@@ -4287,10 +4287,17 @@ const std::vector<ui::AXApiType::Type> GetAXTestValues() {
   return passes;
 }
 
+struct PDFExtensionAccessibilityTreeDumpTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTest,
                          testing::ValuesIn(GetAXTestValues()),
-                         testing::PrintToStringParamName());
+                         PDFExtensionAccessibilityTreeDumpTestPassToString());
 
 // TODO(crbug.com/1324362): Fix Mac flakes.
 #if BUILDFLAG(IS_MAC)
