@@ -15,28 +15,15 @@
 
 namespace history {
 
-// KeywordSearchTermVisit is returned from GetMostRecentKeywordSearchTerms()
-// and contains either the search term and the normalized search term. It also
-// contains the visit count, and the last visit time for either a single keyword
-// visit or a set of keyword visits, depending on the overloaded functions it is
-// returned from.
+// Represents one or more visits to a keyword search term. It contains the
+// search term and the normalized search term in addition to the visit count and
+// the last visit time. An optional frecency score may be provided by the
+// utility functions/helpers in keyword_search_term_util.h where applicable.
 struct KeywordSearchTermVisit {
-  KeywordSearchTermVisit();
-  KeywordSearchTermVisit(const KeywordSearchTermVisit& other);
-  ~KeywordSearchTermVisit();
-
-  // Returns the frecency score of the visit based on the following formula:
-  //            (frequency ^ frequency_exponent) * recency_decay_unit_in_seconds
-  // frecency = ————————————————————————————————————————————————————————————————
-  //                   recency_in_seconds + recency_decay_unit_in_seconds
-  // This score combines frequency and recency of the visit favoring ones that
-  // are more frequent and more recent (see go/local-zps-frecency-ranking).
-  // `recency_decay_unit_sec` is the number of seconds until the recency
-  // component of the score decays to half. `frequency_exponent` is factor by
-  // which the frequency of the visit is exponentiated.
-  double GetFrecency(base::Time now,
-                     int recency_decay_unit_sec,
-                     double frequency_exponent) const;
+  KeywordSearchTermVisit() = default;
+  KeywordSearchTermVisit(const KeywordSearchTermVisit&) = delete;
+  KeywordSearchTermVisit& operator=(const KeywordSearchTermVisit&) = delete;
+  ~KeywordSearchTermVisit() = default;
 
   std::u16string term;             // The search term that was used.
   std::u16string normalized_term;  // The search term, in lower case and with

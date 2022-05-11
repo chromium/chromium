@@ -1229,17 +1229,17 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
       base::CollapseWhitespace(input_text, false);
   for (const auto& result : results) {
     const std::u16string& trimmed_suggestion =
-        base::CollapseWhitespace(result.term, false);
+        base::CollapseWhitespace(result->term, false);
 
     // Don't autocomplete multi-word queries that have only been seen once
     // unless the user has typed more than one word.
     bool prevent_inline_autocomplete =
         base_prevent_inline_autocomplete ||
-        (!input_multiple_words && (result.visit_count < 2) &&
+        (!input_multiple_words && (result->visit_count < 2) &&
          HasMultipleWords(trimmed_suggestion));
 
     int relevance = CalculateRelevanceForHistory(
-        result.last_visit_time, is_keyword, !prevent_inline_autocomplete,
+        result->last_visit_time, is_keyword, !prevent_inline_autocomplete,
         prevent_search_history_inlining);
     // Add the match to |scored_results| by putting the what-you-typed match
     // on the front and appending all other matches.  We want the what-you-

@@ -219,18 +219,30 @@ class URLDatabase {
 
   // Returns up to max_count of the most recent search terms for the specified
   // keyword.
+  // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
+  // function below after experimentation.
   void GetMostRecentKeywordSearchTerms(
       KeywordID keyword_id,
       const std::u16string& prefix,
       int max_count,
-      std::vector<KeywordSearchTermVisit>* visits);
+      std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits);
+
+  // Returns an enumerator to enumerate all the KeywordSearchTermVisits starting
+  // with `prefix` for the specified keyword. The visits are ordered first by
+  // |normalized_term| and then by |last_visit_time| in ascending order, i.e.,
+  // from the oldest to the newest.
+  std::unique_ptr<KeywordSearchTermVisitEnumerator>
+  CreateKeywordSearchTermVisitEnumerator(KeywordID keyword_id,
+                                         const std::u16string& prefix);
 
   // Returns the most recent (no older than `age_threshold`) search terms for
   // the specified keyword.
+  // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
+  // function below after experimentation.
   void GetMostRecentKeywordSearchTerms(
       KeywordID keyword_id,
       base::Time age_threshold,
-      std::vector<KeywordSearchTermVisit>* visits);
+      std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits);
 
   // Returns an enumerator to enumerate all the KeywordSearchTermVisits no older
   // than `age_threshold` for the given keyword. The visits are ordered first by
@@ -340,15 +352,6 @@ class URLDatabase {
 extern const int kLowQualityMatchTypedLimit;
 extern const int kLowQualityMatchVisitLimit;
 extern const int kLowQualityMatchAgeLimitInDays;
-
-// The time interval within which a duplicate query is considered invalid for
-// autocomplete purposes.
-// These invalid duplicates are extracted from search query URLs which are
-// identical or nearly identical to the original search query URL and issued too
-// closely to it, i.e., within this time interval. They are typically recorded
-// as a result of back/forward navigations or user interactions in the search
-// result page and are likely not newly initiated searches.
-extern const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold;
 
 // Returns the date threshold for considering an history item as significant.
 base::Time AutocompleteAgeThreshold();

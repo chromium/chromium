@@ -159,7 +159,8 @@ class SearchProvider : public BaseSearchProvider,
 
   class CompareScoredResults;
 
-  typedef std::vector<history::KeywordSearchTermVisit> HistoryResults;
+  typedef std::vector<std::unique_ptr<history::KeywordSearchTermVisit>>
+      HistoryResults;
 
   // A helper function for UpdateAllOldResults().
   static void UpdateOldResults(bool minimal_changes,

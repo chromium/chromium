@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -206,18 +207,16 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     return;
   }
 
-  std::vector<history::KeywordSearchTermVisit> results;
+  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> results;
   const base::TimeTicks db_query_time = base::TimeTicks::Now();
   url_db->GetMostRecentKeywordSearchTerms(
       template_url_service->GetDefaultSearchProvider()->id(),
       OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold(), &results);
 
   const base::Time now = base::Time::Now();
-  const int kRecencyDecayUnitSec = 60;
-  const double kFrequencyExponent = 1.15;
   auto CompareByFrecency = [&](const auto& a, const auto& b) {
-    return a.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent) >
-           b.GetFrecency(now, kRecencyDecayUnitSec, kFrequencyExponent);
+    return history::GetFrecencyScore(a->visit_count, a->last_visit_time, now) >
+           history::GetFrecencyScore(b->visit_count, b->last_visit_time, now);
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 
@@ -228,7 +227,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
                       : kLocalHistoryZPSUnauthenticatedRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
-        /*suggestion=*/result.normalized_term,
+        /*suggestion=*/result->normalized_term,
         AutocompleteMatchType::SEARCH_HISTORY,
         /*subtypes=*/{}, /*from_keyword=*/false, relevance--,
         /*relevance_from_server=*/false,

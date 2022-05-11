@@ -20,6 +20,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -482,12 +483,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   // produce the deleted match are deleted.
   history::URLDatabase* url_db =
       client_->GetHistoryService()->InMemoryDatabase();
-  std::vector<history::KeywordSearchTermVisit> visits;
+  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> visits;
   url_db->GetMostRecentKeywordSearchTerms(
       default_search_provider()->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
       &visits);
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(u"not to be deleted", visits[0].normalized_term);
+  EXPECT_EQ(u"not to be deleted", visits[0]->normalized_term);
 
   // Make sure search terms from other search providers that would produce the
   // deleted match are not deleted.
@@ -496,5 +497,5 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
       other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold(),
       &visits);
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(u"hello world", visits[0].normalized_term);
+  EXPECT_EQ(u"hello world", visits[0]->normalized_term);
 }

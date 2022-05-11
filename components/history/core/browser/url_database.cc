@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/database_utils/url_converter.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/url_formatter/url_formatter.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -577,7 +578,7 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
     const std::u16string& prefix,
     int max_count,
-    std::vector<KeywordSearchTermVisit>* visits) {
+    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.
@@ -607,21 +608,61 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   statement.BindString16(2, next_prefix);
   statement.BindInt(3, max_count);
 
-  KeywordSearchTermVisit visit;
   while (statement.Step()) {
-    visit.term = statement.ColumnString16(0);
-    visit.normalized_term = statement.ColumnString16(1);
-    visit.visit_count = statement.ColumnInt(2);
-    visit.last_visit_time =
+    auto visit = std::make_unique<KeywordSearchTermVisit>();
+    visit->term = statement.ColumnString16(0);
+    visit->normalized_term = statement.ColumnString16(1);
+    visit->visit_count = statement.ColumnInt(2);
+    visit->last_visit_time =
         base::Time::FromInternalValue(statement.ColumnInt64(3));
-    visits->push_back(visit);
+    visits->push_back(std::move(visit));
   }
+}
+
+std::unique_ptr<KeywordSearchTermVisitEnumerator>
+URLDatabase::CreateKeywordSearchTermVisitEnumerator(
+    KeywordID keyword_id,
+    const std::u16string& prefix) {
+  // NOTE: the keyword_id can be zero if on first run the user does a query
+  // before the TemplateURLService has finished loading. As the chances of this
+  // occurring are small, we ignore it.
+  if (!keyword_id)
+    return nullptr;
+
+  auto enumerator = base::WrapUnique<KeywordSearchTermVisitEnumerator>(
+      new KeywordSearchTermVisitEnumerator());
+  enumerator->statement_.Assign(GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                                           R"(
+      SELECT
+        kst.term,
+        kst.normalized_term,
+        u.visit_count,
+        u.last_visit_time
+      FROM
+        keyword_search_terms kst JOIN urls u ON kst.url_id = u.id
+      WHERE
+        kst.keyword_id = ? AND
+        kst.normalized_term >= ? AND
+        kst.normalized_term < ?
+      ORDER BY kst.normalized_term, u.last_visit_time
+      )"));
+  // Keep CollapseWhitespace() and ToLower() in sync with search_provider.cc.
+  std::u16string normalized_prefix =
+      base::CollapseWhitespace(base::i18n::ToLower(prefix), false);
+  // This magic gives us a prefix search.
+  std::u16string next_prefix = normalized_prefix;
+  next_prefix.back() = next_prefix.back() + 1;
+  enumerator->statement_.BindInt64(0, keyword_id);
+  enumerator->statement_.BindString16(1, normalized_prefix);
+  enumerator->statement_.BindString16(2, next_prefix);
+  enumerator->initialized_ = enumerator->statement_.is_valid();
+  return enumerator;
 }
 
 void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
     base::Time age_threshold,
-    std::vector<KeywordSearchTermVisit>* visits) {
+    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.
@@ -672,13 +713,13 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
   statement.BindInt64(2, age_threshold.ToInternalValue());
 
   while (statement.Step()) {
-    KeywordSearchTermVisit visit;
-    visit.normalized_term = statement.ColumnString16(0);
-    visit.term = statement.ColumnString16(1);
-    visit.visit_count = statement.ColumnInt(2);
-    visit.last_visit_time =
+    auto visit = std::make_unique<KeywordSearchTermVisit>();
+    visit->normalized_term = statement.ColumnString16(0);
+    visit->term = statement.ColumnString16(1);
+    visit->visit_count = statement.ColumnInt(2);
+    visit->last_visit_time =
         base::Time::FromInternalValue(statement.ColumnInt64(3));
-    visits->push_back(visit);
+    visits->push_back(std::move(visit));
   }
 }
 
@@ -809,9 +850,6 @@ bool URLDatabase::RecreateURLTableWithAllContents() {
 const int kLowQualityMatchTypedLimit = 1;
 const int kLowQualityMatchVisitLimit = 4;
 const int kLowQualityMatchAgeLimitInDays = 3;
-
-const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold =
-    base::Minutes(5);
 
 base::Time AutocompleteAgeThreshold() {
   return (base::Time::Now() - base::Days(kLowQualityMatchAgeLimitInDays));
