@@ -705,6 +705,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double>
     kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability;
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyPrivacySettingsTriggerId;
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -728,6 +731,9 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kTrustSafetySentimentSurveyPrivacySettingsTime;

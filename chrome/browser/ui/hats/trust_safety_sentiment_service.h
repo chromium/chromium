@@ -91,7 +91,8 @@ class TrustSafetySentimentService : public KeyedService,
     kPrivacySandbox3NoticeDismiss = 6,
     kPrivacySandbox3NoticeOk = 7,
     kPrivacySandbox3NoticeSettings = 8,
-    kMaxValue = kPrivacySandbox3NoticeSettings,
+    kPrivacySandbox3NoticeLearnMore = 9,
+    kMaxValue = kPrivacySandbox3NoticeLearnMore,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|

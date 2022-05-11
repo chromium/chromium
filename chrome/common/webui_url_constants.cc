@@ -565,6 +565,8 @@ const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
 const char kPrivacySandboxAdPersonalizationSubPage[] =
     "privacySandbox?view=adPersonalizationDialog";
+const char kPrivacySandboxLearnMoreSubPage[] =
+    "privacySandbox?view=learnMoreDialog";
 const char kPrivacySandboxSubPage[] = "privacySandbox";
 
 #if !BUILDFLAG(IS_ANDROID)

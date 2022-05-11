@@ -1106,22 +1106,26 @@ void PrivacySandboxService::InformSentimentService(
 
   TrustSafetySentimentService::FeatureArea area;
   switch (action) {
-    case (DialogAction::kNoticeOpenSettings):
+    case DialogAction::kNoticeOpenSettings:
       area = TrustSafetySentimentService::FeatureArea::
           kPrivacySandbox3NoticeSettings;
       break;
-    case (DialogAction::kNoticeAcknowledge):
+    case DialogAction::kNoticeAcknowledge:
       area = TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk;
       break;
-    case (DialogAction::kNoticeDismiss):
+    case DialogAction::kNoticeDismiss:
       area = TrustSafetySentimentService::FeatureArea::
           kPrivacySandbox3NoticeDismiss;
       break;
-    case (DialogAction::kConsentAccepted):
+    case DialogAction::kNoticeLearnMore:
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox3NoticeLearnMore;
+      break;
+    case DialogAction::kConsentAccepted:
       area = TrustSafetySentimentService::FeatureArea::
           kPrivacySandbox3ConsentAccept;
       break;
-    case (DialogAction::kConsentDeclined):
+    case DialogAction::kConsentDeclined:
       area = TrustSafetySentimentService::FeatureArea::
           kPrivacySandbox3ConsentDecline;
       break;

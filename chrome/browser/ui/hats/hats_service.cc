@@ -59,6 +59,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[] =
     "ts-ps3-notice-ok";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[] =
     "ts-ps3-notice-settings";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[] =
+    "ts-ps3-notice-learn-more";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
     "ts-privacy-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
@@ -218,6 +220,14 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings,
       features::
           kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId
+              .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore,
+      features::
+          kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId
               .Get(),
       std::vector<std::string>{"Stable channel", "3P cookies blocked",
                                "Privacy Sandbox enabled"});

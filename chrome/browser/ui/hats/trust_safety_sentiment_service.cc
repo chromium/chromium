@@ -70,6 +70,9 @@ std::string GetHatsTriggerForFeatureArea(
     case (TrustSafetySentimentService::FeatureArea::
               kPrivacySandbox3NoticeSettings):
       return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings;
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeLearnMore):
+      return kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore;
     default:
       NOTREACHED();
       return "";
@@ -117,6 +120,12 @@ bool ProbabilityCheck(TrustSafetySentimentService::FeatureArea feature_area) {
       return base::RandDouble() <
              features::
                  kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability
+                     .Get();
+    case (TrustSafetySentimentService::FeatureArea::
+              kPrivacySandbox3NoticeLearnMore):
+      return base::RandDouble() <
+             features::
+                 kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability
                      .Get();
     default:
       NOTREACHED();

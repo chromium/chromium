@@ -1035,6 +1035,10 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsProbability{
         &kTrustSafetySentimentSurvey,
         "privacy-sandbox-3-notice-settings-probability", 0.8};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreProbability{
+        &kTrustSafetySentimentSurvey,
+        "privacy-sandbox-3-notice-learn-more-probability", 0.2};
 // The HaTS trigger IDs, which determine which survey is delivered from the HaTS
 // backend.
 const base::FeatureParam<std::string>
@@ -1066,6 +1070,10 @@ extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId{
         &kTrustSafetySentimentSurvey,
         "privacy-sandbox-3-notice-settings-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId{
+        &kTrustSafetySentimentSurvey,
+        "privacy-sandbox-3-notice-learn-more-trigger-id", ""};
 // The time the user must remain on settings after interacting with a privacy
 // setting to be considered.
 const base::FeatureParam<base::TimeDelta>

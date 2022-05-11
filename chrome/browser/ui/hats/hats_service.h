@@ -58,6 +58,7 @@ extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[];
+extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
 extern const char kHatsSurveyTriggerTrustSafetyTrustedSurface[];
 extern const char kHatsSurveyTriggerTrustSafetyTransactions[];

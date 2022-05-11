@@ -1548,6 +1548,22 @@ TEST_F(PrivacySandboxServiceTest, DialogActionsSentimentService) {
         PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction);
   }
   {
+    EXPECT_CALL(
+        *mock_sentiment_service(),
+        InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
+                                          kPrivacySandbox3NoticeLearnMore))
+        .Times(1);
+    SetupDialogTestState(feature_list(), prefs(),
+                         {/*consent_required=*/false,
+                          /*old_api_pref=*/true,
+                          /*new_api_pref=*/false,
+                          /*notice_displayed=*/false,
+                          /*consent_decision_made=*/false,
+                          /*confirmation_not_shown=*/false});
+    privacy_sandbox_service()->DialogActionOccurred(
+        PrivacySandboxService::DialogAction::kNoticeLearnMore);
+  }
+  {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);

@@ -499,6 +499,7 @@ extern const char kSignOutSubPage[];
 extern const char kSyncSetupSubPage[];
 extern const char kTriggeredResetProfileSettingsSubPage[];
 extern const char kPrivacySandboxAdPersonalizationSubPage[];
+extern const char kPrivacySandboxLearnMoreSubPage[];
 extern const char kPrivacySandboxSubPage[];
 
 #if !BUILDFLAG(IS_ANDROID)

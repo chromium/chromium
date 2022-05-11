@@ -215,7 +215,7 @@ void PrivacySandboxNoticeBubbleView::AppMenuShown() {
 }
 
 void PrivacySandboxNoticeBubbleView::OpenAboutAdPersonalizationSettings() {
-  chrome::ShowPrivacySandboxSettings(browser_);
+  chrome::ShowPrivacySandboxLearnMore(browser_);
   NotifyServiceAboutDialogAction(browser_->profile(),
                                  DialogAction::kNoticeLearnMore);
   GetWidget()->CloseWithReason(
