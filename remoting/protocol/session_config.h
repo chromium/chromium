@@ -190,9 +190,6 @@ class CandidateSessionConfig {
   std::list<ChannelConfig> event_configs_;
   std::list<ChannelConfig> video_configs_;
   std::list<ChannelConfig> audio_configs_;
-
-  bool vp9_experiment_enabled_ = false;
-  bool h264_experiment_enabled_ = false;
 };
 
 }  // namespace protocol
