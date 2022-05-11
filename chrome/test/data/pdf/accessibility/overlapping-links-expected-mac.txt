@@ -1,5 +1,5 @@
 AXGroup AXDescription='PDF document containing 1 page'
-++AXGroup AXDescription='Page 1'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
 ++++AXGroup
 ++++++AXLink AXDescription='start first link start second link end second link end first link<newline>'
 ++++++++AXStaticText AXValue='start first link start second link end second link end first link<newline>'

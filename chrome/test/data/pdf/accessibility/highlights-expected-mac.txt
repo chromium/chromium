@@ -1,9 +1,9 @@
 AXGroup AXDescription='PDF document containing 1 page'
-++AXGroup AXDescription='Page 1'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
 ++++AXGroup
 ++++++AXButton AXDescription='Hello'
 ++++++++AXStaticText AXValue='Hello'
-++++++++AXGroup
+++++++++AXGroup AXSubrole=AXDocumentNote
 ++++++++++AXStaticText AXValue='Text Note'
 ++++++AXStaticText AXValue=', nice '
 ++++++AXButton AXDescription='meeting'

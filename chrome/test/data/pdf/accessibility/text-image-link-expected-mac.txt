@@ -1,5 +1,5 @@
 AXGroup AXDescription='PDF document containing 2 pages'
-++AXGroup AXDescription='Page 1'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 1'
 ++++AXHeading AXValue=2
 ++++++AXStaticText AXValue='Link Annotations - Page 1<newline>'
 ++++AXHeading AXValue=2
@@ -19,6 +19,6 @@ AXGroup AXDescription='PDF document containing 2 pages'
 ++++++AXImage AXDescription='Image 1'
 ++++++AXImage AXDescription='Unlabeled image'
 ++++++AXImage AXDescription='Unlabeled image'
-++AXGroup AXDescription='Page 2'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Page 2'
 ++++AXGroup
 ++++++AXStaticText AXValue='Second Page'
