@@ -47,23 +47,6 @@ using content::WebContents;
 using content::OpenURLParams;
 using content::Referrer;
 
-// There is logic inside IntentPickerBubbleView that filters out the intent
-// helper by checking IsIntentHelperPackage() on them. That logic is
-// ChromeOS-only, so for this unit test to match the behavior of
-// IntentPickerBubbleView on non-ChromeOS platforms, if needs to not filter any
-// packages.
-#if BUILDFLAG(IS_CHROMEOS)
-const char* kArcIntentHelperPackageName = arc::kArcIntentHelperPackageName;
-bool IsIntentHelperPackage(const base::StringPiece package_name) {
-  return package_name == arc::kArcIntentHelperPackageName;
-}
-#else
-constexpr char kArcIntentHelperPackageName[] = "unused_intent_helper";
-bool IsIntentHelperPackage(const base::StringPiece package_name) {
-  return false;
-}
-#endif
-
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() = default;
@@ -94,10 +77,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                            "package_1", "dank app 1");
     app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                            "package_2", "dank_app_2");
-    // Also adding the corresponding Chrome's package name on ARC, even if this
-    // is given to the picker UI as input it should be ignored.
-    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
-                           kArcIntentHelperPackageName, "legit_chrome");
 
     if (use_icons)
       FillAppListWithDummyIcons();
@@ -188,13 +167,8 @@ TEST_F(IntentPickerBubbleViewTest, LabelsPtrVectorSize) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
   size_t size = app_info_.size();
-  size_t chrome_package_repetitions = 0;
-  for (const AppInfo& app_info : app_info_) {
-    if (IsIntentHelperPackage(app_info.launch_name))
-      ++chrome_package_repetitions;
-  }
 
-  EXPECT_EQ(size, bubble_->GetScrollViewSize() + chrome_package_repetitions);
+  EXPECT_EQ(size, bubble_->GetScrollViewSize());
 }
 
 // Verifies that the first item is activated by default when creating a new
@@ -244,19 +218,6 @@ TEST_F(IntentPickerBubbleViewTest, PressButtonTwice) {
   bubble_->PressButtonForTesting(1, event);
   EXPECT_EQ(bubble_->GetInkDropStateForTesting(1),
             views::InkDropState::ACTIVATED);
-}
-
-// Check that none of the app candidates within the picker corresponds to the
-// Chrome browser.
-TEST_F(IntentPickerBubbleViewTest, ChromeNotInCandidates) {
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/absl::nullopt);
-  size_t size = bubble_->GetScrollViewSize();
-  for (size_t i = 0; i < size; ++i) {
-    EXPECT_FALSE(
-        IsIntentHelperPackage(bubble_->app_info_for_testing()[i].launch_name));
-  }
 }
 
 // Check that a non nullptr WebContents() has been created and observed.

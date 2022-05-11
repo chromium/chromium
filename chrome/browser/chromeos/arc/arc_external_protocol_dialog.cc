@@ -604,6 +604,7 @@ void OnAppIconsReceived(
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
     base::OnceCallback<void(bool)> handled_cb,
+    bool show_stay_in_chrome,
     std::unique_ptr<ArcIconCacheDelegate::ActivityToIconsMap> icons) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -628,10 +629,9 @@ void OnAppIconsReceived(
   if (!browser)
     return std::move(handled_cb).Run(false);
 
-  const bool stay_in_chrome = IsChromeAnAppCandidate(handlers);
   bool handled = MaybeAddDevicesAndShowPicker(
       url, initiating_origin, web_contents.get(), std::move(app_info),
-      stay_in_chrome,
+      show_stay_in_chrome,
       /*show_remember_selection=*/true,
       base::BindOnce(OnIntentPickerClosed, web_contents, url, safe_to_bypass_ui,
                      std::move(handlers), std::move(mojo_delegate)));
@@ -702,16 +702,26 @@ void OnUrlHandlerList(
 
   // Otherwise, retrieve icons of the activities. Since this function is for
   // handling external protocols, Chrome is rarely in the list, but if the |url|
-  // is intent: with fallback or geo:, for example, it may be.
+  // is intent: with fallback or geo:, for example, it may be. In this case, we
+  // remove it from the handler list and show the "Stay in Chrome" button
+  // instead.
+  bool show_stay_in_chrome = false;
   std::vector<ArcIntentHelperMojoDelegate::ActivityName> activities;
-  for (const auto& handler : handlers) {
-    activities.emplace_back(handler.package_name, handler.activity_name);
+  auto it = handlers.begin();
+  while (it != handlers.end()) {
+    if (it->package_name == kArcIntentHelperPackageName) {
+      it = handlers.erase(it);
+      show_stay_in_chrome = true;
+    } else {
+      activities.emplace_back(it->package_name, it->activity_name);
+      ++it;
+    }
   }
   ArcIconCacheDelegate::GetInstance()->GetActivityIcons(
-      activities,
-      base::BindOnce(OnAppIconsReceived, web_contents, url, initiating_origin,
-                     safe_to_bypass_ui, std::move(handlers),
-                     std::move(mojo_delegate), std::move(handled_cb)));
+      activities, base::BindOnce(OnAppIconsReceived, web_contents, url,
+                                 initiating_origin, safe_to_bypass_ui,
+                                 std::move(handlers), std::move(mojo_delegate),
+                                 std::move(handled_cb), show_stay_in_chrome));
 }
 
 }  // namespace

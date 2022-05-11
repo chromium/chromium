@@ -46,10 +46,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 constexpr char kInvalidLaunchName[] = "";
@@ -299,26 +295,13 @@ void IntentPickerBubbleView::Initialize() {
   scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  size_t i = 0;
-  size_t to_erase = app_info_.size();
-  for (const auto& app_info : app_info_) {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (app_info.launch_name == arc::kArcIntentHelperPackageName) {
-      to_erase = i;
-      continue;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  for (size_t i = 0; i < app_info_.size(); i++) {
     auto app_button = std::make_unique<IntentPickerLabelButton>(
         base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
                             base::Unretained(this), i),
-        app_info.icon_model, app_info.display_name);
-    scrollable_view->AddChildViewAt(std::move(app_button), i++);
+        app_info_[i].icon_model, app_info_[i].display_name);
+    scrollable_view->AddChildViewAt(std::move(app_button), i);
   }
-
-  // We should delete at most one entry, this is the case when Chrome is listed
-  // as a candidate to handle a given URL.
-  if (to_erase != app_info_.size())
-    app_info_.erase(app_info_.begin() + to_erase);
 
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetBackgroundThemeColorId(ui::kColorBubbleBackground);

@@ -91,7 +91,7 @@ class ArcIntentHelperMojoDelegate {
                       bool is_preferred,
                       absl::optional<std::string> fallback_url);
     IntentHandlerInfo(const IntentHandlerInfo& other);
-    IntentHandlerInfo& operator=(const IntentHandlerInfo&) = delete;
+    IntentHandlerInfo& operator=(const IntentHandlerInfo&) = default;
     ~IntentHandlerInfo();
 
     // The name of the package used as a description text.
