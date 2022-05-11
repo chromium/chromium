@@ -65,7 +65,8 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(list_item, max_depth - 1);
       if (value) {
-        list->Append(std::move(value));
+        list->GetList().Append(
+            base::Value::FromUniquePtrValue(std::move(value)));
       }
     }
     result = std::move(list);
