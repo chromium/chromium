@@ -806,7 +806,8 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
                               apps_uninstalling.size());
 
   if (!apps_uninstalling.empty())
-    install_delegate_->RetryIncompleteUninstalls(apps_uninstalling);
+    install_delegate_->RetryIncompleteUninstalls(
+        base::flat_set<AppId>(std::move(apps_uninstalling)));
 }
 
 void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {

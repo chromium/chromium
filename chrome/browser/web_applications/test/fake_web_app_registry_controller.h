@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -58,7 +59,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   void SetUninstallFromSyncDelegate(UninstallFromSyncDelegate delegate);
 
   using RetryIncompleteUninstallsDelegate = base::RepeatingCallback<void(
-      const std::vector<AppId>& apps_to_uninstall)>;
+      const base::flat_set<AppId>& apps_to_uninstall)>;
   void SetRetryIncompleteUninstallsDelegate(
       RetryIncompleteUninstallsDelegate delegate);
 
@@ -68,7 +69,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   void UninstallFromSync(const std::vector<AppId>& web_apps,
                          RepeatingUninstallCallback callback) override;
   void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall) override;
+      const base::flat_set<AppId>& apps_to_uninstall) override;
 
   void DestroySubsystems();
 

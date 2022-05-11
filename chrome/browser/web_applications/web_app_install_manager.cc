@@ -294,7 +294,7 @@ void WebAppInstallManager::UninstallFromSync(
 }
 
 void WebAppInstallManager::RetryIncompleteUninstalls(
-    const std::vector<AppId>& apps_to_uninstall) {
+    const base::flat_set<AppId>& apps_to_uninstall) {
   if (!started_)
     return;
 

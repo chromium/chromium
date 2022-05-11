@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -132,7 +133,7 @@ void FakeWebAppRegistryController::UninstallFromSync(
 }
 
 void FakeWebAppRegistryController::RetryIncompleteUninstalls(
-    const std::vector<AppId>& apps_to_uninstall) {
+    const base::flat_set<AppId>& apps_to_uninstall) {
   if (retry_incomplete_uninstalls_delegate_)
     retry_incomplete_uninstalls_delegate_.Run(apps_to_uninstall);
 }

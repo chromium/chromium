@@ -83,7 +83,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void UninstallFromSync(const std::vector<AppId>& web_apps,
                          RepeatingUninstallCallback callback) override;
   void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall) override;
+      const base::flat_set<AppId>& apps_to_uninstall) override;
 
   virtual void AddObserver(WebAppInstallManagerObserver* observer);
   virtual void RemoveObserver(WebAppInstallManagerObserver* observer);

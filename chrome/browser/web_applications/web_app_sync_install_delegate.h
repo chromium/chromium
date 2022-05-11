@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
 
@@ -48,7 +49,7 @@ class SyncInstallDelegate {
   // `is_uninstalling()` set to true. They are expected to be eventually deleted
   // by this call.
   virtual void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall) = 0;
+      const base::flat_set<AppId>& apps_to_uninstall) = 0;
 };
 
 }  // namespace web_app

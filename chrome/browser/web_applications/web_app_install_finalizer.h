@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -124,7 +125,7 @@ class WebAppInstallFinalizer {
                                UninstallWebAppCallback callback);
 
   virtual void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall);
+      const base::flat_set<AppId>& apps_to_uninstall);
 
   // Sync-initiated uninstall. Copied from WebAppInstallSyncInstallDelegate.
   // Called before the web apps are removed from the registry by sync. This:

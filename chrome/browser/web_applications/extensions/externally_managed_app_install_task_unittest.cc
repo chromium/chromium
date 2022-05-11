@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -225,7 +226,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
   }
 
   void RetryIncompleteUninstalls(
-      const std::vector<AppId>& apps_to_uninstall) override {
+      const base::flat_set<AppId>& apps_to_uninstall) override {
     NOTREACHED();
   }
 

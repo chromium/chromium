@@ -1202,7 +1202,7 @@ TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
 
   base::RunLoop run_loop;
   controller().SetRetryIncompleteUninstallsDelegate(base::BindLambdaForTesting(
-      [&](const std::vector<AppId>& apps_to_uninstall) {
+      [&](const base::flat_set<AppId>& apps_to_uninstall) {
         EXPECT_EQ(apps_to_uninstall.size(), 5ul);
         EXPECT_THAT(apps_to_uninstall,
                     ::testing::UnorderedElementsAreArray(apps_to_uninstall));
