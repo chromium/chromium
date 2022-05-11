@@ -58,13 +58,15 @@ class WTF_EXPORT Partitions {
     return array_buffer_root_ != nullptr;
   }
 
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* ArrayBufferPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  ArrayBufferPartition() {
     DCHECK(initialized_);
     DCHECK(ArrayBufferPartitionInitialized());
     return array_buffer_root_;
   }
 
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* BufferPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  BufferPartition() {
     DCHECK(initialized_);
     return buffer_root_;
   }
@@ -98,7 +100,8 @@ class WTF_EXPORT Partitions {
   static void HandleOutOfMemory(size_t size);
 
  private:
-  ALWAYS_INLINE static base::ThreadSafePartitionRoot* FastMallocPartition() {
+  ALWAYS_INLINE static partition_alloc::ThreadSafePartitionRoot*
+  FastMallocPartition() {
     DCHECK(initialized_);
     return fast_malloc_root_;
   }
@@ -108,9 +111,9 @@ class WTF_EXPORT Partitions {
   static bool initialized_;
   static bool scan_is_enabled_;
   // See Allocator.md for a description of these partitions.
-  static base::ThreadSafePartitionRoot* fast_malloc_root_;
-  static base::ThreadSafePartitionRoot* array_buffer_root_;
-  static base::ThreadSafePartitionRoot* buffer_root_;
+  static partition_alloc::ThreadSafePartitionRoot* fast_malloc_root_;
+  static partition_alloc::ThreadSafePartitionRoot* array_buffer_root_;
+  static partition_alloc::ThreadSafePartitionRoot* buffer_root_;
 };
 
 }  // namespace WTF

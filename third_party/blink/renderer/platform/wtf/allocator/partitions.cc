@@ -65,9 +65,11 @@ bool Partitions::scan_is_enabled_ = false;
 
 // These statics are inlined, so cannot be LazyInstances. We create the values,
 // and then set the pointers correctly in Initialize().
-base::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ = nullptr;
-base::ThreadSafePartitionRoot* Partitions::array_buffer_root_ = nullptr;
-base::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
+partition_alloc::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ =
+    nullptr;
+partition_alloc::ThreadSafePartitionRoot* Partitions::array_buffer_root_ =
+    nullptr;
+partition_alloc::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
 
 // static
 void Partitions::Initialize() {

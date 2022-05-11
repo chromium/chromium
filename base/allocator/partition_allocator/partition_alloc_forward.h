@@ -66,7 +66,6 @@ namespace base {
 // the migration to the new namespaces gets done.
 using ::partition_alloc::PartitionRoot;
 using ::partition_alloc::PartitionStatsDumper;
-using ::partition_alloc::ThreadSafePartitionRoot;
 
 }  // namespace base
 
