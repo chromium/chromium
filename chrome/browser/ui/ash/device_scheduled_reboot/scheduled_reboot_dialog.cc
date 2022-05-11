@@ -28,7 +28,10 @@ ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
 
 ScheduledRebootDialog::~ScheduledRebootDialog() {
   if (dialog_delegate_) {
-    dialog_delegate_->GetWidget()->CloseNow();
+    views::Widget* widget = dialog_delegate_->GetWidget();
+    if (widget->HasObserver(this))
+      widget->RemoveObserver(this);
+    widget->CloseNow();
     dialog_delegate_ = nullptr;
   }
 }
@@ -62,7 +65,7 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
   dialog_delegate_->GetWidget()->AddObserver(this);
 }
 
-void ScheduledRebootDialog::OnWidgetClosing(views::Widget* widget) {
+void ScheduledRebootDialog::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   dialog_delegate_ = nullptr;
 }

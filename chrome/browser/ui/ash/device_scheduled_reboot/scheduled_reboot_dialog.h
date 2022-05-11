@@ -33,7 +33,7 @@ class ScheduledRebootDialog : public views::WidgetObserver {
 
  protected:
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   // Show bubble dialog and set |dialog_delegate_|.
