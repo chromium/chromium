@@ -15,6 +15,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -85,6 +86,8 @@ PasswordManagerSettingsServiceAndroidImpl::
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
+  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
+  sync_service->AddObserver(this);
 }
 
 // Constructor for tests
@@ -108,6 +111,8 @@ PasswordManagerSettingsServiceAndroidImpl::
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
+  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
+  sync_service->AddObserver(this);
 }
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -143,14 +148,19 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
   if (!IsPasswordSyncEnabled(sync_service_))
     return;
-  // TODO(crbug.com/1289700): Request the settings from the backend.
+
+  RequestSettingsFromBackend();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
-    password_manager::PasswordManagerSetting setting,
+    PasswordManagerSetting setting,
     bool value) {
-  if (!IsPasswordSyncEnabled(sync_service_))
+  UpdateSettingFetchState(setting);
+  if (!fetch_after_sync_status_change_in_progress_ &&
+      !IsPasswordSyncEnabled(sync_service_)) {
     return;
+  }
+
   const PrefService::Preference* android_pref =
       GetGMSPrefFromSetting(pref_service_, setting);
   pref_service_->SetBoolean(android_pref->name(), value);
@@ -170,8 +180,10 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
   DCHECK(bridge_);
+  UpdateSettingFetchState(setting);
   if (!IsPasswordSyncEnabled(sync_service_))
     return;
+
   const PrefService::Preference* pref =
       GetGMSPrefFromSetting(pref_service_, setting);
 
@@ -202,13 +214,54 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded() {
   if (!IsPasswordSyncEnabled(sync_service_))
     return;
 
+  DumpChromePrefsIntoGMSPrefs();
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
+    syncer::SyncService* sync) {
+  // Return early if the setting didn't change.
+  if (IsPasswordSyncEnabled(sync) == is_password_sync_enabled_) {
+    return;
+  }
+
+  if (IsPasswordSyncEnabled(sync))
+    DumpChromePrefsIntoGMSPrefs();
+
+  // Fetch settings from the backend to align values stored in GMS Core and
+  // Chrome.
+  is_password_sync_enabled_ = IsPasswordSyncEnabled(sync);
+  fetch_after_sync_status_change_in_progress_ = true;
+  for (PasswordManagerSetting setting : kAllPasswordSettings)
+    awaited_settings_.insert(setting);
+  RequestSettingsFromBackend();
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
+  for (PasswordManagerSetting setting : kAllPasswordSettings) {
+    bridge_->GetPasswordSettingValue(
+        PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+            pref_service_->GetString(::prefs::kGoogleServicesLastUsername)),
+        setting);
+  }
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
+    PasswordManagerSetting received_setting) {
+  if (!fetch_after_sync_status_change_in_progress_)
+    return;
+
+  awaited_settings_.erase(received_setting);
+  if (awaited_settings_.empty())
+    fetch_after_sync_status_change_in_progress_ = false;
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::DumpChromePrefsIntoGMSPrefs() {
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
     const PrefService::Preference* regular_pref =
         GetRegularPrefFromSetting(pref_service_, setting);
 
-    if (!pref_service_->GetUserPrefValue(regular_pref->name())) {
+    if (!pref_service_->GetUserPrefValue(regular_pref->name()))
       continue;
-    }
 
     const PrefService::Preference* gms_pref =
         GetGMSPrefFromSetting(pref_service_, setting);

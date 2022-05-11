@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge.h"
@@ -22,7 +23,8 @@ class PrefService;
 // the possibility of communicating with GMS.
 class PasswordManagerSettingsServiceAndroidImpl
     : public PasswordManagerSettingsService,
-      public password_manager::PasswordSettingsUpdaterAndroidBridge::Consumer {
+      public password_manager::PasswordSettingsUpdaterAndroidBridge::Consumer,
+      public syncer::SyncServiceObserver {
  public:
   PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
                                             syncer::SyncService* sync_service);
@@ -66,6 +68,21 @@ class PasswordManagerSettingsServiceAndroidImpl
   // to migrate again.
   void MigratePrefsIfNeeded();
 
+  // syncer::SyncServiceObserver implementation
+  void OnStateChanged(syncer::SyncService* sync) override;
+
+  // Asynchronously fetch password settings.
+  void RequestSettingsFromBackend();
+
+  // Updates information about the current setting fetch after receiving
+  // a reply from the backend.
+  void UpdateSettingFetchState(
+      password_manager::PasswordManagerSetting received_setting);
+
+  // Copies the values of chrome prefs that have user-set values into the
+  // GMS prefs.
+  void DumpChromePrefsIntoGMSPrefs();
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -80,6 +97,17 @@ class PasswordManagerSettingsServiceAndroidImpl
   // Notifies the service when Chrome is foregrounded, so that the service
   // can request settings values from Google Mobile Services.
   std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper_;
+
+  // Cached value of the password sync setting.
+  bool is_password_sync_enabled_ = false;
+
+  // True if settings were requested from the backend after password sync
+  // setting was changed, and the fetch is still in progress.
+  bool fetch_after_sync_status_change_in_progress_ = false;
+
+  // Settings requested from the backend after a sunc status change, but not
+  // fetched yet.
+  base::flat_set<password_manager::PasswordManagerSetting> awaited_settings_;
 
   base::WeakPtrFactory<PasswordManagerSettingsServiceAndroidImpl>
       weak_ptr_factory_{this};
