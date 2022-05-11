@@ -4767,6 +4767,21 @@
             ]
         }
     ],
+    "MessagesPreinstall": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MessagesPreinstall"
+                    ]
+                }
+            ]
+        }
+    ],
     "MetrickitCrashReport": [
         {
             "platforms": [
