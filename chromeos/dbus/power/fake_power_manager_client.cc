@@ -189,6 +189,8 @@ void FakePowerManagerClient::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
   ++num_request_restart_calls_;
+  if (restart_callback_)
+    std::move(restart_callback_).Run();
 }
 
 void FakePowerManagerClient::RequestShutdown(

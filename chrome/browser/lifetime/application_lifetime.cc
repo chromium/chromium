@@ -54,6 +54,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/aura/env.h"
@@ -177,7 +178,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // If an update is pending NotifyAndTerminate() will trigger a system reboot,
   // which in turn will send SIGTERM to Chrome, and that ends up processing
   // unload handlers.
-  if (browser_shutdown::UpdatePending()) {
+  if (UpdatePending()) {
     browser_shutdown::NotifyAndTerminate(true);
     return;
   }
@@ -337,25 +338,18 @@ void AttemptRestart() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// The ChromeOS implementation is in application_lifetime_chromeos.cc
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void AttemptRelaunch() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
-  // If running the Chrome OS build, but we're not on the device, fall through.
-#endif
   AttemptRestart();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void RelaunchIgnoreUnloadHandlers() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
-  // If running the Chrome OS build, but we're not on the device, fall through.
-#endif
   AttemptRestartInternal(IgnoreUnloadHandlers(true));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AttemptExit() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
