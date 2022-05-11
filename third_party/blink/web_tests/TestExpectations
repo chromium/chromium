@@ -6870,8 +6870,8 @@ crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-ps
 crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 
-# Sheriff 2022-04-18
-crbug.com/1317007 [ Mac ] external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
+# Sheriff 2022-04-18, failing on Mac and WebKit Win10 builders.
+crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
 
 # Sheriff 2022-04-18
 # TODO(crbug.com/1316144): Re-enable this test
@@ -6958,3 +6958,6 @@ crbug.com/1323627 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 
 # Sheriff 2022-05-10
 crbug.com/1280621 [ Linux Debug ] http/tests/devtools/persistence/persistence-move-breakpoints.js [ Failure ]
+
+# Sheriff 2022-05-11
+crbug.com/1324428 fast/webgl/canvas-toDataURL-crash.html [ Crash Pass ]
