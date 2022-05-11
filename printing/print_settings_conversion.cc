@@ -132,6 +132,47 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
   settings->set_should_print_backgrounds(backgrounds.value());
   settings->set_selection_only(selection_only.value());
 
+  absl::optional<bool> collate = job_settings.FindBool(kSettingCollate);
+  absl::optional<int> copies = job_settings.FindInt(kSettingCopies);
+  absl::optional<int> color = job_settings.FindInt(kSettingColor);
+  absl::optional<int> duplex_mode = job_settings.FindInt(kSettingDuplexMode);
+  absl::optional<bool> landscape = job_settings.FindBool(kSettingLandscape);
+  absl::optional<int> scale_factor = job_settings.FindInt(kSettingScaleFactor);
+  absl::optional<bool> rasterize_pdf =
+      job_settings.FindBool(kSettingRasterizePdf);
+  absl::optional<int> pages_per_sheet =
+      job_settings.FindInt(kSettingPagesPerSheet);
+  if (!collate.has_value() || !copies.has_value() || !color.has_value() ||
+      !duplex_mode.has_value() || !landscape.has_value() ||
+      !scale_factor.has_value() || !rasterize_pdf.has_value() ||
+      !pages_per_sheet.has_value()) {
+    return nullptr;
+  }
+  settings->set_collate(collate.value());
+  settings->set_copies(copies.value());
+  settings->SetOrientation(landscape.value());
+  settings->set_device_name(
+      base::UTF8ToUTF16(*job_settings.FindString(kSettingDeviceName)));
+  settings->set_duplex_mode(
+      static_cast<mojom::DuplexMode>(duplex_mode.value()));
+  settings->set_color(static_cast<mojom::ColorModel>(color.value()));
+  settings->set_scale_factor(static_cast<double>(scale_factor.value()) / 100.0);
+  settings->set_rasterize_pdf(rasterize_pdf.value());
+  settings->set_pages_per_sheet(pages_per_sheet.value());
+
+  absl::optional<int> dpi_horizontal =
+      job_settings.FindInt(kSettingDpiHorizontal);
+  absl::optional<int> dpi_vertical = job_settings.FindInt(kSettingDpiVertical);
+  if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
+    return nullptr;
+
+  settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
+
+  absl::optional<int> rasterize_pdf_dpi =
+      job_settings.FindInt(kSettingRasterizePdfDpi);
+  if (rasterize_pdf_dpi.has_value())
+    settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
+
   PrintSettings::RequestedMedia requested_media;
   const base::Value::Dict* media_size_value =
       job_settings.FindDict(kSettingMediaSize);
@@ -168,47 +209,6 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
 
   settings->set_ranges(GetPageRangesFromJobSettings(job_settings));
 
-  absl::optional<bool> collate = job_settings.FindBool(kSettingCollate);
-  absl::optional<int> copies = job_settings.FindInt(kSettingCopies);
-  absl::optional<int> color = job_settings.FindInt(kSettingColor);
-  absl::optional<int> duplex_mode = job_settings.FindInt(kSettingDuplexMode);
-  absl::optional<bool> landscape = job_settings.FindBool(kSettingLandscape);
-  absl::optional<int> scale_factor = job_settings.FindInt(kSettingScaleFactor);
-  absl::optional<bool> rasterize_pdf =
-      job_settings.FindBool(kSettingRasterizePdf);
-  absl::optional<int> pages_per_sheet =
-      job_settings.FindInt(kSettingPagesPerSheet);
-
-  if (!collate.has_value() || !copies.has_value() || !color.has_value() ||
-      !duplex_mode.has_value() || !landscape.has_value() ||
-      !scale_factor.has_value() || !rasterize_pdf.has_value() ||
-      !pages_per_sheet.has_value()) {
-    return nullptr;
-  }
-
-  absl::optional<int> dpi_horizontal =
-      job_settings.FindInt(kSettingDpiHorizontal);
-  absl::optional<int> dpi_vertical = job_settings.FindInt(kSettingDpiVertical);
-  if (!dpi_horizontal.has_value() || !dpi_vertical.has_value())
-    return nullptr;
-  settings->set_dpi_xy(dpi_horizontal.value(), dpi_vertical.value());
-
-  absl::optional<int> rasterize_pdf_dpi =
-      job_settings.FindInt(kSettingRasterizePdfDpi);
-  if (rasterize_pdf_dpi.has_value())
-    settings->set_rasterize_pdf_dpi(rasterize_pdf_dpi.value());
-
-  settings->set_collate(collate.value());
-  settings->set_copies(copies.value());
-  settings->SetOrientation(landscape.value());
-  settings->set_device_name(
-      base::UTF8ToUTF16(*job_settings.FindString(kSettingDeviceName)));
-  settings->set_duplex_mode(
-      static_cast<mojom::DuplexMode>(duplex_mode.value()));
-  settings->set_color(static_cast<mojom::ColorModel>(color.value()));
-  settings->set_scale_factor(static_cast<double>(scale_factor.value()) / 100.0);
-  settings->set_rasterize_pdf(rasterize_pdf.value());
-  settings->set_pages_per_sheet(pages_per_sheet.value());
   absl::optional<bool> is_modifiable =
       job_settings.FindBool(kSettingPreviewModifiable);
   if (is_modifiable.has_value()) {
