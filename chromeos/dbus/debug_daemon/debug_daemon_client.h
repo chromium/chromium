@@ -91,16 +91,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void GetNetworkInterfaces(
       DBusMethodCallback<std::string> callback) = 0;
 
-  // Runs perf (via quipper) with arguments for |duration| (converted to
-  // seconds) and returns data collected over the passed |file_descriptor|.
+  // Runs perf (via quipper) with |quipper_args| and returns data collected
+  // over the passed |file_descriptor|.
   // |callback| is called on the completion of the D-Bus call.
   // Note that quipper failures may occur after successfully running the D-Bus
   // method. Such errors can be detected by |file_descriptor| and all its
   // duplicates being closed with no data written.
   // This method duplicates |file_descriptor| so it's OK to close the FD without
   // waiting for the result.
-  virtual void GetPerfOutput(base::TimeDelta duration,
-                             const std::vector<std::string>& perf_args,
+  virtual void GetPerfOutput(const std::vector<std::string>& quipper_args,
+                             bool disable_cpu_idle,
                              int file_descriptor,
                              DBusMethodCallback<uint64_t> callback) = 0;
 

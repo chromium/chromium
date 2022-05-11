@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -36,6 +37,9 @@ const char kCWPFieldTrialName[] = "ChromeOSWideProfilingCollection";
 
 const base::Feature kCWPCollectionOnHostAndGuest{
     "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCWPCollectsETM{"CWPCollectsETM",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Name the histogram that represents the success and various failure modes for
 // parsing CPU frequencies.
@@ -147,65 +151,68 @@ const char kPerfCommandDelimiter[] = " ";
 
 // Collect precise=3 (:ppp) cycle events on microarchitectures and kernels that
 // support it.
-const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
+const char kPerfCyclesPPPCmd[] = "-- record -a -e cycles:ppp -c 1000003";
 
 const char kPerfFPCallgraphPPPCmd[] =
-    "perf record -a -e cycles:ppp -g -c 4000037";
+    "-- record -a -e cycles:ppp -g -c 4000037";
 
 const char kPerfLBRCallgraphPPPCmd[] =
-    "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
+    "-- record -a -e cycles:ppp -c 4000037 --call-graph lbr";
 
-const char kPerfCyclesPPPHGCmd[] = "perf record -a -e cycles:pppHG -c 1000003";
+const char kPerfCyclesPPPHGCmd[] = "-- record -a -e cycles:pppHG -c 1000003";
 
 const char kPerfFPCallgraphPPPHGCmd[] =
-    "perf record -a -e cycles:pppHG -g -c 4000037";
+    "-- record -a -e cycles:pppHG -g -c 4000037";
 
 // Collect default (imprecise) cycle events everywhere else.
-const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
+const char kPerfCyclesCmd[] = "-- record -a -e cycles -c 1000003";
 
-const char kPerfCyclesHGCmd[] = "perf record -a -e cycles:HG -c 1000003";
+const char kPerfCyclesHGCmd[] = "-- record -a -e cycles:HG -c 1000003";
 
-const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
+const char kPerfFPCallgraphCmd[] = "-- record -a -e cycles -g -c 4000037";
 
-const char kPerfFPCallgraphHGCmd[] =
-    "perf record -a -e cycles:HG -g -c 4000037";
+const char kPerfFPCallgraphHGCmd[] = "-- record -a -e cycles:HG -g -c 4000037";
 
 const char kPerfLBRCallgraphCmd[] =
-    "perf record -a -e cycles -c 6000011 --call-graph lbr";
+    "-- record -a -e cycles -c 6000011 --call-graph lbr";
 
-const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 800011";
+const char kPerfLBRCmd[] = "-- record -a -e r20c4 -b -c 800011";
 
 // Silvermont, Airmont, Goldmont don't have a branches taken event. Therefore,
 // we sample on the branches retired event.
-const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 800011";
+const char kPerfLBRCmdAtom[] = "-- record -a -e rc4 -b -c 800011";
 
 // The following events count misses in the last level caches and level 2 TLBs.
 
 // TLB miss cycles for IvyBridge, Haswell, Broadwell and SandyBridge.
 const char kPerfITLBMissCyclesCmdIvyBridge[] =
-    "perf record -a -e itlb_misses.walk_duration -c 30001";
+    "-- record -a -e itlb_misses.walk_duration -c 30001";
 
 const char kPerfDTLBMissCyclesCmdIvyBridge[] =
-    "perf record -a -e dtlb_load_misses.walk_duration -g -c 350003";
+    "-- record -a -e dtlb_load_misses.walk_duration -g -c 350003";
 
 // TLB miss cycles for Skylake, Kabylake, Tigerlake.
 const char kPerfITLBMissCyclesCmdSkylake[] =
-    "perf record -a -e itlb_misses.walk_pending -c 30001";
+    "-- record -a -e itlb_misses.walk_pending -c 30001";
 
 const char kPerfDTLBMissCyclesCmdSkylake[] =
-    "perf record -a -e dtlb_load_misses.walk_pending -g -c 350003";
+    "-- record -a -e dtlb_load_misses.walk_pending -g -c 350003";
 
 // TLB miss cycles for Atom, including Silvermont, Airmont and Goldmont.
 const char kPerfITLBMissCyclesCmdAtom[] =
-    "perf record -a -e page_walks.i_side_cycles -c 30001";
+    "-- record -a -e page_walks.i_side_cycles -c 30001";
 
 const char kPerfDTLBMissCyclesCmdAtom[] =
-    "perf record -a -e page_walks.d_side_cycles -g -c 350003";
+    "-- record -a -e page_walks.d_side_cycles -g -c 350003";
 
-const char kPerfLLCMissesCmd[] = "perf record -a -e r412e -g -c 30007";
+const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 // Precise events (request zero skid) for last level cache misses.
-const char kPerfLLCMissesPreciseCmd[] =
-    "perf record -a -e r412e:pp -g -c 30007";
+const char kPerfLLCMissesPreciseCmd[] = "-- record -a -e r412e:pp -g -c 30007";
+
+// ETM for ARM boards including trogdor and herobrine.
+const char kPerfETMCmd[] =
+    "--run_inject --inject_args inject;--itrace=i512il;--strip -- record -a -e "
+    "cs_etm/autofdo/";
 
 const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     const CPUIdentity& cpuid) {
@@ -304,21 +311,41 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   return cmds;
 }
 
+std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_aarch64(
+    const std::string& model) {
+  using WeightAndValue = RandomSelector::WeightAndValue;
+  std::vector<WeightAndValue> cmds;
+
+  if (base::FeatureList::IsEnabled(kCWPCollectsETM) &&
+      (model == "TROGDOR" || model == "HEROBRINE")) {
+    cmds.emplace_back(WeightAndValue(50.0, kPerfCyclesHGCmd));
+    cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
+    cmds.emplace_back(WeightAndValue(30.0, kPerfETMCmd));
+  } else {
+    cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesHGCmd));
+    cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
+  }
+  return cmds;
+}
+
 }  // namespace
 
 namespace internal {
 
-std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
-    const CPUIdentity& cpuid) {
+std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpuModel(
+    const CPUIdentity& cpuid,
+    const std::string& model) {
   using WeightAndValue = RandomSelector::WeightAndValue;
 
   if (cpuid.arch == "x86_64")  // 64-bit x86
     return GetDefaultCommands_x86_64(cpuid);
 
+  if (cpuid.arch == "aarch64")  // ARM64
+    return GetDefaultCommands_aarch64(model);
+
   std::vector<WeightAndValue> cmds;
-  if (cpuid.arch == "x86" ||      // 32-bit x86, or...
-      cpuid.arch == "armv7l" ||   // ARM32
-      cpuid.arch == "aarch64") {  // ARM64
+  if (cpuid.arch == "x86" ||     // 32-bit x86, or...
+      cpuid.arch == "armv7l") {  // ARM32
     if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
       cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesHGCmd));
       cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
@@ -361,8 +388,8 @@ void PerfCollector::SetUp() {
       base::BindOnce(&PerfCollector::ParseCPUFrequencies, task_runner,
                      weak_factory_.GetWeakPtr()));
 
-  CHECK(command_selector_.SetOdds(
-      internal::GetDefaultCommandsForCpu(GetCPUIdentity())));
+  CHECK(command_selector_.SetOdds(internal::GetDefaultCommandsForCpuModel(
+      GetCPUIdentity(), base::SysInfo::HardwareModelName())));
   std::map<std::string, std::string> params;
   if (variations::GetVariationParams(kCWPFieldTrialName, &params)) {
     SetCollectionParamsFromVariationParams(params);
@@ -484,13 +511,13 @@ void PerfCollector::SetCollectionParamsFromVariationParams(
 }
 
 std::unique_ptr<PerfOutputCall> PerfCollector::CreatePerfOutputCall(
-    base::TimeDelta duration,
     const std::vector<std::string>& perf_args,
+    bool disable_cpu_idle,
     PerfOutputCall::DoneCallback callback) {
   DCHECK(debugd_client_provider_.get());
   return std::make_unique<PerfOutputCall>(
-      debugd_client_provider_->debug_daemon_client(), duration, perf_args,
-      std::move(callback));
+      debugd_client_provider_->debug_daemon_client(), perf_args,
+      disable_cpu_idle, std::move(callback));
 }
 
 void PerfCollector::OnPerfOutputComplete(
@@ -637,23 +664,29 @@ bool PerfCollector::ShouldCollect() const {
   return true;
 }
 
-namespace internal {
+// static
+PerfCollector::EventType PerfCollector::CommandEventType(
+    const std::vector<std::string>& args) {
+  if (args.size() < 4)
+    return EventType::kOther;
 
-bool CommandSamplesCPUCycles(const std::vector<std::string>& args) {
-  // Command must start with "perf record".
-  if (args.size() < 4 || args[0] != "perf" || args[1] != "record")
-    return false;
-  // Cycles event can be either the raw 'cycles' event, or the event name can be
-  // annotated with some qualifier suffix. Check for all cases.
-  for (size_t i = 2; i + 1 < args.size(); ++i) {
-    if (args[i] == "-e" &&
-        (args[i + 1] == "cycles" || args[i + 1].rfind("cycles:", 0) == 0))
-      return true;
+  bool isRecord = false;
+  for (size_t i = 0; i + 1 < args.size(); ++i) {
+    if (!isRecord && args[i] == "record") {
+      isRecord = true;
+      continue;
+    }
+    if (isRecord && args[i] == "-e") {
+      // Cycles event can be either the raw 'cycles' event, or the event name
+      // can be annotated with some qualifier suffix. Check for all cases.
+      if (args[i + 1] == "cycles" || args[i + 1].rfind("cycles:", 0) == 0)
+        return EventType::kCycles;
+      if (args[i + 1].rfind("cs_etm/autofdo", 0) == 0)
+        return EventType::kETM;
+    }
   }
-  return false;
+  return EventType::kOther;
 }
-
-}  // namespace internal
 
 void PerfCollector::CollectProfile(
     std::unique_ptr<SampledProfile> sampled_profile) {
@@ -667,19 +700,24 @@ void PerfCollector::CollectProfile(
     return;
   }
 
-  std::vector<std::string> command =
-      base::SplitString(command_selector_.Select(), kPerfCommandDelimiter,
-                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  bool has_cycles = internal::CommandSamplesCPUCycles(command);
+  // Prepend the duration to the command before splitting.
+  std::vector<std::string> command = base::SplitString(
+      base::StrCat({"--duration ",
+                    base::NumberToString(
+                        collection_params().collection_duration.InSeconds()),
+                    " ", command_selector_.Select()}),
+      kPerfCommandDelimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  auto event_type = CommandEventType(command);
 
   DCHECK(sampled_profile->has_trigger_event());
   current_trigger_ = sampled_profile->trigger_event();
 
   perf_output_call_ = CreatePerfOutputCall(
-      collection_params().collection_duration, command,
+      command, event_type == EventType::kETM,
       base::BindOnce(&PerfCollector::OnPerfOutputComplete,
                      weak_factory_.GetWeakPtr(), std::move(incognito_observer),
-                     std::move(sampled_profile), has_cycles));
+                     std::move(sampled_profile),
+                     event_type == EventType::kCycles));
 }
 
 // static

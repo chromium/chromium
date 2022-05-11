@@ -153,10 +153,9 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     std::map<std::string, std::string> field_trial_params;
     // Only "cycles" event is supported.
     field_trial_params.insert(std::make_pair(
-        "PerfCommand::default::0", "50 perf record -a -e cycles -c 1000003"));
-    field_trial_params.insert(
-        std::make_pair("PerfCommand::default::1",
-                       "50 perf record -a -e cycles -g -c 4000037"));
+        "PerfCommand::default::0", "50 -- record -a -e cycles -c 1000003"));
+    field_trial_params.insert(std::make_pair(
+        "PerfCommand::default::1", "50 -- record -a -e cycles -g -c 4000037"));
     ASSERT_TRUE(variations::AssociateVariationParams(
         "ChromeOSWideProfilingCollection", "group_name", field_trial_params));
     field_trial_ = base::FieldTrialList::CreateFieldTrial(
