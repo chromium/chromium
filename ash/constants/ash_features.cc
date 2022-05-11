@@ -1199,6 +1199,12 @@ const base::Feature kProjectorShowShortPseudoTranscript(
     "ProjectorShowShortPseudoTranscript",
     base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to update the indexable text when metadata file gets
+// uploaded.
+const base::Feature kProjectorUpdateIndexableText(
+    "ProjectorUpdateIndexableText",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -2096,6 +2102,10 @@ bool IsProjectorManagedUserIgnorePolicyEnabled() {
 
 bool IsProjectorShowShortPseudoTranscript() {
   return base::FeatureList::IsEnabled(kProjectorShowShortPseudoTranscript);
+}
+
+bool IsProjectorUpdateIndexableTextEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorUpdateIndexableText);
 }
 
 bool IsQuickDimEnabled() {
