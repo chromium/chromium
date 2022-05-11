@@ -38,11 +38,13 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
   int pending_index = web_contents->GetController().GetPendingEntryIndex();
   if (pending_index == i)
     return web_contents->GetController().GetPendingEntry();
-
   NavigationEntry* entry = web_contents->GetController().GetEntryAtIndex(i);
-  // ShouldSync() should return false if `web_contents` is on the initial
-  // NavigationEntry, preventing calls to this function.
-  DCHECK(!entry || !entry->IsInitialEntry());
+  // Don't use the entry for sync if it doesn't exist or is the initial
+  // NavigationEntry.
+  // TODO(https://crbug.com/1240138): Guarantee this won't be called when on the
+  // initial NavigationEntry instead of bailing out here.
+  if (!entry || entry->IsInitialEntry())
+    return nullptr;
   return entry;
 }
 
