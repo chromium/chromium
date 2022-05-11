@@ -388,7 +388,7 @@ class HttpStreamFactory::Job
   // describe some proxy cases.
   const bool using_ssl_;
 
-  // True if Job actually uses HTTP/2. Note this describes both using QUIC
+  // True if Job actually uses QUIC. Note this describes both using QUIC
   // with an HTTPS origin, and proxying a cleartext HTTP request over an QUIC
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   const bool using_quic_;
