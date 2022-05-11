@@ -21,7 +21,7 @@ struct CONTENT_EXPORT DesktopMediaID {
  public:
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
 
-  typedef intptr_t Id;
+  using Id = intptr_t;
 
   // Represents an "unset" value for either |id| or |window_id|.
   static constexpr Id kNullId = 0;
@@ -67,8 +67,6 @@ struct CONTENT_EXPORT DesktopMediaID {
   // it possible for both of these to be non-null, which means both IDs are
   // referring to the same logical window.
   Id id = kNullId;
-
-  // TODO(https://crbug.com/1304392): Change window ID to an integer.
   Id window_id = kNullId;
 
   // This records whether the desktop share has sound or not.

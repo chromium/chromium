@@ -25,7 +25,7 @@ class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
   DesktopMediaWindowRegistryAura& operator=(
       const DesktopMediaWindowRegistryAura&) = delete;
 
-  Id RegisterWindow(gfx::NativeWindow window) final {
+  DesktopMediaID::Id RegisterWindow(gfx::NativeWindow window) final {
     base::IDMap<aura::Window*>::const_iterator it(&registered_windows_);
     for (; !it.IsAtEnd(); it.Advance()) {
       if (it.GetCurrentValue() == window)
@@ -36,7 +36,7 @@ class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
     return registered_windows_.Add(window);
   }
 
-  gfx::NativeWindow GetWindowById(Id id) final {
+  gfx::NativeWindow GetWindowById(DesktopMediaID::Id id) final {
     return registered_windows_.Lookup(id);
   }
 
