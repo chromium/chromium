@@ -56,6 +56,33 @@ class PasswordChangeMetricsRecorderUma : public PasswordChangeMetricsRecorder {
                       base::TimeDelta duration) override;
 };
 
+// Implementation of the |PasswordChangeMetricsRecorder| for UKM metrics.
+// It currently does not associate the record with the current navigation;
+// instead, it writes everything to the id |ukm::NoUrlSourceId()|.
+class PasswordChangeMetricsRecorderUkm : public PasswordChangeMetricsRecorder {
+ public:
+  // The exponential factor used for bucket spacing for the UKM recorder.
+  // Choosing a factor of 1.1 gives 70 unique buckets between 1 and 3600.
+  // A sufficient good resolution is important, since we expect the majority of
+  // flows to have durations much shorter than 3600 seconds.
+  static constexpr double kBucketSpacing = 1.1;
+
+  PasswordChangeMetricsRecorderUkm() = default;
+  ~PasswordChangeMetricsRecorderUkm() override;
+
+  PasswordChangeMetricsRecorderUkm(const PasswordChangeMetricsRecorderUkm&) =
+      delete;
+  PasswordChangeMetricsRecorderUkm& operator=(
+      const PasswordChangeMetricsRecorderUkm&) = delete;
+
+  // PasswordChangeMetricsRecorder:
+  void OnFlowRecorded(const std::string& etld_plus_1,
+                      PasswordChangeSuccessTracker::StartEvent start_event,
+                      PasswordChangeSuccessTracker::EndEvent end_event,
+                      PasswordChangeSuccessTracker::EntryPoint entry_point,
+                      base::TimeDelta duration) override;
+};
+
 // Implementation of the |PasswordChangeSuccessTracker| interface.
 class PasswordChangeSuccessTrackerImpl
     : public password_manager::PasswordChangeSuccessTracker {

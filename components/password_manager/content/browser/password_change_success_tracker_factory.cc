@@ -41,6 +41,8 @@ KeyedService* PasswordChangeSuccessTrackerFactory::BuildServiceInstanceFor(
       user_prefs::UserPrefs::Get(browser_context));
   tracker->AddMetricsRecorder(
       std::make_unique<PasswordChangeMetricsRecorderUma>());
+  tracker->AddMetricsRecorder(
+      std::make_unique<PasswordChangeMetricsRecorderUkm>());
   return tracker;
 }
 

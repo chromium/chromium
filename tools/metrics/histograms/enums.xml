@@ -72896,6 +72896,29 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
+  <int value="0" label="Automated flow, generated password chosen"/>
+  <int value="1" label="Automated flow, manual password chosen"/>
+  <int value="2" label="Automated flow, reset link requested"/>
+  <int value="3" label="Manual flow, generated password chosen"/>
+  <int value="4" label="Manual flow, manual password chosen"/>
+  <int value="5" label="Timeout"/>
+</enum>
+
+<enum name="PasswordManager.PasswordChangeSuccessTracker.EntryPoint">
+  <int value="0" label="Leak check in settings"/>
+  <int value="1" label="Leak warning dialog"/>
+</enum>
+
+<enum name="PasswordManager.PasswordChangeSuccessTracker.StartEvent">
+  <int value="0" label="Automated flow"/>
+  <int value="1" label="Manual unknown flow"/>
+  <int value="2" label="Manual well-known URL flow"/>
+  <int value="3" label="Manual domain-specific URL flow"/>
+  <int value="4" label="Manual homepage flow"/>
+  <int value="5" label="Manual reset link flow"/>
+</enum>
+
 <enum name="PasswordManager.ReauthResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

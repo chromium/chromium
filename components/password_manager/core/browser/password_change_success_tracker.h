@@ -39,7 +39,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
   // Start and end events for automated (i.e. Autofill Assistant-driven) and
   // manual flows (i.e. Chrome opens a CCT and a user updates a password on
   // their own).
-  // These values are persisted to prefs; do not reorder or renumber entries!
+  // These values are persisted to prefs and used in enums.xml; do not reorder
+  // or renumber entries!
   enum class StartEvent {
     // An automated password change flow.
     kAutomatedFlow = 0,
@@ -67,7 +68,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
     kMaxValue = kManualResetLinkFlow
   };
 
-  // These values are persisted to prefs; do not reorder or renumber entries!
+  // These values are persisted to prefs and used in enums.xml; do not reorder
+  // or renumber entries!
   enum class EndEvent {
     // Automated password change flow completed with a generated password.
     kAutomatedFlowGeneratedPasswordChosen = 0,
@@ -94,7 +96,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
   };
 
   // The place in Chrome where the password change flow originated.
-  // These values are persisted to prefs; do not reorder or renumber entries!
+  // These values are persisted to prefs and used in enums.xml; do not reorder
+  // or renumber entries!
   enum class EntryPoint {
     // Started after performing a password check in settings / the password
     // manager.

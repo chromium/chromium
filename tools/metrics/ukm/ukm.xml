@@ -15181,6 +15181,44 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.PasswordChangeFlowDuration">
+  <owner>kolos@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Metrics related to password change flows. Chrome offers users several entry
+    points for password change flows, e.g. from Password Checkup in Settings or
+    on a leak warning dialog during sign in with compromised credentials. We
+    collect the duration of and the success rate of such password change flows.
+  </summary>
+  <metric name="Duration">
+    <summary>
+      The time that passed during the start of the flow and the end of the flow
+      in seconds.
+    </summary>
+  </metric>
+  <metric name="EndEvent"
+      enum="PasswordManager.PasswordChangeSuccessTracker.EndEvent">
+    <summary>
+      Records how the flow was ended, e.g. whether it ended with an generated
+      password from an automated flow, a password reset link, etc.
+    </summary>
+  </metric>
+  <metric name="EntryPoint"
+      enum="PasswordManager.PasswordChangeSuccessTracker.EntryPoint">
+    <summary>
+      Records the entry point of the password change flow, e.g. whether it was
+      from settings or during login.
+    </summary>
+  </metric>
+  <metric name="StartEvent"
+      enum="PasswordManager.PasswordChangeSuccessTracker.StartEvent">
+    <summary>
+      Records how the flow was started, e.g. whether it was an automated flow, a
+      manual flow will a well-known/.change-password URL, etc.
+    </summary>
+  </metric>
+</event>
+
 <event name="PasswordManager.PasswordChangeTriggered">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-duplex@google.com</owner>

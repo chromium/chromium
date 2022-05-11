@@ -15,6 +15,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -121,6 +124,25 @@ void PasswordChangeMetricsRecorderUma::OnFlowRecorded(
   // passwords.
   base::StrAppend(&entry_key, {SerializeEnumForUma(end_event)});
   UmaHistogramLongTimes100(entry_key, duration);
+}
+
+PasswordChangeMetricsRecorderUkm::~PasswordChangeMetricsRecorderUkm() = default;
+
+void PasswordChangeMetricsRecorderUkm::OnFlowRecorded(
+    const std::string& etld_plus_1,
+    PasswordChangeSuccessTracker::StartEvent start_event,
+    PasswordChangeSuccessTracker::EndEvent end_event,
+    PasswordChangeSuccessTracker::EntryPoint entry_point,
+    base::TimeDelta duration) {
+  int64_t bucketed_duration =
+      ukm::GetExponentialBucketMin(duration.InSeconds(), kBucketSpacing);
+  ukm::builders::PasswordManager_PasswordChangeFlowDuration(
+      ukm::NoURLSourceId())
+      .SetStartEvent(static_cast<int64_t>(start_event))
+      .SetEndEvent(static_cast<int64_t>(end_event))
+      .SetEntryPoint(static_cast<int64_t>(entry_point))
+      .SetDuration(bucketed_duration)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 PasswordChangeSuccessTrackerImpl::IncompleteFlow::IncompleteFlow(

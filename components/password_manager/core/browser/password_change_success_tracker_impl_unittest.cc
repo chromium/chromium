@@ -11,17 +11,22 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using password_manager::PasswordChangeMetricsRecorder;
+using password_manager::PasswordChangeMetricsRecorderUkm;
 using password_manager::PasswordChangeMetricsRecorderUma;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::PasswordChangeSuccessTrackerImpl;
 using testing::_;
 using testing::StrictMock;
+using UkmEntry = ukm::builders::PasswordManager_PasswordChangeFlowDuration;
 
 constexpr char kUrl1[] = "https://www.example.com";
 constexpr char kEtldPlus1[] = "example.com";
@@ -172,6 +177,81 @@ TEST_F(PasswordChangeMetricsRecorderUmaTest,
       "PasswordManager.PasswordChangeFlowDuration.LeakCheckInSettings."
       "AutomatedFlow.ManualFlowPasswordChosen",
       2);
+}
+
+// Tests of |PasswordChangeMetricsRecorderUkm|.
+class PasswordChangeMetricsRecorderUkmTest : public ::testing::Test {
+ public:
+  PasswordChangeMetricsRecorderUkmTest() = default;
+  ~PasswordChangeMetricsRecorderUkmTest() override = default;
+
+ protected:
+  const ukm::TestAutoSetUkmRecorder& ukm_tester() { return test_ukm_recorder_; }
+  PasswordChangeMetricsRecorderUkm& recorder() { return recorder_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
+
+  // The object to test.
+  PasswordChangeMetricsRecorderUkm recorder_;
+};
+
+TEST_F(PasswordChangeMetricsRecorderUkmTest, RecordSingleMetricsEvent) {
+  constexpr PasswordChangeSuccessTracker::StartEvent start_event =
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event =
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen;
+  constexpr PasswordChangeSuccessTracker::EntryPoint entry_point =
+      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog;
+
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point,
+                            base::Seconds(30));
+
+  // Check that UKM logging is correct.
+  const auto& entries = ukm_tester().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto* entry : entries) {
+    EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kStartEventName,
+                                   static_cast<int64_t>(start_event));
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kEndEventName,
+                                   static_cast<int64_t>(end_event));
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kEntryPointName,
+                                   static_cast<int64_t>(entry_point));
+    // Exponential bucketing maps 30 seconds to the 29 second bucket.
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kDurationName, 29);
+  }
+}
+
+TEST_F(PasswordChangeMetricsRecorderUkmTest,
+       RecordSingleMetricsEventWithTimeout) {
+  constexpr PasswordChangeSuccessTracker::StartEvent start_event =
+      PasswordChangeSuccessTracker::StartEvent::kManualChangePasswordUrlFlow;
+  constexpr PasswordChangeSuccessTracker::EndEvent end_event =
+      PasswordChangeSuccessTracker::EndEvent::kTimeout;
+  constexpr PasswordChangeSuccessTracker::EntryPoint entry_point =
+      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings;
+
+  recorder().OnFlowRecorded(kEtldPlus1, start_event, end_event, entry_point,
+                            PasswordChangeSuccessTracker::kFlowTimeout);
+
+  // Check that UKM logging is correct.
+  const auto& entries = ukm_tester().GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto* entry : entries) {
+    EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kStartEventName,
+                                   static_cast<int64_t>(start_event));
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kEndEventName,
+                                   static_cast<int64_t>(end_event));
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kEntryPointName,
+                                   static_cast<int64_t>(entry_point));
+    // With a bucket spacing of 1.1, 3600 seconds are mapped to the bucket
+    // with 3299 seconds.
+    ukm_tester().ExpectEntryMetric(entry, UkmEntry::kDurationName, 3299);
+  }
 }
 
 // Tests of |PasswordChangeSuccessTrackerImpl|.
@@ -561,4 +641,56 @@ TEST_F(PasswordChangeSuccessTrackerImplTest,
       "PasswordManager.PasswordChangeFlowDuration.LeakWarningDialog."
       "AutomatedFlow.AutomatedFlowPasswordChosen",
       1);
+}
+
+TEST_F(PasswordChangeSuccessTrackerImplTest,
+       IntegrationTestWithMetricsRecorderUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_tester;
+
+  // Manually add the Ukm recorder.
+  AddMetricsRecorder(std::make_unique<PasswordChangeMetricsRecorderUkm>());
+
+  tracker()->OnChangePasswordFlowStarted(
+      GURL(kUrl2WithPath), kUsername2,
+      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+      PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog);
+
+  // This flow completion cannot be matched due to a different url,
+  // so there is no call to the recorder.
+  tracker()->OnChangePasswordFlowCompleted(
+      GURL(kUrl1), kUsername2,
+      PasswordChangeSuccessTracker::EndEvent::
+          kAutomatedFlowGeneratedPasswordChosen);
+
+  EXPECT_CALL(
+      *metrics_recorder(),
+      OnFlowRecorded(
+          PasswordChangeSuccessTrackerImpl::ExtractEtldPlus1(GURL(kUrl2)),
+          PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
+          PasswordChangeSuccessTracker::EndEvent::
+              kAutomatedFlowOwnPasswordChosen,
+          PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog, _));
+
+  tracker()->OnChangePasswordFlowCompleted(
+      GURL(kUrl2), kUsername2,
+      PasswordChangeSuccessTracker::EndEvent::kAutomatedFlowOwnPasswordChosen);
+
+  // Check that UKM logging is correct.
+  const auto& entries = ukm_tester.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto* entry : entries) {
+    EXPECT_EQ(entry->source_id, ukm::NoURLSourceId());
+    ukm_tester.ExpectEntryMetric(
+        entry, UkmEntry::kStartEventName,
+        static_cast<int64_t>(
+            PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow));
+    ukm_tester.ExpectEntryMetric(
+        entry, UkmEntry::kEndEventName,
+        static_cast<int64_t>(PasswordChangeSuccessTracker::EndEvent::
+                                 kAutomatedFlowOwnPasswordChosen));
+    ukm_tester.ExpectEntryMetric(
+        entry, UkmEntry::kEntryPointName,
+        static_cast<int64_t>(
+            PasswordChangeSuccessTracker::EntryPoint::kLeakWarningDialog));
+  }
 }
