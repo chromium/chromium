@@ -29205,11 +29205,13 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           'name': 'PrimaryAccountKeepExistingData',
           'value': 'primary_account_keep_existing_data',
           'caption': 'A Managed account must be a primary account and the user can import existing data at the time of its creation',
+          'supported_on': ['chrome.*:102-'],
         },
         {
           'name': 'PrimaryAccountStrictKeepExistingData',
           'value': 'primary_account_strict_keep_existing_data',
           'caption': 'A Managed account must be a primary account and have no secondary accounts and the user can import existing data at the time of its creation',
+          'supported_on': ['chrome.*:102-'],
         },
       ],
       'default': 'none',
@@ -29219,10 +29221,10 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'tags': [],
       'desc': '''
       If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT">'primary_account'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account.
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA">'primary_account_keep_existing_data'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA">'primary_account_keep_existing_data'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data. This option is supported on Chrome 102 and higher version.
 
       If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT">'primary_account_strict'</ph>, after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account. This profile will not allow any secondary accounts.
-      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA">'primary_account_strict_keep_existing_data'</ph> after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data. This profile will not allow any secondary accounts.
+      If this policy is set to <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA">'primary_account_strict_keep_existing_data'</ph> after a signin into an a managed account subjected to this policy, the user be asked to create a new profile for the account with an option to keep any existing browsing data. This profile will not allow any secondary accounts. This option is supported on Chrome 102 and higher version.
 
       If this policy is set to <ph name="POLICY_VALUE_NONE">'none'</ph> or not set, managed accounts have no restrictions. This may result in a managed account being a secondary account, which disables its ability to receive policies set on the account by the admin.
 
