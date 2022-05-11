@@ -25,6 +25,9 @@ void DeskModelWrapper::GetAllEntries(
   auto template_entries = std::vector<const ash::DeskTemplate*>();
   auto desk_template_status =
       GetDeskTemplateModel()->GetAllEntries(template_entries);
+  for (const auto& it : policy_entries_)
+    template_entries.push_back(it.get());
+
   if (desk_template_status != DeskModel::GetAllEntriesStatus::kOk) {
     std::move(callback).Run(DeskModel::GetAllEntriesStatus::kFailure,
                             template_entries);
@@ -92,7 +95,8 @@ size_t DeskModelWrapper::GetSaveAndRecallDeskEntryCount() const {
 }
 
 size_t DeskModelWrapper::GetDeskTemplateEntryCount() const {
-  return GetDeskTemplateModel()->GetDeskTemplateEntryCount();
+  return GetDeskTemplateModel()->GetDeskTemplateEntryCount() +
+         policy_entries_.size();
 }
 
 size_t DeskModelWrapper::GetMaxEntryCount() const {
@@ -104,11 +108,16 @@ size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
 }
 
 size_t DeskModelWrapper::GetMaxDeskTemplateEntryCount() const {
-  return GetDeskTemplateModel()->GetMaxDeskTemplateEntryCount();
+  return GetDeskTemplateModel()->GetMaxDeskTemplateEntryCount() +
+         policy_entries_.size();
 }
 
 std::vector<base::GUID> DeskModelWrapper::GetAllEntryUuids() const {
   std::vector<base::GUID> keys;
+
+  for (const auto& it : policy_entries_)
+    keys.push_back(it.get()->uuid());
+
   for (const auto& save_and_recall_uuid :
        save_and_recall_desks_model_->GetAllEntryUuids()) {
     keys.emplace_back(save_and_recall_uuid);
