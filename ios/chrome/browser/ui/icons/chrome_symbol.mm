@@ -72,6 +72,8 @@ NSString* const kCheckmarkSymbol = @"checkmark";
 NSString* const kArrowDownCircleFillSymbol = @"arrow.down.circle.fill";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpFillSymbol = @"questionmark.circle";
+NSString* const kCheckMarkCircleFillSymbol = @"checkmark.circle.fill";
+NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbolName,
                                         UIImageConfiguration* configuration) {

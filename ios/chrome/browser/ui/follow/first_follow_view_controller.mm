@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -54,6 +55,9 @@ constexpr CGFloat kVerticalSpacing = 10.0;
 
 // Vertical spacing between labels and buttons in stack views.
 constexpr CGFloat kStackViewVerticalSpacing = 10.0;
+
+// The size of the symbol badge image.
+NSInteger kSymbolBadgeImagePointSize = 13;
 
 // Properties of the favicon.
 constexpr CGFloat kFaviconCornerRadius = 10;
@@ -158,7 +162,8 @@ constexpr CGFloat kFaviconShadowOpacity = 0.2;
 
   UIImageView* faviconBadgeView = [[UIImageView alloc] init];
   faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-  faviconBadgeView.image = [UIImage systemImageNamed:@"checkmark.circle.fill"];
+  faviconBadgeView.image = DefaultSymbolTemplateWithPointSize(
+      kCheckMarkCircleFillSymbol, kSymbolBadgeImagePointSize);
   faviconBadgeView.tintColor = [UIColor colorNamed:kGreenColor];
 
   UIView* view = [[UIView alloc] init];

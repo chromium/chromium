@@ -26,8 +26,8 @@
 
 namespace {
 
-// The size of the xmark symbol image.
-NSInteger kXmarkSymbolPointSize = 13;
+// The size of symbol icons.
+NSInteger kIconSymbolPointSize = 13;
 
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
@@ -381,7 +381,7 @@ void PositionView(UIView* view, CGPoint point) {
   closeIconView.image =
       UseSymbols()
           ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
-                                               kXmarkSymbolPointSize)
+                                               kIconSymbolPointSize)
           : [[UIImage imageNamed:@"grid_cell_close_button"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
@@ -496,9 +496,8 @@ void PositionView(UIView* view, CGPoint point) {
         imageWithTintColor:UIColor.systemGray3Color
              renderingMode:UIImageRenderingModeAlwaysOriginal];
   }
-  return [UIImage systemImageNamed:@"checkmark.circle.fill"];
-  NOTREACHED();
-  return nil;
+  return DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+                                            kIconSymbolPointSize);
 }
 
 // Update constraints of top bar when system font size changes. If accessibility

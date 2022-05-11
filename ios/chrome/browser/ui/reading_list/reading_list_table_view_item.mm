@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
@@ -28,9 +29,14 @@
 #endif
 
 namespace {
+
+// The size of the symbol badge image.
+NSInteger kSymbolBadgeImagePointSize = 13;
+
 // The string format used to append the distillation date to the URL host.
 NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
-}
+
+}  // namespace
 
 @interface ReadingListTableViewItem ()
 
@@ -68,11 +74,17 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   switch (_distillationState) {
     case ReadingListUIDistillationStatusFailure:
       self.distillationBadgeImage =
-          [UIImage imageNamed:@"distillation_fail_new"];
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(kFailMarkCircleFillSymbol,
+                                                   kSymbolBadgeImagePointSize)
+              : [UIImage imageNamed:@"distillation_fail_new"];
       break;
     case ReadingListUIDistillationStatusSuccess:
       self.distillationBadgeImage =
-          [UIImage imageNamed:@"table_view_cell_check_mark"];
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+                                                   kSymbolBadgeImagePointSize)
+              : [UIImage imageNamed:@"table_view_cell_check_mark"];
       break;
     case ReadingListUIDistillationStatusPending:
       self.distillationBadgeImage = nil;
