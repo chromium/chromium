@@ -1200,7 +1200,7 @@ void LocalFrameMojoHandler::SetScaleFactor(float scale_factor) {
 
 void LocalFrameMojoHandler::ClosePage(
     mojom::blink::LocalMainFrame::ClosePageCallback completion_callback) {
-  SECURITY_CHECK(frame_->IsMainFrame());
+  SECURITY_CHECK(frame_->IsOutermostMainFrame());
 
   // There are two ways to close a page:
   //

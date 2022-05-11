@@ -707,6 +707,7 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
 
 void RenderViewHostImpl::ClosePage() {
   is_waiting_for_page_close_completion_ = true;
+  DCHECK(GetMainRenderFrameHost()->IsOutermostMainFrame());
 
   if (IsRenderViewLive() && !SuddenTerminationAllowed()) {
     close_timeout_->Start(kUnloadTimeout);
