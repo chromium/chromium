@@ -567,7 +567,7 @@ deps = {
   'src/third_party/apache-linux': {
     'packages': [
       {
-        'package': 'infra/3pp/tools/httpd-php/${{platform}}',
+        'package': 'infra/3pp/tools/httpd-php/linux-amd64',
         'version': 'version:2@httpd2.4.38.php7.3.31.chromium.3',
       },
     ],
