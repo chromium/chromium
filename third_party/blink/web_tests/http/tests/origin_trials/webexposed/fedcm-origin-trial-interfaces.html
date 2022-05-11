@@ -10,18 +10,10 @@ generate_token.py http://127.0.0.1:8000 FedCM --expire-timestamp=2000000000
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/origin-trials-helper.js"></script>
 <script>
-  test(t => {
-    if (navigator.userAgent.toLowerCase().indexOf("android") > 1) {
+    test(t => {
       OriginTrialsHelper.check_properties_exist(this,
         {
           'FederatedCredential': ['login'],
         });
-    } else {
-      // FedCM is android-only for now
-      OriginTrialsHelper.check_properties_missing_unless_runtime_flag(this,
-        {
-          'FederatedCredential': ['login'],
-        }, 'fedCmEnabled');
-    }
   }, 'FedCM API interfaces and properties in Origin-Trial enabled document.');
 </script>

@@ -6,18 +6,10 @@
 <script src="/resources/origin-trials-helper.js"></script>
 <script src="http://localhost:8000/origin_trials/webexposed/resources/fedcm-origin-trial.js"></script>
 <script>
-  test(t => {
-    if (navigator.userAgent.toLowerCase().indexOf("android") > 1) {
+    test(t => {
       OriginTrialsHelper.check_properties_exist(this,
         {
           'FederatedCredential': ['login'],
         });
-    } else {
-      // FedCM is android-only for now
-      OriginTrialsHelper.check_properties_missing_unless_runtime_flag(this,
-        {
-          'FederatedCredential': ['login'],
-        }, 'fedCmEnabled');
-    }
   }, 'FedCM API interfaces and properties in Origin-Trial enabled document.');
 </script>
