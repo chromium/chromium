@@ -398,8 +398,8 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
   void SetUpOnMainThread() override {
     IsolatedAppBrowserTest::SetUpOnMainThread();
 
-    app_url_ = https_server()->GetURL(kAppHost,
-                                      "/banners/isolated/service_worker.html");
+    app_url_ = https_server()->GetURL(
+        kAppHost, "/banners/isolated/register_service_worker.html");
   }
 
   int64_t InstallIsolatedAppAndWaitForServiceWorker() {

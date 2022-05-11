@@ -21,6 +21,6 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(self.clients.openWindow(
-    self.location.origin + '/banners/isolated/service_worker.html'
+    self.location.origin + '/banners/isolated/register_service_worker.html'
   ));
 });

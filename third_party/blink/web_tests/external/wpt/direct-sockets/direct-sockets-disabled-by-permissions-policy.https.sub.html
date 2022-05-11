@@ -9,15 +9,6 @@
     <script src="/resources/testdriver-vendor.js"></script>
   </head>
   <body>
-    <script>
-      'use strict';
-
-      test(() => {
-        assert_throws_dom("NotAllowedError", () => new TCPSocket("address.com", 53), "constructor should throw");
-      }, "tcp disabled by permissions-policy");
-      test(() => {
-        assert_throws_dom("NotAllowedError", () => new UDPSocket("address.com", 53), "constructor should throw");
-      }, "udp disabled by permissions-policy");
-    </script>
+    <script src="direct-sockets-disabled-by-permissions-policy.js"></script>
   </body>
 </html>
