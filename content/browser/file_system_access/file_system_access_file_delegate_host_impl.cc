@@ -95,7 +95,7 @@ void FileSystemAccessFileDelegateHostImpl::Read(uint64_t offset,
   // Chrome will be allowed to contiguously allocate at once.
   int max_bytes_to_read =
       std::min(base::saturated_cast<int>(bytes_to_read),
-               base::saturated_cast<int>(base::MaxDirectMapped()));
+               base::saturated_cast<int>(partition_alloc::MaxDirectMapped()));
 
   auto buffer = base::MakeRefCounted<storage::BigIOBuffer>(max_bytes_to_read);
 

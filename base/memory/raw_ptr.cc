@@ -74,7 +74,8 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
     CHECK(address - reservation_start >= partition_alloc::PartitionPageSize());
   } else {
     CHECK(IsManagedByNormalBuckets(address));
-    CHECK(address % kSuperPageSize >= partition_alloc::PartitionPageSize());
+    CHECK(address % partition_alloc::kSuperPageSize >=
+          partition_alloc::PartitionPageSize());
   }
 }
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)

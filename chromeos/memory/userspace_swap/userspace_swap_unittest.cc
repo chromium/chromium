@@ -35,7 +35,7 @@ TEST(UserspaceSwap, GetUsedSuperpages) {
   // Allocate 1000 different memory areas between 128 bytes and 20 superpages in
   // size.
   constexpr size_t kNumAllocations = 1000;
-  constexpr size_t kMaxAllocationSize = 2 * base::kSuperPageSize;
+  constexpr size_t kMaxAllocationSize = 2 * partition_alloc::kSuperPageSize;
   constexpr size_t kMinAllocationSize = 128;
 
   uintptr_t mem_area[kNumAllocations] = {};
@@ -63,7 +63,7 @@ TEST(UserspaceSwap, GetUsedSuperpages) {
 TEST(UserspaceSwap, LimitSuperpagesReturned) {
   // Allocate 1000 different memory areas.
   constexpr size_t kNumAllocations = 50;
-  constexpr size_t kMaxAllocationSize = 5 * base::kSuperPageSize;
+  constexpr size_t kMaxAllocationSize = 5 * partition_alloc::kSuperPageSize;
   constexpr size_t kMinAllocationSize = 1024;
 
   uintptr_t mem_area[kNumAllocations] = {};
@@ -84,7 +84,7 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
   for (size_t i = 0; i < regions.size(); ++i) {
     total_length += regions[i]->length;
   }
-  ASSERT_LE(total_length, 5 * base::kSuperPageSize);
+  ASSERT_LE(total_length, 5 * partition_alloc::kSuperPageSize);
 
   // Cleanup
   for (size_t i = 0; i < kNumAllocations; ++i) {

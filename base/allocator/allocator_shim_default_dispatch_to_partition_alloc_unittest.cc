@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/compiler_specific.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
@@ -128,7 +129,8 @@ TEST(PartitionAllocAsMalloc, Memalign) {
 
 TEST(PartitionAllocAsMalloc, AlignedAlloc) {
   for (size_t alloc_size : {100, 100000, 10000000}) {
-    for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
+    for (size_t alignment = 1;
+         alignment <= partition_alloc::kMaxSupportedAlignment;
          alignment <<= 1) {
       void* data =
           PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);
@@ -141,7 +143,8 @@ TEST(PartitionAllocAsMalloc, AlignedAlloc) {
 
 TEST(PartitionAllocAsMalloc, AlignedRealloc) {
   for (size_t alloc_size : {100, 100000, 10000000}) {
-    for (size_t alignment = 1; alignment <= kMaxSupportedAlignment;
+    for (size_t alignment = 1;
+         alignment <= partition_alloc::kMaxSupportedAlignment;
          alignment <<= 1) {
       void* data =
           PartitionAlignedAlloc(nullptr, alloc_size, alignment, nullptr);

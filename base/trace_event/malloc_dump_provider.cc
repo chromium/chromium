@@ -259,9 +259,9 @@ void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
     if (detailed) {
       base::internal::BucketIndexLookup lookup{};
       std::string name = dump->absolute_name();
-      for (size_t i = 0; i < kNumBuckets; i++) {
+      for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
         size_t bucket_size = lookup.bucket_sizes()[i];
-        if (bucket_size == kInvalidBucketSize)
+        if (bucket_size == partition_alloc::kInvalidBucketSize)
           continue;
         // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
         std::string dump_name =
