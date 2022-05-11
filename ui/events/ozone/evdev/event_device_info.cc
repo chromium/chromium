@@ -93,6 +93,7 @@ constexpr struct {
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
+    {0x2201, 0x0100},  // AirTurn PEDpro
     {0x256c, 0x006d},  // Huion HS64
     {0x258a, 0x1007},  // Acer Cestus 330
     {0x2717, 0x003b},  // Xiaomi Mi Portable Mouse
