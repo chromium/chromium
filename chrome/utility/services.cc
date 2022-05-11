@@ -117,8 +117,6 @@
 #include "chromeos/assistant/buildflags.h"  // nogncheck
 #include "chromeos/components/local_search_service/local_search_service.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
-#include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
-#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"
 
@@ -127,6 +125,11 @@
 #include "chromeos/services/libassistant/libassistant_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
+#include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -352,12 +355,6 @@ auto RunQuickPairService(
       std::move(receiver));
 }
 
-auto RunQuickAnswersSpellCheckService(
-    mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
-  return std::make_unique<quick_answers::SpellCheckService>(
-      std::move(receiver));
-}
-
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 auto RunAssistantAudioDecoder(
     mojo::PendingReceiver<
@@ -374,6 +371,14 @@ auto RunLibassistantService(
 }
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+auto RunQuickAnswersSpellCheckService(
+    mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
+  return std::make_unique<quick_answers::SpellCheckService>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -465,12 +470,15 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
-  services.Add(RunQuickAnswersSpellCheckService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  services.Add(RunQuickAnswersSpellCheckService);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {
