@@ -1073,8 +1073,6 @@ void BrowserManager::StartWithLogFile(
 
   // Set up Mojo channel.
   base::CommandLine command_line(argv);
-  LOG(WARNING) << "Launching lacros with command: "
-               << command_line.GetCommandLineString();
 
   // Lacros-chrome starts with NORMAL priority
   LacrosThreadPriorityDelegate thread_priority_delegate;
@@ -1110,6 +1108,9 @@ void BrowserManager::StartWithLogFile(
     // ash behavior(clear or move cached shared resource file at lacros launch).
     command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
   }
+
+  LOG(WARNING) << "Launching lacros with command: "
+               << command_line.GetCommandLineString();
 
   // Create the lacros-chrome subprocess.
   base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
