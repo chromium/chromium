@@ -515,3 +515,22 @@ async function cros_test() {
 
   RunTest(test_code);
 }
+
+// Tests that the CrosWindowManagement object is an EventTarget.
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowManagementEventTarget) {
+  const char test_code[] = R"(
+async function cros_test() {
+  assert_true(chromeos.windowManagement instanceof EventTarget);
+
+  return new Promise(resolve => {
+    chromeos.windowManagement.addEventListener('testevent', e => {
+      assert_equals(e.target, chromeos.windowManagement);
+      resolve();
+    });
+    chromeos.windowManagement.dispatchEvent(new Event('testevent'));
+  });
+}
+  )";
+
+  RunTest(test_code);
+}

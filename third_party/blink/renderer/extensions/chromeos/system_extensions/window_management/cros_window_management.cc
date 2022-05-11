@@ -34,8 +34,20 @@ CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
   Supplement<ExecutionContext>::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
+}
+
+const WTF::AtomicString& CrosWindowManagement::InterfaceName() const {
+  // TODO(b/221130654): Move to event_target_names::kCrosWindowManagement.
+  DEFINE_STATIC_LOCAL(const AtomicString, kInterfaceName,
+                      ("CrosWindowManagement"));
+  return kInterfaceName;
+}
+
+ExecutionContext* CrosWindowManagement::GetExecutionContext() const {
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 mojom::blink::CrosWindowManagement*

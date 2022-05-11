@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -15,7 +16,7 @@
 namespace blink {
 class ScriptPromiseResolver;
 
-class CrosWindowManagement : public ScriptWrappable,
+class CrosWindowManagement : public EventTargetWithInlineData,
                              public Supplement<ExecutionContext>,
                              public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,6 +28,11 @@ class CrosWindowManagement : public ScriptWrappable,
 
   explicit CrosWindowManagement(ExecutionContext&);
 
+  // EventTarget
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  // GC
   void Trace(Visitor*) const override;
 
   // Returns the remote for communication with the browser's window management
