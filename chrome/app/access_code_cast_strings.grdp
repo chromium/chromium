@@ -37,6 +37,26 @@
   <message name="IDS_ACCESS_CODE_CAST_INPUT_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Label for the text box where users type the access code to start casting to a Chromecast device">
     Type the access code to start casting
   </message>
+  <message name="IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_DAYS" desc="In the dialog to connect to a chromecast device using a code, this message is a footnote that lets the user know that the Chromecast device will be remembered and will remain in their list for a number of days">
+    {DAYS, plural,
+      =1 {This device will be saved for 1 day and you can connect without a code next time. This is set by your administrator.}
+      other {This device will be saved for {DAYS} days and you can connect without a code next time. This is set by your administrator.}}
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_HOURS" desc="In the dialog to connect to a chromecast device using a code, this message is a footnote that lets the user know that the Chromecast device will be remembered and will remain in their list for a number of hours">
+    {HOURS, plural,
+      =1 {This device will be saved for 1 hour and you can connect without a code next time. This is set by your administrator.}
+      other {This device will be saved for {HOURS} hours and you can connect without a code next time. This is set by your administrator.}}
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_MONTHS" desc="In the dialog to connect to a chromecast device using a code, this message is a footnote that lets the user know that the Chromecast device will be remembered and will remain in their list for a number of months">
+    {MONTHS, plural,
+      =1 {This device will be saved for 1 month and you can connect without a code next time. This is set by your administrator.}
+      other {This device will be saved for {MONTHS} months and you can connect without a code next time. This is set by your administrator.}}
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_YEARS" desc="In the dialog to connect to a chromecast device using a code, this message is a footnote that lets the user know that the Chromecast device will be remembered and will remain in their list for a number of years">
+    {YEARS, plural,
+      =1 {This device will be saved for 1 year and you can connect without a code next time. This is set by your administrator.}
+      other {This device will be saved for {YEARS} years and you can connect without a code next time. This is set by your administrator.}}
+  </message>
   <message name="IDS_ACCESS_CODE_CAST_SUBMIT" desc="Text for the button that when pressed submits an access code to attempt to start casting">
     Submit
   </message>

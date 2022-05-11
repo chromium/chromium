@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -12,6 +15,7 @@
 #include "chrome/grit/access_code_cast_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -50,6 +54,22 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("qrScannerEnabled", false);
   source->AddString("learnMoreUrl", chrome::kAccessCodeCastLearnMoreURL);
+
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  source->AddInteger("rememberedDeviceDuration",
+      GetAccessCodeDeviceDurationPref(profile->GetPrefs()).InSeconds());
+
+  // Add a handler to provide pluralized strings.
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "managedFootnoteHours", IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_HOURS);
+  plural_string_handler->AddLocalizedString(
+      "managedFootnoteDays", IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_DAYS);
+  plural_string_handler->AddLocalizedString(
+      "managedFootnoteMonths", IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_MONTHS);
+  plural_string_handler->AddLocalizedString(
+      "managedFootnoteYears", IDS_ACCESS_CODE_CAST_MANAGED_FOOTNOTE_YEARS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

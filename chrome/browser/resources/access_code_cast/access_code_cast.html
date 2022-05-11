@@ -34,6 +34,25 @@
     background-color: transparent;
   }
 
+  #error-message-container {
+    min-height: 16px;
+  }
+
+  #remembered-device-footnote {
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    justify-content: center;
+  }
+
+  #remembered-device-icon {
+    align-self: flex-start;
+    flex-shrink: 0;
+    height: 20px;
+    padding-inline-end: 16px;
+    width: 20px;
+  }
+
   a[href] {
     color: var(--cr-link-color);
     text-decoration: none;
@@ -80,7 +99,18 @@
     <div id="qrInputView">
       <div>Camera input view</div>
     </div>
-    <c2c-error-message id="errorMessage"></c2c-error-message>
+    <div id="error-message-container">
+      <c2c-error-message id="errorMessage"></c2c-error-message>
+    </div>
+    <div class="space-1"></div>
+    <template is="dom-if" if="[[rememberDevices]]">
+      <div id="remembered-device-footnote">
+        <iron-icon icon="cr:domain" id="remembered-device-icon"></iron-icon>
+        <div id="remembered-device-content">
+          [[managedFootnote]]
+        </div>
+      </div>
+    </template>
   </div>
   <div slot="button-container">
     <cr-button on-click="close" class="cancel-button">$i18n{cancel}</cr-button>

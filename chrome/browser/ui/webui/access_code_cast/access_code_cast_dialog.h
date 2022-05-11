@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
@@ -17,7 +18,6 @@
 #include "url/gurl.h"
 
 namespace content {
-class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -93,7 +93,7 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   std::unique_ptr<media_router::MediaRouteStarter> media_route_starter_;
 
   const raw_ptr<content::WebContents> web_contents_;
-  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
 };
 

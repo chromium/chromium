@@ -14,9 +14,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 
 import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
@@ -43,6 +44,12 @@ export interface AccessCodeCastElement {
 
 const AccessCodeCastElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
+
+const ECMASCRIPT_EPOCH_START_YEAR = 1970;
+const SECONDS_PER_DAY = 86400;
+const SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_MONTH = 2592000;
+const SECONDS_PER_YEAR = 31536000;
 
 export class AccessCodeCastElement extends AccessCodeCastElementBase {
   static get is() {
@@ -72,18 +79,24 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
   private router: PageCallbackRouter;
 
   private static readonly ACCESS_CODE_LENGTH = 6;
+
   private accessCode: string;
   private canCast: boolean;
   private inputLabel: string;
   private state: PageState;
   private submitDisabled: boolean;
   private qrScannerEnabled: boolean;
+  private rememberDevices: boolean;
+  private managedFootnote: string;
 
   constructor() {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
     this.inputLabel = this.i18n('inputLabel');
+
+    this.createManagedFootnote(
+        loadTimeData.getInteger('rememberedDeviceDuration'));
 
     this.accessCode = '';
     BrowserProxy.getInstance().isQrScanningAvailable().then((available) => {
@@ -168,8 +181,55 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.close();
   }
 
+  async createManagedFootnote(duration: number) {
+    if (duration === 0) {
+      return;
+    }
+
+
+    // Handle the cases from the policy enum.
+    if (duration === SECONDS_PER_HOUR) {
+      return this.makeFootnote('managedFootnoteHours', 1);
+    } else if (duration === SECONDS_PER_DAY) {
+      return this.makeFootnote('managedFootnoteDays', 1);
+    } else if (duration === SECONDS_PER_MONTH) {
+      return this.makeFootnote('managedFootnoteMonths', 1);
+    } else if (duration === SECONDS_PER_YEAR) {
+      return this.makeFootnote('managedFootnoteYears', 1);
+    }
+
+    // Handle the general case.
+    const durationAsDate = new Date(duration * 1000);
+    // ECMAscript epoch starts at 1970.
+    if (durationAsDate.getUTCFullYear() - ECMASCRIPT_EPOCH_START_YEAR > 0) {
+      return this.makeFootnote('managedFootnoteYears',
+          durationAsDate.getUTCFullYear() - ECMASCRIPT_EPOCH_START_YEAR);
+    // Months are zero indexed.
+    } else if (durationAsDate.getUTCMonth() > 0) {
+      return this.makeFootnote('managedFootnoteMonths',
+          durationAsDate.getUTCMonth());
+    // Dates start at 1.
+    } else if (durationAsDate.getUTCDate() - 1 > 0) {
+      return this.makeFootnote('managedFootnoteDays',
+          durationAsDate.getUTCDate() - 1);
+    // Hours start at 0.
+    } else if (durationAsDate.getUTCHours() > 0) {
+      return this.makeFootnote('managedFootnoteHours',
+          durationAsDate.getUTCHours());
+    // The given duration is either minutes, seconds, or a negative time. These
+    // are not valid so we should not show the managed footnote.
+    }
+
+    this.rememberDevices = false;
+    return;
+  }
+
   setAccessCodeForTest(value: string) {
     this.accessCode = value;
+  }
+
+  getManagedFootnoteForTest() {
+    return this.managedFootnote;
   }
 
   private castStateChange() {
@@ -230,6 +290,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
   private async cast(): Promise<RouteRequestResultCode> {
     const castResult = await BrowserProxy.getInstance().handler.castToSink();
     return castResult.resultCode as RouteRequestResultCode;
+  }
+
+  private async makeFootnote(messageName: string, value: number) {
+    const proxy = PluralStringProxyImpl.getInstance();
+    this.managedFootnote = await proxy.getPluralString(messageName, value);
+    this.rememberDevices = true;
   }
 }
 

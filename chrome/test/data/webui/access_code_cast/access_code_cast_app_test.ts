@@ -260,4 +260,38 @@ suite('AccessCodeCastAppTest', () => {
     await app.addSinkAndCast();
     assertTrue(app.$.codeInput.focused);
   });
+
+  // Split up footnote tests to limit number of await statements used in a
+  // single test, since this contributes to test flakiness.
+  test('managed footnote is correctly created for short times', async () => {
+    assertEquals(app.getManagedFootnoteForTest(), undefined);
+
+    await app.createManagedFootnote(3600 /* One hour */);
+    assertTrue(app.getManagedFootnoteForTest().includes('1 hour '));
+
+    await app.createManagedFootnote(7200 /* Two hours */);
+    assertTrue(app.getManagedFootnoteForTest().includes('2 hours '));
+
+    await app.createManagedFootnote(86400 /* 1 day */);
+    assertTrue(app.getManagedFootnoteForTest().includes('1 day '));
+
+    await app.createManagedFootnote(172800 /* 2 days */);
+    assertTrue(app.getManagedFootnoteForTest().includes('2 days '));
+  });
+
+  test('managed footnote is correctly created for long times', async () => {
+    assertEquals(app.getManagedFootnoteForTest(), undefined);
+
+    await app.createManagedFootnote(2764800 /* 32 days */);
+    assertTrue(app.getManagedFootnoteForTest().includes('1 month '));
+
+    await app.createManagedFootnote(5529600 /* 64 days */);
+    assertTrue(app.getManagedFootnoteForTest().includes('2 months '));
+
+    await app.createManagedFootnote(31540000 /* 1 year */);
+    assertTrue(app.getManagedFootnoteForTest().includes('1 year '));
+
+    await app.createManagedFootnote(63080000 /* 2 years */);
+    assertTrue(app.getManagedFootnoteForTest().includes('2 years '));
+  });
 });
