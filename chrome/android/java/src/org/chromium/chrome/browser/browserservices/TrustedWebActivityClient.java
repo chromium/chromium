@@ -245,11 +245,15 @@ public class TrustedWebActivityClient {
      */
     public void requestNotificationPermission(
             Origin origin, PermissionCallback permissionCallback) {
+        String channelName = ContextUtils.getApplicationContext().getResources().getString(
+                R.string.notification_category_group_general);
         connectAndExecute(origin.uri(), new ExecutionCallback() {
             @Override
             public void onConnected(Origin origin, Connection service) throws RemoteException {
+                Bundle commandArgs = new Bundle();
+                commandArgs.putString(ARG_NOTIFICATION_CHANNEL_NAME, channelName);
                 Bundle commandResult = service.sendExtraCommand(
-                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT, Bundle.EMPTY,
+                        COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT, commandArgs,
                         /*callback=*/null);
                 PendingIntent pendingIntent = commandResult.getParcelable(
                         KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT);
