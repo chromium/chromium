@@ -2092,19 +2092,19 @@ TEST_F(DesksTemplatesTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
       GetOverviewGridList().front()->GetSavedDeskLibraryView();
   ASSERT_TRUE(library_view);
 
-  // The library has two grids and one feedback button.
+  // The library has two grids, two labels and one feedback button.
   SavedDeskLibraryViewTestApi test_api(library_view);
-  ASSERT_EQ(3ul, test_api.scroll_view()->contents()->children().size());
+  ASSERT_EQ(5ul, test_api.scroll_view()->contents()->children().size());
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
   WaitForDesksTemplatesUI();
   EXPECT_TRUE(InOverviewSession());
 
-  // Go back to the library view and verify a new feedback button wasn't
-  // created. There should still be two grids and one feedback button.
+  // Go back to the library view and verify that we have the same amount of
+  // expected children.
   ShowDesksTemplatesGrids();
-  ASSERT_EQ(3ul, test_api.scroll_view()->contents()->children().size());
+  ASSERT_EQ(5ul, test_api.scroll_view()->contents()->children().size());
 }
 
 // Tests that if we open the desks templates grid a second time during an
@@ -2701,11 +2701,11 @@ TEST_F(DesksTemplatesTest, ItemsDoNotOverlapShelf) {
   SavedDeskLibraryView* library_view =
       GetOverviewGridList().front()->GetSavedDeskLibraryView();
 
-  // The library has two grids and one feedback button.
+  // The library has two grids, two labels and one feedback button.
   SavedDeskLibraryViewTestApi test_api(library_view);
   views::View::Views library_child_views =
       test_api.scroll_view()->contents()->children();
-  ASSERT_EQ(3ul, library_child_views.size());
+  ASSERT_EQ(5ul, library_child_views.size());
 
   const gfx::Rect shelf_bounds =
       GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();

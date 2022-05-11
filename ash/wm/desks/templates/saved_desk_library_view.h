@@ -13,6 +13,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -64,9 +65,6 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   friend class SavedDeskLibraryViewTestApi;
   friend class SavedDeskLibraryWindowTargeter;
 
-  // Compute the bounds for all sub-views.
-  std::vector<std::pair<views::View*, gfx::Rect>> CalculatePositions() const;
-
   // Called when the feedback button is pressed. Shows the feedback dialog with
   // desks templates information.
   void OnFeedbackButtonPressed();
@@ -102,6 +100,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;
+
+  // Owned by views hierarchy. Section headers above grids. Will match size and
+  // order of items in `grid_views_`.
+  std::vector<views::Label*> grid_labels_;
 
   // Owned by views hierarchy. Temporary button to help users give feedback.
   // TODO(crbug.com/1289880): Remove this button when it is no longer needed.

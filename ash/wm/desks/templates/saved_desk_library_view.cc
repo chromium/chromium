@@ -32,8 +32,15 @@
 namespace ash {
 namespace {
 
-// Vertical spacing between the last grid item and the feedback button.
-constexpr int kFeedbackButtonSpacingDp = 40;
+constexpr char kGridLabelFont[] = "Roboto";
+constexpr int kGridLabelFontSize = 16;
+
+// Grids use landscape mode if the available width is greater or equal to this.
+constexpr int kLandscapeMinWidth = 756;
+
+// Label dimensions.
+constexpr gfx::Size kLabelSizeLandscape = {708, 24};
+constexpr gfx::Size kLabelSizePortrait = {464, 24};
 
 // Between child spacing of Library page scroll content view.
 constexpr int kLibraryPageScrollContentsBetweenChildSpacingDp = 32;
@@ -67,6 +74,16 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
   }
 
   return grouped;
+}
+
+std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
+  auto label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(label_string_id));
+  label->SetFontList(gfx::FontList({kGridLabelFont}, gfx::Font::NORMAL,
+                                   kGridLabelFontSize,
+                                   gfx::Font::Weight::MEDIUM));
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
 }
 
 }  // namespace
@@ -202,11 +219,15 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
 
   // Create grids depending on which features are enabled.
   if (features::AreDesksTemplatesEnabled()) {
+    grid_labels_.push_back(scroll_contents->AddChildView(
+        MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     desk_template_grid_view_ =
         scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
   }
   if (features::IsSavedDesksEnabled()) {
+    grid_labels_.push_back(scroll_contents->AddChildView(MakeGridLabel(
+        IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     save_and_recall_grid_view_ =
         scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_);
@@ -284,60 +305,6 @@ void SavedDeskLibraryView::DeleteTemplates(
     save_and_recall_grid_view_->DeleteTemplates(uuids);
 
   Layout();
-}
-
-std::vector<std::pair<views::View*, gfx::Rect>>
-SavedDeskLibraryView::CalculatePositions() const {
-  // TODO(dandersson): The following code is entirely temporary. It's made so
-  // that the positioning of desk templates doesn't regress. The positioning of
-  // the save & recall grid (if present), is not final.
-  std::vector<std::pair<views::View*, gfx::Rect>> positions;
-  if (bounds().IsEmpty())
-    return positions;
-
-  constexpr int kGridPadding = 50;  // Padding between grids.
-
-  // Total height of all grids, including padding.
-  int total_height = 0;
-
-  std::vector<int> grid_heights(grid_views_.size());
-  for (size_t i = 0; i != grid_views_.size(); ++i) {
-    const int grid_height = grid_views_[i]->GetSizeForWidth(width()).height();
-    grid_heights[i] = grid_height;
-    total_height += grid_height;
-  }
-
-  const size_t non_empty_grids =
-      std::count_if(grid_heights.begin(), grid_heights.end(),
-                    [](int height) { return height > 0; });
-
-  // Add space for padding.
-  total_height +=
-      non_empty_grids > 1 ? (non_empty_grids - 1) * kGridPadding : 0;
-
-  int y_pos = bounds().height() / 2 - total_height / 2;
-  for (size_t i = 0; i != grid_views_.size(); ++i) {
-    positions.emplace_back(
-        grid_views_[i], gfx::Rect(0, y_pos, bounds().width(), grid_heights[i]));
-
-    y_pos += grid_heights[i];
-    if (grid_heights[i])
-      y_pos += kGridPadding;
-  }
-
-  // Position of feedback button.
-  if (total_height == 0) {
-    positions.emplace_back(feedback_button_, feedback_button_->bounds());
-  } else {
-    const gfx::Size feedback_size = feedback_button_->GetPreferredSize();
-    positions.emplace_back(
-        feedback_button_,
-        gfx::Rect(gfx::Point(width() / 2 - feedback_size.width() / 2,
-                             y_pos - kGridPadding + kFeedbackButtonSpacingDp),
-                  feedback_size));
-  }
-
-  return positions;
 }
 
 void SavedDeskLibraryView::OnFeedbackButtonPressed() {
@@ -429,14 +396,40 @@ void SavedDeskLibraryView::AddedToWidget() {
 }
 
 void SavedDeskLibraryView::Layout() {
+  if (bounds().IsEmpty())
+    return;
+
+  const bool landscape = width() >= kLandscapeMinWidth;
+  for (auto* grid_view : grid_views()) {
+    grid_view->set_layout_mode(landscape
+                                   ? SavedDeskGridView::LayoutMode::LANDSCAPE
+                                   : SavedDeskGridView::LayoutMode::PORTRAIT);
+  }
+
+  DCHECK_EQ(grid_views_.size(), grid_labels_.size());
+  for (size_t i = 0; i != grid_views_.size(); ++i) {
+    // Make the grid label invisible if the corresponding grid view is
+    // empty. This will exclude it from the box layout.
+    grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
+                                                : kLabelSizePortrait);
+  }
+
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
 }
 
 void SavedDeskLibraryView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  feedback_button_->SetBackgroundColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80));
+
+  auto* color_provider = AshColorProvider::Get();
+  feedback_button_->SetBackgroundColor(color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
+
+  for (views::Label* label : grid_labels_) {
+    label->SetBackgroundColor(SK_ColorTRANSPARENT);
+    label->SetEnabledColor(color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
 }
 
 void SavedDeskLibraryView::OnWindowDestroying(aura::Window* window) {

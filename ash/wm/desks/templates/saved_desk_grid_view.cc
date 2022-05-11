@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
@@ -36,12 +37,10 @@ namespace ash {
 
 namespace {
 
-// Items are laid out in landscape mode unless the width is smaller than this.
-constexpr int kLandscapeMinWidth = 756;
 constexpr int kLandscapeMaxColumns = 3;
 constexpr int kPortraitMaxColumns = 2;
 
-constexpr int kGridPaddingDp = 25;
+constexpr int kGridPaddingDp = 24;
 
 // This is the maximum number of templates we will show in the grid. This
 // constant is used instead of the Desk model `GetMaxEntryCount()` because that
@@ -74,12 +73,6 @@ gfx::Transform GetScaleTransformForView(views::View* view) {
   scale_transform.Scale(kAddOrDeleteItemScale, kAddOrDeleteItemScale);
   return gfx::TransformAboutPivot(view->GetLocalBounds().CenterPoint(),
                                   scale_transform);
-}
-
-// Gets the max columns that the grid can show for a given width.
-size_t GetColumnsForWidth(int width) {
-  return width < kLandscapeMinWidth ? kPortraitMaxColumns
-                                    : kLandscapeMaxColumns;
 }
 
 }  // namespace
@@ -247,11 +240,19 @@ bool SavedDeskGridView::IsTemplateNameBeingModified() const {
 }
 
 gfx::Size SavedDeskGridView::CalculatePreferredSize() const {
-  return GetSizeForWidth(kLandscapeMinWidth);
-}
+  if (grid_items_.empty())
+    return gfx::Size();
 
-int SavedDeskGridView::GetHeightForWidth(int width) const {
-  return GetSizeForWidth(width).height();
+  const size_t cols = GetMaxColumns();
+  const size_t rows = (grid_items_.size() + cols - 1) / cols;
+  DCHECK_GT(cols, 0u);
+  DCHECK_GT(rows, 0u);
+
+  const int item_width = SavedDeskItemView::kPreferredSize.width();
+  const int item_height = SavedDeskItemView::kPreferredSize.height();
+
+  return gfx::Size(cols * item_width + (cols - 1) * kGridPaddingDp,
+                   rows * item_height + (rows - 1) * kGridPaddingDp);
 }
 
 void SavedDeskGridView::Layout() {
@@ -279,19 +280,6 @@ bool SavedDeskGridView::IsAnimating() const {
   return bounds_animator_.IsAnimating();
 }
 
-gfx::Size SavedDeskGridView::GetSizeForWidth(int width) const {
-  if (grid_items_.empty())
-    return gfx::Size();
-
-  const size_t columns = GetColumnsForWidth(width);
-  const size_t rows = (grid_items_.size() + columns - 1) / columns;
-
-  DCHECK_GT(rows, 0u);
-
-  return gfx::Size(width, (rows * SavedDeskItemView::kPreferredSize.height()) +
-                              (rows - 1) * kGridPaddingDp);
-}
-
 SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::GUID& uuid) {
   if (!uuid.is_valid())
     return nullptr;
@@ -303,6 +291,11 @@ SavedDeskItemView* SavedDeskGridView::GetItemForUUID(const base::GUID& uuid) {
   return it == grid_items_.end() ? nullptr : *it;
 }
 
+size_t SavedDeskGridView::GetMaxColumns() const {
+  return layout_mode_ == LayoutMode::LANDSCAPE ? kLandscapeMaxColumns
+                                               : kPortraitMaxColumns;
+}
+
 std::vector<gfx::Rect> SavedDeskGridView::CalculateGridItemPositions() const {
   std::vector<gfx::Rect> positions;
 
@@ -311,7 +304,7 @@ std::vector<gfx::Rect> SavedDeskGridView::CalculateGridItemPositions() const {
 
   const size_t count = grid_items_.size();
   const gfx::Size grid_item_size = grid_items_[0]->GetPreferredSize();
-  const size_t max_column_count = GetColumnsForWidth(width());
+  const size_t max_column_count = GetMaxColumns();
   const size_t column_count = std::min(count, max_column_count);
 
   int x = 0;

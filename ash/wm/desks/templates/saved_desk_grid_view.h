@@ -21,6 +21,11 @@ class SavedDeskItemView;
 // `SavedDeskItemView`.
 class SavedDeskGridView : public views::View {
  public:
+  enum class LayoutMode {
+    LANDSCAPE = 0,
+    PORTRAIT,
+  };
+
   METADATA_HEADER(SavedDeskGridView);
 
   SavedDeskGridView();
@@ -31,6 +36,9 @@ class SavedDeskGridView : public views::View {
   const std::vector<SavedDeskItemView*>& grid_items() const {
     return grid_items_;
   }
+
+  // Sets the grid to show items in landscape or portrait mode.
+  void set_layout_mode(LayoutMode layout_mode) { layout_mode_ = layout_mode; }
 
   // Updates the UI by creating a grid layout and populating the grid with the
   // provided list of saved desks.
@@ -62,7 +70,6 @@ class SavedDeskGridView : public views::View {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
   void Layout() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
@@ -73,6 +80,9 @@ class SavedDeskGridView : public views::View {
 
  private:
   friend class SavedDeskGridViewTestApi;
+
+  // Returns the max columns that the grid can show based on `layout_mode_`.
+  size_t GetMaxColumns() const;
 
   // Calculates the bounds for each grid item within the saved desks grid. The
   // indices of the returned vector directly correlate to those of `grid_items_`
@@ -88,6 +98,9 @@ class SavedDeskGridView : public views::View {
 
   // The views representing saved desks. They're owned by views hierarchy.
   std::vector<SavedDeskItemView*> grid_items_;
+
+  // Controls how the grid items are laid out.
+  LayoutMode layout_mode_ = LayoutMode::LANDSCAPE;
 
   // Used to animate individual view positions.
   views::BoundsAnimator bounds_animator_;

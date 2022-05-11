@@ -1868,6 +1868,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" desc="The label visible above template items in the saved desk library.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" desc="The label visible above the save and recall items in the saved desk library.">
+        Saved for later
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
