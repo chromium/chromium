@@ -2425,7 +2425,6 @@
     },
     {
       name: "VideoTrackGeneratorInWorker",
-      status: "test",
     },
     {
       name: "VideoWakeLockOptimisationHiddenMuted",
