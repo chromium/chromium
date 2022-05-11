@@ -320,6 +320,8 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1324721",
+        supported_abis_includes = "x86")
     public void testRenderGrid_Incognito() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
