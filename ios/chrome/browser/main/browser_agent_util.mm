@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
+#import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
+#import "ios/chrome/browser/upgrade/utils/features.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -91,6 +93,10 @@ void AttachBrowserAgents(Browser* browser) {
 
   if (!browser->GetBrowserState()->IsOffTheRecord())
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
+
+  if (IsUpgradeCenterRefactorEnabled()) {
+    UpgradeCenterBrowserAgent::CreateForBrowser(browser);
+  }
 
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.

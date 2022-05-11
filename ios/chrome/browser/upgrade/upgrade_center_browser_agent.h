@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_UI_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
 
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
@@ -44,4 +44,4 @@ class UpgradeCenterBrowserAgent
   Browser* browser_ = nullptr;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_

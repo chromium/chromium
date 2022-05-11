@@ -62,6 +62,8 @@ source_set("main") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/start_surface",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade/utils:features",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:delegate",

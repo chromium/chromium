@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/upgrade/upgrade_center_browser_agent.h"
+#import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -21,9 +21,9 @@ UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(Browser* browser) {
   browser->GetWebStateList()->AddObserver(this);
 }
 
-UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent()
+UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent() {}
 
-    void UpgradeCenterBrowserAgent::BrowserDestroyed(Browser* browser) {
+void UpgradeCenterBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK(browser);
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
