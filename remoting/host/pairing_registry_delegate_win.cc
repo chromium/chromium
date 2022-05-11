@@ -139,8 +139,10 @@ std::unique_ptr<base::ListValue> PairingRegistryDelegateWin::LoadAll() {
     }
 
     PairingRegistry::Pairing pairing = Load(base::WideToUTF8(value_name));
-    if (pairing.is_valid())
-      pairings->Append(pairing.ToValue());
+    if (pairing.is_valid()) {
+      pairings->GetList().Append(
+          base::Value::FromUniquePtrValue(pairing.ToValue()));
+    }
   }
 
   return pairings;
