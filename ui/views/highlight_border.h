@@ -15,6 +15,8 @@ class RoundedCornersF;
 
 namespace views {
 
+constexpr int kHighlightBorderThickness = 1;
+
 // A rounded rectangle border that has inner (highlight) and outer color.
 // Useful when go/cros-launcher-spec mentions "BorderHighlight".
 class VIEWS_EXPORT HighlightBorder : public views::Border {
@@ -55,6 +57,16 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
                                   const gfx::RoundedCornersF& corner_radii,
                                   Type type,
                                   bool use_light_colors);
+
+  // Returns the inner highlight color used to paint highlight border.
+  static SkColor GetHighlightColor(const views::View& view,
+                                   HighlightBorder::Type type,
+                                   bool use_light_colors);
+
+  // Returns the outer border color used to paint highlight border.
+  static SkColor GetBorderColor(const views::View& view,
+                                HighlightBorder::Type type,
+                                bool use_light_colors);
 
   HighlightBorder(int corner_radius,
                   Type type,

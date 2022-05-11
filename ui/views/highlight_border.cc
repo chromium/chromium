@@ -16,8 +16,6 @@
 
 namespace views {
 
-constexpr int kHighlightBorderThickness = 1;
-
 // static
 void HighlightBorder::PaintBorderToCanvas(
     gfx::Canvas* canvas,
@@ -26,34 +24,8 @@ void HighlightBorder::PaintBorderToCanvas(
     const gfx::RoundedCornersF& corner_radii,
     Type type,
     bool use_light_colors) {
-  ui::ColorId highlight_color_id;
-  ui::ColorId border_color_id;
-  if (use_light_colors) {
-    // TODO(crbug/1319917): These light color values are used here since we want
-    // to use light colors when dark/light mode feature is not enabled. This
-    // should be removed after dark light mode is launched.
-    DCHECK(!ash::features::IsDarkLightModeEnabled());
-    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                             ? ui::kColorAshSystemUILightHighlightColor1
-                             : ui::kColorAshSystemUILightHighlightColor2;
-    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                          ? ui::kColorAshSystemUILightBorderColor1
-                          : ui::kColorAshSystemUILightBorderColor2;
-  } else {
-    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                             ? ui::kColorAshSystemUIHighlightColor1
-                             : ui::kColorAshSystemUIHighlightColor2;
-    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
-                          ? ui::kColorAshSystemUIBorderColor1
-                          : ui::kColorAshSystemUIBorderColor2;
-  }
-
-  // `view` should be embedded in a Widget to use color provider.
-  DCHECK(view.GetWidget());
-  const SkColor inner_color =
-      view.GetColorProvider()->GetColor(highlight_color_id);
-  const SkColor outer_color =
-      view.GetColorProvider()->GetColor(border_color_id);
+  SkColor inner_color = GetHighlightColor(view, type, use_light_colors);
+  SkColor outer_color = GetBorderColor(view, type, use_light_colors);
 
   cc::PaintFlags flags;
   flags.setStrokeWidth(kHighlightBorderThickness);
@@ -88,6 +60,54 @@ void HighlightBorder::PaintBorderToCanvas(
   SkPath inner_path;
   inner_path.addRoundRect(gfx::RectFToSkRect(inner_border_bounds), radii);
   canvas->DrawPath(inner_path, flags);
+}
+
+// static
+SkColor HighlightBorder::GetHighlightColor(const views::View& view,
+                                           HighlightBorder::Type type,
+                                           bool use_light_colors) {
+  ui::ColorId highlight_color_id;
+  if (use_light_colors) {
+    // TODO(crbug/1319917): These light color values are used here since we want
+    // to use light colors when dark/light mode feature is not enabled. This
+    // should be removed after dark light mode is launched.
+    DCHECK(!ash::features::IsDarkLightModeEnabled());
+    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                             ? ui::kColorAshSystemUILightHighlightColor1
+                             : ui::kColorAshSystemUILightHighlightColor2;
+  } else {
+    highlight_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                             ? ui::kColorAshSystemUIHighlightColor1
+                             : ui::kColorAshSystemUIHighlightColor2;
+  }
+
+  // `view` should be embedded in a Widget to use color provider.
+  DCHECK(view.GetWidget());
+  return view.GetColorProvider()->GetColor(highlight_color_id);
+}
+
+// static
+SkColor HighlightBorder::GetBorderColor(const views::View& view,
+                                        HighlightBorder::Type type,
+                                        bool use_light_colors) {
+  ui::ColorId border_color_id;
+  if (use_light_colors) {
+    // TODO(crbug/1319917): These light color values are used here since we want
+    // to use light colors when dark/light mode feature is not enabled. This
+    // should be removed after dark light mode is launched.
+    DCHECK(!ash::features::IsDarkLightModeEnabled());
+    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                          ? ui::kColorAshSystemUILightBorderColor1
+                          : ui::kColorAshSystemUILightBorderColor2;
+  } else {
+    border_color_id = type == HighlightBorder::Type::kHighlightBorder1
+                          ? ui::kColorAshSystemUIBorderColor1
+                          : ui::kColorAshSystemUIBorderColor2;
+  }
+
+  // `view` should be embedded in a Widget to use color provider.
+  DCHECK(view.GetWidget());
+  return view.GetColorProvider()->GetColor(border_color_id);
 }
 
 HighlightBorder::HighlightBorder(int corner_radius,
