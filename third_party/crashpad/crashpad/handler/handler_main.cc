@@ -287,7 +287,12 @@ bool AddKeyValueToMap(std::map<std::string, std::string>* map,
 // a normal exit, or if a CallMetricsRecordNormalExit object is destroyed after
 // something else logs an exit event.
 void MetricsRecordExit(Metrics::LifetimeMilestone milestone) {
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    __cpp_lib_atomic_value_initialization < 201911L
   static std::atomic_flag metrics_exit_recorded = ATOMIC_FLAG_INIT;
+#else
+  static std::atomic_flag metrics_exit_recorded;
+#endif
   if (!metrics_exit_recorded.test_and_set()) {
     Metrics::HandlerLifetimeMilestone(milestone);
   }
