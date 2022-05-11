@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
   EXPECT_EQ(ExpectedWindowCountForBrowserCount(0), CountVisibleWindows());
 
   NSEvent* cmd_n = cocoa_test_event_utils::KeyEventWithKeyCode(
-      'n', 'n', NSKeyDown, NSCommandKeyMask);
+      'n', 'n', NSEventTypeKeyDown, NSEventModifierFlagCommand);
   [[NSApp mainMenu] performSelector:@selector(performKeyEquivalent:)
                          withObject:cmd_n
                          afterDelay:0];

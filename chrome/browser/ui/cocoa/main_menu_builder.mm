@@ -443,22 +443,22 @@ base::scoped_nsobject<NSMenuItem> BuildTabMenu(
               Item(IDS_DUPLICATE_TARGET_TAB_MAC)
                   .command_id(IDC_DUPLICATE_TARGET_TAB)
                   .is_alternate()
-                  .key_equivalent(@"", NSAlternateKeyMask),
+                  .key_equivalent(@"", NSEventModifierFlagOption),
               Item(IDS_MUTE_SITE_MAC).command_id(IDC_WINDOW_MUTE_SITE),
               Item(IDS_MUTE_TARGET_SITE_MAC)
                   .command_id(IDC_MUTE_TARGET_SITE)
                   .is_alternate()
-                  .key_equivalent(@"", NSAlternateKeyMask),
+                  .key_equivalent(@"", NSEventModifierFlagOption),
               Item(IDS_PIN_TAB_MAC).command_id(IDC_WINDOW_PIN_TAB),
               Item(IDS_PIN_TARGET_TAB_MAC)
                   .command_id(IDC_PIN_TARGET_TAB)
                   .is_alternate()
-                  .key_equivalent(@"", NSAlternateKeyMask),
+                  .key_equivalent(@"", NSEventModifierFlagOption),
               Item(IDS_GROUP_TAB_MAC).command_id(IDC_WINDOW_GROUP_TAB),
               Item(IDS_GROUP_TARGET_TAB_MAC)
                   .command_id(IDC_GROUP_TARGET_TAB)
                   .is_alternate()
-                  .key_equivalent(@"", NSAlternateKeyMask),
+                  .key_equivalent(@"", NSEventModifierFlagOption),
               Item(IDS_TAB_CXMENU_CLOSEOTHERTABS)
                   .command_id(IDC_WINDOW_CLOSE_OTHER_TABS),
               Item(IDS_TAB_CXMENU_CLOSETABSTORIGHT)

@@ -195,8 +195,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)mouseEvent:(NSEvent*)theEvent {
   if (!_host)
     return;
-  _host->OnMouseEvent([theEvent type] == NSMouseMoved,
-                      [theEvent type] == NSMouseExited);
+  _host->OnMouseEvent([theEvent type] == NSEventTypeMouseMoved,
+                      [theEvent type] == NSEventTypeMouseExited);
 }
 
 - (void)setMouseDownCanMoveWindow:(BOOL)canMove {

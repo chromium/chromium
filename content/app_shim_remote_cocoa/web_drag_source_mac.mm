@@ -179,7 +179,7 @@ using content::DropData;
   NSWindow* window = [_contentsView window];
   NSPoint position = [window mouseLocationOutsideOfEventStream];
   NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSLeftMouseDragged
+  NSEvent* dragEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
                                           location:position
                                      modifierFlags:0
                                          timestamp:eventTime

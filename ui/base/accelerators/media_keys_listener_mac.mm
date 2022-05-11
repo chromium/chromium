@@ -181,7 +181,7 @@ CGEventRef MediaKeysListenerImpl::EventTapCallback(CGEventTapProxy proxy,
   }
 
   // Ignore events that are not system defined media keys.
-  if (type != NX_SYSDEFINED || [ns_event type] != NSSystemDefined ||
+  if (type != NX_SYSDEFINED || [ns_event type] != NSEventTypeSystemDefined ||
       [ns_event subtype] != kSystemDefinedEventMediaKeysSubtype) {
     return event;
   }

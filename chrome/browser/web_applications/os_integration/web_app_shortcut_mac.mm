@@ -522,7 +522,7 @@ base::FilePath GetLocalizableAppShortcutsSubdirName() {
 
 // Creates a canvas the same size as |overlay|, copies the appropriate
 // representation from |backgound| into it (according to Cocoa), then draws
-// |overlay| over it using NSCompositeSourceOver.
+// |overlay| over it using NSCompositingOperationSourceOver.
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
   DCHECK(background);
   NSInteger dimension = [overlay pixelsWide];
@@ -553,11 +553,11 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
   [NSGraphicsContext setCurrentContext:drawing_context];
   [background drawInRect:NSMakeRect(0, 0, dimension, dimension)
                 fromRect:NSZeroRect
-               operation:NSCompositeCopy
+               operation:NSCompositingOperationCopy
                 fraction:1.0];
   [overlay drawInRect:NSMakeRect(0, 0, dimension, dimension)
              fromRect:NSZeroRect
-            operation:NSCompositeSourceOver
+            operation:NSCompositingOperationSourceOver
              fraction:1.0
        respectFlipped:NO
                 hints:0];

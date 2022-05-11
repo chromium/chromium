@@ -43,8 +43,8 @@ BubbleCloser::BubbleCloser(NSWindow* window,
     return event;
   };
   event_tap_ =
-      [NSEvent addLocalMonitorForEventsMatchingMask:NSLeftMouseDownMask |
-                                                    NSRightMouseDownMask
+      [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseDown |
+                                                    NSEventMaskRightMouseDown
                                             handler:block];
 }
 

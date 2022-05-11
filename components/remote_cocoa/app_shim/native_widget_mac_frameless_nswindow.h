@@ -8,9 +8,9 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
 // Overrides contentRect <-> frameRect conversion methods to keep them equal to
-// each other, even for windows that do not use NSBorderlessWindowMask. This
-// allows an NSWindow to be frameless without attaining undesired side-effects
-// of NSBorderlessWindowMask.
+// each other, even for windows that do not use NSWindowStyleMaskBorderless.
+// This allows an NSWindow to be frameless without attaining undesired
+// side-effects of NSWindowStyleMaskBorderless.
 @interface NativeWidgetMacFramelessNSWindow : NativeWidgetMacNSWindow
 @end
 

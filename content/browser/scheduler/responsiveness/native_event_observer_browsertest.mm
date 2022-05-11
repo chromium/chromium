@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_F(ResponsivenessNativeEventObserverBrowserTest,
 
   EXPECT_FALSE(observer.will_run_id());
   EXPECT_FALSE(observer.did_run_id());
-  NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(kVK_Return, '\r',
-                                                               NSKeyDown, 0);
+  NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(
+      kVK_Return, '\r', NSEventTypeKeyDown, 0);
   [NSApp sendEvent:event];
 
   EXPECT_EQ(observer.will_run_id(), event);

@@ -53,13 +53,14 @@ NSPoint ConvertRootPointToTarget(NSWindow* target,
 // Inverse of ui::EventFlagsFromModifiers().
 NSUInteger EventFlagsToModifiers(int flags) {
   NSUInteger modifiers = 0;
-  modifiers |= (flags & ui::EF_SHIFT_DOWN) ? NSShiftKeyMask : 0;
-  modifiers |= (flags & ui::EF_CONTROL_DOWN) ? NSControlKeyMask : 0;
-  modifiers |= (flags & ui::EF_ALT_DOWN) ? NSAlternateKeyMask : 0;
-  modifiers |= (flags & ui::EF_COMMAND_DOWN) ? NSCommandKeyMask : 0;
-  modifiers |= (flags & ui::EF_CAPS_LOCK_ON) ? NSAlphaShiftKeyMask : 0;
+  modifiers |= (flags & ui::EF_SHIFT_DOWN) ? NSEventModifierFlagShift : 0;
+  modifiers |= (flags & ui::EF_CONTROL_DOWN) ? NSEventModifierFlagControl : 0;
+  modifiers |= (flags & ui::EF_ALT_DOWN) ? NSEventModifierFlagOption : 0;
+  modifiers |= (flags & ui::EF_COMMAND_DOWN) ? NSEventModifierFlagCommand : 0;
+  modifiers |= (flags & ui::EF_CAPS_LOCK_ON) ? NSEventModifierFlagCapsLock : 0;
   // ui::EF_*_MOUSE_BUTTON not handled here.
-  // NSFunctionKeyMask, NSNumericPadKeyMask and NSHelpKeyMask not mapped.
+  // NSEventModifierFlagFunction, NSEventModifierFlagNumericPad and
+  // NSHelpKeyMask not mapped.
   return modifiers;
 }
 
@@ -84,37 +85,34 @@ NSEventType EventTypeToNative(ui::EventType ui_event_type,
     *modifiers = EventFlagsToModifiers(flags);
   switch (ui_event_type) {
     case ui::ET_KEY_PRESSED:
-      return NSKeyDown;
+      return NSEventTypeKeyDown;
     case ui::ET_KEY_RELEASED:
-      return NSKeyUp;
+      return NSEventTypeKeyUp;
     case ui::ET_MOUSE_PRESSED:
-      return PickMouseEventType(flags,
-                                NSLeftMouseDown,
-                                NSRightMouseDown,
-                                NSOtherMouseDown);
+      return PickMouseEventType(flags, NSEventTypeLeftMouseDown,
+                                NSEventTypeRightMouseDown,
+                                NSEventTypeOtherMouseDown);
     case ui::ET_MOUSE_RELEASED:
-      return PickMouseEventType(flags,
-                                NSLeftMouseUp,
-                                NSRightMouseUp,
-                                NSOtherMouseUp);
+      return PickMouseEventType(flags, NSEventTypeLeftMouseUp,
+                                NSEventTypeRightMouseUp,
+                                NSEventTypeOtherMouseUp);
     case ui::ET_MOUSE_DRAGGED:
-      return PickMouseEventType(flags,
-                                NSLeftMouseDragged,
-                                NSRightMouseDragged,
-                                NSOtherMouseDragged);
+      return PickMouseEventType(flags, NSEventTypeLeftMouseDragged,
+                                NSEventTypeRightMouseDragged,
+                                NSEventTypeOtherMouseDragged);
     case ui::ET_MOUSE_MOVED:
-      return NSMouseMoved;
+      return NSEventTypeMouseMoved;
     case ui::ET_MOUSEWHEEL:
-      return NSScrollWheel;
+      return NSEventTypeScrollWheel;
     case ui::ET_MOUSE_ENTERED:
-      return NSMouseEntered;
+      return NSEventTypeMouseEntered;
     case ui::ET_MOUSE_EXITED:
-      return NSMouseExited;
+      return NSEventTypeMouseExited;
     case ui::ET_SCROLL_FLING_START:
       return NSEventTypeSwipe;
     default:
       NOTREACHED();
-      return NSApplicationDefined;
+      return NSEventTypeApplicationDefined;
   }
 }
 
@@ -125,10 +123,10 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
   base::AutoReset<NSEvent*> reset(&g_current_event, event);
   NSResponder* responder = [window firstResponder];
   switch ([event type]) {
-    case NSKeyDown:
+    case NSEventTypeKeyDown:
       [responder keyDown:event];
       return;
-    case NSKeyUp:
+    case NSEventTypeKeyUp:
       [responder keyUp:event];
       return;
     default:
@@ -141,47 +139,47 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
   // and the NSWindow's contentView is wrapping a views::internal::RootView.
   responder = [window contentView];
   switch ([event type]) {
-    case NSLeftMouseDown:
+    case NSEventTypeLeftMouseDown:
       [responder mouseDown:event];
       break;
-    case NSRightMouseDown:
+    case NSEventTypeRightMouseDown:
       [responder rightMouseDown:event];
       break;
-    case NSOtherMouseDown:
+    case NSEventTypeOtherMouseDown:
       [responder otherMouseDown:event];
       break;
-    case NSLeftMouseUp:
+    case NSEventTypeLeftMouseUp:
       [responder mouseUp:event];
       break;
-    case NSRightMouseUp:
+    case NSEventTypeRightMouseUp:
       [responder rightMouseUp:event];
       break;
-    case NSOtherMouseUp:
+    case NSEventTypeOtherMouseUp:
       [responder otherMouseUp:event];
       break;
-    case NSLeftMouseDragged:
+    case NSEventTypeLeftMouseDragged:
       [responder mouseDragged:event];
       break;
-    case NSRightMouseDragged:
+    case NSEventTypeRightMouseDragged:
       [responder rightMouseDragged:event];
       break;
-    case NSOtherMouseDragged:
+    case NSEventTypeOtherMouseDragged:
       [responder otherMouseDragged:event];
       break;
-    case NSMouseMoved:
+    case NSEventTypeMouseMoved:
       // Assumes [NSWindow acceptsMouseMovedEvents] would return YES, and that
       // NSTrackingAreas have been appropriately installed on |responder|.
       [responder mouseMoved:event];
       break;
-    case NSScrollWheel:
+    case NSEventTypeScrollWheel:
       [responder scrollWheel:event];
       break;
-    case NSMouseEntered:
-    case NSMouseExited:
-      // With the assumptions in NSMouseMoved, it doesn't make sense for the
-      // generator to handle entered/exited separately. It's the responsibility
-      // of views::internal::RootView to convert the moved events into entered
-      // and exited events for the individual views.
+    case NSEventTypeMouseEntered:
+    case NSEventTypeMouseExited:
+      // With the assumptions in NSEventTypeMouseMoved, it doesn't make sense
+      // for the generator to handle entered/exited separately. It's the
+      // responsibility of views::internal::RootView to convert the moved events
+      // into entered and exited events for the individual views.
       NOTREACHED();
       break;
     case NSEventTypeSwipe:
@@ -458,8 +456,9 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
     case Target::WINDOW:
       // -[NSApp sendEvent:] sends -performKeyEquivalent: if Command or Control
       // modifiers are pressed. Emulate that behavior.
-      if ([ns_event type] == NSKeyDown &&
-          ([ns_event modifierFlags] & (NSControlKeyMask | NSCommandKeyMask)) &&
+      if ([ns_event type] == NSEventTypeKeyDown &&
+          ([ns_event modifierFlags] &
+           (NSEventModifierFlagControl | NSEventModifierFlagCommand)) &&
           [target_window_ performKeyEquivalent:ns_event])
         break;  // Handled by performKeyEquivalent:.
 

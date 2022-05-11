@@ -272,7 +272,7 @@ class MockNativeWidgetMac : public NativeWidgetMac {
     base::scoped_nsobject<NativeWidgetMacNSWindow> window(
         [[NativeWidgetMacNSWindow alloc]
             initWithContentRect:ui::kWindowSizeDeterminedLater
-                      styleMask:NSBorderlessWindowMask
+                      styleMask:NSWindowStyleMaskBorderless
                         backing:NSBackingStoreBuffered
                           defer:NO]);
     GetNSWindowHost()->CreateInProcessNSWindowBridge(window);
@@ -332,7 +332,7 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
   // representing the first unicode character of |chars|.
   NSEvent* UnicodeKeyDown(int key_code, NSString* chars) {
     return cocoa_test_event_utils::KeyEventWithKeyCode(
-        key_code, [chars characterAtIndex:0], NSKeyDown, 0);
+        key_code, [chars characterAtIndex:0], NSEventTypeKeyDown, 0);
   }
 
   // Overridden from testing::Test:
@@ -870,11 +870,11 @@ TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
 
   CreateNewWidgetToInit();
   EXPECT_FALSE(
-      [bridge_window() hasShadow]);  // Default for NSBorderlessWindowMask.
+      [bridge_window() hasShadow]);  // Default for NSWindowStyleMaskBorderless.
   PerformInit();
 
   // Borderless is 0, so isn't really a mask. Check that nothing is set.
-  EXPECT_EQ(NSBorderlessWindowMask, [bridge_window() styleMask]);
+  EXPECT_EQ(NSWindowStyleMaskBorderless, [bridge_window() styleMask]);
   EXPECT_TRUE(
       [bridge_window() hasShadow]);  // ShadowType::kDefault means a shadow.
 

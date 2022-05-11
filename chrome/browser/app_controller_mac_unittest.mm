@@ -115,9 +115,10 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
 
     EXPECT_TRUE([[closeWindowMenuItem_ keyEquivalent] isEqualToString:@"W"]);
     EXPECT_EQ([closeWindowMenuItem_ keyEquivalentModifierMask],
-              NSCommandKeyMask);
+              NSEventModifierFlagCommand);
     EXPECT_TRUE([[closeTabMenuItem_ keyEquivalent] isEqualToString:@"w"]);
-    EXPECT_EQ([closeTabMenuItem_ keyEquivalentModifierMask], NSCommandKeyMask);
+    EXPECT_EQ([closeTabMenuItem_ keyEquivalentModifierMask],
+              NSEventModifierFlagCommand);
   }
 
   void CheckMenuItemsMatchNonBrowserWindow() {
@@ -128,7 +129,7 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
 
     EXPECT_TRUE([[closeWindowMenuItem_ keyEquivalent] isEqualToString:@"w"]);
     EXPECT_EQ([closeWindowMenuItem_ keyEquivalentModifierMask],
-              NSCommandKeyMask);
+              NSEventModifierFlagCommand);
     EXPECT_TRUE([[closeTabMenuItem_ keyEquivalent] isEqualToString:@""]);
     EXPECT_EQ([closeTabMenuItem_ keyEquivalentModifierMask], 0UL);
   }

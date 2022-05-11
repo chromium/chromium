@@ -96,10 +96,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       desc += base::StringPrintf(" buttonNumber=%ld clickCount=%ld",
                                  event.buttonNumber, event.clickCount);
       break;
-    case NSAppKitDefined:
-    case NSSystemDefined:
-    case NSApplicationDefined:
-    case NSPeriodic:
+    case NSEventTypeAppKitDefined:
+    case NSEventTypeSystemDefined:
+    case NSEventTypeApplicationDefined:
+    case NSEventTypePeriodic:
       desc += base::StringPrintf(" subtype=%d data1=%ld data2=%ld",
                                  event.subtype, event.data1, event.data2);
       break;
@@ -325,9 +325,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       // In kiosk mode, we want to prevent context menus from appearing,
       // so simply discard menu-generating events instead of passing them
       // along.
-      BOOL couldTriggerContextMenu = event.type == NSRightMouseDown ||
-                                     (event.type == NSLeftMouseDown &&
-                                      (event.modifierFlags & NSControlKeyMask));
+      BOOL couldTriggerContextMenu =
+          event.type == NSEventTypeRightMouseDown ||
+          (event.type == NSEventTypeLeftMouseDown &&
+           (event.modifierFlags & NSEventModifierFlagControl));
       if (couldTriggerContextMenu)
         return;
     }
@@ -337,7 +338,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
     // and sent directly to IME, which prevents ui keydown events from firing.
     // These events need to be sent to [NSApp keyWindow] for handling.
-    if ([event type] == NSKeyDown &&
+    if ([event type] == NSEventTypeKeyDown &&
         ([event keyCode] == kVK_JIS_Eisu || [event keyCode] == kVK_JIS_Kana)) {
       [[NSApp keyWindow] sendEvent:event];
     } else {

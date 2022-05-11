@@ -426,8 +426,9 @@ gfx::Rect GetExpectedRect(const gfx::Point& origin,
       size.height());
 }
 
-// Returns NSScrollWheel event that mocks -phase. |mockPhaseSelector| should
-// correspond to a method in |MockPhaseMethods| that returns the desired phase.
+// Returns NSEventTypeScrollWheel event that mocks -phase. |mockPhaseSelector|
+// should correspond to a method in |MockPhaseMethods| that returns the desired
+// phase.
 NSEvent* MockScrollWheelEventWithPhase(SEL mockPhaseSelector, int32_t delta) {
   CGEventRef cg_event = CGEventCreateScrollWheelEvent(
       nullptr, kCGScrollEventUnitLine, 1, delta, 0);
@@ -606,7 +607,8 @@ TEST_F(RenderWidgetHostViewMacTest, FilterNonPrintableCharacter) {
   EXPECT_EQ(0U, events.size());
   [rwhv_mac_->GetInProcessNSView()
       keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
-                   0x7B, 0xF70F, NSKeyDown, NSControlKeyMask)];
+                   0x7B, 0xF70F, NSEventTypeKeyDown,
+                   NSEventModifierFlagControl)];
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
 
@@ -618,15 +620,16 @@ TEST_F(RenderWidgetHostViewMacTest, FilterNonPrintableCharacter) {
   EXPECT_EQ(0U, process_host_->sink().message_count());
   [rwhv_mac_->GetInProcessNSView()
       keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
-                   0x2E, 0xF728, NSKeyDown, NSControlKeyMask)];
+                   0x2E, 0xF728, NSEventTypeKeyDown,
+                   NSEventModifierFlagControl)];
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
   EXPECT_EQ("RawKeyDown", GetMessageNames(events));
 
   // Simulate a printable char, should generate keypress event
   [rwhv_mac_->GetInProcessNSView()
-      keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(0x58, 'x', NSKeyDown,
-                                                           NSControlKeyMask)];
+      keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                   0x58, 'x', NSEventTypeKeyDown, NSEventModifierFlagControl)];
   base::RunLoop().RunUntilIdle();
   events = host_->GetAndResetDispatchedMessages();
   EXPECT_EQ("RawKeyDown Char", GetMessageNames(events));
@@ -635,11 +638,11 @@ TEST_F(RenderWidgetHostViewMacTest, FilterNonPrintableCharacter) {
 // Test that invalid |keyCode| shouldn't generate key events.
 // https://crbug.com/601964
 TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {
-  // Simulate "Convert" key on JIS PC keyboard, will generate a |NSFlagsChanged|
-  // NSEvent with |keyCode| == 0xFF.
+  // Simulate "Convert" key on JIS PC keyboard, will generate a
+  // |NSEventTypeFlagsChanged| NSEvent with |keyCode| == 0xFF.
   [rwhv_mac_->GetInProcessNSView()
-      keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(0xFF, 0,
-                                                           NSFlagsChanged, 0)];
+      keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                   0xFF, 0, NSEventTypeFlagsChanged, 0)];
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0U, host_->GetAndResetDispatchedMessages().size());
 }
@@ -1010,9 +1013,10 @@ TEST_F(RenderWidgetHostViewMacTest, ScrollWheelEndEventDelivery) {
 }
 
 TEST_F(RenderWidgetHostViewMacTest, PointerEventWithEraserType) {
-  // Send a NSEvent of NSTabletProximity type which has a device type of eraser.
+  // Send a NSEvent of NSEventTypeTabletProximity type which has a device type
+  // of eraser.
   NSEvent* event = MockTabletEventWithParams(kCGEventTabletProximity, true,
-                                             NSEraserPointingDevice);
+                                             NSPointingDeviceTypeEraser);
   [rwhv_mac_->GetInProcessNSView() tabletEvent:event];
   // Flush and clear other messages (e.g. begin frames) the RWHVMac also sends.
   base::RunLoop().RunUntilIdle();
@@ -1030,9 +1034,10 @@ TEST_F(RenderWidgetHostViewMacTest, PointerEventWithEraserType) {
 }
 
 TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenType) {
-  // Send a NSEvent of NSTabletProximity type which has a device type of pen.
+  // Send a NSEvent of NSEventTypeTabletProximity type which has a device type
+  // of pen.
   NSEvent* event = MockTabletEventWithParams(kCGEventTabletProximity, true,
-                                             NSPenPointingDevice);
+                                             NSPointingDeviceTypePen);
   [rwhv_mac_->GetInProcessNSView() tabletEvent:event];
   // Flush and clear other messages (e.g. begin frames) the RWHVMac also sends.
   base::RunLoop().RunUntilIdle();
@@ -1051,7 +1056,7 @@ TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenType) {
 
 TEST_F(RenderWidgetHostViewMacTest, PointerEventWithPenTypeNoTabletEvent) {
   // Send a NSEvent of a mouse type with a subtype of
-  // NSTabletProximityEventSubtype, which indicates the input device is a pen.
+  // NSEventSubtypeTabletProximity, which indicates the input device is a pen.
   NSEvent* event =
       MockMouseEventWithParams(kCGEventMouseMoved, {6, 9}, kCGMouseButtonLeft,
                                kCGEventMouseSubtypeTabletProximity, true);

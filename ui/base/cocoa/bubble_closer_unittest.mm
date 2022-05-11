@@ -25,7 +25,7 @@ class BubbleCloserTest : public CocoaTest {
     CocoaTest::SetUp();
     bubble_window_.reset([[NSWindow alloc]
         initWithContentRect:NSMakeRect(100, 100, 320, 200)
-                  styleMask:NSBorderlessWindowMask
+                  styleMask:NSWindowStyleMaskBorderless
                     backing:NSBackingStoreBuffered
                       defer:NO]);
     [bubble_window_ setReleasedWhenClosed:NO];  // Owned by scoped_nsobject.

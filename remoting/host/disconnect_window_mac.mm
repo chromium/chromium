@@ -91,7 +91,7 @@ void DisconnectWindowMac::Start(
   NSRect frame = NSMakeRect(0, 0, 466, 40);
   DisconnectWindow* window =
       [[[DisconnectWindow alloc] initWithContentRect:frame
-                                           styleMask:NSBorderlessWindowMask
+                                           styleMask:NSWindowStyleMaskBorderless
                                              backing:NSBackingStoreBuffered
                                                defer:NO] autorelease];
   window_controller_ = [[DisconnectWindowController alloc]
@@ -236,9 +236,9 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
                           styleMask:(NSUInteger)aStyle
                             backing:(NSBackingStoreType)bufferingType
                               defer:(BOOL)flag {
-  // Pass NSBorderlessWindowMask for the styleMask to remove the title bar.
+  // Pass NSWindowStyleMaskBorderless for the styleMask to remove the title bar.
   self = [super initWithContentRect:contentRect
-                          styleMask:NSBorderlessWindowMask
+                          styleMask:NSWindowStyleMaskBorderless
                             backing:bufferingType
                               defer:flag];
 

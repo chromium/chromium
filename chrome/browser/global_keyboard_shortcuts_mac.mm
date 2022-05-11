@@ -62,7 +62,7 @@ NSMenuItem* FindMenuItem(NSEvent* key, NSMenu* menu) {
 }
 
 int MenuCommandForKeyEvent(NSEvent* event) {
-  if ([event type] != NSKeyDown)
+  if ([event type] != NSEventTypeKeyDown)
     return -1;
 
   // We avoid calling -[NSMenuDelegate menuNeedsUpdate:] on each submenu's
@@ -223,7 +223,7 @@ const std::vector<NSMenuItem*>& GetMenuItemsNotPresentInMainMenu() {
 
 CommandForKeyEventResult CommandForKeyEvent(NSEvent* event) {
   DCHECK(event);
-  if ([event type] != NSKeyDown)
+  if ([event type] != NSEventTypeKeyDown)
     return NoCommand();
 
   int cmdNum = MenuCommandForKeyEvent(event);
@@ -242,15 +242,15 @@ CommandForKeyEventResult CommandForKeyEvent(NSEvent* event) {
 
 int DelayedWebContentsCommandForKeyEvent(NSEvent* event) {
   DCHECK(event);
-  if ([event type] != NSKeyDown)
+  if ([event type] != NSEventTypeKeyDown)
     return -1;
 
   // Look in secondary keyboard shortcuts.
   NSUInteger modifiers = [event modifierFlags];
-  const bool cmdKey = (modifiers & NSCommandKeyMask) != 0;
-  const bool shiftKey = (modifiers & NSShiftKeyMask) != 0;
-  const bool cntrlKey = (modifiers & NSControlKeyMask) != 0;
-  const bool optKey = (modifiers & NSAlternateKeyMask) != 0;
+  const bool cmdKey = (modifiers & NSEventModifierFlagCommand) != 0;
+  const bool shiftKey = (modifiers & NSEventModifierFlagShift) != 0;
+  const bool cntrlKey = (modifiers & NSEventModifierFlagControl) != 0;
+  const bool optKey = (modifiers & NSEventModifierFlagOption) != 0;
   const int keyCode = [event keyCode];
 
   // Scan through keycodes and see if it corresponds to one of the non-menu
@@ -266,16 +266,16 @@ int DelayedWebContentsCommandForKeyEvent(NSEvent* event) {
 }
 
 // AppKit sends an event via performKeyEquivalent: if it has at least one of the
-// command or control modifiers, and is an NSKeyDown event. CommandDispatcher
-// supplements this by also sending event with the option modifier to
-// performKeyEquivalent:.
+// command or control modifiers, and is an NSEventTypeKeyDown event.
+// CommandDispatcher supplements this by also sending event with the option
+// modifier to performKeyEquivalent:.
 bool EventUsesPerformKeyEquivalent(NSEvent* event) {
   NSUInteger modifiers = [event modifierFlags];
   if ((modifiers & (NSEventModifierFlagCommand | NSEventModifierFlagControl |
                     NSEventModifierFlagOption)) == 0) {
     return false;
   }
-  return [event type] == NSKeyDown;
+  return [event type] == NSEventTypeKeyDown;
 }
 
 bool GetDefaultMacAcceleratorForCommandId(int command_id,

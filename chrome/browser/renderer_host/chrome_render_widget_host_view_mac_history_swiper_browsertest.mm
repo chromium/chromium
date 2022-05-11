@@ -193,8 +193,9 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
                                NSEventPhase momentum_phase,
                                CGFloat scrolling_delta_x,
                                CGFloat scrolling_delta_y) {
-    id event = MockScrollWheelEvent(
-        NSMakePoint(scrolling_delta_x, scrolling_delta_y), NSScrollWheel);
+    id event =
+        MockScrollWheelEvent(NSMakePoint(scrolling_delta_x, scrolling_delta_y),
+                             NSEventTypeScrollWheel);
     [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(phase)] phase];
     [(NSEvent*)[[event stub]
         andReturnValue:OCMOCK_VALUE(momentum_phase)] momentumPhase];

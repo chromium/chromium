@@ -109,7 +109,7 @@ BOOL forceMagicMouse = NO;
 }
 
 - (BOOL)handleEvent:(NSEvent*)event {
-  if ([event type] != NSScrollWheel)
+  if ([event type] != NSEventTypeScrollWheel)
     return NO;
 
   return [self handleScrollWheelEvent:event];

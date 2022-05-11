@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_EQ(0lu, [rwhv_cocoa selectedRange].location);
 
   TextSelectionWaiter waiter(rwhv_mac);
-  NSEvent* key_a =
-      cocoa_test_event_utils::KeyEventWithKeyCode('a', 'a', NSKeyDown, 0);
+  NSEvent* key_a = cocoa_test_event_utils::KeyEventWithKeyCode(
+      'a', 'a', NSEventTypeKeyDown, 0);
   [rwhv_cocoa keyEvent:key_a];
 
   // After typing 'a', the browser process assumes that the text was entered and

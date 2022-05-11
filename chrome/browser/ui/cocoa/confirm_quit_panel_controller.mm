@@ -172,11 +172,11 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
 - (instancetype)init {
   const NSRect kWindowFrame = NSMakeRect(0, 0, 350, 70);
-  base::scoped_nsobject<NSWindow> window(
-      [[NSWindow alloc] initWithContentRect:kWindowFrame
-                                  styleMask:NSBorderlessWindowMask
-                                    backing:NSBackingStoreBuffered
-                                      defer:NO]);
+  base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
+      initWithContentRect:kWindowFrame
+                styleMask:NSWindowStyleMaskBorderless
+                  backing:NSBackingStoreBuffered
+                    defer:NO]);
   if ((self = [super initWithWindow:window])) {
     [window setDelegate:self];
     [window setBackgroundColor:[NSColor clearColor]];
@@ -219,7 +219,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
     [self hideAllWindowsForApplication:app withDuration:0];
     NSEvent* nextEvent = [self pumpEventQueueForKeyUp:app
                                             untilDate:[NSDate distantFuture]];
-    [app discardEventsMatchingMask:NSAnyEventMask beforeEvent:nextEvent];
+    [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
     // Based on how long the user held the keys, record the metric.
     if ([[NSDate date] timeIntervalSinceDate:timeNow] <
@@ -238,7 +238,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   // Explicitly announce the hold-to-quit message. For an ordinary modal dialog
   // VoiceOver would announce it and read its message, but VoiceOver does not do
-  // this for windows whose styleMask is NSBorderlessWindowMask, so do it
+  // this for windows whose styleMask is NSWindowStyleMaskBorderless, so do it
   // manually here. Without this screenreader users have no way to know why
   // their quit hotkey seems not to work.
   [self sendAccessibilityAnnouncement];
@@ -278,7 +278,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   // The user has released the key combo. Discard any events (i.e. the
   // repeated KeyDown Cmd+Q).
-  [app discardEventsMatchingMask:NSAnyEventMask beforeEvent:nextEvent];
+  [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
   if (willQuit) {
     // The user held down the combination long enough that quitting should
@@ -350,7 +350,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
 // Runs a nested loop that pumps the event queue until the next KeyUp event.
 - (NSEvent*)pumpEventQueueForKeyUp:(NSApplication*)app untilDate:(NSDate*)date {
-  return [app nextEventMatchingMask:NSKeyUpMask
+  return [app nextEventMatchingMask:NSEventMaskKeyUp
                           untilDate:date
                              inMode:NSEventTrackingRunLoopMode
                             dequeue:YES];
@@ -382,7 +382,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
                                                  action:@selector(terminate:)
                                           keyEquivalent:@"q"] autorelease];
-  item.keyEquivalentModifierMask = NSCommandKeyMask;
+  item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
   return item;
 }
 
@@ -390,13 +390,13 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   NSMutableString* string = [NSMutableString string];
   NSUInteger modifiers = item.keyEquivalentModifierMask;
 
-  if (modifiers & NSCommandKeyMask)
+  if (modifiers & NSEventModifierFlagCommand)
     [string appendString:@"\u2318"];
-  if (modifiers & NSControlKeyMask)
+  if (modifiers & NSEventModifierFlagControl)
     [string appendString:@"\u2303"];
-  if (modifiers & NSAlternateKeyMask)
+  if (modifiers & NSEventModifierFlagOption)
     [string appendString:@"\u2325"];
-  if (modifiers & NSShiftKeyMask)
+  if (modifiers & NSEventModifierFlagShift)
     [string appendString:@"\u21E7"];
 
   [string appendString:[item.keyEquivalent uppercaseString]];

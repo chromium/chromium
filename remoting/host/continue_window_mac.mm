@@ -103,11 +103,11 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
   _shades.reset([[NSMutableArray alloc] initWithCapacity:[screens count]]);
   for (NSScreen *screen in screens) {
     NSWindow* shade =
-      [[[NSWindow alloc] initWithContentRect:[screen frame]
-                                   styleMask:NSBorderlessWindowMask
-                                     backing:NSBackingStoreBuffered
-                                       defer:NO
-                                      screen:screen] autorelease];
+        [[[NSWindow alloc] initWithContentRect:[screen frame]
+                                     styleMask:NSWindowStyleMaskBorderless
+                                       backing:NSBackingStoreBuffered
+                                         defer:NO
+                                        screen:screen] autorelease];
     [shade setReleasedWhenClosed:NO];
     [shade setAlphaValue:0.8];
     [shade setOpaque:NO];

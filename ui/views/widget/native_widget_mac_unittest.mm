@@ -141,11 +141,12 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
   void PopulateCreateWindowParams(
       const views::Widget::InitParams& widget_params,
       remote_cocoa::mojom::CreateWindowParams* params) override {
-    params->style_mask = NSBorderlessWindowMask;
+    params->style_mask = NSWindowStyleMaskBorderless;
     if (widget_params.type == Widget::InitParams::TYPE_WINDOW) {
-      params->style_mask = NSTexturedBackgroundWindowMask | NSTitledWindowMask |
-                           NSClosableWindowMask | NSMiniaturizableWindowMask |
-                           NSResizableWindowMask;
+      params->style_mask = NSWindowStyleMaskTexturedBackground |
+                           NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                           NSWindowStyleMaskMiniaturizable |
+                           NSWindowStyleMaskResizable;
     }
   }
   NativeWidgetMacNSWindow* CreateNSWindow(
@@ -606,9 +607,9 @@ TEST_F(NativeWidgetMacTest, SetCursor) {
   // content area.
   const gfx::Rect bounds = widget->GetWindowBoundsInScreen();
   NSEvent* event_in_content = cocoa_test_event_utils::MouseEventAtPoint(
-      NSMakePoint(bounds.x(), bounds.y()), NSMouseMoved, 0);
+      NSMakePoint(bounds.x(), bounds.y()), NSEventTypeMouseMoved, 0);
   NSEvent* event_out_of_content = cocoa_test_event_utils::MouseEventAtPoint(
-      NSMakePoint(-50, -50), NSMouseMoved, 0);
+      NSMakePoint(-50, -50), NSEventTypeMouseMoved, 0);
 
   EXPECT_NE(arrow, hand);
   EXPECT_NE(arrow, ibeam);
@@ -1326,12 +1327,14 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   base::scoped_nsobject<NSWindow> sheet_window(
       [sheet_widget->GetNativeWindow().GetNativeNSWindow() retain]);
 
-  // Although there is no titlebar displayed, sheets need NSTitledWindowMask in
-  // order to properly engage window-modal behavior in AppKit.
-  EXPECT_TRUE(NSTitledWindowMask & [sheet_window styleMask]);
+  // Although there is no titlebar displayed, sheets need
+  // NSWindowStyleMaskTitled in order to properly engage window-modal behavior
+  // in AppKit.
+  EXPECT_TRUE(NSWindowStyleMaskTitled & [sheet_window styleMask]);
 
-  // But to properly size, sheets also need NSFullSizeContentViewWindowMask.
-  EXPECT_TRUE(NSFullSizeContentViewWindowMask & [sheet_window styleMask]);
+  // But to properly size, sheets also need
+  // NSWindowStyleMaskFullSizeContentView.
+  EXPECT_TRUE(NSWindowStyleMaskFullSizeContentView & [sheet_window styleMask]);
 
   sheet_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(sheet_widget->IsVisible());

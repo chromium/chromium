@@ -185,8 +185,8 @@ enum RecognitionState {
 }
 
 // Many event types are passed in, but the only one we care about is
-// NSScrollWheel. We look at the phase to determine whether to trigger history
-// swiping
+// NSEventTypeScrollWheel. We look at the phase to determine whether to trigger
+// history swiping
 - (BOOL)handleEvent:(NSEvent*)event;
 - (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
                          consumed:(BOOL)consumed;

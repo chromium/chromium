@@ -148,59 +148,62 @@ NSArray* EventsMacTest::TrackpadScrollSequence(bool initial_rest,
 
 TEST_F(EventsMacTest, EventFlagsFromNative) {
   // Left click.
-  NSEvent* left = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseUp, 0);
+  NSEvent* left =
+      cocoa_test_event_utils::MouseEventWithType(NSEventTypeLeftMouseUp, 0);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, EventFlagsFromNative(left));
 
   // Right click.
-  NSEvent* right = cocoa_test_event_utils::MouseEventWithType(NSRightMouseUp,
-                                                              0);
+  NSEvent* right =
+      cocoa_test_event_utils::MouseEventWithType(NSEventTypeRightMouseUp, 0);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON, EventFlagsFromNative(right));
 
   // Middle click.
-  NSEvent* middle = cocoa_test_event_utils::MouseEventWithType(NSOtherMouseUp,
-                                                               0);
+  NSEvent* middle =
+      cocoa_test_event_utils::MouseEventWithType(NSEventTypeOtherMouseUp, 0);
   EXPECT_EQ(EF_MIDDLE_MOUSE_BUTTON, EventFlagsFromNative(middle));
 
   // Caps + Left
   NSEvent* caps = cocoa_test_event_utils::MouseEventWithType(
-      NSLeftMouseUp, NSAlphaShiftKeyMask);
+      NSEventTypeLeftMouseUp, NSEventModifierFlagCapsLock);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_CAPS_LOCK_ON, EventFlagsFromNative(caps));
 
   // Shift + Left
-  NSEvent* shift = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseUp,
-                                                              NSShiftKeyMask);
+  NSEvent* shift = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeLeftMouseUp, NSEventModifierFlagShift);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_SHIFT_DOWN, EventFlagsFromNative(shift));
 
   // Ctrl + Left. Note we map this to a right click on Mac and remove Control.
-  NSEvent* ctrl = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseUp,
-                                                             NSControlKeyMask);
+  NSEvent* ctrl = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeLeftMouseUp, NSEventModifierFlagControl);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON, EventFlagsFromNative(ctrl));
 
   // Ctrl + Right. Remains a right click.
   NSEvent* ctrl_right = cocoa_test_event_utils::MouseEventWithType(
-      NSRightMouseUp, NSControlKeyMask);
+      NSEventTypeRightMouseUp, NSEventModifierFlagControl);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON | EF_CONTROL_DOWN,
             EventFlagsFromNative(ctrl_right));
 
   // Alt + Left
-  NSEvent* alt = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseUp,
-                                                            NSAlternateKeyMask);
+  NSEvent* alt = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeLeftMouseUp, NSEventModifierFlagOption);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_ALT_DOWN, EventFlagsFromNative(alt));
 
   // Cmd + Left
-  NSEvent* cmd = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseUp,
-                                                            NSCommandKeyMask);
+  NSEvent* cmd = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeLeftMouseUp, NSEventModifierFlagCommand);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_COMMAND_DOWN, EventFlagsFromNative(cmd));
 
   // Shift + Ctrl + Left. Also mapped to a right-click. Control removed.
   NSEvent* shiftctrl = cocoa_test_event_utils::MouseEventWithType(
-      NSLeftMouseUp, NSShiftKeyMask | NSControlKeyMask);
+      NSEventTypeLeftMouseUp,
+      NSEventModifierFlagShift | NSEventModifierFlagControl);
   EXPECT_EQ(EF_RIGHT_MOUSE_BUTTON | EF_SHIFT_DOWN,
             EventFlagsFromNative(shiftctrl));
 
   // Cmd + Alt + Right
   NSEvent* cmdalt = cocoa_test_event_utils::MouseEventWithType(
-      NSLeftMouseUp, NSCommandKeyMask | NSAlternateKeyMask);
+      NSEventTypeLeftMouseUp,
+      NSEventModifierFlagCommand | NSEventModifierFlagOption);
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON | EF_COMMAND_DOWN | EF_ALT_DOWN,
             EventFlagsFromNative(cmdalt));
 
@@ -272,11 +275,12 @@ TEST_F(EventsMacTest, ButtonEvents) {
 // Test correct location when the window has a native titlebar.
 TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
   gfx::Point location(5, 10);
-  NSUInteger style_mask = NSTitledWindowMask | NSClosableWindowMask |
-                          NSMiniaturizableWindowMask | NSResizableWindowMask;
+  NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable |
+                          NSWindowStyleMaskResizable;
 
   // First check that the window provided by ui::CocoaTest is how we think.
-  DCHECK_EQ(NSBorderlessWindowMask, [test_window() styleMask]);
+  DCHECK_EQ(NSWindowStyleMaskBorderless, [test_window() styleMask]);
   [test_window() setStyleMask:style_mask];
   DCHECK_EQ(style_mask, [test_window() styleMask]);
 
@@ -294,7 +298,7 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
   NSRect content_rect = NSMakeRect(0, 0, 600, kTestHeight);
   NSRect frame_rect = [test_window() frameRectForContentRect:content_rect];
   [test_window() setFrame:frame_rect display:YES];
-  event = [NSEvent mouseEventWithType:NSLeftMouseDown
+  event = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown
                              location:NSMakePoint(0, 0)  // Bottom-left corner.
                         modifierFlags:0
                             timestamp:0
@@ -311,7 +315,7 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
   // toolkit-views coordinate system.
   int height_change = NSHeight(frame_rect) - kTestHeight;
   EXPECT_GT(height_change, 0);
-  [test_window() setStyleMask:NSBorderlessWindowMask];
+  [test_window() setStyleMask:NSWindowStyleMaskBorderless];
   [test_window() setFrame:frame_rect display:YES];
   EXPECT_EQ(gfx::Point(0, kTestHeight + height_change),
             gfx::ToFlooredPoint(ui::EventLocationFromNative(event)));
@@ -332,20 +336,24 @@ TEST_F(EventsMacTest, NoWindowLocation) {
 
 // Testing for ui::EventTypeFromNative() not covered by ButtonEvents.
 TEST_F(EventsMacTest, EventTypeFromNative) {
-  NSEvent* event = cocoa_test_event_utils::KeyEventWithType(NSKeyDown, 0);
+  NSEvent* event =
+      cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyDown, 0);
   EXPECT_EQ(ui::ET_KEY_PRESSED, ui::EventTypeFromNative(event));
 
-  event = cocoa_test_event_utils::KeyEventWithType(NSKeyUp, 0);
+  event = cocoa_test_event_utils::KeyEventWithType(NSEventTypeKeyUp, 0);
   EXPECT_EQ(ui::ET_KEY_RELEASED, ui::EventTypeFromNative(event));
 
-  event = cocoa_test_event_utils::MouseEventWithType(NSLeftMouseDragged, 0);
+  event = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeLeftMouseDragged, 0);
   EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
-  event = cocoa_test_event_utils::MouseEventWithType(NSRightMouseDragged, 0);
+  event = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeRightMouseDragged, 0);
   EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
-  event = cocoa_test_event_utils::MouseEventWithType(NSOtherMouseDragged, 0);
+  event = cocoa_test_event_utils::MouseEventWithType(
+      NSEventTypeOtherMouseDragged, 0);
   EXPECT_EQ(ui::ET_MOUSE_DRAGGED, ui::EventTypeFromNative(event));
 
-  event = cocoa_test_event_utils::MouseEventWithType(NSMouseMoved, 0);
+  event = cocoa_test_event_utils::MouseEventWithType(NSEventTypeMouseMoved, 0);
   EXPECT_EQ(ui::ET_MOUSE_MOVED, ui::EventTypeFromNative(event));
 
   event = cocoa_test_event_utils::EnterEvent();
@@ -516,7 +524,8 @@ TEST_F(EventsMacTest, TrackpadScrollThenFlick) {
   }
 }
 
-// Check that NSFlagsChanged event is translated to key press or release event.
+// Check that NSEventTypeFlagsChanged event is translated to key press or
+// release event.
 TEST_F(EventsMacTest, HandleModifierOnlyKeyEvents) {
   struct {
     const char* description;
@@ -525,24 +534,26 @@ TEST_F(EventsMacTest, HandleModifierOnlyKeyEvents) {
     EventType expected_type;
     KeyboardCode expected_key_code;
   } test_cases[] = {
-      {"CapsLock pressed", NSAlphaShiftKeyMask, kVK_CapsLock, ET_KEY_PRESSED,
-       VKEY_CAPITAL},
+      {"CapsLock pressed", NSEventModifierFlagCapsLock, kVK_CapsLock,
+       ET_KEY_PRESSED, VKEY_CAPITAL},
       {"CapsLock released", 0, kVK_CapsLock, ET_KEY_RELEASED, VKEY_CAPITAL},
-      {"Shift pressed", NSShiftKeyMask, kVK_Shift, ET_KEY_PRESSED, VKEY_SHIFT},
+      {"Shift pressed", NSEventModifierFlagShift, kVK_Shift, ET_KEY_PRESSED,
+       VKEY_SHIFT},
       {"Shift released", 0, kVK_Shift, ET_KEY_RELEASED, VKEY_SHIFT},
-      {"Control pressed", NSControlKeyMask, kVK_Control, ET_KEY_PRESSED,
-       VKEY_CONTROL},
+      {"Control pressed", NSEventModifierFlagControl, kVK_Control,
+       ET_KEY_PRESSED, VKEY_CONTROL},
       {"Control released", 0, kVK_Control, ET_KEY_RELEASED, VKEY_CONTROL},
-      {"Option pressed", NSAlternateKeyMask, kVK_Option, ET_KEY_PRESSED,
+      {"Option pressed", NSEventModifierFlagOption, kVK_Option, ET_KEY_PRESSED,
        VKEY_MENU},
       {"Option released", 0, kVK_Option, ET_KEY_RELEASED, VKEY_MENU},
-      {"Command pressed", NSCommandKeyMask, kVK_Command, ET_KEY_PRESSED,
-       VKEY_LWIN},
+      {"Command pressed", NSEventModifierFlagCommand, kVK_Command,
+       ET_KEY_PRESSED, VKEY_LWIN},
       {"Command released", 0, kVK_Command, ET_KEY_RELEASED, VKEY_LWIN},
-      {"Shift pressed with CapsLock on", NSShiftKeyMask | NSAlphaShiftKeyMask,
-       kVK_Shift, ET_KEY_PRESSED, VKEY_SHIFT},
-      {"Shift released with CapsLock off", NSAlphaShiftKeyMask, kVK_Shift,
-       ET_KEY_RELEASED, VKEY_SHIFT},
+      {"Shift pressed with CapsLock on",
+       NSEventModifierFlagShift | NSEventModifierFlagCapsLock, kVK_Shift,
+       ET_KEY_PRESSED, VKEY_SHIFT},
+      {"Shift released with CapsLock off", NSEventModifierFlagCapsLock,
+       kVK_Shift, ET_KEY_RELEASED, VKEY_SHIFT},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(::testing::Message() << "While checking case: "

@@ -93,20 +93,21 @@ TEST_F(SystemHotkeyMapTest, Parse) {
 
   // Command + ` is a common key binding. It should exist.
   unsigned short key_code = kVK_ANSI_Grave;
-  NSUInteger modifiers = NSCommandKeyMask;
+  NSUInteger modifiers = NSEventModifierFlagCommand;
   EXPECT_TRUE(map.IsHotkeyReserved(key_code, modifiers));
 
   // Command + Shift + ` is a common key binding. It should exist.
-  modifiers = NSCommandKeyMask | NSShiftKeyMask;
+  modifiers = NSEventModifierFlagCommand | NSEventModifierFlagShift;
   EXPECT_TRUE(map.IsHotkeyReserved(key_code, modifiers));
 
   // Command + Shift + Ctr + ` is not a common key binding.
-  modifiers = NSCommandKeyMask | NSShiftKeyMask | NSControlKeyMask;
+  modifiers = NSEventModifierFlagCommand | NSEventModifierFlagShift |
+              NSEventModifierFlagControl;
   EXPECT_FALSE(map.IsHotkeyReserved(key_code, modifiers));
 
   // Command + L is not a common key binding.
   key_code = kVK_ANSI_L;
-  modifiers = NSCommandKeyMask;
+  modifiers = NSEventModifierFlagCommand;
   EXPECT_FALSE(map.IsHotkeyReserved(key_code, modifiers));
 }
 
@@ -134,7 +135,7 @@ TEST_F(SystemHotkeyMapTest, ParseMouse) {
   // https://crbug.com/383558
   // https://crbug.com/145062
   unsigned short key_code = kVK_ANSI_Grave;
-  NSUInteger modifiers = NSCommandKeyMask;
+  NSUInteger modifiers = NSEventModifierFlagCommand;
   EXPECT_TRUE(map.IsHotkeyReserved(key_code, modifiers));
 
   // There is a mouse keybinding for 0x08. It should not apply to keyboard
@@ -149,7 +150,7 @@ TEST_F(SystemHotkeyMapTest, ParseMouse) {
   // be reserved.
   // http://crbug.com/383558
   key_code = kVK_ANSI_Equal;
-  modifiers = NSCommandKeyMask | NSAlternateKeyMask;
+  modifiers = NSEventModifierFlagCommand | NSEventModifierFlagOption;
   EXPECT_FALSE(map.IsHotkeyReserved(key_code, modifiers));
 }
 
@@ -157,12 +158,13 @@ TEST_F(SystemHotkeyMapTest, ParseCustomEntries) {
   unsigned short key_code = kVK_ANSI_C;
 
   AddEntryToDictionary(YES, key_code, 0);
-  AddEntryToDictionary(YES, key_code, NSAlphaShiftKeyMask);
-  AddEntryToDictionary(YES, key_code, NSShiftKeyMask);
-  AddEntryToDictionary(YES, key_code, NSControlKeyMask);
-  AddEntryToDictionary(YES, key_code, NSFunctionKeyMask);
-  AddEntryToDictionary(YES, key_code, NSFunctionKeyMask | NSControlKeyMask);
-  AddEntryToDictionary(NO, key_code, NSAlternateKeyMask);
+  AddEntryToDictionary(YES, key_code, NSEventModifierFlagCapsLock);
+  AddEntryToDictionary(YES, key_code, NSEventModifierFlagShift);
+  AddEntryToDictionary(YES, key_code, NSEventModifierFlagControl);
+  AddEntryToDictionary(YES, key_code, NSEventModifierFlagFunction);
+  AddEntryToDictionary(
+      YES, key_code, NSEventModifierFlagFunction | NSEventModifierFlagControl);
+  AddEntryToDictionary(NO, key_code, NSEventModifierFlagOption);
 
   SystemHotkeyMap map;
 
@@ -172,20 +174,20 @@ TEST_F(SystemHotkeyMapTest, ParseCustomEntries) {
   // Entries without control, command, or alternate key mask should not be
   // reserved.
   EXPECT_FALSE(map.IsHotkeyReserved(key_code, 0));
-  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSAlphaShiftKeyMask));
-  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSShiftKeyMask));
-  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSFunctionKeyMask));
+  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSEventModifierFlagCapsLock));
+  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSEventModifierFlagShift));
+  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSEventModifierFlagFunction));
 
   // Unlisted entries should not be reserved.
-  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSCommandKeyMask));
+  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSEventModifierFlagCommand));
 
   // Disabled entries should not be reserved.
-  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSAlternateKeyMask));
+  EXPECT_FALSE(map.IsHotkeyReserved(key_code, NSEventModifierFlagOption));
 
   // Other entries should be reserved.
-  EXPECT_TRUE(map.IsHotkeyReserved(key_code, NSControlKeyMask));
-  EXPECT_TRUE(
-      map.IsHotkeyReserved(key_code, NSFunctionKeyMask | NSControlKeyMask));
+  EXPECT_TRUE(map.IsHotkeyReserved(key_code, NSEventModifierFlagControl));
+  EXPECT_TRUE(map.IsHotkeyReserved(
+      key_code, NSEventModifierFlagFunction | NSEventModifierFlagControl));
 }
 
 }  // namespace content

@@ -31,10 +31,11 @@ COMPONENT_EXPORT(UI_BASE)
   NSInteger _pressureEventStage;
 }
 
-// Process an NSLeftMouseUp event on this view that wasn't dispatched already
-// to BaseView (e.g. if captured via an event monitor). This may generate a
-// synthetic NSMouseExited if the mouse exited the view area during a drag and
-// should be invoked after a call to -mouseEvent: for the mouse up.
+// Process an NSEventTypeLeftMouseUp event on this view that wasn't dispatched
+// already to BaseView (e.g. if captured via an event monitor). This may
+// generate a synthetic NSEventTypeMouseExited if the mouse exited the view area
+// during a drag and should be invoked after a call to -mouseEvent: for the
+// mouse up.
 - (void)handleLeftMouseUp:(NSEvent*)theEvent;
 
 // Override these methods (mouseEvent, keyEvent, forceTouchEvent) in a

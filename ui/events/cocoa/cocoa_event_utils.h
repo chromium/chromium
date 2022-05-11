@@ -27,8 +27,8 @@ EVENTS_EXPORT int EventFlagsFromModifiers(NSUInteger modifiers);
 EVENTS_EXPORT int EventFlagsFromNSEventWithModifiers(NSEvent* event,
                                                      NSUInteger modifiers);
 
-// Returns true for |NSKeyUp| and for |NSFlagsChanged| when modifier key was
-// released.
+// Returns true for |NSEventTypeKeyUp| and for |NSEventTypeFlagsChanged| when
+// modifier key was released.
 EVENTS_EXPORT bool IsKeyUpEvent(NSEvent* event);
 
 // Convert an NSEvent to an opaque serialization using CGEventCreateData.

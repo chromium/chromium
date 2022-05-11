@@ -72,7 +72,7 @@ struct NativeWidgetNSWindowInitParams {
   bool has_window_server_shadow;
   // If true, the NSWindow's collection behavior is set to include
   // NSWindowCollectionBehaviorParticipatesInCycle (this is not the
-  // default for NSWindows with NSBorderlessWindowMask).
+  // default for NSWindows with NSWindowStyleMaskBorderless).
   bool force_into_collection_cycle;
   // If true, the window was created in headless mode.
   bool is_headless_mode_window;

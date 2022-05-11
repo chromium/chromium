@@ -665,8 +665,8 @@ const base::Feature kListWebAppsSwitch{"ListWebAppsSwitch",
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Uses NSFullSizeContentViewWindowMask where available instead of adding our
-// own views to the window frame. This is a temporary kill switch, it can be
+// Uses NSWindowStyleMaskFullSizeContentView where available instead of adding
+// our own views to the window frame. This is a temporary kill switch, it can be
 // removed once we feel okay about leaving it on.
 const base::Feature kMacFullSizeContentView{"MacFullSizeContentView",
                                             base::FEATURE_ENABLED_BY_DEFAULT};

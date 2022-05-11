@@ -31,7 +31,7 @@
 - (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError**)outError {
   // Refuse to accept users closing the dialog with a key repeat, since the key
   // may have been first pressed while the user was looking at something else.
-  if ([[NSApp currentEvent] type] == NSKeyDown &&
+  if ([[NSApp currentEvent] type] == NSEventTypeKeyDown &&
       [[NSApp currentEvent] isARepeat]) {
     return NO;
   }
@@ -113,7 +113,7 @@ void MacFileChooserOnUiThread::Show() {
   [open_panel_ setCanChooseDirectories:NO];
   [open_panel_ setDelegate:delegate_];
   [open_panel_ beginWithCompletionHandler:^(NSModalResponse result) {
-    if (result == NSFileHandlingPanelOKButton) {
+    if (result == NSModalResponseOK) {
       NSURL* url = [open_panel_ URLs][0];
       if (![url isFileURL]) {
         // Delegate should prevent this.

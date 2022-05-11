@@ -115,7 +115,7 @@ void ShowFirstRunDialogCocoa(Profile* profile) {
   // to be for use here.
   base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
       initWithContentRect:[[_viewController view] frame]
-                styleMask:NSTitledWindowMask
+                styleMask:NSWindowStyleMaskTitled
                   backing:NSBackingStoreBuffered
                     defer:YES]);
   [window setContentView:[_viewController view]];

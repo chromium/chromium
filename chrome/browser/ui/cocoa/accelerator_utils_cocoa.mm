@@ -16,10 +16,11 @@
 namespace chrome {
 
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
-  NSUInteger modifiers = (accelerator.IsCtrlDown() ? NSControlKeyMask : 0) |
-                         (accelerator.IsCmdDown() ? NSCommandKeyMask : 0) |
-                         (accelerator.IsAltDown() ? NSAlternateKeyMask : 0) |
-                         (accelerator.IsShiftDown() ? NSShiftKeyMask : 0);
+  NSUInteger modifiers =
+      (accelerator.IsCtrlDown() ? NSEventModifierFlagControl : 0) |
+      (accelerator.IsCmdDown() ? NSEventModifierFlagCommand : 0) |
+      (accelerator.IsAltDown() ? NSEventModifierFlagOption : 0) |
+      (accelerator.IsShiftDown() ? NSEventModifierFlagShift : 0);
 
   // The |accelerator| passed in contains a Windows key code but no platform
   // accelerator info. The Accelerator list is the opposite: It has accelerators
@@ -38,7 +39,7 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   NSString* charactersIgnoringModifiers =
       [NSString stringWithFormat:@"%C", shifted_character];
 
-  NSEvent* event = [NSEvent keyEventWithType:NSKeyDown
+  NSEvent* event = [NSEvent keyEventWithType:NSEventTypeKeyDown
                                     location:NSZeroPoint
                                modifierFlags:modifiers
                                    timestamp:0

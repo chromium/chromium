@@ -86,7 +86,7 @@ class SelectFileDialogMacTest : public ::testing::Test,
   NSSavePanel* SelectFileWithParams(FileDialogArguments args) {
     base::scoped_nsobject<NSWindow> parent_window([[NSWindow alloc]
         initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                  styleMask:NSTitledWindowMask
+                  styleMask:NSWindowStyleMaskTitled
                     backing:NSBackingStoreBuffered
                       defer:NO]);
     [parent_window setReleasedWhenClosed:NO];

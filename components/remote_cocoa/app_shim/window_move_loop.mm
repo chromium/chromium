@@ -86,8 +86,8 @@ bool CocoaWindowMoveLoop::Run() {
 
   // Esc keypress is handled by EscapeTracker, which is installed by
   // TabDragController.
-  NSEventMask mask =
-      NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSMouseMovedMask;
+  NSEventMask mask = NSEventMaskLeftMouseUp | NSEventMaskLeftMouseDragged |
+                     NSEventMaskMouseMoved;
   auto handler = ^NSEvent*(NSEvent* event) {
     // The docs say this always runs on the main thread, but if it didn't,
     // it would explain https://crbug.com/876493, so let's make sure.
@@ -102,7 +102,7 @@ bool CocoaWindowMoveLoop::Run() {
       return event;
     }
 
-    if ([event type] == NSLeftMouseDragged) {
+    if ([event type] == NSEventTypeLeftMouseDragged) {
       const NSPoint mouse_in_screen = [NSEvent mouseLocation];
 
       NSRect ns_frame = NSOffsetRect(
@@ -119,12 +119,12 @@ bool CocoaWindowMoveLoop::Run() {
       return event;
     }
 
-    // In theory, we shouldn't see any kind of NSMouseMoved, but if we see one
-    // and the left button isn't pressed, we know for a fact that we missed a
-    // NSLeftMouseUp.
-    BOOL unexpectedMove = [event type] == NSMouseMoved &&
+    // In theory, we shouldn't see any kind of NSEventTypeMouseMoved, but if we
+    // see one and the left button isn't pressed, we know for a fact that we
+    // missed a NSEventTypeLeftMouseUp.
+    BOOL unexpectedMove = [event type] == NSEventTypeMouseMoved &&
                           ([NSEvent pressedMouseButtons] & 1) != 1;
-    if (unexpectedMove || [event type] == NSLeftMouseUp) {
+    if (unexpectedMove || [event type] == NSEventTypeLeftMouseUp) {
       *strong->exit_reason_ref_ = MOUSE_UP;
       std::move(strong->quit_closure_).Run();
     }

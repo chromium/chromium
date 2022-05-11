@@ -24,40 +24,40 @@ namespace ui {
 EventType EventTypeFromNative(const PlatformEvent& native_event) {
   NSEventType type = [native_event type];
   switch (type) {
-    case NSKeyDown:
-    case NSKeyUp:
-    case NSFlagsChanged:
+    case NSEventTypeKeyDown:
+    case NSEventTypeKeyUp:
+    case NSEventTypeFlagsChanged:
       return IsKeyUpEvent(native_event) ? ET_KEY_RELEASED : ET_KEY_PRESSED;
-    case NSLeftMouseDown:
-    case NSRightMouseDown:
-    case NSOtherMouseDown:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeOtherMouseDown:
       return ET_MOUSE_PRESSED;
-    case NSLeftMouseUp:
-    case NSRightMouseUp:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseUp:
       return ET_MOUSE_RELEASED;
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-    case NSOtherMouseDragged:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
       return ET_MOUSE_DRAGGED;
-    case NSMouseMoved:
+    case NSEventTypeMouseMoved:
       return ET_MOUSE_MOVED;
-    case NSScrollWheel:
+    case NSEventTypeScrollWheel:
       return ET_SCROLL;
-    case NSMouseEntered:
+    case NSEventTypeMouseEntered:
       return ET_MOUSE_ENTERED;
-    case NSMouseExited:
+    case NSEventTypeMouseExited:
       return ET_MOUSE_EXITED;
     case NSEventTypeSwipe:
       return ET_SCROLL_FLING_START;
-    case NSAppKitDefined:
-    case NSSystemDefined:
+    case NSEventTypeAppKitDefined:
+    case NSEventTypeSystemDefined:
       return ET_UNKNOWN;
-    case NSApplicationDefined:
-    case NSPeriodic:
-    case NSCursorUpdate:
-    case NSTabletPoint:
-    case NSTabletProximity:
+    case NSEventTypeApplicationDefined:
+    case NSEventTypePeriodic:
+    case NSEventTypeCursorUpdate:
+    case NSEventTypeTabletPoint:
+    case NSEventTypeTabletProximity:
     case NSEventTypeGesture:
     case NSEventTypeMagnify:
     case NSEventTypeRotate:
@@ -112,17 +112,17 @@ int EventButtonFromNative(const PlatformEvent& native_event) {
 int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& native_event) {
   NSEventType type = [native_event type];
   switch (type) {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSLeftMouseDragged:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeLeftMouseDragged:
       return EF_LEFT_MOUSE_BUTTON;
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSRightMouseDragged:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeRightMouseDragged:
       return EF_RIGHT_MOUSE_BUTTON;
-    case NSOtherMouseDown:
-    case NSOtherMouseUp:
-    case NSOtherMouseDragged:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseUp:
+    case NSEventTypeOtherMouseDragged:
       return EF_MIDDLE_MOUSE_BUTTON;
     default:
       break;
@@ -269,7 +269,7 @@ uint32_t WindowsKeycodeFromNative(const PlatformEvent& native_event) {
 
 uint16_t TextFromNative(const PlatformEvent& native_event) {
   NSString* text = @"";
-  if ([native_event type] != NSFlagsChanged)
+  if ([native_event type] != NSEventTypeFlagsChanged)
     text = [native_event characters];
 
   // These exceptions are based on web_input_event_builders_mac.mm:
@@ -288,7 +288,7 @@ uint16_t TextFromNative(const PlatformEvent& native_event) {
 
 uint16_t UnmodifiedTextFromNative(const PlatformEvent& native_event) {
   NSString* text = @"";
-  if ([native_event type] != NSFlagsChanged)
+  if ([native_event type] != NSEventTypeFlagsChanged)
     text = [native_event charactersIgnoringModifiers];
 
   // These exceptions are based on web_input_event_builders_mac.mm:

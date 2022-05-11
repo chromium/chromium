@@ -224,7 +224,7 @@ void RenderViewContextMenuMacCocoa::Show() {
                   NSHeight([parent_view_ bounds]) - params_position.y());
   position = [parent_view_ convertPoint:position toView:nil];
   NSTimeInterval eventTime = [currentEvent timestamp];
-  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSRightMouseDown
+  NSEvent* clickEvent = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
                                            location:position
                                       modifierFlags:0
                                           timestamp:eventTime

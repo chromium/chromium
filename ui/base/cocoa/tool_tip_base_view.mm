@@ -128,12 +128,13 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
   }
 }
 
-// Sends a fake NSMouseExited event to the view for its current tracking rect.
+// Sends a fake NSEventTypeMouseExited event to the view for its current
+// tracking rect.
 - (void)_sendToolTipMouseExited {
   // Nothing matters except window, trackingNumber, and userData.
   int windowNumber = [[self window] windowNumber];
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
-  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSMouseExited
+  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSEventTypeMouseExited
                                               location:NSZeroPoint
                                          modifierFlags:0
                                              timestamp:eventTime
@@ -145,7 +146,8 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
   [_trackingRectOwner mouseExited:fakeEvent];
 }
 
-// Sends a fake NSMouseEntered event to the view for its current tracking rect.
+// Sends a fake NSEventTypeMouseEntered event to the view for its current
+// tracking rect.
 - (void)_sendToolTipMouseEntered {
   int windowNumber = [[self window] windowNumber];
 
@@ -157,7 +159,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 
   // Nothing matters except window, trackingNumber, and userData.
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
-  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSMouseEntered
+  NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSEventTypeMouseEntered
                                               location:NSZeroPoint
                                          modifierFlags:0
                                              timestamp:eventTime

@@ -655,7 +655,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // dismissed the context menu.
   NSPoint location = [window mouseLocationOutsideOfEventStream];
   NSTimeInterval event_time = [[NSApp currentEvent] timestamp];
-  NSEvent* event = [NSEvent mouseEventWithType:NSMouseMoved
+  NSEvent* event = [NSEvent mouseEventWithType:NSEventTypeMouseMoved
                                       location:location
                                  modifierFlags:0
                                      timestamp:event_time
@@ -674,7 +674,7 @@ void ExtractUnderlines(NSAttributedString* string,
   NSWindow* window = [self window];
   // If this is a background window, don't handle mouse movement events. This
   // is the expected behavior on the Mac as evidenced by other applications.
-  if ([theEvent type] == NSMouseMoved &&
+  if ([theEvent type] == NSEventTypeMouseMoved &&
       ![self acceptsMouseEventsWhenInactive] && ![window isMainWindow] &&
       ![window isKeyWindow]) {
     return YES;
@@ -720,27 +720,27 @@ void ExtractUnderlines(NSAttributedString* string,
   if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents())
     return;
 
-  // Set the pointer type when we are receiving a NSMouseEntered event and the
-  // following NSMouseExited event should have the same pointer type.
-  // For NSMouseExited and NSMouseEntered events, they do not have a subtype.
-  // We decide their pointer types by checking if we recevied a
-  // NSTabletProximity event.
+  // Set the pointer type when we are receiving a NSEventTypeMouseEntered event
+  // and the following NSEventTypeMouseExited event should have the same pointer
+  // type. For NSEventTypeMouseExited and NSEventTypeMouseEntered events, they
+  // do not have a subtype. We decide their pointer types by checking if we
+  // recevied a NSEventTypeTabletProximity event.
   NSEventType type = [theEvent type];
-  if (type == NSMouseEntered || type == NSMouseExited) {
+  if (type == NSEventTypeMouseEntered || type == NSEventTypeMouseExited) {
     _pointerType = _isStylusEnteringProximity
                        ? _pointerType
                        : blink::WebPointerProperties::PointerType::kMouse;
   } else {
     NSEventSubtype subtype = [theEvent subtype];
     // For other mouse events and touchpad events, the pointer type is mouse.
-    if (subtype != NSTabletPointEventSubtype &&
-        subtype != NSTabletProximityEventSubtype) {
+    if (subtype != NSEventSubtypeTabletPoint &&
+        subtype != NSEventSubtypeTabletProximity) {
       _pointerType = blink::WebPointerProperties::PointerType::kMouse;
-    } else if (subtype == NSTabletProximityEventSubtype) {
+    } else if (subtype == NSEventSubtypeTabletProximity) {
       _isStylusEnteringProximity = [theEvent isEnteringProximity];
       NSPointingDeviceType deviceType = [theEvent pointingDeviceType];
       // For all tablet events, the pointer type will be pen or eraser.
-      _pointerType = deviceType == NSEraserPointingDevice
+      _pointerType = deviceType == NSPointingDeviceTypeEraser
                          ? blink::WebPointerProperties::PointerType::kEraser
                          : blink::WebPointerProperties::PointerType::kPen;
     }
@@ -748,7 +748,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // Because |updateCursor:| changes the current cursor, we have to reset it to
   // the default cursor on mouse exit.
-  if (type == NSMouseExited)
+  if (type == NSEventTypeMouseExited)
     [[NSCursor arrowCursor] set];
 
   if ([self shouldIgnoreMouseEvent:theEvent]) {
@@ -781,9 +781,9 @@ void ExtractUnderlines(NSAttributedString* string,
   // popup. A click outside the text field would cause the text field to drop
   // the focus, and then EditorHostImpl::textFieldDidEndEditing() would cancel
   // the popup anyway, so we're OK.
-  if (type == NSLeftMouseDown)
+  if (type == NSEventTypeLeftMouseDown)
     _hasOpenMouseDown = YES;
-  else if (type == NSLeftMouseUp)
+  else if (type == NSEventTypeLeftMouseUp)
     _hasOpenMouseDown = NO;
 
   // TODO(suzhe): We should send mouse events to the input method first if it
@@ -792,12 +792,12 @@ void ExtractUnderlines(NSAttributedString* string,
   // See: http://code.google.com/p/chromium/issues/detail?id=47141
   // Instead of sending mouse events to the input method first, we now just
   // simply confirm all ongoing composition here.
-  if (type == NSLeftMouseDown || type == NSRightMouseDown ||
-      type == NSOtherMouseDown) {
+  if (type == NSEventTypeLeftMouseDown || type == NSEventTypeRightMouseDown ||
+      type == NSEventTypeOtherMouseDown) {
     [self finishComposingText];
   }
 
-  if (type == NSMouseMoved)
+  if (type == NSEventTypeMouseMoved)
     _cursorHidden = NO;
 
   bool unaccelerated_movement =
@@ -819,7 +819,7 @@ void ExtractUnderlines(NSAttributedString* string,
       NSWindow* window = [self window];
       NSPoint location = [window mouseLocationOutsideOfEventStream];
       int window_number = window ? [window windowNumber] : -1;
-      NSEvent* nsevent = [NSEvent mouseEventWithType:NSMouseMoved
+      NSEvent* nsevent = [NSEvent mouseEventWithType:NSEventTypeMouseMoved
                                             location:location
                                        modifierFlags:[theEvent modifierFlags]
                                            timestamp:[theEvent timestamp]
@@ -846,11 +846,11 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (void)tabletEvent:(NSEvent*)theEvent {
-  if ([theEvent type] == NSTabletProximity) {
+  if ([theEvent type] == NSEventTypeTabletProximity) {
     _isStylusEnteringProximity = [theEvent isEnteringProximity];
     NSPointingDeviceType deviceType = [theEvent pointingDeviceType];
     // For all tablet events, the pointer type will be pen or eraser.
-    _pointerType = deviceType == NSEraserPointingDevice
+    _pointerType = deviceType == NSPointingDeviceTypeEraser
                        ? blink::WebPointerProperties::PointerType::kEraser
                        : blink::WebPointerProperties::PointerType::kPen;
   }
@@ -961,8 +961,8 @@ void ExtractUnderlines(NSAttributedString* string,
   if (EventIsReservedBySystem(theEvent))
     return;
 
-  if (eventType == NSFlagsChanged) {
-    // Ignore NSFlagsChanged events from the NumLock and Fn keys as
+  if (eventType == NSEventTypeFlagsChanged) {
+    // Ignore NSEventTypeFlagsChanged events from the NumLock and Fn keys as
     // Safari does in -[WebHTMLView flagsChanged:] (of "WebHTMLView.mm").
     // Also ignore unsupported |keyCode| (255) generated by Convert, NonConvert
     // and KanaMode from JIS PC keyboard.
@@ -991,7 +991,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // otherwise we might get an event from releasing the return key in the
   // omnibox (https://crbug.com/338736) or from closing another window
   // (https://crbug.com/155492).
-  if (eventType == NSKeyUp) {
+  if (eventType == NSEventTypeKeyUp) {
     auto numErased = _keyDownCodes.erase(keyCode);
     if (numErased < 1)
       return;
@@ -1003,11 +1003,11 @@ void ExtractUnderlines(NSAttributedString* string,
   _host->BeginKeyboardEvent();
 
   bool shouldAutohideCursor = _textInputType != ui::TEXT_INPUT_TYPE_NONE &&
-                              eventType == NSKeyDown &&
-                              !(modifierFlags & NSCommandKeyMask);
+                              eventType == NSEventTypeKeyDown &&
+                              !(modifierFlags & NSEventModifierFlagCommand);
 
   // We only handle key down events and just simply forward other events.
-  if (eventType != NSKeyDown) {
+  if (eventType != NSEventTypeKeyDown) {
     _hostHelper->ForwardKeyboardEvent(event, latency_info);
 
     // Possibly autohide the cursor.
@@ -1152,7 +1152,8 @@ void ExtractUnderlines(NSAttributedString* string,
         event, fake_event_latency_info, std::move(_editCommands));
   }
 
-  const NSUInteger kCtrlCmdKeyMask = NSControlKeyMask | NSCommandKeyMask;
+  const NSUInteger kCtrlCmdKeyMask =
+      NSEventModifierFlagControl | NSEventModifierFlagCommand;
   // Only send a corresponding key press event if there is no marked text.
   if (!_hasMarkedText) {
     if (!textInserted && _textToBeInserted.length() == 1) {
@@ -1315,7 +1316,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // for ending rubber-banding in such cases.
   if ([event phase] == NSEventPhaseBegan && !_endWheelMonitor) {
     _endWheelMonitor = [NSEvent
-        addLocalMonitorForEventsMatchingMask:NSScrollWheelMask
+        addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
                                      handler:^(NSEvent* blockEvent) {
                                        [self shortCircuitScrollWheelEvent:
                                                  blockEvent];
@@ -1716,8 +1717,8 @@ void ExtractUnderlines(NSAttributedString* string,
 
 // Below is our NSTextInputClient implementation.
 //
-// When WebHTMLView receives a NSKeyDown event, WebHTMLView calls the following
-// functions to process this event.
+// When WebHTMLView receives a NSEventTypeKeyDown event, WebHTMLView calls the
+// following functions to process this event.
 //
 // [WebHTMLView keyDown] ->
 //     EventHandler::keyEvent() ->
@@ -1732,8 +1733,8 @@ void ExtractUnderlines(NSAttributedString* string,
 // it causes key-typing jank.
 // RenderWidgetHostViewMac is running in a browser process. On the other
 // hand, Editor and EventHandler are running in a renderer process.
-// So, if we used this implementation, a NSKeyDown event is dispatched to
-// the following functions of Chromium.
+// So, if we used this implementation, a NSEventTypeKeyDown event is dispatched
+// to the following functions of Chromium.
 //
 // [RenderWidgetHostViewMac keyEvent] (browser) ->
 //     |Sync IPC (KeyDown)| (*1) ->

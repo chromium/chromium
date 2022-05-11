@@ -462,10 +462,10 @@ void NativeWidgetNSWindowBridge::InitWindow(
   // Validate the window's initial state, otherwise the bridge's initial
   // tracking state will be incorrect.
   DCHECK(![window_ isVisible]);
-  DCHECK_EQ(0u, [window_ styleMask] & NSFullScreenWindowMask);
+  DCHECK_EQ(0u, [window_ styleMask] & NSWindowStyleMaskFullScreen);
 
   // Include "regular" windows without the standard frame in the window cycle.
-  // These use NSBorderlessWindowMask so do not get it by default.
+  // These use NSWindowStyleMaskBorderless so do not get it by default.
   if (params->force_into_collection_cycle) {
     [window_
         setCollectionBehavior:[window_ collectionBehavior] |
@@ -856,7 +856,7 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
       return event_handled ? nil : event;
     };
     key_down_event_monitor_ =
-        [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
                                               handler:block];
   } else {
     // Destroy the event monitor if it exists.
@@ -1343,7 +1343,7 @@ void NativeWidgetNSWindowBridge::SetMiniaturized(bool miniaturized) {
   if (miniaturized) {
     // Calling performMiniaturize: will momentarily highlight the button, but
     // AppKit will reject it if there is no miniaturize button.
-    if ([window_ styleMask] & NSMiniaturizableWindowMask)
+    if ([window_ styleMask] & NSWindowStyleMaskMiniaturizable)
       [window_ performMiniaturize:nil];
     else
       [window_ miniaturize:nil];

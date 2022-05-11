@@ -55,24 +55,24 @@ static base::RepeatingCallback<void(NativeWidgetMac*)>*
 
 NSInteger StyleMaskForParams(const Widget::InitParams& params) {
   // If the Widget is modal, it will be displayed as a sheet. This works best if
-  // it has NSTitledWindowMask. For example, with NSBorderlessWindowMask, the
-  // parent window still accepts input.
-  // NSFullSizeContentViewWindowMask ensures that calculating the modal's
+  // it has NSWindowStyleMaskTitled. For example, with
+  // NSWindowStyleMaskBorderless, the parent window still accepts input.
+  // NSWindowStyleMaskFullSizeContentView ensures that calculating the modal's
   // content rect doesn't account for a nonexistent title bar.
   if (params.delegate &&
       params.delegate->GetModalType() == ui::MODAL_TYPE_WINDOW)
-    return NSTitledWindowMask | NSFullSizeContentViewWindowMask;
+    return NSWindowStyleMaskTitled | NSWindowStyleMaskFullSizeContentView;
 
   // TODO(tapted): Determine better masks when there are use cases for it.
   if (params.remove_standard_frame)
-    return NSBorderlessWindowMask;
+    return NSWindowStyleMaskBorderless;
 
   if (params.type == Widget::InitParams::TYPE_WINDOW) {
-    return NSTitledWindowMask | NSClosableWindowMask |
-           NSMiniaturizableWindowMask | NSResizableWindowMask |
-           NSTexturedBackgroundWindowMask;
+    return NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+           NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
+           NSWindowStyleMaskTexturedBackground;
   }
-  return NSBorderlessWindowMask;
+  return NSWindowStyleMaskBorderless;
 }
 
 CGWindowLevel CGWindowLevelForZOrderLevel(ui::ZOrderLevel level,

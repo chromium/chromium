@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
   EXPECT_EQ(AppWindow::FULLSCREEN_TYPE_NONE,
             app_window->fullscreen_types_for_test());
   EXPECT_FALSE(window->IsFullscreen());
-  EXPECT_FALSE([ns_window styleMask] & NSFullScreenWindowMask);
+  EXPECT_FALSE([ns_window styleMask] & NSWindowStyleMaskFullScreen);
   EXPECT_TRUE(IsNSWindowFloating(ns_window));
 
   [ns_window toggleFullScreen:nil];
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
   EXPECT_TRUE(app_window->fullscreen_types_for_test() &
               AppWindow::FULLSCREEN_TYPE_OS);
   EXPECT_TRUE(window->IsFullscreen());
-  EXPECT_TRUE([ns_window styleMask] & NSFullScreenWindowMask);
+  EXPECT_TRUE([ns_window styleMask] & NSWindowStyleMaskFullScreen);
   EXPECT_FALSE(IsNSWindowFloating(ns_window));
 
   app_window->Restore();
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
   EXPECT_EQ(AppWindow::FULLSCREEN_TYPE_NONE,
             app_window->fullscreen_types_for_test());
   EXPECT_FALSE(window->IsFullscreen());
-  EXPECT_FALSE([ns_window styleMask] & NSFullScreenWindowMask);
+  EXPECT_FALSE([ns_window styleMask] & NSWindowStyleMaskFullScreen);
   EXPECT_TRUE(IsNSWindowFloating(ns_window));
 
   app_window->Fullscreen();
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
   EXPECT_TRUE(app_window->fullscreen_types_for_test() &
               AppWindow::FULLSCREEN_TYPE_WINDOW_API);
   EXPECT_TRUE(window->IsFullscreen());
-  EXPECT_TRUE([ns_window styleMask] & NSFullScreenWindowMask);
+  EXPECT_TRUE([ns_window styleMask] & NSWindowStyleMaskFullScreen);
   EXPECT_FALSE(IsNSWindowFloating(ns_window));
 
   [ns_window toggleFullScreen:nil];
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Fullscreen) {
   EXPECT_EQ(AppWindow::FULLSCREEN_TYPE_NONE,
             app_window->fullscreen_types_for_test());
   EXPECT_FALSE(window->IsFullscreen());
-  EXPECT_FALSE([ns_window styleMask] & NSFullScreenWindowMask);
+  EXPECT_FALSE([ns_window styleMask] & NSWindowStyleMaskFullScreen);
   EXPECT_TRUE(IsNSWindowFloating(ns_window));
 }
 
@@ -484,16 +484,16 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, Frameless) {
   [ns_window setFrame:new_frame display:YES];
   EXPECT_TRUE(NSEqualSizes(new_frame.size, [web_contents frame].size));
 
-  // Windows created with NSBorderlessWindowMask by default don't have shadow,
-  // but packaged apps should always have one.
-  // This specific check is disabled because shadows are disabled on the
-  // bots - see https://crbug.com/899286.
-  // EXPECT_TRUE([ns_window hasShadow]);
+  // Windows created with NSWindowStyleMaskBorderless by default don't have
+  // shadow, but packaged apps should always have one. This specific check is
+  // disabled because shadows are disabled on the bots - see
+  // https://crbug.com/899286. EXPECT_TRUE([ns_window hasShadow]);
 
   // Since the window has no constraints, it should have all of the following
   // style mask bits.
-  NSUInteger style_mask = NSTitledWindowMask | NSClosableWindowMask |
-                          NSMiniaturizableWindowMask | NSResizableWindowMask;
+  NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable |
+                          NSWindowStyleMaskResizable;
   EXPECT_EQ(style_mask, [ns_window styleMask] & style_mask);
 
   CloseAppWindow(app_window);
@@ -506,7 +506,7 @@ void TestControls(AppWindow* app_window) {
   NSWindow* ns_window = app_window->GetNativeWindow().GetNativeNSWindow();
 
   // The window is resizable.
-  EXPECT_TRUE([ns_window styleMask] & NSResizableWindowMask);
+  EXPECT_TRUE([ns_window styleMask] & NSWindowStyleMaskResizable);
 
   // Due to this bug: http://crbug.com/362039, which manifests on the Cocoa
   // implementation but not the views one, frameless windows should have
@@ -527,7 +527,7 @@ void TestControls(AppWindow* app_window) {
   EXPECT_EQ(201, [web_contents frame].size.height);
 
   // Still resizable.
-  EXPECT_TRUE([ns_window styleMask] & NSResizableWindowMask);
+  EXPECT_TRUE([ns_window styleMask] & NSWindowStyleMaskResizable);
 
   // Fullscreen and maximize are disabled.
   EXPECT_FALSE([ns_window collectionBehavior] &
@@ -541,7 +541,7 @@ void TestControls(AppWindow* app_window) {
   EXPECT_EQ(201, [ns_window contentMinSize].height);
 
   // No longer resizable.
-  EXPECT_FALSE([ns_window styleMask] & NSResizableWindowMask);
+  EXPECT_FALSE([ns_window styleMask] & NSWindowStyleMaskResizable);
 
   // If a window is made fullscreen by the API, fullscreen should be enabled so
   // the user can exit fullscreen.

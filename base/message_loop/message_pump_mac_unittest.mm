@@ -123,7 +123,7 @@ TEST(MessagePumpMacTest, QuitWithModalWindow) {
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
   NSWindow* window =
       [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                                   styleMask:NSBorderlessWindowMask
+                                   styleMask:NSWindowStyleMaskBorderless
                                      backing:NSBackingStoreBuffered
                                        defer:NO] autorelease];
 

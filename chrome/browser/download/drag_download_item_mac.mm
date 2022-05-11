@@ -68,7 +68,7 @@ void DragDownloadItem(const download::DownloadItem* download,
   // Synthesize a drag event, since we don't have access to the actual event
   // that initiated a drag (possibly consumed by the Web UI, for example).
   NSEvent* dragEvent =
-      [NSEvent mouseEventWithType:NSLeftMouseDragged
+      [NSEvent mouseEventWithType:NSEventTypeLeftMouseDragged
                          location:current_position
                     modifierFlags:0
                         timestamp:[[NSApp currentEvent] timestamp]

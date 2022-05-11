@@ -42,13 +42,13 @@ int CommandForKeys(int vkey_code,
                    ControlKeyState control = ControlKeyState::kUp) {
   NSUInteger modifier_flags = 0;
   if (command == CommandKeyState::kDown)
-    modifier_flags |= NSCommandKeyMask;
+    modifier_flags |= NSEventModifierFlagCommand;
   if (shift == ShiftKeyState::kDown)
-    modifier_flags |= NSShiftKeyMask;
+    modifier_flags |= NSEventModifierFlagShift;
   if (option == OptionKeyState::kDown)
-    modifier_flags |= NSAlternateKeyMask;
+    modifier_flags |= NSEventModifierFlagOption;
   if (control == ControlKeyState::kDown)
-    modifier_flags |= NSControlKeyMask;
+    modifier_flags |= NSEventModifierFlagControl;
 
   switch (vkey_code) {
     case kVK_UpArrow:
@@ -80,7 +80,7 @@ int CommandForKeys(int vkey_code,
   DCHECK_NE(result, -1);
 
   NSEvent* event = [NSEvent
-                 keyEventWithType:NSKeyDown
+                 keyEventWithType:NSEventTypeKeyDown
                          location:NSZeroPoint
                     modifierFlags:modifier_flags
                         timestamp:0.0

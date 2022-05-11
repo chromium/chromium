@@ -29,7 +29,7 @@ NSEvent* KeyEvent(const NSUInteger modifierFlags,
                   NSString* chars,
                   NSString* charsNoMods,
                   const NSUInteger keyCode) {
-  return [NSEvent keyEventWithType:NSKeyDown
+  return [NSEvent keyEventWithType:NSEventTypeKeyDown
                           location:NSZeroPoint
                      modifierFlags:modifierFlags
                          timestamp:0.0

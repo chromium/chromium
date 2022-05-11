@@ -288,7 +288,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents())
     return;
 
-  BOOL isScrollEvent = [theEvent type] == NSScrollWheel;
+  BOOL isScrollEvent = [theEvent type] == NSEventTypeScrollWheel;
 
   // If it's the view's window, process normally.
   if ([target isEqual:source]) {
@@ -296,7 +296,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
       [self scrollWheel:theEvent];
     } else {
       [self mouseEvent:theEvent];
-      if ([theEvent type] == NSLeftMouseUp)
+      if ([theEvent type] == NSEventTypeLeftMouseUp)
         [self handleLeftMouseUp:theEvent];
     }
     return;
@@ -413,7 +413,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // Always propagate the shift modifier if present. Shift doesn't always alter
   // the command selector, but should always be passed along. Control and Alt
   // have different meanings on Mac, so they do not propagate automatically.
-  if ([_keyDownEvent modifierFlags] & NSShiftKeyMask)
+  if ([_keyDownEvent modifierFlags] & NSEventModifierFlagShift)
     eventFlags |= ui::EF_SHIFT_DOWN;
 
   // Generate a synthetic event with the keycode toolkit-views expects.
@@ -606,7 +606,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (!_bridge)
     return;
 
-  DCHECK([theEvent type] != NSScrollWheel);
+  DCHECK([theEvent type] != NSEventTypeScrollWheel);
   auto event = std::make_unique<ui::MouseEvent>(theEvent);
   [self adjustUiEventLocation:event.get() fromNativeEvent:theEvent];
 

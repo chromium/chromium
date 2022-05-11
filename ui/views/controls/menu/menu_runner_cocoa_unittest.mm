@@ -235,7 +235,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     // Simulate clicking the item using its accelerator.
     NSEvent* accelerator = cocoa_test_event_utils::KeyEventWithKeyCode(
-        'e', 'e', NSKeyDown, NSCommandKeyMask);
+        'e', 'e', NSEventTypeKeyDown, NSEventModifierFlagCommand);
     [native_menu performKeyEquivalent:accelerator];
   }
 

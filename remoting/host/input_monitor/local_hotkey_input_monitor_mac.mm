@@ -89,12 +89,13 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 
     GTMCarbonEventDispatcherHandler* handler =
         [GTMCarbonEventDispatcherHandler sharedEventDispatcherHandler];
-    _hotKey = [handler registerHotKey:kEscKeyCode
-                            modifiers:(NSAlternateKeyMask | NSControlKeyMask)
-                               target:self
-                               action:@selector(hotKeyHit:)
-                             userInfo:nil
-                          whenPressed:YES];
+    _hotKey = [handler
+        registerHotKey:kEscKeyCode
+             modifiers:(NSEventModifierFlagOption | NSEventModifierFlagControl)
+                target:self
+                action:@selector(hotKeyHit:)
+              userInfo:nil
+           whenPressed:YES];
     if (!_hotKey) {
       LOG(ERROR) << "registerHotKey failed.";
       [self release];

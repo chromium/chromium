@@ -146,7 +146,7 @@ const int kMessageTextMaxSlots = 2000;
   if (message_has_rtl && message_text_field) {
     base::scoped_nsobject<NSMutableParagraphStyle> alignment(
         [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
-    [alignment setAlignment:NSRightTextAlignment];
+    [alignment setAlignment:NSTextAlignmentRight];
 
     NSDictionary* alignment_attributes =
         @{NSParagraphStyleAttributeName : alignment};
@@ -164,8 +164,8 @@ const int kMessageTextMaxSlots = 2000;
     base::scoped_nsobject<NSMutableParagraphStyle> alignment(
         [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
     [alignment setAlignment:(direction == base::i18n::RIGHT_TO_LEFT)
-                                ? NSRightTextAlignment
-                                : NSLeftTextAlignment];
+                                ? NSTextAlignmentRight
+                                : NSTextAlignmentLeft];
 
     NSDictionary* alignment_attributes =
         @{NSParagraphStyleAttributeName : alignment};

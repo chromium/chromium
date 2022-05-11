@@ -39,7 +39,7 @@ void NOINLINE ForceSystemLeaks() {
 
 - (instancetype)initWithContentRect:(NSRect)contentRect {
   self = [super initWithContentRect:contentRect
-                          styleMask:NSBorderlessWindowMask
+                          styleMask:NSWindowStyleMaskBorderless
                             backing:NSBackingStoreBuffered
                               defer:NO];
   if (self) {
@@ -189,7 +189,7 @@ CocoaTestHelper::~CocoaTestHelper() {
       // Autorelease anything thrown up by the event loop.
       @autoreleasepool {
         ++spins;
-        NSEvent* next_event = [NSApp nextEventMatchingMask:NSAnyEventMask
+        NSEvent* next_event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                                  untilDate:nil
                                                     inMode:NSDefaultRunLoopMode
                                                    dequeue:YES];

@@ -23,7 +23,7 @@ class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     window_ = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(100, 101, 150, 151)
-                  styleMask:NSTitledWindowMask | NSResizableWindowMask
+                  styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable
                     backing:NSBackingStoreBuffered
                       defer:NO];
     static_cast<user_prefs::PrefRegistrySyncable*>(
@@ -53,11 +53,10 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
 
   // Replace the window with one that doesn't have resize controls.
   [window_ close];
-  window_ =
-      [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 101, 150, 151)
-                                  styleMask:NSTitledWindowMask
-                                    backing:NSBackingStoreBuffered
-                                      defer:NO];
+  window_ = [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 101, 150, 151)
+                                        styleMask:NSWindowStyleMaskTitled
+                                          backing:NSBackingStoreBuffered
+                                            defer:NO];
 
   // Ask the window to save its position, then check that a preference
   // exists.  We're technically passing in a pointer to the user prefs

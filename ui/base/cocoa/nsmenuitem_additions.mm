@@ -72,7 +72,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   if (![self isEnabled])
     return NO;
 
-  DCHECK([event type] == NSKeyDown);
+  DCHECK([event type] == NSEventTypeKeyDown);
   // In System Preferences->Keyboard->Keyboard Shortcuts, it is possible to add
   // arbitrary keyboard shortcuts to applications. It is not documented how this
   // works in detail, but |NSMenuItem| has a method |userKeyEquivalent| that
@@ -87,7 +87,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // for printable characters (but not for stuff like arrow keys etc).
   NSString* eventString = [event charactersIgnoringModifiers];
   NSUInteger eventModifiers =
-      [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+      [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 
   // cmd-opt-a gives some weird char as characters and "a" as
   // charactersWithoutModifiers with an US layout, but an "a" as characters and
@@ -102,7 +102,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [event characters];
 
     // Process the shift if necessary.
-    if (eventModifiers & NSShiftKeyMask)
+    if (eventModifiers & NSEventModifierFlagShift)
       eventString = [eventString uppercaseString];
   }
 
@@ -111,7 +111,8 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 
   // Turns out esc never fires unless cmd or ctrl is down.
   if ([event keyCode] == kVK_Escape &&
-      (eventModifiers & (NSControlKeyMask | NSCommandKeyMask)) == 0)
+      (eventModifiers &
+       (NSEventModifierFlagControl | NSEventModifierFlagCommand)) == 0)
     return NO;
 
   // From the |NSMenuItem setKeyEquivalent:| documentation:
@@ -127,7 +128,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [NSString stringWithCharacters:&chr length:1];
 
     // Make sure "shift" is not removed from modifiers below.
-    eventModifiers |= NSFunctionKeyMask;
+    eventModifiers |= NSEventModifierFlagFunction;
   }
   if ([[self keyEquivalent] characterAtIndex:0] == NSDeleteCharacter &&
       [eventString characterAtIndex:0] == NSDeleteFunctionKey) {
@@ -135,7 +136,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [NSString stringWithCharacters:&chr length:1];
 
     // Make sure "shift" is not removed from modifiers below.
-    eventModifiers |= NSFunctionKeyMask;
+    eventModifiers |= NSEventModifierFlagFunction;
   }
 
   // We intentionally leak this object.
@@ -161,7 +162,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // be a number key, but this causes Chrome to match platform behavior. For
   // example, on the Czech keyboard, we want to interpret cmd + '+' as cmd +
   // '1', even though the '1' character normally requires cmd + shift + '+'.
-  if (eventModifiers == NSCommandKeyMask) {
+  if (eventModifiers == NSEventModifierFlagCommand) {
     ui::KeyboardCode windows_keycode =
         ui::KeyboardCodeFromKeyCode(event.keyCode);
     if (windows_keycode >= ui::VKEY_0 && windows_keycode <= ui::VKEY_9) {
@@ -174,21 +175,22 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // "Horizontal Tab". We still use "Horizontal Tab" in the main menu to match
   // the behavior of Safari and Terminal. Thus, we need to explicitly check for
   // this case.
-  if ((eventModifiers & NSShiftKeyMask) &&
+  if ((eventModifiers & NSEventModifierFlagShift) &&
       [eventString isEqualToString:@"\x19"]) {
     eventString = @"\x9";
   } else {
     // Clear shift key for printable characters, excluding tab.
-    if ((eventModifiers & (NSNumericPadKeyMask | NSFunctionKeyMask)) == 0 &&
+    if ((eventModifiers &
+         (NSEventModifierFlagNumericPad | NSEventModifierFlagFunction)) == 0 &&
         [[self keyEquivalent] characterAtIndex:0] != '\r' &&
         [[self keyEquivalent] characterAtIndex:0] != '\x9') {
-      eventModifiers &= ~NSShiftKeyMask;
+      eventModifiers &= ~NSEventModifierFlagShift;
     }
   }
 
   // Clear all non-interesting modifiers
-  eventModifiers &=
-      NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask;
+  eventModifiers &= NSEventModifierFlagCommand | NSEventModifierFlagControl |
+                    NSEventModifierFlagOption | NSEventModifierFlagShift;
 
   return [eventString isEqualToString:[self keyEquivalent]] &&
          eventModifiers == [self keyEquivalentModifierMask];

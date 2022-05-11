@@ -158,7 +158,7 @@ void TestCompositorHostMac::Show() {
   window_ = [[NSWindow alloc]
       initWithContentRect:NSMakeRect(bounds_.x(), bounds_.y(), bounds_.width(),
                                      bounds_.height())
-                styleMask:NSBorderlessWindowMask
+                styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
                     defer:NO];
   base::scoped_nsobject<AcceleratedTestView> view(

@@ -299,7 +299,7 @@ bool ShouldInstallDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSInformationalAlertStyle];
+  [alert setAlertStyle:NSAlertStyleInformational];
   [alert setMessageText:title];
   [alert setInformativeText:prompt];
   [alert addButtonWithTitle:yes];
@@ -437,7 +437,7 @@ void ShowErrorDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert setAlertStyle:NSAlertStyleWarning];
   [alert setMessageText:title];
   [alert setInformativeText:error];
   [alert addButtonWithTitle:ok];

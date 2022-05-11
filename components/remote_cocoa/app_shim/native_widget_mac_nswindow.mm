@@ -235,7 +235,7 @@
 }
 
 // Ignore [super canBecome{Key,Main}Window]. The default is NO for windows with
-// NSBorderlessWindowMask, which is not the desired behavior.
+// NSWindowStyleMaskBorderless, which is not the desired behavior.
 // Note these can be called via -[NSWindow close] while the widget is being torn
 // down, so check for a delegate.
 - (BOOL)canBecomeKeyWindow {
@@ -298,12 +298,12 @@
   // still suppress right-clicks in a draggable region. Forwarding right-clicks
   // allows the underlying views to respond to right-click to potentially bring
   // up a frame context menu.
-  if (type == NSRightMouseDown) {
+  if (type == NSEventTypeRightMouseDown) {
     if ([[self contentView] hitTest:event.locationInWindow] == nil) {
       [[self contentView] rightMouseDown:event];
       return;
     }
-  } else if (type == NSRightMouseUp) {
+  } else if (type == NSEventTypeRightMouseUp) {
     if ([[self contentView] hitTest:event.locationInWindow] == nil) {
       [[self contentView] rightMouseUp:event];
       return;
@@ -311,10 +311,10 @@
   } else if ([self hasViewsMenuActive]) {
     // Send to the menu, after converting the event into an action message using
     // the content view.
-    if (type == NSKeyDown) {
+    if (type == NSEventTypeKeyDown) {
       [[self contentView] keyDown:event];
       return;
-    } else if (type == NSKeyUp) {
+    } else if (type == NSEventTypeKeyUp) {
       [[self contentView] keyUp:event];
       return;
     }
@@ -417,8 +417,8 @@
   }
 }
 
-// On newer SDKs, _canMiniaturize respects NSMiniaturizableWindowMask in the
-// window's styleMask. Views assumes that Widgets can always be minimized,
+// On newer SDKs, _canMiniaturize respects NSWindowStyleMaskMiniaturizable in
+// the window's styleMask. Views assumes that Widgets can always be minimized,
 // regardless of their window style, so override that behavior here.
 - (BOOL)_canMiniaturize {
   return YES;

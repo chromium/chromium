@@ -71,8 +71,8 @@
       [[NSMutableDictionary alloc] initWithCapacity:3]);
   base::scoped_nsobject<NSMutableParagraphStyle> paragraphStyle(
       [[NSMutableParagraphStyle alloc] init]);
-  [paragraphStyle setAlignment:_rightAligned ? NSRightTextAlignment
-                                             : NSLeftTextAlignment];
+  [paragraphStyle
+      setAlignment:_rightAligned ? NSTextAlignmentRight : NSTextAlignmentLeft];
   NSWritingDirection writingDirection =
       item->text_direction == base::i18n::RIGHT_TO_LEFT
           ? NSWritingDirectionRightToLeft

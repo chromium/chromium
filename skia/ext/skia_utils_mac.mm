@@ -68,12 +68,12 @@ SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
   if (image) {
     [image drawInRect:drawRect
              fromRect:NSZeroRect
-            operation:NSCompositeCopy
+            operation:NSCompositingOperationCopy
              fraction:1.0];
   } else {
     [image_rep drawInRect:drawRect
                  fromRect:NSZeroRect
-                operation:NSCompositeCopy
+                operation:NSCompositingOperationCopy
                  fraction:1.0
            respectFlipped:NO
                     hints:nil];

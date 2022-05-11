@@ -56,7 +56,7 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     return event;
   };
 
-  monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:NSAnyEventMask
+  monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                                    handler:block];
 }
 

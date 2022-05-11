@@ -453,19 +453,19 @@ NSEvent* EventForPositioningContextMenu(const gfx::Rect& anchor,
                                         NSWindow* window) {
   NSEvent* event = [NSApp currentEvent];
   switch ([event type]) {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSOtherMouseDown:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseUp:
       return event;
     default:
       break;
   }
   NSPoint location_in_window = ui::ConvertPointFromScreenToWindow(
       window, gfx::ScreenPointToNSPoint(anchor.CenterPoint()));
-  return [NSEvent mouseEventWithType:NSRightMouseDown
+  return [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
                             location:location_in_window
                        modifierFlags:0
                            timestamp:0

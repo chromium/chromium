@@ -138,7 +138,7 @@ id scrollWheelEventWithPhase(NSEventPhase phase,
                              CGFloat scrollingDeltaX,
                              CGFloat scrollingDeltaY) {
   // The point isn't used, so we pass in bogus data.
-  id event = mockEventWithPoint(makePoint(0,0), NSScrollWheel);
+  id event = mockEventWithPoint(makePoint(0, 0), NSEventTypeScrollWheel);
   [(NSEvent*)[[event stub] andReturnValue:OCMOCK_VALUE(phase)] phase];
   [(NSEvent*)
       [[event stub] andReturnValue:OCMOCK_VALUE(momentumPhase)] momentumPhase];

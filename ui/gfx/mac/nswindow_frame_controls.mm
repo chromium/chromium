@@ -16,9 +16,9 @@ const int kUnboundedSize = 0;
 void SetResizableStyleMask(NSWindow* window, bool resizable) {
   NSUInteger style_mask = [window styleMask];
   if (resizable)
-    style_mask |= NSResizableWindowMask;
+    style_mask |= NSWindowStyleMaskResizable;
   else
-    style_mask &= ~NSResizableWindowMask;
+    style_mask &= ~NSWindowStyleMaskResizable;
   [window setStyleMask:style_mask];
 }
 

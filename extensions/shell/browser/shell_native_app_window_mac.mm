@@ -46,7 +46,7 @@ ShellNativeAppWindowMac::ShellNativeAppWindowMac(
     const AppWindow::CreateParams& params)
     : ShellNativeAppWindow(app_window, params) {
   base::scoped_nsobject<NSWindow> shell_window;
-  NSUInteger style_mask = NSTitledWindowMask | NSClosableWindowMask;
+  NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable;
 
   NSRect cocoa_bounds = gfx::ScreenRectToNSRect(
       params.GetInitialWindowBounds(gfx::Insets()));

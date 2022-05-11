@@ -49,13 +49,14 @@
 // Install the callback.
 - (void)startObservingClicks {
   _clickEventTap = [NSEvent
-      addLocalMonitorForEventsMatchingMask:NSAnyEventMask
+      addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
                                      if ([event window] == self)
                                        return event;
                                      NSEventType eventType = [event type];
-                                     if (eventType == NSLeftMouseDown ||
-                                         eventType == NSRightMouseDown)
+                                     if (eventType ==
+                                             NSEventTypeLeftMouseDown ||
+                                         eventType == NSEventTypeRightMouseDown)
                                        [self close];
                                      return event;
                                    }];
@@ -95,7 +96,7 @@ PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
 
   popup_window_.reset([[RenderWidgetPopupWindow alloc]
       initWithContentRect:gfx::ScreenRectToNSRect(content_rect)
-                styleMask:NSBorderlessWindowMask
+                styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
                     defer:NO]);
   [popup_window_ setHasShadow:YES];

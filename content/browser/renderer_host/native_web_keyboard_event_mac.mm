@@ -17,15 +17,15 @@ namespace {
 int modifiersForEvent(int modifiers) {
   int flags = 0;
   if (modifiers & blink::WebInputEvent::kControlKey)
-    flags |= NSControlKeyMask;
+    flags |= NSEventModifierFlagControl;
   if (modifiers & blink::WebInputEvent::kShiftKey)
-    flags |= NSShiftKeyMask;
+    flags |= NSEventModifierFlagShift;
   if (modifiers & blink::WebInputEvent::kAltKey)
-    flags |= NSAlternateKeyMask;
+    flags |= NSEventModifierFlagOption;
   if (modifiers & blink::WebInputEvent::kMetaKey)
-    flags |= NSCommandKeyMask;
+    flags |= NSEventModifierFlagCommand;
   if (modifiers & blink::WebInputEvent::kCapsLockOn)
-    flags |= NSAlphaShiftKeyMask;
+    flags |= NSEventModifierFlagCapsLock;
   return flags;
 }
 
@@ -51,12 +51,12 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     const blink::WebKeyboardEvent& web_event,
     gfx::NativeView native_view)
     : WebKeyboardEvent(web_event), os_event(nullptr), skip_in_browser(false) {
-  NSEventType type = NSKeyUp;
+  NSEventType type = NSEventTypeKeyUp;
   int flags = modifiersForEvent(web_event.GetModifiers());
   if (web_event.GetType() == blink::WebInputEvent::Type::kChar ||
       web_event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       web_event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-    type = NSKeyDown;
+    type = NSEventTypeKeyDown;
   }
   size_t text_length = WebKeyboardEventTextLength(web_event.text);
   size_t unmod_text_length =
@@ -67,7 +67,7 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
   // cause Mac to set [NSEvent characters] to "\0" which for us is
   // indistinguishable from "".
   if (unmod_text_length == 0)
-    type = NSFlagsChanged;
+    type = NSEventTypeFlagsChanged;
 
   NSString* text = [[[NSString alloc]
       initWithCharacters:reinterpret_cast<const UniChar*>(web_event.text)

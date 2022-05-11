@@ -316,8 +316,8 @@ NSString* ColumnIdentifier(int id) {
   id dataCell = [column.get() dataCell];
 
   NSTextAlignment textAlignment = (columnData.align == ui::TableColumn::LEFT)
-                                      ? NSLeftTextAlignment
-                                      : NSRightTextAlignment;
+                                      ? NSTextAlignmentLeft
+                                      : NSTextAlignmentRight;
 
   NSString* columnTitle = l10n_util::GetNSStringWithFixup(columnData.id);
   [headerCell setStringValue:columnTitle];

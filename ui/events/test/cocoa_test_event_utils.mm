@@ -67,7 +67,7 @@ NSEvent* AttachWindowToCGEvent(CGEventRef event, NSWindow* window) {
 
 NSEvent* MouseEventAtPoint(NSPoint point, NSEventType type,
                            NSUInteger modifiers) {
-  if (type == NSOtherMouseUp) {
+  if (type == NSEventTypeOtherMouseUp) {
     // To synthesize middle clicks we need to create a CGEvent with the
     // "center" button flags so that our resulting NSEvent will have the
     // appropriate buttonNumber field. NSEvent provides no way to create a
@@ -114,7 +114,7 @@ NSEvent* MouseEventAtPointInWindow(NSPoint point,
 }
 
 NSEvent* RightMouseDownAtPointInWindow(NSPoint point, NSWindow* window) {
-  return MouseEventAtPointInWindow(point, NSRightMouseDown, window, 1);
+  return MouseEventAtPointInWindow(point, NSEventTypeRightMouseDown, window, 1);
 }
 
 NSEvent* RightMouseDownAtPoint(NSPoint point) {
@@ -122,7 +122,7 @@ NSEvent* RightMouseDownAtPoint(NSPoint point) {
 }
 
 NSEvent* LeftMouseDownAtPointInWindow(NSPoint point, NSWindow* window) {
-  return MouseEventAtPointInWindow(point, NSLeftMouseDown, window, 1);
+  return MouseEventAtPointInWindow(point, NSEventTypeLeftMouseDown, window, 1);
 }
 
 NSEvent* LeftMouseDownAtPoint(NSPoint point) {
@@ -133,9 +133,9 @@ std::pair<NSEvent*,NSEvent*> MouseClickInView(NSView* view,
                                               NSUInteger clickCount) {
   const NSRect bounds = [view convertRect:[view bounds] toView:nil];
   const NSPoint mid_point = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
-  NSEvent* down = MouseEventAtPointInWindow(mid_point, NSLeftMouseDown,
+  NSEvent* down = MouseEventAtPointInWindow(mid_point, NSEventTypeLeftMouseDown,
                                             [view window], clickCount);
-  NSEvent* up = MouseEventAtPointInWindow(mid_point, NSLeftMouseUp,
+  NSEvent* up = MouseEventAtPointInWindow(mid_point, NSEventTypeLeftMouseUp,
                                           [view window], clickCount);
   return std::make_pair(down, up);
 }
@@ -144,9 +144,9 @@ std::pair<NSEvent*, NSEvent*> RightMouseClickInView(NSView* view,
                                                     NSUInteger clickCount) {
   const NSRect bounds = [view convertRect:[view bounds] toView:nil];
   const NSPoint mid_point = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
-  NSEvent* down = MouseEventAtPointInWindow(mid_point, NSRightMouseDown,
-                                            [view window], clickCount);
-  NSEvent* up = MouseEventAtPointInWindow(mid_point, NSRightMouseUp,
+  NSEvent* down = MouseEventAtPointInWindow(
+      mid_point, NSEventTypeRightMouseDown, [view window], clickCount);
+  NSEvent* up = MouseEventAtPointInWindow(mid_point, NSEventTypeRightMouseUp,
                                           [view window], clickCount);
   return std::make_pair(down, up);
 }
@@ -229,7 +229,7 @@ NSEvent* TestScrollEvent(NSPoint window_point,
 }
 
 NSEvent* KeyDownEventWithRepeat() {
-  return [NSEvent keyEventWithType:NSKeyDown
+  return [NSEvent keyEventWithType:NSEventTypeKeyDown
                           location:NSZeroPoint
                      modifierFlags:0
                          timestamp:TimeIntervalSinceSystemStartup()
@@ -242,7 +242,7 @@ NSEvent* KeyDownEventWithRepeat() {
 }
 
 NSEvent* KeyEventWithCharacter(unichar c) {
-  return KeyEventWithKeyCode(0, c, NSKeyDown, 0);
+  return KeyEventWithKeyCode(0, c, NSEventTypeKeyDown, 0);
 }
 
 NSEvent* KeyEventWithType(NSEventType event_type, NSUInteger modifiers) {
@@ -268,7 +268,7 @@ NSEvent* KeyEventWithKeyCode(unsigned short key_code,
 
 NSEvent* KeyEventWithModifierOnly(unsigned short key_code,
                                   NSUInteger modifiers) {
-  return [NSEvent keyEventWithType:NSFlagsChanged
+  return [NSEvent keyEventWithType:NSEventTypeFlagsChanged
                           location:NSZeroPoint
                      modifierFlags:modifiers
                          timestamp:TimeIntervalSinceSystemStartup()
@@ -295,11 +295,11 @@ static NSEvent* EnterExitEventWithType(NSPoint point,
 }
 
 NSEvent* EnterEvent(NSPoint point, NSWindow* window) {
-  return EnterExitEventWithType(point, NSMouseEntered, window);
+  return EnterExitEventWithType(point, NSEventTypeMouseEntered, window);
 }
 
 NSEvent* ExitEvent(NSPoint point, NSWindow* window) {
-  return EnterExitEventWithType(point, NSMouseExited, window);
+  return EnterExitEventWithType(point, NSEventTypeMouseExited, window);
 }
 
 NSEvent* OtherEventWithType(NSEventType event_type) {
@@ -328,12 +328,12 @@ NSEvent* SynthesizeKeyEvent(NSWindow* window,
   // Note on Mac (unlike other platforms) shift while caps is down does not go
   // back to lowercase.
   if (keycode >= ui::VKEY_A && keycode <= ui::VKEY_Z &&
-      (flags & NSAlphaShiftKeyMask))
-    flags |= NSShiftKeyMask;
+      (flags & NSEventModifierFlagCapsLock))
+    flags |= NSEventModifierFlagShift;
 
   // Clear caps regardless -- MacKeyCodeForWindowsKeyCode doesn't implement
   // logic to support it.
-  flags &= ~NSAlphaShiftKeyMask;
+  flags &= ~NSEventModifierFlagCapsLock;
 
   // Call sites may generate unicode character events with an undefined
   // keycode. Since it's not feasible to determine the correct keycode for
@@ -363,8 +363,8 @@ NSEvent* SynthesizeKeyEvent(NSWindow* window,
                                      length:1] autorelease];
 
   // Control + [Shift] Tab is special.
-  if (keycode == ui::VKEY_TAB && (flags & NSControlKeyMask)) {
-    if (flags & NSShiftKeyMask) {
+  if (keycode == ui::VKEY_TAB && (flags & NSEventModifierFlagControl)) {
+    if (flags & NSEventModifierFlagShift) {
       charactersIgnoringModifiers = @"\x19";
     } else {
       charactersIgnoringModifiers = @"\x9";
@@ -373,10 +373,10 @@ NSEvent* SynthesizeKeyEvent(NSWindow* window,
 
   NSString* characters;
   // The following were determined empirically on OSX 10.9.
-  if (flags & NSControlKeyMask) {
+  if (flags & NSEventModifierFlagControl) {
     // If Ctrl is pressed, Cocoa always puts an empty string into |characters|.
     characters = [NSString string];
-  } else if (flags & NSCommandKeyMask) {
+  } else if (flags & NSEventModifierFlagCommand) {
     // If Cmd is pressed, Cocoa puts a lowercase character into |characters|,
     // regardless of Shift. If, however, Alt is also pressed then shift *is*
     // preserved, but re-mappings for Alt are not implemented. Although we still
@@ -391,16 +391,16 @@ NSEvent* SynthesizeKeyEvent(NSWindow* window,
     characters = charactersIgnoringModifiers;
   }
 
-  NSEventType type = (keyDown ? NSKeyDown : NSKeyUp);
+  NSEventType type = (keyDown ? NSEventTypeKeyDown : NSEventTypeKeyUp);
 
-  // Modifier keys generate NSFlagsChanged event rather than
-  // NSKeyDown/NSKeyUp events.
+  // Modifier keys generate NSEventTypeFlagsChanged event rather than
+  // NSEventTypeKeyDown/NSEventTypeKeyUp events.
   if (keycode == ui::VKEY_CONTROL || keycode == ui::VKEY_SHIFT ||
       keycode == ui::VKEY_MENU || keycode == ui::VKEY_COMMAND)
-    type = NSFlagsChanged;
+    type = NSEventTypeFlagsChanged;
 
   // For events other than mouse moved, [event locationInWindow] is
-  // UNDEFINED if the event is not NSMouseMoved.  Thus, the (0,0)
+  // UNDEFINED if the event is not NSEventTypeMouseMoved.  Thus, the (0,0)
   // location should be fine.
   NSEvent* event = [NSEvent keyEventWithType:type
                                     location:NSZeroPoint

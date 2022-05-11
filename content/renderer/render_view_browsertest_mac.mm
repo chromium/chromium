@@ -39,7 +39,7 @@ NSEvent* CmdDeadKeyEvent(NSEventType type, unsigned short code) {
 
   return [NSEvent keyEventWithType:type
                           location:NSZeroPoint
-                     modifierFlags:NSCommandKeyMask
+                     modifierFlags:NSEventModifierFlagCommand
                          timestamp:0.0
                       windowNumber:0
                            context:nil
@@ -89,8 +89,9 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   const int kMaxOutputCharacters = 1024;
   std::string output;
 
-  NSEvent* arrowDownKeyDown = CmdDeadKeyEvent(NSKeyDown, kVK_DownArrow);
-  NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSKeyDown, kVK_UpArrow);
+  NSEvent* arrowDownKeyDown =
+      CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_DownArrow);
+  NSEvent* arrowUpKeyDown = CmdDeadKeyEvent(NSEventTypeKeyDown, kVK_UpArrow);
 
   // First test when javascript does not eat keypresses -- should scroll.
   RenderFrameImpl::FromWebFrame(

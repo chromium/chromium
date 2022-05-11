@@ -71,13 +71,13 @@ inline NSString* FilterSpecialCharacter(NSString* str) {
 }
 
 inline NSString* TextFromEvent(NSEvent* event) {
-  if ([event type] == NSFlagsChanged)
+  if ([event type] == NSEventTypeFlagsChanged)
     return @"";
   return FilterSpecialCharacter([event characters]);
 }
 
 inline NSString* UnmodifiedTextFromEvent(NSEvent* event) {
-  if ([event type] == NSFlagsChanged)
+  if ([event type] == NSEventTypeFlagsChanged)
     return @"";
   return FilterSpecialCharacter([event charactersIgnoringModifiers]);
 }
@@ -88,15 +88,15 @@ inline NSString* UnmodifiedTextFromEvent(NSEvent* event) {
 int ModifiersFromEvent(NSEvent* event) {
   int modifiers = 0;
 
-  if ([event modifierFlags] & NSControlKeyMask)
+  if ([event modifierFlags] & NSEventModifierFlagControl)
     modifiers |= blink::WebInputEvent::kControlKey;
-  if ([event modifierFlags] & NSShiftKeyMask)
+  if ([event modifierFlags] & NSEventModifierFlagShift)
     modifiers |= blink::WebInputEvent::kShiftKey;
-  if ([event modifierFlags] & NSAlternateKeyMask)
+  if ([event modifierFlags] & NSEventModifierFlagOption)
     modifiers |= blink::WebInputEvent::kAltKey;
-  if ([event modifierFlags] & NSCommandKeyMask)
+  if ([event modifierFlags] & NSEventModifierFlagCommand)
     modifiers |= blink::WebInputEvent::kMetaKey;
-  if ([event modifierFlags] & NSAlphaShiftKeyMask)
+  if ([event modifierFlags] & NSEventModifierFlagCapsLock)
     modifiers |= blink::WebInputEvent::kCapsLockOn;
 
   // The return value of 1 << 0 corresponds to the left mouse button,
@@ -261,7 +261,7 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event) {
   int modifiers =
       ModifiersFromEvent(event) | ui::DomCodeToWebInputEventModifiers(dom_code);
 
-  if (([event type] != NSFlagsChanged) && [event isARepeat])
+  if (([event type] != NSEventTypeFlagsChanged) && [event isARepeat])
     modifiers |= blink::WebInputEvent::kIsAutoRepeat;
 
   blink::WebKeyboardEvent result(
@@ -322,53 +322,53 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
 
   NSEventType type = [event type];
   switch (type) {
-    case NSMouseExited:
+    case NSEventTypeMouseExited:
       event_type = blink::WebInputEvent::Type::kMouseLeave;
       break;
-    case NSLeftMouseDown:
+    case NSEventTypeLeftMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseDown:
+    case NSEventTypeOtherMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = ButtonFromButtonNumber(event);
       break;
-    case NSRightMouseDown:
+    case NSEventTypeRightMouseDown:
       event_type = blink::WebInputEvent::Type::kMouseDown;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kRight;
       break;
-    case NSLeftMouseUp:
+    case NSEventTypeLeftMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseUp:
+    case NSEventTypeOtherMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = ButtonFromButtonNumber(event);
       break;
-    case NSRightMouseUp:
+    case NSEventTypeRightMouseUp:
       event_type = blink::WebInputEvent::Type::kMouseUp;
       click_count = [event clickCount];
       button = blink::WebMouseEvent::Button::kRight;
       break;
-    case NSMouseMoved:
-    case NSMouseEntered:
+    case NSEventTypeMouseMoved:
+    case NSEventTypeMouseEntered:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = ButtonFromPressedMouseButtons();
       break;
-    case NSLeftMouseDragged:
+    case NSEventTypeLeftMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kLeft;
       break;
-    case NSOtherMouseDragged:
+    case NSEventTypeOtherMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kMiddle;
       break;
-    case NSRightMouseDragged:
+    case NSEventTypeRightMouseDragged:
       event_type = blink::WebInputEvent::Type::kMouseMove;
       button = blink::WebMouseEvent::Button::kRight;
       break;
@@ -377,8 +377,8 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
   }
 
   // Set id = 0 for all mouse events, disable multi-pen on mac for now.
-  // NSMouseExited and NSMouseEntered events don't have deviceID.
-  // Therefore pen exit and enter events can't get correct id.
+  // NSEventTypeMouseExited and NSEventTypeMouseEntered events don't have
+  // deviceID. Therefore pen exit and enter events can't get correct id.
   blink::WebMouseEvent result(event_type, ModifiersFromEvent(event),
                               ui::EventTimeStampFromSeconds([event timestamp]),
                               0);
@@ -388,16 +388,16 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
                                      unacceleratedMovement);
 
   result.pointer_type = pointerType;
-  if ((type == NSMouseExited || type == NSMouseEntered) ||
-      ([event subtype] != NSTabletPointEventSubtype &&
-       [event subtype] != NSTabletProximityEventSubtype)) {
+  if ((type == NSEventTypeMouseExited || type == NSEventTypeMouseEntered) ||
+      ([event subtype] != NSEventSubtypeTabletPoint &&
+       [event subtype] != NSEventSubtypeTabletProximity)) {
     return result;
   }
 
   // Set stylus properties for events with a subtype of
-  // NSTabletPointEventSubtype.
+  // NSEventSubtypeTabletPoint.
   NSEventSubtype subtype = [event subtype];
-  if (subtype == NSTabletPointEventSubtype) {
+  if (subtype == NSEventSubtypeTabletPoint) {
     result.force = [event pressure];
     NSPoint tilt = [event tilt];
     result.tilt_x = lround(tilt.x * 90);
@@ -537,7 +537,7 @@ blink::WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   // [1]
   // <http://developer.apple.com/documentation/Carbon/Reference/QuartzEventServicesRef/Reference/reference.html>
   // [2] <http://developer.apple.com/releasenotes/Cocoa/AppKitOlderNotes.html>
-  //     Scroll to the section headed "NSScrollWheel events".
+  //     Scroll to the section headed "NSEventTypeScrollWheel events".
   //
   // P.S. The "smooth scrolling" option in the system preferences is utterly
   // unrelated to any of this.
@@ -639,22 +639,22 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
   blink::WebTouchPoint::State state =
       blink::WebTouchPoint::State::kStateUndefined;
   switch (type) {
-    case NSLeftMouseDown:
+    case NSEventTypeLeftMouseDown:
       event_type = blink::WebInputEvent::Type::kTouchStart;
       state = blink::WebTouchPoint::State::kStatePressed;
       break;
-    case NSLeftMouseUp:
+    case NSEventTypeLeftMouseUp:
       event_type = blink::WebInputEvent::Type::kTouchEnd;
       state = blink::WebTouchPoint::State::kStateReleased;
       break;
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-    case NSOtherMouseDragged:
-    case NSMouseMoved:
-    case NSRightMouseDown:
-    case NSOtherMouseDown:
-    case NSRightMouseUp:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDragged:
+    case NSEventTypeMouseMoved:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseUp:
       event_type = blink::WebInputEvent::Type::kTouchMove;
       state = blink::WebTouchPoint::State::kStateMoved;
       break;

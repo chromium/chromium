@@ -185,7 +185,7 @@ struct DidOverscrollParams;
 
   // The set of key codes from key down events that we haven't seen the matching
   // key up events yet.
-  // Used for filtering out non-matching NSKeyUp events.
+  // Used for filtering out non-matching NSEventTypeKeyUp events.
   std::set<unsigned short> _keyDownCodes;
 
   // The filter used to guide touch events towards a horizontal or vertical

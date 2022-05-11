@@ -67,7 +67,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   NSImage* appIcon = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
   [appIcon drawInRect:[self bounds]
              fromRect:NSZeroRect
-            operation:NSCompositeSourceOver
+            operation:NSCompositingOperationSourceOver
              fraction:1.0];
 
   if (_downloads == 0)

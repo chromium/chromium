@@ -79,8 +79,9 @@ bool SystemHotkeyMap::ParseDictionary(NSDictionary* dictionary) {
       @"enabled" : @YES,
       @"value" : @{
         @"type" : @"standard",
-        @"parameters" :
-            @[ @96 /* unused */, @(kVK_ANSI_Grave), @(NSCommandKeyMask) ],
+        @"parameters" : @[
+          @96 /* unused */, @(kVK_ANSI_Grave), @(NSEventModifierFlagCommand)
+        ],
       }
     }
   } mutableCopy]);
@@ -133,7 +134,7 @@ bool SystemHotkeyMap::IsEventReserved(NSEvent* event) const {
 
 bool SystemHotkeyMap::IsHotkeyReserved(unsigned short key_code,
                                        NSUInteger modifiers) const {
-  modifiers &= NSDeviceIndependentModifierFlagsMask;
+  modifiers &= NSEventModifierFlagDeviceIndependentFlagsMask;
   std::vector<SystemHotkey>::const_iterator it;
   for (it = system_hotkeys_.begin(); it != system_hotkeys_.end(); ++it) {
     if (it->key_code == key_code && it->modifiers == modifiers)
@@ -150,15 +151,16 @@ void SystemHotkeyMap::ReserveHotkey(unsigned short key_code,
   // If a hotkey exists for toggling through the windows of an application, then
   // adding shift to that hotkey toggles through the windows backwards.
   if ([system_effect isEqualToString:@"27"])
-    ReserveHotkey(key_code, modifiers | NSShiftKeyMask);
+    ReserveHotkey(key_code, modifiers | NSEventModifierFlagShift);
 }
 
 void SystemHotkeyMap::ReserveHotkey(unsigned short key_code,
                                     NSUInteger modifiers) {
   // Hotkeys require at least one of control, command, or alternate keys to be
   // down.
-  NSUInteger required_modifiers =
-      NSControlKeyMask | NSCommandKeyMask | NSAlternateKeyMask;
+  NSUInteger required_modifiers = NSEventModifierFlagControl |
+                                  NSEventModifierFlagCommand |
+                                  NSEventModifierFlagOption;
   if ((modifiers & required_modifiers) == 0)
     return;
 

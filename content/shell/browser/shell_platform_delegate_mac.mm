@@ -150,8 +150,9 @@ void ShellPlatformDelegate::CreatePlatformWindow(
     height += kURLBarHeight;
   NSRect initial_window_bounds = NSMakeRect(0, 0, width, height);
   NSRect content_rect = initial_window_bounds;
-  NSUInteger style_mask = NSTitledWindowMask | NSClosableWindowMask |
-                          NSMiniaturizableWindowMask | NSResizableWindowMask;
+  NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable |
+                          NSWindowStyleMaskResizable;
   CrShellWindow* window =
       [[CrShellWindow alloc] initWithContentRect:content_rect
                                        styleMask:style_mask
@@ -191,13 +192,13 @@ void ShellPlatformDelegate::CreatePlatformWindow(
                    kButtonWidth, kURLBarHeight);
 
     MakeShellButton(&button_frame, @"Back", content, IDC_NAV_BACK,
-                    (NSView*)delegate, @"[", NSCommandKeyMask);
+                    (NSView*)delegate, @"[", NSEventModifierFlagCommand);
     MakeShellButton(&button_frame, @"Forward", content, IDC_NAV_FORWARD,
-                    (NSView*)delegate, @"]", NSCommandKeyMask);
+                    (NSView*)delegate, @"]", NSEventModifierFlagCommand);
     MakeShellButton(&button_frame, @"Reload", content, IDC_NAV_RELOAD,
-                    (NSView*)delegate, @"r", NSCommandKeyMask);
+                    (NSView*)delegate, @"r", NSEventModifierFlagCommand);
     MakeShellButton(&button_frame, @"Stop", content, IDC_NAV_STOP,
-                    (NSView*)delegate, @".", NSCommandKeyMask);
+                    (NSView*)delegate, @".", NSEventModifierFlagCommand);
 
     button_frame.size.width =
         NSWidth(initial_window_bounds) - NSMinX(button_frame);
@@ -349,8 +350,8 @@ bool ShellPlatformDelegate::HandleKeyboardEvent(
 
   // The event handling to get this strictly right is a tangle; cheat here a bit
   // by just letting the menus have a chance at it.
-  if ([event.os_event type] == NSKeyDown) {
-    if (([event.os_event modifierFlags] & NSCommandKeyMask) &&
+  if ([event.os_event type] == NSEventTypeKeyDown) {
+    if (([event.os_event modifierFlags] & NSEventModifierFlagCommand) &&
         [[event.os_event characters] isEqual:@"l"]) {
       [shell_data.window.GetNativeNSWindow()
           makeFirstResponder:shell_data.url_edit_view];

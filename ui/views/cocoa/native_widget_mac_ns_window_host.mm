@@ -334,7 +334,8 @@ void NativeWidgetMacNSWindowHost::CreateRemoteNSWindow(
   {
     auto in_process_ns_window_create_params =
         remote_cocoa::mojom::CreateWindowParams::New();
-    in_process_ns_window_create_params->style_mask = NSBorderlessWindowMask;
+    in_process_ns_window_create_params->style_mask =
+        NSWindowStyleMaskBorderless;
     in_process_ns_window_ =
         remote_cocoa::NativeWidgetNSWindowBridge::CreateNSWindow(
             in_process_ns_window_create_params.get());
@@ -397,9 +398,9 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     is_headless_mode_window_ = params.headless_mode;
 
     // OSX likes to put shadows on most things. However, frameless windows (with
-    // styleMask = NSBorderlessWindowMask) default to no shadow. So change that.
-    // ShadowType::kDrop is used for Menus, which get the same shadow style on
-    // Mac.
+    // styleMask = NSWindowStyleMaskBorderless) default to no shadow. So change
+    // that. ShadowType::kDrop is used for Menus, which get the same shadow
+    // style on Mac.
     switch (params.shadow_type) {
       case Widget::InitParams::ShadowType::kNone:
         window_params->has_window_server_shadow = false;
@@ -415,7 +416,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     }  // No default case, to pick up new types.
 
     // Include "regular" windows without the standard frame in the window cycle.
-    // These use NSBorderlessWindowMask so do not get it by default.
+    // These use NSWindowStyleMaskBorderless so do not get it by default.
     window_params->force_into_collection_cycle =
         widget_type_ == Widget::InitParams::TYPE_WINDOW &&
         params.remove_standard_frame;

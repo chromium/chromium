@@ -72,14 +72,16 @@ NSWindow* CocoaMouseCapture::ActiveEventTap::GetGlobalCaptureWindow() {
 }
 
 void CocoaMouseCapture::ActiveEventTap::Init() {
-  // Consume most things, but not NSMouseEntered/Exited: The Widget doing
-  // capture will still see its own Entered/Exit events, but not those for other
-  // NSViews, since consuming those would break their tracking area logic.
-  NSEventMask event_mask =
-      NSLeftMouseDownMask | NSLeftMouseUpMask | NSRightMouseDownMask |
-      NSRightMouseUpMask | NSMouseMovedMask | NSLeftMouseDraggedMask |
-      NSRightMouseDraggedMask | NSScrollWheelMask | NSOtherMouseDownMask |
-      NSOtherMouseUpMask | NSOtherMouseDraggedMask;
+  // Consume most things, but not NSEventTypeMouseEntered/Exited: The Widget
+  // doing capture will still see its own Entered/Exit events, but not those for
+  // other NSViews, since consuming those would break their tracking area logic.
+  NSEventMask event_mask = NSEventMaskLeftMouseDown | NSEventMaskLeftMouseUp |
+                           NSEventMaskRightMouseDown | NSEventMaskRightMouseUp |
+                           NSEventMaskMouseMoved | NSEventMaskLeftMouseDragged |
+                           NSEventMaskRightMouseDragged |
+                           NSEventMaskScrollWheel | NSEventMaskOtherMouseDown |
+                           NSEventMaskOtherMouseUp |
+                           NSEventMaskOtherMouseDragged;
 
   // Capture a WeakPtr via NSObject. This allows the block to detect another
   // event monitor for the same event deleting |owner_|.

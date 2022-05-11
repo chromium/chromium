@@ -123,15 +123,16 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   NSInteger command = [sender tag];
   NSUInteger modifierFlags = [[NSApp currentEvent] modifierFlags];
   if ((command == IDC_RELOAD) &&
-      (modifierFlags & (NSShiftKeyMask | NSControlKeyMask))) {
+      (modifierFlags &
+       (NSEventModifierFlagShift | NSEventModifierFlagControl))) {
     command = IDC_RELOAD_BYPASSING_CACHE;
     // Mask off Shift and Control so they don't affect the disposition below.
-    modifierFlags &= ~(NSShiftKeyMask | NSControlKeyMask);
+    modifierFlags &= ~(NSEventModifierFlagShift | NSEventModifierFlagControl);
   }
   if (![[sender window] isMainWindow]) {
     // Remove the command key from the flags, it means "keep the window in
     // the background" in this case.
-    modifierFlags &= ~NSCommandKeyMask;
+    modifierFlags &= ~NSEventModifierFlagCommand;
   }
 
   bool was_executed = false;
