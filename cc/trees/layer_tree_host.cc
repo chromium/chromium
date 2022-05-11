@@ -1011,6 +1011,21 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
         transform_node->needs_local_transform_update = true;
         transform_node->transform_changed = true;
         transform_tree.set_needs_update(true);
+
+        // If the scroll was realized on the compositor, then its transform node
+        // is already updated (see LayerTreeImpl::DidUpdateScrollOffset) and we
+        // are now "catching up" to it on main, so we don't need a commit.
+        //
+        // But if the scroll was NOT realized on the compositor, we need a
+        // commit to push the transform change.
+        //
+        // Skip this if scroll unification is disabled as we will not set
+        // ScrollNode::is_composited in that case.
+        //
+        if (base::FeatureList::IsEnabled(features::kScrollUnification) &&
+            !scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+          SetNeedsCommit();
+        }
       }
 
       // The transform tree has been modified which requires a call to

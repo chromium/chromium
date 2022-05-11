@@ -1878,6 +1878,34 @@ TEST_P(CompositingSimTest, BuildTreeSetsScaleOnTransformTree) {
   EXPECT_EQ(gfx::Vector2dF(2, 2), scale_node->local.To2dScale());
 }
 
+TEST_P(CompositingSimTest, UnifiedScrollWithMainThreadReasonsNeedsCommit) {
+  // This test requires scroll unification.
+  if (!RuntimeEnabledFeatures::ScrollUnificationEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+    <style>
+      body { height: 2500px; }
+      #h { background: url(data:image/png;base64,invalid) fixed; }
+    </style>
+    <div id="h">ABCDE</div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* layer_tree_host = Compositor().LayerTreeHost();
+  EXPECT_FALSE(layer_tree_host->CommitRequested());
+
+  // Simulate 100px scroll from compositor thread.
+  cc::CompositorCommitData commit_data;
+  commit_data.scrolls.emplace_back(
+      MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId(),
+      gfx::Vector2dF(0, 100.f), absl::nullopt);
+  layer_tree_host->ApplyCompositorChanges(&commit_data);
+
+  // Due to main thread scrolling reasons (fixed-background element), we need a
+  // commit to push the update to the transform tree.
+  EXPECT_TRUE(layer_tree_host->CommitRequested());
+}
+
 TEST_P(CompositingSimTest, FrameAttribution) {
   InitializeWithHTML(R"HTML(
     <div id='child' style='will-change: transform;'>test</div>
