@@ -135,42 +135,43 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kTopBottomPadding));
-  title_ = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
       base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_);
-  bubble_icon_ =
+  gfx::ImageSkia icon =
       gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
           idp_metadata.brand_icon, skia::ImageOperations::RESIZE_LANCZOS3,
           kDesiredIconSize, kDesiredIconSize));
-  AddChildView(CreateHeaderView());
+  header_view_ = AddChildView(CreateHeaderView(icon, title));
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateAccountChooser(accounts));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
-std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
+std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
+    gfx::ImageSkia icon,
+    const std::u16string& title) {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets::VH(kVerticalSpacing, 0));
 
   // Add the icon.
   auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(bubble_icon_);
+  image_view->SetImage(icon);
   image_view->SetProperty(
       views::kMarginsKey,
       gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding));
   header->AddChildView(image_view.release());
 
   // Add the title.
-  views::Label* title_label =
-      header->AddChildView(std::make_unique<views::Label>(
-          title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_PRIMARY));
-  title_label->SetMultiLine(true);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetAllowCharacterBreak(true);
-  title_label->SetProperty(
+  title_label_ = header->AddChildView(std::make_unique<views::Label>(
+      title, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY));
+  title_label_->SetMultiLine(true);
+  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label_->SetAllowCharacterBreak(true);
+  title_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
@@ -390,8 +391,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
     OnAccountSelected(account);
     return;
   }
-  RemoveAllChildViews();
-  AddChildView(CreateHeaderView());
+  RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
   std::vector<content::IdentityRequestAccount> accounts = {account};
   AddChildView(CreateAccountChooser(accounts));
@@ -407,9 +407,8 @@ void AccountSelectionBubbleView::OnAccountSelected(
 
 void AccountSelectionBubbleView::ShowVerifySheet(
     const content::IdentityRequestAccount& account) {
-  RemoveAllChildViews();
-  title_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
-  AddChildView(CreateHeaderView());
+  RemoveNonHeaderChildViews();
+  title_label_->SetText(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
   views::ProgressBar* progress_bar =
       AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
   // Use an infinite animation: SetValue(-1).
@@ -423,6 +422,16 @@ void AccountSelectionBubbleView::ShowVerifySheet(
   AddChildView(row.release());
   SizeToContents();
   PreferredSizeChanged();
+}
+
+void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
+  std::vector<views::View*> child_views = children();
+  for (views::View* child_view : child_views) {
+    if (child_view != header_view_) {
+      RemoveChildView(child_view);
+      delete child_view;
+    }
+  }
 }
 
 BEGIN_METADATA(AccountSelectionBubbleView, views::BubbleDialogDelegateView)

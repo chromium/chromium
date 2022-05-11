@@ -37,7 +37,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
  private:
   // Returns a View containing the logo of the identity provider and the title
   // of the bubble, properly formatted.
-  std::unique_ptr<views::View> CreateHeaderView();
+  std::unique_ptr<views::View> CreateHeaderView(gfx::ImageSkia icon,
+                                                const std::u16string& title);
 
   void CloseBubble();
 
@@ -88,6 +89,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // account.
   void ShowVerifySheet(const content::IdentityRequestAccount& account);
 
+  // Removes all children except for `header_view_`.
+  void RemoveNonHeaderChildViews();
+
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
@@ -108,11 +112,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // The privacy policy and terms of service URLs
   const content::ClientIdData client_data_;
 
-  // The bubble's icon, shown at the top left.
-  gfx::ImageSkia bubble_icon_;
+  // View containing the logo of the identity provider and the title.
+  views::View* header_view_;
 
-  // The bubble's current title.
-  std::u16string title_;
+  // View containing the bubble title.
+  views::Label* title_label_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
