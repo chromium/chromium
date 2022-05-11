@@ -1004,6 +1004,11 @@ const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod{
 const base::Feature kMicMuteNotifications{"MicMuteNotifications",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Disables the deprecated Messages cross-device integration, to be used
+// along side the flag preinstall-by-default (kMessagesPreinstall).
+const base::Feature kDisableMessagesCrossDeviceIntegration{
+    "DisableMessagesCrossDeviceIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is

@@ -46,17 +46,21 @@ const cryptauthv2::FeatureMetadata& GenerateFeatureMetadata() {
       feature_metadata([] {
         cryptauthv2::BetterTogetherFeatureMetadata inner_metadata;
 
-        // Smart Lock, MultiDevice Setup and Messages are supported on all
-        // Chromebooks.
+        // Smart Lock and MultiDevice Setup are supported on all Chromebooks.
         inner_metadata.add_supported_features(
             cryptauthv2::
                 BetterTogetherFeatureMetadata_FeatureName_EASY_UNLOCK_CLIENT);
         inner_metadata.add_supported_features(
             cryptauthv2::
                 BetterTogetherFeatureMetadata_FeatureName_BETTER_TOGETHER_CLIENT);
-        inner_metadata.add_supported_features(
-            cryptauthv2::
-                BetterTogetherFeatureMetadata_FeatureName_SMS_CONNECT_CLIENT);
+
+        // Disable Messages integration when pre-installing app on all devices.
+        if (!base::FeatureList::IsEnabled(
+                features::kDisableMessagesCrossDeviceIntegration)) {
+          inner_metadata.add_supported_features(
+              cryptauthv2::
+                  BetterTogetherFeatureMetadata_FeatureName_SMS_CONNECT_CLIENT);
+        }
 
         // Instant Tethering is only supported if the associated flag enabled.
         if (base::FeatureList::IsEnabled(features::kInstantTethering)) {

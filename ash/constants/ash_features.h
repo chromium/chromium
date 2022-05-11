@@ -396,6 +396,8 @@ extern const base::Feature kManagedTermsOfService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMicMuteNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDisableMessagesCrossDeviceIntegration;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMojoDBusRelay;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMultilingualTyping;
