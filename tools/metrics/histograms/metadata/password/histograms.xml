@@ -1232,7 +1232,8 @@ chromium-metrics-reviews@google.com.
     Records whether the provided intent to launch the Credential Manager for the
     {ProfileType} could be used successfully. This is recorded right after
     calling send() on the intent which happens when the async call to get the
-    intent from Google Play Services returns.
+    intent from Google Play Services returns. Metric will not be reported when
+    the Loading dialog is cancelled by user or timed out.
   </summary>
   <token key="ProfileType" variants="ProfileType"/>
 </histogram>
@@ -1847,6 +1848,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ModalLoadingDialog.{IntentType}.Outcome"
+    enum="PasswordManager.LoadingDialogOutcome" expires_after="M106">
+  <owner>maxan@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records the outcome of the GMS Core UI loading dialog shown when the user
+    launches the {IntentType}. Recorded for both successful and failed attempts
+    to get and launch the {IntentType}. The outcome is recorded right before
+    attempting to send the {IntentType} PendingIntent.
+  </summary>
+  <token key="IntentType">
+    <variant name="CredentialManager"/>
+    <variant name="PasswordCheckup"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.MoveUIDismissalReason"
     enum="PasswordManagerUIDismissalReason" expires_after="2022-10-16">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
@@ -1958,7 +1975,8 @@ chromium-metrics-reviews@google.com.
     Records whether the provided intent to launch the Password Checkup could be
     used successfully. This is recorded right after calling send() on the intent
     which happens when the async call to get the intent from Google Play
-    Services returns.
+    Services returns. Metric will not be reported when the Loading dialog is
+    cancelled by user or timed out.
   </summary>
 </histogram>
 

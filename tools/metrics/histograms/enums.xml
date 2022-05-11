@@ -72877,6 +72877,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Malformed response"/>
 </enum>
 
+<enum name="PasswordManager.LoadingDialogOutcome">
+  <int value="0" label="Loading finished before dialog">
+    The loading dialog was requested but the loading finished before it got
+    shown.
+  </int>
+  <int value="1" label="Loaded finished with dialog">
+    The loading dialog was shown, loading finished and dialog was automatically
+    dismissed.
+  </int>
+  <int value="2" label="Loading cancelled by user">
+    The loading dialog was shown and cancelled by user before the loading
+    finished.
+  </int>
+  <int value="3" label="Loading timed out">
+    The loading dialog was shown and timed out before the loading finished.
+  </int>
+</enum>
+
 <enum name="PasswordManager.MoveToAccountStoreTrigger">
   <summary>
     Triggers that will cause Chrome to offer to move a password from the profile

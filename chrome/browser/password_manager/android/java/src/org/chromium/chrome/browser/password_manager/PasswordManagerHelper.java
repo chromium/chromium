@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Optional;
@@ -28,6 +29,9 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** A helper class for showing PasswordSettings. */
 public class PasswordManagerHelper {
@@ -72,6 +76,35 @@ public class PasswordManagerHelper {
             "PasswordManager.PasswordCheckup.GetIntent.Error";
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
+
+    private static final String LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM =
+            "PasswordManager.ModalLoadingDialog.CredentialManager.Outcome";
+    private static final String LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM =
+            "PasswordManager.ModalLoadingDialog.PasswordCheckup.Outcome";
+
+    /**
+     *  The identifier of the loading dialog outcome.
+     *
+     *  These values are persisted to logs. Entries should not be renumbered and
+     *  numeric values should never be reused.
+     *  Please, keep in sync with tools/metrics/histograms/enums.xml.
+     */
+    @VisibleForTesting
+    @IntDef({LoadingDialogOutcome.NOT_SHOWN_LOADED, LoadingDialogOutcome.SHOWN_LOADED,
+            LoadingDialogOutcome.SHOWN_CANCELLED, LoadingDialogOutcome.SHOWN_TIMED_OUT,
+            LoadingDialogOutcome.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LoadingDialogOutcome {
+        /** The loading dialog was requested but loading finished before it got shown. */
+        int NOT_SHOWN_LOADED = 0;
+        /** The loading dialog was shown, loading process finished.  */
+        int SHOWN_LOADED = 1;
+        /** The loading dialog was shown and cancelled by user before loading finished. */
+        int SHOWN_CANCELLED = 2;
+        /** The loading dialog was shown and timed out before loading finished. */
+        int SHOWN_TIMED_OUT = 3;
+        int NUM_ENTRIES = 4;
+    }
 
     /**
      * Launches the password settings or, if available, the credential manager from Google Play
@@ -192,6 +225,8 @@ public class PasswordManagerHelper {
                                 intent, startTimeMs, true, loadingDialogCoordinator),
                 (error) -> {
                     PasswordManagerHelper.recordFailureMetrics(error, true);
+                    recordLoadingDialogMetrics(LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM,
+                            loadingDialogCoordinator.getState());
                     loadingDialogCoordinator.dismiss();
                 });
     }
@@ -215,6 +250,8 @@ public class PasswordManagerHelper {
                     RecordHistogram.recordEnumeratedHistogram(
                             PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM, error,
                             CredentialManagerError.COUNT);
+                    recordLoadingDialogMetrics(LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM,
+                            loadingDialogCoordinator.getState());
                     loadingDialogCoordinator.dismiss();
                 });
     }
@@ -252,7 +289,8 @@ public class PasswordManagerHelper {
 
         maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
                 forAccount ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
-                           : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
+                           : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                LOADING_DIALOG_CREDENTIAL_MANAGER_HISTOGRAM);
     }
 
     private static void launchPasswordCheckupIntent(PendingIntent intent, long startTimeMs,
@@ -262,7 +300,8 @@ public class PasswordManagerHelper {
         RecordHistogram.recordBooleanHistogram(PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, true);
 
         maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
-                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
+                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM);
     }
 
     private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
@@ -287,37 +326,88 @@ public class PasswordManagerHelper {
      */
     private static void maybeLaunchIntentWithLoadingDialog(
             LoadingModalDialogCoordinator loadingDialogCoordinator, PendingIntent intent,
-            String intentLaunchSuccessHistogram) {
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
-                || loadingDialogCoordinator.getState()
-                        == LoadingModalDialogCoordinator.State.TIMED_OUT) {
+            String intentLaunchSuccessHistogram, String loadingDialogOutcomeHistogram) {
+        @LoadingModalDialogCoordinator.State
+        int loadingDialogState = loadingDialogCoordinator.getState();
+        if (loadingDialogState == LoadingModalDialogCoordinator.State.CANCELLED
+                || loadingDialogState == LoadingModalDialogCoordinator.State.TIMED_OUT) {
             // Dialog was dismissed or timeout occurred before the loading finished, do not launch
             // the intent.
+            recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, loadingDialogState);
             return;
         }
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.PENDING) {
+
+        if (loadingDialogState == LoadingModalDialogCoordinator.State.PENDING) {
             // Dialog is not yet visible, dismiss immediately.
+            recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, loadingDialogState);
             loadingDialogCoordinator.dismiss();
             launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
-        } else if (loadingDialogCoordinator.isImmediatelyDismissable()) {
+            return;
+        }
+
+        if (loadingDialogCoordinator.isImmediatelyDismissable()) {
             // Dialog is visible and dismissable. Dismiss with a small delay to cover the intent
             // launch delay.
+            recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, loadingDialogState);
             launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
             new Handler(Looper.getMainLooper())
                     .postDelayed(
                             loadingDialogCoordinator::dismiss, LOADING_DIALOG_DISMISS_DELAY_MS);
-        } else {
-            // Dialog could not be dismissed right now, wait for it to become immediately
-            // dismissable.
-            loadingDialogCoordinator.addObserver(new LoadingModalDialogCoordinator.Observer() {
-                @Override
-                public void onDismissable() {
-                    launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
-                    new Handler(Looper.getMainLooper())
-                            .postDelayed(loadingDialogCoordinator::dismiss,
-                                    LOADING_DIALOG_DISMISS_DELAY_MS);
-                }
-            });
+            return;
+        }
+
+        // Dialog could not be dismissed right now, wait for it to become immediately
+        // dismissable.
+        loadingDialogCoordinator.addObserver(new LoadingModalDialogCoordinator.Observer() {
+            @Override
+            public void onDismissable() {
+                // Record the known state - if the dialog was cancelled or timed out,
+                // {@link #onCancelledOrTimedOut()} would be called.
+                recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, loadingDialogState);
+                launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+                new Handler(Looper.getMainLooper())
+                        .postDelayed(
+                                loadingDialogCoordinator::dismiss, LOADING_DIALOG_DISMISS_DELAY_MS);
+            }
+
+            @Override
+            public void onDismissedWithState(@LoadingModalDialogCoordinator.State int finalState) {
+                recordLoadingDialogMetrics(loadingDialogOutcomeHistogram, finalState);
+            }
+        });
+    }
+
+    /**
+     * Reports metric for the GMS Core UI loading dialog.
+     * Should be called right before launching the loaded intent or before dismissing the dialog if
+     * the intent will not be launched.
+     *
+     * @param histogramName Name of the histogram to report metric via.
+     * @param loadingDialogState State of the loading dialog before launching the intent.
+     */
+    private static void recordLoadingDialogMetrics(
+            String histogramName, @LoadingModalDialogCoordinator.State int loadingDialogState) {
+        switch (loadingDialogState) {
+            case LoadingModalDialogCoordinator.State.PENDING:
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        LoadingDialogOutcome.NOT_SHOWN_LOADED, LoadingDialogOutcome.NUM_ENTRIES);
+                break;
+            case LoadingModalDialogCoordinator.State.SHOWN:
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        LoadingDialogOutcome.SHOWN_LOADED, LoadingDialogOutcome.NUM_ENTRIES);
+                break;
+            case LoadingModalDialogCoordinator.State.CANCELLED:
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        LoadingDialogOutcome.SHOWN_CANCELLED, LoadingDialogOutcome.NUM_ENTRIES);
+                break;
+            case LoadingModalDialogCoordinator.State.TIMED_OUT:
+                RecordHistogram.recordEnumeratedHistogram(histogramName,
+                        LoadingDialogOutcome.SHOWN_TIMED_OUT, LoadingDialogOutcome.NUM_ENTRIES);
+                break;
+            case LoadingModalDialogCoordinator.State.READY:
+            case LoadingModalDialogCoordinator.State.FINISHED:
+                throw new AssertionError(
+                        "Unexpected state for metrics recording: " + loadingDialogState);
         }
     }
 }
