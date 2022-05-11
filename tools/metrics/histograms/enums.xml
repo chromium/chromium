@@ -18446,6 +18446,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchEnterClosedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="From Other"/>
   <int value="1" label="From Peeked (back press)"/>
   <int value="2" label="From Peeked (base page scroll)"/>
@@ -18460,6 +18463,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchEnterExpandedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="From Other"/>
   <int value="1" label="From Peeked (search bar tap)"/>
   <int value="2" label="From Peeked (swipe)"/>
@@ -18469,6 +18475,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchEnterMaximizedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="From Peeked (swipe)"/>
   <int value="2" label="From Peeked (fling)"/>
@@ -18478,6 +18487,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchEnterPeekedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="From Other"/>
   <int value="1" label="From Closed (text select tap)"/>
   <int value="2" label="From Closed (text select long press)"/>
@@ -18491,12 +18503,18 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchExitClosedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="Peek (text select tap)"/>
   <int value="2" label="Peek (text select long press)"/>
 </enum>
 
 <enum name="ContextualSearchExitExpandedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="Close (back press)"/>
   <int value="2" label="Close (base page tap)"/>
@@ -18510,6 +18528,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchExitMaximizedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="Close (back press)"/>
   <int value="2" label="Close (fling)"/>
@@ -18522,6 +18543,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchExitPeekedStateChange">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="Close (back press)"/>
   <int value="2" label="Close (base page scroll)"/>

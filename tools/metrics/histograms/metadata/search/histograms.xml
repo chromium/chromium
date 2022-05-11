@@ -460,7 +460,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchEnterClosed"
-    enum="ContextualSearchEnterClosedStateChange" expires_after="M72">
+    enum="ContextualSearchEnterClosedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -470,7 +473,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchEnterExpanded"
-    enum="ContextualSearchEnterExpandedStateChange" expires_after="M72">
+    enum="ContextualSearchEnterExpandedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -480,7 +486,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchEnterMaximized"
-    enum="ContextualSearchEnterMaximizedStateChange" expires_after="M72">
+    enum="ContextualSearchEnterMaximizedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -490,7 +499,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchEnterPeeked"
-    enum="ContextualSearchEnterPeekedStateChange" expires_after="M72">
+    enum="ContextualSearchEnterPeekedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -511,7 +523,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchExitClosed"
-    enum="ContextualSearchExitClosedStateChange" expires_after="M72">
+    enum="ContextualSearchExitClosedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -521,7 +536,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchExitExpanded"
-    enum="ContextualSearchExitExpandedStateChange" expires_after="M72">
+    enum="ContextualSearchExitExpandedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -531,7 +549,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchExitMaximized"
-    enum="ContextualSearchExitMaximizedStateChange" expires_after="M72">
+    enum="ContextualSearchExitMaximizedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -541,7 +562,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchExitPeeked"
-    enum="ContextualSearchExitPeekedStateChange" expires_after="M77">
+    enum="ContextualSearchExitPeekedStateChange" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

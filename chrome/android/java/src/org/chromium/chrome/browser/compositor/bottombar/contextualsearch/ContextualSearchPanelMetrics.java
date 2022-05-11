@@ -179,25 +179,8 @@ public class ContextualSearchPanelMetrics {
             mAreOutcomesValid = true;
         }
 
-        // Log state changes. We only log the first transition to a state within a contextual
-        // search. Note that when a user clicks on a link on the search content view, this will
-        // trigger a transition to MAXIMIZED (SERP_NAVIGATION) followed by a transition to
-        // CLOSED (TAB_PROMOTION). For the purpose of logging, the reason for the second transition
-        // is reinterpreted to SERP_NAVIGATION, in order to distinguish it from a tab promotion
-        // caused when tapping on the Search Bar when the Panel is maximized.
         @StateChangeReason
         int reasonForLogging = mIsSerpNavigation ? StateChangeReason.SERP_NAVIGATION : reason;
-        if (isStartingSearch || isEndingSearch
-                || (!mHasExpanded && toState == PanelState.EXPANDED)
-                || (!mHasMaximized && toState == PanelState.MAXIMIZED)) {
-            ContextualSearchUma.logFirstStateEntry(fromState, toState, reasonForLogging);
-        }
-        // Note: CLOSED / UNDEFINED state exits are detected when a search that is not chained is
-        // starting.
-        if ((isStartingSearch && !isChained) || isFirstExitFromPeeking || isFirstExitFromExpanded
-                || isFirstExitFromMaximized) {
-            ContextualSearchUma.logFirstStateExit(fromState, toState, reasonForLogging);
-        }
         // Log individual user actions so they can be sequenced.
         ContextualSearchUma.logPanelStateUserAction(toState, reasonForLogging);
 
