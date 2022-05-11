@@ -22,6 +22,14 @@ declare_args() {
 #     referenced from within |primary_script|. Listing all these files here
 #     ensures this target is rebuilt if any of the files are changed.
 #
+#   output_name (optional):
+#     The name of the exported value or namespace. For more details, see
+#     https://rollupjs.org/guide/en/#outputname
+#
+#   deps (optional):
+#     The dependent targets which produce typescript compiler manifest files.
+#     These manifest files will be used to resolve script imports.
+
 template("optimize_js") {
   assert(defined(invoker.sources), "sources must be set")
   assert(defined(invoker.primary_script), "primary_script must be set")
@@ -35,7 +43,7 @@ template("optimize_js") {
     }
   }
   assert(_primary_script_found_in_sources,
-         "primnary_script must be listed in sources")
+         "primary_script must be listed in sources")
 
   optimize_target_name = target_name + "_optimize"
   _target_name = target_name
@@ -44,6 +52,7 @@ template("optimize_js") {
 
     forward_variables_from(invoker,
                            [
+                             "deps",
                              "sources",
                              "testonly",
                            ])
@@ -67,6 +76,22 @@ template("optimize_js") {
 
     if (!minify_scripts) {
       args += [ "--skip-minification" ]
+    }
+
+    if (defined(invoker.output_name)) {
+      args += [
+        "--output-name",
+        invoker.output_name,
+      ]
+    }
+
+    if (defined(invoker.deps)) {
+      args += [ "--path-mapping-manifests" ]
+      foreach(_dep, invoker.deps) {
+        _dep_gen_dir =
+            rebase_path(get_label_info(_dep, "target_gen_dir"), root_build_dir)
+        args += [ "$_dep_gen_dir/tsconfig.manifest" ]
+      }
     }
   }
 
