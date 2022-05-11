@@ -8,23 +8,18 @@
 #include <stdint.h>
 
 #include <memory>
-#include <tuple>
 #include <utility>
 
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/lazy_instance.h"
-#include "base/trace_event/typed_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
@@ -230,13 +225,6 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     else
       is_no_op = true;
   }
-  // Record a trace event whose name encodes the old and new states. The states
-  // can be used to trace this function to see if WasShown / WasHidden were
-  // called. When a tab switch is occurring these traces will nest in trace
-  // events recoded by RenderWidgetHostViewMac.
-  // TODO(https://crbug.com/1164477): Remove these when the investigation is
-  // done.
-  TRACE_EVENT("cc", EventNameForStateTransition(state_, new_state, is_no_op));
   if (is_no_op)
     return;
 
@@ -291,42 +279,6 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
   delegated_frame_host_->AttachToCompositor(GetCompositor());
   delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
                                   {} /* record_tab_switch_time_request */);
-}
-
-// static
-perfetto::StaticString BrowserCompositorMac::EventNameForStateTransition(
-    State old_state,
-    State new_state,
-    bool is_no_op) {
-  static const auto kEventNames =
-      base::MakeFixedFlatMap<std::tuple<State, State, bool>,
-                             perfetto::StaticString>({
-          {{HasNoCompositor, HasNoCompositor, true},
-           "BrowserCompositorMac.StateTransition.No.No.NoOp"},
-          {{HasNoCompositor, HasOwnCompositor, false},
-           "BrowserCompositorMac.StateTransition.No.Own"},
-          {{HasNoCompositor, UseParentLayerCompositor, false},
-           "BrowserCompositorMac.StateTransition.No.Parent"},
-          {{HasOwnCompositor, HasNoCompositor, false},
-           "BrowserCompositorMac.StateTransition.Own.No"},
-          {{HasOwnCompositor, HasOwnCompositor, true},
-           "BrowserCompositorMac.StateTransition.Own.Own.NoOp"},
-          {{HasOwnCompositor, UseParentLayerCompositor, false},
-           "BrowserCompositorMac.StateTransition.Own.Parent"},
-          {{UseParentLayerCompositor, HasNoCompositor, false},
-           "BrowserCompositorMac.StateTransition.Parent.No"},
-          {{UseParentLayerCompositor, HasOwnCompositor, false},
-           "BrowserCompositorMac.StateTransition.Parent.Own"},
-          // UseParentLayerCompositer -> UseParentLayerCompositer may or may not
-          // be a no-op.
-          {{UseParentLayerCompositor, UseParentLayerCompositor, false},
-           "BrowserCompositorMac.StateTransition.Parent.Parent"},
-          {{UseParentLayerCompositor, UseParentLayerCompositor, true},
-           "BrowserCompositorMac.StateTransition.Parent.Parent.NoOp"},
-      });
-  const auto key = std::make_tuple(old_state, new_state, is_no_op);
-  DCHECK(base::Contains(kEventNames, key));
-  return kEventNames.at(key);
 }
 
 // static

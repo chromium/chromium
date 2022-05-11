@@ -20,10 +20,6 @@
 #include "ui/display/screen_info.h"
 #include "ui/gfx/ca_layer_params.h"
 
-namespace perfetto {
-class StaticString;
-}
-
 namespace ui {
 class AcceleratedWidgetMacNSView;
 class RecyclableCompositorMac;
@@ -163,10 +159,6 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   State state_ = HasNoCompositor;
   void UpdateState();
   void TransitionToState(State new_state);
-
-  static perfetto::StaticString EventNameForStateTransition(State old_state,
-                                                            State new_state,
-                                                            bool is_no_op);
 
   // Weak pointer to the layer supplied and reset via SetParentUiLayer. |this|
   // is an observer of |parent_ui_layer_|, to ensure that |parent_ui_layer_|
