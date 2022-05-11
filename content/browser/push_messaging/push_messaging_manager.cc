@@ -330,11 +330,14 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
           url::Origin requesting_origin = data.requesting_origin;
           bool user_gesture = data.user_gesture;
 
+          DCHECK_EQ(data.requesting_origin,
+                    render_frame_host->GetLastCommittedOrigin());
+
           render_frame_host->GetBrowserContext()
               ->GetPermissionController()
-              ->RequestPermission(
+              ->RequestPermissionFromCurrentDocument(
                   blink::PermissionType::NOTIFICATIONS, render_frame_host,
-                  requesting_origin.GetURL(), user_gesture,
+                  user_gesture,
                   base::BindOnce(
                       &PushMessagingManager::DidRequestPermissionInIncognito,
                       AsWeakPtr(), std::move(data)));

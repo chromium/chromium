@@ -54,18 +54,23 @@ void HeadlessPermissionManager::ResetPermission(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {}
 
+void HeadlessPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<blink::PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  // In headless mode we just pretent the user "closes" any permission prompt,
+  // without accepting or denying.
+  std::vector<blink::mojom::PermissionStatus> result(
+      permissions.size(), blink::mojom::PermissionStatus::ASK);
+  std::move(callback).Run(result);
+}
+
 blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
     blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  return blink::mojom::PermissionStatus::ASK;
-}
-
-blink::mojom::PermissionStatus
-HeadlessPermissionManager::GetPermissionStatusForFrame(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
   return blink::mojom::PermissionStatus::ASK;
 }
 

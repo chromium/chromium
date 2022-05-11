@@ -253,10 +253,12 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
   EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::ASK));
-  // PermissionManagerFactory::GetForProfile(browser()->profile())
-  browser()->profile()->GetPermissionController()->RequestPermission(
-      blink::PermissionType::GEOLOCATION, rfh_a.get(), url_a,
-      /* user_gesture = */ true, callback.Get());
+  browser()
+      ->profile()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          blink::PermissionType::GEOLOCATION, rfh_a.get(),
+          /* user_gesture = */ true, callback.Get());
 
   // Ensure |rfh_a| is evicted from the cache because it is not allowed to
   // service the GEOLOCATION permission request.

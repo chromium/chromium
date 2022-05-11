@@ -48,14 +48,17 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<blink::PermissionType>& permissions,
+      content::RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;

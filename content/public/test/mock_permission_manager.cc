@@ -28,4 +28,14 @@ void MockPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {}
 
+void MockPermissionManager::ResetPermission(blink::PermissionType permission,
+                                            const GURL& requesting_origin,
+                                            const GURL& embedding_origin) {}
+
+void MockPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<blink::PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {}
 }  // namespace content

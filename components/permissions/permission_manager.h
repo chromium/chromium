@@ -94,15 +94,6 @@ class PermissionManager : public KeyedService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // Requests the given `permission` on behalf of the last committed document in
-  // `render_frame_host`, also performing additional checks such as Permission
-  // Policy.
-  void RequestPermissionsFromCurrentDocument(
-      const std::vector<ContentSettingsType>& permissions,
-      content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
-
   PermissionContextBase* GetPermissionContextForTesting(
       ContentSettingsType type);
 
@@ -133,48 +124,6 @@ class PermissionManager : public KeyedService,
 
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
-  // Callers from within chrome/ should use the methods which take the
-  // ContentSettingsType enum. The methods which take PermissionType values
-  // are for the content::PermissionControllerDelegate overrides and shouldn't
-  // be used from chrome/.
-  // Deprecated. Use `RequestPermissionFromCurrentDocument` instead.
-  void RequestPermission(ContentSettingsType permission,
-                         content::RenderFrameHost* render_frame_host,
-                         const GURL& requesting_origin,
-                         bool user_gesture,
-                         base::OnceCallback<void(ContentSetting)> callback);
-
-  // Deprecated. Use `RequestPermissionsFromCurrentDocument` instead.
-  void RequestPermissions(
-      const std::vector<ContentSettingsType>& permissions,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
-  void RequestPermissionFromCurrentDocument(
-      ContentSettingsType permission,
-      content::RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(ContentSetting)> callback);
-  // Returns the permission status for a given frame. This should be preferred
-  // over GetPermissionStatus as additional checks can be performed when we know
-  // the exact context the request is coming from.
-  // TODO(raymes): Currently we still pass the |requesting_origin| as a separate
-  // parameter because we can't yet guarantee that it matches the last committed
-  // origin of the RenderFrameHost. See crbug.com/698985.
-  // Deprecated. Use `GetPermissionStatusForCurrentDocument` instead.
-  PermissionResult GetPermissionStatusForFrame(
-      ContentSettingsType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin);
-
-  // Returns the status of the given `permission` for a worker on `origin`
-  // running in the renderer corresponding to `render_process_host`.
-  PermissionResult GetPermissionStatusForWorker(
-      ContentSettingsType permission,
-      content::RenderProcessHost* render_process_host,
-      const url::Origin& worker_origin);
-
   // content::PermissionControllerDelegate implementation.
   void RequestPermission(
       blink::PermissionType permission,
@@ -194,14 +143,17 @@ class PermissionManager : public KeyedService,
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<blink::PermissionType>& permissions,
+      content::RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   blink::mojom::PermissionStatus GetPermissionStatus(
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      blink::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;

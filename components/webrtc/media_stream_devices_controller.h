@@ -16,6 +16,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace permissions {
 enum class PermissionStatusSource;
@@ -63,7 +64,7 @@ class MediaStreamDevicesController {
       std::unique_ptr<MediaStreamDevicesController> controller,
       bool did_prompt_for_audio,
       bool did_prompt_for_video,
-      const std::vector<ContentSetting>& responses);
+      const std::vector<blink::mojom::PermissionStatus>& responses);
 
 #if BUILDFLAG(IS_ANDROID)
   // Called when the Android OS-level prompt is answered.

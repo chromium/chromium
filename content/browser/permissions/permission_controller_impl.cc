@@ -111,6 +111,13 @@ void MergeOverriddenAndDelegatedResults(
   std::move(original_cb).Run(full_results);
 }
 
+void PermissionStatusCallbackWrapper(
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
+    const std::vector<blink::mojom::PermissionStatus>& vector) {
+  DCHECK_EQ(1ul, vector.size());
+  std::move(callback).Run(vector.at(0));
+}
+
 }  // namespace
 
 PermissionControllerImpl::PermissionControllerImpl(
@@ -149,8 +156,7 @@ PermissionControllerImpl::GetSubscriptionCurrentValue(
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       subscription.render_process_id, subscription.render_frame_id);
   if (rfh) {
-    return GetPermissionStatusForFrame(subscription.permission, rfh,
-                                       subscription.requesting_origin);
+    return GetPermissionStatusForCurrentDocument(subscription.permission, rfh);
   }
 
   content::RenderProcessHost* rph =
@@ -270,36 +276,19 @@ void PermissionControllerImpl::UpdateDelegateOverridesForDevTools(
   delegate->SetPermissionOverridesForDevTools(origin, current_overrides);
 }
 
-void PermissionControllerImpl::RequestPermission(
+void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
-
-  absl::optional<blink::mojom::PermissionStatus> status_override =
-      devtools_permission_overrides_.Get(url::Origin::Create(requesting_origin),
-                                         permission);
-  if (status_override.has_value()) {
-    std::move(callback).Run(*status_override);
-    return;
-  }
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
-    return;
-  }
-  delegate->RequestPermission(permission, render_frame_host, requesting_origin,
-                              user_gesture, std::move(callback));
+  RequestPermissionsFromCurrentDocument(
+      {permission}, render_frame_host, user_gesture,
+      base::BindOnce(&PermissionStatusCallbackWrapper, std::move(callback)));
 }
 
-void PermissionControllerImpl::RequestPermissions(
+void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
     const std::vector<PermissionType>& permissions,
     RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
@@ -308,7 +297,7 @@ void PermissionControllerImpl::RequestPermissions(
 
   std::vector<PermissionType> permissions_without_overrides;
   std::vector<absl::optional<blink::mojom::PermissionStatus>> results;
-  url::Origin origin = url::Origin::Create(requesting_origin);
+  url::Origin origin = render_frame_host->GetLastCommittedOrigin();
   for (const auto& permission : permissions) {
     absl::optional<blink::mojom::PermissionStatus> override_status =
         devtools_permission_overrides_.Get(origin, permission);
@@ -334,37 +323,10 @@ void PermissionControllerImpl::RequestPermissions(
         blink::mojom::PermissionStatus::DENIED));
     return;
   }
-  delegate->RequestPermissions(permissions_without_overrides, render_frame_host,
-                               requesting_origin, user_gesture,
-                               std::move(wrapper));
-}
 
-void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
-    PermissionType permission,
-    RenderFrameHost* render_frame_host,
-    bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  // TODO(https://crbug.com/1271543): Add `RequestPermissionFromCurrentDocument`
-  // into `PermissionControllerDelegate` and use it here.
-  RequestPermission(
-      permission, render_frame_host,
-      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
-      user_gesture, std::move(callback));
-}
-
-void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions,
-    RenderFrameHost* render_frame_host,
-    bool user_gesture,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
-        callback) {
-  // TODO(https://crbug.com/1271543): Add
-  // `RequestPermissionsFromCurrentDocument` into `PermissionControllerDelegate`
-  // and use it here.
-  RequestPermissions(
-      permissions, render_frame_host,
-      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
-      user_gesture, std::move(callback));
+  delegate->RequestPermissionsFromCurrentDocument(
+      permissions_without_overrides, render_frame_host, user_gesture,
+      std::move(wrapper));
 }
 
 blink::mojom::PermissionStatus
@@ -428,25 +390,6 @@ PermissionControllerImpl::GetPermissionStatusForOriginWithoutContext(
     const url::Origin& origin) {
   return DeprecatedGetPermissionStatus(permission, origin.GetURL(),
                                        origin.GetURL());
-}
-
-blink::mojom::PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForFrame(
-    PermissionType permission,
-    RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
-  absl::optional<blink::mojom::PermissionStatus> status =
-      devtools_permission_overrides_.Get(url::Origin::Create(requesting_origin),
-                                         permission);
-  if (status)
-    return *status;
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate)
-    return blink::mojom::PermissionStatus::DENIED;
-  return delegate->GetPermissionStatusForFrame(permission, render_frame_host,
-                                               requesting_origin);
 }
 
 void PermissionControllerImpl::ResetPermission(PermissionType permission,

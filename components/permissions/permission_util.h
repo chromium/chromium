@@ -11,6 +11,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
 enum class PermissionType;
@@ -86,6 +87,10 @@ class PermissionUtil {
   // Helper method to convert PermissionType to ContentSettingType.
   static ContentSettingsType PermissionTypeToContentSetting(
       blink::PermissionType permission);
+
+  // Helper method to convert PermissionStatus to ContentSetting.
+  static ContentSetting PermissionStatusToContentSetting(
+      blink::mojom::PermissionStatus status);
 };
 
 }  // namespace permissions

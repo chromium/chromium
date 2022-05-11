@@ -38,7 +38,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/variations/variations_associated_data.h"
-#include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1235,10 +1235,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
 
   base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
   EXPECT_CALL(callback, Run(blink::mojom::PermissionStatus::DENIED));
-  auto* delegate = browser()->profile()->GetPermissionControllerDelegate();
-  delegate->RequestPermission(blink::PermissionType::SENSORS, fenced_frame_host,
-                              fenced_frame_url,
-                              /* user_gesture = */ true, callback.Get());
+
+  content::PermissionController* permission_controller =
+      browser()->profile()->GetPermissionController();
+  permission_controller->RequestPermissionFromCurrentDocument(
+      blink::PermissionType::SENSORS, fenced_frame_host,
+      /* user_gesture = */ true, callback.Get());
   console_observer.Wait();
   ASSERT_EQ(1u, console_observer.messages().size());
 }

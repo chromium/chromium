@@ -15,6 +15,7 @@
 #include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
@@ -66,13 +67,21 @@ class GeolocationPermissionContextDelegateTests
   }
 
   void RequestPermissionFromCurrentDocument(
-      ContentSettingsType permission,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       bool user_gesture,
-      base::OnceCallback<void(ContentSetting)> callback) {
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
     PermissionManagerFactory::GetForProfile(profile())
-        ->RequestPermissionFromCurrentDocument(
-            permission, render_frame_host, user_gesture, std::move(callback));
+        ->RequestPermissionsFromCurrentDocument(
+            {permission}, render_frame_host, user_gesture,
+            base::BindOnce(
+                [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                       callback,
+                   const std::vector<blink::mojom::PermissionStatus>& state) {
+                  DCHECK_EQ(state.size(), 1U);
+                  std::move(callback).Run(state[0]);
+                },
+                std::move(callback)));
   }
 
   permissions::PermissionResult GetPermissionStatusForDisplayOnSettingsUI(
@@ -94,10 +103,10 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 
   base::RunLoop run_loop;
   RequestPermissionFromCurrentDocument(
-      ContentSettingsType::GEOLOCATION, main_rfh(), true,
+      blink::PermissionType::GEOLOCATION, main_rfh(), true,
       base::BindOnce(
-          [](base::RunLoop* run_loop, ContentSetting content_setting) {
-            EXPECT_EQ(content_setting, CONTENT_SETTING_ALLOW);
+          [](base::RunLoop* run_loop, blink::mojom::PermissionStatus status) {
+            EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
             run_loop->Quit();
           },
           &run_loop));

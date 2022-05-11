@@ -125,8 +125,8 @@ void PermissionServiceImpl::RequestPermissions(
 
   int pending_request_id = pending_requests_.Add(std::move(pending_request));
   PermissionControllerImpl::FromBrowserContext(browser_context)
-      ->RequestPermissions(
-          types, context_->render_frame_host(), origin_.GetURL(), user_gesture,
+      ->RequestPermissionsFromCurrentDocument(
+          types, context_->render_frame_host(), user_gesture,
           base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
                          weak_factory_.GetWeakPtr(), pending_request_id));
 }

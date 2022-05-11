@@ -138,25 +138,38 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                                                                type, value);
   }
 
-  void RequestPermission(PermissionType type,
-                         content::RenderFrameHost* rfh,
-                         const GURL& origin) {
+  void RequestPermissionFromCurrentDocument(PermissionType type,
+                                            content::RenderFrameHost* rfh) {
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
-    GetPermissionManager()->RequestPermission(
-        type, rfh, origin, true,
-        base::BindOnce(&PermissionManagerTest::OnPermissionChange,
-                       base::Unretained(this)));
+    GetPermissionManager()->RequestPermissionsFromCurrentDocument(
+        std::vector(1, type), rfh, true,
+        base::BindOnce(
+            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                   callback,
+               const std::vector<blink::mojom::PermissionStatus>& state) {
+              DCHECK_EQ(state.size(), 1U);
+              std::move(callback).Run(state[0]);
+            },
+            base::BindOnce(&PermissionManagerTest::OnPermissionChange,
+                           base::Unretained(this))));
     loop.Run();
   }
 
-  void RequestPermissionNonBlocking(PermissionType type,
-                                    content::RenderFrameHost* rfh,
-                                    const GURL& origin) {
-    GetPermissionManager()->RequestPermission(
-        type, rfh, origin, true,
-        base::BindOnce(&PermissionManagerTest::OnPermissionChange,
-                       base::Unretained(this)));
+  void RequestPermissionFromCurrentDocumentNonBlocking(
+      PermissionType type,
+      content::RenderFrameHost* rfh) {
+    GetPermissionManager()->RequestPermissionsFromCurrentDocument(
+        std::vector(1, type), rfh, true,
+        base::BindOnce(
+            [](base::OnceCallback<void(blink::mojom::PermissionStatus)>
+                   callback,
+               const std::vector<blink::mojom::PermissionStatus>& state) {
+              DCHECK_EQ(state.size(), 1U);
+              std::move(callback).Run(state[0]);
+            },
+            base::BindOnce(&PermissionManagerTest::OnPermissionChange,
+                           base::Unretained(this))));
   }
 
   PermissionStatus GetPermissionStatusForCurrentDocument(
@@ -657,7 +670,8 @@ TEST_F(PermissionManagerTest, PermissionIgnoredCleanup) {
 
   NavigateAndCommit(url());
 
-  RequestPermissionNonBlocking(PermissionType::GEOLOCATION, main_rfh(), url());
+  RequestPermissionFromCurrentDocumentNonBlocking(PermissionType::GEOLOCATION,
+                                                  main_rfh());
 
   EXPECT_FALSE(PendingRequestsEmpty());
 
@@ -764,7 +778,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
   prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
   prompt_factory->DocumentOnLoadCompletedInPrimaryMainFrame();
 
-  RequestPermission(PermissionType::GEOLOCATION, child, GURL(kOrigin2));
+  RequestPermissionFromCurrentDocument(PermissionType::GEOLOCATION, child);
 
   EXPECT_TRUE(prompt_factory->RequestOriginSeen(GURL(kOrigin1)));
 

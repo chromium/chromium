@@ -23,10 +23,10 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  // If `allow_universal_access_from_file_urls` flag is enabled, a file can
-  // introduce discrepancy between GetLastCommittedURL and
-  // GetLastCommittedOrigin. In that case GetLastCommittedURL should be used
-  // for requesting and verifying permissions.
+  // If `allow_universal_access_from_file_urls` flag is enabled, a file:/// can
+  // change its url via history.pushState/replaceState to any other url,
+  // including about:blank. To avoid user confusion we should always use a
+  // visible url, in other words `GetLastCommittedURL`.
   if (web_contents->GetOrCreateWebPreferences()
           .allow_universal_access_from_file_urls &&
       render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {

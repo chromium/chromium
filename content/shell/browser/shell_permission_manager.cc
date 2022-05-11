@@ -117,6 +117,26 @@ void ShellPermissionManager::ResetPermission(
     const GURL& embedding_origin) {
 }
 
+void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+    return;
+  }
+  std::vector<blink::mojom::PermissionStatus> result;
+  for (const auto& permission : permissions) {
+    result.push_back(IsAllowlistedPermissionType(permission)
+                         ? blink::mojom::PermissionStatus::GRANTED
+                         : blink::mojom::PermissionStatus::DENIED);
+  }
+  std::move(callback).Run(result);
+}
+
 blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
@@ -135,28 +155,17 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
 }
 
 blink::mojom::PermissionStatus
-ShellPermissionManager::GetPermissionStatusForFrame(
-    PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
-  if (render_frame_host->IsNestedWithinFencedFrame())
-    return blink::mojom::PermissionStatus::DENIED;
-  return GetPermissionStatus(
-      permission, requesting_origin,
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host->GetMainFrame()));
-}
-
-blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host->IsNestedWithinFencedFrame())
     return blink::mojom::PermissionStatus::DENIED;
   return GetPermissionStatus(
-      permission, render_frame_host->GetLastCommittedOrigin().GetURL(),
+      permission,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-          render_frame_host));
+          render_frame_host),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame()));
 }
 
 blink::mojom::PermissionStatus

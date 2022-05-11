@@ -58,27 +58,29 @@ void WebEnginePermissionDelegate::ResetPermission(
   NOTIMPLEMENTED() << ": " << static_cast<int>(permission);
 }
 
+void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
+    const std::vector<blink::PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
+  DCHECK(frame);
+  frame->permission_controller()->RequestPermissions(
+      permissions, render_frame_host->GetLastCommittedOrigin(), user_gesture,
+      std::move(callback));
+}
+
 blink::mojom::PermissionStatus WebEnginePermissionDelegate::GetPermissionStatus(
     blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  // Although GetPermissionStatusForFrame() should be used for most permissions,
-  // some use cases (e.g., BACKGROUND_SYNC) do not have a frame.
+  // Although GetPermissionStatusForCurrentDocument() should be used for most
+  // permissions, some use cases (e.g., BACKGROUND_SYNC) do not have a frame.
   //
   // TODO(crbug.com/1063094): Handle frame-less permission status checks in the
   // PermissionManager API. Until then, reject such requests.
   return blink::mojom::PermissionStatus::DENIED;
-}
-
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForFrame(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
-  FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
-  DCHECK(frame);
-  return frame->permission_controller()->GetPermissionState(
-      permission, url::Origin::Create(requesting_origin));
 }
 
 blink::mojom::PermissionStatus

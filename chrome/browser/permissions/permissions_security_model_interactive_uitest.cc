@@ -901,25 +901,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("https://chromium.org/", main_rfh->GetLastCommittedURL().spec());
   EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
 
-  const struct {
-    std::string check_permission;
-    std::string request_permission;
-  } kTests[] = {
-      {kCheckCamera, kRequestCamera},
-      {kCheckGeolocation, kRequestGeolocation},
-  };
-
-  for (const auto& test : kTests) {
-    ASSERT_FALSE(
-        content::EvalJs(main_rfh, test.check_permission).value.GetBool());
-    EXPECT_EQ("granted", content::EvalJs(main_rfh, test.request_permission));
-    ASSERT_TRUE(
-        content::EvalJs(main_rfh, test.check_permission).value.GetBool());
-  }
-
-  // Notifications is not supported for file:/// with changed URL.
-  ASSERT_FALSE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
-  EXPECT_EQ("denied", content::EvalJs(main_rfh, kRequestNotifications));
+  // `https://chromium.org` is used for permissions verification.
+  VerifyPermissionsAllowed(main_rfh);
 }
 
 // Verifies that permissions are not supported for file:/// with changed URL to

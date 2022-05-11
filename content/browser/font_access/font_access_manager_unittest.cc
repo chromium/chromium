@@ -19,7 +19,6 @@
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/font_access/font_enumeration_data_source.h"
-#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_browser_context.h"
@@ -103,8 +102,6 @@ class FontAccessManagerTest : public RenderViewHostImplTestHarness {
         static_cast<TestBrowserContext*>(main_rfh()->GetBrowserContext());
     browser_context->SetPermissionControllerDelegate(
         std::make_unique<TestFontAccessPermissionManager>());
-    permission_controller_ =
-        std::make_unique<PermissionControllerImpl>(browser_context);
   }
 
   void TearDown() override {
@@ -128,37 +125,37 @@ class FontAccessManagerTest : public RenderViewHostImplTestHarness {
   void AutoGrantPermission() {
     test_permission_manager()->SetRequestCallback(base::BindRepeating(
         [](TestFontAccessPermissionManager::PermissionCallback callback) {
-          std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+          std::move(callback).Run({blink::mojom::PermissionStatus::GRANTED});
         }));
-    test_permission_manager()->SetPermissionStatusForFrame(
+    test_permission_manager()->SetPermissionStatusForCurrentDocument(
         blink::mojom::PermissionStatus::GRANTED);
   }
 
   void AutoDenyPermission() {
     test_permission_manager()->SetRequestCallback(base::BindRepeating(
         [](TestFontAccessPermissionManager::PermissionCallback callback) {
-          std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+          std::move(callback).Run({blink::mojom::PermissionStatus::DENIED});
         }));
-    test_permission_manager()->SetPermissionStatusForFrame(
+    test_permission_manager()->SetPermissionStatusForCurrentDocument(
         blink::mojom::PermissionStatus::DENIED);
   }
 
   void AskGrantPermission() {
-    test_permission_manager()->SetPermissionStatusForFrame(
-        blink::mojom::PermissionStatus::ASK);
     test_permission_manager()->SetRequestCallback(base::BindRepeating(
         [](TestFontAccessPermissionManager::PermissionCallback callback) {
-          std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
+          std::move(callback).Run({blink::mojom::PermissionStatus::GRANTED});
         }));
+    test_permission_manager()->SetPermissionStatusForCurrentDocument(
+        blink::mojom::PermissionStatus::ASK);
   }
 
   void AskDenyPermission() {
-    test_permission_manager()->SetPermissionStatusForFrame(
-        blink::mojom::PermissionStatus::ASK);
     test_permission_manager()->SetRequestCallback(base::BindRepeating(
         [](TestFontAccessPermissionManager::PermissionCallback callback) {
-          std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+          std::move(callback).Run({blink::mojom::PermissionStatus::DENIED});
         }));
+    test_permission_manager()->SetPermissionStatusForCurrentDocument(
+        blink::mojom::PermissionStatus::ASK);
   }
 
   void SetFrameHidden() { test_rvh()->SimulateWasHidden(); }
@@ -169,7 +166,6 @@ class FontAccessManagerTest : public RenderViewHostImplTestHarness {
   const GURL kTestUrl = GURL("https://example.com/font_access");
   const url::Origin kTestOrigin = url::Origin::Create(GURL(kTestUrl));
 
-  std::unique_ptr<PermissionControllerImpl> permission_controller_;
   std::unique_ptr<FontAccessManager> manager_;
   mojo::Remote<blink::mojom::FontAccessManager> manager_remote_;
   std::unique_ptr<FontAccessManagerSync> manager_sync_;

@@ -20,6 +20,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -89,7 +90,7 @@ void MediaStreamDevicesController::RequestPermissions(
       new MediaStreamDevicesController(web_contents, enumerator, request,
                                        std::move(callback)));
 
-  std::vector<ContentSettingsType> content_settings_types;
+  std::vector<blink::PermissionType> permission_types;
 
   permissions::PermissionManager* permission_manager =
       permissions::PermissionsClient::Get()->GetPermissionManager(
@@ -110,7 +111,7 @@ void MediaStreamDevicesController::RequestPermissions(
       return;
     }
 
-    content_settings_types.push_back(ContentSettingsType::MEDIASTREAM_MIC);
+    permission_types.push_back(blink::PermissionType::AUDIO_CAPTURE);
     will_prompt_for_audio =
         permission_status.content_setting == CONTENT_SETTING_ASK;
   }
@@ -127,7 +128,7 @@ void MediaStreamDevicesController::RequestPermissions(
       return;
     }
 
-    content_settings_types.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
+    permission_types.push_back(blink::PermissionType::VIDEO_CAPTURE);
     will_prompt_for_video =
         permission_status.content_setting == CONTENT_SETTING_ASK;
 
@@ -149,8 +150,7 @@ void MediaStreamDevicesController::RequestPermissions(
         return;
       }
 
-      content_settings_types.push_back(
-          ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
+      permission_types.push_back(blink::PermissionType::CAMERA_PAN_TILT_ZOOM);
     }
   }
 
@@ -159,12 +159,14 @@ void MediaStreamDevicesController::RequestPermissions(
   // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
   // `render_frame_host->GetMainFrame()->GetLastCommittedOrigin()` will be used
   // instead.
-  permission_manager->RequestPermissionsFromCurrentDocument(
-      content_settings_types, rfh, request.user_gesture,
-      base::BindOnce(
-          &MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded,
-          web_contents, std::move(controller), will_prompt_for_audio,
-          will_prompt_for_video));
+  rfh->GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionsFromCurrentDocument(
+          permission_types, rfh, request.user_gesture,
+          base::BindOnce(
+              &MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded,
+              web_contents, std::move(controller), will_prompt_for_audio,
+              will_prompt_for_video));
 }
 
 MediaStreamDevicesController::~MediaStreamDevicesController() {
@@ -203,7 +205,12 @@ void MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded(
     std::unique_ptr<MediaStreamDevicesController> controller,
     bool did_prompt_for_audio,
     bool did_prompt_for_video,
-    const std::vector<ContentSetting>& responses) {
+    const std::vector<blink::mojom::PermissionStatus>& permissions_status) {
+  std::vector<ContentSetting> responses;
+  std::transform(permissions_status.begin(), permissions_status.end(),
+                 back_inserter(responses),
+                 permissions::PermissionUtil::PermissionStatusToContentSetting);
+
 #if BUILDFLAG(IS_ANDROID)
   // If either audio or video was previously allowed and Chrome no longer has
   // the necessary permissions, show a infobar to attempt to address this

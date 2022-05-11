@@ -99,32 +99,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void RequestPermissionsFromCurrentDocument(
-      const std::vector<PermissionType>& permission,
+      const std::vector<PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
-      override;
-
-  void RequestPermissions(
-      const std::vector<PermissionType>& permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<
-          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
-
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin);
-
-  void RequestPermission(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
 
   struct Subscription;

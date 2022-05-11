@@ -152,20 +152,26 @@ void CastPermissionManager::ResetPermission(blink::PermissionType permission,
                                             const GURL& requesting_origin,
                                             const GURL& embedding_origin) {}
 
+void CastPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<blink::PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  std::vector<blink::mojom::PermissionStatus> permission_statuses;
+  for (auto permission : permissions) {
+    permission_statuses.push_back(GetPermissionStatusInternal(
+        permission, render_frame_host,
+        render_frame_host->GetLastCommittedOrigin().GetURL()));
+  }
+  std::move(callback).Run(permission_statuses);
+}
+
 blink::mojom::PermissionStatus CastPermissionManager::GetPermissionStatus(
     blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return GetPermissionStatusInternal(permission, requesting_origin);
-}
-
-blink::mojom::PermissionStatus
-CastPermissionManager::GetPermissionStatusForFrame(
-    blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
-  return GetPermissionStatusInternal(permission, render_frame_host,
-                                     requesting_origin);
 }
 
 blink::mojom::PermissionStatus

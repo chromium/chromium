@@ -54,31 +54,32 @@ class CONTENT_EXPORT PermissionControllerDelegate {
       base::OnceCallback<void(
           const std::vector<blink::mojom::PermissionStatus>&)> callback) = 0;
 
+  // Requests permissions from the current document in the given
+  // RenderFrameHost. Use this over `RequestPermission` whenever possible as
+  // this API takes into account the lifecycle state of a given document (i.e.
+  // whether it's in back-forward cache or being prerendered) in addition to its
+  // origin.
+  virtual void RequestPermissionsFromCurrentDocument(
+      const std::vector<blink::PermissionType>& permissions,
+      RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(
+          const std::vector<blink::mojom::PermissionStatus>&)> callback) = 0;
+
   // Returns the permission status of a given requesting_origin/embedding_origin
   // tuple. This is not taking a RenderFrameHost because the call might happen
-  // outside of a frame context. Prefer GetPermissionStatusForFrame (below)
-  // whenever possible.
+  // outside of a frame context. Prefer GetPermissionStatusForCurrentDocument
+  // (below) whenever possible.
   virtual blink::mojom::PermissionStatus GetPermissionStatus(
       blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
-  // Returns the permission status for a given frame. Use this over
-  // GetPermissionStatus whenever possible.
-  // TODO(raymes): Currently we still pass the |requesting_origin| as a separate
-  // parameter because we can't yet guarantee that it matches the last committed
-  // origin of the RenderFrameHost. See https://crbug.com/698985.
-  // Deprecated. Use `GetPermissionStatusForCurrentDocument` instead.
-  virtual blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      blink::PermissionType permission,
-      RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) = 0;
-
   // Returns the permission status for the current document in the given
-  // RenderFrameHost. Use this over `GetPermissionStatusForFrame` and
-  // `GetPermissionStatus` whenever possible as this API takes into account the
-  // lifecycle state of a given document (i.e. whether it's in back-forward
-  // cache or being prerendered) in addition to its origin.
+  // RenderFrameHost. Use this over `GetPermissionStatus` whenever possible as
+  // this API takes into account the lifecycle state of a given document (i.e.
+  // whether it's in back-forward cache or being prerendered) in addition to its
+  // origin.
   virtual blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) = 0;
