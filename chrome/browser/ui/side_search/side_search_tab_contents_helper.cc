@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -107,6 +108,17 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
     if (side_panel_contents_)
       UpdateSideContentsNavigation();
   }
+
+  // Trigger the timer only when the side panel first becomes available. The
+  // timer should only be cleared when the side panel is no longer available.
+  if (!could_show_for_last_committed_navigation_ &&
+      CanShowSidePanelForCommittedNavigation()) {
+    available_timer_ = base::ElapsedTimer();
+  } else if (!CanShowSidePanelForCommittedNavigation()) {
+    available_timer_.reset();
+  }
+  could_show_for_last_committed_navigation_ =
+      CanShowSidePanelForCommittedNavigation();
 }
 
 void SideSearchTabContentsHelper::OnSideSearchConfigChanged() {
@@ -142,6 +154,16 @@ bool SideSearchTabContentsHelper::CanShowSidePanelForCommittedNavigation() {
   const GURL& url = web_contents()->GetLastCommittedURL();
   return last_search_url_ && GetConfig()->CanShowSidePanelForURL(url) &&
          GetConfig()->is_side_panel_srp_available();
+}
+
+void SideSearchTabContentsHelper::
+    MaybeRecordDurationSidePanelAvailableToFirstOpen() {
+  if (!available_timer_)
+    return;
+  base::UmaHistogramMediumTimes(
+      "SideSearch.TimeSinceSidePanelAvailableToFirstOpen",
+      available_timer_->Elapsed());
+  available_timer_.reset();
 }
 
 void SideSearchTabContentsHelper::SetDelegate(

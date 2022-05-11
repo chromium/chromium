@@ -458,6 +458,7 @@ void SideSearchBrowserController::SidePanelCloseButtonPressed() {
 void SideSearchBrowserController::OpenSidePanel() {
   RecordSideSearchOpenAction(
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
+  RecordSidePanelOpenedMetrics();
   // Close the Side Search IPH if it is showing.
   browser_view_->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -621,4 +622,14 @@ void SideSearchBrowserController::OnWebViewVisibilityChanged() {
   // by the hosting Widget.
   if (web_view_->GetVisible())
     web_view_->web_contents()->Focus();
+}
+
+void SideSearchBrowserController::RecordSidePanelOpenedMetrics() {
+  auto* active_contents = browser_view_->GetActiveWebContents();
+  if (!active_contents)
+    return;
+
+  auto* helper = SideSearchTabContentsHelper::FromWebContents(active_contents);
+  if (helper)
+    helper->MaybeRecordDurationSidePanelAvailableToFirstOpen();
 }

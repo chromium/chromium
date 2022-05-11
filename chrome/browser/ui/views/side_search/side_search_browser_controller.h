@@ -100,6 +100,9 @@ class SideSearchBrowserController
   // manager to update the visibility of its web_view_ child.
   void OnWebViewVisibilityChanged();
 
+  // Called after the side panel is toggled open to emit relevant UMA metrics.
+  void RecordSidePanelOpenedMetrics();
+
   base::CallbackListSubscription web_view_visibility_subscription_;
 
   raw_ptr<ToolbarButton> toolbar_button_ = nullptr;

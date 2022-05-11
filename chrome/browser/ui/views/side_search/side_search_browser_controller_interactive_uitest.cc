@@ -479,6 +479,8 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   histogram_tester_.ExpectBucketCount(
       "SideSearch.OpenAction",
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 1);
 
   // Toggling the close button should close the side panel.
   NotifyCloseButtonClick(browser());
@@ -617,6 +619,8 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 1);
 
   ActivateTabAt(browser(), 0);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
@@ -627,6 +631,8 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 2);
 
   ActivateTabAt(browser(), 1);
   TestSidePanelOpenEntrypointState(browser());
@@ -745,6 +751,21 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
+                       TimeUntilOpenMetricEmittedCorrectlyMultipleNavigations) {
+  // Perform a search and navigate multiple times to non-matching pages before
+  // finally opening the side panel.
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  NotifyButtonClick(browser());
+  TestSidePanelOpenEntrypointState(browser());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 1);
 }
 
 // Only test the side search icon view chip in the DSE configuration.
