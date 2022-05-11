@@ -69,6 +69,22 @@ DownloadToolbarButtonView::~DownloadToolbarButtonView() {
   bubble_controller_.reset();
 }
 
+void DownloadToolbarButtonView::SetBubbleCreatedCallbackForTesting(
+    base::OnceClosure callback) {
+  // The bubble already exists, run the callback right away. This can happen
+  // when starting a new download.
+  if (bubble_delegate_) {
+    std::move(callback).Run();
+    return;
+  }
+  bubble_created_callback_for_testing_ = std::move(callback);
+}
+
+void DownloadToolbarButtonView::SetBubbleDestroyedCallbackForTesting(
+    base::OnceClosure callback) {
+  bubble_destroyed_callback_for_testing_ = std::move(callback);
+}
+
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   DownloadDisplayController::ProgressInfo progress_info =
       controller_->GetProgress();
@@ -213,6 +229,11 @@ void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
   bubble_delegate_ = nullptr;
   primary_view_ = nullptr;
   security_view_ = nullptr;
+  download_row_list_view_ = nullptr;
+  download_list_size_ = 0;
+  if (bubble_destroyed_callback_for_testing_) {
+    std::move(bubble_destroyed_callback_for_testing_).Run();
+  }
 }
 
 // TODO(bhatiarohit): Remove the margin around the bubble.
@@ -249,6 +270,9 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   bubble_delegate_->GetWidget()->Show();
+  if (bubble_created_callback_for_testing_) {
+    std::move(bubble_created_callback_for_testing_).Run();
+  }
 }
 
 // If the bubble delegate is set (either the main or the partial view), the
@@ -269,17 +293,19 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
   if (is_primary_partial_view_ && model_list.empty())
     return nullptr;
 
-  auto row_list_view =
-      std::make_unique<DownloadBubbleRowListView>(is_primary_partial_view_);
+  download_list_size_ = model_list.size();
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  download_row_list_view_ = scroll_view->SetContents(
+      std::make_unique<DownloadBubbleRowListView>(is_primary_partial_view_));
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
-    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller_.get(), this));
+    download_row_list_view_->AddChildView(
+        std::make_unique<DownloadBubbleRowView>(
+            std::move(model), download_row_list_view_.get(),
+            bubble_controller_.get(), this));
   }
 
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(std::move(row_list_view));
   scroll_view->ClipHeightTo(0, kMaxHeightForRowList);
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);

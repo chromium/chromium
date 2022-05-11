@@ -9,6 +9,7 @@
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -19,7 +20,7 @@ class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleUIController;
 class DownloadBubbleRowView;
-class DownloadBubbleSecurityView;
+class DownloadBubbleRowListView;
 
 class DownloadBubbleNavigationHandler {
  public:
@@ -67,6 +68,12 @@ class DownloadToolbarButtonView : public ToolbarButton,
   }
 
  private:
+  // For testing.
+  friend class DownloadBubbleDialogBrowserTest;
+  bool IsBubbleVisible() { return bubble_delegate_ != nullptr; }
+  void SetBubbleCreatedCallbackForTesting(base::OnceClosure callback);
+  void SetBubbleDestroyedCallbackForTesting(base::OnceClosure callback);
+
   // views::Button overrides:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
@@ -89,6 +96,12 @@ class DownloadToolbarButtonView : public ToolbarButton,
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<View> primary_view_ = nullptr;
   raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
+
+  // For testing
+  base::OnceClosure bubble_created_callback_for_testing_;
+  base::OnceClosure bubble_destroyed_callback_for_testing_;
+  size_t download_list_size_ = 0;
+  raw_ptr<DownloadBubbleRowListView> download_row_list_view_ = nullptr;
 
   gfx::SlideAnimation scanning_animation_{this};
 

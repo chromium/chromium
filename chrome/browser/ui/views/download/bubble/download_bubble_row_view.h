@@ -69,6 +69,8 @@ class DownloadBubbleRowView : public views::View,
                                   float new_device_scale_factor) override;
 
  private:
+  friend class DownloadBubbleDialogBrowserTest;
+
   raw_ptr<views::MdTextButton> AddMainPageButton(
       DownloadCommands::Command command,
       const std::u16string& button_string);
@@ -89,6 +91,12 @@ class DownloadBubbleRowView : public views::View,
   void OnCancelButtonPressed();
   void OnDiscardButtonPressed();
   void OnMainButtonPressed();
+
+  // Callback for dangerous downloads for testing.
+  void SetNotifyDangerousDownloadCallbackForTesting(base::OnceClosure callback);
+  void NotifyIfDownloadDangerous();
+  base::OnceClosure notify_dangerous_download_callback_for_testing_;
+  bool ui_updated_for_dangerous_download_ = false;
 
   // TODO(bhatiarohit): Add platform-independent icons.
   // The icon for the file. We get platform-specific icons from IconLoader.
