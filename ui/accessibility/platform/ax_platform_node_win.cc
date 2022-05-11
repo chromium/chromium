@@ -1060,15 +1060,15 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kLayoutTable:
       return {UIALocalizationStrategy::kDeferToControlType,
-              UIA_TableControlTypeId, L"grid"};
+              UIA_GroupControlTypeId, L"group"};
 
     case ax::mojom::Role::kLayoutTableCell:
       return {UIALocalizationStrategy::kDeferToControlType,
-              UIA_DataItemControlTypeId, L"gridcell"};
+              UIA_GroupControlTypeId, L"group"};
 
     case ax::mojom::Role::kLayoutTableRow:
-      return {UIALocalizationStrategy::kDeferToAriaRole,
-              UIA_DataItemControlTypeId, L"row"};
+      return {UIALocalizationStrategy::kDeferToAriaRole, UIA_GroupControlTypeId,
+              L"group"};
 
     case ax::mojom::Role::kLink:
       return {UIALocalizationStrategy::kDeferToControlType,
@@ -7069,7 +7069,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       // text to be effectively repeated.
       auto* ancestor = FromNativeViewAccessible(GetDelegate()->GetParent());
       while (ancestor) {
-        if (IsCellOrTableHeader(ancestor->GetRole()))
+        if (IsUIACellOrTableHeader(ancestor->GetRole()))
           return false;
         switch (ancestor->GetRole()) {
           case ax::mojom::Role::kListItem:
@@ -7111,7 +7111,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
     // The control view also includes noninteractive UI items that contribute
     // to the logical structure of the UI.
     if (IsControl(GetRole()) || ComputeUIALandmarkType() ||
-        IsTableLike(GetRole()) || IsList(GetRole())) {
+        IsUIATableLike(GetRole()) || IsList(GetRole())) {
       return true;
     }
     if (IsImage(GetRole())) {
@@ -7813,13 +7813,13 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_GridPatternId:
-      if (IsTableLike(GetRole())) {
+      if (IsUIATableLike(GetRole())) {
         return &PatternProvider<IGridProvider>;
       }
       break;
 
     case UIA_GridItemPatternId:
-      if (IsCellOrTableHeader(GetRole())) {
+      if (IsUIACellOrTableHeader(GetRole())) {
         return &PatternProvider<IGridItemProvider>;
       }
       break;
@@ -7864,7 +7864,12 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       // headers, we should expose the Table pattern on all table-like roles.
       // This will allow clients to detect such constructs as tables and expose
       // row/column counts and navigation along with Table semantics.
-      if (IsTableLike(GetRole()))
+      //
+      // On UIA, we don't want to expose the ITableProvider for layout tables
+      // because it can cause extraneous, confusing announcements for users. We
+      // initially exposed it, but decided to re-evaluate our decision after
+      // hearing from users.
+      if (IsUIATableLike(GetRole()))
         return &PatternProvider<ITableProvider>;
       break;
 
@@ -7875,8 +7880,14 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       // headers, we should expose the Table pattern on all table-like roles.
       // This will allow clients to detect such constructs as tables and expose
       // row/column counts and navigation along with Table semantics.
-      if (IsCellOrTableHeader(GetRole()))
+      //
+      // On UIA, we don't want to expose the ITableProvider for layout tables
+      // because it can cause extraneous, confusing announcements for users. We
+      // initially exposed it, but decided to re-evaluate our decision after
+      // hearing from users.
+      if (IsUIACellOrTableHeader(GetRole())) {
         return &PatternProvider<ITableProvider>;
+      }
       break;
 
     case UIA_TextChildPatternId:

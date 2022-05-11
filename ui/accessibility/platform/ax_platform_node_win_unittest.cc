@@ -5792,7 +5792,7 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
       UIA_ControlTypePropertyId, int{UIA_TableControlTypeId});
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child2.id),
-      UIA_ControlTypePropertyId, int{UIA_TableControlTypeId});
+      UIA_ControlTypePropertyId, int{UIA_GroupControlTypeId});
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child3.id),
       UIA_ControlTypePropertyId, int{UIA_EditControlTypeId});

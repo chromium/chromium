@@ -958,6 +958,20 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
   }
 }
 
+bool IsUIATableLike(ax::mojom::Role role) {
+  if (role == ax::mojom::Role::kLayoutTable)
+    return false;
+
+  return IsTableLike(role);
+}
+
+bool IsUIACellOrTableHeader(ax::mojom::Role role) {
+  if (role == ax::mojom::Role::kLayoutTableCell)
+    return false;
+
+  return IsCellOrTableHeader(role);
+}
+
 bool IsWindow(ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kWindow:

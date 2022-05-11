@@ -229,6 +229,13 @@ AX_BASE_EXPORT bool IsTextField(ax::mojom::Role role);
 // objects. See the method definition for more details.
 AX_BASE_EXPORT bool IsUIAEmbeddedObject(ax::mojom::Role role);
 
+// Returns false if |role| is a layout table, or whatever `IsTableLike` returns.
+AX_BASE_EXPORT bool IsUIATableLike(ax::mojom::Role role);
+
+// Returns false if |role| is a layout table cell, or whatever
+// `IsCellOrTableHeader` returns.
+AX_BASE_EXPORT bool IsUIACellOrTableHeader(ax::mojom::Role role);
+
 // Returns true if the provided role represents a window.
 AX_BASE_EXPORT bool IsWindow(const ax::mojom::Role role);
 
