@@ -60,6 +60,10 @@ bool OverlayStrategyUnderlayCast::Attempt(
   QuadList& quad_list = render_pass->quad_list;
   bool found_underlay = false;
   gfx::Rect content_rect;
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+
   for (const auto* quad : base::Reversed(quad_list)) {
     if (OverlayCandidate::IsInvisibleQuad(quad))
       continue;
@@ -79,12 +83,9 @@ bool OverlayStrategyUnderlayCast::Attempt(
       // quad is supposed to be to replace it with a transparent quad to allow
       // the underlay to be visible.
       // VIDEO_HOLE implies it requires overlay.
-      is_underlay =
-          quad->material == DrawQuad::Material::kVideoHole &&
-          OverlayCandidate::FromDrawQuad(
-              resource_provider, surface_damage_rect_list, output_color_matrix,
-              quad, GetPrimaryPlaneDisplayRect(primary_plane),
-              &candidate) == OverlayCandidate::CandidateStatus::kSuccess;
+      is_underlay = quad->material == DrawQuad::Material::kVideoHole &&
+                    candidate_factory.FromDrawQuad(quad, candidate) ==
+                        OverlayCandidate::CandidateStatus::kSuccess;
       found_underlay = is_underlay;
     }
 
@@ -110,10 +111,8 @@ bool OverlayStrategyUnderlayCast::Attempt(
     for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
       OverlayCandidate candidate;
       if (it->material != DrawQuad::Material::kVideoHole ||
-          OverlayCandidate::FromDrawQuad(
-              resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, GetPrimaryPlaneDisplayRect(primary_plane),
-              &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
+          candidate_factory.FromDrawQuad(*it, candidate) !=
+              OverlayCandidate::CandidateStatus::kSuccess) {
         continue;
       }
 
@@ -145,6 +144,10 @@ void OverlayStrategyUnderlayCast::ProposePrioritized(
   QuadList& quad_list = render_pass->quad_list;
   OverlayCandidate candidate;
   auto overlay_iter = quad_list.end();
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+
   // Original code did reverse iteration.
   // Here we do forward but find the last one. which should be the same thing.
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
@@ -160,10 +163,8 @@ void OverlayStrategyUnderlayCast::ProposePrioritized(
     // the underlay to be visible.
     // VIDEO_HOLE implies it requires overlay.
     if (it->material == DrawQuad::Material::kVideoHole &&
-        OverlayCandidate::FromDrawQuad(
-            resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane),
-            &candidate) == OverlayCandidate::CandidateStatus::kSuccess) {
+        candidate_factory.FromDrawQuad(*it, candidate) ==
+            OverlayCandidate::CandidateStatus::kSuccess) {
       overlay_iter = it;
     }
   }
@@ -190,6 +191,10 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
   QuadList& quad_list = render_pass->quad_list;
   bool found_underlay = false;
   gfx::Rect content_rect;
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+
   for (const auto* quad : base::Reversed(quad_list)) {
     if (OverlayCandidate::IsInvisibleQuad(quad))
       continue;
@@ -209,12 +214,9 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
       // quad is supposed to be to replace it with a transparent quad to allow
       // the underlay to be visible.
       // VIDEO_HOLE implies it requires overlay.
-      is_underlay =
-          quad->material == DrawQuad::Material::kVideoHole &&
-          OverlayCandidate::FromDrawQuad(
-              resource_provider, surface_damage_rect_list, output_color_matrix,
-              quad, GetPrimaryPlaneDisplayRect(primary_plane),
-              &candidate) == OverlayCandidate::CandidateStatus::kSuccess;
+      is_underlay = quad->material == DrawQuad::Material::kVideoHole &&
+                    candidate_factory.FromDrawQuad(quad, candidate) ==
+                        OverlayCandidate::CandidateStatus::kSuccess;
       found_underlay = is_underlay;
     }
 
@@ -240,10 +242,8 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
     for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
       OverlayCandidate candidate;
       if (it->material != DrawQuad::Material::kVideoHole ||
-          OverlayCandidate::FromDrawQuad(
-              resource_provider, surface_damage_rect_list, output_color_matrix,
-              *it, GetPrimaryPlaneDisplayRect(primary_plane),
-              &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
+          candidate_factory.FromDrawQuad(*it, candidate) !=
+              OverlayCandidate::CandidateStatus::kSuccess) {
         continue;
       }
 

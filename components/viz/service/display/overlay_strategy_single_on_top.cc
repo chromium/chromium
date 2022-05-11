@@ -35,13 +35,15 @@ bool OverlayStrategySingleOnTop::Attempt(
   QuadList* quad_list = &render_pass->quad_list;
   // Build a list of candidates with the associated quad.
   OverlayCandidate best_candidate;
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+
   auto best_quad_it = quad_list->end();
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
-    if (OverlayCandidate::FromDrawQuad(
-            resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane),
-            &candidate) == OverlayCandidate::CandidateStatus::kSuccess &&
+    if (candidate_factory.FromDrawQuad(*it, candidate) ==
+            OverlayCandidate::CandidateStatus::kSuccess &&
         !candidate.has_mask_filter &&
         !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
       // If the candidate has been promoted previously and has not changed
@@ -92,12 +94,14 @@ void OverlayStrategySingleOnTop::ProposePrioritized(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
   // Build a list of candidates with the associated quad.
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane));
+
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
-    if (OverlayCandidate::FromDrawQuad(
-            resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane),
-            &candidate) == OverlayCandidate::CandidateStatus::kSuccess &&
+    if (candidate_factory.FromDrawQuad(*it, candidate) ==
+            OverlayCandidate::CandidateStatus::kSuccess &&
         !candidate.has_mask_filter &&
         !OverlayCandidate::IsOccluded(candidate, quad_list->cbegin(), it)) {
       candidates->push_back({it, candidate, this});

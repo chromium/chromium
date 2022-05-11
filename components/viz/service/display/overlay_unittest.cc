@@ -1190,14 +1190,13 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
 
   // Code to make sure the 'unique' tracking ids are actually identical.
   OverlayCandidate candidate_a;
-  SkM44 ident;
-  auto ret_a = OverlayCandidate::FromDrawQuad(
-      resource_provider_.get(), &surface_damage_rect_list, ident, quad_a,
-      gfx::RectF(pass->output_rect), &candidate_a);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect));
+  auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
-  auto ret_b = OverlayCandidate::FromDrawQuad(
-      resource_provider_.get(), &surface_damage_rect_list, ident, quad_b,
-      gfx::RectF(pass->output_rect), &candidate_b);
+  auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
   EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_a);
   EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_b);
 
@@ -1207,10 +1206,9 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
   pass_list.push_back(std::move(pass));
   overlay_processor_->SetFrameSequenceNumber(1);
   overlay_processor_->ProcessForOverlays(
-      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &candidate_list,
-      &damage_rect_, &content_bounds_);
+      resource_provider_.get(), &pass_list, color_mat, render_pass_filters,
+      render_pass_backdrop_filters, std::move(surface_damage_rect_list),
+      nullptr, &candidate_list, &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
 
   // Check that one quad is gone.
@@ -1239,15 +1237,14 @@ TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
       kCandidateRect, SurfaceId(FrameSinkId(2, 2), LocalSurfaceId()));
   // Code to make sure the 'unique' tracking ids are actually different.
   OverlayCandidate candidate_a;
-  SkM44 ident;
   SurfaceDamageRectList surface_damage_rect_list;
-  auto ret_a = OverlayCandidate::FromDrawQuad(
-      resource_provider_.get(), &surface_damage_rect_list, ident, quad_a,
-      gfx::RectF(pass->output_rect), &candidate_a);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect));
+  auto ret_a = candidate_factory.FromDrawQuad(quad_a, candidate_a);
   OverlayCandidate candidate_b;
-  auto ret_b = OverlayCandidate::FromDrawQuad(
-      resource_provider_.get(), &surface_damage_rect_list, ident, quad_b,
-      gfx::RectF(pass->output_rect), &candidate_b);
+  auto ret_b = candidate_factory.FromDrawQuad(quad_b, candidate_b);
   EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_a);
   EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_b);
 
@@ -4300,11 +4297,12 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredBasic) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kSmallCandidateRect);
   SurfaceDamageRectList surface_damage_rect_list;
-  SkM44 default_color = GetIdentityColorMatrix();
   OverlayCandidate candidate;
-  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
-                                 &surface_damage_rect_list, default_color,
-                                 new_quad, gfx::RectF(), &candidate);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect));
+  candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a default candidate is not a required overlay.
   EXPECT_FALSE(candidate.requires_overlay);
@@ -4322,11 +4320,12 @@ TEST_F(SingleOverlayOnTopTest, IsOverlayRequiredHwProtectedVideo) {
       kSmallCandidateRect, gfx::ProtectedVideoType::kHardwareProtected,
       YUV_420_BIPLANAR);
   SurfaceDamageRectList surface_damage_rect_list;
-  SkM44 default_color = GetIdentityColorMatrix();
   OverlayCandidate candidate;
-  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
-                                 &surface_damage_rect_list, default_color,
-                                 new_quad, gfx::RectF(), &candidate);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect));
+  candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Verify that a HW protected video candidate requires overlay.
   EXPECT_TRUE(candidate.requires_overlay);
@@ -4345,11 +4344,12 @@ TEST_F(SingleOverlayOnTopTest, RequiredOverlayClippingAndSubsampling) {
       YUV_420_BIPLANAR);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
-  SkM44 default_color = GetIdentityColorMatrix();
   OverlayCandidate candidate;
-  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
-                                 &surface_damage_rect_list, default_color,
-                                 new_quad, gfx::RectF(), &candidate);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect));
+  candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
   // corresponds to 32, 48, 288x192. That maps to |kVideoCandidateRect| in the
@@ -4378,13 +4378,14 @@ TEST_F(SingleOverlayOnTopTest,
       YUV_420_BIPLANAR);
   pass->shared_quad_state_list.back()->clip_rect = kOverlayClipRect;
   SurfaceDamageRectList surface_damage_rect_list;
-  SkM44 default_color = GetIdentityColorMatrix();
   gfx::RectF primary_rect(0, 0, 100, 120);
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
   OverlayCandidate candidate;
-  OverlayCandidate::FromDrawQuad(resource_provider_.get(),
-                                 &surface_damage_rect_list, default_color,
-                                 new_quad, primary_rect, &candidate);
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, primary_rect);
+  candidate_factory.FromDrawQuad(new_quad, candidate);
 
   // Default uv rect is 0.1, 0.2, 1.0, 1.0 which in the 320x240 buffer
   // corresponds to 32, 48, 288x192. That maps to |kVideoCandidateRect| in the
@@ -4453,7 +4454,7 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
       kCandidateSmall * kCandidateSmall,
       kCandidateSmall * kCandidateSmall - kOccluderWidth * kOccluderWidth,
       kCandidateLarge * kCandidateLarge - kOccluderWidth * kOccluderWidth * 2,
-      kCandidateLarge * kCandidateLarge * 4 -
+      kOverlayRect.width() * kOverlayRect.height() -
           kOccluderWidth * kOccluderWidth * 2};
 
   static_assert(
@@ -4481,21 +4482,22 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
     if (kCandidateUseSurfaceIndex[i]) {
       damaged_shared_quad_state->overlay_damage_index =
           surface_damage_rect_list.size();
-      surface_damage_rect_list.emplace_back(kCandidateRects[i]);
     } else {
       damaged_shared_quad_state->overlay_damage_index.reset();
     }
+    surface_damage_rect_list.emplace_back(kCandidateRects[i]);
 
     auto* quad_candidate = CreateCandidateQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), damaged_shared_quad_state, pass.get(),
         kCandidateRects[i]);
 
-    SkM44 default_color = GetIdentityColorMatrix();
     OverlayCandidate candidate;
-    OverlayCandidate::FromDrawQuad(resource_provider_.get(),
-                                   &surface_damage_rect_list, default_color,
-                                   quad_candidate, gfx::RectF(), &candidate);
+    auto color_mat = GetIdentityColorMatrix();
+    auto candidate_factory = OverlayCandidateFactory(
+        pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+        &color_mat, gfx::RectF());
+    candidate_factory.FromDrawQuad(quad_candidate, candidate);
 
     // Before the 'EstimateOccludedDamage' function is called the damage area
     // will just be whatever comes from the |surface_damage_rect_list|.
@@ -4512,8 +4514,8 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
     // Now we test the opaque occlusion provided by 'EstimateOccludedDamage'
     // function.
-    candidate.damage_area_estimate = OverlayCandidate::EstimateVisibleDamage(
-        quad_candidate, &surface_damage_rect_list, quad_list.begin(),
+    candidate.damage_area_estimate = candidate_factory.EstimateVisibleDamage(
+        quad_candidate, candidate, quad_list.begin(),
         std::next(quad_list.begin(), occluder_iter_count));
 
     ASSERT_EQ(kExpectedDamages[i], candidate.damage_area_estimate);

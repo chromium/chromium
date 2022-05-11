@@ -1262,6 +1262,9 @@ void SurfaceAggregator::CopyQuadsToPass(
   const DrawQuad* quad_with_overlay_damage_index = nullptr;
   if (needs_surface_damage_rect_list_ &&
       resolved_pass.aggregation().will_draw) {
+    // TODO(crbug.com/1323002): If there is one specific quad for this pass's
+    // damage we should move the allocation of the damage index below to be
+    // consistent with quad ordering.
     quad_with_overlay_damage_index =
         FindQuadWithOverlayDamage(source_pass, dest_pass, target_transform,
                                   surface, &overlay_damage_index);

@@ -134,6 +134,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       !render_pass_backdrop_filters.empty())
     return false;
 
+  OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
+      render_pass, resource_provider, surface_damage_rect_list,
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      is_delegated_context);
+
   std::vector<QuadList::Iterator> candidate_quads;
   int num_quads_skipped = 0;
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
@@ -146,10 +151,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),
         base::StringPrintf("m=%d rid=%d", static_cast<int>(it->material),
                            it->resources.begin()->value()));
-    auto candidate_status = OverlayCandidate::FromDrawQuad(
-        resource_provider, surface_damage_rect_list, output_color_matrix, *it,
-        GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
-        is_delegated_context);
+    auto candidate_status = candidate_factory.FromDrawQuad(*it, candidate);
     if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
       if (it->material == DrawQuad::Material::kSolidColor) {
         DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
@@ -198,6 +200,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       candidates->clear();
       delegated_status_ = DelegationStatus::kCompositedCheckOverlayFail;
       DBG_DRAW_RECT("delegated.handled.failed", each.display_rect);
+      DBG_LOG("delegated.handled.failed", "Handled failed %s",
+              each.display_rect.ToString().c_str());
       return false;
     }
   }

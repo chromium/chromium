@@ -60,17 +60,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   using TrackingId = uint32_t;
   static constexpr TrackingId kDefaultTrackingId{0};
 
-  // Returns true and fills in |candidate| if |draw_quad| is of a known quad
-  // type and contains an overlayable resource. |primary_rect| can be empty in
-  // the case of a null primary plane.
-  static CandidateStatus FromDrawQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const SkM44& output_color_matrix,
-      const DrawQuad* quad,
-      const gfx::RectF& primary_rect,
-      OverlayCandidate* candidate,
-      bool is_delegated_context = false);
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
@@ -81,25 +70,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                          QuadList::ConstIterator quad_list_begin,
                          QuadList::ConstIterator quad_list_end);
 
-  // Returns an estimate of this |quad|'s actual visible damage area. This
-  // visible damage is computed by combining from input
-  // |surface_damage_rect_list| with the occluding rects in the quad_list.
-  // This is an estimate since the occluded damage area is calculated on a per
-  // quad basis.
-  static int EstimateVisibleDamage(
-      const DrawQuad* quad,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      QuadList::ConstIterator quad_list_begin,
-      QuadList::ConstIterator quad_list_end);
-
-  // Returns true if any of the quads in the list given by |quad_list_begin|
-  // and |quad_list_end| have a filter associated and occlude |candidate|.
-  static bool IsOccludedByFilteredQuad(
-      const OverlayCandidate& candidate,
-      QuadList::ConstIterator quad_list_begin,
-      QuadList::ConstIterator quad_list_end,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
-          render_pass_backdrop_filters);
+  // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
+  // This function will also update the |uv_rect| based on what clipping was
+  // applied to |display_rect|.
+  static void ApplyClip(OverlayCandidate& candidate,
+                        const gfx::RectF& clip_rect);
 
   // Returns true if the |quad| cannot be displayed on the main plane. This is
   // used in conjuction with protected content that can't be GPU composited and
@@ -163,7 +138,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // The total area in square pixels of damage for this candidate's quad. This
   // is an estimate when 'EstimateOccludedDamage' function is used.
-  int damage_area_estimate = 0;
+  float damage_area_estimate = 0.f;
 
   // Damage in buffer space (extents bound by |resource_size_in_pixels|).
   gfx::RectF damage_rect;
@@ -211,71 +186,102 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // surface and have the same |DrawQuad::rect| they will have the same
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
-
- private:
-  static CandidateStatus FromDrawQuadResource(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const DrawQuad* quad,
-      ResourceId resource_id,
-      bool y_flipped,
-      OverlayCandidate* candidate,
-      bool is_delegated_context,
-      const gfx::RectF& primary_rect);
-
-  static CandidateStatus FromTextureQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const TextureDrawQuad* quad,
-      const gfx::RectF& primary_rect,
-      OverlayCandidate* candidate,
-      bool is_delegated_context);
-
-  static CandidateStatus FromTileQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const TileDrawQuad* quad,
-      const gfx::RectF& primary_rect,
-      OverlayCandidate* candidate);
-
-  static CandidateStatus FromAggregateQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const AggregatedRenderPassDrawQuad* quad,
-      const gfx::RectF& primary_rect,
-      OverlayCandidate* candidate);
-
-  static CandidateStatus FromSolidColorQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const SolidColorDrawQuad* quad,
-      const gfx::RectF& primary_rect,
-      OverlayCandidate* candidate);
-
-  static CandidateStatus FromStreamVideoQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const StreamVideoDrawQuad* quad,
-      OverlayCandidate* candidate,
-      bool is_delegated_context,
-      const gfx::RectF& primary_rect);
-
-  static CandidateStatus FromVideoHoleQuad(
-      DisplayResourceProvider* resource_provider,
-      SurfaceDamageRectList* surface_damage_rect_list,
-      const VideoHoleDrawQuad* quad,
-      OverlayCandidate* candidate);
-  static void HandleClipAndSubsampling(OverlayCandidate* candidate,
-                                       const gfx::RectF& primary_rect);
-  static void AssignDamage(const DrawQuad* quad,
-                           SurfaceDamageRectList* surface_damage_rect_list,
-                           OverlayCandidate* candidate);
-
-  static void ApplyClip(OverlayCandidate* candidate,
-                        const gfx::RectF& clip_rect);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;
+
+// This is a factory to help with the creation of |OverlayCandidates|.  On
+// construction, this factory captures the required objects to create candidates
+// from a draw quad.  Common computations for all possible candidates can be
+// made at construction time. This class is const after construction and not
+// copy/moveable to avoid capture ownership issues.
+class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
+ public:
+  using CandidateStatus = OverlayCandidate::CandidateStatus;
+
+  OverlayCandidateFactory(const AggregatedRenderPass* render_pass,
+                          DisplayResourceProvider* resource_provider,
+                          const SurfaceDamageRectList* surface_damage_rect_list,
+                          const SkM44* output_color_matrix,
+                          const gfx::RectF primary_rect,
+                          bool is_delegated_context = false);
+
+  OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
+  OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
+
+  ~OverlayCandidateFactory();
+
+  // Returns |kSuccess| and fills in |candidate| if |draw_quad| is of a known
+  // quad type and contains an overlayable resource. |primary_rect| can be empty
+  // in the case of a null primary plane. |candidate| is expected to be a
+  // freshly constructed |OverlayCandidate| object.
+  CandidateStatus FromDrawQuad(const DrawQuad* quad,
+                               OverlayCandidate& candidate) const;
+
+  // Returns an estimate of this |quad|'s actual visible damage area as float
+  // pixels squared. This visible damage is computed by combining from input
+  // |surface_damage_rect_list_| with the occluding rects in the quad_list. This
+  // is an estimate since the occluded damage area is calculated on a per quad
+  // basis. The |quad_list_begin| and |quad_list_end| provide the range of valid
+  // occluders of this |candidate|.
+  // TODO(petermcneeley): Can we replace this with |visible_rect| in |DrawQuad|?
+  float EstimateVisibleDamage(const DrawQuad* quad,
+                              const OverlayCandidate& candidate,
+                              QuadList::ConstIterator quad_list_begin,
+                              QuadList::ConstIterator quad_list_end) const;
+
+  // Returns true if any of the quads in the list given by |quad_list_begin|
+  // and |quad_list_end| have an associated filter and occlude |candidate|.
+  bool IsOccludedByFilteredQuad(
+      const OverlayCandidate& candidate,
+      QuadList::ConstIterator quad_list_begin,
+      QuadList::ConstIterator quad_list_end,
+      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+          render_pass_backdrop_filters) const;
+
+ private:
+  CandidateStatus FromDrawQuadResource(const DrawQuad* quad,
+                                       ResourceId resource_id,
+                                       bool y_flipped,
+                                       OverlayCandidate& candidate) const;
+
+  CandidateStatus FromTextureQuad(const TextureDrawQuad* quad,
+                                  OverlayCandidate& candidate) const;
+
+  CandidateStatus FromTileQuad(const TileDrawQuad* quad,
+                               OverlayCandidate& candidate) const;
+
+  CandidateStatus FromAggregateQuad(const AggregatedRenderPassDrawQuad* quad,
+                                    OverlayCandidate& candidate) const;
+
+  CandidateStatus FromSolidColorQuad(const SolidColorDrawQuad* quad,
+                                     OverlayCandidate& candidate) const;
+
+  CandidateStatus FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
+                                      OverlayCandidate& candidate) const;
+
+  CandidateStatus FromVideoHoleQuad(const VideoHoleDrawQuad* quad,
+                                    OverlayCandidate& candidate) const;
+
+  void HandleClipAndSubsampling(OverlayCandidate& candidate) const;
+
+  void AssignDamage(const DrawQuad* quad, OverlayCandidate& candidate) const;
+
+  // Damage returned from this function is in target content space.
+  gfx::RectF GetDamageRect(const DrawQuad* quad,
+                           const OverlayCandidate& candidate) const;
+
+  const AggregatedRenderPass* render_pass_;
+  DisplayResourceProvider* resource_provider_;
+  const SurfaceDamageRectList* surface_damage_rect_list_;
+  const SkM44* output_color_matrix_;
+  const gfx::RectF primary_rect_;
+  bool is_delegated_context_;
+
+  // The union of all surface damages that are not specifically assigned to a
+  // draw quad.
+  gfx::Rect unassigned_surface_damage_;
+};
 
 }  // namespace viz
 
