@@ -530,7 +530,8 @@ void AccessibilityTreeFormatterUia::RecursiveBuildTree(
     } else {
       child_dict->SetStringKey("error", "[Error retrieving child]");
     }
-    child_list->Append(std::move(child_dict));
+    child_list->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(child_dict)));
   }
   dict->Set(kChildrenDictAttr, std::move(child_list));
 }
