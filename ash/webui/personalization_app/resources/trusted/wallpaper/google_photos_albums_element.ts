@@ -207,6 +207,11 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     return undefined;
   }
 
+  /** Returns the aria posinset index for the album at index |i|. */
+  private getAlbumAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
   /** Returns the secondary text to display for the specified |album|. */
   private getSecondaryText_(album: GooglePhotosAlbum): string {
     return getCountText(album.photoCount);
