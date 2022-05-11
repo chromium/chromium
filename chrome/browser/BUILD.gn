@@ -3668,6 +3668,8 @@ static_library("browser") {
       "autofill_assistant/password_change/apc_client.h",
       "autofill_assistant/password_change/apc_client_impl.cc",
       "autofill_assistant/password_change/apc_client_impl.h",
+      "autofill_assistant/password_change/apc_external_action_delegate.cc",
+      "autofill_assistant/password_change/apc_external_action_delegate.h",
       "autofill_assistant/password_change/apc_onboarding_coordinator.h",
       "autofill_assistant/password_change/apc_onboarding_coordinator_impl.cc",
       "autofill_assistant/password_change/apc_onboarding_coordinator_impl.h",
