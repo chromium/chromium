@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("mojo_service_manager") {
+  sources = [
+    "connection.cc",
+    "connection.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+  public_deps = [ "//chromeos/components/mojo_service_manager/mojom" ]
+  defines = [ "IS_CHROMEOS_MOJO_SERVICE_MANAGER_IMPL" ]
+}
