@@ -154,7 +154,7 @@ void FileAnalyzer::StartExtractZipFeatures() {
 
 void FileAnalyzer::OnZipAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
-  base::UmaHistogramEnumeration("SBClientDownload.ZipArchiveAnalysisResult",
+  base::UmaHistogramEnumeration("SBClientDownload.ZipArchiveNotValidReason",
                                 archive_results.analysis_result);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -202,7 +202,7 @@ void FileAnalyzer::StartExtractRarFeatures() {
 void FileAnalyzer::OnRarAnalysisFinished(
     const ArchiveAnalyzerResults& archive_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::UmaHistogramEnumeration("SBClientDownload.RarArchiveAnalysisResult",
+  base::UmaHistogramEnumeration("SBClientDownload.RarArchiveNotValidReason",
                                 archive_results.analysis_result);
 
   results_.archive_is_valid =
@@ -260,7 +260,7 @@ void FileAnalyzer::ExtractFileOrDmgFeatures(
 void FileAnalyzer::OnDmgAnalysisFinished(
     const safe_browsing::ArchiveAnalyzerResults& archive_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::UmaHistogramEnumeration("SBClientDownload.DmgArchiveAnalysisResult",
+  base::UmaHistogramEnumeration("SBClientDownload.DmgArchiveNotValidReason",
                                 archive_results.analysis_result);
 
   if (archive_results.signature_blob.size() > 0) {
