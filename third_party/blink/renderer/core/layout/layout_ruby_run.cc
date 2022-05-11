@@ -70,25 +70,21 @@ LayoutRubyText* LayoutRubyRun::RubyText() const {
   // text, layout will have to be changed to handle them properly.
   DCHECK(!child || !child->IsRubyText() ||
          !child->IsFloatingOrOutOfFlowPositioned());
-  return child && child->IsRubyText() ? static_cast<LayoutRubyText*>(child)
-                                      : nullptr;
+  return DynamicTo<LayoutRubyText>(child);
 }
 
 LayoutRubyBase* LayoutRubyRun::RubyBase() const {
   NOT_DESTROYED();
-  LayoutObject* child = LastChild();
-  return child && child->IsRubyBase() ? static_cast<LayoutRubyBase*>(child)
-                                      : nullptr;
+  return DynamicTo<LayoutRubyBase>(LastChild());
 }
 
-LayoutRubyBase* LayoutRubyRun::RubyBaseSafe() {
+LayoutRubyBase& LayoutRubyRun::EnsureRubyBase() {
   NOT_DESTROYED();
-  LayoutRubyBase* base = RubyBase();
-  if (!base) {
-    base = CreateRubyBase();
-    LayoutBlockFlow::AddChild(base);
-  }
-  return base;
+  if (auto* base = RubyBase())
+    return *base;
+  auto& new_base = CreateRubyBase();
+  LayoutBlockFlow::AddChild(&new_base);
+  return new_base;
 }
 
 bool LayoutRubyRun::IsChildAllowed(LayoutObject* child,
@@ -114,42 +110,42 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
       DCHECK_EQ(before_child->Parent(), this);
       LayoutObject* ruby = Parent();
       DCHECK(ruby->IsRuby());
-      auto* new_run = StaticCreateRubyRun(ruby, *ContainingBlock());
-      ruby->AddChild(new_run, NextSibling());
-      new_run->RubyBaseSafe();
+      auto& new_run = Create(ruby, *ContainingBlock());
+      ruby->AddChild(&new_run, NextSibling());
+      new_run.EnsureRubyBase();
       // Add the new ruby text and move the old one to the new run
       // Note: Doing it in this order and not using LayoutRubyRun's methods,
       // in order to avoid automatic removal of the ruby run in case there is no
       // other child besides the old ruby text.
       LayoutBlockFlow::AddChild(child, before_child);
       LayoutBlockFlow::RemoveChild(before_child);
-      new_run->AddChild(before_child);
+      new_run.AddChild(before_child);
     } else if (RubyBase()->FirstChild()) {
       // Insertion before a ruby base object.
       // In this case we need insert a new run before the current one and split
       // the base.
       LayoutObject* ruby = Parent();
-      LayoutRubyRun* new_run = StaticCreateRubyRun(ruby, *ContainingBlock());
-      ruby->AddChild(new_run, this);
-      new_run->RubyBaseSafe();
-      new_run->AddChild(child);
+      LayoutRubyRun& new_run = Create(ruby, *ContainingBlock());
+      ruby->AddChild(&new_run, this);
+      auto& new_base = new_run.EnsureRubyBase();
+      new_run.AddChild(child);
 
       // Make sure we don't leave anything in the percentage descendant
       // map before moving the children to the new base.
       if (HasPercentHeightDescendants())
         ClearPercentHeightDescendants();
-      RubyBaseSafe()->MoveChildren(new_run->RubyBaseSafe(), before_child);
+      EnsureRubyBase().MoveChildren(new_base, before_child);
     }
   } else {
     // child is not a text -> insert it into the base
     // (append it instead if beforeChild is the ruby text)
-    LayoutRubyBase* base = RubyBaseSafe();
-    if (before_child == base)
-      before_child = base->FirstChild();
+    LayoutRubyBase& base = EnsureRubyBase();
+    if (before_child == &base)
+      before_child = base.FirstChild();
     if (before_child && before_child->IsRubyText())
       before_child = nullptr;
-    DCHECK(!before_child || before_child->IsDescendantOf(base));
-    base->AddChild(child, before_child);
+    DCHECK(!before_child || before_child->IsDescendantOf(&base));
+    base.AddChild(child, before_child);
   }
 }
 
@@ -162,12 +158,12 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
     LayoutObject* right_neighbour = NextSibling();
     if (base->FirstChild() && right_neighbour && right_neighbour->IsRubyRun()) {
       auto* right_run = To<LayoutRubyRun>(right_neighbour);
-      LayoutRubyBase* right_base = right_run->RubyBaseSafe();
-      if (right_base->FirstChild()) {
+      LayoutRubyBase& right_base = right_run->EnsureRubyBase();
+      if (right_base.FirstChild()) {
         // Collect all children in a single base, then swap the bases.
-        right_base->MoveChildren(base);
+        right_base.MoveChildren(*base);
         MoveChildTo(right_run, base);
-        right_run->MoveChildTo(this, right_base);
+        right_run->MoveChildTo(this, &right_base);
         DCHECK(!RubyBase()->FirstChild());
       }
     }
@@ -188,22 +184,21 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
   }
 }
 
-LayoutRubyBase* LayoutRubyRun::CreateRubyBase() const {
+LayoutRubyBase& LayoutRubyRun::CreateRubyBase() const {
   NOT_DESTROYED();
-  LayoutRubyBase* layout_object =
-      LayoutRubyBase::CreateAnonymous(&GetDocument(), *this);
+  auto* layout_object = LayoutRubyBase::CreateAnonymous(&GetDocument(), *this);
   scoped_refptr<ComputedStyle> new_style =
       GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           StyleRef(), EDisplay::kBlock);
   new_style->SetTextAlign(ETextAlign::kCenter);  // FIXME: use WEBKIT_CENTER?
   new_style->SetHasLineIfEmpty(true);
   layout_object->SetStyle(std::move(new_style));
-  return layout_object;
+  return *layout_object;
 }
 
-LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
-    const LayoutObject* parent_ruby,
-    const LayoutBlock& containing_block) {
+// static
+LayoutRubyRun& LayoutRubyRun::Create(const LayoutObject* parent_ruby,
+                                     const LayoutBlock& containing_block) {
   DCHECK(parent_ruby);
   DCHECK(parent_ruby->IsRuby());
   LayoutRubyRun* rr;
@@ -219,7 +214,7 @@ LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
           .CreateAnonymousStyleWithDisplay(parent_ruby->StyleRef(),
                                            EDisplay::kInlineBlock);
   rr->SetStyle(std::move(new_style));
-  return rr;
+  return *rr;
 }
 
 LayoutObject* LayoutRubyRun::LayoutSpecialExcludedChild(

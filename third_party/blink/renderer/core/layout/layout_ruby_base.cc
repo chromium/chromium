@@ -60,12 +60,11 @@ bool LayoutRubyBase::IsChildAllowed(LayoutObject* child,
   return child->IsInline();
 }
 
-void LayoutRubyBase::MoveChildren(LayoutRubyBase* to_base,
+// This function removes all children that are before (!) before_child
+// and appends them to to_base.
+void LayoutRubyBase::MoveChildren(LayoutRubyBase& to_base,
                                   LayoutObject* before_child) {
   NOT_DESTROYED();
-  // This function removes all children that are before (!) beforeChild
-  // and appends them to toBase.
-  DCHECK(to_base);
   // Callers should have handled the percent height descendant map.
   DCHECK(!HasPercentHeightDescendants());
 
@@ -79,55 +78,53 @@ void LayoutRubyBase::MoveChildren(LayoutRubyBase* to_base,
 
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kUnknown);
-  to_base->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+  to_base.SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kUnknown);
 }
 
-void LayoutRubyBase::MoveInlineChildren(LayoutRubyBase* to_base,
+void LayoutRubyBase::MoveInlineChildren(LayoutRubyBase& to_base,
                                         LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
-  DCHECK(to_base);
 
   if (!FirstChild())
     return;
 
   LayoutBlock* to_block;
-  if (to_base->ChildrenInline()) {
+  if (to_base.ChildrenInline()) {
     // The standard and easy case: move the children into the target base
-    to_block = to_base;
+    to_block = &to_base;
   } else {
     // We need to wrap the inline objects into an anonymous block.
     // If toBase has a suitable block, we re-use it, otherwise create a new one.
-    LayoutObject* last_child = to_base->LastChild();
+    LayoutObject* last_child = to_base.LastChild();
     if (last_child && last_child->IsAnonymousBlock() &&
         last_child->ChildrenInline()) {
       to_block = To<LayoutBlock>(last_child);
     } else {
-      to_block = to_base->CreateAnonymousBlock();
-      to_base->Children()->AppendChildNode(to_base, to_block);
+      to_block = to_base.CreateAnonymousBlock();
+      to_base.Children()->AppendChildNode(&to_base, to_block);
     }
   }
   // Move our inline children into the target block we determined above.
   MoveChildrenTo(to_block, FirstChild(), before_child);
 }
 
-void LayoutRubyBase::MoveBlockChildren(LayoutRubyBase* to_base,
+void LayoutRubyBase::MoveBlockChildren(LayoutRubyBase& to_base,
                                        LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(!ChildrenInline());
-  DCHECK(to_base);
 
   if (!FirstChild())
     return;
 
-  if (to_base->ChildrenInline())
-    to_base->MakeChildrenNonInline();
+  if (to_base.ChildrenInline())
+    to_base.MakeChildrenNonInline();
 
   // If an anonymous block would be put next to another such block, then merge
   // those.
   LayoutObject* first_child_here = FirstChild();
-  LayoutObject* last_child_there = to_base->LastChild();
+  LayoutObject* last_child_there = to_base.LastChild();
   if (first_child_here->IsAnonymousBlock() &&
       first_child_here->ChildrenInline() && last_child_there &&
       last_child_there->IsAnonymousBlock() &&
@@ -142,7 +139,7 @@ void LayoutRubyBase::MoveBlockChildren(LayoutRubyBase* to_base,
   // Move all remaining children normally. If moving all children, include our
   // float list.
   if (!before_child) {
-    bool full_remove_insert = to_base->HasLayer() || HasLayer();
+    bool full_remove_insert = to_base.HasLayer() || HasLayer();
     // TODO(kojii): |this| is |!ChildrenInline()| when we enter this function,
     // but it may turn to |ChildrenInline()| when |anon_block_here| is destroyed
     // above. Probably the correct fix is to do it earlier and switch to
@@ -150,9 +147,9 @@ void LayoutRubyBase::MoveBlockChildren(LayoutRubyBase* to_base,
     // using |full_remove_insert| can prevent inconsistent LayoutObject tree
     // that leads to CHECK failures.
     full_remove_insert |= ChildrenInline();
-    MoveAllChildrenIncludingFloatsTo(to_base, full_remove_insert);
+    MoveAllChildrenIncludingFloatsTo(&to_base, full_remove_insert);
   } else {
-    MoveChildrenTo(to_base, FirstChild(), before_child);
+    MoveChildrenTo(&to_base, FirstChild(), before_child);
     RemoveFloatingObjectsFromDescendants();
   }
 }
