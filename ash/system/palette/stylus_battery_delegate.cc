@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -51,7 +52,11 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
 
   if (IsBatteryCharging()) {
     info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+    } else {
+      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    }
   }
 
   const SkColor icon_fg_color = GetColorForBatteryLevel();

@@ -298,8 +298,9 @@ bool PaletteTray::ShouldShowPalette() const {
 
 bool PaletteTray::ShouldShowOnDisplay() {
   if (stylus_utils::IsPaletteEnabledOnEveryDisplay() ||
-      display_has_stylus_for_testing_)
+      display_has_stylus_for_testing_) {
     return true;
+  }
 
   // |widget| is null when this function is called from PaletteTray constructor
   // before it is added to a widget.
@@ -322,6 +323,7 @@ bool PaletteTray::ShouldShowOnDisplay() {
     ids.insert(ids.end(), mirrors.begin(), mirrors.end());
     ids.push_back(display_manager->mirroring_source_id());
   }
+
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus && std::find(ids.begin(), ids.end(),

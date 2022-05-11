@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -320,6 +321,12 @@ class BatteryIconView : public BatteryInfoViewBase {
     SetLayoutManager(std::move(layout));
 
     battery_image_ = AddChildView(std::make_unique<views::ImageView>());
+    if (features::IsDarkLightModeEnabled()) {
+      // The battery icon requires its own layer to properly render the masked
+      // outline of the badge within the battery icon.
+      battery_image_->SetPaintToLayer();
+      battery_image_->layer()->SetFillsBoundsOpaquely(false);
+    }
     ConfigureIcon();
 
     percentage_ = AddChildView(std::make_unique<views::Label>());
@@ -594,9 +601,8 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
     separator_->SetPreferredHeight(kUnifiedSystemInfoHeight);
 
     const bool use_smart_charging_ui = UseSmartChargingUI();
-    if (use_smart_charging_ui) {
+    if (use_smart_charging_ui)
       AddChildView(std::make_unique<BatteryIconView>(controller));
-    }
     AddChildView(
         std::make_unique<BatteryLabelView>(controller, use_smart_charging_ui));
   }
