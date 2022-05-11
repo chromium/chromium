@@ -140,12 +140,12 @@ std::unique_ptr<api::tabs::Tab> CreateTabObject(
   return tab_object;
 }
 
-std::unique_ptr<base::ListValue> CreateTabList(
-    const std::vector<CastWebContents*>& webviews,
-    const Extension* extension) {
-  std::unique_ptr<base::ListValue> tab_list(new base::ListValue());
+base::Value::List CreateTabList(const std::vector<CastWebContents*>& webviews,
+                                const Extension* extension) {
+  base::Value::List tab_list;
   for (size_t i = 0; i < webviews.size(); i++) {
-    tab_list->Append(CreateTabObject(webviews[i], extension, i)->ToValue());
+    tab_list.Append(base::Value::FromUniquePtrValue(
+        CreateTabObject(webviews[i], extension, i)->ToValue()));
   }
   return tab_list;
 }
@@ -209,27 +209,27 @@ int GetID(const std::unique_ptr<int>& id) {
   return -1;
 }
 
-std::unique_ptr<base::DictionaryValue> CreateWindowValueForExtension(
+base::Value::Dict CreateWindowValueForExtension(
     content::BrowserContext* browser_context,
     const Extension* extension,
     ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior) {
-  auto result = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict result;
 
-  result->SetInteger(keys::kIdKey, 0);
-  result->SetString(keys::kWindowTypeKey, "normal");
-  result->SetBoolean(keys::kFocusedKey, true);
-  result->SetBoolean(keys::kIncognitoKey, browser_context->IsOffTheRecord());
-  result->SetBoolean(keys::kAlwaysOnTopKey, true);
-  result->SetString(keys::kShowStateKey, "locked-fullscreen");
+  result.Set(keys::kIdKey, 0);
+  result.Set(keys::kWindowTypeKey, "normal");
+  result.Set(keys::kFocusedKey, true);
+  result.Set(keys::kIncognitoKey, browser_context->IsOffTheRecord());
+  result.Set(keys::kAlwaysOnTopKey, true);
+  result.Set(keys::kShowStateKey, "locked-fullscreen");
 
   gfx::Rect bounds(0, 0, 640, 480);
-  result->SetInteger(keys::kLeftKey, bounds.x());
-  result->SetInteger(keys::kTopKey, bounds.y());
-  result->SetInteger(keys::kWidthKey, bounds.width());
-  result->SetInteger(keys::kHeightKey, bounds.height());
+  result.Set(keys::kLeftKey, bounds.x());
+  result.Set(keys::kTopKey, bounds.y());
+  result.Set(keys::kWidthKey, bounds.width());
+  result.Set(keys::kHeightKey, bounds.height());
 
   if (populate_tab_behavior == ExtensionTabUtil::kPopulateTabs)
-    result->Set(keys::kTabsKey, CreateTabList(GetTabList(), extension));
+    result.Set(keys::kTabsKey, CreateTabList(GetTabList(), extension));
 
   return result;
 }
@@ -274,11 +274,9 @@ ExtensionFunction::ResponseAction WindowsGetFunction::Run() {
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
-  std::unique_ptr<base::DictionaryValue> windows =
-      CreateWindowValueForExtension(browser_context(), extension(),
-                                    populate_tab_behavior);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
+  base::Value::Dict windows = CreateWindowValueForExtension(
+      browser_context(), extension(), populate_tab_behavior);
+  return RespondNow(OneArgument(base::Value(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
@@ -291,11 +289,9 @@ ExtensionFunction::ResponseAction WindowsGetCurrentFunction::Run() {
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
-  std::unique_ptr<base::DictionaryValue> windows =
-      CreateWindowValueForExtension(browser_context(), extension(),
-                                    populate_tab_behavior);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
+  base::Value::Dict windows = CreateWindowValueForExtension(
+      browser_context(), extension(), populate_tab_behavior);
+  return RespondNow(OneArgument(base::Value(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
@@ -308,11 +304,9 @@ ExtensionFunction::ResponseAction WindowsGetLastFocusedFunction::Run() {
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
-  std::unique_ptr<base::DictionaryValue> windows =
-      CreateWindowValueForExtension(browser_context(), extension(),
-                                    populate_tab_behavior);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(windows))));
+  base::Value::Dict windows = CreateWindowValueForExtension(
+      browser_context(), extension(), populate_tab_behavior);
+  return RespondNow(OneArgument(base::Value(std::move(windows))));
 }
 
 ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
@@ -321,15 +315,14 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ApiParameterExtractor<windows::GetAll::Params> extractor(params.get());
-  std::unique_ptr<base::ListValue> window_list(new base::ListValue());
+  base::Value::List window_list;
   ExtensionTabUtil::PopulateTabBehavior populate_tab_behavior =
       extractor.populate_tabs() ? ExtensionTabUtil::kPopulateTabs
                                 : ExtensionTabUtil::kDontPopulateTabs;
-  window_list->Append(CreateWindowValueForExtension(
+  window_list.Append(CreateWindowValueForExtension(
       browser_context(), extension(), populate_tab_behavior));
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(window_list))));
+  return RespondNow(OneArgument(base::Value(std::move(window_list))));
 }
 
 ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
@@ -350,9 +343,8 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
         keys::kWindowNotFoundError, base::NumberToString(params->window_id))));
   }
 
-  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
-      CreateWindowValueForExtension(browser_context(), extension(),
-                                    ExtensionTabUtil::kDontPopulateTabs))));
+  return RespondNow(OneArgument(base::Value(CreateWindowValueForExtension(
+      browser_context(), extension(), ExtensionTabUtil::kDontPopulateTabs))));
 }
 
 ExtensionFunction::ResponseAction WindowsRemoveFunction::Run() {
@@ -399,8 +391,8 @@ ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kWindowNotFoundError, base::NumberToString(window_id))));
 
-  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
-      CreateTabList(GetTabList(), extension()))));
+  return RespondNow(
+      OneArgument(base::Value(CreateTabList(GetTabList(), extension()))));
 }
 
 ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
@@ -441,8 +433,8 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
 
   // For now, pretend that all tabs will match the query.
   // TODO(achaulk): make this actually execute the query.
-  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
-      CreateTabList(GetTabList(), extension()))));
+  return RespondNow(
+      OneArgument(base::Value(CreateTabList(GetTabList(), extension()))));
 }
 
 ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
@@ -537,9 +529,8 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   selection.set_active(active_index);
   // TODO(achaulk): figure out what tab focus means for cast.
   NOTIMPLEMENTED() << "not changing tab focus";
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(CreateWindowValueForExtension(
-          browser_context(), extension(), ExtensionTabUtil::kPopulateTabs))));
+  return RespondNow(OneArgument(base::Value(CreateWindowValueForExtension(
+      browser_context(), extension(), ExtensionTabUtil::kPopulateTabs))));
 }
 
 bool TabsHighlightFunction::HighlightTab(

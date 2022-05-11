@@ -129,25 +129,24 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
   }
 
   const char* event_type_string = TtsEventTypeToString(event_type);
-  std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue());
+  base::Value::Dict details;
   if (char_index >= 0)
-    details->SetInteger(constants::kCharIndexKey, char_index);
+    details.Set(constants::kCharIndexKey, char_index);
   if (length >= 0)
-    details->SetInteger(constants::kLengthKey, length);
-  details->SetString(constants::kEventTypeKey, event_type_string);
+    details.Set(constants::kLengthKey, length);
+  details.Set(constants::kEventTypeKey, event_type_string);
   if (event_type == content::TTS_EVENT_ERROR) {
-    details->SetString(constants::kErrorMessageKey, error_message);
+    details.Set(constants::kErrorMessageKey, error_message);
   }
-  details->SetInteger(constants::kSrcIdKey, utterance->GetSrcId());
-  details->SetBoolean(constants::kIsFinalEventKey, utterance->IsFinished());
+  details.Set(constants::kSrcIdKey, utterance->GetSrcId());
+  details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
 
-  std::unique_ptr<base::ListValue> arguments(new base::ListValue());
-  arguments->Append(std::move(details));
+  std::vector<base::Value> arguments;
+  arguments.emplace_back(std::move(details));
 
   auto event = std::make_unique<extensions::Event>(
       ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
-      std::move(*arguments).TakeListDeprecated(),
-      utterance->GetBrowserContext());
+      std::move(arguments), utterance->GetBrowserContext());
   event->event_url = utterance->GetSrcUrl();
   extensions::EventRouter::Get(utterance->GetBrowserContext())
       ->DispatchEventToExtension(src_extension_id_, std::move(event));
@@ -315,30 +314,28 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
   content::TtsController::GetInstance()->GetVoices(browser_context(), GURL(),
                                                    &voices);
 
-  auto result_voices = std::make_unique<base::ListValue>();
+  base::Value::List result_voices;
   for (size_t i = 0; i < voices.size(); ++i) {
     const content::VoiceData& voice = voices[i];
-    std::unique_ptr<base::DictionaryValue> result_voice(
-        new base::DictionaryValue());
-    result_voice->SetString(constants::kVoiceNameKey, voice.name);
-    result_voice->SetBoolean(constants::kRemoteKey, voice.remote);
+    base::Value::Dict result_voice;
+    result_voice.Set(constants::kVoiceNameKey, voice.name);
+    result_voice.Set(constants::kRemoteKey, voice.remote);
     if (!voice.lang.empty())
-      result_voice->SetString(constants::kLangKey, voice.lang);
+      result_voice.Set(constants::kLangKey, voice.lang);
     if (!voice.engine_id.empty())
-      result_voice->SetString(constants::kExtensionIdKey, voice.engine_id);
+      result_voice.Set(constants::kExtensionIdKey, voice.engine_id);
 
-    auto event_types = std::make_unique<base::ListValue>();
+    base::Value::List event_types;
     for (auto iter = voice.events.begin(); iter != voice.events.end(); ++iter) {
       const char* event_name_constant = TtsEventTypeToString(*iter);
-      event_types->Append(event_name_constant);
+      event_types.Append(event_name_constant);
     }
-    result_voice->Set(constants::kEventTypesKey, std::move(event_types));
+    result_voice.Set(constants::kEventTypesKey, std::move(event_types));
 
-    result_voices->Append(std::move(result_voice));
+    result_voices.Append(std::move(result_voice));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result_voices))));
+  return RespondNow(OneArgument(base::Value(std::move(result_voices))));
 }
 
 TtsAPI::TtsAPI(content::BrowserContext* context) {
