@@ -294,9 +294,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       test_helper_.LoadExpectationFile(expected_file);
 
   // Get the test URL.
-  GURL url(embedded_test_server()->GetURL(
-      "a.test",
-      "/" + std::string(file_dir) + "/" + file_path.BaseName().MaybeAsASCII()));
+  GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
+                                          file_path.BaseName().MaybeAsASCII()));
   WebContentsImpl* web_contents = GetWebContents();
 
   if (enable_accessibility_after_navigating_ &&
@@ -582,14 +581,6 @@ DumpAccessibilityTestBase::FindNodeByHTMLAttributeInSubtree(
       return result;
   }
   return nullptr;
-}
-
-void DumpAccessibilityTestBase::UseHttpsTestServer() {
-  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server_.get()->AddDefaultHandlers(GetTestDataFilePath());
-  https_test_server_.get()->SetSSLConfig(
-      net::EmbeddedTestServer::CERT_TEST_NAMES);
 }
 
 }  // namespace content

@@ -647,26 +647,17 @@ void AXObject::Init(AXObject* parent) {
   if (parent_ && parent_->RoleValue() == ax::mojom::blink::Role::kIframe &&
       RoleValue() != ax::mojom::blink::Role::kDocument) {
     // A frame/iframe can only have a document child.
-    // Make an exception for ShadowDOM based fenced frames. While they have
-    // the same role as a regular IFrame, they will have an inner iframe
-    // be the child of the outer iframe, rather than a document. This
-    // behavior is expected and the exception is carved out here.
     if (!blink::features::IsFencedFramesEnabled() ||
         !blink::features::IsFencedFramesShadowDOMBased() ||
         !IsA<HTMLFencedFrameElement>(parent_->GetNode())) {
+      // Exception for now: shadow DOM fenced frame.
+      // TODO(crbug.com/1316348): see if AXNodeObject::AddNodeChildren() needs
+      // to change for fenced frames similar to iframes and whether this change
+      // would then still be necessary.
       NOTREACHED() << "An iframe can only have a document child."
                    << "\n* Child = " << ToString(true, true)
                    << "\n* Parent =  " << parent_->ToString(true, true);
     }
-  }
-
-  if (blink::features::IsFencedFramesEnabled() &&
-      blink::features::IsFencedFramesShadowDOMBased() && parent_ &&
-      IsA<HTMLFencedFrameElement>(parent_->GetNode()) &&
-      RoleValue() != ax::mojom::blink::Role::kIframe) {
-    NOTREACHED() << "A ShadowDOM fenced frame must have an iframe child."
-                 << "\n* Child = " << ToString(true, true)
-                 << "\n* Parent =  " << parent_->ToString(true, true);
   }
 #endif
 }
