@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/base_export.h"
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -81,12 +81,13 @@ class BASE_EXPORT InsecureRandomGenerator {
   // free() time.
   friend class ::partition_alloc::RandomGenerator;
 
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                           InsecureRandomGeneratorProducesBothValuesOfAllBits);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                           InsecureRandomGeneratorChiSquared);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                           InsecureRandomGeneratorRandDouble);
+  PA_FRIEND_TEST_ALL_PREFIXES(
+      PartitionAllocBaseRandUtilTest,
+      InsecureRandomGeneratorProducesBothValuesOfAllBits);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
+                              InsecureRandomGeneratorChiSquared);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
+                              InsecureRandomGeneratorRandDouble);
 };
 
 }  // namespace partition_alloc::internal::base

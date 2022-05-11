@@ -15,7 +15,6 @@ include_rules = [
     "+base/dcheck_is_on.h",
     "+base/debug/proc_maps_linux.h",
     "+base/fuchsia/fuchsia_logging.h",
-    "+base/gtest_prod_util.h",
     "+base/immediate_crash.h",
     "+base/lazy_instance.h",
     "+base/location.h",
@@ -43,6 +42,7 @@ include_rules = [
     "+build/chromecast_buildflags.h",
     "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
+    "+testing/gtest/include/gtest/gtest_prod.h",
     "+testing/perf/perf_result_reporter.h",
     "+third_party/lss/linux_syscall_support.h",
 ]

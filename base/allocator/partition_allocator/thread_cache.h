@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
@@ -20,7 +21,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -418,26 +418,29 @@ class BASE_EXPORT ThreadCache {
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
   friend class tools::ThreadCacheInspector;
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           MultipleObjectsCachedPerBucket);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           LargeAllocationsAreNotCached);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, MultipleThreadCaches);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, RecordStats);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ThreadCacheRegistry);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           MultipleThreadCachesAccounting);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           DynamicCountPerBucket);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           DynamicCountPerBucketClamping);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           DynamicCountPerBucketMultipleThreads);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, DynamicSizeThreshold);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                           DynamicSizeThresholdPurge);
-  FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              MultipleObjectsCachedPerBucket);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              LargeAllocationsAreNotCached);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              MultipleThreadCaches);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, RecordStats);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              ThreadCacheRegistry);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              MultipleThreadCachesAccounting);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              DynamicCountPerBucket);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              DynamicCountPerBucketClamping);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              DynamicCountPerBucketMultipleThreads);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              DynamicSizeThreshold);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
+                              DynamicSizeThresholdPurge);
+  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
