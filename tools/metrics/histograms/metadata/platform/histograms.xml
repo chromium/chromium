@@ -155,66 +155,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Cr50.BoardIdFlags" enum="Cr50BoardIdFlags"
-    expires_after="2022-09-25">
-  <owner>apronin@chromium.org</owner>
-  <owner>vbendeb@chromium.org</owner>
-  <summary>
-    A sparse histogram of values of Board ID flags programmed in H1 devices in
-    the field. Board ID flags is a 32 bit field, and while there only are a few
-    expected values, conceivably any bit combination could be encountered.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Cr50.BoardIdOfRlzMismatch" enum="Cr50CrosRlzCodes"
-    expires_after="2022-09-30">
-  <owner>vbendeb@chromium.org</owner>
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    A sparse histogram of values indexed by 4 byte Board ID code programmed in
-    H1 reported by devices where there is a mismatch between the RLZ code and
-    the Board ID value programmed in the H1.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Cr50.FlashLog" enum="Cr50FlashLogs"
-    expires_after="2022-09-25">
-  <owner>apronin@chromium.org</owner>
-  <owner>vbendeb@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    A histogram of flash log event types collected from the H1 device. Log event
-    type is an 8 bit value. This histogram does not allow to drill into
-    particular log entries' contents, but allows to collect a general statistics
-    of events. A script running on the Chrome OS device polls the H1 for new
-    flash log events after every start up.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Cr50.MatchingBoardId" enum="Cr50CrosRlzCodes"
-    expires_after="M85">
-  <owner>vbendeb@chromium.org</owner>
-  <summary>
-    A sparse histogram of values indexed by 4 byte Board ID code programmed in
-    H1, reported by devices where there is no mismatch between the RLZ code and
-    the Board ID value.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Cr50.RlzOfBoardIdMismatch" enum="Cr50CrosRlzCodes"
-    expires_after="2022-10-09">
-  <owner>vbendeb@chromium.org</owner>
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    A sparse histogram of values indexed by 4 byte RLZ code reported by devices
-    where there is a mismatch between the RLZ code and the Board ID value
-    programmed in the H1. Since RLZ code could be misprogrammed, a sparse
-    histogram is used to allow keeping track of outliers.
-  </summary>
-</histogram>
-
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
     enum="CrosCrashSenderRemoveReason" expires_after="2022-11-06">
   <owner>iby@chromium.org</owner>
@@ -1454,6 +1394,88 @@ chromium-metrics-reviews@google.com.
     The fraction of compressed memory that consists of zero-filled pages.
     Snapshot every 30s.
   </summary>
+</histogram>
+
+<histogram name="Platform.{GSC}.BoardIdFlags" enum="Cr50BoardIdFlags"
+    expires_after="2022-09-25">
+  <owner>apronin@chromium.org</owner>
+  <owner>vbendeb@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    A sparse histogram of values of Board ID flags programmed in GSC devices in
+    the field. Board ID flags is a 32 bit field, and while there only are a few
+    expected values, conceivably any bit combination could be encountered.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.{GSC}.BoardIdOfRlzMismatch" enum="Cr50CrosRlzCodes"
+    expires_after="2022-09-30">
+  <owner>vbendeb@chromium.org</owner>
+  <owner>apronin@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    A sparse histogram of values indexed by 4 byte Board ID code programmed in
+    GSC reported by devices where there is a mismatch between the RLZ code and
+    the Board ID value programmed in the GSC.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.{GSC}.FlashLog" enum="Cr50FlashLogs"
+    expires_after="2022-09-25">
+  <owner>apronin@chromium.org</owner>
+  <owner>vbendeb@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    A histogram of flash log event types collected from the GSC device. Log
+    event type is an 8 bit value. This histogram does not allow to drill into
+    particular log entries' contents, but allows to collect a general statistics
+    of events. A script running on the Chrome OS device polls the GSC for new
+    flash log events after every start up.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.{GSC}.MatchingBoardId" enum="Cr50CrosRlzCodes"
+    expires_after="2022-10-26">
+  <owner>vbendeb@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    A sparse histogram of values indexed by 4 byte Board ID code programmed in
+    GSC, reported by devices where there is no mismatch between the RLZ code and
+    the Board ID value.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.{GSC}.RlzOfBoardIdMismatch" enum="Cr50CrosRlzCodes"
+    expires_after="2022-10-09">
+  <owner>vbendeb@chromium.org</owner>
+  <owner>apronin@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    A sparse histogram of values indexed by 4 byte RLZ code reported by devices
+    where there is a mismatch between the RLZ code and the Board ID value
+    programmed in the GSC. Since RLZ code could be misprogrammed, a sparse
+    histogram is used to allow keeping track of outliers.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
 </histogram>
 
 <histogram name="PlatformFile.UnknownErrors.Posix" enum="PopularOSErrno"
