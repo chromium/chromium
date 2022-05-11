@@ -255,9 +255,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mEventFilter =
                 new AreaGestureEventFilter(context, mTabStripEventHandler, null, false, false);
 
-        mNormalHelper = new StripLayoutHelper(context, updateHost, renderHost, false);
-        mIncognitoHelper = new StripLayoutHelper(context, updateHost, renderHost, true);
-
         CompositorOnClickHandler selectorClickHandler = new CompositorOnClickHandler() {
             @Override
             public void onClick(long time) {
@@ -283,6 +280,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mStripScrim = new StripScrim(context, mWidth, mHeight);
         mStripScrim.setVisible(false);
         mBrowserScrimShowing = false;
+
+        mNormalHelper =
+                new StripLayoutHelper(context, updateHost, renderHost, false, mModelSelectorButton);
+        mIncognitoHelper =
+                new StripLayoutHelper(context, updateHost, renderHost, true, mModelSelectorButton);
 
         onContextChanged(context);
     }
