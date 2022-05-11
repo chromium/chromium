@@ -637,6 +637,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._package_info = None
     self._suite = None
     self._test_apk = None
+    self._test_apk_as_instant = False
     self._test_apk_incremental_install_json = None
     self._test_jar = None
     self._test_package = None
@@ -730,6 +731,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._test_apk = apk_helper.ToHelper(test_apk_path)
     self._suite = os.path.splitext(os.path.basename(args.test_apk))[0]
+
+    self._test_apk_as_instant = args.test_apk_as_instant
 
     self._apk_under_test_incremental_install_json = (
         args.apk_under_test_incremental_install_json)
@@ -1006,6 +1009,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def test_apk(self):
     return self._test_apk
+
+  @property
+  def test_apk_as_instant(self):
+    return self._test_apk_as_instant
 
   @property
   def test_apk_incremental_install_json(self):

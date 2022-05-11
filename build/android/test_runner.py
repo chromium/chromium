@@ -540,6 +540,11 @@ def AddInstrumentationTestOptions(parser):
       required=True,
       help='Path or name of the apk containing the tests.')
   parser.add_argument(
+      '--test-apk-as-instant',
+      action='store_true',
+      help='Install the test apk as an instant app. '
+      'Instant apps run in a more restrictive execution environment.')
+  parser.add_argument(
       '--test-jar',
       help='Path of jar containing test java files.')
   parser.add_argument(

@@ -227,7 +227,8 @@ class LocalDeviceInstrumentationTestRun(
                          modules=None,
                          fake_modules=None,
                          permissions=None,
-                         additional_locales=None):
+                         additional_locales=None,
+                         instant_app=False):
 
         @instrumentation_tracing.no_tracing
         @trace_event.traced
@@ -237,7 +238,8 @@ class LocalDeviceInstrumentationTestRun(
                     modules=modules,
                     fake_modules=fake_modules,
                     permissions=permissions,
-                    additional_locales=additional_locales)
+                    additional_locales=additional_locales,
+                    instant_app=instant_app)
 
         return install_helper_internal
 
@@ -247,19 +249,25 @@ class LocalDeviceInstrumentationTestRun(
         def incremental_install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
           installer.Install(d, json_path, apk=apk, permissions=permissions)
+
         return incremental_install_helper_internal
 
       permissions = self._test_instance.test_apk.GetPermissions()
       if self._test_instance.test_apk_incremental_install_json:
-        steps.append(incremental_install_helper(
-                         self._test_instance.test_apk,
-                         self._test_instance.
-                             test_apk_incremental_install_json,
-                         permissions))
+        if self._test_instance.test_apk_as_instant:
+          raise Exception('Test APK cannot be installed as an instant '
+                          'app if it is incremental')
+
+        steps.append(
+            incremental_install_helper(
+                self._test_instance.test_apk,
+                self._test_instance.test_apk_incremental_install_json,
+                permissions))
       else:
         steps.append(
-            install_helper(
-                self._test_instance.test_apk, permissions=permissions))
+            install_helper(self._test_instance.test_apk,
+                           permissions=permissions,
+                           instant_app=self._test_instance.test_apk_as_instant))
 
       steps.extend(
           install_helper(apk) for apk in self._test_instance.additional_apks)
