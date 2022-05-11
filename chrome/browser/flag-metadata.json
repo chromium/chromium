@@ -5207,8 +5207,8 @@
   },
   {
     "name": "run-video-capture-service-in-browser",
-    "owners": [ "agpalak", "guidou" ],
-    "expiry_milestone": 99
+    "owners": [ "agpalak", "herre" ],
+    "expiry_milestone": 110
   },
   {
     "name": "sameparty-cookies-considered-first-party",
