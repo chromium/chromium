@@ -45,6 +45,7 @@ void AccessCodeCastPrefUpdater::UpdateDevicesDict(
   DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
                        << " pref does not exist.";
 
+  // TODO(b/231748126): Add IP based-deduping for storing Access Code Cast Sinks
   devices_pref->SetDictionary(
       sink.id(), base::DictionaryValue::From(base::Value::ToUniquePtrValue(
                      CreateValueDictFromMediaSinkInternal(sink))));
