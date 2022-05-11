@@ -13,7 +13,7 @@ namespace selector_observer_script {
 // (1) selector_id -> element
 // (2) selector_id -> element
 // (3) element_id -> element
-// (4) uses setTimeout so that initialization isn't blocked checking the
+// (4) uses queueMicrotask so that initialization isn't blocked checking the
 //     selectors.
 // (5) In case c++ doesn't call terminate()
 // (7) A result is serializable by value. Unserializable elements are saved in
@@ -75,14 +75,15 @@ constexpr char kWaitForChangeScript[] = R"eof(
     return runTime - count * avgCheckTime;
   };
 
-  const onChange = () => {
+  const checkSelectors = () => {
     if (startTime == null) {
       startTime = now();
     }
     checkCount += 1;
     const start = now();
-    if (pollingTid) clearTimeout(pollingTid);
-    pollingTid = setTimeout(onChange, pollInterval);
+    clearTimeout(pollingTid);
+    clearTimeout(debounceTid);
+    pollingTid = setTimeout(checkSelectors, pollInterval);
 
     for (const selector of selectors) {
       const node = runSelector(selector);
@@ -108,6 +109,15 @@ constexpr char kWaitForChangeScript[] = R"eof(
     }
   };
 
+  let debounceTid = 0;
+  const onChange = () => {
+    clearTimeout(debounceTid);
+    debounceTid = setTimeout(checkSelectors, debounceInterval);
+  };
+
+  // (4)
+  queueMicrotask(checkSelectors);
+
   const config = {
     attributes: true,
     childList: true,
@@ -121,8 +131,6 @@ constexpr char kWaitForChangeScript[] = R"eof(
     if (pollingTid) clearTimeout(pollingTid);
     clearTimeout(disconnectTid);
   };
-  // (4)
-  setTimeout(onChange, 0);
   // (5)
   const disconnectTid = setTimeout(terminate, maxRuntime);
 
@@ -176,7 +184,7 @@ constexpr char kWaitForChangeScript[] = R"eof(
           selectors.push(selector);
         }
       });
-      onChange();
+      checkSelectors();
     },
     getElements(elementIds) {
       const result = {};

@@ -11,6 +11,7 @@ using ::testing::ReturnRef;
 MockScriptExecutorDelegate::MockScriptExecutorDelegate() {
   ON_CALL(*this, GetSettings).WillByDefault(ReturnRef(client_settings_));
   ON_CALL(*this, GetLogInfo).WillByDefault(ReturnRef(log_info_));
+  ON_CALL(*this, GetCurrentURL).WillByDefault(ReturnRef(default_url_));
 }
 
 MockScriptExecutorDelegate::~MockScriptExecutorDelegate() = default;

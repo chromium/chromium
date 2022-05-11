@@ -917,13 +917,11 @@ void WebController::OnFindElementResult(
 
 ClientStatus WebController::ObserveSelectors(
     const std::vector<SelectorObserver::ObservableSelector>& selectors,
-    base::TimeDelta timeout_ms,
-    base::TimeDelta periodic_check_interval,
-    base::TimeDelta extra_timeout,
+    const SelectorObserver::Settings& settings,
     SelectorObserver::Callback callback) {
   auto observer = std::make_unique<SelectorObserver>(
-      selectors, timeout_ms, periodic_check_interval, extra_timeout,
-      web_contents_, devtools_client_.get(), user_data_, std::move(callback));
+      selectors, settings, web_contents_, devtools_client_.get(), user_data_,
+      std::move(callback));
   auto* ptr = observer.get();
   pending_workers_.emplace_back(std::move(observer));
   return ptr->Start(base::BindOnce(&WebController::OnSelectorObserverFinished,

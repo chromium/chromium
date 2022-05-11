@@ -147,6 +147,10 @@ struct ClientSettings {
   // time spent waiting so a extra delay of 1 to 10 seconds for javascript
   // execution and checking selectors is conceivable.
   base::TimeDelta selector_observer_extra_timeout = base::Seconds(15);
+
+  // Wait until no DOM changes are received for this amount of time to check
+  // the selectors. An interval of 0 effectively disables debouncing.
+  base::TimeDelta selector_observer_debounce_interval = base::Milliseconds(100);
 };
 
 }  // namespace autofill_assistant

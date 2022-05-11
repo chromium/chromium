@@ -324,7 +324,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
-// Next ID: 25
+// Next ID: 26
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -504,6 +504,10 @@ message ClientSettingsProto {
   // max_wait_time + extra_timeout (this value) it assumes something went
   // wrong and fails with a |TIMED_OUT| error.
   optional int32 selector_observer_extra_timeout_ms = 24;
+
+  // SelectorObserver will wait until no DOM mutation notifications are received
+  // for this amount of time to check the selectors.
+  optional int32 selector_observer_debounce_interval_ms = 25;
 
   reserved 8 to 11;
 }

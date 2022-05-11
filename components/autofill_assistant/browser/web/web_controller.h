@@ -118,9 +118,7 @@ class WebController {
 
   virtual ClientStatus ObserveSelectors(
       const std::vector<SelectorObserver::ObservableSelector>& selectors,
-      base::TimeDelta timeout_ms,
-      base::TimeDelta periodic_check_interval,
-      base::TimeDelta extra_timeout,
+      const SelectorObserver::Settings& settings,
       SelectorObserver::Callback callback);
 
   // Scroll the |element| into view. |animation| defines the transition

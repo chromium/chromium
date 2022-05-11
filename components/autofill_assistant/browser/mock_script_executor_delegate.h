@@ -100,6 +100,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
  private:
   ClientSettings client_settings_;
   ProcessedActionStatusDetailsProto log_info_;
+  const GURL default_url_ = GURL("https://example.com/");
 };
 
 }  // namespace autofill_assistant

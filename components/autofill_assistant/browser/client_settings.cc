@@ -176,6 +176,10 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
     selector_observer_extra_timeout =
         base::Milliseconds(proto.selector_observer_extra_timeout_ms());
   }
+  if (proto.has_selector_observer_debounce_interval_ms()) {
+    selector_observer_debounce_interval =
+        base::Milliseconds(proto.selector_observer_debounce_interval_ms());
+  }
 }
 
 }  // namespace autofill_assistant

@@ -101,6 +101,12 @@ class BatchElementCheckerBrowserTest
     return proto;
   }
 
+  static SelectorObserver::Settings SelectorObserverDefaultSettings(
+      base::TimeDelta max_wait_time) {
+    return {max_wait_time, base::Seconds(1), base::Seconds(15),
+            base::Milliseconds(100)};
+  }
+
   // Run Observer BatchElementChecker on the provided conditions. The second
   // value in the pairs (bool) is the match expectation.
   void RunObserverBatchElementChecker(
@@ -123,8 +129,7 @@ class BatchElementCheckerBrowserTest
             ObserverBatchElementCheckerAllDoneCallback,
         run_loop.QuitClosure(), &expected_results, &actual_results));
 
-    checker.EnableObserver(base::Seconds(30), base::Seconds(1),
-                           base::Seconds(15));
+    checker.EnableObserver(SelectorObserverDefaultSettings(base::Seconds(30)));
     checker.Run(web_controller_.get());
     run_loop.Run();
     EXPECT_EQ(web_controller_->pending_workers_.size(), 0u);
@@ -335,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest, SelectorObserver) {
         /* proto = */
         Selector({"#iframeExternal", ".dynamic.about-2-seconds"}).proto,
         /* strict = */ true}},
-      base::Seconds(30), base::Seconds(1), base::Seconds(15), update_callback);
+      SelectorObserverDefaultSettings(base::Seconds(30)), update_callback);
 
   run_loop.Run();
   ASSERT_TRUE(expected_updates.empty());
@@ -375,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
       {{/* selector_id = */ button_id,
         /* proto = */ Selector({"#iframeRedirecting", "#button"}).proto,
         /* strict = */ true}},
-      base::Seconds(30), base::Seconds(1), base::Seconds(15), update_callback);
+      SelectorObserverDefaultSettings(base::Seconds(30)), update_callback);
 
   run_loop.Run();
 }
@@ -411,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
       {{/* selector_id = */ SelectorObserver::SelectorId(1),
         /* proto = */ Selector({"#does_not_exist"}).proto,
         /* strict = */ true}},
-      base::Milliseconds(300), base::Seconds(1), base::Seconds(15),
+      SelectorObserverDefaultSettings(base::Milliseconds(300)),
       mock_callback.Get());
 
   run_loop.Run();
@@ -454,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
       {{/* selector_id = */ button_id,
         /* proto = */ Selector({"#iframe", "#button"}).proto,
         /* strict = */ true}},
-      base::Milliseconds(1), base::Seconds(1), base::Seconds(15),
+      SelectorObserverDefaultSettings(base::Milliseconds(1)),
       update_callback.Get());
 
   run_loop.Run();

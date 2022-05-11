@@ -61,23 +61,31 @@ SelectorObserver::RequestedElement::~RequestedElement() = default;
 SelectorObserver::RequestedElement::RequestedElement(const RequestedElement&) =
     default;
 
+SelectorObserver::Settings::Settings(const base::TimeDelta& max_wait_time,
+                                     const base::TimeDelta& min_check_interval,
+                                     const base::TimeDelta& extra_timeout,
+                                     const base::TimeDelta& debounce_interval)
+    : max_wait_time(max_wait_time),
+      min_check_interval(min_check_interval),
+      extra_timeout(extra_timeout),
+      debounce_interval(debounce_interval) {}
+SelectorObserver::Settings::~Settings() = default;
+SelectorObserver::Settings::Settings(const Settings&) = default;
+
 SelectorObserver::SelectorObserver(
     const std::vector<ObservableSelector>& selectors,
-    base::TimeDelta max_wait_time,
-    base::TimeDelta periodic_check_interval,
-    base::TimeDelta extra_timeout,
+    const Settings& settings,
     content::WebContents* web_contents,
     DevtoolsClient* devtools_client,
     const UserData* user_data,
     Callback update_callback)
-    : periodic_check_interval_(periodic_check_interval),
-      extra_timeout_(extra_timeout),
+    : settings_(settings),
       devtools_client_(devtools_client),
       web_contents_(web_contents),
       user_data_(user_data),
       update_callback_(update_callback) {
   const DomRoot root(/* frame_id = */ "", DomRoot::kUseMainDoc);
-  wait_time_remaining_ms_[root] = max_wait_time.InMilliseconds();
+  wait_time_remaining_ms_[root] = settings.max_wait_time.InMilliseconds();
   for (auto& selector : selectors) {
     selectors_.emplace(std::make_pair(selector.selector_id, selector));
     // Every selector starts in the root frame
@@ -106,7 +114,7 @@ ClientStatus SelectorObserver::Start(base::OnceClosure finished_callback) {
   ResolveObjectIdAndInjectFrame(root, 0);
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>();
-  timeout_timer_->Start(FROM_HERE, MaxTimeRemaining() + extra_timeout_,
+  timeout_timer_->Start(FROM_HERE, MaxTimeRemaining() + settings_.extra_timeout,
                         base::BindOnce(&SelectorObserver::OnHardTimeout,
                                        weak_ptr_factory_.GetWeakPtr()));
 
@@ -814,15 +822,21 @@ std::string SelectorObserver::BuildExpression(const DomRoot& dom_root) const {
   snippet.AddLine("(function selectorObserver() {");
   snippet.AddLine(
       {"const pollInterval = ",
-       base::NumberToString(periodic_check_interval_.InMilliseconds()), ";"});
+       base::NumberToString(settings_.min_check_interval.InMilliseconds()),
+       ";"});
   int max_wait_time = wait_time_remaining_ms_.at(dom_root);
-  snippet.AddLine({"const maxRuntime = ",
-                   base::NumberToString(base::saturated_cast<int>(
-                       (base::Milliseconds(max_wait_time) + extra_timeout_)
-                           .InMilliseconds())),
-                   ";"});
+  snippet.AddLine(
+      {"const maxRuntime = ",
+       base::NumberToString(base::saturated_cast<int>(
+           (base::Milliseconds(max_wait_time) + settings_.extra_timeout)
+               .InMilliseconds())),
+       ";"});
   snippet.AddLine(
       {"const maxWaitTime = ", base::NumberToString(max_wait_time), ";"});
+  snippet.AddLine(
+      {"const debounceInterval = ",
+       base::NumberToString(settings_.debounce_interval.InMilliseconds()),
+       ";"});
   snippet.AddLine("const selectors = [");
 
   size_t depth = frame_depth_.at(dom_root);

@@ -165,12 +165,14 @@ void WaitForDomOperation::RunChecks(
                      base::Unretained(this), std::move(report_attempt_result)));
   if (use_observers_) {
     batch_element_checker_->EnableObserver(
-        /* max_wait_time= */ max_wait_time_ -
-            wait_time_stopwatch_.TotalElapsed(),
-        /* periodic_check_interval= */
-        delegate_->GetSettings().periodic_element_check_interval,
-        /* extra_timeout= */
-        delegate_->GetSettings().selector_observer_extra_timeout);
+        {/* max_wait_time= */ max_wait_time_ -
+             wait_time_stopwatch_.TotalElapsed(),
+         /* min_check_interval= */
+         delegate_->GetSettings().periodic_element_check_interval,
+         /* extra_timeout= */
+         delegate_->GetSettings().selector_observer_extra_timeout,
+         /* debounce_interval */
+         delegate_->GetSettings().selector_observer_debounce_interval});
   }
   batch_element_checker_->Run(delegate_->GetWebController());
 }

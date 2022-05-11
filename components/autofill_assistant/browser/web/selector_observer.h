@@ -60,6 +60,7 @@ class SelectorObserver : public WebControllerWorker {
     // If true, match will fail if more that one element matches the selector.
     bool strict;
   };
+
   // An update to the match status of a selector.
   struct Update {
     Update();
@@ -73,6 +74,7 @@ class SelectorObserver : public WebControllerWorker {
     // fetch the element later.
     int element_id;
   };
+
   struct RequestedElement {
     RequestedElement(const SelectorId& selector_id, int element_id);
     ~RequestedElement();
@@ -85,18 +87,37 @@ class SelectorObserver : public WebControllerWorker {
     // end.
     int element_id;
   };
+
+  // Settings to configure the selector observer.
+  struct Settings {
+    Settings(const base::TimeDelta& max_wait_time,
+             const base::TimeDelta& min_check_interval,
+             const base::TimeDelta& extra_timeout,
+             const base::TimeDelta& debounce_interval);
+    ~Settings();
+    Settings(const Settings&);
+    // Maximum amount of time it will wait for an element.
+    const base::TimeDelta max_wait_time;
+    // Selector checks will run at least this often, even if no DOM changes are
+    // detected.
+    const base::TimeDelta min_check_interval;
+    // Extra wait time before assuming something has failed and giving up.
+    const base::TimeDelta extra_timeout;
+    // Wait until no DOM changes are received for this amount of time to check
+    // the selectors. An interval of 0 effectively disables debouncing.
+    const base::TimeDelta debounce_interval;
+  };
+
   using Callback = base::RepeatingCallback<
       void(const ClientStatus&, const std::vector<Update>&, SelectorObserver*)>;
 
   // |content::WebContents| and |DevtoolsClient| need to outlive this instance.
   // |UserData| needs to exist until Start() is called.
   explicit SelectorObserver(const std::vector<ObservableSelector>& selectors,
-                            base::TimeDelta max_wait_time,
-                            base::TimeDelta periodic_check_interval,
-                            base::TimeDelta extra_timeout,
-                            content::WebContents*,
-                            DevtoolsClient*,
-                            const UserData*,
+                            const Settings& settings,
+                            content::WebContents* web_contents,
+                            DevtoolsClient* devtools_client,
+                            const UserData* user_data,
                             Callback update_callback);
 
   ~SelectorObserver() override;
@@ -143,9 +164,7 @@ class SelectorObserver : public WebControllerWorker {
     ERROR_STATE = 4,
   };
   State state_ = State::INITIALIZED;
-  const base::TimeDelta periodic_check_interval_;
-  const base::TimeDelta extra_timeout_;
-  base::TimeDelta max_wait_time_;
+  const Settings settings_;
   base::TimeTicks started_;
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
