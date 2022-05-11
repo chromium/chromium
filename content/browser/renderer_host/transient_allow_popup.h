@@ -18,8 +18,10 @@ class CONTENT_EXPORT TransientAllowPopup {
  public:
   TransientAllowPopup();
 
-  // The lifespan should be just long enough to allow brief async script calls.
-  static constexpr base::TimeDelta kActivationLifespan = base::Seconds(1);
+  // The lifespan should be just long enough to allow brief async script calls
+  // and long enough for the OS to complete any transition (i.e. fullscreen)
+  // animations first.
+  static constexpr base::TimeDelta kActivationLifespan = base::Seconds(5);
 
   // Activate the transient state.
   void Activate();
