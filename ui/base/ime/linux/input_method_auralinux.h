@@ -88,6 +88,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   // async-mode.
   absl::optional<ui::KeyEvent> ime_filtered_key_event_;
 
+  // Tracks last commit result during one key dispatch event.
+  absl::optional<CommitResult> last_commit_result_;
+
   std::u16string result_text_;
 
   ui::CompositionText composition_;

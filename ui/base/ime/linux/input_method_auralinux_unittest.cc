@@ -509,8 +509,47 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
 
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
-  test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("textinput:A");
+  test_result_->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
+  context_->SetSyncMode(false);
+  context_->SetEatKey(true);
+
+  std::unique_ptr<TextInputClientForTesting> client(
+      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
+  input_method_auralinux_->SetFocusedTextInputClient(client.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
+  key.set_character(L'a');
+  input_method_auralinux_->DispatchKeyEvent(&key);
+
+  // IBus issues a standalone set_composition action.
+  input_method_auralinux_->OnPreeditStart();
+  CompositionText comp;
+  comp.text = u"a";
+  input_method_auralinux_->OnPreeditChanged(comp);
+
+  test_result_->ExpectAction("keydown:229");
+  test_result_->ExpectAction("compositionstart");
+  test_result_->ExpectAction("compositionupdate:a");
+  test_result_->Verify();
+
+  // IBus issues a commit text with composition after muting the space key down.
+  // Typing return issues a commit, followed by preedit change (to make
+  // composition empty), then preedit end.
+  KeyEvent key_up(ET_KEY_PRESSED, VKEY_RETURN, 0);
+  input_method_auralinux_->DispatchKeyEvent(&key_up);
+
+  input_method_auralinux_->OnCommit(u"a");
+  comp.text = u"";
+  input_method_auralinux_->OnPreeditChanged(comp);
+  input_method_auralinux_->OnPreeditEnd();
+
+  test_result_->ExpectAction("keydown:229");
+  test_result_->ExpectAction("compositionend");
+  test_result_->ExpectAction("textinput:a");
   test_result_->Verify();
 }
 
