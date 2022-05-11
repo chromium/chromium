@@ -662,6 +662,10 @@ const base::Feature kProcessSharingWithStrictSiteInstances{
 const base::Feature kHighPriorityBeforeUnload{
     "HighPriorityBeforeUnload", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Preload cookie database on NetworkContext creation.
+const base::Feature kPreloadCookies{"PreloadCookies",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics.
 const base::Feature kPrivacySandboxAdsAPIsOverride{
