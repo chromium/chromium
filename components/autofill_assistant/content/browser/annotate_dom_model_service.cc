@@ -120,6 +120,15 @@ absl::optional<base::File> AnnotateDomModelService::GetModelFile() {
   return annotate_dom_model_file_->Duplicate();
 }
 
+std::string AnnotateDomModelService::GetOverridesPolicy() const {
+  return overrides_policy_binary_proto_;
+}
+
+bool AnnotateDomModelService::SetOverridesPolicy(
+    SemanticSelectorPolicy policy) {
+  return policy.SerializeToString(&overrides_policy_binary_proto_);
+}
+
 void AnnotateDomModelService::NotifyOnModelFileAvailable(
     NotifyModelAvailableCallback callback) {
   DCHECK(!annotate_dom_model_file_);

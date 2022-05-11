@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/content/common/proto/semantic_feature_overrides.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +51,11 @@ class AnnotateDomModelService
   // asynchronous notification of the model being available.
   absl::optional<base::File> GetModelFile();
 
+  // Returns the overrides policy as a serialized binary proto representation
+  // that will be passed to renderer processes.
+  std::string GetOverridesPolicy() const;
+  virtual bool SetOverridesPolicy(SemanticSelectorPolicy policy);
+
   // If the model file is not available, requestors can ask to be notified, via
   // |callback|. This enables a two-step approach to relabily get the model file
   // when it becomes available if the requestor needs the file right when it
@@ -71,6 +77,9 @@ class AnnotateDomModelService
   // file path has been provided by the Optimization Guide and has been
   // successfully loaded.
   absl::optional<base::File> annotate_dom_model_file_;
+
+  // A serialized binary representation of a SemanticSelectorPolicy proto.
+  std::string overrides_policy_binary_proto_;
 
   // The set of callbacks associated with requests for the language detection
   // model.

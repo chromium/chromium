@@ -510,6 +510,14 @@ void Controller::OnGetScripts(
         Metrics::DropOutReason::GET_SCRIPTS_UNPARSABLE);
     return;
   }
+
+  if (response_proto.has_semantic_selector_policy()) {
+    // TODO(b/228987849): A semantic policy is set unconditionally. It may be
+    // more appropriate to only set one if there are actual eligible scripts for
+    // the given domain.
+    SetSemanticSelectorPolicy(
+        std::move(response_proto.semantic_selector_policy()));
+  }
   if (response_proto.has_client_settings()) {
     SetClientSettings(response_proto.client_settings());
   }
@@ -997,6 +1005,13 @@ void Controller::SetDirectActionScripts(
       continue;
 
     direct_action_scripts_.push_back(script);
+  }
+}
+
+void Controller::SetSemanticSelectorPolicy(SemanticSelectorPolicy policy) {
+  DCHECK(annotate_dom_model_service_);
+  if (!annotate_dom_model_service_->SetOverridesPolicy(std::move(policy))) {
+    NOTREACHED() << "Setting overrides policy failed!";
   }
 }
 

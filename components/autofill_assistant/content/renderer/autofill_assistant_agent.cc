@@ -78,7 +78,7 @@ absl::optional<OverridesMap> ParseOverridesPolicyToMap(
           std::string(overrides_policy.begin(), overrides_policy.end()))) {
     return absl::nullopt;
   }
-  if (!policy.has_bag_of_words()) {
+  if (policy.bag_of_words().data_point_map().empty()) {
     return absl::nullopt;
   }
   OverridesMap overrides_map;

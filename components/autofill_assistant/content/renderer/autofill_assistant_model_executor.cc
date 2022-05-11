@@ -4,9 +4,13 @@
 
 #include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
 
+#include <ostream>
+
+#include "base/command_line.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill_assistant/content/common/switches.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -18,6 +22,17 @@
 
 namespace autofill_assistant {
 namespace {
+
+std::string SparseVectorToDebugString(
+    AutofillAssistantModelExecutor::SparseVector sparse_vector) {
+  std::ostringstream out;
+  out << "Sparse vector representation:\n";
+  for (const auto& entry : sparse_vector) {
+    out << "  [idx: [" << entry.first.first << ", " << entry.first.second
+        << "], count: " << entry.second << "]";
+  }
+  return out.str();
+}
 
 void DenseEncode(
     const AutofillAssistantModelExecutor::SparseVector& sparse_vector,
@@ -147,6 +162,10 @@ bool AutofillAssistantModelExecutor::Preprocess(
   }
 
   SparseVector sparse_vector = TokenizeSignalsToSparseVector(node_signals);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutofillAssistantDebugAnnotateDom)) {
+    VLOG(3) << SparseVectorToDebugString(sparse_vector);
+  }
 
   if (overrides_ && overrides_->contains(sparse_vector)) {
     overrides_result_ = (*overrides_)[sparse_vector];
@@ -237,7 +256,15 @@ absl::optional<std::pair<int, int>> AutofillAssistantModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // Check if we have an override for this execution and return that instead.
   if (overrides_result_) {
-    return overrides_result_;
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kAutofillAssistantDebugAnnotateDom)) {
+      VLOG(3) << "Found override, using (role: " << overrides_result_->first
+              << ", objective: " << overrides_result_->second << ")";
+    }
+    // Cleanup the result in case this executor is reused.
+    std::pair<int, int> result = *overrides_result_;
+    overrides_result_.reset();
+    return result;
   }
   if (output_tensors.size() < 2u) {
     NOTREACHED() << "Output Tensors mismatch.";

@@ -140,5 +140,37 @@ TEST_F(AutofillAssistantModelExecutorTest, OverridesNoMatch) {
   EXPECT_NE(result->second, 1111);
 }
 
+TEST_F(AutofillAssistantModelExecutorTest, OverridesResultNotReused) {
+  AutofillAssistantModelExecutor model_executor =
+      AutofillAssistantModelExecutor(CreateOverrides());
+
+  ASSERT_TRUE(model_executor.InitializeModelFromFile(model_file_.Duplicate()));
+  {
+    blink::AutofillAssistantNodeSignals node_signals;
+    node_signals.node_features.invisible_attributes =
+        blink::WebString::FromUTF8("street");
+    node_signals.node_features.text.push_back(
+        blink::WebString::FromUTF8("street"));
+
+    auto result = model_executor.ExecuteModelWithInput(node_signals);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->first, 9999);
+    EXPECT_EQ(result->second, 1111);
+  }
+
+  // We expect the internal overrides result from the previous execution to have
+  // been cleared.
+  {
+    blink::AutofillAssistantNodeSignals node_signals;
+    node_signals.node_features.text.push_back(
+        blink::WebString::FromUTF8("unknown"));
+
+    auto result = model_executor.ExecuteModelWithInput(node_signals);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_NE(result->first, 9999);
+    EXPECT_NE(result->second, 1111);
+  }
+}
+
 }  // namespace
 }  // namespace autofill_assistant

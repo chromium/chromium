@@ -296,6 +296,9 @@ class Controller : public ScriptExecutorDelegate,
   void SetDirectActionScripts(
       const std::vector<ScriptHandle>& direct_action_scripts);
 
+  // Sets the semantic selector in the DOM annotation service.
+  void SetSemanticSelectorPolicy(SemanticSelectorPolicy policy);
+
   ClientSettings settings_;
   const raw_ptr<Client> client_;
   const raw_ptr<const base::TickClock> tick_clock_;

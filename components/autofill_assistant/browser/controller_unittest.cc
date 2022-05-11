@@ -74,6 +74,14 @@ using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
+class MockAnnotateDomModelService : public AnnotateDomModelService {
+ public:
+  MockAnnotateDomModelService() : AnnotateDomModelService(nullptr, nullptr) {}
+  ~MockAnnotateDomModelService() override = default;
+
+  MOCK_METHOD1(SetOverridesPolicy, bool(SemanticSelectorPolicy));
+};
+
 class ControllerTest : public testing::Test {
  public:
   ControllerTest() {
@@ -99,7 +107,7 @@ class ControllerTest : public testing::Test {
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
         mock_runtime_manager_->GetWeakPtr(), std::move(service), &ukm_recorder_,
-        /* annotate_dom_model_service= */ nullptr);
+        &mock_annotate_dom_model_service_);
 
     controller_->SetWebControllerForTest(std::move(web_controller));
 
@@ -261,6 +269,7 @@ class ControllerTest : public testing::Test {
       mock_password_change_success_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<Controller> controller_;
+  NiceMock<MockAnnotateDomModelService> mock_annotate_dom_model_service_;
 };
 
 struct NavigationState {
@@ -2301,6 +2310,22 @@ TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
   controller_->RemoveNavigationListener(&listener);
 
   EXPECT_THAT(listener.events, IsEmpty());
+}
+
+TEST_F(ControllerTest, SemanticOverridesSetInService) {
+  EXPECT_CALL(mock_annotate_dom_model_service_, SetOverridesPolicy)
+      .WillOnce(Return(true));
+
+  SupportsScriptResponseProto script_response;
+  script_response.mutable_semantic_selector_policy()
+      ->mutable_bag_of_words()
+      ->add_data_point_map();
+  AddRunnableScript(&script_response, "runnable");
+  SetNextScriptResponse(script_response);
+
+  EXPECT_CALL(mock_client_, AttachUI());
+  Start("http://a.example.com/path");
+  EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
 }
 
 }  // namespace autofill_assistant

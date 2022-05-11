@@ -144,14 +144,8 @@ void ContentAutofillAssistantDriver::SetAnnotateDomModelService(
 }
 
 std::string ContentAutofillAssistantDriver::GetOverridesPolicy() const {
-  // TODO(b/228987849): Finish the plumbing by fetching the overrides data from
-  // the service.
-  std::string policy;
-  SemanticSelectorPolicy policy_proto;
-  if (!policy_proto.SerializeToString(&policy)) {
-    return std::string();
-  }
-  return policy;
+  DCHECK(annotate_dom_model_service_);
+  return annotate_dom_model_service_->GetOverridesPolicy();
 }
 
 }  // namespace autofill_assistant
