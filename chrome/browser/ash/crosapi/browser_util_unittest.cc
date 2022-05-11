@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -14,11 +15,16 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -795,6 +801,42 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutPrimary) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
+}
+
+TEST_F(BrowserUtilTest, IsArcAvailable) {
+  arc::SetArcAvailableCommandLineForTesting(
+      base::CommandLine::ForCurrentProcess());
+  IdleServiceAsh::DisableForTesting();
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  AddRegularUser("user@google.com");
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false);
+  EXPECT_TRUE(browser_init_params->device_properties->is_arc_available);
+  EXPECT_FALSE(browser_init_params->device_properties->is_tablet_form_factor);
+}
+
+TEST_F(BrowserUtilTest, IsTabletFormFactor) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableTabletFormFactor);
+  IdleServiceAsh::DisableForTesting();
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  AddRegularUser("user@google.com");
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false);
+  EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
+  EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
 }
 
 }  // namespace crosapi

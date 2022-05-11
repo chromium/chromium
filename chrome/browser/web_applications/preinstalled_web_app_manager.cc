@@ -70,6 +70,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 
 namespace {
@@ -119,6 +123,30 @@ struct LoadedConfigs {
   std::vector<LoadedConfig> configs;
   std::vector<std::string> errors;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsArcAvailable() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return arc::IsArcAvailable();
+#else
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosService::Get()->init_params();
+  return init_params && init_params->device_properties &&
+         init_params->device_properties->is_arc_available;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+bool IsTabletFormFactor() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::switches::IsTabletFormFactor();
+#else
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosService::Get()->init_params();
+  return init_params && init_params->device_properties &&
+         init_params->device_properties->is_tablet_form_factor;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 LoadedConfigs LoadConfigsBlocking(
     const std::vector<base::FilePath>& config_dirs) {
@@ -235,22 +263,21 @@ absl::optional<std::string> GetDisableReason(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Remove if ARC is supported and app should be disabled.
-  if (options.disable_if_arc_supported && arc::IsArcAvailable()) {
+  if (options.disable_if_arc_supported && IsArcAvailable()) {
     base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                   DisabledReason::kArcAvailable);
     return options.install_url.spec() + " disabled because ARC is available.";
   }
 
   // Remove if device is tablet and app should be disabled.
-  if (options.disable_if_tablet_form_factor &&
-      ash::switches::IsTabletFormFactor()) {
+  if (options.disable_if_tablet_form_factor && IsTabletFormFactor()) {
     base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                   DisabledReason::kTabletFormFactor);
     return options.install_url.spec() + " disabled because device is tablet.";
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Remove if only for new users, user isn't new and app was not
   // installed previously.

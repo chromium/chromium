@@ -596,8 +596,8 @@ struct DefaultPaths {
 };
 
 // The device specific data needed in Lacros.
-// Next version: 2
-// Next id: 2
+// Next version: 3
+// Next id: 4
 // TODO(igorcov): Include DeviceAttributes here.
 [Stable]
 struct DeviceProperties {
@@ -610,6 +610,13 @@ struct DeviceProperties {
   // determined. It is non-encrypted data corresponding to
   // PolicyData::device_affiliation_ids.
   [MinVersion=1] array<string>? device_affiliation_ids@1;
+
+  // Whether ARC is installed and the current device is officially supported to
+  // run ARC.
+  [MinVersion=2] bool is_arc_available@2;
+
+  // Whether the device is of tablet form factor.
+  [MinVersion=2] bool is_tablet_form_factor@3;
 };
 
 [Stable, Extensible]

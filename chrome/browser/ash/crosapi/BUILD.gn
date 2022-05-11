@@ -344,6 +344,7 @@ source_set("unit_tests") {
     ":crosapi",
     ":test_support",
     "//ash",
+    "//ash/components/arc:arc_test_support",
     "//ash/components/cryptohome",
     "//base",
     "//base/test:test_config",

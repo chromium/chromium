@@ -6,6 +6,7 @@
 
 #include <sys/mman.h>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
@@ -162,6 +163,8 @@ mojom::DevicePropertiesPtr GetDeviceProperties() {
     }
   }
 
+  result->is_arc_available = arc::IsArcAvailable();
+  result->is_tablet_form_factor = ash::switches::IsTabletFormFactor();
   return result;
 }
 
