@@ -134,10 +134,28 @@ TEST(PasswordProtoUtilsTest, SpecificsDataFromPasswordPreservesUnknownFields) {
   *specifics_with_only_unknown_fields.mutable_unknown_fields() =
       "unknown_fields";
 
-  sync_pb::PasswordSpecificsData updated_specifics =
-      SpecificsDataFromPassword(form, specifics_with_only_unknown_fields);
+  EXPECT_EQ(SpecificsDataFromPassword(form, specifics_with_only_unknown_fields)
+                .SerializeAsString(),
+            specifics.SerializeAsString());
+}
 
-  EXPECT_EQ(updated_specifics.SerializeAsString(),
+TEST(PasswordProtoUtilsTest, SpecificsFromPasswordPreservesUnknownFields) {
+  sync_pb::PasswordSpecificsData specifics =
+      CreateSpecificsData("http://www.origin.com/", "username_element",
+                          "username_value", "password_element", "signon_realm",
+                          /*issue_types=*/{});
+
+  PasswordForm form = PasswordFromSpecifics(specifics);
+
+  *specifics.mutable_unknown_fields() = "unknown_fields";
+
+  sync_pb::PasswordSpecificsData specifics_with_only_unknown_fields;
+  *specifics_with_only_unknown_fields.mutable_unknown_fields() =
+      "unknown_fields";
+
+  EXPECT_EQ(SpecificsFromPassword(form, specifics_with_only_unknown_fields)
+                .client_only_encrypted_data()
+                .SerializeAsString(),
             specifics.SerializeAsString());
 }
 

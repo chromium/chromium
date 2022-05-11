@@ -130,17 +130,18 @@ sync_pb::PasswordSpecificsData TrimPasswordSpecificsDataForCaching(
 sync_pb::PasswordSpecifics SpecificsFromPassword(
     const PasswordForm& password_form,
     const sync_pb::PasswordSpecificsData& base_password_data) {
-  sync_pb::PasswordSpecifics specifics;
-  *specifics.mutable_client_only_encrypted_data() =
-      SpecificsDataFromPassword(password_form, base_password_data);
-
   // WARNING: if you are adding support for new `PasswordSpecificsData` fields,
-  // you need to update following functions accordingly:
+  // you need to update the following functions accordingly:
   // `TrimPasswordSpecificsDataForCaching`
   // `TrimRemoteSpecificsForCachingPreservesOnlyUnknownFields`
   DCHECK_EQ(0u, TrimPasswordSpecificsDataForCaching(
-                    specifics.client_only_encrypted_data())
+                    SpecificsDataFromPassword(password_form,
+                                              /*base_password_data=*/{}))
                     .ByteSizeLong());
+
+  sync_pb::PasswordSpecifics specifics;
+  *specifics.mutable_client_only_encrypted_data() =
+      SpecificsDataFromPassword(password_form, base_password_data);
   return specifics;
 }
 
