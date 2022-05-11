@@ -503,24 +503,41 @@ def _GetTestsFromDexdump(test_apk):
   dex_dumps = dexdump.Dump(test_apk)
   tests = []
 
-  def get_test_methods(methods):
-    return [
-        {
-          'method': m,
-          # No annotation info is available from dexdump.
-          # Set MediumTest annotation for default.
-          'annotations': {'MediumTest': None},
-        } for m in methods if m.startswith('test')]
+  def get_test_methods(methods, annotations):
+    test_methods = []
+
+    for method in methods:
+      if method.startswith('test'):
+        method_annotations = annotations.get(method, {})
+
+        # Dexdump used to not return any annotation info
+        # So MediumTest annotation was added to all methods
+        # Preserving this behaviour by adding MediumTest if none of the
+        # size annotations are included in these annotations
+        if not any(valid in method_annotations for valid in _VALID_ANNOTATIONS):
+          method_annotations.update({'MediumTest': None})
+
+        test_methods.append({
+            'method': method,
+            'annotations': method_annotations
+        })
+
+    return test_methods
 
   for dump in dex_dumps:
     for package_name, package_info in six.iteritems(dump):
       for class_name, class_info in six.iteritems(package_info['classes']):
         if class_name.endswith('Test') and not class_info['is_abstract']:
+          classAnnotations, methodsAnnotations = class_info['annotations']
           tests.append({
-              'class': '%s.%s' % (package_name, class_name),
-              'annotations': {},
-              'methods': get_test_methods(class_info['methods']),
-              'superclass': class_info['superclass'],
+              'class':
+              '%s.%s' % (package_name, class_name),
+              'annotations':
+              classAnnotations,
+              'methods':
+              get_test_methods(class_info['methods'], methodsAnnotations),
+              'superclass':
+              class_info['superclass'],
           })
   return tests
 

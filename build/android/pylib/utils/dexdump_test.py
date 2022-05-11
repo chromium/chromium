@@ -10,8 +10,40 @@ from pylib.utils import dexdump
 
 # pylint: disable=protected-access
 
+emptyAnnotations = dexdump.Annotations(classAnnotations={},
+                                       methodsAnnotations={})
+
 
 class DexdumpXMLParseTest(unittest.TestCase):
+
+  def testParseAnnotations(self):
+    example_xml_string = (
+        '<package name="com.foo.bar">\n'
+        'Class #1 annotations:\n'
+        'Annotations on class\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/AppModeFull; value=...\n'
+        'Annotations on method #512 \'example\'\n'
+        ' VISIBILITY_SYSTEM Ldalvik/annotation/Signature; value=...\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test; value=...\n'
+        '<class name="Class1" extends="java.lang.Object">\n'
+        '</class>\n'
+        '<class name="Class2" extends="java.lang.Object">\n'
+        '</class>\n'
+        '</package>\n')
+
+    actual = dexdump._ParseAnnotations(example_xml_string)
+
+    expected = {
+        1:
+        dexdump.Annotations(
+            classAnnotations={'AppModeFull': None},
+            methodsAnnotations={'example': {
+                'Test': None
+            }},
+        )
+    }
+
+    self.assertEqual(expected, actual)
 
   def testParseRootXmlNode(self):
     example_xml_string = ('<api>'
@@ -69,8 +101,8 @@ class DexdumpXMLParseTest(unittest.TestCase):
                           '</package>'
                           '</api>')
 
-    actual = dexdump._ParseRootNode(
-        ElementTree.fromstring(example_xml_string))
+    actual = dexdump._ParseRootNode(ElementTree.fromstring(example_xml_string),
+                                    {})
 
     expected = {
         'com.foo.bar1': {
@@ -79,11 +111,13 @@ class DexdumpXMLParseTest(unittest.TestCase):
                     'methods': ['class1Method1', 'class1Method2'],
                     'superclass': 'java.lang.Object',
                     'is_abstract': False,
+                    'annotations': emptyAnnotations,
                 },
                 'Class2': {
                     'methods': ['class2Method1'],
                     'superclass': 'java.lang.Object',
                     'is_abstract': True,
+                    'annotations': emptyAnnotations,
                 }
             },
         },
@@ -106,8 +140,8 @@ class DexdumpXMLParseTest(unittest.TestCase):
         '</package>')
 
 
-    actual = dexdump._ParsePackageNode(
-        ElementTree.fromstring(example_xml_string))
+    (actual, classCount) = dexdump._ParsePackageNode(
+        ElementTree.fromstring(example_xml_string), 0, {})
 
     expected = {
         'classes': {
@@ -115,15 +149,18 @@ class DexdumpXMLParseTest(unittest.TestCase):
                 'methods': [],
                 'superclass': 'java.lang.Object',
                 'is_abstract': False,
+                'annotations': emptyAnnotations,
             },
             'Class2': {
                 'methods': [],
                 'superclass': 'java.lang.Object',
                 'is_abstract': True,
+                'annotations': emptyAnnotations,
             },
         },
     }
     self.assertEqual(expected, actual)
+    self.assertEqual(classCount, 2)
 
   def testParseClassNode(self):
     example_xml_string = ('<class name="Class1" extends="java.lang.Object">'
@@ -135,13 +172,14 @@ class DexdumpXMLParseTest(unittest.TestCase):
                           '</method>'
                           '</class>')
 
-    actual = dexdump._ParseClassNode(
-        ElementTree.fromstring(example_xml_string))
+    actual = dexdump._ParseClassNode(ElementTree.fromstring(example_xml_string),
+                                     0, {})
 
     expected = {
         'methods': ['method1', 'method2'],
         'superclass': 'java.lang.Object',
         'is_abstract': False,
+        'annotations': emptyAnnotations,
     }
     self.assertEqual(expected, actual)
 
