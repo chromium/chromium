@@ -19,6 +19,8 @@ source_set("cpp") {
   deps = [
     "//base",
     "//chromeos/services/network_health/public/mojom",
+    "//content/public/browser:browser",
+    "//ui/events/devices",
     "//ui/events/ozone/evdev:event_device_info",
   ]
   public_deps = [ "//chromeos/services/cros_healthd/private/mojom" ]
@@ -40,9 +42,12 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base/test:test_support",
+    "//content/test:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/events/devices",
+    "//ui/events/devices:test_support",
   ]
 }

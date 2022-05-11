@@ -11,7 +11,10 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace chromeos {
@@ -111,9 +114,52 @@ void DataCollectorImpl::BindReceiver(
   receiver_set_.Add(this, std::move(receiver));
 }
 
+mojom::InputDevice::ConnectionType GetInputDeviceConnectionType(
+    ui::InputDeviceType type) {
+  switch (type) {
+    case ui::INPUT_DEVICE_INTERNAL:
+      return mojom::InputDevice::ConnectionType::kInternal;
+    case ui::INPUT_DEVICE_USB:
+      return mojom::InputDevice::ConnectionType::kUSB;
+    case ui::INPUT_DEVICE_BLUETOOTH:
+      return mojom::InputDevice::ConnectionType::kBluetooth;
+    case ui::INPUT_DEVICE_UNKNOWN:
+      return mojom::InputDevice::ConnectionType::kUnknown;
+  }
+}
+
+void GetTouchscreenDevicesOnUIThread(
+    DataCollectorImpl::GetTouchscreenDevicesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const std::vector<ui::TouchscreenDevice>& devices =
+      ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
+  std::vector<mojom::TouchscreenDevicePtr> results;
+  for (const auto& device : devices) {
+    auto result = mojom::TouchscreenDevice::New();
+    result->input_device = mojom::InputDevice::New();
+    result->input_device->name = device.name;
+    result->input_device->connection_type =
+        GetInputDeviceConnectionType(device.type);
+    result->input_device->physical_location = device.phys;
+    result->input_device->is_enabled = device.enabled;
+    result->input_device->sysfs_path = device.sys_path.value();
+
+    result->touch_points = device.touch_points;
+    result->has_stylus = device.has_stylus;
+    result->has_stylus_garage_switch = device.has_stylus_garage_switch;
+    results.push_back(std::move(result));
+  }
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+}
+
 void DataCollectorImpl::GetTouchscreenDevices(
     GetTouchscreenDevicesCallback callback) {
-  NOTIMPLEMENTED();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetTouchscreenDevicesOnUIThread, std::move(callback)));
 }
 
 void DataCollectorImpl::GetTouchpadLibraryName(
