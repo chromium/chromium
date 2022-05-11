@@ -762,16 +762,6 @@
       </intent-filter>  # DIFF-ANCHOR: 9fe4b527
     </activity-alias>  # DIFF-ANCHOR: 7c349c4f
     <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER" android:value="org.chromium.content_public.browser.SmartClipProvider"/>
-    <receiver  # DIFF-ANCHOR: 58d39a0f
-        android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
-        android:exported="true"
-        android:label="@string/bookmark_widget_title">
-      <intent-filter>  # DIFF-ANCHOR: 1ebe78e9
-        <action android:name=".BOOKMARK_APPWIDGET_UPDATE"/>
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-      </intent-filter>  # DIFF-ANCHOR: 1ebe78e9
-      <meta-data android:name="android.appwidget.provider" android:resource="@xml/bookmark_widget_info"/>
-    </receiver>  # DIFF-ANCHOR: 58d39a0f
     <receiver  # DIFF-ANCHOR: 68e22783
         android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
         android:exported="false">

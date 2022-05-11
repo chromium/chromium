@@ -21,24 +21,17 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuItemDelegate;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.download.ChromeDownloadDelegate;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
@@ -263,23 +256,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onReadLater(GURL url, String title) {
-        if (url == null || url.isEmpty()) return;
-        assert url.isValid();
-
-        BookmarkModel bookmarkModel = new BookmarkModel();
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // Add to reading list.
-            BookmarkUtils.addToReadingList(
-                    url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                    .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
-            bookmarkModel.destroy();
-
-            // Add to offline pages.
-            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
-                    .savePageLater(url.getSpec(), OfflinePageBridge.BOOKMARK_NAMESPACE,
-                            /*userRequested*/ true);
-        });
     }
 
     @Override

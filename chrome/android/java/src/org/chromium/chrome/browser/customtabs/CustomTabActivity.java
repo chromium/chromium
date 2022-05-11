@@ -217,10 +217,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == R.id.bookmark_this_page_id) {
-            RecordUserAction.record("MobileMenuAddToBookmarks");
-            return true;
-        } else if (id == R.id.open_in_browser_id) {
+        if (id == R.id.open_in_browser_id) {
             // Need to get tab before calling openCurrentUrlInBrowser or else it will be null.
             Tab tab = mTabProvider.getTab();
             if (mNavigationController.openCurrentUrlInBrowser(false)) {

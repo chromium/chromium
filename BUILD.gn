@@ -416,7 +416,6 @@ group("gn_all") {
         "//android_webview/tools/system_webview_shell",
         "//chrome/android:chrome_public_apk",
         "//chrome/browser/android/examples/custom_tabs_client:custom_tabs_client_example_apk",
-        "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
         "//content/shell/android:content_shell_test_apk",
       ]
     }

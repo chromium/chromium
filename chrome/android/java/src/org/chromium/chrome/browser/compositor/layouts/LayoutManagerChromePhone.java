@@ -81,9 +81,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     public void onTabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            startShowing(DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
-                            ? mOverviewListLayout
-                            : mOverviewLayout,
+            startShowing(mOverviewLayout,
                     /* animate= */ false);
         }
         super.onTabsAllClosing(incognito);

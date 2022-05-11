@@ -7,11 +7,9 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -39,11 +37,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProvider,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             ModalDialogManager modalDialogManager, SnackbarManager snackbarManager) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, layoutStateProvider, startSurfaceSupplier,
-                bookmarkBridgeSupplier);
+                toolbarManager, decorView, layoutStateProvider, startSurfaceSupplier);
         mAppMenuDelegate = appMenuDelegate;
         mModalDialogManager = modalDialogManager;
         mSnackbarManager = snackbarManager;

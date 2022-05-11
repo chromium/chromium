@@ -177,7 +177,7 @@ public class CustomTabToolbarCoordinator {
 
     private void onCompositorContentInitialized(LayoutManagerImpl layoutDriver) {
         mToolbarManager.initializeWithNative(
-                layoutDriver, null, null, null, v -> onCloseButtonClick(), null);
+                layoutDriver, null, null, null, v -> onCloseButtonClick());
         mInitializedToolbarWithNative = true;
     }
 

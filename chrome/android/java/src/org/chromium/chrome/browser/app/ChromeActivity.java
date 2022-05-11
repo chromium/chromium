@@ -80,9 +80,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingControlle
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -138,7 +135,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -180,8 +176,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.vr.ArDelegateProvider;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -208,7 +202,6 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
-import org.chromium.components.webxr.ArDelegate;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -270,8 +263,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
-    protected ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
-            new ObservableSupplierImpl<>();
     private TabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
@@ -447,14 +438,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mTabModelOrchestrator = createTabModelOrchestrator();
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
 
-        // There's no corresponding call to removeObserver() for this addObserver() because
-        // mTabModelProfileSupplier has the same lifecycle as this activity.
-        mTabModelProfileSupplier.addObserver((profile) -> {
-            BookmarkBridge oldBridge = mBookmarkBridgeSupplier.get();
-            if (oldBridge != null) oldBridge.destroy();
-            mBookmarkBridgeSupplier.set(profile == null ? null : new BookmarkBridge(profile));
-        });
-
         super.performPreInflationStartup();
 
         // Force a partner customizations refresh if it has yet to be initialized.  This can happen
@@ -496,11 +479,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // a recommended pattern.
         // clang-format off
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
-                getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
+                getActivityTabProvider(), mTabModelProfileSupplier,
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
-                () -> null, mBrowserControlsManagerSupplier.get(), getWindowAndroid(),
+                mBrowserControlsManagerSupplier.get(), getWindowAndroid(),
                 new DummyJankTracker(), getLifecycleDispatcher(), getLayoutManagerSupplier(),
                  /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
                 getModalDialogManagerSupplier(), /* appMenuBlocker= */ this,
@@ -892,7 +875,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), null, null, mBookmarkBridgeSupplier);
+                getWindow().getDecorView(), null, null);
     }
 
     /**
@@ -1527,12 +1510,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         destroyTabModels();
-
-        if (mBookmarkBridgeSupplier != null) {
-            BookmarkBridge bookmarkBridge = mBookmarkBridgeSupplier.get();
-            if (bookmarkBridge != null) bookmarkBridge.destroy();
-            mBookmarkBridgeSupplier = null;
-        }
 
         if (mShareRegistrationCoordinator != null) mShareRegistrationCoordinator.destroy();
         if (mShareDelegateSupplier != null) {
@@ -2183,9 +2160,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             TextBubble.dismissBubbles();
         }
 
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null && arDelegate.onBackPressed()) return;
-
         if (mCompositorViewHolderSupplier.hasValue()) {
             LayoutManagerImpl layoutManager =
                     mCompositorViewHolderSupplier.get().getLayoutManager();
@@ -2315,25 +2289,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 return true;
             }
             return false;
-        }
-
-        if (id == R.id.delete_from_reading_list_menu_id) {
-            ReadingListUtils.deleteFromReadingList(
-                    new BookmarkModel(), mSnackbarManager, /*activity=*/this, currentTab);
-            RecordUserAction.record("MobileMenuDeleteFromReadingList");
-            return true;
-        }
-
-        if (id == R.id.disable_price_tracking_menu_id) {
-            // TODO(crbug.com/1268976): Extract this code into a one-liner.
-            List<BookmarkId> bookmarkIds =
-                    PowerBookmarkUtils.getBookmarkIdsWithSharedClusterIdForTab(
-                            currentTab, mBookmarkBridgeSupplier.get());
-            PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
-                    mBookmarkBridgeSupplier.get(), bookmarkIds,
-                    /*enabled=*/false, mSnackbarManager, getResources());
-            RecordUserAction.record("MobileMenuDisablePriceTracking");
-            return true;
         }
 
         if (id == R.id.offline_page_id) {
@@ -2607,24 +2562,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @VisibleForTesting
-    @Nullable
-    public BookmarkBridge getBookmarkBridgeForTesting() {
-        return mBookmarkBridgeSupplier.get();
-    }
-
-    @VisibleForTesting
-    public Configuration getSavedConfigurationForTesting() {
-        return mConfig;
-    }
-
-    @VisibleForTesting
     public boolean deferredStartupPostedForTesting() {
         return mDeferredStartupPosted;
-    }
-
-    @VisibleForTesting
-    public DisplayAndroidObserver getDisplayAndroidObserverForTesting() {
-        return mDisplayAndroidObserver;
     }
 
     /** Returns whether the print action was successfully started. */

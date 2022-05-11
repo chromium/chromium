@@ -18,7 +18,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -66,7 +65,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
-     * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param browserControlsManager Manages the browser controls.
@@ -99,7 +97,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
@@ -128,9 +125,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         // clang-format off
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
-                bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
+                contextualSearchManagerSupplier, tabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>(), () -> null,
+                new OneshotSupplierImpl<>(),
                 browserControlsManager, windowAndroid, new DummyJankTracker(),
                 activityLifecycleDispatcher, layoutManagerSupplier, menuOrKeyboardActionController,
                 activityThemeColorSupplier, modalDialogManagerSupplier, appMenuBlocker,

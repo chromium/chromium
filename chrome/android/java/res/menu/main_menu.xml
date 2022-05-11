@@ -17,10 +17,6 @@
                 android:title="@string/accessibility_menu_forward"
                 android:titleCondensed="@string/menu_forward"
                 android:icon="@drawable/btn_forward"/>
-              <item android:id="@+id/bookmark_this_page_id"
-                android:title="@string/accessibility_menu_bookmark"
-                android:titleCondensed="@string/menu_bookmark"
-                android:icon="@drawable/btn_star"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
                 android:titleCondensed="@string/menu_download"

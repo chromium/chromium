@@ -22,10 +22,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -631,26 +628,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     public void wipeSyncUserData(Runnable wipeDataCallback) {
         assert !mWipeUserDataInProgress;
         mWipeUserDataInProgress = true;
-
-        final BookmarkModel model = new BookmarkModel();
-        model.finishLoadingBookmarkModel(new Runnable() {
-            @Override
-            public void run() {
-                model.removeAllUserBookmarks();
-                model.destroy();
-                BrowsingDataBridge.getInstance().clearBrowsingData(
-                        new BrowsingDataBridge.OnClearBrowsingDataListener() {
-                            @Override
-                            public void onBrowsingDataCleared() {
-                                assert mWipeUserDataInProgress;
-                                mWipeUserDataInProgress = false;
-                                wipeDataCallback.run();
-                                notifyCallbacksWaitingForOperation();
-                            }
-                        },
-                        SYNC_DATA_TYPES, TimePeriod.ALL_TIME);
-            }
-        });
     }
 
     private boolean isGooglePlayServicesPresent() {

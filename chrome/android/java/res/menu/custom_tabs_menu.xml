@@ -11,9 +11,6 @@
               <item android:id="@+id/forward_menu_id"
                 android:title="@string/accessibility_menu_forward"
                 android:icon="@drawable/btn_forward"/>
-              <item android:id="@+id/bookmark_this_page_id"
-                android:title="@string/accessibility_menu_bookmark"
-                android:icon="@drawable/btn_star"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
                 android:icon="@drawable/ic_file_download_white_24dp"/>

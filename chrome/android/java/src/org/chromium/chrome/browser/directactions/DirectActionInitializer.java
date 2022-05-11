@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantDependencyUtilsCh
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -50,8 +49,6 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
     private int mActivityType;
     private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private Runnable mGoBackAction;
-    @Nullable
-    private FindToolbarManager mFindToolbarManager;
     private boolean mDirectActionsRegistered;
     @Nullable
     private DirectActionCoordinator mCoordinator;
@@ -65,7 +62,6 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      * @param goBackAction Implementation of the "go_back" action, usually {@link
      *         android.app.Activity#onBackPressed}.
      * @param tabModelSelector The activity's {@link TabModelSelector}
-     * @param findToolbarManager Manager to use for the "find_in_page" action, if it exists
      * @param bottomSheetController Controller for the activity's bottom sheet, if it exists
      * @param browserControls Provider of browser controls of the activity
      * @param compositorViewHolder Compositor view holder of the activity
@@ -73,8 +69,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      */
     public DirectActionInitializer(Context context, @ActivityType int activityType,
             MenuOrKeyboardActionController actionController, Runnable goBackAction,
-            TabModelSelector tabModelSelector, @Nullable FindToolbarManager findToolbarManager,
-            @Nullable BottomSheetController bottomSheetController,
+            TabModelSelector tabModelSelector, @Nullable BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
             ActivityTabProvider activityTabProvider) {
         mContext = context;
@@ -82,7 +77,6 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
         mMenuOrKeyboardActionController = actionController;
         mGoBackAction = goBackAction;
         mTabModelSelector = tabModelSelector;
-        mFindToolbarManager = findToolbarManager;
         mBottomSheetController = bottomSheetController;
         mBrowserControls = browserControls;
         mCompositorViewHolder = compositorViewHolder;
@@ -134,7 +128,6 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      * @param goBackAction Implementation of the "go_back" action, usually {@link
      *         android.app.Activity#onBackPressed}.
      * @param tabModelSelector The activity's {@link TabModelSelector}
-     * @param findToolbarManager Manager to use for the "find_in_page" action, if it exists
      * @param bottomSheetController Controller for the activity's bottom sheet, if it exists
      * @param browserControls Browser controls manager of the activity
      * @param compositorViewHolder Compositor view holder of the activity
@@ -142,13 +135,10 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      */
     private void registerCommonChromeActions(Context context, @ActivityType int activityType,
             MenuOrKeyboardActionController actionController, Runnable goBackAction,
-            TabModelSelector tabModelSelector, @Nullable FindToolbarManager findToolbarManager,
-            @Nullable BottomSheetController bottomSheetController,
+            TabModelSelector tabModelSelector, @Nullable BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
             ActivityTabProvider activityTabProvider) {
         mCoordinator.register(new GoBackDirectActionHandler(goBackAction));
-        mCoordinator.register(
-                new FindInPageDirectActionHandler(tabModelSelector, findToolbarManager));
 
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
                 .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
@@ -207,7 +197,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
      */
     void registerDirectActions() {
         registerCommonChromeActions(mContext, mActivityType, mMenuOrKeyboardActionController,
-                mGoBackAction, mTabModelSelector, mFindToolbarManager,
+                mGoBackAction, mTabModelSelector,
                 AssistantDependencyUtilsChrome.areDirectActionsAvailable(mActivityType)
                         ? mBottomSheetController
                         : null,
@@ -217,7 +207,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
             registerTabManipulationActions(mMenuOrKeyboardActionController, mTabModelSelector);
         } else if (mActivityType == ActivityType.CUSTOM_TAB) {
             allowMenuActions(mMenuOrKeyboardActionController, mTabModelSelector,
-                    R.id.bookmark_this_page_id, R.id.preferences_id);
+                    R.id.preferences_id);
         }
 
         mDirectActionsRegistered = true;

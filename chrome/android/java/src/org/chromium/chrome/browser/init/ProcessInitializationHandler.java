@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
-import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
 import org.chromium.chrome.browser.contacts_picker.ChromePickerAdapter;
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
@@ -486,11 +485,6 @@ public class ProcessInitializationHandler {
                     // Initialize the WebappRegistry if it's not already initialized. Must be in
                     // async task due to shared preferences disk access on N.
                     WebappRegistry.getInstance();
-
-                    // Force a widget refresh in order to wake up any possible zombie widgets.
-                    // This is needed to ensure the right behavior when the process is suddenly
-                    // killed.
-                    BookmarkWidgetProvider.refreshAllWidgets();
 
                     removeSnapshotDatabase();
 

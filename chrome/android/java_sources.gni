@@ -7,7 +7,6 @@ import("//chrome/android/chrome_java_sources.gni")
 import("//chrome/android/chrome_junit_test_java_sources.gni")
 import("//chrome/android/features/autofill_assistant/public/java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
-import("//chrome/browser/commerce/price_tracking/android/test_java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/browser/share/android/test_java_sources.gni")
@@ -32,7 +31,6 @@ if (enable_supervised_users) {
   chrome_java_sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
 }
 
-chrome_junit_test_java_sources += price_tracking_junit_test_java_sources
 chrome_junit_test_java_sources += share_junit_test_java_sources
 chrome_junit_test_java_deps = share_junit_test_java_deps
 chrome_junit_test_java_sources += commerce_subscriptions_junit_test_sources
@@ -42,6 +40,5 @@ if (enable_arcore) {
   chrome_java_sources += [
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/ArDelegateImpl.java",
   ]
 }

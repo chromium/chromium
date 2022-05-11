@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -21,8 +20,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurface.StateObserver;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -53,10 +50,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final TabObserver mTabObserver;
 
     private final CallbackController mCallbackController;
-
-    /** The supplier of {@link StartSurface} instance. */
-    private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
-    private StateObserver mStartSurfaceStateObserver;
 
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -113,8 +106,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             Supplier<SnackbarManager> snackbarManagerSupplier,
             TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            Supplier<OverlayPanelManager> overlayManager,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            Supplier<OverlayPanelManager> overlayManager) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
@@ -124,10 +116,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
-        mStartSurfaceSupplier = startSurfaceSupplier;
         mCallbackController = new CallbackController();
-        mStartSurfaceSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
 
         mSheetController.addObserver(this);
         mSheetController.setAccessibilityUtil(ChromeAccessibilityUtil.get());
@@ -187,10 +176,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private void setActivityTab(Tab tab) {
         // Temporarily suppress the sheet if entering a state where there is no activity
         // tab and the Start surface homepage isn't showing.
-        updateSuppressionForTabSwitcher(tab,
-                mStartSurfaceSupplier.get() == null
-                        ? null
-                        : mStartSurfaceSupplier.get().getController().getStartSurfaceState());
+        updateSuppressionForTabSwitcher(tab, null);
 
         if (tab == null) return;
 
@@ -205,7 +191,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     }
 
     /**
-     * Called by both {@link StateObserver} and {@link HintlessActivityTabObserver} to update the
+     * Called by both {@link } and {@link HintlessActivityTabObserver} to update the
      * suppression of the bottom sheet for Tab switcher.
      * @param tab The current tab. It might be null when the Start surface or the Tab switcher is
      *            showing.
@@ -232,42 +218,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
     private boolean shouldSuppressForTabSwitcher(
             Tab tab, @StartSurfaceState Integer startSurfaceState) {
-        StartSurface startSurface = mStartSurfaceSupplier.get();
-        if (tab == null && startSurface == null) return true;
-
-        /** When the Start surface is enabled, the {@link startSurfaceState} isn't null. */
-        if (startSurfaceState != null) {
-            if (startSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
-                    || startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-                return false;
-            } else if (startSurfaceState != StartSurfaceState.NOT_SHOWN
-                    && startSurfaceState != StartSurfaceState.DISABLED) {
-                return true;
-            }
-        }
-
-        return tab == null;
-    }
-
-    private void addStartSurfaceStateObserver(StartSurface startSurface) {
-        mStartSurfaceStateObserver = new StateObserver() {
-            private int mStartSurfaceState;
-            @Override
-            public void onStateChanged(
-                    int startSurfaceState, boolean shouldShowTabSwitcherToolbar) {
-                if (mStartSurfaceState == startSurfaceState) return;
-
-                assert startSurfaceState == startSurface.getController().getStartSurfaceState();
-                mStartSurfaceState = startSurfaceState;
-                updateSuppressionForTabSwitcher(mTabProvider.get(), startSurfaceState);
-
-                if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-                    mSheetController.clearRequestsAndHide();
-                }
-            }
-        };
-
-        startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+        return true;
     }
 
     @Override
@@ -373,8 +324,5 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mSheetController.removeObserver(this);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
-        if (mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().removeStateChangeObserver(mStartSurfaceStateObserver);
-        }
     }
 }

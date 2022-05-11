@@ -21,15 +21,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -39,7 +35,6 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNo
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
@@ -51,6 +46,8 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.Locale;
 
@@ -93,7 +90,6 @@ public class PriceDropNotificationManager {
             "Commerce.PriceDrops.UserManaged.NotificationCount";
 
     private static NotificationManagerProxy sNotificationManagerForTesting;
-    private static BookmarkBridge sBookmarkBridgeForTesting;
 
     /**
      * Used to host click logic for "turn off alert" action intent.
@@ -276,12 +272,6 @@ public class PriceDropNotificationManager {
                         String.format(
                                 Locale.US, "Failed to remove subscriptions. Status: %d", status));
             };
-            final BookmarkBridge bookmarkBridge;
-            if (sBookmarkBridgeForTesting != null) {
-                bookmarkBridge = sBookmarkBridgeForTesting;
-            } else {
-                bookmarkBridge = new BookmarkBridge(Profile.getLastUsedRegularProfile());
-            }
 
             Runnable unsubscribeRunnable = () -> {
                 if (offerId != null) {
@@ -299,22 +289,6 @@ public class PriceDropNotificationManager {
                             callback);
                 }
             };
-
-            // Only attempt to unsubscribe once the corresponding bookmarks can also be updated.
-            if (bookmarkBridge.isBookmarkModelLoaded()) {
-                unsubscribeRunnable.run();
-            } else {
-                bookmarkBridge.addObserver(new BookmarkBridge.BookmarkModelObserver() {
-                    @Override
-                    public void bookmarkModelLoaded() {
-                        unsubscribeRunnable.run();
-                        bookmarkBridge.removeObserver(this);
-                    }
-
-                    @Override
-                    public void bookmarkModelChanged() {}
-                });
-            }
 
             if (recordMetrics) {
                 NotificationUmaTracker.getInstance().onNotificationActionClick(
@@ -469,16 +443,6 @@ public class PriceDropNotificationManager {
     public static void setNotificationManagerForTesting(
             NotificationManagerProxy notificationManager) {
         sNotificationManagerForTesting = notificationManager;
-    }
-
-    /**
-     * Set a mock BookmarkBridge for testing so we don't need to access Profile.
-     *
-     * @param bookmarkBridge The bookmark bridge to use.
-     */
-    @VisibleForTesting
-    public static void setBookmarkBridgeForTesting(BookmarkBridge bookmarkBridge) {
-        sBookmarkBridgeForTesting = bookmarkBridge;
     }
 
     /**

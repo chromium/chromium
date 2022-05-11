@@ -1389,39 +1389,6 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 23): `addDirectAction`"
-        errorLine1="            reporter.addDirectAction(ACTION_ID).withParameter("
-        errorLine2="                     ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/FindInPageDirectActionHandler.java"
-            line="35"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 23): `withParameter`"
-        errorLine1="            reporter.addDirectAction(ACTION_ID).withParameter("
-        errorLine2="                                                ~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/FindInPageDirectActionHandler.java"
-            line="35"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 23): `withParameter`"
-        errorLine1="                    ARGUMENT_NAME, Type.STRING, /* required = */ true);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/FindInPageDirectActionHandler.java"
-            line="36"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 26 (current min is 23): `setPasteAsPlainTextMenuItemTitle`"
         errorLine1="            SelectionPopupControllerImpl.setPasteAsPlainTextMenuItemTitle(menu);"
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -9503,17 +9470,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
             line="438"
             column="32"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="            mAdapter.notifyDataSetChanged();"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManager.java"
-            line="104"
-            column="13"/>
     </issue>
 
     <issue

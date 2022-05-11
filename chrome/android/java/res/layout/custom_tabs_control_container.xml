@@ -26,22 +26,7 @@
             android:layout_marginTop="@dimen/custom_tabs_control_container_height"
             android:scaleType="fitXY"
             android:importantForAccessibility="no" />
-        <ViewStub
-            android:id="@+id/find_toolbar_stub"
-            android:inflatedId="@+id/find_toolbar"
-            android:visibility="gone"
-            android:layout_marginTop="@dimen/tab_strip_height"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/custom_tabs_control_container_height"
-            android:layout="@layout/find_toolbar" />
-        <ViewStub
-            android:id="@+id/find_toolbar_tablet_stub"
-            android:inflatedId="@+id/find_toolbar"
-            android:layout_width="@dimen/find_in_page_popup_width"
-            android:layout_height="@dimen/find_in_page_popup_height"
-            android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
-            android:layout_gravity="end|top"
-            android:layout="@layout/find_toolbar" />
+
         <ViewStub
             android:id="@+id/topbar_stub"
             android:layout_width="match_parent"

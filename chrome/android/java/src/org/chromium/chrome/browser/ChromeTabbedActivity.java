@@ -57,7 +57,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
-import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.TabbedActivityLaunchCauseMetrics;
@@ -126,7 +125,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
@@ -299,7 +297,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private Runnable mShowHistoryRunnable;
 
     private CompositorViewHolder mCompositorViewHolder;
-    private OverviewListLayout mOverviewListLayout;
+
     /**
      * Keeps track of whether or not a specific tab was created based on the startup intent.
      */
@@ -820,7 +818,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             };
 
             getToolbarManager().initializeWithNative(mLayoutManager, tabSwitcherClickHandler,
-                    newTabClickHandler, null, null, showStartSurfaceSupplier);
+                    newTabClickHandler, null, null);
 
             if (!isInstantStartEnabled()) {
                 // TODO(https://crbug.com/1306904): Fix this assert which is tripping on unrelated
@@ -933,9 +931,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = getCompositorViewHolderSupplier().get();
-            mOverviewListLayout = (OverviewListLayout) mLayoutManager.getOverviewListLayout();
             getTabObscuringHandler().addObserver(mCompositorViewHolder);
-            getTabObscuringHandler().addObserver(mOverviewListLayout);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
@@ -1626,7 +1622,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                mBookmarkBridgeSupplier, getContextualSearchManagerSupplier(),
+                getContextualSearchManagerSupplier(),
                 getTabModelSelectorSupplier(), mStartSurfaceSupplier,
                 mIntentMetadataOneshotSupplier, mLayoutStateProviderSupplier,
                 mStartSurfaceParentTabSupplier, getBrowserControlsManager(), getWindowAndroid(),
@@ -1847,7 +1843,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
                 getWindow().getDecorView(), this, mLayoutStateProviderSupplier,
                 ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
-                mBookmarkBridgeSupplier,
                 getModalDialogManager(), getSnackbarManager());
     }
 
@@ -2200,11 +2195,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        if (type == TabLaunchType.FROM_READING_LIST) {
-            assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
-            ReadingListUtils.showReadingList(currentTab.isIncognito());
-        }
-
         final boolean shouldCloseTab = backShouldCloseTab(currentTab);
 
         // Minimize the app if either:
@@ -2517,7 +2507,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
         if (tabObscuringHandler != null) {
             getTabObscuringHandler().removeObserver(mCompositorViewHolder);
-            getTabObscuringHandler().removeObserver(mOverviewListLayout);
         }
 
         if (isTablet()) ChromeAccessibilityUtil.get().removeObserver(mCompositorViewHolder);
@@ -2602,11 +2591,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @VisibleForTesting
     public LayoutManagerChrome getLayoutManager() {
         return (LayoutManagerChrome) getCompositorViewHolderSupplier().get().getLayoutManager();
-    }
-
-    @VisibleForTesting
-    public Layout getOverviewListLayout() {
-        return getLayoutManager().getOverviewListLayout();
     }
 
     @VisibleForTesting

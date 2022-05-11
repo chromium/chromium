@@ -134,7 +134,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         // clang-format off
         mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
                 getShareDelegateSupplier(),
-                getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
+                getActivityTabProvider(), mTabModelProfileSupplier,
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
                 getLayoutManagerSupplier(),
@@ -348,7 +348,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new CustomTabAppMenuPropertiesDelegate(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), mBookmarkBridgeSupplier, mVerifier,
+                getWindow().getDecorView(), mVerifier,
                 mIntentDataProvider.getUiType(), mIntentDataProvider.getMenuTitles(),
                 mIntentDataProvider.isOpenedByChrome(),
                 mIntentDataProvider.shouldShowShareMenuItem(),

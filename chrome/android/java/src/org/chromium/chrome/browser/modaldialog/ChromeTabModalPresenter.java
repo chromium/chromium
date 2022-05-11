@@ -30,10 +30,8 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.webxr.ArDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -305,24 +303,11 @@ public class ChromeTabModalPresenter
         TabAttributes.from(mActiveTab).set(TabAttributeKeys.MODAL_DIALOG_SHOWING, isShowing);
         mVisibilityDelegate.updateConstraintsForTab(mActiveTab);
 
-        // AR Sessions are fullscreen sessions where it's okay to show the TabModal dialog
-        // without exiting fullscreen. So if we are in one we need to ensure that we:
-        // 1) Don't exit fullscreen
-        // 2) Toggle the Controls visibility appropriately.
-        // Note that if we don't have an ArDelegate, then we can't have an AR Session.
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        boolean isInArSession = (arDelegate != null && arDelegate.hasActiveArSession());
-
-        // If needed, exit fullscreen mode before showing the tab modal dialog view.
-        if (!isInArSession) {
-            mFullscreenManager.onExitFullscreen(mActiveTab);
-        }
+        mFullscreenManager.onExitFullscreen(mActiveTab);
 
         // Also need to update browser control state to refresh the constraints.
-        if (isShowing && (areRendererInputEventsIgnored() || isInArSession)) {
+        if (isShowing && areRendererInputEventsIgnored()) {
             mBrowserControlsVisibilityManager.showAndroidControls(true);
-        } else if (!isShowing && isInArSession) {
-            mBrowserControlsVisibilityManager.restoreControlsPositions();
         } else {
             TabBrowserControlsConstraintsHelper.update(mActiveTab, BrowserControlsState.SHOWN,
                     !mBrowserControlsVisibilityManager.offsetOverridden());

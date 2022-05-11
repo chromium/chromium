@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -40,7 +39,6 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
-import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,7 +61,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.share.crow.CrowIphController;
@@ -93,7 +90,6 @@ import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundView
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -107,7 +103,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.
@@ -122,7 +117,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
-    private ReadLaterIPHController mReadLaterIPHController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
@@ -138,7 +132,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
     private HeightObserver mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
-    private FindToolbarObserver mContinuousSearchFindToolbarObserver;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final int mControlContainerHeightResource;
@@ -192,7 +185,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
-     * @param bookmarkBridgeSupplier Supplier of the bookmark  bridge for the current profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
@@ -234,7 +226,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             @NonNull Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
@@ -268,8 +259,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
-                profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
-                tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
+                profileSupplier, contextualSearchManagerSupplier,
+                tabModelSelectorSupplier, intentMetadataOneshotSupplier,
                 layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
                 browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
                 layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
@@ -352,14 +343,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mContinuousSearchContainerCoordinator != null) {
             getTabObscuringHandler().removeObserver(mContinuousSearchTabObscuringHandlerObserver);
             mContinuousSearchContainerCoordinator.removeHeightObserver(mContinuousSearchObserver);
-            if (mFindToolbarManager != null) {
-                mFindToolbarManager.removeObserver(mContinuousSearchFindToolbarObserver);
-            }
             mContinuousSearchContainerCoordinator.destroy();
             mContinuousSearchContainerCoordinator = null;
             mContinuousSearchObserver = null;
             mContinuousSearchTabObscuringHandlerObserver = null;
-            mContinuousSearchFindToolbarObserver = null;
         }
 
         if (mUndoGroupSnackbarController != null) {
@@ -493,9 +480,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean isShowingStartSurfaceHomepage() {
-        return mStartSurfaceSupplier.get() != null
-                && mStartSurfaceSupplier.get().getController().getStartSurfaceState()
-                == StartSurfaceState.SHOWN_HOMEPAGE;
+        return false;
     }
 
     // Protected class methods
@@ -550,9 +535,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mWindowAndroid, mAppMenuCoordinator, mActivityLifecycleDispatcher,
                 mActivityTabProvider, mIsInOverviewModeSupplier,
                 mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
-        mReadLaterIPHController = new ReadLaterIPHController(mActivity,
-                getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
-
         boolean didTriggerPromo = false;
 
         if (!didTriggerPromo) {
@@ -569,7 +551,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
-            mReadLaterIPHController.showColdStartIPH();
             if (MultiWindowUtils.instanceSwitcherEnabled()
                     && MultiWindowUtils.shouldShowManageWindowsMenu()) {
                 MultiInstanceIphController.maybeShowInProductHelp(mActivity,
@@ -716,25 +697,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         getTabObscuringHandler().addObserver(mContinuousSearchTabObscuringHandlerObserver);
 
         if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
-
-        assert mFindToolbarManager != null;
-
-        mContinuousSearchFindToolbarObserver = new FindToolbarObserver() {
-            private int mToken = TokenHolder.INVALID_TOKEN;
-
-            @Override
-            public void onFindToolbarShown() {
-                assert mToken == TokenHolder.INVALID_TOKEN;
-                mToken = mContinuousSearchContainerCoordinator.hideContainer();
-            }
-
-            @Override
-            public void onFindToolbarHidden() {
-                mContinuousSearchContainerCoordinator.showContainer(mToken);
-                mToken = TokenHolder.INVALID_TOKEN;
-            }
-        };
-        mFindToolbarManager.addObserver(mContinuousSearchFindToolbarObserver);
     }
 
     /**
@@ -769,8 +731,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Called when a link is copied through context menu. */
     public void onContextMenuCopyLink() {
-        // TODO(crbug/1150090): Find a better way of passing event for IPH.
-        mReadLaterIPHController.onCopyContextMenuItemClicked();
     }
 
     /**

@@ -36,7 +36,6 @@ public final class ReadingListBridge {
 
     @CalledByNative
     private static void openReadingListPage() {
-        ReadingListUtils.showReadingList(/*isIncognito=*/false);
     }
 
     @NativeMethods

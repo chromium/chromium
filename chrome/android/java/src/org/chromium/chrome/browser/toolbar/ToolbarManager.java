@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -56,8 +55,6 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.findinpage.FindToolbarManager;
-import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -195,17 +192,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
-    private ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
-    private final Callback<BookmarkBridge> mBookmarkBridgeSupplierObserver;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
-    private FindToolbarManager mFindToolbarManager;
 
     private LayoutManagerImpl mLayoutManager;
 
     private TabObserver mTabObserver;
-    private BookmarkBridge.BookmarkModelObserver mBookmarksObserver;
-    private FindToolbarObserver mFindToolbarObserver;
 
     private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
     private boolean mIsStartSurfaceEnabled;
@@ -266,10 +258,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
 
-    /**
-     * Runnable for the home and search accelerator button when Start Surface home page is enabled.
-     */
-    private Supplier<Boolean> mShowStartSurfaceSupplier;
     private final ScrimCoordinator mScrimCoordinator;
 
     private StartSurface mStartSurface;
@@ -332,13 +320,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param scrimCoordinator A means of showing the scrim.
      * @param toolbarActionModeCallback Callback that communicates changes in the conceptual mode
      *                                  of toolbar interaction.
-     * @param findToolbarManager The manager for the find in page function.
      * @param profileSupplier Supplier of the currently applicable profile.
-     * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
      * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
-     * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param intentMetadataOneshotSupplier Supplier with info about the launching intent.
      * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup. Will only
@@ -370,14 +355,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             IdentityDiscController identityDiscController,
             List<ButtonDataProvider> buttonDataProviders, ActivityTabProvider tabProvider,
             ScrimCoordinator scrimCoordinator, ToolbarActionModeCallback toolbarActionModeCallback,
-            FindToolbarManager findToolbarManager, ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            ObservableSupplier<Profile> profileSupplier,
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
@@ -443,13 +426,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mControlContainer = controlContainer;
         assert mControlContainer != null;
 
-        mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
-        // We need to capture a reference to setBookmarkBridge/setCurrentProfile in order to remove
-        // them later; there is no guarantee in the JLS that referencing the same method later will
-        // reference the same object.
-        mBookmarkBridgeSupplierObserver = this::setBookmarkBridge;
-        mBookmarkBridgeSupplier.addObserver(mBookmarkBridgeSupplierObserver);
-
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
@@ -484,7 +460,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         // clang-format off
         mToolbarTabController = new ToolbarTabControllerImpl(mLocationBarModel::getTab,
-                () -> mShowStartSurfaceSupplier != null && mShowStartSurfaceSupplier.get(),
+                () -> false,
                 () -> {
                     Profile profile = profileSupplier.get();
                     return profile != null ? TrackerFactory.getTrackerForProfile(profile) : null;
@@ -589,8 +565,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     null, IntentHandler::bringTabToFront,
                     DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
                     TabWindowManagerSingleton::getInstance,
-                    (url) -> mBookmarkBridgeSupplier.hasValue()
-                            && mBookmarkBridgeSupplier.get().isBookmarked(url),
+                    (url) -> false,
                     VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker,
                     exploreIconProvider,
                     merchantTrustSignalsCoordinatorSupplier,
@@ -807,13 +782,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
         };
 
-        mBookmarksObserver = new BookmarkBridge.BookmarkModelObserver() {
-            @Override
-            public void bookmarkModelChanged() {
-                updateBookmarkButtonStatus();
-            }
-        };
-
         mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
             private OnLayoutChangeListener mLayoutChangeListener;
             @Override
@@ -844,31 +812,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mFullscreenObserver = new FullscreenManager.Observer() {
             @Override
             public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
             }
         };
         mFullscreenManager.addObserver(mFullscreenObserver);
-
-        mFindToolbarObserver = new FindToolbarObserver() {
-            @Override
-            public void onFindToolbarShown() {
-                mToolbar.handleFindLocationBarStateChange(true);
-                if (mControlsVisibilityDelegate != null) {
-                    mFullscreenFindInPageToken =
-                            mControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
-                                    mFullscreenFindInPageToken);
-                }
-            }
-
-            @Override
-            public void onFindToolbarHidden() {
-                mToolbar.handleFindLocationBarStateChange(false);
-                if (mControlsVisibilityDelegate != null) {
-                    mControlsVisibilityDelegate.releasePersistentShowingToken(
-                            mFullscreenFindInPageToken);
-                }
-            }
-        };
 
         mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
@@ -915,24 +861,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         ChromeAccessibilityUtil.get().addObserver(this);
         mLocationBarModel.setShouldShowOmniboxInOverviewMode(mIsStartSurfaceEnabled);
-
-        mFindToolbarManager = findToolbarManager;
-        mFindToolbarManager.addObserver(mFindToolbarObserver);
-
-        startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
-            mStartSurface = startSurface;
-            mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                assert ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
-                mStartSurfaceState = newState;
-                mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar);
-            };
-            mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
-
-            mStartSurfaceHeaderOffsetChangeListener = (appbarLayout, verticalOffset) -> {
-                mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset);
-            };
-            mStartSurface.addHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
-        }));
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
@@ -1262,18 +1190,15 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
      *         button.
-     * @param showStartSurfaceSupplier Supplies if we should show the start surface.
      */
     public void initializeWithNative(LayoutManagerImpl layoutManager,
             OnClickListener tabSwitcherClickHandler, OnClickListener newTabClickHandler,
-            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
-            Supplier<Boolean> showStartSurfaceSupplier) {
+            OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
 
         mTabModelSelector = mTabModelSelectorSupplier.get();
-        mShowStartSurfaceSupplier = showStartSurfaceSupplier;
 
         mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
                 newTabClickHandler, bookmarkClickHandler, customTabsBackClickHandler,
@@ -1399,21 +1324,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * Call to tear down all of the toolbar dependencies.
      */
     public void destroy() {
-        if (mInitializedWithNative) {
-            mFindToolbarManager.removeObserver(mFindToolbarObserver);
-        }
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier = null;
         }
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-        }
-        if (mBookmarkBridgeSupplier != null) {
-            BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
-            if (bridge != null) bridge.removeObserver(mBookmarksObserver);
-
-            mBookmarkBridgeSupplier.removeObserver(mBookmarkBridgeSupplierObserver);
-            mBookmarkBridgeSupplier = null;
         }
         if (mTemplateUrlObserver != null) {
             TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
@@ -1478,11 +1393,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         if (mProgressBarCoordinator != null) mProgressBarCoordinator.destroy();
-
-        if (mFindToolbarManager != null) {
-            mFindToolbarManager.removeObserver(mFindToolbarObserver);
-            mFindToolbarManager = null;
-        }
 
         if (mMenuButtonCoordinator != null) {
             if (mMenuStateObserver != null) {
@@ -1598,8 +1508,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbar.onUrlFocusChange(hasFocus);
-
-        if (mFindToolbarManager != null && hasFocus) mFindToolbarManager.hideToolbar();
 
         if (mControlsVisibilityDelegate == null) return;
         if (hasFocus) {
@@ -1799,14 +1707,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateBookmarkButtonStatus() {
-        if (mBookmarkBridgeSupplier == null) return;
-        Tab currentTab = mLocationBarModel.getTab();
-        BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
-        boolean isBookmarked =
-                currentTab != null && bridge != null && bridge.hasBookmarkIdForTab(currentTab);
-        boolean editingAllowed =
-                currentTab == null || bridge == null || bridge.isEditBookmarksEnabled();
-        mToolbar.updateBookmarkButton(isBookmarked, editingAllowed);
     }
 
     private void updateReloadState(boolean tabCrashed) {
@@ -1878,11 +1778,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
         }
-    }
-
-    private void setBookmarkBridge(BookmarkBridge bookmarkBridge) {
-        if (bookmarkBridge == null) return;
-        bookmarkBridge.addObserver(mBookmarksObserver);
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

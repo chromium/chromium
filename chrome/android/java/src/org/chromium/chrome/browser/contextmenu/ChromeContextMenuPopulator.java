@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
-
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -47,7 +41,6 @@ import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.Pe
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
@@ -81,6 +74,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CONTENT_DESC;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_IMAGE;
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 /**
  * A {@link ContextMenuPopulator} used for showing the default Chrome context menu.
@@ -419,10 +418,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (!mItemDelegate.isIncognito()
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
-                }
-                if (!mParams.isImage() && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
-                        && ReadingListUtils.isReadingListSupported(mParams.getLinkUrl())) {
-                    linkGroup.add(createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
                 }
                 linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));
                 if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {

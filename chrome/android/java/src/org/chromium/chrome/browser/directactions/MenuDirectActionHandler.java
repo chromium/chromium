@@ -34,7 +34,6 @@ class MenuDirectActionHandler implements DirectActionHandler {
         Map<String, Integer> map = new HashMap<>();
         map.put(ChromeDirectActionIds.GO_FORWARD, R.id.forward_menu_id);
         map.put(ChromeDirectActionIds.RELOAD, R.id.reload_menu_id);
-        map.put(ChromeDirectActionIds.BOOKMARK_THIS_PAGE, R.id.bookmark_this_page_id);
         map.put(ChromeDirectActionIds.DOWNLOADS, R.id.downloads_menu_id);
         map.put(ChromeDirectActionIds.HELP, R.id.help_id);
         map.put(ChromeDirectActionIds.NEW_TAB, R.id.new_tab_menu_id);
@@ -84,7 +83,6 @@ class MenuDirectActionHandler implements DirectActionHandler {
                 availableItemIds.add(R.id.forward_menu_id);
             }
             availableItemIds.add(R.id.reload_menu_id);
-            availableItemIds.add(R.id.bookmark_this_page_id);
             availableItemIds.add(R.id.open_history_menu_id);
         }
         if (mTabModelSelector.getTotalTabCount() > 0) {

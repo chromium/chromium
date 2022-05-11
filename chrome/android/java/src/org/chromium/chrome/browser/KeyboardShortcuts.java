@@ -310,11 +310,6 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.all_bookmarks_menu_id, false);
                     return true;
-                case KeyEvent.KEYCODE_BOOKMARK:
-                case CTRL | KeyEvent.KEYCODE_D:
-                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                            R.id.bookmark_this_page_id, false);
-                    return true;
                 case CTRL | KeyEvent.KEYCODE_H:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.open_history_menu_id, false);

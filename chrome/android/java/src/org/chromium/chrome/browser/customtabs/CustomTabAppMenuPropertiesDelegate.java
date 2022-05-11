@@ -17,12 +17,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -67,11 +65,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
+            Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
             boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, null, bookmarkBridgeSupplier);
+                toolbarManager, decorView, null, null);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -180,13 +178,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 downloadItem.setEnabled(shouldEnableDownloadPage(currentTab));
             } else {
                 downloadItem.setVisible(false);
-            }
-
-            MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
-            if (bookmarkItemVisible) {
-                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /*fromCCT=*/true);
-            } else {
-                bookmarkItem.setVisible(false);
             }
 
             prepareTranslateMenuItem(menu, currentTab);

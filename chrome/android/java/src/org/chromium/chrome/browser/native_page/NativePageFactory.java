@@ -15,7 +15,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
@@ -157,12 +156,6 @@ public class NativePageFactory {
                     mToolbarSupplier);
         }
 
-        protected NativePage buildBookmarksPage(Tab tab) {
-            return new BookmarkPage(mActivity.getComponentName(), mSnackbarManagerSupplier.get(),
-                    mTabModelSelector.isIncognitoSelected(),
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
-        }
-
         protected NativePage buildExploreSitesPage(Tab tab) {
             return new ExploreSitesPage(mActivity,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab,
@@ -206,9 +199,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.NTP:
                 page = getBuilder().buildNewTabPage(tab, url);
-                break;
-            case NativePageType.BOOKMARKS:
-                page = getBuilder().buildBookmarksPage(tab);
                 break;
             case NativePageType.EXPLORE:
                 page = getBuilder().buildExploreSitesPage(tab);
