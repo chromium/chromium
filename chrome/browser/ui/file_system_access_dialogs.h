@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_UI_FILE_SYSTEM_ACCESS_DIALOGS_H_
 
 #include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "build/build_config.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 
@@ -34,10 +32,9 @@ void ShowFileSystemAccessPermissionDialog(
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents);
 
-// Displays a dialog to inform the user that the |path| they picked using the
-// File System Access API is blocked by chrome. |is_directory| is true if the
-// user was selecting a directory, otherwise the user was selecting files within
-// a directory. |callback| is called when the user has dismissed the dialog.
+// Displays a dialog to inform the user that the `path` they picked using the
+// File System Access API is blocked by chrome. `callback` is called when the
+// user has dismissed the dialog.
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
     const base::FilePath& path,

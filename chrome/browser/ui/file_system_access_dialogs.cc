@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/file_system_access_dialogs.h"
+#include "build/build_config.h"
 
 #include "components/permissions/permission_util.h"
 
