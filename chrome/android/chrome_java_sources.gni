@@ -418,7 +418,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextualsearch/SelectionClientManager.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ShortTextRunSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/SmallTextSuppression.java",
-  "java/src/org/chromium/chrome/browser/contextualsearch/TapDurationSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/TapFarFromPreviousSuppression.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/TapSuppressionHeuristics.java",
   "java/src/org/chromium/chrome/browser/crash/ChromeMinidumpUploadJobServiceImpl.java",

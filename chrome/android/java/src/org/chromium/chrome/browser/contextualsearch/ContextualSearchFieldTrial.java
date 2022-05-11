@@ -226,6 +226,7 @@ public class ContextualSearchFieldTrial {
          */
         int WAIT_AFTER_TAP_DELAY_MS = 3;
         /**
+         * @deprecated
          * A threshold for the duration of a tap gesture for categorization as brief or
          * lengthy (the maximum amount of time in milliseconds for a tap gesture that's still
          * considered a very brief duration tap).

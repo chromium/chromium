@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
@@ -60,10 +59,6 @@ public class ContextualSearchSelectionController {
 
     // Max selection length must be limited or the entire request URL can go past the 2K limit.
     private static final int MAX_SELECTION_LENGTH = 1000;
-
-    private static final int INVALID_DURATION = -1;
-    // A default tap duration value when we can't compute it.
-    private static final int DEFAULT_DURATION = 0;
 
     private final Activity mActivity;
     private final ContextualSearchSelectionHandler mHandler;
@@ -113,9 +108,6 @@ public class ContextualSearchSelectionController {
 
     // Whether the selection was empty before the most recent tap gesture.
     private boolean mWasSelectionEmptyBeforeTap;
-
-    // The duration of the last tap gesture in milliseconds, or 0 if not set.
-    private int mTapDurationMs = INVALID_DURATION;
 
     /** Tracks whether we're currently clearing the selection to prevent recursion. */
     private boolean mClearingSelection;
@@ -410,7 +402,6 @@ public class ContextualSearchSelectionController {
         mLastTapState = null;
         mLastScrollTimeNs = 0;
         mTapTimeNanoseconds = 0;
-        mTapDurationMs = INVALID_DURATION;
         mDidExpandSelection = false;
         mFontSizeDips = 0;
         mTextRunLength = 0;
@@ -450,10 +441,6 @@ public class ContextualSearchSelectionController {
         if (mSelectionType != SelectionType.LONG_PRESS && !mAreSelectionHandlesShown
                 && mLastValidSelectionType != SelectionType.LONG_PRESS
                 && mLastValidSelectionType != SelectionType.RESOLVING_LONG_PRESS) {
-            if (mTapTimeNanoseconds != 0) {
-                mTapDurationMs = (int) ((System.nanoTime() - mTapTimeNanoseconds)
-                        / TimeUtils.NANOSECONDS_PER_MILLISECOND);
-            }
             mWasTapGestureDetected = true;
             mSelectionType = SelectionType.TAP;
             mX = x;
@@ -482,11 +469,9 @@ public class ContextualSearchSelectionController {
         int x = (int) mX;
         int y = (int) mY;
 
-        // TODO(donnd): Remove tap counters.
-        if (mTapDurationMs == INVALID_DURATION) mTapDurationMs = DEFAULT_DURATION;
         TapSuppressionHeuristics tapHeuristics =
                 new TapSuppressionHeuristics(this, mLastTapState, x, y, contextualSearchContext,
-                        mTapDurationMs, mWasSelectionEmptyBeforeTap, mFontSizeDips, mTextRunLength);
+                        mWasSelectionEmptyBeforeTap, mFontSizeDips, mTextRunLength);
         // TODO(donnd): Move to be called when the panel closes to work with states that change.
         tapHeuristics.logConditionState();
 
