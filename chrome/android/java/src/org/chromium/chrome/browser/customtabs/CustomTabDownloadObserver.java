@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
@@ -55,6 +56,10 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             DownloadInterstitialCoordinator coordinator =
                     DownloadInterstitialCoordinatorFactory.create(tab::getContext,
                             tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
+            // Register the download's original URL to prevent messages UI showing in interstitial.
+            DownloadManagerService.getDownloadManagerService()
+                    .getMessageUiController(/* otrProfileId */ null)
+                    .addDownloadInterstitialSource(tab.getOriginalUrl().getSpec());
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }

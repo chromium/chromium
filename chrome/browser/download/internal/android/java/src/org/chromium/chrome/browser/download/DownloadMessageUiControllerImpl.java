@@ -279,6 +279,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     // paused items.
     private final Set<ContentId> mIgnoredItems = new HashSet<>();
 
+    // Used to calculate which items are being handled by a download interstitial.
+    private final Set<String> mDownloadInterstitialSources = new HashSet<>();
+
     // The notification IDs associated with the currently tracked completed items. The notification
     // should be removed when the message action button is clicked to open the item.
     private final Map<ContentId, Integer> mNotificationIds = new HashMap<>();
@@ -329,6 +332,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mNotificationIds.put(id, notificationId);
     }
 
+    /**
+     * Registers a new URL source for which a download interstitial download will be initiated.
+     * @param originalUrl The URL of the download.
+     */
+    @Override
+    public void addDownloadInterstitialSource(String originalUrl) {
+        mDownloadInterstitialSources.add(originalUrl);
+    }
+
     @Override
     public void onItemsAdded(List<OfflineItem> items) {
         for (OfflineItem item : items) {
@@ -348,6 +360,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     @Override
     public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
+        if (mDownloadInterstitialSources.contains(item.originalUrl)) {
+            mDownloadInterstitialSources.remove(item.originalUrl);
+            mIgnoredItems.add(item.id);
+        }
         if (!isVisibleToUser(item)) return;
 
         if (updateDelta != null && !updateDelta.stateChanged

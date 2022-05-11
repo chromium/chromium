@@ -69,6 +69,12 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
     // TODO(shaktisahu): Find an alternative way after moving to offline content provider.
     void onNotificationShown(ContentId id, int notificationId);
 
+    /**
+     * Registers a new URL source for which a download interstitial download will be initiated.
+     * @param originalUrl The URL of the download.
+     */
+    void addDownloadInterstitialSource(String originalUrl);
+
     /** OfflineContentProvider.Observer methods. */
     @Override
     void onItemsAdded(List<OfflineItem> items);

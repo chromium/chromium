@@ -416,32 +416,4 @@ public class DownloadManagerServiceTest {
         notifier.waitTillExpectedCallsComplete();
         Assert.assertTrue("All downloads should be updated.", matchSet.mMatches.isEmpty());
     }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    @Features.EnableFeatures({ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB})
-    public void testCCTDownloads() {
-        Assert.assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB));
-        if (useDownloadOfflineContentProvider()) return;
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        // Try calling download completed directly.
-        DownloadInfo successful = getDownloadInfo();
-        notifier.expect(MethodID.DOWNLOAD_SUCCESSFUL, successful);
-
-        // Add the download to the inProgressCCTDownloads set before the download starts.
-        DownloadManagerService.addCCTDownload(successful.getDownloadGuid());
-        Assert.assertTrue(DownloadManagerService.inProgressCCTDownloadsContains(
-                successful.getDownloadGuid()));
-
-        mService.onDownloadCompleted(successful);
-        notifier.waitTillExpectedCallsComplete();
-
-        // Check that the download has been removed from the set after downloading successfully.
-        Assert.assertFalse(DownloadManagerService.inProgressCCTDownloadsContains(
-                successful.getDownloadGuid()));
-    }
 }

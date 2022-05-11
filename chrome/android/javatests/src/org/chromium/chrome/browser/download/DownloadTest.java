@@ -121,6 +121,9 @@ public class DownloadTest implements CustomMainActivityStart {
         public void onNotificationShown(ContentId id, int notificationId) {}
 
         @Override
+        public void addDownloadInterstitialSource(String originalUrl) {}
+
+        @Override
         public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override

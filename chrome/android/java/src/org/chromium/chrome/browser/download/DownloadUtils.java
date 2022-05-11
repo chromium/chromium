@@ -479,12 +479,6 @@ public class DownloadUtils {
     public static void openDownload(String filePath, String mimeType, String downloadGuid,
             OTRProfileID otrProfileID, String originalUrl, String referer,
             @DownloadOpenSource int source) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
-                && source == DownloadOpenSource.UNKNOWN
-                && DownloadManagerService.inProgressCCTDownloadsContains(downloadGuid)) {
-            DownloadManagerService.removeCCTDownload(downloadGuid);
-            return;
-        }
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();

@@ -87,6 +87,9 @@ public class OMADownloadHandlerTest {
         }
 
         @Override
+        public void addDownloadInterstitialSource(String originalUrl) {}
+
+        @Override
         public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override
