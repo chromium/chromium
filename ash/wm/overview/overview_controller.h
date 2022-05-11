@@ -115,7 +115,7 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
 
  private:
-  friend class DesksTemplatesTest;
+  friend class SavedDeskTest;
 
   void set_disable_app_id_check_for_saved_desks(bool val) {
     disable_app_id_check_for_saved_desks_ = val;

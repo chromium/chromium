@@ -19,7 +19,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/templates/desks_templates_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "base/guid.h"

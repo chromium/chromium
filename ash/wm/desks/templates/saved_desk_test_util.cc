@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
 
 #include "ash/shell.h"
 #include "ash/style/close_button.h"

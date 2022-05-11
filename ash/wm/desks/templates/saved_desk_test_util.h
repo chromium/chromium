@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_TEST_UTIL_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_TEST_UTIL_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_TEST_UTIL_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_TEST_UTIL_H_
 
 #include <vector>
 
@@ -165,4 +165,4 @@ void WaitForDesksTemplatesUI();
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_TEST_UTIL_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_TEST_UTIL_H_
