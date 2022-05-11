@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
+#import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 
@@ -48,6 +49,34 @@ enum class FeedLoadStreamStatus {
   kCannotLoadMoreNoNextPageToken = 19,
   // Highest enumerator. Recommended by Histogram metrics best practices.
   kMaxValue = kCannotLoadMoreNoNextPageToken,
+};
+
+// Values for the UMA ContentSuggestions.Feed.UserSettingsOnStart
+// histogram. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused. This must be kept
+// in sync with FeedUserSettingsOnStart in enums.xml.
+// Reports last known state of user settings which affect Feed content.
+// This includes WAA (whether activity is recorded), and DP (whether
+// Discover personalization is enabled).
+enum class UserSettingsOnStart {
+  // The Feed is disabled by enterprise policy.
+  kFeedNotEnabledByPolicy = 0,
+  // The Feed is enabled by enterprise policy, but the user has hidden and
+  // disabled the Feed, so other user settings beyond sign-in status are not
+  // available.
+  kFeedNotVisibleSignedOut = 1,
+  kFeedNotVisibleSignedIn = 2,
+  // The Feed is enabled, the user is not signed in.
+  kSignedOut = 3,
+  // The Feed is enabled, the user is signed in, and setting states are known.
+  kSignedInWaaOnDpOn = 4,
+  kSignedInWaaOnDpOff = 5,
+  kSignedInWaaOffDpOn = 6,
+  kSignedInWaaOffDpOff = 7,
+  // The Feed is enabled, but there is no recent Feed data, so user settings
+  // state is unknown.
+  kSignedInNoRecentData = 8,
+  kMaxValue = kSignedInNoRecentData,
 };
 
 namespace {
@@ -208,6 +237,10 @@ const char kDiscoverFeedActivityLoggingEnabled[] =
 const char kDiscoverFeedBrokenNTPHierarchy[] =
     "ContentSuggestions.Feed.BrokenNTPHierarchy";
 
+// Histogram name for the Feed settings when the App is being start.
+const char kFeedUserSettingsOnStart[] =
+    "ContentSuggestions.Feed.UserSettingsOnStart";
+
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
 const int kMinScrollThreshold = 160;
@@ -217,6 +250,9 @@ const int kMinutesBetweenSessions = 5;
 
 // The max amount of cards in the Discover Feed.
 const int kMaxCardsInFeed = 50;
+
+// If cached user setting info is older than this, it will not be reported.
+constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 }  // namespace
 
 @interface FeedMetricsRecorder ()
@@ -556,7 +592,57 @@ const int kMaxCardsInFeed = 50;
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
 }
 
+- (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
+                                         feedVisible:(BOOL)feedVisible
+                                            signedIn:(BOOL)signedIn
+                                          waaEnabled:(BOOL)waaEnabled
+                                         spywEnabled:(BOOL)spywEnabled
+                                     lastRefreshTime:
+                                         (base::Time)lastRefreshTime {
+  UserSettingsOnStart settings =
+      [self userSettingsOnStartForEnterprisePolicy:enterprisePolicy
+                                       feedVisible:feedVisible
+                                          signedIn:signedIn
+                                        waaEnabled:waaEnabled
+                                   lastRefreshTime:lastRefreshTime];
+  base::UmaHistogramEnumeration(kFeedUserSettingsOnStart, settings);
+}
+
 #pragma mark - Private
+
+// Returns the UserSettingsOnStart value based on the user settings.
+- (UserSettingsOnStart)
+    userSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
+                               feedVisible:(BOOL)feedVisible
+                                  signedIn:(BOOL)signedIn
+                                waaEnabled:(BOOL)waaEnabled
+                           lastRefreshTime:(base::Time)lastRefreshTime {
+  if (!enterprisePolicy) {
+    return UserSettingsOnStart::kFeedNotEnabledByPolicy;
+  }
+
+  if (!feedVisible) {
+    if (signedIn) {
+      return UserSettingsOnStart::kFeedNotVisibleSignedIn;
+    }
+    return UserSettingsOnStart::kFeedNotVisibleSignedOut;
+  }
+
+  if (!signedIn) {
+    return UserSettingsOnStart::kSignedOut;
+  }
+
+  const base::TimeDelta delta = base::Time::Now() - lastRefreshTime;
+  if (delta >= base::TimeDelta() && delta <= kUserSettingsMaxAge) {
+    return UserSettingsOnStart::kSignedInNoRecentData;
+  }
+
+  if (waaEnabled) {
+    return UserSettingsOnStart::kSignedInWaaOnDpOff;
+  } else {
+    return UserSettingsOnStart::kSignedInWaaOffDpOff;
+  }
+}
 
 // Records histogram metrics for Discover feed user actions.
 - (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType {

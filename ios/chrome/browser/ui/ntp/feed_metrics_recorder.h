@@ -25,6 +25,10 @@ enum class BrokenNTPHierarchyRelationship {
   kMaxValue = 6,
 };
 
+namespace base {
+class Time;
+}
+
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject
 
@@ -174,6 +178,17 @@ enum class BrokenNTPHierarchyRelationship {
 
 // Records that the feed is about to be refreshed.
 - (void)recordFeedWillRefresh;
+
+// Records the state of the Feed setting based on the |enterprisePolicy| being
+// enabled, |feedVisible|, the user being |signedIn|, user having |waaEnabled|
+// and |spywEnabled|, and the |lastRefreshTime| for the Feed.
+- (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
+                                         feedVisible:(BOOL)feedVisible
+                                            signedIn:(BOOL)signedIn
+                                          waaEnabled:(BOOL)waaEnabled
+                                         spywEnabled:(BOOL)spywEnabled
+                                     lastRefreshTime:
+                                         (base::Time)lastRefreshTime;
 
 // The currently selected feed type in the NTP.
 @property(nonatomic, assign) FeedType selectedFeedType;
