@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/html_response_provider_impl.h"
@@ -36,8 +38,19 @@ using web::test::HttpServer;
   [super tearDown];
 }
 
-// Tests that loading a URL ends up creating an NTP tile.
-- (void)testTopSitesTileAfterLoadURL {
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kSingleCellContentSuggestions);
+  config.features_enabled.push_back(kContentSuggestionsHeaderMigration);
+  config.features_enabled.push_back(
+      kContentSuggestionsUIViewControllerMigration);
+  return config;
+}
+
+// Tests that loading a URL ends up creating an NTP tile and shows it on cold
+// start.
+- (void)testTopSitesTileAfterLoadURLAndColdStart {
   std::map<GURL, std::string> responses;
   GURL URL = web::test::HttpServer::MakeUrl("http://simple_tile.html");
   responses[URL] =
@@ -62,6 +75,12 @@ using web::test::HttpServer;
 
   [ChromeEarlGrey openNewTab];
 
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
+      assertWithMatcher:grey_notNil()];
+
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:self.appConfigurationForTestCase];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
       assertWithMatcher:grey_notNil()];

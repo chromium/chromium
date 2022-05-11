@@ -40,6 +40,7 @@ source_set("eg2_tests") {
   sources = [ "ntp_tiles_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
