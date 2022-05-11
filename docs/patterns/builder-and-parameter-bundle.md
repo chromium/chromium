@@ -175,7 +175,8 @@ which lets us avoid naming the temporary builder object.
   which should not be changed once the object is "in use"
 * Your class has invalid sets of configuration options that should be prohibited
 * Your class has complicated configuration options of any sort that want runtime
-  checking (places you might have previously used the `bool Init()` pattern)
+  checking (places you might have previously used the [bool Init()
+  pattern](bool-init.md))
 
 ## Alternatives / See Also
 
