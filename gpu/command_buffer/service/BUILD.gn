@@ -288,6 +288,8 @@ target(link_target_type, "gles2_sources") {
       "dawn_platform.h",
       "dawn_service_memory_transfer_service.cc",
       "dawn_service_memory_transfer_service.h",
+      "dawn_service_serializer.cc",
+      "dawn_service_serializer.h",
       "webgpu_decoder_impl.cc",
       "webgpu_decoder_impl.h",
     ]

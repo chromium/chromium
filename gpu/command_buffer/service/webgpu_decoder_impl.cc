@@ -27,6 +27,7 @@
 #include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
+#include "gpu/command_buffer/service/dawn_service_serializer.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -35,7 +36,6 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_preferences.h"
-#include "ipc/ipc_channel.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gl/gl_context_egl.h"
@@ -47,24 +47,10 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#endif
-
 namespace gpu {
 namespace webgpu {
 
 namespace {
-
-constexpr size_t kMaxWireBufferSize =
-    std::min(IPC::Channel::kMaximumMessageSize,
-             static_cast<size_t>(1024 * 1024));
-
-constexpr size_t kDawnReturnCmdsOffset =
-    offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer);
-
-static_assert(kDawnReturnCmdsOffset < kMaxWireBufferSize, "");
 
 static constexpr uint32_t kAllowedWritableMailboxTextureUsages =
     static_cast<uint32_t>(WGPUTextureUsage_CopyDst |
@@ -77,83 +63,6 @@ static constexpr uint32_t kAllowedReadableMailboxTextureUsages =
 
 static constexpr uint32_t kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
-
-class WireServerCommandSerializer : public dawn::wire::CommandSerializer {
- public:
-  explicit WireServerCommandSerializer(DecoderClient* client);
-  ~WireServerCommandSerializer() override = default;
-  size_t GetMaximumAllocationSize() const final;
-  void* GetCmdSpace(size_t size) final;
-  bool Flush() final;
-  bool NeedsFlush() const;
-
- private:
-  raw_ptr<DecoderClient> client_;
-  std::vector<uint8_t> buffer_;
-  size_t put_offset_;
-};
-
-WireServerCommandSerializer::WireServerCommandSerializer(DecoderClient* client)
-    : client_(client),
-      buffer_(kMaxWireBufferSize),
-      put_offset_(offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)) {
-  // We prepopulate the message with the header and keep it between flushes so
-  // we never need to write it again.
-  cmds::DawnReturnCommandsInfoHeader* header =
-      reinterpret_cast<cmds::DawnReturnCommandsInfoHeader*>(&buffer_[0]);
-  header->return_data_header.return_data_type =
-      DawnReturnDataType::kDawnCommands;
-}
-
-size_t WireServerCommandSerializer::GetMaximumAllocationSize() const {
-  return kMaxWireBufferSize - kDawnReturnCmdsOffset;
-}
-
-void* WireServerCommandSerializer::GetCmdSpace(size_t size) {
-  // Note: Dawn will never call this function with |size| >
-  // GetMaximumAllocationSize().
-  DCHECK_LE(put_offset_, kMaxWireBufferSize);
-  DCHECK_LE(size, GetMaximumAllocationSize());
-
-  // Statically check that kMaxWireBufferSize + kMaxWireBufferSize is
-  // a valid uint32_t. We can add put_offset_ and size without overflow.
-  static_assert(base::CheckAdd(kMaxWireBufferSize, kMaxWireBufferSize)
-                    .IsValid<uint32_t>(),
-                "");
-  uint32_t next_offset = put_offset_ + static_cast<uint32_t>(size);
-  if (next_offset > buffer_.size()) {
-    Flush();
-    // TODO(enga): Keep track of how much command space the application is using
-    // and adjust the buffer size accordingly.
-
-    DCHECK_EQ(put_offset_, kDawnReturnCmdsOffset);
-    next_offset = put_offset_ + static_cast<uint32_t>(size);
-  }
-
-  uint8_t* ptr = &buffer_[put_offset_];
-  put_offset_ = next_offset;
-  return ptr;
-}
-
-bool WireServerCommandSerializer::NeedsFlush() const {
-  return put_offset_ > kDawnReturnCmdsOffset;
-}
-
-bool WireServerCommandSerializer::Flush() {
-  if (NeedsFlush()) {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                 "WireServerCommandSerializer::Flush", "bytes", put_offset_);
-
-    static uint32_t return_trace_id = 0;
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                           "DawnReturnCommands", return_trace_id++,
-                           TRACE_EVENT_FLAG_FLOW_OUT);
-
-    client_->HandleReturnData(base::make_span(buffer_.data(), put_offset_));
-    put_offset_ = kDawnReturnCmdsOffset;
-  }
-  return true;
-}
 
 WGPUAdapterType PowerPreferenceToDawnAdapterType(
     PowerPreference power_preference) {
@@ -491,7 +400,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> force_disabled_toggles_;
 
   std::unique_ptr<dawn::wire::WireServer> wire_server_;
-  std::unique_ptr<WireServerCommandSerializer> wire_serializer_;
+  std::unique_ptr<DawnServiceSerializer> wire_serializer_;
 
   // Helper class whose derived implementations holds a representation
   // and its ScopedAccess, ensuring safe destruction order.
@@ -970,7 +879,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       dawn_instance_(
           DawnInstance::Create(dawn_platform_.get(), gpu_preferences)),
       memory_transfer_service_(new DawnServiceMemoryTransferService(this)),
-      wire_serializer_(new WireServerCommandSerializer(client)) {
+      wire_serializer_(new DawnServiceSerializer(client)) {
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   force_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
