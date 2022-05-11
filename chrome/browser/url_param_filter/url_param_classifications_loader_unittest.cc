@@ -82,6 +82,13 @@ class UrlParamClassificationsLoaderTest : public ::testing::Test {
 };
 
 TEST_F(UrlParamClassificationsLoaderTest,
+       GetClassifications_MissingComponentAndFeature) {
+  // Neither Component nor feature provide classifications.
+  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
        ReadClassifications_NonserializedProto) {
   loader()->ReadClassifications("clearly not proto");
   EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
@@ -156,8 +163,25 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_MissingComponentAndFeature) {
-  // Neither Component nor feature provide classifications.
+       GetSourceClassifications_NoSourceClassificationsProvided) {
+  // Create proto with only Destination classifications.
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {}, {{kDestinationSite, {"plzblock3", "plzblock4"}}});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // No source classifications were loaded.
+  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
+
+  // Provide classifications from the feature.
+  SetFeatureParams(
+      {{"classifications",
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {}, {{kDestinationSite, {"plzblock3", "plzblock4"}}})}});
+
+  // No source classifications were loaded.
   EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
 }
 
@@ -296,9 +320,25 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_MissingComponentAndFeature) {
-  // Neither Component nor feature provide classifications.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
+       GetDestinationClassifications_NoDestinationClassificationsProvided) {
+  // Create proto with only Source classifications.
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1", "plzblock2"}}}, {});
+
+  // Provide classifications from the Component.
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // No destination classifications were loaded.
+  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+
+  // Provide classifications from the feature.
+  SetFeatureParams({{"classifications",
+                     CreateBase64EncodedFilterParamClassificationForTesting(
+                         {{kSourceSite, {"plzblock1", "plzblock2"}}}, {})}});
+
+  // No destination classifications were loaded.
+  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
