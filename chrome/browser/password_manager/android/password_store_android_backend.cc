@@ -54,9 +54,6 @@ using password_manager::GetRegexForPSLMatching;
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
-// An internal error which occurred in GMS Core.
-constexpr int kGMSInternalError = 8;
-
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
     std::vector<PasswordForm> passwords) {
   std::vector<std::unique_ptr<PasswordForm>> password_ptrs;
@@ -582,10 +579,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
-  if (error.api_error_code.has_value() &&
-      error.api_error_code.value() == kGMSInternalError) {
-    base::debug::DumpWithoutCrashing();
-  }
+  // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) to catch dev errors.
   reply->RecordMetrics(std::move(error));
   if (reply->Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
