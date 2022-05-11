@@ -541,7 +541,7 @@ struct AutocompleteMatch {
   bool TryRichAutocompletion(const std::u16string& primary_text,
                              const std::u16string& secondary_text,
                              const AutocompleteInput& input,
-                             bool shortcut_provider = false);
+                             const std::u16string& shortcut_text = u"");
 
   // True if |inline_autocompletion|, |prefix_autocompletion|, and
   // |split_autocompletion| are all empty.

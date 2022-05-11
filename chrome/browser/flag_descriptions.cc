@@ -1804,6 +1804,10 @@ const char kOmniboxRichAutocompletionMinCharName[] =
     "Omnibox Rich Autocompletion Min Characters";
 const char kOmniboxRichAutocompletionMinCharDescription[] =
     "Specifies min input character length to trigger rich autocompletion.";
+const char kOmniboxRichAutocompletionShortcutTextName[] =
+    "Omnibox Rich Autocompletion Shortcut Text";
+const char kOmniboxRichAutocompletionShortcutTextDescription[] =
+    "Allow autocompletion for shortcut texts.";
 const char kOmniboxRichAutocompletionShowAdditionalTextName[] =
     "Omnibox Rich Autocompletion Show Additional Text";
 const char kOmniboxRichAutocompletionShowAdditionalTextDescription[] =

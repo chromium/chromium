@@ -872,6 +872,23 @@ const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar(
     "RichAutocompletionSplitCompletionMinChar",
     0);
 
+const base::FeatureParam<bool> kRichAutocompletionAutocompleteShortcutText(
+    &omnibox::kRichAutocompletion,
+    "RichAutocompletionAutocompleteShortcutText",
+    false);
+
+const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces(
+        &omnibox::kRichAutocompletion,
+        "RichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces",
+        false);
+
+const base::FeatureParam<int>
+    kRichAutocompletionAutocompleteShortcutTextMinChar(
+        &omnibox::kRichAutocompletion,
+        "RichAutocompletionAutocompleteShortcutTextMinChar",
+        0);
+
 const base::FeatureParam<bool> kRichAutocompletionCounterfactual(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionCounterfactual",

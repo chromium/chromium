@@ -513,6 +513,12 @@ extern const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText;
 extern const base::FeatureParam<bool> kRichAutocompletionSplitTitleCompletion;
 extern const base::FeatureParam<bool> kRichAutocompletionSplitUrlCompletion;
 extern const base::FeatureParam<int> kRichAutocompletionSplitCompletionMinChar;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteShortcutText;
+extern const base::FeatureParam<bool>
+    kRichAutocompletionAutocompleteShortcutTextNoInputsWithSpaces;
+extern const base::FeatureParam<int>
+    kRichAutocompletionAutocompleteShortcutTextMinChar;
 extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompletePreferUrlsOverPrefixes;

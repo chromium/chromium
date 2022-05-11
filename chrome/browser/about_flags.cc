@@ -1150,6 +1150,20 @@ const FeatureEntry::FeatureVariation
         {"Title 5 / Non Prefix 5", kOmniboxRichAutocompletionMinChar55,
          std::size(kOmniboxRichAutocompletionMinChar55), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionShortcutText3[] = {
+    {"RichAutocompletionAutocompleteShortcutText", "true"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionShortcutText5[] = {
+    {"RichAutocompletionAutocompleteShortcutText", "true"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "5"}};
+
+const FeatureEntry::FeatureVariation
+    kOmniboxRichAutocompletionShortcutTextVariations[] = {
+        {"Shortcut Text 3", kOmniboxRichAutocompletionShortcutText3,
+         std::size(kOmniboxRichAutocompletionShortcutText3), nullptr},
+        {"Shortcut Text 5", kOmniboxRichAutocompletionShortcutText5,
+         std::size(kOmniboxRichAutocompletionShortcutText5), nullptr}};
+
 const FeatureEntry::FeatureParam
     kOmniboxRichAutocompletionAdditionalTextHide[] = {
         {"RichAutocompletionAutocompleteShowAdditionalText", "false"}};
@@ -1197,15 +1211,6 @@ const FeatureEntry::FeatureVariation
 
 // A limited number of combinations of the above variations that are most
 // promising.
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive[] = {
-    {"RichAutocompletionAutocompleteTitles", "true"},
-    {"RichAutocompletionAutocompleteNonPrefixAll", "true"}};
-const FeatureEntry::FeatureParam
-    kOmniboxRichAutocompletionAggressiveModerate[] = {
-        {"RichAutocompletionAutocompleteTitles", "true"},
-        {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-        {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
-        {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
 const FeatureEntry::FeatureParam
     kOmniboxRichAutocompletionConservativeModerate[] = {
         {"RichAutocompletionAutocompleteTitles", "true"},
@@ -1218,18 +1223,14 @@ const FeatureEntry::FeatureParam
         {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
         {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}};
-const FeatureEntry::FeatureParam kOmniboxRichAutocompletionConservative[] = {
+const FeatureEntry::FeatureParam kOmniboxRichAutocompletionAggressive[] = {
     {"RichAutocompletionAutocompleteTitles", "true"},
-    {"RichAutocompletionAutocompleteTitlesMinChar", "3"}};
+    {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+    {"RichAutocompletionAutocompleteShortcutText", "true"},
+    {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}};
 
 const FeatureEntry::FeatureVariation
     kOmniboxRichAutocompletionPromisingVariations[] = {
-        {"Aggressive - Title, Non-Prefix, min 0/0",
-         kOmniboxRichAutocompletionAggressive,
-         std::size(kOmniboxRichAutocompletionAggressive), nullptr},
-        {"Aggressive Moderate - Title, Non-Prefix, min 3/5",
-         kOmniboxRichAutocompletionAggressiveModerate,
-         std::size(kOmniboxRichAutocompletionAggressiveModerate), nullptr},
         {"Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
          kOmniboxRichAutocompletionConservativeModerate,
          std::size(kOmniboxRichAutocompletionConservativeModerate), nullptr},
@@ -1237,8 +1238,9 @@ const FeatureEntry::FeatureVariation
          "3/5",
          kOmniboxRichAutocompletionConservativeModerate2,
          std::size(kOmniboxRichAutocompletionConservativeModerate2), nullptr},
-        {"Conservative - Title, min 3", kOmniboxRichAutocompletionConservative,
-         std::size(kOmniboxRichAutocompletionConservative), nullptr}};
+        {"Aggressive - Title Shortcut Title 3, Shortcut Text 3",
+         kOmniboxRichAutocompletionAggressive,
+         std::size(kOmniboxRichAutocompletionAggressive), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
     {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
@@ -5001,6 +5003,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRichAutocompletion,
                                     kOmniboxRichAutocompletionMinCharVariations,
                                     "OmniboxBundledExperimentV1")},
+    {"omnibox-rich-autocompletion-shortcut-text",
+     flag_descriptions::kOmniboxRichAutocompletionShortcutTextName,
+     flag_descriptions::kOmniboxRichAutocompletionShortcutTextDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kRichAutocompletion,
+         kOmniboxRichAutocompletionShortcutTextVariations,
+         "OmniboxBundledExperimentV1")},
     {"omnibox-rich-autocompletion-show-additional-text",
      flag_descriptions::kOmniboxRichAutocompletionShowAdditionalTextName,
      flag_descriptions::kOmniboxRichAutocompletionShowAdditionalTextDescription,

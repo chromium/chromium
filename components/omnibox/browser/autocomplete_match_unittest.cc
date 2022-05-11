@@ -515,10 +515,11 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
     input.set_prevent_inline_autocomplete(input_prevent_inline_autocomplete);
 
     AutocompleteMatch match;
-    EXPECT_EQ(match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
-                                          base::UTF8ToUTF16(secondary_text),
-                                          input, shortcut_provider),
-              expected_return);
+    EXPECT_EQ(
+        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
+                                    base::UTF8ToUTF16(secondary_text), input,
+                                    shortcut_provider ? u"non-empty" : u""),
+        expected_return);
 
     EXPECT_EQ(match.rich_autocompletion_triggered,
               expected_rich_autocompletion_triggered);
@@ -826,6 +827,76 @@ TEST(AutocompleteMatchTest, TryRichAutocompletionSplit) {
   {
     SCOPED_TRACE("primary split, incorrect order");
     test("x_y_z", "z_y_x_", "x_z_y_", false, {}, "", false);
+  }
+}
+
+TEST(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
+  auto test = [](const std::string input_text, const std::string primary_text,
+                 const std::string secondary_text,
+                 const std::string shortcut_text, bool expected_return,
+                 const std::string expected_inline_autocompletion,
+                 const std::string expected_additional_text,
+                 bool expected_allowed_to_be_default_match) {
+    AutocompleteInput input(base::UTF8ToUTF16(input_text),
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+
+    AutocompleteMatch match;
+    EXPECT_EQ(
+        match.TryRichAutocompletion(base::UTF8ToUTF16(primary_text),
+                                    base::UTF8ToUTF16(secondary_text), input,
+                                    base::UTF8ToUTF16(shortcut_text)),
+        expected_return);
+
+    EXPECT_EQ(base::UTF16ToUTF8(match.inline_autocompletion).c_str(),
+              expected_inline_autocompletion);
+    EXPECT_TRUE(match.prefix_autocompletion.empty());
+    EXPECT_TRUE(match.split_autocompletion.Empty());
+    EXPECT_EQ(base::UTF16ToUTF8(match.additional_text).c_str(),
+              expected_additional_text);
+    EXPECT_EQ(match.allowed_to_be_default_match,
+              expected_allowed_to_be_default_match);
+  };
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kRichAutocompletion,
+      {
+          {"RichAutocompletionAutocompleteTitles", "true"},
+          {"RichAutocompletionAutocompleteShortcutText", "true"},
+      });
+
+  // Prefer URL prefix AC when the input prefix matches the URL, title, and
+  // shortcut text.
+  {
+    SCOPED_TRACE("URL");
+    test("prefix", "prefix-url.com/suffix", "prefix title suffix",
+         "prefix shortcut text suffix", true, "-url.com/suffix", "", true);
+  }
+
+  // Prefer title prefix AC when the input prefix matches the title and shortcut
+  // text.
+  {
+    SCOPED_TRACE("Title");
+    test("prefix ", "prefix-url.com/suffix", "prefix title suffix",
+         "prefix shortcut text suffix", true, "title suffix",
+         "prefix-url.com/suffix", true);
+  }
+
+  // Do shortcut text prefix AC when title and URL don't prefix match, even if
+  // they non-prefix match.
+  {
+    SCOPED_TRACE("Shortcut text");
+    test("short", "url.com/shortcut", "title shortcut", "shortcut text", true,
+         "cut text", "url.com/shortcut", true);
+  }
+
+  // Don't shortcut text AC when the shortcut text doesn't prefix match, even if
+  // it does non-prefix match.
+  {
+    SCOPED_TRACE("None");
+    test("suffix", "prefix-url.com/suffix", "prefix title suffix",
+         "prefix shortcut text suffix", false, "", "", false);
   }
 }
 
