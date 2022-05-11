@@ -666,6 +666,10 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Download Bubble Items -->
+      <message name="IDS_DOWNLOAD_BUBBLE_DANGEROUS_FILE"
+               desc="Message shown to the user to validate the download of a dangerous file.">
+        Chrome blocked this file because this type of file is dangerous
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED"
                desc="Message shown to the user to validate the download when the download url is classified to lead to malware by the safebrowsing database.">
         Chrome blocked this file because it is dangerous

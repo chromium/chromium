@@ -837,10 +837,9 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
                 DownloadCommands::Command::DISCARD,
                 /*is_prominent=*/true);
       } else {
-        // TODO(crbug.com/1320025): Update the strings to match the UX mock.
         return DownloadUIModel::BubbleUIInfo(
                    l10n_util::GetStringUTF16(
-                       IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED))
+                       IDS_DOWNLOAD_BUBBLE_DANGEROUS_FILE))
             .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
             .AddPrimaryButton(DownloadCommands::Command::KEEP)
             .AddSubpageButton(
