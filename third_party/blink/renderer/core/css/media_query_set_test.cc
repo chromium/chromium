@@ -241,7 +241,7 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"screen and (width: 100px) or (width: 200px)", "not all"},
       {"(height: 100px) and (width: 100px) or (width: 200px)", "not all"},
       {"(height: 100px) or (width: 100px) and (width: 200px)", "not all"},
-      {"(width: 100px) or (max-width: 50%)", "not all"},
+      {"(width: 100px) or (max-width: 50%)", nullptr},
       {"((width: 100px))", nullptr},
       {"(((width: 100px)))", nullptr},
       {"(   (   (width: 100px) ) )", "(((width: 100px)))"},
@@ -250,10 +250,10 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"(width: 100px) or ((width: 200px) and (width: 300px))", nullptr},
       {"(width: 100px) or ((width: 200px) and (width: 300px) or (width: "
        "400px))",
-       "not all"},
+       nullptr},
       {"(width: 100px) or ((width: 200px) or (width: 300px) and (width: "
        "400px))",
-       "not all"},
+       nullptr},
       {"(width: 100px) or ((width: 200px) and (width: 300px)) and (width: "
        "400px)",
        "not all"},
@@ -293,39 +293,39 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"(width=100px)", "(width = 100px)"},
       {"(200px>=width > 100px)", "(200px >= width > 100px)"},
       {"(200px>=width>100px)", "(200px >= width > 100px)"},
-      {"(width < 50%)", "not all"},
-      {"(width < 100px nonsense)", "not all"},
-      {"(100px nonsense < 100px)", "not all"},
-      {"(width == 100px)", "not all"},
-      {"(width << 100px)", "not all"},
-      {"(width <> 100px)", "not all"},
-      {"(100px == width)", "not all"},
-      {"(100px < = width)", "not all"},
-      {"(100px > = width)", "not all"},
-      {"(100px==width)", "not all"},
-      {"(100px , width)", "not all"},
-      {"(100px,width)", "not all"},
-      {"(100px ! width)", "not all"},
-      {"(1px < width > 2px)", "not all"},
-      {"(1px > width < 2px)", "not all"},
-      {"(1px <= width > 2px)", "not all"},
-      {"(1px > width <= 2px)", "not all"},
-      {"(1px = width = 2px)", "not all"},
-      {"(min-width < 10px)", "not all"},
-      {"(max-width < 10px)", "not all"},
-      {"(10px < min-width)", "not all"},
-      {"(10px < min-width < 20px)", "not all"},
-      {"(100px ! width < 200px)", "not all"},
-      {"(100px < width ! 200px)", "not all"},
-      {"(100px <)", "not all"},
-      {"(100px < )", "not all"},
-      {"(100px < width <)", "not all"},
-      {"(100px < width < )", "not all"},
-      {"(50% < width < 200px)", "not all"},
-      {"(100px < width < 50%)", "not all"},
-      {"(100px nonsense < width < 200px)", "not all"},
-      {"(100px < width < 200px nonsense)", "not all"},
-      {"(100px < width : 200px)", "not all"},
+      {"(width < 50%)", nullptr},
+      {"(width < 100px nonsense)", nullptr},
+      {"(100px nonsense < 100px)", nullptr},
+      {"(width == 100px)", nullptr},
+      {"(width << 100px)", nullptr},
+      {"(width <> 100px)", nullptr},
+      {"(100px == width)", nullptr},
+      {"(100px < = width)", nullptr},
+      {"(100px > = width)", nullptr},
+      {"(100px==width)", nullptr},
+      {"(100px , width)", nullptr},
+      {"(100px,width)", nullptr},
+      {"(100px ! width)", nullptr},
+      {"(1px < width > 2px)", nullptr},
+      {"(1px > width < 2px)", nullptr},
+      {"(1px <= width > 2px)", nullptr},
+      {"(1px > width <= 2px)", nullptr},
+      {"(1px = width = 2px)", nullptr},
+      {"(min-width < 10px)", nullptr},
+      {"(max-width < 10px)", nullptr},
+      {"(10px < min-width)", nullptr},
+      {"(10px < min-width < 20px)", nullptr},
+      {"(100px ! width < 200px)", nullptr},
+      {"(100px < width ! 200px)", nullptr},
+      {"(100px <)", nullptr},
+      {"(100px < )", nullptr},
+      {"(100px < width <)", nullptr},
+      {"(100px < width < )", nullptr},
+      {"(50% < width < 200px)", nullptr},
+      {"(100px < width < 50%)", nullptr},
+      {"(100px nonsense < width < 200px)", nullptr},
+      {"(100px < width < 200px nonsense)", nullptr},
+      {"(100px < width : 200px)", nullptr},
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {
@@ -359,25 +359,8 @@ TEST(MediaQuerySetTest, GeneralEnclosed) {
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {
-    String input(test.input);
-    SCOPED_TRACE(input);
-    auto query_set = MediaQuerySet::Create(input, nullptr);
-    ASSERT_TRUE(query_set);
-    ASSERT_EQ(1u, query_set->QueryVector().size());
-    std::unique_ptr<MediaQuery> query =
-        query_set->QueryVector()[0]->CopyIgnoringUnknownForTest();
-    const char* expected = test.output ? test.output : test.input;
-    EXPECT_EQ(expected, query->CssText());
-  }
-
-  // Run same tests again, except this time avoid CopyIgnoringUnknownForTest().
-  // This should result in a serialization of "not all".
-  for (const MediaQuerySetTestCase& test : test_cases) {
-    String input(test.input);
-    SCOPED_TRACE(input);
-    auto query_set = MediaQuerySet::Create(input, nullptr);
-    ASSERT_TRUE(query_set);
-    EXPECT_EQ("not all", query_set->MediaText());
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test, *MediaQuerySet::Create(test.input, nullptr));
   }
 }
 

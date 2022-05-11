@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -92,19 +93,19 @@ MediaQuery::MediaQuery(const MediaQuery& o)
 MediaQuery::~MediaQuery() = default;
 
 MediaQuery::RestrictorType MediaQuery::Restrictor() const {
-  if (has_unknown_)
+  if (BehaveAsNotAll())
     return MediaQuery::kNot;
   return restrictor_;
 }
 
 const MediaQueryExpNode* MediaQuery::ExpNode() const {
-  if (has_unknown_)
+  if (BehaveAsNotAll())
     return nullptr;
   return exp_node_.get();
 }
 
 const String& MediaQuery::MediaType() const {
-  if (has_unknown_) {
+  if (BehaveAsNotAll()) {
     DEFINE_STATIC_LOCAL(const AtomicString, all, ("all"));
     return all;
   }
@@ -116,19 +117,18 @@ bool MediaQuery::operator==(const MediaQuery& other) const {
   return CssText() == other.CssText();
 }
 
+bool MediaQuery::BehaveAsNotAll() const {
+  if (RuntimeEnabledFeatures::CSSMediaQueries4Enabled())
+    return false;
+  return has_unknown_;
+}
+
 // https://drafts.csswg.org/cssom/#serialize-a-list-of-media-queries
 String MediaQuery::CssText() const {
   if (serialization_cache_.IsNull())
     const_cast<MediaQuery*>(this)->serialization_cache_ = Serialize();
 
   return serialization_cache_;
-}
-
-std::unique_ptr<MediaQuery> MediaQuery::CopyIgnoringUnknownForTest() const {
-  auto query = Copy();
-  query->has_unknown_ = false;
-  query->serialization_cache_ = g_null_atom;
-  return query;
 }
 
 }  // namespace blink

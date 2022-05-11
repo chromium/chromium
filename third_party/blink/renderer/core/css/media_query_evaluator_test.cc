@@ -1196,35 +1196,19 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
       {"not ((unknown: 1px) and (width))", false},
   };
 
-  {
-    ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
-
-    for (const MediaQueryEvaluatorTestCase& test : tests) {
-      SCOPED_TRACE(test.input);
-      String input(test.input);
-      auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
-      ASSERT_TRUE(query_set);
-      ASSERT_EQ(1u, query_set->QueryVector().size());
-      std::unique_ptr<MediaQuery> query =
-          query_set->QueryVector()[0]->CopyIgnoringUnknownForTest();
-      EXPECT_EQ(test.output, media_query_evaluator.Eval(*query));
-    }
-  }
-
-  // Run the same tests again, but avoiding CopyIgnoringUnknownForTest. This
-  // should make any MediaQuery containing "unknown" effectively behave as "not
-  // all".
+  // Run the same tests twice (CSSMediaQueries4 on/off).
   Vector<bool> flag_values = {true, false};
   for (bool flag : flag_values) {
-    // The runtime flag CSSMediaQueries4 should not affect the results.
     ScopedCSSMediaQueries4ForTest media_queries_4_flag(flag);
 
     for (const MediaQueryEvaluatorTestCase& test : tests) {
-      SCOPED_TRACE(test.input);
+      SCOPED_TRACE(String(test.input));
       String input(test.input);
       auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
       ASSERT_TRUE(query_set);
-      EXPECT_FALSE(media_query_evaluator.Eval(*query_set));
+      // Always expect `false` with CSSMediaQueries4 disabled, otherwise
+      // expect `test.output`.
+      EXPECT_EQ(flag && test.output, media_query_evaluator.Eval(*query_set));
     }
   }
 }

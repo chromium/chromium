@@ -70,12 +70,9 @@ class CORE_EXPORT MediaQuery {
     return std::make_unique<MediaQuery>(*this);
   }
 
-  // This provides a way to bypass the behavior that MediaQuery objects
-  // with "unknown" values behave as "not all".
-  std::unique_ptr<MediaQuery> CopyIgnoringUnknownForTest() const;
-
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
+  bool BehaveAsNotAll() const;
 
   RestrictorType restrictor_;
   String media_type_;
@@ -83,7 +80,12 @@ class CORE_EXPORT MediaQuery {
   String serialization_cache_;
 
   // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.
-  // This will cause the MediaQuery to appear as a "not all" query.
+  //
+  // If the runtime flag CSSMediaQueries4 is *not* enabled, this will cause the
+  // MediaQuery to appear as a "not all".
+  //
+  // Knowing whether or not something is unknown is useful for use-counting and
+  // testing purposes.
   bool has_unknown_;
 
   String Serialize() const;
