@@ -87,7 +87,9 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->ukm_data_manager =
       UkmDatabaseClient::GetInstance().GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
-  params->local_state = g_browser_process->local_state();
+  params->local_state = local_state_to_use_ == nullptr
+                            ? g_browser_process->local_state()
+                            : local_state_to_use_.get();
   params->configs = GetSegmentationPlatformConfig();
   params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
 

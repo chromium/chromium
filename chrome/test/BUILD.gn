@@ -5524,6 +5524,7 @@ test("unit_tests") {
     "//chrome/browser/safe_browsing:advanced_protection",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+    "//chrome/browser/segmentation_platform:test_utils",
     "//chrome/browser/share",
     "//chrome/browser/sharing/proto",
     "//chrome/browser/storage_access_api:permissions",

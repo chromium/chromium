@@ -52,7 +52,7 @@ class UkmDataManagerTestUtils {
   // Records a page load and 2 valid UKM metrics associated with it. May record
   // other UKM metrics that are unrelated to the metadata provided by
   // GetSamplePageLoadMetadata().
-  void RecordPageLoadUkm(const GURL& url);
+  void RecordPageLoadUkm(const GURL& url, base::Time history_timestamp);
 
   // Returns whether the `url` is part of the UKM database.
   bool IsUrlInDatabase(const GURL& url);
@@ -72,6 +72,7 @@ class UkmDataManagerTestUtils {
       const ModelProvider::ModelUpdatedCallback& callback);
 
   const raw_ptr<ukm::TestUkmRecorder> ukm_recorder_;
+  int source_id_counter_ = 1;
   raw_ptr<history::HistoryService> history_service_;
 
   std::map<optimization_guide::proto::OptimizationTarget, MockModelProvider*>

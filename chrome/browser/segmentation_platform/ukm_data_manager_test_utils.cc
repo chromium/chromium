@@ -27,11 +27,8 @@ using ::optimization_guide::proto::OptimizationTarget;
 using ::testing::Return;
 using ::ukm::builders::PageLoad;
 
-constexpr ukm::SourceId kSourceId = 10;
-
 // Returns a sample UKM entry.
-ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(
-    ukm::SourceId source_id = kSourceId) {
+ukm::mojom::UkmEntryPtr GetSamplePageLoadEntry(ukm::SourceId source_id) {
   ukm::mojom::UkmEntryPtr entry = ukm::mojom::UkmEntry::New();
   entry->source_id = source_id;
   entry->event_hash = PageLoad::kEntryNameHash;
@@ -142,7 +139,8 @@ UkmDataManagerTestUtils::GetSamplePageLoadMetadata(const std::string& query) {
   return metadata;
 }
 
-void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url) {
+void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url,
+                                                base::Time history_timestamp) {
   UkmObserver* observer =
       UkmDatabaseClient::GetInstance().ukm_observer_for_testing();
   // Ensure that the observer is started before recording metrics.
@@ -150,12 +148,14 @@ void UkmDataManagerTestUtils::RecordPageLoadUkm(const GURL& url) {
   // Ensure that OTR profiles are not started in the test.
   ASSERT_FALSE(observer->is_paused_for_testing());
 
-  ukm_recorder_->AddEntry(GetSamplePageLoadEntry());
-  ukm_recorder_->UpdateSourceURL(kSourceId, url);
+  ukm_recorder_->AddEntry(GetSamplePageLoadEntry(source_id_counter_));
+  ukm_recorder_->UpdateSourceURL(source_id_counter_, url);
+  source_id_counter_++;
+
   // Without a history service the recorded URLs will not be written to
   // database.
   ASSERT_TRUE(history_service_);
-  history_service_->AddPage(url, base::Time::Now(),
+  history_service_->AddPage(url, history_timestamp,
                             history::VisitSource::SOURCE_BROWSED);
 }
 

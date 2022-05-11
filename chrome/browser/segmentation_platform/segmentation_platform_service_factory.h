@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -16,6 +17,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+class PrefService;
 class Profile;
 
 namespace segmentation_platform {
@@ -38,6 +40,10 @@ class SegmentationPlatformServiceFactory
   SegmentationPlatformServiceFactory& operator=(
       const SegmentationPlatformServiceFactory&) = delete;
 
+  void set_local_state_for_testing(PrefService* local_state) {
+    local_state_to_use_ = local_state;
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<
       SegmentationPlatformServiceFactory>;
@@ -48,6 +54,8 @@ class SegmentationPlatformServiceFactory
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+
+  raw_ptr<PrefService> local_state_to_use_;
 };
 
 }  // namespace segmentation_platform

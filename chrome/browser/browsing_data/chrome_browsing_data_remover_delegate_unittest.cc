@@ -18,6 +18,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,6 +54,9 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -71,6 +75,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -122,7 +127,9 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/site_isolation/pref_names.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -482,6 +489,72 @@ class RemoveFaviconTester {
   // Owned by TestingProfile.
   raw_ptr<history::HistoryService> history_service_ = nullptr;
   raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
+};
+
+class RemoveUkmDataTester {
+ public:
+  static constexpr optimization_guide::proto::OptimizationTarget kSegmentId =
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+
+  RemoveUkmDataTester() : test_utils_(&ukm_recorder_) {
+    test_utils_.PreProfileInit({kSegmentId});
+    segmentation_platform::UkmDatabaseClient::GetInstance().PreProfileInit();
+  }
+
+  RemoveUkmDataTester(const RemoveUkmDataTester&) = delete;
+  RemoveUkmDataTester& operator=(const RemoveUkmDataTester&) = delete;
+
+  ~RemoveUkmDataTester() {
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
+  }
+
+  [[nodiscard]] bool Init(Profile* profile) {
+    // Setup required dependencies for segmentation platform:
+    segmentation_platform::SegmentationPlatformServiceFactory::GetInstance()
+        ->set_local_state_for_testing(&local_state_);
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
+
+    // Create the platform to kick off initialization.
+    segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+        profile);
+    history_service_ = HistoryServiceFactory::GetForProfile(
+        profile, ServiceAccessType::EXPLICIT_ACCESS);
+    if (!history_service_)
+      return false;
+    test_utils_.set_history_service(history_service_);
+
+    // Run model overrides to start storing UKM metrics.
+    test_utils_.WaitForModelRequestAndUpdateWith(
+        kSegmentId, test_utils_.GetSamplePageLoadMetadata("SELECT 1"));
+
+    return true;
+  }
+
+  [[nodiscard]] bool UkmDatabaseContainsURL(const GURL& url) {
+    return test_utils_.IsUrlInDatabase(url);
+  }
+
+  void AddURL(const GURL& url, base::Time time) {
+    test_utils_.RecordPageLoadUkm(url, time);
+
+    // Wait for URL to be written to database, UKM recorder needs to run all
+    // necessary tasks before sending observation.
+    while (!UkmDatabaseContainsURL(url)) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+ private:
+  ukm::TestUkmRecorder ukm_recorder_;
+  TestingPrefServiceSimple local_state_;
+  base::ScopedTempDir temp_dir_;
+  raw_ptr<history::HistoryService> history_service_;
+  segmentation_platform::UkmDataManagerTestUtils test_utils_;
+
+  base::WeakPtrFactory<RemoveUkmDataTester> weak_ptr_factory_{this};
 };
 
 std::unique_ptr<KeyedService> BuildProtocolHandlerRegistry(
@@ -1806,6 +1879,48 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
             GetOriginTypeMask());
   EXPECT_FALSE(tester.HistoryContainsURL(kOrigin1));
   EXPECT_TRUE(tester.HistoryContainsURL(kOrigin2));
+}
+
+class ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest() {
+    // Enable features that will trigger platform to store URLs in database.
+    feature_list_.InitWithFeatures(
+        {segmentation_platform::features::kSegmentationPlatformFeature,
+         segmentation_platform::features::
+             kSegmentationPlatformLowEngagementFeature,
+         segmentation_platform::features::kSegmentationPlatformUkmEngine},
+        {});
+  }
+};
+
+TEST_F(ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest, RemoveUkmUrls) {
+  RemoveUkmDataTester tester;
+  ASSERT_TRUE(tester.Init(GetProfile()));
+
+  const base::Time timestamp1 = base::Time::Now();
+  const base::Time timestamp2 = timestamp1 + base::Hours(2);
+
+  const GURL kOrigin1("http://host1.com:1");
+  tester.AddURL(kOrigin1, timestamp1);
+  const GURL kOrigin2("http://host2.com:1");
+  tester.AddURL(kOrigin2, timestamp2);
+  ASSERT_TRUE(tester.UkmDatabaseContainsURL(kOrigin2));
+
+  // Removing history URLs will remove URLs from the platform.
+  BlockUntilBrowsingDataRemoved(base::Time(), timestamp1 + base::Hours(1),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin1));
+  EXPECT_TRUE(tester.UkmDatabaseContainsURL(kOrigin2));
+
+  // Removing history URLs will remove URLs from the platform.
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin1));
+  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin2));
 }
 
 // Verify that clearing autofill form data works.

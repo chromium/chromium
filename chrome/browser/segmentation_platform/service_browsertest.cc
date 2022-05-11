@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
 
   // Record page load UKM that should be recorded in the database, persisted
   // across sessions.
-  utils_.RecordPageLoadUkm(kUrl1);
+  utils_.RecordPageLoadUkm(kUrl1, base::Time::Now());
   while (!utils_.IsUrlInDatabase(kUrl1)) {
     base::RunLoop().RunUntilIdle();
   }
