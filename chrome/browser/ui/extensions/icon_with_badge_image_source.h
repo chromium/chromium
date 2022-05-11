@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -40,8 +41,11 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
     SkColor background_color;
   };
 
-  IconWithBadgeImageSource(const gfx::Size& size,
-                           const ui::ColorProvider* color_provider);
+  using GetColorProviderCallback =
+      base::RepeatingCallback<const ui::ColorProvider*()>;
+  IconWithBadgeImageSource(
+      const gfx::Size& size,
+      GetColorProviderCallback get_color_provider_callback);
 
   IconWithBadgeImageSource(const IconWithBadgeImageSource&) = delete;
   IconWithBadgeImageSource& operator=(const IconWithBadgeImageSource&) = delete;
@@ -81,7 +85,7 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
   // https://crbug.com/831946.
   gfx::Rect GetIconAreaRect() const;
 
-  const ui::ColorProvider* const color_provider_;
+  GetColorProviderCallback get_color_provider_callback_;
 
   // The base icon to draw.
   gfx::Image icon_;

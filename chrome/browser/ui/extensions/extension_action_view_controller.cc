@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -470,18 +471,22 @@ std::unique_ptr<IconWithBadgeImageSource>
 ExtensionActionViewController::GetIconImageSource(
     content::WebContents* web_contents,
     const gfx::Size& size) {
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   // `web_contents` may be null during tab closure or in tests.  Fall back on a
   // generic color provider.
-  const auto* const color_provider =
-      web_contents
-          ? &web_contents->GetColorProvider()
-          : ui::ColorProviderManager::Get().GetColorProviderFor(
-                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
-                    nullptr));
-  auto image_source =
-      std::make_unique<IconWithBadgeImageSource>(size, color_provider);
+  auto get_color_provider_callback = base::BindRepeating(
+      [](base::WeakPtr<content::WebContents> weak_web_contents) {
+        return weak_web_contents
+                   ? &weak_web_contents->GetColorProvider()
+                   : ui::ColorProviderManager::Get().GetColorProviderFor(
+                         ui::NativeTheme::GetInstanceForNativeUi()
+                             ->GetColorProviderKey(nullptr));
+      },
+      web_contents ? web_contents->GetWeakPtr()
+                   : base::WeakPtr<content::WebContents>());
+  auto image_source = std::make_unique<IconWithBadgeImageSource>(
+      size, std::move(get_color_provider_callback));
 
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   image_source->SetIcon(icon_factory_.GetIcon(tab_id));
 
   std::unique_ptr<IconWithBadgeImageSource::Badge> badge;
