@@ -44,17 +44,27 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 
     ui::AXNodeData node;
 
-    chrome_screen_ai::UIComponent::Type original_type =
-        uic.predicted_type().type();
     node.relative_bounds.bounds.set_x(uic.bounding_box().x());
     node.relative_bounds.bounds.set_y(uic.bounding_box().y());
     node.relative_bounds.bounds.set_width(uic.bounding_box().width());
     node.relative_bounds.bounds.set_height(uic.bounding_box().height());
 
-    // TODO(https://crbug.com/1278249): Add tests to ensure these two types
-    // match. Add a PRESUBMIT test that compares the proto and enum.
-    node.role = static_cast<ax::mojom::Role>(original_type);
-
+    switch (uic.predicted_type().type_of_case()) {
+      case chrome_screen_ai::UIComponent_PredictedType::kEnumType:
+        // TODO(https://crbug.com/1278249): Add tests to ensure these two types
+        // match. Add a PRESUBMIT test that compares the proto and enum.
+        node.role =
+            static_cast<ax::mojom::Role>(uic.predicted_type().enum_type());
+        break;
+      case chrome_screen_ai::UIComponent_PredictedType::kStringType:
+        node.role = ax::mojom::Role::kGenericContainer;
+        node.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                                uic.predicted_type().string_type());
+        break;
+      case chrome_screen_ai::UIComponent_PredictedType::TYPE_OF_NOT_SET:
+        NOTREACHED();
+        continue;
+    }
     updates.nodes.push_back(node);
   }
 

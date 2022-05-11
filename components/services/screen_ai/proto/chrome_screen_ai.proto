@@ -10,6 +10,8 @@ syntax = "proto3";
 
 package chrome_screen_ai;
 
+// This option should be enabled for Chrome, but not in Google3.
+// TODO(https://crbug.com/1278249): Try to make this based on build commands.
 option optimize_for = LITE_RUNTIME;
 
 // A component of a given UI. This proto is filled based on
@@ -233,11 +235,14 @@ message UIComponent {
 
   // The predicted type of this component.
   message PredictedType {
-    Type type = 1;
+    oneof type_of {
+      Type enum_type = 1;
+      string string_type = 2;
+    }
 
     // A score in the range of [0, 1], indicating how confident the model is of
     // the given type prediction. Closer to 1 means more confident.
-    float score = 2;
+    float score = 3;
   }
 
   PredictedType predicted_type = 1;
