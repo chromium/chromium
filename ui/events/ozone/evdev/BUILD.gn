@@ -198,8 +198,10 @@ component("evdev") {
 }
 
 source_set("event_device_info") {
-  public = [ "event_device_info.h" ]
-  sources = [ "event_device_info.cc" ]
+  sources = [
+    "event_device_info.cc",
+    "event_device_info.h",
+  ]
 
   deps = [
     "//base",
