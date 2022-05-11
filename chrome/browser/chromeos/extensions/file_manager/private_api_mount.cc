@@ -55,12 +55,12 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   if (logger) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
-                params->source.empty() ? "(none)" : params->source.c_str());
+                params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
   set_log_on_completion(true);
 
   path_ = file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
-                                                  GURL(params->source));
+                                                  GURL(params->file_url));
 
   if (path_.empty())
     return RespondNow(Error("Invalid path"));
@@ -73,7 +73,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->source));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->file_url));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);
@@ -142,17 +142,17 @@ FileManagerPrivateCancelMountingFunction::Run() {
   if (logger) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
-                params->source.empty() ? "(none)" : params->source.c_str());
+                params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
   set_log_on_completion(true);
 
-  if (params->source.empty())
+  if (params->file_url.empty())
     return RespondNow(Error("Invalid path"));
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), profile, GURL(params->source));
+      render_frame_host(), profile, GURL(params->file_url));
 
   DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
   DCHECK(disk_mount_manager);
