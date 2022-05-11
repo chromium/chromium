@@ -6605,6 +6605,8 @@ test("unit_tests") {
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
       "../browser/ui/webui/metrics_reporter/metrics_reporter_unittest.cc",
+      "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.cc",
+      "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.h",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler_unittest.cc",
       "../browser/ui/webui/sanitized_image_source_unittest.cc",

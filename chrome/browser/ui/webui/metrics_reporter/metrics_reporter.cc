@@ -71,6 +71,10 @@ void MetricsReporter::HasMark(const std::string& name,
           std::move(callback)));
 }
 
+bool MetricsReporter::HasLocalMark(const std::string& name) {
+  return marks_.count(name) > 0;
+}
+
 void MetricsReporter::ClearMark(const std::string& name) {
   marks_.erase(name);
   page_->OnClearMark(name);

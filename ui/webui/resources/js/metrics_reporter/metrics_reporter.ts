@@ -45,23 +45,51 @@ function timeToMojo(mark: bigint): TimeDelta {
  *       metricsReporter.umaReportTime(
  *         metricsReporter.measure('StartMark'));
  *     }
+ *
+ * Caveats:
+ *   1. measure() will assert if the mark is not available. You can use
+ *      the following code to prevent execution from being interrupted.
+ *
+ *     metricsReporter.measure('StartMark').then(duration =>
+ *       metricsReporter.umaReportTime('Your.Histogram', duration))
+ *
+ *   2. measure() will record inaccurate time if a mark is reused for
+ *      overlapping measurements. To prevent this from happening, you
+ *      can use hasLocalMark() to test before calling mark() and use
+ *      clearMark() to erase the mark after measure().
  */
-export class MetricsReporter {
+
+export interface MetricsReporter {
+  mark(name: string): void;
+  measure(startMark: string, endMark?: string): Promise<bigint>;
+  hasMark(name: string): Promise<boolean>;
+  hasLocalMark(name: string): boolean;
+  clearMark(name: string): void;
+  umaReportTime(histogram: string, time: bigint): void;
+}
+
+export class MetricsReporterImpl implements MetricsReporter {
   private marks_: Map<string, bigint> = new Map();
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     const callbackRouter = this.browserProxy_.getCallbackRouter();
-    callbackRouter.onGetMark.addListener((name: string) => {
-      return this.marks_.has(name) ? timeToMojo(this.marks_.get(name)!) : null;
-    });
+    callbackRouter.onGetMark.addListener(
+        (name: string) => ({
+          markedTime:
+              this.marks_.has(name) ? timeToMojo(this.marks_.get(name)!) : null
+        }));
 
     callbackRouter.onClearMark.addListener(
         (name: string) => this.marks_.delete(name));
   }
 
   static getInstance(): MetricsReporter {
-    return instance || (instance = new MetricsReporter());
+    return instance || (instance = new MetricsReporterImpl());
+  }
+
+  static setInstanceForTest(newInstance: MetricsReporter) {
+    instance = newInstance;
   }
 
   mark(name: string) {
@@ -100,8 +128,12 @@ export class MetricsReporter {
     return remoteMark !== null && remoteMark.markedTime !== null;
   }
 
+  hasLocalMark(name: string): boolean {
+    return this.marks_.has(name);
+  }
+
   clearMark(name: string) {
-    assert(this.marks_.delete(name));
+    this.marks_.delete(name);
     this.browserProxy_.clearMark(name);
   }
 

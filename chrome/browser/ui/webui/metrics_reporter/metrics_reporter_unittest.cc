@@ -130,6 +130,20 @@ TEST_F(WebUIMetricsReporterTest, HasMark) {
   metrics_reporter_.HasMark("remote_mark", TestHasMarkCallback(true));
 }
 
+// HasLocalMark() should check only local marks.
+TEST_F(WebUIMetricsReporterTest, HasLocalMark) {
+  EXPECT_FALSE(metrics_reporter_.HasLocalMark("local_mark"));
+  metrics_reporter_.Mark("local_mark");
+  EXPECT_TRUE(metrics_reporter_.HasLocalMark("local_mark"));
+
+  ON_CALL(page_metrics_, OnGetMark("remote_mark", _))
+      .WillByDefault([](const std::string& mark,
+                        MetricsReporter::OnGetMarkCallback callback) {
+        std::move(callback).Run(base::TimeTicks::Now().since_origin());
+      });
+  EXPECT_FALSE(metrics_reporter_.HasLocalMark("remote_mark"));
+}
+
 // ClearMark() should clear both local and remote marks.
 TEST_F(WebUIMetricsReporterTest, ClearMark) {
   EXPECT_CALL(page_metrics_, OnClearMark("remote_mark")).Times(1);

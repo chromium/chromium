@@ -17,11 +17,15 @@ generate_grd("build_grdp") {
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [ "chrome://webui-test/*|" +
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
-  in_files = [ "metrics_reporter_test.ts" ]
+  in_files = [
+    "metrics_reporter_test.ts",
+    "mocked_metrics_reporter.ts",
+  ]
   definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
   deps = [ "//ui/webui/resources/js/metrics_reporter:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
