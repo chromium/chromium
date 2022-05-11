@@ -46684,6 +46684,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Both devices, pointing and keyboard, detected."/>
 </enum>
 
+<enum name="HidType">
+  <summary>
+    Possible device types of HIDs interfaced with in the OOBE HID detection
+    screen
+  </summary>
+  <int value="0" label="Touchscreen"/>
+  <int value="1" label="USB Keyboard"/>
+  <int value="2" label="USB Pointer"/>
+  <int value="3" label="Serial Keyboard"/>
+  <int value="4" label="Serial Pointer"/>
+  <int value="5" label="Bluetooth Keyboard"/>
+  <int value="6" label="Bluetooth Pointer"/>
+  <int value="7" label="Unknown Keyboard"/>
+  <int value="8" label="Unknown Pointer"/>
+</enum>
+
 <enum name="HintCacheStoreEntryType">
   <summary>
     Possible store entry types contained within the HintCacheStore.

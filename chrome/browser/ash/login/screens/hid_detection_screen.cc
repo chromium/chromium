@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/hid_detection/hid_detection_utils.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -475,6 +476,8 @@ void HIDDetectionScreen::InputDeviceAdded(InputDeviceInfoPtr info) {
     SetKeyboardDeviceName(info_ref->name);
     SendKeyboardDeviceNotification();
   }
+  DCHECK(!info_ref.is_null());
+  hid_detection::RecordHidConnected(*info_ref);
 }
 
 void HIDDetectionScreen::InputDeviceAddedForTesting(InputDeviceInfoPtr info) {

@@ -4002,6 +4002,7 @@ if (!is_android) {
         "//ash/components/drivefs:test_support",
         "//ash/components/drivefs/mojom",
         "//ash/components/geolocation",
+        "//ash/components/hid_detection:hid_detection",
         "//ash/components/login/auth",
         "//ash/components/login/auth:challenge_response_key",
         "//ash/components/login/auth:test_support",

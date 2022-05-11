@@ -168,6 +168,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.HidDetectionScreen.HidConnected" enum="HidType"
+    expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of a connected human interface device (HID). This metric is
+    emitted each time a HID is connected during the HID detection screen in
+    OOBE. It does not include devices connected before the screen is shown or
+    after the screen is hidden.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.MarketingOptInScreen.BackendConnector"
     enum="MarketingOptInBackendConnectorEvent" expires_after="2022-11-30">
   <owner>rrsilva@google.com</owner>

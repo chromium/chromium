@@ -12,6 +12,8 @@ static_library("hid_detection") {
     "bluetooth_hid_detector.h",
     "bluetooth_hid_detector_impl.cc",
     "bluetooth_hid_detector_impl.h",
+    "hid_detection_utils.cc",
+    "hid_detection_utils.h",
   ]
 
   deps = [
@@ -22,6 +24,7 @@ static_library("hid_detection") {
     "//components/device_event_log",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
   ]
 }
 

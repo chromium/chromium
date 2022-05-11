@@ -99,6 +99,7 @@ source_set("chromeos") {
     "//ash/components/enhanced_network_tts/mojom",
     "//ash/components/fwupd",
     "//ash/components/geolocation",
+    "//ash/components/hid_detection:hid_detection",
     "//ash/components/login/auth",
     "//ash/components/login/session",
     "//ash/components/multidevice",
