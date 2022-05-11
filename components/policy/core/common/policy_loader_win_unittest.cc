@@ -587,8 +587,8 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
   policy.SetIntKey("int", -123);
   policy.SetDoubleKey("double", 456.78e9);
   base::ListValue list;
-  list.Append(std::make_unique<base::Value>(policy.Clone()));
-  list.Append(std::make_unique<base::Value>(policy.Clone()));
+  list.GetList().Append(policy.Clone());
+  list.GetList().Append(policy.Clone());
   policy.SetKey("list", list.Clone());
   // Encode |policy| before adding the "dict" entry.
   std::string encoded_dict;

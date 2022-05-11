@@ -234,7 +234,7 @@ TEST(RegistryDictTest, ConvertToJSON) {
   expected_subdict->SetKey("two", string_value.Clone());
   expected.Set("three", std::move(expected_subdict));
   auto expected_list = std::make_unique<base::ListValue>();
-  expected_list->Append(std::make_unique<base::Value>(string_value.Clone()));
+  expected_list->GetList().Append(string_value.Clone());
   expected.Set("dict-to-list", std::move(expected_list));
   expected.SetBoolKey("int-to-bool", true);
   expected.SetDoubleKey("int-to-double", 42.0);
@@ -242,7 +242,7 @@ TEST(RegistryDictTest, ConvertToJSON) {
   expected.SetDoubleKey("string-to-double", 0.0);
   expected.SetIntKey("string-to-int", static_cast<int>(0));
   expected_list = std::make_unique<base::ListValue>();
-  expected_list->Append(std::make_unique<base::Value>("value"));
+  expected_list->GetList().Append("value");
   expected_subdict = std::make_unique<base::DictionaryValue>();
   expected_subdict->Set("key", std::move(expected_list));
   expected.Set("string-to-dict", std::move(expected_subdict));
@@ -278,9 +278,9 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
 
   base::DictionaryValue expected;
   std::unique_ptr<base::ListValue> expected_list(new base::ListValue());
-  expected_list->Append(base::Value("1").Clone());
-  expected_list->Append(base::Value("2").Clone());
-  expected_list->Append(base::Value("4").Clone());
+  expected_list->GetList().Append(base::Value("1").Clone());
+  expected_list->GetList().Append(base::Value("2").Clone());
+  expected_list->GetList().Append(base::Value("4").Clone());
   expected.Set("dict-to-list", std::move(expected_list));
 
   EXPECT_EQ(expected, *actual);
@@ -345,7 +345,7 @@ TEST(RegistryDictTest, PatternPropertySchema) {
   std::unique_ptr<base::DictionaryValue> expected_extension_settings(
       new base::DictionaryValue());
   std::unique_ptr<base::ListValue> list_value(new base::ListValue());
-  list_value->Append("*://*.google.com");
+  list_value->GetList().Append("*://*.google.com");
   std::unique_ptr<base::DictionaryValue> restrictions_properties(
       new base::DictionaryValue());
   restrictions_properties->Set(

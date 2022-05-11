@@ -39,8 +39,10 @@ void DictionaryEntryToValue(const void* key, const void* value, void* context) {
 void ArrayEntryToValue(const void* value, void* context) {
   std::unique_ptr<base::Value> converted =
       PropertyToValue(static_cast<CFPropertyListRef>(value));
-  if (converted)
-    static_cast<base::ListValue*>(context)->Append(std::move(converted));
+  if (converted) {
+    static_cast<base::ListValue*>(context)->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(converted)));
+  }
 }
 
 }  // namespace
