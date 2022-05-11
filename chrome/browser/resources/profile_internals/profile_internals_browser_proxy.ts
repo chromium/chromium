@@ -19,6 +19,11 @@ export type ProfileState = {
   keepAlives: Array<KeepAlive>,
 };
 
+export type ProfileStateElement = {
+  profileState: ProfileState,
+  expanded: boolean,
+};
+
 /**
  * @fileoverview A helper object used by the profile internals debug page
  * to interact with the browser.
