@@ -815,7 +815,7 @@
     },
     {
       name: "DeflateRawCompressionFormat",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DelegatedInkTrails",
