@@ -348,7 +348,13 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   FuchsiaVideoDecoderTest(const FuchsiaVideoDecoderTest&) = delete;
   FuchsiaVideoDecoderTest& operator=(const FuchsiaVideoDecoderTest&) = delete;
 
-  ~FuchsiaVideoDecoderTest() override = default;
+  ~FuchsiaVideoDecoderTest() override {
+    // The decoder uses async destruction callbacks for VideoFrames, so we need
+    // to run the message loop after releasing the frames to avoid memory leaks
+    // (see crbug.com/1287362).
+    output_frames_.clear();
+    task_environment_.RunUntilIdle();
+  }
 
   [[nodiscard]] bool InitializeDecoder(VideoDecoderConfig config) {
     base::RunLoop run_loop;
