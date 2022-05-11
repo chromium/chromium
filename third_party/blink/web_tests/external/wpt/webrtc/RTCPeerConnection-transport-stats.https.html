@@ -40,6 +40,7 @@ promise_test(async t => {
   });
   assert_equals(transportStats.iceRole, 'controlling');
   assert_equals(transportStats.iceLocalUsernameFragment, iceParameters.usernameFragment);
+  assert_equals(transportStats.iceState, 'new');
   assert_equals(transportStats.selectedCandidatePairChanges, 0);
 }, 'ICE statistics on transport-stats after setLocalDescription');
 </script>
