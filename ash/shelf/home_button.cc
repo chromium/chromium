@@ -259,6 +259,17 @@ bool HomeButton::CanShowNudgeLabel() const {
 }
 
 void HomeButton::StartNudgeAnimation() {
+  // Ensure any in-progress nudge animations are completed before initializing
+  // a new nudge animation, and creating a rippler layer. Nudge animation
+  // callbacks may otherwise delete ripple layer mid new animation set up (and
+  // delete the newly created ripple layer just before the layer animation is
+  // set up by animation builder).
+  nudge_ripple_layer_.ReleaseLayer();
+  if (nudge_label_)
+    nudge_label_->layer()->GetAnimator()->AbortAllAnimations();
+  if (label_container_)
+    label_container_->layer()->GetAnimator()->AbortAllAnimations();
+
   // Create the nudge label first to check if there is enough space to show it.
   if (!nudge_label_)
     CreateNudgeLabel();
