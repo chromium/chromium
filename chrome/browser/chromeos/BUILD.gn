@@ -1731,6 +1731,8 @@ source_set("chromeos") {
     "../ash/input_method/multi_word_suggester.h",
     "../ash/input_method/native_input_method_engine.cc",
     "../ash/input_method/native_input_method_engine.h",
+    "../ash/input_method/native_input_method_engine_observer.cc",
+    "../ash/input_method/native_input_method_engine_observer.h",
     "../ash/input_method/personal_info_suggester.cc",
     "../ash/input_method/personal_info_suggester.h",
     "../ash/input_method/suggester.h",
