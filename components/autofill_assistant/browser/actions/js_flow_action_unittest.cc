@@ -363,4 +363,48 @@ TEST_F(JsFlowActionTest, NativeActionReturnsActionResult) {
   action->ProcessAction(callback_.Get());
 }
 
+TEST_F(JsFlowActionTest, NativeActionReturnsAutofillErrorInfo) {
+  auto mock_js_flow_executor = std::make_unique<MockJsFlowExecutor>();
+  auto* mock_js_flow_executor_ptr = mock_js_flow_executor.get();
+  auto action = CreateAction(std::move(mock_js_flow_executor));
+
+  EXPECT_CALL(*mock_js_flow_executor_ptr, Start)
+      .WillOnce(WithArg<1>([&](auto finished_callback) {
+        ActionProto native_action;
+        native_action.mutable_wait_for_dom()->mutable_wait_condition();
+
+        action->RunNativeAction(
+            /* action_id = */ static_cast<int>(
+                native_action.action_info_case()),
+            /* action = */
+            native_action.wait_for_dom().SerializeAsString(),
+            native_action_callback_.Get());
+
+        std::move(finished_callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      }));
+
+  AutofillErrorInfoProto autofill_error_info;
+  autofill_error_info.set_client_memory_address_key_names("key_names");
+  std::string autofill_error_info_base64;
+  base::Base64Encode(autofill_error_info.SerializeAsString(),
+                     &autofill_error_info_base64);
+
+  EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning)
+      .WillOnce(WithArg<4>([&](auto dom_finished_callback) {
+        *GetInnerProcessedAction(*action)
+             ->mutable_status_details()
+             ->mutable_autofill_error_info() = autofill_error_info;
+        std::move(dom_finished_callback)
+            .Run(ClientStatus(ACTION_APPLIED), base::Seconds(0));
+      }));
+
+  EXPECT_CALL(native_action_callback_, Run(_, Pointee(IsJson(R"(
+        {
+          "navigationStarted": false,
+          "autofillErrorInfo": ")" + autofill_error_info_base64 +
+                                                             "\"}"))));
+
+  action->ProcessAction(callback_.Get());
+}
+
 }  // namespace autofill_assistant

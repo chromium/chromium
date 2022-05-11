@@ -28,6 +28,10 @@ const char kActionSpecificResultKey[] = "actionSpecificResult";
 // by runNativeAction().
 // DO NOT CHANGE
 const char kNavigationStartedKey[] = "navigationStarted";
+// The key for the autofill error info in the result object returned by
+// runNativeAction().
+// DO NOT CHANGE
+const char kAutofillErrorInfo[] = "autofillErrorInfo";
 
 // Returns true for remote object types that flows are allowed to return. This
 // is mostly used to filter types like FUNCTION which would otherwise slip
@@ -165,6 +169,12 @@ ClientStatus ExtractJsFlowActionReturnValue(
 
 namespace {
 
+std::string SerializeToBase64(const google::protobuf::MessageLite* proto) {
+  std::string serialized_result_base64;
+  base::Base64Encode(proto->SerializeAsString(), &serialized_result_base64);
+  return serialized_result_base64;
+}
+
 absl::optional<std::string> SerializeActionResult(
     const ProcessedActionProto& processed_action) {
   const google::protobuf::MessageLite* proto;
@@ -209,9 +219,7 @@ absl::optional<std::string> SerializeActionResult(
       return absl::nullopt;
   }
 
-  std::string serialized_result_base64;
-  base::Base64Encode(proto->SerializeAsString(), &serialized_result_base64);
-  return serialized_result_base64;
+  return SerializeToBase64(proto);
 }
 
 }  // namespace
@@ -226,6 +234,13 @@ std::unique_ptr<base::Value> NativeActionResultToResultValue(
       SerializeActionResult(processed_action);
   if (serialized_result.has_value()) {
     result_value.Set(kActionSpecificResultKey, *serialized_result);
+  }
+
+  if (processed_action.status_details().has_autofill_error_info()) {
+    result_value.Set(
+        kAutofillErrorInfo,
+        SerializeToBase64(
+            &processed_action.status_details().autofill_error_info()));
   }
 
   return std::make_unique<base::Value>(std::move(result_value));
