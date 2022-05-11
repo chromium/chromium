@@ -92,8 +92,8 @@ void HistogramAuthEvent(HttpAuthHandler* handler, AuthEvent auth_event) {
   //   Negotiate Start: 6
   //   Negotiate Reject: 7
   static const int kEventBucketsEnd =
-      HttpAuth::AUTH_SCHEME_MAX * AUTH_EVENT_MAX;
-  int event_bucket = auth_scheme * AUTH_EVENT_MAX + auth_event;
+      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_EVENT_MAX;
+  int event_bucket = int{auth_scheme} * AUTH_EVENT_MAX + auth_event;
   DCHECK(event_bucket >= 0 && event_bucket < kEventBucketsEnd);
   UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthCount", event_bucket,
                             kEventBucketsEnd);
@@ -120,9 +120,9 @@ void HistogramAuthEvent(HttpAuthHandler* handler, AuthEvent auth_event) {
   if (auth_event != AUTH_EVENT_START)
     return;
   static const int kTargetBucketsEnd =
-      HttpAuth::AUTH_SCHEME_MAX * AUTH_TARGET_MAX;
+      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_TARGET_MAX;
   AuthTarget auth_target = DetermineAuthTarget(handler);
-  int target_bucket = auth_scheme * AUTH_TARGET_MAX + auth_target;
+  int target_bucket = int{auth_scheme} * AUTH_TARGET_MAX + auth_target;
   DCHECK(target_bucket >= 0 && target_bucket < kTargetBucketsEnd);
   UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthTarget", target_bucket,
                             kTargetBucketsEnd);

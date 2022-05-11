@@ -6,6 +6,8 @@
 
 #include <atomic>
 
+#include "build/build_config.h"
+
 namespace {
 
 void Barrier() {
@@ -21,7 +23,7 @@ namespace disk_cache {
 
 FileLock::FileLock(BlockFileHeader* header) {
   updating_ = &header->updating;
-  (*updating_)++;
+  (*updating_) = (*updating_) + 1;
   Barrier();
   acquired_ = true;
 }
@@ -33,7 +35,7 @@ FileLock::~FileLock() {
 void FileLock::Lock() {
   if (acquired_)
     return;
-  (*updating_)++;
+  (*updating_) = (*updating_) + 1;
   Barrier();
 }
 
@@ -41,7 +43,7 @@ void FileLock::Unlock() {
   if (!acquired_)
     return;
   Barrier();
-  (*updating_)--;
+  (*updating_) = (*updating_) - 1;
 }
 
 }  // namespace disk_cache

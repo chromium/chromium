@@ -7,18 +7,14 @@
 #include <atomic>
 #include <type_traits>
 
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+
 namespace net {
 namespace activity_monitor {
 
 namespace {
 
-std::atomic<uint64_t> g_bytes_received{0};
-
-static_assert(
-    std::is_trivially_constructible<decltype(g_bytes_received)>::value,
-    "g_bytes_received generates a static initializer");
-static_assert(std::is_trivially_destructible<decltype(g_bytes_received)>::value,
-              "g_bytes_received generates a static destructor");
+ABSL_CONST_INIT std::atomic<uint64_t> g_bytes_received = 0;
 
 }  // namespace
 
