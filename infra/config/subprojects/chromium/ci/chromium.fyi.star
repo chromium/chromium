@@ -1188,6 +1188,9 @@ fyi_coverage_builder(
     os = os.WINDOWS_DEFAULT,
     coverage_test_types = ["overall", "unit"],
     use_clang_coverage = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 fyi_ios_builder(

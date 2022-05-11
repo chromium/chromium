@@ -1381,7 +1381,8 @@
       "is_debug": false,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "win32-archive-rel-goma-rbe-canary": {

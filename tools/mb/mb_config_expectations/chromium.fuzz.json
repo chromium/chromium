@@ -357,8 +357,9 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Libfuzzer Upload iOS Catalyst Debug": {
