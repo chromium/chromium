@@ -74,6 +74,7 @@ this.DiagnosticsAppWithInput = class extends PolymerTest {
 // although technically is not necessary.
 const debug_suites_list = [
   'App',
+  'AppForInputHiding',
   'BatteryStatusCard',
   'CellularInfo',
   'ConnectivityCard',

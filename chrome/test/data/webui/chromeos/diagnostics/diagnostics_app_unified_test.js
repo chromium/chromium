@@ -10,7 +10,7 @@ import {cellularInfoTestSuite} from './cellular_info_test.js';
 import {connectivityCardTestSuite} from './connectivity_card_test.js';
 import {cpuCardTestSuite} from './cpu_card_test.js';
 import {dataPointTestSuite} from './data_point_test.js';
-import {appTestSuite} from './diagnostics_app_test.js';
+import {appTestSuite, appTestSuiteForInputHiding} from './diagnostics_app_test.js';
 import {diagnosticsNetworkIconTestSuite} from './diagnostics_network_icon_test.js';
 import {diagnosticsStickyBannerTestSuite} from './diagnostics_sticky_banner_test.js';
 import {diagnosticsUtilsTestSuite} from './diagnostics_utils_test.js';
@@ -56,6 +56,7 @@ function runSuite(suiteName, testFn, condition = 'default') {
 }
 
 runSuite('App', appTestSuite);
+runSuite('AppForInputHiding', appTestSuiteForInputHiding, 'input');
 runSuite('BatteryStatusCard', batteryStatusCardTestSuite);
 runSuite('CellularInfo', cellularInfoTestSuite, 'network');
 runSuite('ConnectivityCard', connectivityCardTestSuite, 'network');

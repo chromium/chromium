@@ -182,8 +182,16 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {?Object} initialData
    */
   addSelector(name, pageIs, icon = '', id = null, initialData = null) {
-    const selectorItem =
-        this.createSelectorItem(name, pageIs, icon, id, initialData);
+    this.addSelectorItem(
+        this.createSelectorItem(name, pageIs, icon, id, initialData));
+  }
+
+  /**
+   * Adds a new section to the top level navigation. The name and icon will
+   * be displayed in the side navigation.
+   * @param {!SelectorItem} selectorItem
+   */
+  addSelectorItem(selectorItem) {
     this.push('selectorItems_', selectorItem);
   }
 

@@ -137,6 +137,14 @@ Polymer({
    */
   onKeyboardDisconnected(id) {
     this.removeDeviceById_('keyboards_', id);
+    if (this.keyboards_.length === 0 && this.keyboardTester_) {
+      // When no keyboards are connected, the <diagnostics-app> component hides
+      // the input page. If that happens while a <cr-dialog> is open, the rest
+      // of the app remains unresponsive due to the dialog's native logic
+      // blocking interaction with other elements. To prevent this we have to
+      // explicitly close the dialog when this happens.
+      this.keyboardTester_.close();
+    }
   },
 
   /**
