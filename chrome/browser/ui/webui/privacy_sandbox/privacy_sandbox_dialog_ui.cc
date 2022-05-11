@@ -92,17 +92,17 @@ void PrivacySandboxDialogUI::Initialize(
     base::OnceCallback<void(int)> resize_callback,
     base::OnceClosure show_dialog_callback,
     base::OnceClosure open_settings_callback,
-    PrivacySandboxService::PromptType prompt_type) {
+    PrivacySandboxService::DialogType dialog_type) {
   base::Value::Dict update;
   update.Set("isConsent",
-             prompt_type == PrivacySandboxService::PromptType::kConsent);
+             dialog_type == PrivacySandboxService::DialogType::kConsent);
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
 
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       std::move(close_callback), std::move(resize_callback),
       std::move(show_dialog_callback), std::move(open_settings_callback),
-      prompt_type);
+      dialog_type);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

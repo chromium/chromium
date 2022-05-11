@@ -52,9 +52,11 @@ class PrivacySandboxService : public KeyedService,
                               public syncer::SyncServiceObserver,
                               public signin::IdentityManager::Observer {
  public:
-  // Possible types of Privacy Sandbox prompts that may be shown to the user.
+  // Possible types of Privacy Sandbox dialogs that may be shown to the user.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class PromptType {
+  // TODO(crbug.com/1321587): Rename to PromptType as the UI can be presented as
+  // a bubble, a dialog or a bottomsheet.
+  enum class DialogType {
     kNone = 0,
     kNotice = 1,
     kConsent = 2,
@@ -112,17 +114,17 @@ class PrivacySandboxService : public KeyedService,
 
   ~PrivacySandboxService() override;
 
-  // Returns the prompt type that should be shown to the user. This consults
+  // Returns the dialog type that should be shown to the user. This consults
   // previous consent / notice information stored in preferences, the current
   // state of the Privacy Sandbox settings, and the current location of the
   // user, to determine the appropriate type. This is expected to be called by
-  // UI code locations determining whether a prompt should be shown on startup.
+  // UI code locations determining whether a dialog should be shown on startup.
   // Virtual to allow mocking in tests.
-  virtual PromptType GetRequiredPromptType();
+  virtual DialogType GetRequiredDialogType();
 
   // Informs the service that |action| occurred with the dialog. This allows
   // the service to record this information in preferences such that future
-  // calls to GetRequiredPromptType() are correct. This is expected to be
+  // calls to GetRequiredDialogType() are correct. This is expected to be
   // called appropriately by all locations showing the dialog. Metrics shared
   // between platforms will also be recorded.
   // This method is virtual for mocking in tests.
@@ -146,7 +148,7 @@ class PrivacySandboxService : public KeyedService,
   virtual bool IsDialogOpenForBrowser(Browser* browser);
 
   // Disables the display of the Privacy Sandbox dialog for testing. When
-  // |disabled| is true, GetRequiredPromptType() will only ever return that no
+  // |disabled| is true, GetRequiredDialogType() will only ever return that no
   // dialog is required.
   // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
   // dialog for those tests. If you set this outside of that context, you should
@@ -315,7 +317,7 @@ class PrivacySandboxService : public KeyedService,
                            ManuallyControlledNoDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, NoParamNoDialog);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
-                           GetRequiredPromptType);
+                           GetRequiredDialogType);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxDialogNoticeWaiting);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
@@ -439,12 +441,12 @@ class PrivacySandboxService : public KeyedService,
       base::OnceCallback<void(std::vector<std::string>)> callback,
       std::vector<url::Origin> top_frames);
 
-  // Contains the logic which powers GetRequiredPromptType(). Static to allow
+  // Contains the logic which powers GetRequiredDialogType(). Static to allow
   // EXPECT_DCHECK_DEATH testing, which does not work well with many of the
   // other dependencies of this service. It is also for this reason the 3P
   // cookie block state is passed in, as CookieSettings cannot be used in
   // death tests.
-  static PrivacySandboxService::PromptType GetRequiredPromptTypeInternal(
+  static PrivacySandboxService::DialogType GetRequiredDialogTypeInternal(
       PrefService* pref_service,
       profile_metrics::BrowserProfileType profile_type,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,

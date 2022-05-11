@@ -388,14 +388,14 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool will_use_new_notice_ui =
       privacy_sandbox::kPrivacySandboxSettings3NewNotice.Get() &&
       (privacy_sandbox_serivce &&
-       privacy_sandbox_serivce->GetRequiredPromptType() ==
-           PrivacySandboxService::PromptType::kNotice);
+       privacy_sandbox_serivce->GetRequiredDialogType() ==
+           PrivacySandboxService::DialogType::kNotice);
   // Don't add any tabs for the new notice UI. It is a bubble instead of the
   // modal dialog and it will stay up even while the user is navigating.
   const bool privacy_sandbox_dialog_required =
       privacy_sandbox_serivce &&
-      privacy_sandbox_serivce->GetRequiredPromptType() !=
-          PrivacySandboxService::PromptType::kNone &&
+      privacy_sandbox_serivce->GetRequiredDialogType() !=
+          PrivacySandboxService::DialogType::kNone &&
       !will_use_new_notice_ui;
 
   auto result = DetermineStartupTabs(

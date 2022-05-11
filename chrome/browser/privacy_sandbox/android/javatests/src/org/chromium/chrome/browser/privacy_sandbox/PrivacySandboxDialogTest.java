@@ -201,7 +201,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsNothing() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NONE);
+        mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.NONE);
         launchDialog();
         // Verify that nothing is shown. Notice & Consent share a title.
         onView(withText(R.string.privacy_sandbox_consent_title)).check(doesNotExist());
@@ -210,7 +210,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsConsent() throws IOException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.CONSENT);
+        mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.CONSENT);
         launchDialog();
         // Verify that the consent is shown and the action is recorded.
         onViewWaiting(withId(R.id.privacy_sandbox_consent_title));
@@ -245,7 +245,7 @@ public final class PrivacySandboxDialogTest {
     @Test
     @SmallTest
     public void testControllerShowsNotice() throws IOException, InterruptedException {
-        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
+        mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.NOTICE);
         launchDialog();
         // Verify that the consent is shown and the action is recorded.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));

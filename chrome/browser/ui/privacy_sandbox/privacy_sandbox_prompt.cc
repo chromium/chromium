@@ -7,11 +7,11 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 void ShowPrivacySandboxPrompt(Browser* browser,
-                              PrivacySandboxService::PromptType prompt_type) {
+                              PrivacySandboxService::DialogType dialog_type) {
   if (privacy_sandbox::kPrivacySandboxSettings3NewNotice.Get() &&
-      prompt_type == PrivacySandboxService::PromptType::kNotice) {
+      dialog_type == PrivacySandboxService::DialogType::kNotice) {
     ShowPrivacySandboxNoticeBubble(browser);
   } else {
-    ShowPrivacySandboxDialog(browser, prompt_type);
+    ShowPrivacySandboxDialog(browser, dialog_type);
   }
 }

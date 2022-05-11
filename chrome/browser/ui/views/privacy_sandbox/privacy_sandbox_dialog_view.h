@@ -22,7 +22,7 @@ class PrivacySandboxDialogView : public views::View {
  public:
   METADATA_HEADER(PrivacySandboxDialogView);
   PrivacySandboxDialogView(Browser* browser,
-                           PrivacySandboxService::PromptType dialog_type);
+                           PrivacySandboxService::DialogType dialog_type);
 
   void Close();
 
