@@ -50,6 +50,7 @@ class GameResult : public ChromeSearchResult {
   AppListControllerDelegate* list_controller_;
 
   GURL launch_url_;
+  bool is_icon_masking_allowed_;
   const int dimension_;
 
   base::WeakPtrFactory<GameResult> weak_factory_{this};

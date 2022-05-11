@@ -38,7 +38,8 @@ apps::Result MakeAppsResult(const std::u16string& title) {
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
           u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
+          base::FilePath("/icons/test.png"), /*is_icon_masking_allowed=*/false,
+          GURL("https://game.com/game")));
 }
 
 }  // namespace

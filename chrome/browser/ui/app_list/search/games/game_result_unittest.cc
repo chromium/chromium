@@ -44,7 +44,8 @@ TEST_F(GameResultTest, Basic) {
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
           u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png"), GURL("https://game.com/game")));
+          base::FilePath("/icons/test.png"),
+          /*is_icon_masking_allowed=*/false, GURL("https://game.com/game")));
 
   GameResult result(profile_.get(), &list_controller_, app_discovery_service,
                     apps_result, 0.6, u"SomeGame");

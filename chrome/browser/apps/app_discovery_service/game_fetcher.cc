@@ -219,6 +219,7 @@ std::vector<Result> GameFetcher::GetAppsForCurrentLocale(
         base::UTF8ToUTF16(app_with_locale.app().source_name()),
         base::UTF8ToUTF16(app_with_locale.app().publisher_name()),
         base::FilePath(app_with_locale.app().icon_info().icon_path()),
+        app_with_locale.app().icon_info().is_masking_allowed(),
         GURL(app_with_locale.app().deeplink()));
     results.push_back(Result(
         AppSource::kGames, app_with_locale.app().app_id_for_platform(),

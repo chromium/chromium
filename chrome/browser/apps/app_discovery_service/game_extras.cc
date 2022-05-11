@@ -15,11 +15,13 @@ GameExtras::GameExtras(
     const std::u16string& source,
     const std::u16string& publisher,
     const base::FilePath& relative_icon_path,
+    const bool is_icon_masking_allowed,
     const GURL& deeplink_url)
     : platforms_(platforms),
       source_(source),
       publisher_(publisher),
       relative_icon_path_(relative_icon_path),
+      is_icon_masking_allowed_(is_icon_masking_allowed),
       deeplink_url_(deeplink_url) {}
 
 GameExtras::GameExtras(const GameExtras&) = default;
@@ -49,6 +51,10 @@ const std::u16string& GameExtras::GetPublisher() const {
 
 const base::FilePath& GameExtras::GetRelativeIconPath() const {
   return relative_icon_path_;
+}
+
+bool GameExtras::GetIsIconMaskingAllowed() const {
+  return is_icon_masking_allowed_;
 }
 
 const GURL& GameExtras::GetDeeplinkUrl() const {

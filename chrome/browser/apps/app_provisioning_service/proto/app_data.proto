@@ -49,4 +49,5 @@ message AppWithLocaleList {
 
 message IconInfo {
   optional string icon_path = 1;
+  optional bool is_masking_allowed = 2;
 }

@@ -74,7 +74,9 @@ GameResult::GameResult(Profile* profile,
   DCHECK(game.GetSourceExtras());
   DCHECK(game.GetSourceExtras()->AsGameExtras());
 
-  launch_url_ = game.GetSourceExtras()->AsGameExtras()->GetDeeplinkUrl();
+  const auto* extras = game.GetSourceExtras()->AsGameExtras();
+  launch_url_ = extras->GetDeeplinkUrl();
+  is_icon_masking_allowed_ = extras->GetIsIconMaskingAllowed();
 
   set_id(launch_url_.spec());
   set_relevance(relevance);
@@ -119,8 +121,14 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
     return;
   }
 
-  // TODO(crbug.com/1305880): This code resizes and sets the provided image into
-  // a white circle. This may change if more game sources are introduced.
+  if (is_icon_masking_allowed_) {
+    // TODO(crbug.com/1305880): Check that this is set in unit tests. This
+    // relies on the AppDiscoveryService.
+    SetIcon(IconInfo(image, GetAppIconDimension(), IconShape::kCircle));
+    return;
+  }
+
+  // Resize and set the provided image into a white circle.
   const int radius = dimension_ / 2;
   const int size = MaxSquareLengthForRadius(radius);
   const gfx::ImageSkia resized_image =
