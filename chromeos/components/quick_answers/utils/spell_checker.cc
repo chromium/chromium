@@ -234,7 +234,7 @@ void SpellChecker::MaybeRetryInitialize() {
 
 void SpellChecker::OnPathExistsComplete(bool path_exists) {
   // If the dictionary is not available, try to download it from the server.
-  if (path_exists) {
+  if (!path_exists) {
     auto url =
         GetDictionaryURL(dictionary_file_path_.BaseName().MaybeAsASCII());
 
