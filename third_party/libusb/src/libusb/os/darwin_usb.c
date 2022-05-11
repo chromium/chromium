@@ -22,13 +22,13 @@
 #include <ctype.h>
 #include <errno.h>
 #include <pthread.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <libkern/OSAtomic.h>
 
 #include <mach/clock.h>
 #include <mach/clock_types.h>
@@ -50,7 +50,7 @@ static clock_serv_t clock_realtime;
 static clock_serv_t clock_monotonic;
 
 static CFRunLoopRef libusb_darwin_acfl = NULL; /* event cf loop */
-static volatile int32_t initCount = 0;
+_Atomic int32_t initCount = ATOMIC_VAR_INIT(0);
 
 static usbi_mutex_t darwin_cached_devices_lock = PTHREAD_MUTEX_INITIALIZER;
 static struct list_head darwin_cached_devices = {&darwin_cached_devices, &darwin_cached_devices};
@@ -418,7 +418,7 @@ static int darwin_init(struct libusb_context *ctx) {
     return rc;
   }
 
-  if (OSAtomicIncrement32Barrier(&initCount) == 1) {
+  if (atomic_fetch_add(&initCount, 1) == 0) {
     /* create the clocks that will be used */
 
     if (!initted) {
@@ -443,7 +443,7 @@ static int darwin_init(struct libusb_context *ctx) {
 }
 
 static void darwin_exit (void) {
-  if (OSAtomicDecrement32Barrier(&initCount) == 0) {
+  if (atomic_fetch_sub(&initCount, 1) == 1) {
     mach_port_deallocate(mach_task_self(), clock_realtime);
     mach_port_deallocate(mach_task_self(), clock_monotonic);
 
