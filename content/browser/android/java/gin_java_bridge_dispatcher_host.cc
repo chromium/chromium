@@ -378,7 +378,7 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
   DCHECK(routing_id != MSG_ROUTING_NONE);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
-    wrapped_result->Append(std::make_unique<base::Value>());
+    wrapped_result->GetList().Append(base::Value());
     *error_code = kGinJavaBridgeUnknownObjectId;
     return;
   }
@@ -404,10 +404,10 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
                                      false,
                                      routing_id);
     }
-    wrapped_result->Append(
-        GinJavaBridgeValue::CreateObjectIDValue(returned_object_id));
+    wrapped_result->Append(base::Value::FromUniquePtrValue(
+        GinJavaBridgeValue::CreateObjectIDValue(returned_object_id)));
   } else {
-    wrapped_result->Append(std::make_unique<base::Value>());
+    wrapped_result->Append(base::Value());
   }
 }
 
