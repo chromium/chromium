@@ -50,20 +50,21 @@ std::unique_ptr<base::Value> SerializeFillData(
   root_dict->SetInteger("unique_renderer_id",
                         FormRendererIdToJsParameter(form_renderer_id));
 
-  auto fieldList = std::make_unique<base::ListValue>();
+  base::Value::List fieldList;
 
-  auto usernameField = std::make_unique<base::DictionaryValue>();
-  usernameField->SetInteger("unique_renderer_id",
-                            FieldRendererIdToJsParameter(username_element));
-  usernameField->SetString("value", username_value);
-  fieldList->Append(std::move(usernameField));
+  base::Value::Dict usernameField;
+  usernameField.Set("unique_renderer_id",
+                    FieldRendererIdToJsParameter(username_element));
+  usernameField.Set("value", username_value);
+  fieldList.Append(std::move(usernameField));
 
-  auto passwordField = std::make_unique<base::DictionaryValue>();
-  passwordField->SetInteger("unique_renderer_id", password_element.value());
-  passwordField->SetString("value", password_value);
-  fieldList->Append(std::move(passwordField));
+  base::Value::Dict passwordField;
+  passwordField.Set("unique_renderer_id",
+                    static_cast<int>(password_element.value()));
+  passwordField.Set("value", password_value);
+  fieldList.Append(std::move(passwordField));
 
-  root_dict->Set("fields", std::move(fieldList));
+  root_dict->GetDict().Set("fields", std::move(fieldList));
 
   return root_dict;
 }
