@@ -44,10 +44,6 @@ for (const inputFile of inputFiles) {
         resolve.sync(source.value, {basedir: args.basedir || inputDir});
     resolved = path.relative(inputDir, resolved);
 
-    // Special handling for tslib since resolve.sync only resolves to the "main"
-    // field in the package.json, and we need the ES6 version.
-    resolved = resolved.replace('tslib.js', 'tslib.es6.js');
-
     if (!resolved.startsWith('.')) {
       resolved = './' + resolved;
     }

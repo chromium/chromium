@@ -48,7 +48,7 @@ var FocusTrap = /** @class */ (function () {
         this.elFocusedBeforeTrapFocus =
             document.activeElement instanceof HTMLElement ? document.activeElement :
                 null;
-        this.wrapTabFocus(this.root, focusableEls);
+        this.wrapTabFocus(this.root);
         if (!this.options.skipInitialFocus) {
             this.focusInitialElement(focusableEls, this.options.initialFocusEl);
         }
@@ -62,7 +62,7 @@ var FocusTrap = /** @class */ (function () {
             .forEach(function (sentinelEl) {
             sentinelEl.parentElement.removeChild(sentinelEl);
         });
-        if (this.elFocusedBeforeTrapFocus) {
+        if (!this.options.skipRestoreFocus && this.elFocusedBeforeTrapFocus) {
             this.elFocusedBeforeTrapFocus.focus();
         }
     };
@@ -73,15 +73,18 @@ var FocusTrap = /** @class */ (function () {
      * children elements of the tabbable region, ensuring that focus is trapped
      * within that region.
      */
-    FocusTrap.prototype.wrapTabFocus = function (el, focusableEls) {
+    FocusTrap.prototype.wrapTabFocus = function (el) {
+        var _this = this;
         var sentinelStart = this.createSentinel();
         var sentinelEnd = this.createSentinel();
         sentinelStart.addEventListener('focus', function () {
+            var focusableEls = _this.getFocusableElements(el);
             if (focusableEls.length > 0) {
                 focusableEls[focusableEls.length - 1].focus();
             }
         });
         sentinelEnd.addEventListener('focus', function () {
+            var focusableEls = _this.getFocusableElements(el);
             if (focusableEls.length > 0) {
                 focusableEls[0].focus();
             }

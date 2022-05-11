@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import { Button as MwcButton } from '//resources/mwc/@material/mwc-button/mwc-button.js';
-import { css, customElement, property, query, CSSResult, CSSResultArray } from '//resources/mwc/lit-element/lit-element.js';
+import { css, CSSResult } from '//resources/mwc/lit-element/lit-element.js';
+import { customElement, property, query } from '//resources/mwc/lit/decorators.js';
 
 function linearGradientOf(color : CSSResult) : CSSResult {
   return css`linear-gradient(${color}, ${color})`;
@@ -70,7 +71,7 @@ export class CrosButton extends MwcButton {
     this.updateAriaLabels();
   }
 
-  static getStyles(): CSSResultArray {
+  static override get styles() {
     const crosStyles = css`
       :host {
         /* Public API */
@@ -188,7 +189,7 @@ export class CrosButton extends MwcButton {
         box-shadow: none;
       }
     `;
-    return [MwcButton.styles, crosStyles];
+    return [...MwcButton.styles, crosStyles];
   }
 }
 

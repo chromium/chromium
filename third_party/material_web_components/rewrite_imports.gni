@@ -28,7 +28,7 @@ template("rewrite_imports") {
       }
     }
 
-    import_mappings = [ "tslib|//resources/mwc/tslib/tslib.es6.js" ]
+    import_mappings = [ "tslib|//resources/mwc/tslib/tslib.js" ]
     if (defined(invoker.import_mappings)) {
       import_mappings += invoker.import_mappings
     }

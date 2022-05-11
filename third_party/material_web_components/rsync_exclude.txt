@@ -8,10 +8,28 @@ manifest.json
 .npmignore
 */test/
 */tests/
+*/development/
+*/dist/
+polyfill-support.*
+experimental-hydrate*
 
 # Dev Dependencies
 acorn/
 argparse/
 
+# lit
+lit/decorators
+
+# lit-element
+lit-element/private-ssr-support.*
+lit-element/decorators
+
 # lit-html
-lit-html/src/directives
+lit-html/private-ssr-support.*
+
+# tslib
+tslib/modules
+tslib/tslib.js
+
+# @material
+@material/animation

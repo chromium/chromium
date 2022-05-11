@@ -1,0 +1,23 @@
+{
+  "name": "@material/rtl",
+  "description": "Material Components for the web RTL Scss helpers",
+  "version": "14.0.0",
+  "license": "MIT",
+  "keywords": [
+    "material components",
+    "material design",
+    "rtl",
+    "right to left"
+  ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/material-components/material-components-web.git",
+    "directory": "packages/mdc-rtl"
+  },
+  "dependencies": {
+    "@material/theme": "^14.0.0",
+    "tslib": "^2.1.0"
+  },
+  "gitHead": "432c815e58d61a257742836f816cf95e271e6ea1"
+}
