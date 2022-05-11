@@ -31,8 +31,10 @@ public interface CrowButtonDelegate {
      * @param pageUrl URL for the page; passed in rather than derived from currentTab
      *     or WebContents's lastCommittedURL as it was used to construct UI in the caller.
      * @param canonicalUrl Canonical URL for 'pageUrl.' May be empty.
+     * @param isFollowing Whether the user is following the associated host in the feed.
      */
-    void launchCustomTab(Activity currentActivity, GURL pageUrl, GURL canonicalUrl);
+    void launchCustomTab(
+            Activity currentActivity, GURL pageUrl, GURL canonicalUrl, boolean isFollowing);
 
     /**
      * @return experiment-configured chip text.

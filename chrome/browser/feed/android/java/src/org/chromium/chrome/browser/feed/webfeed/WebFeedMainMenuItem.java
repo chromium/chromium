@@ -123,7 +123,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             initializeFavicon(result);
             initializeText(result);
             initializeChipView(result);
-            initializeCrowButton();
+            initializeCrowButton(result);
 
             if (mChipView != null && mTab.isShowingErrorPage()) {
                 mChipView.setEnabled(false);
@@ -166,9 +166,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
         }
     }
 
-    private void initializeCrowButton() {
+    private void initializeCrowButton(WebFeedMetadata webFeedMetadata) {
+        boolean isFollowing = webFeedMetadata != null
+                && webFeedMetadata.subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED;
         if (mCrowButtonDelegate.isEnabledForSite(mUrl)) {
-            showCrowButton();
+            showCrowButton(isFollowing);
         }
     }
 
@@ -268,14 +270,14 @@ public class WebFeedMainMenuItem extends FrameLayout {
         chipView.setVisibility(View.VISIBLE);
     }
 
-    private void showCrowButton() {
+    private void showCrowButton(boolean isFollowing) {
         mCrowButton.getPrimaryTextView().setText(mCrowButtonDelegate.getButtonText());
         mCrowButton.setOnClickListener((view) -> {
             if (mTab == null) return;
             RecordUserAction.record("Crow.LaunchCustomTab.AppMenu");
             Activity activity = mTab.getWindowAndroid().getActivity().get();
             mCrowButtonDelegate.requestCanonicalUrl(mTab, (canonicalUrl) -> {
-                mCrowButtonDelegate.launchCustomTab(activity, mUrl, canonicalUrl);
+                mCrowButtonDelegate.launchCustomTab(activity, mUrl, canonicalUrl, isFollowing);
             });
         });
         RecordUserAction.record("Crow.EntryPointShown.AppMenu");

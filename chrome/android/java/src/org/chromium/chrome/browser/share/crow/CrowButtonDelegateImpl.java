@@ -42,9 +42,10 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     }
 
     @Override
-    public void launchCustomTab(Activity currentActivity, GURL pageUrl, GURL canonicalUrl) {
+    public void launchCustomTab(
+            Activity currentActivity, GURL pageUrl, GURL canonicalUrl, boolean isFollowing) {
         String customTabUrl = buildServerUrl(new GURL(getServerUrl()), pageUrl, canonicalUrl,
-                getPublicationId(pageUrl), areMetricsEnabled());
+                getPublicationId(pageUrl), areMetricsEnabled(), isFollowing);
 
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
@@ -124,7 +125,7 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
 
     @VisibleForTesting
     public String buildServerUrl(GURL serverUrl, GURL pageUrl, GURL canonicalPageUrl,
-            String publicationId, boolean allowMetrics) {
+            String publicationId, boolean allowMetrics, boolean isFollowing) {
         String serverSpec = serverUrl.getSpec();
         if (serverSpec.isEmpty()) return "";
         Uri.Builder builder = Uri.parse(serverSpec).buildUpon();
@@ -133,6 +134,9 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
         builder.appendQueryParameter("relCanonUrl", canonicalPageUrl.getSpec());
         builder.appendQueryParameter("publicationId", publicationId);
         builder.appendQueryParameter("metrics", allowMetrics ? "true" : "false");
+        if (isFollowing) {
+            builder.appendQueryParameter("following", "true");
+        }
         return builder.build().toString();
     }
 }
