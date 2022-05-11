@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -247,4 +248,11 @@ public interface TabSwitcher {
      * @return {@link Supplier} that provides dialog visibility.
      */
     Supplier<Boolean> getTabGridDialogVisibilitySupplier();
+
+    /**
+     *  @return {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link
+     *         TabSwitcherCoordinator}.
+     */
+    @Nullable
+    TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
 }

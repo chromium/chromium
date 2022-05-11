@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 
 /**
  * Interface for the Tasks-related Start Surface. The tasks surface displays information related to
@@ -119,4 +120,13 @@ public interface TasksSurface {
     @VisibleForTesting
     /** Returns whether the MV tiles has been initialized. */
     boolean isMVTilesInitialized();
+
+    /**
+     * TODO(crbug.com/1315676): Remove this API after the bug is resolved.
+     *
+     * @return {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link
+     *         TabSwitcherCoordinator}.
+     */
+    @Nullable
+    TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
 }

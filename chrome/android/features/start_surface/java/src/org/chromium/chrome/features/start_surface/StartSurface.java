@@ -7,13 +7,16 @@ package org.chromium.chrome.features.start_surface;
 import android.os.SystemClock;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.features.tasks.TasksSurface;
 
 /** Interface to communicate with the start surface. */
@@ -253,4 +256,12 @@ public interface StartSurface {
      */
     @Nullable
     TasksSurface getPrimaryTasksSurface();
+
+    /**
+     * TODO(crbug.com/1315676): Remove this API after the bug is resolved.
+     *
+     * @return A {@link OneShotSupplier <TabSwitcherCustomViewManager>}.
+     */
+    @NonNull
+    OneshotSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
 }

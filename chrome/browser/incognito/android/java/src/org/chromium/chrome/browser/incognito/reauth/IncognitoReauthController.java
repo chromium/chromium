@@ -154,6 +154,7 @@ public class IncognitoReauthController
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mProfileObservableSupplier.removeObserver(mProfileSupplierCallback);
         mLayoutStateProviderCallbackController.destroy();
+        mIncognitoReauthCoordinatorFactory.destroy();
         hideDialogIfShowing(DialogDismissalCause.ACTIVITY_DESTROYED);
     }
 

@@ -162,6 +162,7 @@ public class TabSwitcherCoordinator
             };
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private PriceTrackingDialogCoordinator mPriceTrackingDialogCoordinator;
+    private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
     /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
     public TabSwitcherCoordinator(@NonNull Activity activity,
@@ -183,6 +184,20 @@ public class TabSwitcherCoordinator
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mRootView = rootView;
 
+        mTabSwitcherCustomViewManager =
+                new TabSwitcherCustomViewManager(new TabSwitcherCustomViewManager.Delegate() {
+                    @Override
+                    public void addCustomView(@NonNull View customView) {
+                        // TODO(crbug.com/1227656): Show this custom view in the tab switcher
+                        // content area.
+                    }
+
+                    @Override
+                    public void removeCustomView(@NonNull View customView) {
+                        // TODO(crbug.com/1227656): Release this custom view from the tab switcher
+                        // content area and show the previously showed contents.
+                    }
+                });
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
         mMediator = new TabSwitcherMediator(activity, this, containerViewModel, tabModelSelector,
@@ -433,6 +448,11 @@ public class TabSwitcherCoordinator
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         return mTabGridDialogCoordinator::isVisible;
+    }
+
+    @Override
+    public TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        return mTabSwitcherCustomViewManager;
     }
 
     @Override

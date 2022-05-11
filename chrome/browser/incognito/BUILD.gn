@@ -20,6 +20,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthProperties.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreference.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingUtils.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthTabSwitcherDelegate.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthViewBinder.java",
   ]
   deps = [

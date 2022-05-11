@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.mv_tiles.MostVisitedTileNavigationDeleg
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -291,6 +292,11 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public boolean isMVTilesInitialized() {
         return mIsMVTilesInitialized;
+    }
+
+    @Override
+    public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        return (mTabSwitcher != null) ? mTabSwitcher.getTabSwitcherCustomViewManager() : null;
     }
 
     /** Suggestions UI Delegate for constructing the TileGroup. */
