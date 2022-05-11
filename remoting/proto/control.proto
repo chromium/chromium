@@ -12,8 +12,11 @@ package remoting.protocol;
 
 import "layout_key_function.proto";
 
-// Set the host resolution to match the client. If none of the fields are
-// present, restore the host resolution instead.
+// Set the host resolution to match the client. If screen_id is omitted, then
+// the message will be ignored unless there is only one host display.
+//
+// If none of the fields (apart from screen_id) are present, restore the host
+// resolution instead.
 message ClientResolution {
   // Width and height of the client in Density-Independent Pixels.
   optional int32 dips_width = 1;
@@ -27,6 +30,9 @@ message ClientResolution {
   // unset, the corresponding DPI should be assumed to be 96 (Windows' default)
   optional int32 x_dpi = 5;
   optional int32 y_dpi = 6;
+
+  // The screen_id from the most recent VideoTrackLayout message.
+  optional int64 screen_id = 7;
 }
 
 message VideoControl {
