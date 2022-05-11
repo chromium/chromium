@@ -32,8 +32,10 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -674,4 +676,52 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerDarkModeBrowserTest,
       "window.matchMedia('(prefers-color-scheme: dark)').matches)",
       &prefers_dark_mode));
   EXPECT_EQ(prefers_dark_mode, false);
+}
+
+class SigninReauthViewControllerFencedFrameBrowserTest
+    : public SigninReauthViewControllerBrowserTest {
+ public:
+  SigninReauthViewControllerFencedFrameBrowserTest() = default;
+  ~SigninReauthViewControllerFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that SigninReauthViewController proceeds Reauth only with the primary
+// main frame.
+IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerFencedFrameBrowserTest,
+                       FencedFrame) {
+  const GURL target_url = https_server()->GetURL("/title1.html");
+  ShowReauthPrompt();
+  RedirectGaiaChallengeTo(target_url);
+
+  // Reauth page is shown along with the primary main frame navigation.
+  ReauthTestObserver reauth_observer(signin_reauth_view_controller());
+  ASSERT_TRUE(login_ui_test_utils::ConfirmReauthConfirmationDialog(
+      browser(), kReauthDialogTimeout));
+  reauth_observer.WaitUntilGaiaReauthPageIsShown();
+
+  content::WebContents* target_contents =
+      signin_reauth_view_controller()->GetModalDialogWebContentsForTesting();
+  const GURL fenced_frame_url =
+      https_server()->GetURL("/fenced_frames/title1.html");
+  base::HistogramTester histogram_tester;
+  // Creates a fenced frame inside the primary main frame.
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          &target_contents->GetPrimaryPage().GetMainDocument(),
+          fenced_frame_url);
+  EXPECT_EQ(fenced_frame->GetLastCommittedURL(), fenced_frame_url);
+  // Fenced Frame navigation doesn't have any actions for Reauth.
+  histogram_tester.ExpectBucketCount(
+      kReauthUserActionHistogramName,
+      SigninReauthViewController::UserAction::kClickNextButton, 0);
+
+  SimulateCloseButtonClick();
+  EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kDismissedByUser);
 }
