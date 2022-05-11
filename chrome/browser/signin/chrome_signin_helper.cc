@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_manager.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -44,6 +45,7 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/cookie_reminter.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -305,22 +307,33 @@ void ProcessMirrorHeader(
     }
 
     // Display a re-authentication dialog.
-    ::GetAccountManagerFacade(profile->GetPath().value())
-        ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
-                                      AccountAdditionSource::kContentAreaReauth,
-                                  manage_accounts_params.email);
+    signin_ui_util::ShowReauthForAccount(
+        browser, manage_accounts_params.email,
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
     return;
   }
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    signin::IdentityManager* const identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            primary_account.account_id)) {
+      // On Lacros, it is not allowed to add a new account while the primary
+      // account is in error, as the reconcilor cannot generate the cookie until
+      // the primary account is fixed. Display a reauth dialog instead.
+      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+          browser, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+      return;
+    }
+
     // As per https://crbug.com/1286822 and internal b/215509741, the session
     // may sometimes become invalid on the server without notice. When this
     // happens, the user may try to fix it by signing-in again.
     // Trigger a cookie jar update now to fix the session if needed.
-    signin::IdentityManager* const identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
     identity_manager->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
 
     AccountProfileMapper* mapper =

@@ -51,6 +51,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -211,13 +213,29 @@ void ShowReauthForPrimaryAccountWithAuthError(
   DCHECK(!primary_account_info.IsEmpty());
   DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
       primary_account_info.account_id));
+  ShowReauthForAccount(browser, primary_account_info.email, access_point);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowReauthForAccount(Browser* browser,
+                          const std::string& email,
+                          signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Only `ACCESS_POINT_WEB_SIGNIN` is supported, because `kContentAreaReauth`
+  // is hardcoded.
+  DCHECK_EQ(access_point, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  ::GetAccountManagerFacade(browser->profile()->GetPath().value())
+      ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
+                                    AccountAdditionSource::kContentAreaReauth,
+                                email, base::OnceClosure());
+#else
   // Pass `false` for `enable_sync`, as this function is not expected to start a
   // sync setup flow after the reauth.
   GetSigninUiDelegate()->ShowReauthUI(
-      browser, browser->profile(), primary_account_info.email,
+      browser, browser->profile(), email,
       /*enable_sync=*/false, access_point,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 }
 
 void ShowExtensionSigninPrompt(Profile* profile,

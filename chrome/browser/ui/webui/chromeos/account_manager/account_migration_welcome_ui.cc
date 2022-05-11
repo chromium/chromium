@@ -67,7 +67,7 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
         ->ShowReauthAccountDialog(
             account_manager::AccountManagerFacade::AccountAdditionSource::
                 kAccountManagerMigrationWelcomeScreen,
-            account_email);
+            account_email, base::OnceClosure());
     HandleCloseDialog(args);
   }
 

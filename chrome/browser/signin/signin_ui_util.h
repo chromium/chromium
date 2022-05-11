@@ -48,6 +48,11 @@ void ShowReauthForPrimaryAccountWithAuthError(
     Browser* browser,
     signin_metrics::AccessPoint access_point);
 
+// Shows a reauth page/dialog to reauthanticate an account.
+void ShowReauthForAccount(Browser* browser,
+                          const std::string& email,
+                          signin_metrics::AccessPoint access_point);
+
 // Delegates to an existing sign-in tab if one exists. If not, a new sign-in tab
 // is created.
 void ShowExtensionSigninPrompt(Profile* profile,

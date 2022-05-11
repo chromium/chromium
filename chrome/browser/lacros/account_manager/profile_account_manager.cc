@@ -81,7 +81,8 @@ void ProfileAccountManager::ShowAddAccountDialog(
 
 void ProfileAccountManager::ShowReauthAccountDialog(
     AccountAdditionSource source,
-    const std::string& email) {
+    const std::string& email,
+    base::OnceClosure callback) {
   NOTREACHED();
 }
 

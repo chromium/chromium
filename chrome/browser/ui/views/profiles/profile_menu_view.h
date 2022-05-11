@@ -50,6 +50,9 @@ class ProfileMenuView : public ProfileMenuViewBase {
   friend class ProfileMenuViewSignoutTest;
   friend class ProfileMenuViewSyncErrorButtonTest;
   friend class ProfileMenuInteractiveUiTest;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  friend class ProfileMenuViewSigninErrorButtonTest;
+#endif
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;

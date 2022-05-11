@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -62,6 +63,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/test/fake_server/fake_server_network_resources.h"
@@ -73,6 +75,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -82,6 +85,7 @@
 #include "ui/views/test/widget_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -570,8 +574,15 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
     OpenProfileMenu(browser());
     if (HasFatalFailure())
       return false;
+    // This test does not check that the reauth button is displayed in the menu,
+    // but this is tested in ProfileMenuClickTest.
+    base::HistogramTester histogram_tester;
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSyncErrorButtonClicked(AvatarSyncErrorType::kAuthError);
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+        /*expected_bucket_count=*/1);
     return true;
   }
 
@@ -626,6 +637,102 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
       base::StartsWith(reauth_page->GetURL().spec(),
                        GaiaUrls::GetInstance()->add_account_url().spec(),
                        base::CompareCase::INSENSITIVE_ASCII));
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Test suite that sets up a non-sync account in an error state and simulates a
+// click on the sync button.
+// This is only relevant on Lacros, as this state does not exist on desktop.
+class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
+                                             public InProcessBrowserTest {
+ public:
+  class MockSigninUiDelegate
+      : public signin_ui_util::SigninUiDelegateImplLacros {
+   public:
+    MOCK_METHOD(void,
+                ShowTurnSyncOnUI,
+                (Browser * browser,
+                 Profile* profile,
+                 signin_metrics::AccessPoint access_point,
+                 signin_metrics::PromoAction promo_action,
+                 signin_metrics::Reason signin_reason,
+                 const CoreAccountId& account_id,
+                 TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode),
+                ());
+  };
+
+  ProfileMenuViewSigninErrorButtonTest()
+      : delegate_auto_reset_(
+            signin_ui_util::SetSigninUiDelegateForTesting(&mock_delegate_)) {}
+
+  CoreAccountInfo account_info() const { return account_info_; }
+
+  void SetUpOnMainThread() override {
+    // Add an account, non-syncing and in authentication error.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    account_info_ = signin::MakePrimaryAccountAvailable(
+        identity_manager, "foo@example.com", signin::ConsentLevel::kSignin);
+    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+        identity_manager, account_info_.account_id,
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
+    ASSERT_TRUE(
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info_.account_id));
+  }
+
+  void ClickTurnOnSync() {
+    OpenProfileMenu(browser());
+    // This test does not check that the sync button is displayed in the menu,
+    // but this is tested in ProfileMenuClickTest.
+    base::HistogramTester histogram_tester;
+    static_cast<ProfileMenuView*>(profile_menu_view())
+        ->OnSigninAccountButtonClicked(account_info());
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        /*expected_bucket_count=*/1);
+  }
+
+ protected:
+  CoreAccountInfo account_info_;
+
+  testing::StrictMock<MockSigninUiDelegate> mock_delegate_;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
+  FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
+  ASSERT_TRUE(account_manager_ui);
+  FakeAccountManagerUITestObserver observer(account_manager_ui);
+
+  ClickTurnOnSync();
+
+  // Reauth is shown first.
+  observer.WaitForReauthAccountDialogShown();
+  EXPECT_TRUE(account_manager_ui->IsDialogShown());
+  EXPECT_EQ(1,
+            account_manager_ui->show_account_reauthentication_dialog_calls());
+
+  base::RunLoop loop;
+  EXPECT_CALL(
+      mock_delegate_,
+      ShowTurnSyncOnUI(
+          browser(), browser()->profile(),
+          signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+          signin_metrics::Reason::kReauthentication, account_info().account_id,
+          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT))
+      .WillOnce([&loop]() { loop.Quit(); });
+
+  // Complete reauth.
+  account_manager_ui->CloseDialog();
+
+  // Wait until the Sync confirmation is shown.
+  loop.Run();
 }
 #endif
 
@@ -739,7 +846,8 @@ class ProfileMenuClickTest : public SyncTest,
 
     histogram_tester_.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
-        GetExpectedActionableItemAtIndex(GetParam()), /*count=*/1);
+        GetExpectedActionableItemAtIndex(GetParam()),
+        /*expected_bucket_count=*/1);
   }
 
   base::CallbackListSubscription test_signin_client_subscription_;
@@ -1008,6 +1116,48 @@ PROFILE_MENU_CLICK_TEST(
 
   RunTest();
 }
+
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_UnconsentedPrimaryAccountError[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+        ProfileMenuViewBase::ActionableItem::kAddressesButton,
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+
+PROFILE_MENU_CLICK_TEST(kActionableItems_UnconsentedPrimaryAccountError,
+                        ProfileMenuClickTest_UnconsentedPrimaryAccountError) {
+  AccountInfo account_info =
+      signin::MakeAccountAvailable(identity_manager(), "user@example.com");
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), account_info.account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSignin);
+
+  // Check that the setup was successful.
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  ASSERT_EQ(account_info, identity_manager()->GetPrimaryAccountInfo(
+                              signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_info.account_id));
+
+  RunTest();
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.

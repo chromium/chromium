@@ -365,18 +365,21 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 
 void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     AccountAdditionSource source,
-    const std::string& email) {
+    const std::string& email,
+    base::OnceClosure callback) {
   if (!account_manager_remote_ ||
       remote_version_ < RemoteMinVersions::kShowReauthAccountDialogMinVersion) {
     LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
                  << RemoteMinVersions::kShowReauthAccountDialogMinVersion
                  << " for ShowReauthAccountDialog.";
+    if (callback)
+      std::move(callback).Run();
     return;
   }
 
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
-  account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
+  account_manager_remote_->ShowReauthAccountDialog(email, std::move(callback));
 }
 
 void AccountManagerFacadeImpl::ShowManageAccountsSettings() {

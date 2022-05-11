@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_manager.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,6 +17,8 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace signin_ui_util {
@@ -66,6 +69,9 @@ GetAccountReauthSourceFromAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSyncPromoReauth;
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kContentAreaReauth;
     default:
       NOTREACHED() << "Reauth is requested from an unknown access point "
                    << static_cast<int>(access_point);
@@ -86,7 +92,7 @@ void SigninUiDelegateImplLacros::ShowSigninUI(
       base::BindOnce(&SigninUiDelegateImplLacros::OnAccountAdded,
                      // base::Unretained() is fine because
                      // SigninUiDelegateImplLacros is a singleton.
-                     base::Unretained(this), enable_sync,
+                     base::Unretained(this), enable_sync, /*is_reauth=*/false,
                      browser ? browser->AsWeakPtr() : nullptr,
                      profile->GetPath(), access_point, promo_action);
   signin_manager->StartLacrosSigninFlow(
@@ -105,16 +111,27 @@ void SigninUiDelegateImplLacros::ShowReauthUI(
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action) {
-  // TODO(https://crbug.com/1260291): turn on sync after reauth is completed if
-  // `enable_sync` is true.
+  AccountReconcilor* account_reconcilor =
+      AccountReconcilorFactory::GetForProfile(profile);
+  base::OnceClosure reauth_completed_closure =
+      base::BindOnce(&SigninUiDelegateImplLacros::OnReauthComplete,
+                     // base::Unretained() is fine because
+                     // SigninUiDelegateImplLacros is a singleton.
+                     base::Unretained(this), enable_sync,
+                     account_reconcilor->GetConsistencyCookieManager()
+                         ->CreateScopedAccountUpdate(),
+                     browser ? browser->AsWeakPtr() : nullptr,
+                     profile->GetPath(), access_point, promo_action, email);
   account_manager::AccountManagerFacade* account_manager_facade =
       ::GetAccountManagerFacade(profile->GetPath().value());
   account_manager_facade->ShowReauthAccountDialog(
-      GetAccountReauthSourceFromAccessPoint(access_point), email);
+      GetAccountReauthSourceFromAccessPoint(access_point), email,
+      std::move(reauth_completed_closure));
 }
 
 void SigninUiDelegateImplLacros::OnAccountAdded(
     bool enable_sync,
+    bool is_reauth,
     base::WeakPtr<Browser> browser_weak,
     const base::FilePath& profile_path,
     signin_metrics::AccessPoint access_point,
@@ -133,8 +150,33 @@ void SigninUiDelegateImplLacros::OnAccountAdded(
     return;
 
   ShowTurnSyncOnUI(browser, profile, access_point, promo_action,
-                   signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-                   TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+                   is_reauth ? signin_metrics::Reason::kReauthentication
+                             : signin_metrics::Reason::kSigninPrimaryAccount,
+                   account_id,
+                   is_reauth
+                       ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
+                       : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+}
+
+void SigninUiDelegateImplLacros::OnReauthComplete(
+    bool enable_sync,
+    signin::ConsistencyCookieManager::ScopedAccountUpdate&& update,
+    base::WeakPtr<Browser> browser_weak,
+    const base::FilePath& profile_path,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::PromoAction promo_action,
+    const std::string& email) {
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  if (!profile)
+    return;
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  OnAccountAdded(enable_sync, /*is_reauth=*/true, browser_weak, profile_path,
+                 access_point, promo_action,
+                 identity_manager->FindExtendedAccountInfoByEmailAddress(email)
+                     .account_id);
 }
 
 }  // namespace signin_ui_util

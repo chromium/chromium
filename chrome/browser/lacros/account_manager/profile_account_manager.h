@@ -70,7 +70,8 @@ class ProfileAccountManager : public KeyedService,
       base::OnceCallback<void(const account_manager::AccountAdditionResult&
                                   result)> callback) override;
   void ShowReauthAccountDialog(AccountAdditionSource source,
-                               const std::string& email) override;
+                               const std::string& email,
+                               base::OnceClosure callback) override;
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const account_manager::AccountKey& account,

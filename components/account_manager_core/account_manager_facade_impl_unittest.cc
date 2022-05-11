@@ -555,7 +555,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
   account_manager_facade->ShowReauthAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
           kSettingsAddAccountButton,
-      kTestAccountEmail);
+      kTestAccountEmail, base::OnceClosure());
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_reauth_account_dialog_calls());
 }
@@ -566,7 +566,8 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
       CreateFacade();
   auto source = AccountManagerFacade::AccountAdditionSource::kContentAreaReauth;
 
-  account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail);
+  account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail,
+                                                  base::OnceClosure());
   account_manager_facade->FlushMojoForTesting();
 
   // Check that UMA stats were sent.

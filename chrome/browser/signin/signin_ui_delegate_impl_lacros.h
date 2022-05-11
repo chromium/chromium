@@ -7,6 +7,22 @@
 
 #include "chrome/browser/signin/signin_ui_delegate.h"
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "components/signin/core/browser/consistency_cookie_manager.h"
+
+namespace base {
+class FilePath;
+}
+
+namespace signin_metrics {
+enum class AccessPoint;
+enum class PromoAction;
+}  // namespace signin_metrics
+
+class Profile;
+
 namespace signin_ui_util {
 
 // Lacros-specific implementation of the SigninUiDelegate interface.
@@ -31,11 +47,21 @@ class SigninUiDelegateImplLacros : public SigninUiDelegate {
 
  private:
   void OnAccountAdded(bool enable_sync,
+                      bool is_reauth,
                       base::WeakPtr<Browser> browser_weak,
                       const base::FilePath& profile_path,
                       signin_metrics::AccessPoint access_point,
                       signin_metrics::PromoAction promo_action,
                       const CoreAccountId& account_id);
+
+  void OnReauthComplete(
+      bool enable_sync,
+      signin::ConsistencyCookieManager::ScopedAccountUpdate&& update,
+      base::WeakPtr<Browser> browser_weak,
+      const base::FilePath& profile_path,
+      signin_metrics::AccessPoint access_point,
+      signin_metrics::PromoAction promo_action,
+      const std::string& email);
 };
 
 }  // namespace signin_ui_util
