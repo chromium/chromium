@@ -8,6 +8,7 @@
 
 #include <cstring>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -33,10 +34,16 @@ namespace {
 // unusual.
 const size_t kMaximumDeviceNameLength = 256;
 
-constexpr struct {
+struct DeviceId {
   uint16_t vendor;
   uint16_t product_id;
-} kKeyboardBlocklist[] = {
+  constexpr bool operator<(const DeviceId& other) const {
+    return vendor == other.vendor ? product_id < other.product_id
+                                  : vendor < other.vendor;
+  }
+};
+
+constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0111, 0x183a},  // SteelSeries Aerox 3 Wireless (Bluetooth)
     {0x03f0, 0xa407},  // HP X4000 Wireless Mouse
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
@@ -74,7 +81,7 @@ constexpr struct {
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
-    {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
+    {0x05e0, 0x1200},  // Symbol Technologies / Zebra LS2208 barcode scanner
     {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x1369},  // SteelSeries Sensei RAW Frost Blue
@@ -100,21 +107,15 @@ constexpr struct {
     {0x28bd, 0x0914},  // XP-Pen Star G640
     {0x28bd, 0x091f},  // XP-Pen Artist 12 Pro
     {0x28bd, 0x0928},  // XP-Pen Deco mini7W
-};
+});
 
-constexpr struct {
-  uint16_t vendor;
-  uint16_t product_id;
-} kStylusButtonDevices[] = {
+constexpr DeviceId kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
 
 // Certain devices need to be forced to use libinput in place of
 // evdev/libgestures
-constexpr struct {
-  uint16_t vendor;
-  uint16_t product_id;
-} kForceLibinputlist[] = {
+constexpr DeviceId kForceLibinputlist[] = {
     {0x0002, 0x000e},  // HP Stream 14 touchpad
     {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
 };
@@ -594,13 +595,8 @@ bool EventDeviceInfo::UseLibinput() const {
 }
 
 bool IsInKeyboardBlockList(input_id input_id_) {
-  for (const auto& blocklist_id : kKeyboardBlocklist) {
-    if (input_id_.vendor == blocklist_id.vendor &&
-        input_id_.product == blocklist_id.product_id)
-      return true;
-  }
-
-  return false;
+  DeviceId id = {input_id_.vendor, input_id_.product};
+  return kKeyboardBlocklist.contains(id);
 }
 
 bool EventDeviceInfo::HasKeyboard() const {

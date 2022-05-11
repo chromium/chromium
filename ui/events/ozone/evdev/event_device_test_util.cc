@@ -1465,6 +1465,33 @@ const DeviceCapabilities kRedrixTouchpad = {
     std::size(kRedrixTouchpadAxes),
 };
 
+const DeviceCapabilities kSymbolTechBarcodeScanner = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0/0003:05E0:1200.0009/"
+    "input/input27/event19",
+    /* name */ "Symbol Technologies, Inc, 2008 Symbol Bar Code Scanner",
+    /* phys */ "usb-0000:00:14.0-6/input0",
+    /* uniq */ "S/N:D698905D483448AD806AAC8CD63B8B4A Rev:PAACES00-002-R033",
+    /* bustype */ "0003",
+    /* vendor */ "05e0",
+    /* product */ "1200",
+    /* version */ "0110",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1f",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "",
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.

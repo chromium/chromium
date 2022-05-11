@@ -500,4 +500,22 @@ TEST(EventDeviceInfoTest, HPProBook6560bTouchpad) {
   EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
+TEST(EventDeviceInfoTest, DeviceOnKeyboardBlocklist) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kSymbolTechBarcodeScanner, &devinfo));
+
+  EXPECT_FALSE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasPointingStick());
+  EXPECT_FALSE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasHapticTouchpad());
+  EXPECT_FALSE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+  EXPECT_FALSE(devinfo.IsStylusButtonDevice());
+  EXPECT_FALSE(devinfo.HasStylusSwitch());
+  EXPECT_FALSE(devinfo.HasValidMTAbsXY());
+  EXPECT_FALSE(devinfo.IsSemiMultitouch());
+}
+
 }  // namespace ui
