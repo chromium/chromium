@@ -17,8 +17,15 @@
 // Title of the web channel.
 @property(nonatomic, copy) NSString* title;
 
+// TODO(crbug.com/1296745): Deprecated.
 // URL of the web channel.
 @property(nonatomic, strong) CrURL* channelURL;
+
+// URL of the web channel web page.
+@property(nonatomic, strong) CrURL* webPageURL;
+
+// URL of the web channel rss.
+@property(nonatomic, strong) CrURL* rssURL;
 
 // URL of the favicon.
 @property(nonatomic, strong) CrURL* faviconURL;
@@ -32,6 +39,7 @@
 // Used to request to refollow this web channel, if it has been unfollowed.
 @property(nonatomic, copy) FollowRequestBlock refollowRequestBlock;
 
+// TODO(crbug.com/1296745): Deprecated.
 // Designated initializer with all the properties.
 - (instancetype)initWithTitle:(NSString*)title
                    channelURL:(CrURL*)channelURL

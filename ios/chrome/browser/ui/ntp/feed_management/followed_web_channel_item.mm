@@ -32,7 +32,8 @@
 }
 
 - (CrURL*)URL {
-  return _followedWebChannel.channelURL;
+  return (_followedWebChannel.rssURL) ? _followedWebChannel.rssURL
+                                      : _followedWebChannel.webPageURL;
 }
 
 - (NSString*)thirdRowText {

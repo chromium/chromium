@@ -13,6 +13,7 @@
 
 @implementation FollowedWebChannel
 
+// TODO(crbug.com/1296745): Deprecated.
 - (instancetype)initWithTitle:(NSString*)title
                    channelURL:(CrURL*)channelURL
                    faviconURL:(CrURL*)faviconURL
@@ -35,9 +36,9 @@
 
 - (BOOL)isEqualToFollowedWebChannel:(FollowedWebChannel*)channel {
   return channel && [self.title isEqualToString:channel.title] &&
-         self.channelURL.gurl == channel.channelURL.gurl &&
-         self.faviconURL.gurl == channel.faviconURL.gurl &&
-         self.available == channel.available;
+         self.webPageURL.gurl == channel.webPageURL.gurl &&
+         self.rssURL.gurl == channel.rssURL.gurl &&
+         self.faviconURL.gurl == channel.faviconURL.gurl;
 }
 
 - (BOOL)isEqual:(id)object {
@@ -52,9 +53,9 @@
 
 - (NSUInteger)hash {
   return [self.title hash] ^
-         [base::SysUTF8ToNSString(self.channelURL.gurl.spec()) hash] ^
-         [base::SysUTF8ToNSString(self.faviconURL.gurl.spec()) hash] ^
-         self.available;
+         [base::SysUTF8ToNSString(self.webPageURL.gurl.spec()) hash] ^
+         [base::SysUTF8ToNSString(self.rssURL.gurl.spec()) hash] ^
+         [base::SysUTF8ToNSString(self.faviconURL.gurl.spec()) hash];
 }
 
 @end
