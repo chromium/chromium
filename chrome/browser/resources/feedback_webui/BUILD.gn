@@ -11,6 +11,7 @@ assert(!is_android)
 
 # Note: No need to pass these CSS files to preprocess_if_expr() for now.
 css_files = [
+  "css/common.css",
   "css/feedback.css",
   "css/feedback_shared_styles.css",
   "css/feedback_shared_vars.css",
