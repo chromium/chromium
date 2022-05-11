@@ -51,6 +51,7 @@ ImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
   DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
   device_metadata->set_chromeos_version(GetChromeOSVersion());
   device_metadata->set_chromeos_channel(GetChromeOSChannel());
+  device_metadata->set_market_segment(GetMarketSegment());
 
   // TODO(hirthanan): This is used for debugging purposes until crbug/1289722
   // has launched.

@@ -30,6 +30,31 @@ namespace psm_rlwe = private_membership::rlwe;
 namespace {
 DeviceActivityController* g_ash_device_activity_controller = nullptr;
 
+// Policy device modes that should be classified as not being set.
+static const std::unordered_set<policy::DeviceMode>& DeviceModeNotSet() {
+  static const std::unordered_set<policy::DeviceMode> kModeNotSet(
+      {policy::DeviceMode::DEVICE_MODE_PENDING,
+       policy::DeviceMode::DEVICE_MODE_NOT_SET});
+  return kModeNotSet;
+}
+
+// Policy device modes that should be classified as consumer devices.
+static const std::unordered_set<policy::DeviceMode>& DeviceModeConsumer() {
+  static const std::unordered_set<policy::DeviceMode> kModeConsumer(
+      {policy::DeviceMode::DEVICE_MODE_CONSUMER,
+       policy::DeviceMode::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH});
+  return kModeConsumer;
+}
+
+// Policy device modes that should be classified as enterprise devices.
+static const std::unordered_set<policy::DeviceMode>& DeviceModeEnterprise() {
+  static const std::unordered_set<policy::DeviceMode> kModeEnterprise(
+      {policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+       policy::DeviceMode::DEVICE_MODE_ENTERPRISE_AD,
+       policy::DeviceMode::DEVICE_MODE_DEMO});
+  return kModeEnterprise;
+}
+
 // Production edge server for reporting device actives.
 // TODO(https://crbug.com/1267432): Enable passing base url as a runtime flag.
 const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
@@ -96,6 +121,35 @@ base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
   }
 
   return delay_on_first_chrome_run;
+}
+
+// static
+MarketSegment DeviceActivityController::GetMarketSegment(
+    policy::DeviceMode device_mode,
+    policy::MarketSegment device_market_segment) {
+  // Determine Fresnel market segment using the retrieved device policy
+  // |device_mode| and |device_market_segment|.
+  if (DeviceModeNotSet().count(device_mode)) {
+    return MARKET_SEGMENT_UNKNOWN;
+  }
+
+  if (DeviceModeConsumer().count(device_mode)) {
+    return MARKET_SEGMENT_CONSUMER;
+  }
+
+  if (DeviceModeEnterprise().count(device_mode)) {
+    if (device_market_segment == policy::MarketSegment::ENTERPRISE) {
+      return MARKET_SEGMENT_ENTERPRISE;
+    }
+
+    if (device_market_segment == policy::MarketSegment::EDUCATION) {
+      return MARKET_SEGMENT_EDUCATION;
+    }
+
+    return MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN;
+  }
+
+  return MARKET_SEGMENT_UNKNOWN;
 }
 
 DeviceActivityController::DeviceActivityController(

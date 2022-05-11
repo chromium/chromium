@@ -1624,7 +1624,9 @@ void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
     //
     // When status is PERMANENTLY_UNTRUSTED, client assumes this status is final
     // until browser restarts. Client does not proceed without signature
-    // verification, so retry is not attempted.
+    // verification, so retry is not attempted. This status may be caused
+    // if device is running pre-OOBE, or if the policy proto blob fails the
+    // signature check.
     return;
   }
 
@@ -1632,7 +1634,15 @@ void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
   device_activity_controller_ =
       std::make_unique<device_activity::DeviceActivityController>(
           device_activity::ChromeDeviceMetadataParameters{
-              chrome::GetChannel() /* chromeos_channel */},
+              chrome::GetChannel() /* chromeos_channel */,
+              device_activity::DeviceActivityController::GetMarketSegment(
+                  g_browser_process->platform_part()
+                      ->browser_policy_connector_ash()
+                      ->GetDeviceMode(),
+                  g_browser_process->platform_part()
+                      ->browser_policy_connector_ash()
+                      ->GetEnterpriseMarketSegment()) /* market_segment */,
+          },
           g_browser_process->local_state(),
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),

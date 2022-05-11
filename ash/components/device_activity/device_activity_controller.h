@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefRegistrySimple;
@@ -39,6 +40,11 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   // Determines the total start up delay before starting device activity
   // reporting.
   static base::TimeDelta DetermineStartUpDelay(base::Time chrome_first_run_ts);
+
+  // Determines the market segment from the loaded ChromeOS device policies.
+  static MarketSegment GetMarketSegment(
+      policy::DeviceMode device_mode,
+      policy::MarketSegment device_market_segment);
 
   DeviceActivityController(
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,

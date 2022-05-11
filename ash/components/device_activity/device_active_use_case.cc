@@ -155,6 +155,10 @@ Channel DeviceActiveUseCase::GetChromeOSChannel() const {
   }
 }
 
+MarketSegment DeviceActiveUseCase::GetMarketSegment() const {
+  return chrome_passed_device_params_.market_segment;
+}
+
 absl::optional<psm_rlwe::RlwePlaintextId>
 DeviceActiveUseCase::GeneratePsmIdentifier() const {
   const std::string psm_use_case = psm_rlwe::RlweUseCase_Name(GetPsmUseCase());

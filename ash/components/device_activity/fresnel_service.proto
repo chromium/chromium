@@ -23,6 +23,21 @@ enum Channel {
   CHANNEL_STABLE = 4;
 }
 
+enum MarketSegment {
+  // Default segment, should not be in this state.
+  MARKET_SEGMENT_UNSPECIFIED = 0;
+  // Device is not yet enrolled, owned or have market segment available.
+  MARKET_SEGMENT_UNKNOWN = 1;
+  // Device is locally owned as a consumer device.
+  MARKET_SEGMENT_CONSUMER = 2;
+  // Device is enterprise enrolled but does not have enterprise market segment.
+  MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN = 3;
+  // Device is enterprise enrolled and has enterprise market segment.
+  MARKET_SEGMENT_ENTERPRISE = 4;
+  // Device is enterprise enrolled and has education market segment.
+  MARKET_SEGMENT_EDUCATION = 5;
+};
+
 // The Chrome OS device metadata which is sent in PSM import requests.
 // Each new field to this message requires privacy approval.
 // Next ID: 6
@@ -41,8 +56,9 @@ message DeviceMetadata {
   // i.e. US for United States of America, CA for Canada.
   optional string country_code = 3;
 
-  // Reserved for market segment.
-  reserved 4;
+  // Device market segment is one of the northstar breakout dimensions for
+  // active device counting.
+  optional MarketSegment market_segment = 4;
 
   // ChromeOS channel is used to determine the breakdown of devices that are
   // coming from canary, dev, beta, stable, or unknown channels.

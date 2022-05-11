@@ -25,7 +25,8 @@ namespace {
 constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-    version_info::Channel::STABLE /* chromeos_channel */
+    version_info::Channel::STABLE /* chromeos_channel */,
+    MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
 };
 
 }  // namespace

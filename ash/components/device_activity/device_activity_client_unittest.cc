@@ -73,7 +73,8 @@ constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
 constexpr char kFakeFresnelApiKey[] = "FAKE_FRESNEL_API_KEY";
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-    version_info::Channel::STABLE  // chromeos_channel
+    version_info::Channel::STABLE /* chromeos_channel */,
+    MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
 };
 
 // Number of test cases exist in cros_test_data.binarypb file, which is part of

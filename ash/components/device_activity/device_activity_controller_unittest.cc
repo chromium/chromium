@@ -11,6 +11,7 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -24,7 +25,8 @@ namespace device_activity {
 namespace {
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
-    version_info::Channel::STABLE  // chromeos_channel
+    version_info::Channel::STABLE /* chromeos_channel */,
+    MarketSegment::MARKET_SEGMENT_UNKNOWN /* market_segment */,
 };
 
 }  // namespace
