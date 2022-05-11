@@ -812,6 +812,11 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   ASSERT_TRUE(restore_data);
 
   FullRestoreReadHandler* read_handler = FullRestoreReadHandler::GetInstance();
+  // The following is necessary for making `ShouldUseFullRestoreArcData()` and
+  // `read_handler->IsFullRestoreRunning()` return true;
+  read_handler->SetActiveProfilePath(GetPath());
+  read_handler->SetStartTimeForProfile(GetPath());
+
   FullRestoreReadHandlerTestApi read_test_api(read_handler);
   ASSERT_TRUE(read_test_api.GetArcReadHander());
   EXPECT_EQ(1u, read_test_api.GetArcWindowIdMap().size());

@@ -226,7 +226,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
         scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
   }
-  if (features::IsSavedDesksEnabled()) {
+  if (saved_desk_util::IsDeskSaveAndRecallEnabled()) {
     grid_labels_.push_back(scroll_contents->AddChildView(MakeGridLabel(
         IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     save_and_recall_grid_view_ =

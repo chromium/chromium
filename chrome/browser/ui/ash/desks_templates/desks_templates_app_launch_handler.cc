@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/metrics/histogram_macros.h"
@@ -231,9 +230,6 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
 }
 
 void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
-  if (!ash::features::AreDesksTemplatesEnabled())
-    return;
-
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->AppRegistryCache();

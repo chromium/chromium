@@ -5,7 +5,6 @@
 #include "components/app_restore/desk_template_read_handler.h"
 
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -62,9 +61,6 @@ void DeskTemplateReadHandler::SetRestoreData(
   DCHECK_EQ(arc_read_handler_.count(launch_id), 0u);
 
   restore_data_[launch_id] = std::move(restore_data);
-
-  if (!ash::features::AreDesksTemplatesEnabled())
-    return;
 
   // Set up mapping from restore window IDs to launch ID. Create an ARC read
   // handler and add restore data to it if we have at least one ARC app.

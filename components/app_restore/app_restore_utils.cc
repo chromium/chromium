@@ -5,7 +5,6 @@
 #include "components/app_restore/app_restore_utils.h"
 
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
@@ -27,10 +26,8 @@ static int32_t session_id_counter = kArcSessionIdOffsetForRestoredLaunching;
 // Always use the full restore ARC data if ARC apps for desks templates is not
 // enabled.
 bool ShouldUseFullRestoreArcData() {
-  return ash::features::AreDesksTemplatesEnabled()
-             ? full_restore::FullRestoreReadHandler::GetInstance()
-                   ->IsFullRestoreRunning()
-             : true;
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->IsFullRestoreRunning();
 }
 
 }  // namespace
