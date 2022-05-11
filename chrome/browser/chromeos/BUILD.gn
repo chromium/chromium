@@ -344,6 +344,7 @@ source_set("chromeos") {
     "//chromeos/services/assistant:lib",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
+    "//chromeos/services/cros_healthd/private/cpp",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/machine_learning/public/cpp",

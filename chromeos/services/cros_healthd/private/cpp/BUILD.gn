@@ -18,10 +18,10 @@ source_set("cpp") {
   ]
   deps = [
     "//base",
-    "//chromeos/services/cros_healthd/private/mojom",
     "//chromeos/services/network_health/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
   ]
+  public_deps = [ "//chromeos/services/cros_healthd/private/mojom" ]
   defines = []
   if (is_chromeos_device) {
     defines += [ "USE_EVDEV_GESTURES" ]
@@ -40,7 +40,6 @@ source_set("unit_tests") {
   deps = [
     ":cpp",
     "//base/test:test_support",
-    "//chromeos/services/cros_healthd/private/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",

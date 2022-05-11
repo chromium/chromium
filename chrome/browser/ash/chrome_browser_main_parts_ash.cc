@@ -212,6 +212,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/services/cros_healthd/private/cpp/data_collector.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/system/statistics_provider.h"
@@ -1111,6 +1112,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     // Initialize the NetworkHealth aggregator.
     network_health::NetworkHealthService::GetInstance();
+
+    // Create cros_healthd data collector.
+    cros_healthd::internal::DataCollector::Initialize();
 
     // Create the service connection to CrosHealthd platform service instance.
     auto* cros_healthd = cros_healthd::ServiceConnection::GetInstance();
