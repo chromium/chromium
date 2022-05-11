@@ -3946,13 +3946,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
   if (BehavesLikeBlockContainer()) {
     if (const ComputedStyle* cached =
             StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLine)) {
-      // If the style is cached by getComputedStyle(element, "::first-line"), it
-      // is marked with IsEnsuredInDisplayNone(). In that case we might not have
-      // the correct ::first-line style for laying out the ::first-line. Ignore
-      // the cached ComputedStyle and overwrite it using
-      // ReplaceCachedPseudoElementStyle() below.
-      if (!cached->IsEnsuredInDisplayNone())
-        return cached;
+      return cached;
     }
 
     if (Element* element = DynamicTo<Element>(GetNode())) {
@@ -3986,7 +3980,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
       if (scoped_refptr<ComputedStyle> first_line_style =
               first_line_block->GetUncachedPseudoElementStyle(
                   StyleRequest(kPseudoIdFirstLine, Style()))) {
-        return StyleRef().ReplaceCachedPseudoElementStyle(
+        return StyleRef().AddCachedPseudoElementStyle(
             std::move(first_line_style), kPseudoIdFirstLine, g_null_atom);
       }
     }
