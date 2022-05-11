@@ -166,7 +166,10 @@ bool PlatformCrashpadInitialization(
   @autoreleasepool {
     CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
     crash_reporter_client->GetCrashDumpLocation(database_path);
-    std::string url = crash_reporter_client->GetUploadUrl();
+    // Don't pass `url` to extensions since they never upload minidumps.
+    std::string url = [NSBundle.mainBundle.bundlePath hasSuffix:@"appex"]
+                          ? ""
+                          : crash_reporter_client->GetUploadUrl();
     return GetCrashpadClient().StartCrashpadInProcessHandler(
         *database_path, url, GetProcessSimpleAnnotations());
   }  // @autoreleasepool
