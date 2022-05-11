@@ -154,14 +154,13 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
     const std::u16string& title) {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::VH(kVerticalSpacing, 0));
+      ->SetInteriorMargin(gfx::Insets::VH(kVerticalSpacing, kLeftRightPadding));
 
   // Add the icon.
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(icon);
-  image_view->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_right(kLeftRightPadding));
   header->AddChildView(image_view.release());
 
   // Add the title.
@@ -183,8 +182,6 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
           base::BindRepeating(&AccountSelectionBubbleView::CloseBubble,
                               weak_ptr_factory_.GetWeakPtr()));
   close_button->SetVisible(true);
-  close_button->SetProperty(views::kMarginsKey,
-                            gfx::Insets().set_right(kLeftRightPadding));
   header->AddChildView(close_button.release());
   return header;
 }
