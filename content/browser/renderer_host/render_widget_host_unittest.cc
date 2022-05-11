@@ -79,6 +79,10 @@
 #include "ui/android/screen_android.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#endif
+
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #endif
@@ -1319,17 +1323,22 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
   host_->DidProcessFrame(1, base::TimeTicks::Now());
 }
 
-// Unable to include render_widget_host_view_mac.h and compile.
-#if !BUILDFLAG(IS_MAC)
 // Tests setting background transparency.
 TEST_F(RenderWidgetHostTest, Background) {
   RenderWidgetHostViewBase* view;
 #if defined(USE_AURA)
   view = new RenderWidgetHostViewAura(host_.get());
-  // TODO(derat): Call this on all platforms: http://crbug.com/102450.
-  view->InitAsChild(nullptr);
 #elif BUILDFLAG(IS_ANDROID)
   view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
+#elif BUILDFLAG(IS_MAC)
+  view = CreateRenderWidgetHostViewMacForTesting(host_.get());
+#else
+#error "This test isn't implemented for this platform."
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(derat): Call this on all platforms: http://crbug.com/102450.
+  view->InitAsChild(nullptr);
 #endif
   host_->SetView(view);
 
@@ -1352,9 +1361,15 @@ TEST_F(RenderWidgetHostTest, Background) {
     // The owner delegate will be called to pass it over IPC to the RenderView.
     EXPECT_CALL(mock_owner_delegate_, SetBackgroundOpaque(false));
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
+#if BUILDFLAG(IS_MAC)
+    // Mac replaces transparent background colors with white. See the comment in
+    // RenderWidgetHostViewMac::GetBackgroundColor. (https://crbug.com/735407)
+    EXPECT_EQ(unsigned{SK_ColorWHITE}, *view->GetBackgroundColor());
+#else
     // The browser side will represent the background color as transparent
     // immediately.
     EXPECT_EQ(unsigned{SK_ColorTRANSPARENT}, *view->GetBackgroundColor());
+#endif
   }
   {
     // Setting back an opaque color informs the view.
@@ -1366,7 +1381,6 @@ TEST_F(RenderWidgetHostTest, Background) {
   host_->SetView(nullptr);
   view->Destroy();
 }
-#endif
 
 // Test that the RenderWidgetHost tells the renderer when it is hidden and
 // shown, and can accept a racey update from the renderer after hiding.
