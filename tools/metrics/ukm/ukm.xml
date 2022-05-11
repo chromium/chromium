@@ -16628,22 +16628,12 @@ be describing additional metrics about the same event.
       Records whether the users' request to start a Presentation with a
       &quot;cast:&quot; presentation URL succeed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics/>
-      </history>
-    </aggregation>
   </metric>
   <metric name="RemotePlayback" enum="Boolean">
     <summary>
       Records whether the users' request to start a Presentation through
       RemotePlayback succeed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics/>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
