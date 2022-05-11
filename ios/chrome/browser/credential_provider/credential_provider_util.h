@@ -24,4 +24,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 // Returns the favicon file key.
 NSString* GetFaviconFileKey(const GURL& url);
 
+// Update favicons in the Chrome app group storage.
+void UpdateFaviconsStorage(FaviconLoader* favicon_loader);
+
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_UTIL_H_
