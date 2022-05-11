@@ -309,6 +309,9 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/ios-simulator-cronet",
+    ],
     check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
