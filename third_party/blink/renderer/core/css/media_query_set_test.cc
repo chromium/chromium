@@ -16,22 +16,29 @@ typedef struct {
   const char* output;
 } MediaQuerySetTestCase;
 
-static void TestMediaQuery(MediaQuerySetTestCase test,
-                           MediaQuerySet& query_set) {
-  StringBuilder output;
+// If `unknown_substitute` is non-null, then any unknown queries are
+// substituted with that string.
+static void TestMediaQuery(const char* input,
+                           const char* output,
+                           MediaQuerySet& query_set,
+                           String unknown_substitute = String()) {
+  StringBuilder actual;
   wtf_size_t j = 0;
   while (j < query_set.QueryVector().size()) {
-    String query_text = query_set.QueryVector()[j]->CssText();
-    output.Append(query_text);
+    const MediaQuery& query = *query_set.QueryVector()[j];
+    if (!unknown_substitute.IsNull() && query.HasUnknown())
+      actual.Append(unknown_substitute);
+    else
+      actual.Append(query.CssText());
     ++j;
     if (j >= query_set.QueryVector().size())
       break;
-    output.Append(", ");
+    actual.Append(", ");
   }
-  if (test.output)
-    ASSERT_EQ(test.output, output.ToString());
+  if (output)
+    ASSERT_EQ(output, actual.ToString());
   else
-    ASSERT_EQ(test.input, output.ToString());
+    ASSERT_EQ(input, actual.ToString());
 }
 
 TEST(MediaQuerySetTest, Basic) {
@@ -220,14 +227,12 @@ TEST(MediaQuerySetTest, Basic) {
       {"(block-size > 0px)", "not all"},
       {"(min-block-size: 0px)", "not all"},
       {"(max-block-size: 0px)", "not all"},
-      {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    SCOPED_TRACE(test_cases[i].input);
-    scoped_refptr<MediaQuerySet> query_set =
-        MediaQuerySet::Create(test_cases[i].input, nullptr);
-    TestMediaQuery(test_cases[i], *query_set);
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr));
   }
 }
 
@@ -241,19 +246,12 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"screen and (width: 100px) or (width: 200px)", "not all"},
       {"(height: 100px) and (width: 100px) or (width: 200px)", "not all"},
       {"(height: 100px) or (width: 100px) and (width: 200px)", "not all"},
-      {"(width: 100px) or (max-width: 50%)", nullptr},
       {"((width: 100px))", nullptr},
       {"(((width: 100px)))", nullptr},
       {"(   (   (width: 100px) ) )", "(((width: 100px)))"},
       {"(width: 100px) or ((width: 200px) or (width: 300px))", nullptr},
       {"(width: 100px) and ((width: 200px) or (width: 300px))", nullptr},
       {"(width: 100px) or ((width: 200px) and (width: 300px))", nullptr},
-      {"(width: 100px) or ((width: 200px) and (width: 300px) or (width: "
-       "400px))",
-       nullptr},
-      {"(width: 100px) or ((width: 200px) or (width: 300px) and (width: "
-       "400px))",
-       nullptr},
       {"(width: 100px) or ((width: 200px) and (width: 300px)) and (width: "
        "400px)",
        "not all"},
@@ -293,74 +291,97 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"(width=100px)", "(width = 100px)"},
       {"(200px>=width > 100px)", "(200px >= width > 100px)"},
       {"(200px>=width>100px)", "(200px >= width > 100px)"},
-      {"(width < 50%)", nullptr},
-      {"(width < 100px nonsense)", nullptr},
-      {"(100px nonsense < 100px)", nullptr},
-      {"(width == 100px)", nullptr},
-      {"(width << 100px)", nullptr},
-      {"(width <> 100px)", nullptr},
-      {"(100px == width)", nullptr},
-      {"(100px < = width)", nullptr},
-      {"(100px > = width)", nullptr},
-      {"(100px==width)", nullptr},
-      {"(100px , width)", nullptr},
-      {"(100px,width)", nullptr},
-      {"(100px ! width)", nullptr},
-      {"(1px < width > 2px)", nullptr},
-      {"(1px > width < 2px)", nullptr},
-      {"(1px <= width > 2px)", nullptr},
-      {"(1px > width <= 2px)", nullptr},
-      {"(1px = width = 2px)", nullptr},
-      {"(min-width < 10px)", nullptr},
-      {"(max-width < 10px)", nullptr},
-      {"(10px < min-width)", nullptr},
-      {"(10px < min-width < 20px)", nullptr},
-      {"(100px ! width < 200px)", nullptr},
-      {"(100px < width ! 200px)", nullptr},
-      {"(100px <)", nullptr},
-      {"(100px < )", nullptr},
-      {"(100px < width <)", nullptr},
-      {"(100px < width < )", nullptr},
-      {"(50% < width < 200px)", nullptr},
-      {"(100px < width < 50%)", nullptr},
-      {"(100px nonsense < width < 200px)", nullptr},
-      {"(100px < width < 200px nonsense)", nullptr},
-      {"(100px < width : 200px)", nullptr},
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {
     SCOPED_TRACE(String(test.input));
-    TestMediaQuery(test, *MediaQuerySet::Create(test.input, nullptr));
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr), "<unknown>");
   }
 }
 
+// https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
 TEST(MediaQuerySetTest, GeneralEnclosed) {
   ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
 
-  MediaQuerySetTestCase test_cases[] = {
-      {"()", nullptr},
-      {"( )", nullptr},
-      {"(1)", nullptr},
-      {"( 1 )", nullptr},
-      {"(1px)", nullptr},
-      {"(unknown)", nullptr},
-      {"(unknown: 50kg)", nullptr},
-      {"unknown()", nullptr},
-      {"unknown(1)", nullptr},
-      {"(a b c)", nullptr},
-      {"(width <> height)", nullptr},
-      {"( a! b; )", nullptr},
-      {"not screen and (unknown)", nullptr},
-      {"not all and (unknown)", nullptr},
-      {"not all and (width) and (unknown)", nullptr},
-      {"not all and (not ((width) or (unknown)))", nullptr},
-      {"(])", "not all"},
-      {"(url(as'df))", "not all"},
+  const char* unknown_cases[] = {
+      "()",
+      "( )",
+      "(1)",
+      "( 1 )",
+      "(1px)",
+      "(unknown)",
+      "(unknown: 50kg)",
+      "unknown()",
+      "unknown(1)",
+      "(a b c)",
+      "(width <> height)",
+      "( a! b; )",
+      "not screen and (unknown)",
+      "not all and (unknown)",
+      "not all and (width) and (unknown)",
+      "not all and (not ((width) or (unknown)))",
+      "(width: 100px) or (max-width: 50%)",
+      "(width: 100px) or ((width: 200px) and (width: 300px) or (width: "
+      "400px))",
+      "(width: 100px) or ((width: 200px) or (width: 300px) and (width: "
+      "400px))",
+      "(width < 50%)",
+      "(width < 100px nonsense)",
+      "(100px nonsense < 100px)",
+      "(width == 100px)",
+      "(width << 100px)",
+      "(width <> 100px)",
+      "(100px == width)",
+      "(100px < = width)",
+      "(100px > = width)",
+      "(100px==width)",
+      "(100px , width)",
+      "(100px,width)",
+      "(100px ! width)",
+      "(1px < width > 2px)",
+      "(1px > width < 2px)",
+      "(1px <= width > 2px)",
+      "(1px > width <= 2px)",
+      "(1px = width = 2px)",
+      "(min-width < 10px)",
+      "(max-width < 10px)",
+      "(10px < min-width)",
+      "(10px < min-width < 20px)",
+      "(100px ! width < 200px)",
+      "(100px < width ! 200px)",
+      "(100px <)",
+      "(100px < )",
+      "(100px < width <)",
+      "(100px < width < )",
+      "(50% < width < 200px)",
+      "(100px < width < 50%)",
+      "(100px nonsense < width < 200px)",
+      "(100px < width < 200px nonsense)",
+      "(100px < width : 200px)",
   };
 
-  for (const MediaQuerySetTestCase& test : test_cases) {
-    SCOPED_TRACE(String(test.input));
-    TestMediaQuery(test, *MediaQuerySet::Create(test.input, nullptr));
+  for (const char* input : unknown_cases) {
+    SCOPED_TRACE(String(input));
+    TestMediaQuery(input, input, *MediaQuerySet::Create(input, nullptr));
+
+    // When we parse something as <general-enclosed>, we'll serialize whatever
+    // was specified, so it's not clear if we took the <general-enclosed> path
+    // during parsing or not. In order to verify this, run the same test again,
+    // substituting unknown queries with
+    // "<unknown>".
+    TestMediaQuery(input, "<unknown>", *MediaQuerySet::Create(input, nullptr),
+                   "<unknown>");
+  }
+
+  const char* invalid_cases[] = {
+      "(])",
+      "(url(as'df))",
+  };
+
+  for (const char* input : invalid_cases) {
+    SCOPED_TRACE(String(input));
+    TestMediaQuery(input, "not all", *MediaQuerySet::Create(input, nullptr));
   }
 }
 
@@ -398,13 +419,12 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(unknown)", "not all"},
       {"unknown()", "not all"},
       {"(1px)", "not all"},
-      {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    scoped_refptr<MediaQuerySet> query_set =
-        MediaQuerySet::Create(test_cases[i].input, nullptr);
-    TestMediaQuery(test_cases[i], *query_set);
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test.input, test.output,
+                   *MediaQuerySet::Create(test.input, nullptr));
   }
 }
 
