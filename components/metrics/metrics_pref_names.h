@@ -25,6 +25,9 @@ extern const char kMetricsMachineId[];
 extern const char kMetricsOngoingLogs[];
 extern const char kMetricsOngoingLogsMetadata[];
 extern const char kMetricsResetIds[];
+#if BUILDFLAG(IS_ANDROID)
+extern const char kUsePostFREFixSamplingTrial[];
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Preferences for cloned installs.
 extern const char kClonedResetCount[];

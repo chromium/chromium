@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/enabled_state_provider.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
@@ -76,13 +77,23 @@ namespace internal {
 const base::Feature kMetricsReportingFeature{"MetricsReporting",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+// Same as |kMetricsReportingFeature|, but this feature is associated with a
+// different trial, which has different sampling rates. This is due to a bug
+// in which the old sampling rate was not being applied correctly. In order for
+// the fix to not affect the overall sampling rate, this new feature was
+// created. See crbug/1306481.
+const base::Feature kPostFREFixMetricsReportingFeature{
+    "PostFREFixMetricsReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Name of the variations param that defines the sampling rate.
+const char kRateParamName[] = "sampling_rate_per_mille";
+
 }  // namespace internal
 }  // namespace metrics
 
 namespace {
-
-// Name of the variations param that defines the sampling rate.
-const char kRateParamName[] = "sampling_rate_per_mille";
 
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
@@ -99,15 +110,42 @@ void AppendSamplingTrialGroup(const std::string& group_name,
                               int rate,
                               base::FieldTrial* trial) {
   std::map<std::string, std::string> params = {
-      {kRateParamName, base::NumberToString(rate)}};
+      {metrics::internal::kRateParamName, base::NumberToString(rate)}};
   variations::AssociateVariationParams(trial->trial_name(), group_name, params);
   trial->AppendGroup(group_name, rate);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Returns true if we should use the new sampling trial and feature to determine
+// sampling. See the comment on |kUsePostFREFixSamplingTrial| for more details.
+bool ShouldUsePostFREFixSamplingTrial(PrefService* local_state) {
+  return local_state->GetBoolean(metrics::prefs::kUsePostFREFixSamplingTrial);
+}
+
+bool ShouldUsePostFREFixSamplingTrial() {
+  // We check for g_browser_process and local_state() because some unit tests
+  // may reach this point without creating a test browser process and/or local
+  // state.
+  // TODO(crbug/1321823): Fix the unit tests so that we do not need to check for
+  // g_browser_process and local_state().
+  return g_browser_process && g_browser_process->local_state() &&
+         ShouldUsePostFREFixSamplingTrial(g_browser_process->local_state());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Implementation of IsClientInSample() that takes a PrefService param.
 bool IsClientInSampleImpl(PrefService* local_state) {
-  // Test the MetricsReporting feature for all users to ensure that the trial
-  // is reported.
+  // Test the MetricsReporting or PostFREFixMetricsReporting feature (depending
+  // on the |kUsePostFREFixSamplingTrial| pref and platform) for all users to
+  // ensure that the trial is reported. See the comment on
+  // |kUsePostFREFixSamplingTrial| for more details on why there are two
+  // different features.
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldUsePostFREFixSamplingTrial(local_state)) {
+    return base::FeatureList::IsEnabled(
+        metrics::internal::kPostFREFixMetricsReportingFeature);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
       metrics::internal::kMetricsReportingFeature);
 }
@@ -192,10 +230,24 @@ void ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
   // The trial name must be kept in sync with the server config controlling
   // sampling. If they don't match, then clients will be shuffled into different
   // groups when the server config takes over from the fallback trial.
-  static const char kTrialName[] = "MetricsAndCrashSampling";
+  std::string trial_name = "MetricsAndCrashSampling";
+  // The name of the feature used to control sampling.
+  std::string feature_name = metrics::internal::kMetricsReportingFeature.name;
+
+  bool use_post_fre_fix_sampling_trial = false;
+#if BUILDFLAG(IS_ANDROID)
+  // Depending on the |kUsePostFREFixSamplingTrial| pref, we may apply a
+  // different sampling trial and rate.
+  if (ShouldUsePostFREFixSamplingTrial()) {
+    use_post_fre_fix_sampling_trial = true;
+    trial_name = "PostFREFixMetricsAndCrashSampling";
+    feature_name = metrics::internal::kPostFREFixMetricsReportingFeature.name;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
-          kTrialName, 1000, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          trial_name, 1000, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
           nullptr));
 
   // On all channels except stable, we sample out at a minimal rate to ensure
@@ -203,26 +255,32 @@ void ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
   int sampled_in_rate = 990;
   int sampled_out_rate = 10;
   if (channel == version_info::Channel::STABLE) {
-    sampled_in_rate = 100;
-    sampled_out_rate = 900;
+    if (use_post_fre_fix_sampling_trial) {
+      // See crbug/1306481 for details on why the new sampling rate is 19%.
+      sampled_in_rate = 190;
+      sampled_out_rate = 810;
+    } else {
+      sampled_in_rate = 100;
+      sampled_out_rate = 900;
+    }
   }
 
   // Like the trial name, the order that these two groups are added to the trial
   // must be kept in sync with the order that they appear in the server config.
-  // For future sanity purposes, the desired order is:
-  // OutOfReportingSample, InReportingSample
+  // The desired order is: OutOfReportingSample, InReportingSample.
 
-  static const char kSampledOutGroup[] = "OutOfReportingSample";
+  const char kSampledOutGroup[] = "OutOfReportingSample";
   AppendSamplingTrialGroup(kSampledOutGroup, sampled_out_rate, trial.get());
 
-  static const char kInSampleGroup[] = "InReportingSample";
+  const char kInSampleGroup[] = "InReportingSample";
   AppendSamplingTrialGroup(kInSampleGroup, sampled_in_rate, trial.get());
 
-  // Setup the feature. This must be done after all groups are added since
+  // Set up the feature. This must be done after all groups are added since
   // GetGroupNameWithoutActivation() will finalize the group choice.
   const std::string& group_name = trial->GetGroupNameWithoutActivation();
+
   feature_list->RegisterFieldTrialOverride(
-      metrics::internal::kMetricsReportingFeature.name,
+      feature_name,
       group_name == kSampledOutGroup
           ? base::FeatureList::OVERRIDE_DISABLE_FEATURE
           : base::FeatureList::OVERRIDE_ENABLE_FEATURE,
@@ -236,8 +294,16 @@ bool ChromeMetricsServicesManagerClient::IsClientInSample() {
 
 // static
 bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
+#if BUILDFLAG(IS_ANDROID)
+  const base::Feature& feature =
+      ShouldUsePostFREFixSamplingTrial()
+          ? metrics::internal::kPostFREFixMetricsReportingFeature
+          : metrics::internal::kMetricsReportingFeature;
+#else
+  const base::Feature& feature = metrics::internal::kMetricsReportingFeature;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::string rate_str = variations::GetVariationParamValueByFeature(
-      metrics::internal::kMetricsReportingFeature, kRateParamName);
+      feature, metrics::internal::kRateParamName);
   if (rate_str.empty())
     return false;
 

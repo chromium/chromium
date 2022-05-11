@@ -70,6 +70,21 @@ const char kMetricsOngoingLogsMetadata[] =
 // client id and low entropy source should be reset.
 const char kMetricsResetIds[] = "user_experience_metrics.reset_metrics_ids";
 
+#if BUILDFLAG(IS_ANDROID)
+// Boolean that determines whether to use the new sampling trial
+// "PostFREFixMetricsAndCrashSampling" and feature "PostFREFixMetricsReporting"
+// to control sampling on Android Chrome. This is set to true when disabling
+// metrics reporting, or on start up if metrics reporting is not consented to
+// (including new users going through their first run). As a result, all new UMA
+// users should have this pref set to true.
+// Note: This exists due to a bug in which the old sampling rate was not being
+// applied correctly. In order for the fix to not affect the overall sampling
+// rate, this pref controls what trial/feature to use to determine whether the
+// client is sampled. See crbug/1306481.
+const char kUsePostFREFixSamplingTrial[] =
+    "user_experience_metrics.use_post_fre_fix_sampling_trial";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Boolean that specifies whether or not crash reporting and metrics reporting
 // are sent over the network for analysis.
 const char kMetricsReportingEnabled[] =

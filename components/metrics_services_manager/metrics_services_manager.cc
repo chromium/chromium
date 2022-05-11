@@ -100,6 +100,33 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
     }
   }
 
+  // If metrics reporting goes from not consented to consented, create and
+  // persist a client ID (either generate a new one or promote the provisional
+  // client ID if this is the first run). This can occur in the following
+  // situations:
+  // 1. The user enables metrics reporting in the FRE
+  // 2. The user enables metrics reporting in settings, crash bubble, etc.
+  // 3. On startup, after fetching the enable status from the previous session
+  //    (if enabled)
+  //
+  // ForceClientIdCreation() may be called again later on via
+  // MetricsService::EnableRecording(), but in that case,
+  // ForceClientIdCreation() will be a no-op (will return early since a client
+  // ID will already exist).
+  //
+  // ForceClientIdCreation() must be called here, otherwise, in cases where the
+  // user is sampled out, the passed |current_may_record| will be false, which
+  // will result in not calling ForceClientIdCreation() in
+  // MetricsService::EnableRecording() later on. This is problematic because
+  // in the FRE, if the user consents to metrics reporting, this will cause the
+  // provisional client ID to not be promoted/stored as the client ID. In the
+  // next run, a different client ID will be generated and stored, which will
+  // result in different trial assignments—and the client may even be sampled
+  // in at that time.
+  if (!consent_given_ && current_consent_given) {
+    client_->GetMetricsStateManager()->ForceClientIdCreation();
+  }
+
   // Stash the current permissions so that we can update the services correctly
   // when preferences change.
   may_record_ = current_may_record;
