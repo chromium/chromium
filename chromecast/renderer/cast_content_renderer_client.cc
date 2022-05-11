@@ -162,10 +162,6 @@ void CastContentRendererClient::RenderFrameCreated(
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   if (render_frame->IsMainFrame()) {
-    if (main_frame_feature_manager_on_associated_interface_) {
-      LOG(DFATAL) << "main_frame_feature_manager_on_associated_interface_ gets "
-                     "overwritten.";
-    }
     main_frame_feature_manager_on_associated_interface_ =
         new FeatureManagerOnAssociatedInterface(render_frame);
   } else {
