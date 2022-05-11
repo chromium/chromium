@@ -29,8 +29,6 @@
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -126,22 +124,18 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
           ->GetSendTabToSelfModel();
-  content::NavigationEntry* navigation_entry =
-      GetWebContents().GetController().GetLastCommittedEntry();
   // TODO(crbug.com/1288843): This duplicates the ShouldOfferFeature() check,
   // instead the 2 codepaths should share code.
-  DCHECK(navigation_entry);
+  const GURL& shared_url = GetWebContents().GetLastCommittedURL();
   if (!model->IsReady()) {
     // TODO(https://crbug.com/1280681): Is this legit? In STTSv2, there may not
     // *be* a DesktopNotificationHandler for profile, and we're violating the
     // lifetime rules of DesktopNotificationHandler here I think.
-    DesktopNotificationHandler(GetProfile())
-        .DisplayFailureMessage(navigation_entry->GetURL());
+    DesktopNotificationHandler(GetProfile()).DisplayFailureMessage(shared_url);
     return;
   }
 
-  model->AddEntry(navigation_entry->GetURL(),
-                  base::UTF16ToUTF8(navigation_entry->GetTitle()),
+  model->AddEntry(shared_url, base::UTF16ToUTF8(GetWebContents().GetTitle()),
                   target_device_guid);
   // Show confirmation message.
   show_message_ = true;

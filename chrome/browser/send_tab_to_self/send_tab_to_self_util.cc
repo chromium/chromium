@@ -14,7 +14,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -37,10 +36,7 @@ absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
   if (!web_contents)
     return absl::nullopt;
 
-  if (!web_contents->GetURL().SchemeIsHTTPOrHTTPS())
-    return absl::nullopt;
-
-  if (!web_contents->GetController().GetLastCommittedEntry())
+  if (!web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
     return absl::nullopt;
 
   Profile* profile =
