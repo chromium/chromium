@@ -413,7 +413,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   std::string FetchViaContentScript(const GURL& url,
                                     content::WebContents* web_contents) {
     return FetchHelper(
-        url,
+        url, web_contents,
         base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteContentScript,
                        base::Unretained(this), base::Unretained(web_contents)));
   }
@@ -439,9 +439,12 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
       const GURL& url,
       const content::ToRenderFrameHost& execution_target) {
     return FetchHelper(
-        url, base::BindOnce(
-                 &CorbAndCorsExtensionBrowserTest::ExecuteRegularScript,
-                 base::Unretained(this), execution_target.render_frame_host()));
+        url,
+        content::WebContents::FromRenderFrameHost(
+            execution_target.render_frame_host()),
+        base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteRegularScript,
+                       base::Unretained(this),
+                       execution_target.render_frame_host()));
   }
 
   // Performs a fetch of |url| from a srcdoc subframe added to |parent_frame|
@@ -449,7 +452,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   std::string FetchViaSrcDocFrame(GURL url,
                                   content::RenderFrameHost* parent_frame) {
     return FetchHelper(
-        url,
+        url, content::WebContents::FromRenderFrameHost(parent_frame),
         base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteInSrcDocFrame,
                        base::Unretained(this), base::Unretained(parent_frame)));
   }
@@ -548,8 +551,10 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
       base::OnceCallback<bool(const std::string& fetch_script)>;
 
   // Returns response body of a fetch of |url| initiated via |fetch_callback|.
-  std::string FetchHelper(const GURL& url, FetchCallback fetch_callback) {
-    content::DOMMessageQueue message_queue;
+  std::string FetchHelper(const GURL& url,
+                          content::WebContents* web_contents,
+                          FetchCallback fetch_callback) {
+    content::DOMMessageQueue message_queue(web_contents);
 
     // Inject a content script that performs a cross-origin fetch to
     // cross-site.com.
@@ -576,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Monitor CORB behavior + result of the fetch.
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(active_web_contents());
 
     // Navigate to a fetch-initiator.com page - this should trigger execution of
     // the |content_script| declared in the extension manifest.
@@ -603,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // Monitor CORB behavior + result of the fetch.
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(active_web_contents());
 
     // Inject an about:blank subframe - this should trigger execution of the
     // |content_script| declared in the extension manifest.
@@ -694,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
         document.body.appendChild(link);
         domAutomationController.send('READY');
     )";
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     ASSERT_TRUE(ExecuteContentScript(
         active_web_contents(),
         base::StringPrintf(kNewButtonScriptTemplate,
@@ -717,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
 
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
@@ -737,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
 
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
@@ -934,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     ExecuteScriptAsync(active_web_contents(), script);
     std::string xhr_result = PopString(&queue);
 
@@ -964,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::HistogramTester histograms;
     content::WebContentsConsoleObserver console_observer(active_web_contents());
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     ExecuteContentScript(active_web_contents(), script);
     std::string xhr_result = PopString(&queue);
 
@@ -1225,7 +1230,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL resource("/fake-trust-token-page");
 
   {
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(active_web_contents());
 
     base::Value request_init(base::Value::Type::DICTIONARY);
     request_init.SetStringPath("trustToken.type", "token-redemption");
@@ -1248,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(
       ->GetMainFrame()
       ->FlushNetworkAndNavigationInterfacesForTesting();
   {
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(active_web_contents());
 
     base::Value request_init(base::Value::Type::DICTIONARY);
     request_init.SetStringPath("trustToken.type", "token-redemption");
@@ -1438,7 +1443,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       ProcessManager::Get(browser()->profile())
           ->GetBackgroundHostForExtension(extension()->id())
           ->host_contents();
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(background_web_contents);
   content::ExecuteScriptAsync(background_web_contents, script);
   std::string fetch_result = PopString(&message_queue);
 
@@ -1569,7 +1574,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
             ->host_contents();
 
     base::HistogramTester histograms;
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(background_web_contents);
     content::ExecuteScriptAsync(
         background_web_contents,
         CreateFetchScript(cross_site_resource2, std::move(request_init)));
@@ -1963,7 +1968,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     GURL nosniff_xml_with_permission(
         embedded_test_server()->GetURL("cross-site.com", "/nosniff.xml"));
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     base::HistogramTester histograms;
     content::ExecuteScriptAsync(
         active_web_contents(),
@@ -1981,7 +1986,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   {
     GURL nosniff_xml_with_permission(embedded_test_server()->GetURL(
         "other-without-permission.com", "/nosniff.xml"));
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(active_web_contents());
     base::HistogramTester histograms;
     ServiceWorkerConsoleObserver console_observer(
         active_web_contents()->GetBrowserContext());
@@ -2196,8 +2201,17 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
   std::string web_view_navigation_script =
       content::JsReplace(kWebViewNavigationScriptTemplate, guest_url);
   {
-    content::DOMMessageQueue queue;
-    content::ExecuteScriptAsync(app_contents, web_view_navigation_script);
+    // NOTE: The Dom message will be emitted in a new WebContents instance that
+    // is created when setting webview.src. Hence, we need to listen for the
+    // message in that instance.
+    content::WebContents* webview_contents = nullptr;
+    {
+      content::WebContentsAddedObserver webview_contents_added_observer;
+      content::ExecuteScriptAsync(app_contents, web_view_navigation_script);
+      webview_contents = webview_contents_added_observer.GetWebContents();
+    }
+    content::DOMMessageQueue queue(webview_contents);
+
     std::string fetch_result = PopString(&queue);
 
     // Verify that no CORB or CORS blocking occurred.
@@ -2324,7 +2338,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
           .then(text => domAutomationController.send(text))
           .catch(err => domAutomationController.send('ERROR: ' + err));
   )";
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(active_web_contents());
   ExecuteContentScript(
       active_web_contents(),
       content::JsReplace(kScriptTemplate, same_origin_resource));
@@ -2444,7 +2458,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
             active_web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 
   // Inject a content script that performs a cross-origin GET fetch.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(active_web_contents());
   GURL cors_resource_url(
       embedded_test_server()->GetURL("cross-site.com", cors_resource_path));
   EXPECT_TRUE(ExecuteContentScript(active_web_contents(),
