@@ -103,7 +103,10 @@ source_set("omnibox_icon_type_constants") {
     "omnibox_icon_type.h",
     "omnibox_icon_type.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/icons:symbols",
+  ]
 }
 
 source_set("omnibox_internal") {

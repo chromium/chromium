@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_icon_type.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
 #include "base/notreached.h"
 
@@ -15,7 +16,6 @@ namespace {
 // Specific symbol names for the location bar.
 NSString* kInfoLocationBarSymbol = @"info.circle.fill";
 NSString* kSecureLocationBarSymbol = @"lock.fill";
-NSString* kNotSecureLocationBarSymbol = @"exclamationmark.triangle.fill";
 
 }  // namespace
 
@@ -42,7 +42,7 @@ NSString* GetLocationBarSecuritySymbolName(
     case SECURE:
       return kSecureLocationBarSymbol;
     case NOT_SECURE_WARNING:
-      return kNotSecureLocationBarSymbol;
+      return kWarningFillSymbol;
     case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
       NOTREACHED();
       return kInfoLocationBarSymbol;

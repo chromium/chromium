@@ -14,6 +14,7 @@ extern NSInteger kSymbolActionPointSize;
 extern NSString* kLinkActionSymbol;
 extern NSString* kQRCodeFinderActionSymbol;
 extern NSString* kNewTabActionSymbol;
+extern NSString* kNewTabCircleActionSymbol;
 extern NSString* kClipboardActionSymbol;
 extern NSString* kDeleteActionSymbol;
 extern NSString* kEditActionSymbol;
@@ -23,5 +24,9 @@ extern NSString* kAddBookmarkActionSymbol;
 extern NSString* kCopyActionSymbol;
 extern NSString* kNewWindowActionSymbol;
 extern NSString* kHideActionSymbol;
+extern NSString* kRequestDesktopActionSymbol;
+extern NSString* kRequestMobileActionSymbol;
+extern NSString* kFindInPageActionSymbol;
+extern NSString* kZoomTextActionSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_ACTION_ICON_H_

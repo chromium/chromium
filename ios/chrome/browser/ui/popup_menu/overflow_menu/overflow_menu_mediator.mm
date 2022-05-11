@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -506,6 +507,223 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         [weakSelf openNewWindow];
       });
 
+  [self logTranslateAvailability];
+
+  if (UseSymbols()) {
+    self.reloadAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
+                                 kArrowClockWiseSymbol, NO, kToolsMenuReload, ^{
+                                   [weakSelf reload];
+                                 });
+
+    self.stopLoadAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_STOP, kXMarkSymbol, YES, kToolsMenuStop, ^{
+          [weakSelf stopLoading];
+        });
+
+    self.openTabAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_NEW_TAB,
+                                                  kNewTabCircleActionSymbol,
+                                                  YES, kToolsMenuNewTabId, ^{
+                                                    [weakSelf openTab];
+                                                  });
+
+    self.openIncognitoTabAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, kIncognitoSymbol, NO,
+        kToolsMenuNewIncognitoTabId, ^{
+          [weakSelf openIncognitoTab];
+        });
+
+    self.openNewWindowAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_NEW_WINDOW, kNewWindowActionSymbol, YES,
+        kToolsMenuNewWindowId, ^{
+          [weakSelf openNewWindow];
+        });
+
+    self.followAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_FOLLOW, kPlusSymbol, YES, kToolsMenuFollow, ^{
+          [weakSelf updateFollowStatus:YES];
+        });
+
+    self.unfollowAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_UNFOLLOW, kXMarkSymbol, YES, kToolsMenuUnfollow, ^{
+          [weakSelf updateFollowStatus:NO];
+        });
+
+    self.addBookmarkAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, kAddBookmarkActionSymbol, YES,
+        kToolsMenuAddToBookmarks, ^{
+          [weakSelf addOrEditBookmark];
+        });
+
+    self.editBookmarkAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, kEditActionSymbol, YES,
+        kToolsMenuEditBookmark, ^{
+          [weakSelf addOrEditBookmark];
+        });
+
+    self.readLaterAction = CreateOverflowMenuAction(
+        IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST, kReadLaterActionSymbol, YES,
+        kToolsMenuReadLater, ^{
+          [weakSelf addToReadingList];
+        });
+
+    self.translateAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_TRANSLATE, kTranslateSymbol,
+                                 NO, kToolsMenuTranslateId, ^{
+                                   [weakSelf translatePage];
+                                 });
+
+    self.requestDesktopAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE, kRequestDesktopActionSymbol,
+        YES, kToolsMenuRequestDesktopId, ^{
+          [weakSelf requestDesktopSite];
+        });
+
+    self.requestMobileAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE, kRequestMobileActionSymbol, YES,
+        kToolsMenuRequestMobileId, ^{
+          [weakSelf requestMobileSite];
+        });
+
+    self.findInPageAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, kFindInPageActionSymbol, YES,
+        kToolsMenuFindInPageId, ^{
+          [weakSelf openFindInPage];
+        });
+
+    self.textZoomAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_TEXT_ZOOM,
+                                                   kZoomTextActionSymbol, YES,
+                                                   kToolsMenuTextZoom, ^{
+                                                     [weakSelf openTextZoom];
+                                                   });
+    self.settingsAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_SETTINGS, kGearShapeSymbol,
+                                 YES, kToolsMenuSettingsId, ^{
+                                   [weakSelf openSettingsFromAction];
+                                 });
+
+    self.reportIssueAction = CreateOverflowMenuAction(
+        IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningFillSymbol, YES,
+        kToolsMenuReportAnIssueId, ^{
+          [weakSelf reportAnIssue];
+        });
+
+    self.helpAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
+                                 kHelpFillSymbol, YES, kToolsMenuHelpId, ^{
+                                   [weakSelf openHelp];
+                                 });
+
+  } else {
+    self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
+                                                 @"overflow_menu_action_reload",
+                                                 kToolsMenuReload, ^{
+                                                   [weakSelf reload];
+                                                 });
+
+    self.stopLoadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_STOP,
+                                                   @"overflow_menu_action_stop",
+                                                   kToolsMenuStop, ^{
+                                                     [weakSelf stopLoading];
+                                                   });
+
+    self.openTabAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_NEW_TAB, @"overflow_menu_action_new_tab",
+        kToolsMenuNewTabId, ^{
+          [weakSelf openTab];
+        });
+
+    self.openIncognitoTabAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito",
+        kToolsMenuNewIncognitoTabId, ^{
+          [weakSelf openIncognitoTab];
+        });
+
+    self.openNewWindowAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_NEW_WINDOW, @"overflow_menu_action_new_window",
+        kToolsMenuNewWindowId, ^{
+          [weakSelf openNewWindow];
+        });
+
+    self.followAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_FOLLOW, @"overflow_menu_action_follow",
+        kToolsMenuFollow, ^{
+          [weakSelf updateFollowStatus:YES];
+        });
+
+    self.unfollowAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_UNFOLLOW, @"overflow_menu_action_unfollow",
+        kToolsMenuUnfollow, ^{
+          [weakSelf updateFollowStatus:NO];
+        });
+
+    self.addBookmarkAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
+        kToolsMenuAddToBookmarks, ^{
+          [weakSelf addOrEditBookmark];
+        });
+
+    self.editBookmarkAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, @"overflow_menu_action_edit_bookmark",
+        kToolsMenuEditBookmark, ^{
+          [weakSelf addOrEditBookmark];
+        });
+
+    self.readLaterAction = CreateOverflowMenuAction(
+        IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
+        @"overflow_menu_action_read_later", kToolsMenuReadLater, ^{
+          [weakSelf addToReadingList];
+        });
+
+    self.translateAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_translate",
+        kToolsMenuTranslateId, ^{
+          [weakSelf translatePage];
+        });
+
+    self.requestDesktopAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
+        @"overflow_menu_action_request_desktop", kToolsMenuRequestDesktopId, ^{
+          [weakSelf requestDesktopSite];
+        });
+
+    self.requestMobileAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE,
+        @"overflow_menu_action_request_mobile", kToolsMenuRequestMobileId, ^{
+          [weakSelf requestMobileSite];
+        });
+
+    self.findInPageAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page",
+        kToolsMenuFindInPageId, ^{
+          [weakSelf openFindInPage];
+        });
+
+    self.textZoomAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom",
+        kToolsMenuTextZoom, ^{
+          [weakSelf openTextZoom];
+        });
+
+    self.settingsAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_action_settings",
+        kToolsMenuSettingsId, ^{
+          [weakSelf openSettingsFromAction];
+        });
+
+    self.reportIssueAction = CreateOverflowMenuAction(
+        IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue",
+        kToolsMenuReportAnIssueId, ^{
+          [weakSelf reportAnIssue];
+        });
+
+    self.helpAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
+                                               @"overflow_menu_action_help",
+                                               kToolsMenuHelpId, ^{
+                                                 [weakSelf openHelp];
+                                               });
+  }
+
   // The app actions vary based on page state, so they are set in
   // |-updateModel|.
   self.appActionsGroup =
@@ -513,86 +731,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                  actions:@[]
                                                   footer:nil];
 
-  self.clearBrowsingDataAction =
-      CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA,
-                               @"overflow_menu_action_clear_browsing_data",
-                               kToolsMenuClearBrowsingData, ^{
-                                 [weakSelf openClearBrowsingData];
-                               });
-  self.followAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_FOLLOW, @"overflow_menu_action_follow",
-      kToolsMenuFollow, ^{
-        [weakSelf updateFollowStatus:YES];
-      });
-  self.unfollowAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_UNFOLLOW, @"overflow_menu_action_unfollow",
-      kToolsMenuUnfollow, ^{
-        [weakSelf updateFollowStatus:NO];
-      });
-  self.addBookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
-      kToolsMenuAddToBookmarks, ^{
-        [weakSelf addOrEditBookmark];
-      });
-  self.editBookmarkAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, @"overflow_menu_action_edit_bookmark",
-      kToolsMenuEditBookmark, ^{
-        [weakSelf addOrEditBookmark];
-      });
-  self.readLaterAction = CreateOverflowMenuAction(
-      IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
-      @"overflow_menu_action_read_later", kToolsMenuReadLater, ^{
-        [weakSelf addToReadingList];
-      });
-  [self logTranslateAvailability];
-  self.translateAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TRANSLATE, @"overflow_menu_action_translate",
-      kToolsMenuTranslateId, ^{
-        [weakSelf translatePage];
-      });
-  self.requestDesktopAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE,
-      @"overflow_menu_action_request_desktop", kToolsMenuRequestDesktopId, ^{
-        [weakSelf requestDesktopSite];
-      });
-  self.requestMobileAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE,
-      @"overflow_menu_action_request_mobile", kToolsMenuRequestMobileId, ^{
-        [weakSelf requestMobileSite];
-      });
-  self.findInPageAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_FIND_IN_PAGE, @"overflow_menu_action_find_in_page",
-      kToolsMenuFindInPageId, ^{
-        [weakSelf openFindInPage];
-      });
-  self.textZoomAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom",
-      kToolsMenuTextZoom, ^{
-        [weakSelf openTextZoom];
-      });
-
   // The page actions vary based on page state, so they are set in
   // |-updateModel|.
   self.pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
                                                  actions:@[]
                                                   footer:nil];
-
-  self.settingsAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_action_settings",
-      kToolsMenuSettingsId, ^{
-        [weakSelf openSettingsFromAction];
-      });
-  self.reportIssueAction = CreateOverflowMenuAction(
-      IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue",
-      kToolsMenuReportAnIssueId, ^{
-        [weakSelf reportAnIssue];
-      });
-  self.helpAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_HELP_MOBILE,
-                                             @"overflow_menu_action_help",
-                                             kToolsMenuHelpId, ^{
-                                               [weakSelf openHelp];
-                                             });
 
   // Footer and actions vary based on state, so they're set in -updateModel.
   self.helpActionsGroup =
