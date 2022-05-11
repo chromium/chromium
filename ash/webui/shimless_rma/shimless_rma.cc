@@ -185,15 +185,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE_TITLE},
       // Device provisioning page
       {"provisioningPageTitleText", IDS_SHIMLESS_RMA_PROVISIONING_TITLE},
-      {"provisioningPageInProgressText",
-       IDS_SHIMLESS_RMA_PROVISIONING_IN_PROGRESS},
-      {"provisioningPageCompleteText", IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE},
-      {"provisioningPageFailedBlockingText",
-       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING},
-      {"provisioningPageFailedNonBlockingText",
-       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING},
-      {"provisioningPageFailedRetryButtonLabel",
-       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_RETRY_BUTTON_LABEL},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       {"repairCompletedDescriptionText",

@@ -4,17 +4,6 @@
 <base-page>
   <div slot="left-pane">
     <h1>[[i18n('provisioningPageTitleText')]]</h1>
-    <div id="provisioningDeviceStatus" class="instructions">
-      [[statusString_]]
-    </div>
-    <div>
-      <cr-button id="retryProvisioningButton" class="cancel-button"
-          on-click="onRetryProvsioningButtonClicked_"
-          hidden$="[[!shouldShowRetryButton_]]"
-          disabled="[[allButtonsDisabled]]">
-        [[i18n('provisioningPageFailedRetryButtonLabel')]]
-      </cr-button>
-    </div>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">

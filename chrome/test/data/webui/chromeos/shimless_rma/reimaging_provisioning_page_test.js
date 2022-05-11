@@ -61,14 +61,6 @@ export function reimagingProvisioningPageTest() {
     return flushTasks();
   }
 
-  test('WaitForProvisioningPageInitializes', async () => {
-    await initializeWaitForProvisioningPage();
-    const provisioningComponent =
-        component.shadowRoot.querySelector('#provisioningDeviceStatus');
-    assertFalse(provisioningComponent.hidden);
-  });
-
-
   test('ProvisioningCompleteTransitionsState', async () => {
     const resolver = new PromiseResolver();
     await initializeWaitForProvisioningPage();
@@ -85,65 +77,5 @@ export function reimagingProvisioningPageTest() {
     await flushTasks();
 
     assertTrue(provisioningComplete);
-  });
-
-  test('ProvisioningFailedBlockingRetry', async () => {
-    const resolver = new PromiseResolver();
-    await initializeWaitForProvisioningPage();
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryProvisioningButton');
-    assertTrue(retryButton.hidden);
-
-    let callCount = 0;
-    service.retryProvisioning = () => {
-      callCount++;
-      return resolver.promise;
-    };
-    service.triggerProvisioningObserver(
-        ProvisioningStatus.kFailedBlocking, /* progress= */ 1.0,
-        /* delayMs= */ 0);
-    await flushTasks();
-
-    assertFalse(retryButton.hidden);
-    retryButton.click();
-
-    await flushTasks();
-    assertEquals(1, callCount);
-  });
-
-  test('ProvisioningFailedNonBlockingRetry', async () => {
-    const resolver = new PromiseResolver();
-    await initializeWaitForProvisioningPage();
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryProvisioningButton');
-    assertTrue(retryButton.hidden);
-
-    let callCount = 0;
-    service.retryProvisioning = () => {
-      callCount++;
-      return resolver.promise;
-    };
-    service.triggerProvisioningObserver(
-        ProvisioningStatus.kFailedNonBlocking, /* progress= */ 1.0,
-        /* delayMs= */ 0);
-    await flushTasks();
-
-    assertFalse(retryButton.hidden);
-    retryButton.click();
-
-    await flushTasks();
-    assertEquals(1, callCount);
-  });
-
-  test('ProvisioningFailedRetryDisabled', async () => {
-    await initializeWaitForProvisioningPage();
-
-    const retryButton =
-        component.shadowRoot.querySelector('#retryProvisioningButton');
-    assertFalse(retryButton.disabled);
-    component.allButtonsDisabled = true;
-    assertTrue(retryButton.disabled);
   });
 }

@@ -2890,23 +2890,8 @@ Try tapping the mic to ask me anything.
         Retry finalization
       </message>
       <!-- Device provisioning page -->
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" translateable="false" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
         Provisioning the device...
-      </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_IN_PROGRESS" translateable="false" desc="Message to display while the device is provisioning.">
-        Provisioning the device. Do not turn off the power.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE" translateable="false" desc="Message to display when provisioning is complete.">
-        Complete.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING" translateable="false" desc="Message to display when provisioning failed and RMA cannot complete.">
-        Failed, blocking.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when provisioning failed, but RMA can continue.">
-        Failed, non blocking.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry provisioning.">
-        Retry provisioning
       </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
