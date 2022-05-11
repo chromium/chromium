@@ -51,6 +51,14 @@ export class VolumeManager {
   mountArchive(fileUrl, password) {}
 
   /**
+   * Cancels mounting an archive.
+   * @param {string} fileUrl File url to the archive file.
+   * @return {!Promise<void>} Fulfilled on success, otherwise rejected
+   *     with a VolumeManagerCommon.VolumeError.
+   */
+  cancelMounting(fileUrl) {}
+
+  /**
    * Unmounts a volume.
    * @param {!VolumeInfo} volumeInfo Volume to be unmounted.
    * @return {!Promise<void>} Fulfilled on success, otherwise rejected with a

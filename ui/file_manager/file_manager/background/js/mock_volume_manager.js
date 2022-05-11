@@ -227,6 +227,10 @@ export class MockVolumeManager {
     throw new Error('Not implemented');
   }
 
+  async cancelMounting(fileUrl) {
+    throw new Error('Not implemented');
+  }
+
   async unmount(volumeInfo) {
     throw new Error('Not implemented');
   }

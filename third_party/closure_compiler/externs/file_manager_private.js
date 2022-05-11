@@ -885,6 +885,14 @@ chrome.fileManagerPrivate.resolveIsolatedEntries = function(entries,
 chrome.fileManagerPrivate.addMount = function(source, password, callback) {};
 
 /**
+ * Cancels an archive mounting operation.
+ * @param {string} fileUrl Mount point source. Should be same as the one passed
+ *     to addMount.
+ * @param {function()} callback
+ */
+chrome.fileManagerPrivate.cancelMounting = function(fileUrl, callback) {};
+
+/**
  * Unmounts a mounted resource. |volumeId| An ID of the volume.
  * @param {string} volumeId
  */

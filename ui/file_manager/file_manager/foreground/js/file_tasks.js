@@ -920,21 +920,31 @@ export class FileTasks {
     item.type = ProgressItemType.MOUNT_ARCHIVE;
     item.message = strf('ARCHIVE_MOUNT_MESSAGE', filename);
 
+    item.cancelCallback = () => {
+      this.volumeManager_.cancelMounting(url);
+    };
+
     // Display progress panel.
     item.state = ProgressItemState.PROGRESSING;
     this.progressCenter_.updateItem(item);
+
+    let wasCancelled = false;
 
     // First time, try without providing a password.
     try {
       return await this.volumeManager_.mountArchive(url);
     } catch (error) {
       // If error is not about needing a password, propagate it.
+      if (error === VolumeManagerCommon.VolumeError.CANCELLED) {
+        wasCancelled = true;
+      }
       if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
         throw error;
       }
     } finally {
       // Remove progress panel.
-      item.state = ProgressItemState.COMPLETED;
+      item.state = wasCancelled ? ProgressItemState.CANCELED :
+                                  ProgressItemState.COMPLETED;
       this.progressCenter_.updateItem(item);
     }
 
@@ -1004,8 +1014,10 @@ export class FileTasks {
             error.stack || error}`);
       }
     } catch (error) {
-      // No need to display an error message if user canceled.
-      if (error === FilesPasswordDialog.USER_CANCELLED) {
+      // No need to display an error message if user canceled mounting or
+      // canceled the password prompt.
+      if (error === FilesPasswordDialog.USER_CANCELLED ||
+          error === VolumeManagerCommon.VolumeError.CANCELLED) {
         return;
       }
 

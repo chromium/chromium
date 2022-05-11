@@ -450,6 +450,12 @@ export class FilteredVolumeManager extends EventTarget {
   }
 
   /** @override */
+  async cancelMounting(fileUrl) {
+    await this.initialized_;
+    return this.volumeManager_.cancelMounting(fileUrl);
+  }
+
+  /** @override */
   async unmount(volumeInfo) {
     await this.initialized_;
     return this.volumeManager_.unmount(volumeInfo);

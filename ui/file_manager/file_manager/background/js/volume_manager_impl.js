@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {promisify} from '../../common/js/api.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -328,6 +329,12 @@ export class VolumeManagerImpl extends EventTarget {
     console.debug(`Mounting '${path}'`);
     const key = this.makeRequestKey_('mount', path);
     return this.startRequest_(key);
+  }
+
+  /** @override */
+  async cancelMounting(fileUrl) {
+    console.warn(`Cancelling mounting archive at '${fileUrl}'`);
+    return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
   /** @override */
