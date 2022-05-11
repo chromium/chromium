@@ -631,18 +631,17 @@ bool SearchPrefetchService::LoadFromPrefs() {
 }
 
 void SearchPrefetchService::SaveToPrefs() const {
-  base::DictionaryValue dictionary;
+  base::Value::Dict dictionary;
   for (const auto& element : prefetch_cache_) {
     std::string navigation_url = element.first.spec();
     std::string prefetch_url = element.second.first.spec();
-    auto time =
-        std::make_unique<base::Value>(base::TimeToValue(element.second.second));
-    base::ListValue value;
+    base::Value::List value;
     value.Append(prefetch_url);
-    value.Append(std::move(time));
-    dictionary.SetKey(std::move(navigation_url), std::move(value));
+    value.Append(base::TimeToValue(element.second.second));
+    dictionary.Set(std::move(navigation_url), std::move(value));
   }
-  profile_->GetPrefs()->Set(prefetch::prefs::kCachePrefPath, dictionary);
+  profile_->GetPrefs()->Set(prefetch::prefs::kCachePrefPath,
+                            base::Value(std::move(dictionary)));
 }
 
 bool SearchPrefetchService::LoadFromPrefsForTesting() {
