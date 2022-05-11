@@ -309,6 +309,11 @@ class ContinueSectionViewTestBase : public AshTestBase {
     return GetAppListTestHelper()->GetBubbleSearchPageDialog();
   }
 
+  bool IsSearchViewAnchoredDialogOpen() {
+    SearchResultPageAnchoredDialog* dialog = GetSearchViewAnchoredDialog();
+    return (dialog && !dialog->widget()->IsClosed());
+  }
+
   RemoveTaskFeedbackDialog* GetFeedbackDialog() {
     SearchResultPageAnchoredDialog* dialog = GetSearchViewAnchoredDialog();
     return dialog ? static_cast<RemoveTaskFeedbackDialog*>(
@@ -798,11 +803,11 @@ TEST_P(ContinueSectionViewTest, SelectCancelOptionCloseDialogNoRemove) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   ASSERT_TRUE(GetFeedbackDialog());
   GestureTapOn(GetFeedbackDialog()->cancel_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
@@ -822,11 +827,11 @@ TEST_P(ContinueSectionViewTest, SelectRemoveOptionCloseDialogAndRemove) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   ASSERT_TRUE(GetFeedbackDialog());
   GestureTapOn(GetFeedbackDialog()->remove_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
@@ -849,13 +854,13 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackDialogOnce) {
   EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
   RemoveSearchResultWithContextMenuAt(1);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
   GestureTapOn(dialog->all_suggestions_option_for_test());
   GestureTapOn(dialog->remove_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   VerifyResultViewsUpdated();
 
@@ -864,7 +869,7 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackDialogOnce) {
   RemoveSearchResultWithContextMenuAt(0);
 
   // Feedback Dialog should not show the second time.
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   // Both items were removed.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -890,12 +895,12 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackUntilFeedbackSent) {
   RemoveSearchResultWithContextMenuAt(1);
 
   // Feedback dialog should show. Confirm without sending feedback.
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
   GestureTapOn(dialog->remove_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   VerifyResultViewsUpdated();
 
@@ -904,13 +909,13 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackUntilFeedbackSent) {
   RemoveSearchResultWithContextMenuAt(0);
 
   // Feedback Dialog should show a second time. Send feedback.
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
   GestureTapOn(dialog->all_suggestions_option_for_test());
   GestureTapOn(dialog->remove_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   VerifyResultViewsUpdated();
 
@@ -919,7 +924,7 @@ TEST_P(ContinueSectionViewTest, RemoveResultShowsFeedbackUntilFeedbackSent) {
   RemoveSearchResultWithContextMenuAt(2);
 
   // Feedback Dialog should not show.
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   // Both items were removed.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -947,18 +952,18 @@ TEST_P(ContinueSectionViewTest,
   RemoveSearchResultWithContextMenuAt(1);
 
   // Cancel the Feedback Dialog, result should not have been removed.
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   ASSERT_TRUE(GetFeedbackDialog());
   GestureTapOn(GetFeedbackDialog()->cancel_button_for_test());
 
-  EXPECT_FALSE(GetSearchViewAnchoredDialog());
+  EXPECT_FALSE(IsSearchViewAnchoredDialogOpen());
   VerifyResultViewsUpdated();
 
   EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
   RemoveSearchResultWithContextMenuAt(1);
 
   // Feedback Dialog should show again.
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   ASSERT_TRUE(GetFeedbackDialog());
   GestureTapOn(GetFeedbackDialog()->remove_button_for_test());
 
@@ -983,7 +988,7 @@ TEST_P(ContinueSectionViewTest, SecondaryPanelOnFeedbackDialogStartsHidden) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
   EXPECT_FALSE(dialog->secondary_options_panel_for_test()->GetVisible());
@@ -1002,7 +1007,7 @@ TEST_P(ContinueSectionViewTest,
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
 
@@ -1024,7 +1029,7 @@ TEST_P(ContinueSectionViewTest,
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
 
@@ -1049,7 +1054,7 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   ASSERT_TRUE(GetFeedbackDialog());
   GestureTapOn(GetFeedbackDialog()->remove_button_for_test());
 
@@ -1076,7 +1081,7 @@ TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   RemoveSearchResultWithContextMenuAt(0);
 
-  ASSERT_TRUE(GetSearchViewAnchoredDialog());
+  ASSERT_TRUE(IsSearchViewAnchoredDialogOpen());
   RemoveTaskFeedbackDialog* dialog = GetFeedbackDialog();
   ASSERT_TRUE(dialog);
   GestureTapOn(dialog->all_suggestions_option_for_test());
@@ -1085,7 +1090,7 @@ TEST_P(ContinueSectionViewTest, ResultRemovedLogsMetricInBucket) {
   EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
   RemoveSearchResultWithContextMenuAt(1);
 
-  ASSERT_FALSE(GetSearchViewAnchoredDialog());
+  ASSERT_FALSE(IsSearchViewAnchoredDialogOpen());
 
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {

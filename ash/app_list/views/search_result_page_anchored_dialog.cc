@@ -97,13 +97,6 @@ float SearchResultPageAnchoredDialog::AdjustVerticalTransformOffset(
   return default_offset + parent_offset;
 }
 
-void SearchResultPageAnchoredDialog::OnWidgetClosing(views::Widget* widget) {
-  widget_ = nullptr;
-  widget_observations_.RemoveAllObservations();
-  if (callback_)
-    std::move(callback_).Run();
-}
-
 void SearchResultPageAnchoredDialog::OnWidgetDestroying(views::Widget* widget) {
   widget_ = nullptr;
   widget_observations_.RemoveAllObservations();

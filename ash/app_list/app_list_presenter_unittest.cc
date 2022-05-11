@@ -496,25 +496,29 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   }
 
   void CancelSearchResultPageDialog() {
-    views::WidgetDelegate* widget_delegate =
-        GetSearchResultPageDialog()->widget()->widget_delegate();
+    views::Widget* widget = GetSearchResultPageDialog()->widget();
+    views::WidgetDelegate* widget_delegate = widget->widget_delegate();
+    views::test::WidgetDestroyedWaiter widget_waiter(widget);
     if (!productivity_launcher_param()) {
       widget_delegate->AsDialogDelegate()->CancelDialog();
     } else {
       GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
                        ->cancel_button_for_test());
     }
+    widget_waiter.Wait();
   }
 
   void AcceptSearchResultPageDialog() {
-    views::WidgetDelegate* widget_delegate =
-        GetSearchResultPageDialog()->widget()->widget_delegate();
+    views::Widget* widget = GetSearchResultPageDialog()->widget();
+    views::WidgetDelegate* widget_delegate = widget->widget_delegate();
+    views::test::WidgetDestroyedWaiter widget_waiter(widget);
     if (!productivity_launcher_param()) {
       widget_delegate->AsDialogDelegate()->AcceptDialog();
     } else {
       GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
                        ->accept_button_for_test());
     }
+    widget_waiter.Wait();
   }
 
   ContinueSectionView* GetContinueSectionView() {

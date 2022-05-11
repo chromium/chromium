@@ -55,7 +55,6 @@ class SearchResultPageAnchoredDialog : public views::WidgetObserver,
   float AdjustVerticalTransformOffset(float default_offset);
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
