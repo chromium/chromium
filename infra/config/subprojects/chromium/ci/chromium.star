@@ -335,12 +335,9 @@ ci.builder(
 
 ci.builder(
     name = "mac-official",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builderless = False,
-    # TODO(crbug.com/1072012) Use the default console view and use the default
-    # main console view once the build is green
-    main_console_view = None,
     console_view_entry = consoles.console_view_entry(
-        console_view = "chromium.fyi",
         category = "mac",
         short_name = "off",
     ),
