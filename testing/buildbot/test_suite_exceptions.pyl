@@ -2921,6 +2921,11 @@
       'Mac ASan 64 Tests (1)': {
         'swarming': {
           'shards': 3,
+          },
+      },
+      'Mac11 Tests': {
+        'swarming': {
+          'shards': 4,
         },
       },
       'ToTLinuxTSan': {
