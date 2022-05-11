@@ -326,20 +326,18 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     dict_update->SetKey(KioskAppDataBase::kKeyApps, std::move(apps_dict));
 
     // Make the app appear in device settings.
-    base::ListValue device_local_accounts;
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
+    base::Value::List device_local_accounts;
+    base::Value::Dict entry;
     // Fake an account id. Note this needs to match GenerateKioskAppAccountId
     // in kiosk_app_manager.cc to make SetAutoLaunchApp work with the
     // existing app entry created here.
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                  base::Value(app_id + "@kiosk-apps"));
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyType,
-                  base::Value(policy::DeviceLocalAccount::TYPE_KIOSK_APP));
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                  base::Value(app_id));
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyId, app_id + "@kiosk-apps");
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+              policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, app_id);
     device_local_accounts.Append(std::move(entry));
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
-                                 device_local_accounts);
+                                 base::Value(std::move(device_local_accounts)));
   }
 
   bool GetCachedCrx(const std::string& app_id,

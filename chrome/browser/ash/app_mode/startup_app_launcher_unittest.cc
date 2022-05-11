@@ -523,17 +523,17 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
         false /*create_service*/);
     accounts_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
-    auto account = std::make_unique<base::DictionaryValue>();
-    account->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(kTestUserAccount));
-    account->SetKey(kAccountsPrefDeviceLocalAccountsKeyType,
-                    base::Value(policy::DeviceLocalAccount::TYPE_KIOSK_APP));
-    account->SetKey(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                    base::Value(kTestPrimaryAppId));
-    base::ListValue accounts;
+    base::Value::Dict account;
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                kTestPrimaryAppId);
+    base::Value::List accounts;
     accounts.Append(std::move(account));
 
-    accounts_settings_helper_->Set(kAccountsPrefDeviceLocalAccounts, accounts);
+    accounts_settings_helper_->Set(kAccountsPrefDeviceLocalAccounts,
+                                   base::Value(std::move(accounts)));
     accounts_settings_helper_->SetString(
         kAccountsPrefDeviceLocalAccountAutoLoginId, kTestUserAccount);
     accounts_settings_helper_->SetInteger(
