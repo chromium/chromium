@@ -5,8 +5,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -204,20 +202,6 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
       ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     VLOG(1) << "Profile is not allowed to run crostini.";
     *reason = "This user session is not allowed to run crostini";
-    return false;
-  }
-
-  bool kernelnext = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kKernelnextRestrictVMs);
-  bool kernelnext_override =
-      base::FeatureList::IsEnabled(features::kKernelnextVMs);
-  if (kernelnext && !kernelnext_override) {
-    // The host kernel is on an experimental version. In future updates this
-    // device may not have VM support, so we allow enabling VMs, but guard them
-    // on a chrome://flags switch (enable-experimental-kernel-vm-support).
-    VLOG(1) << "Cannot run crostini on experimental kernel without "
-            << "--enable-experimental-kernel-vm-support.";
-    *reason = "Crostini can not run on experimental kernel by default";
     return false;
   }
 

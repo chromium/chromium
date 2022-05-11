@@ -4670,10 +4670,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-experimental-kernel-vm-support",
-     flag_descriptions::kKernelnextVMsName,
-     flag_descriptions::kKernelnextVMsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kKernelnextVMs)},
     {"enable-magnifier-continuous-mouse-following-mode-setting",
      flag_descriptions::kMagnifierContinuousMouseFollowingModeSettingName,
      flag_descriptions::

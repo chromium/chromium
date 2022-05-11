@@ -641,11 +641,6 @@ const base::Feature kIncognitoParamFilterEnabled{
 const base::Feature kIPHInWebUIDemo{"IPHInWebUIDemo",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kKernelnextVMs{"KernelnextVMs",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 const base::Feature kLinuxLowMemoryMonitor{"LinuxLowMemoryMonitor",

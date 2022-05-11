@@ -451,11 +451,6 @@ extern const base::Feature kIncognitoParamFilterEnabled;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIPHInWebUIDemo;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kKernelnextVMs;
-#endif
-
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kLinuxLowMemoryMonitor;

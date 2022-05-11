@@ -628,11 +628,6 @@ const char kInstallLogFastUploadForTests[] =
 // directory. For now, only one extension can be specified.
 const char kInstallSystemExtension[] = "install-system-extension";
 
-// If set, the Chrome settings will not expose the option to enable crostini
-// unless the enable-experimental-kernel-vm-support flag is set in
-// chrome://flags
-const char kKernelnextRestrictVMs[] = "kernelnext-restrict-vms";
-
 // When this flag is set, the lacros-availability policy is ignored.
 const char kLacrosAvailabilityIgnore[] = "lacros-availability-ignore";
 

@@ -2030,11 +2030,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-experimental-kernel-vm-support",
-    "owners": [ "davidmunro@google.com", "zwisler", "clumptini@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-experimental-rgb-keyboard-patterns",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
     "expiry_milestone": 112
