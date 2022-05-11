@@ -6497,9 +6497,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_28_0_20220314",
+                    "name": "Enabled_28_1_20220511",
                     "params": {
-                        "reporter_omaha_tag": "28.0"
+                        "reporter_omaha_tag": "28.1"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
