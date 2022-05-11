@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersBottomSheetContent;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
@@ -56,8 +55,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -556,6 +555,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
     public void testHistoryClustersAction() {
         mOmniboxUtils.requestFocus();
         List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
@@ -571,12 +571,16 @@ public class OmniboxPedalsTest {
 
         clickOnPedal();
 
-        CriteriaHelper.pollUiThread(() -> {
-            BottomSheetController bottomSheetController = sActivityTestRule.getActivity()
-                                                                  .getRootUiCoordinatorForTesting()
-                                                                  .getBottomSheetController();
-            Criteria.checkThat(bottomSheetController.getCurrentSheetContent(),
-                    Matchers.instanceOf(HistoryClustersBottomSheetContent.class));
-        });
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(sActivityTestRule.getActivity())) {
+            CriteriaHelper.pollUiThread(() -> {
+                Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                Criteria.checkThat(tab, Matchers.notNullValue());
+                Criteria.checkThat(
+                        tab.getUrl().getSpec(), Matchers.startsWith("chrome://history/journeys"));
+            });
+        } else {
+            ActivityTestUtils.waitForActivity(
+                    InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
+        }
     }
 }

@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersItemPropertie
 import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -39,12 +38,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private final HistoryClustersMediator mMediator;
     private final ModelList mModelList;
-    private final HistoryClustersBottomSheetContent mBottomSheetContent;
     private SimpleRecyclerViewAdapter mAdapter;
     private final Context mContext;
-    private boolean mBottomSheetInflated;
     private boolean mActivityViewInflated;
-    private final PropertyModel mBottomSheetToolbarModel;
     private final PropertyModel mToolbarModel;
     private ViewGroup mActivityContentView;
     private HistoryClustersToolbar mToolbar;
@@ -56,29 +52,22 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      * @param profile The profile from which the coordinator should access history data.
      * @param context Android context from which UI configuration (strings, colors etc.) should be
      *         derived.
-     * @param bottomSheetController Controller for interacting with the bottom sheet system, e.g. to
-     *         request to show our content.
      * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
      *         We can't directly set the class ourselves without creating a circular dependency.
      * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
      *         tab, e.g. when we're operating in a dedicated history activity.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
-            BottomSheetController bottomSheetController,
             Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier) {
         mContext = context;
         mModelList = new ModelList();
-        mBottomSheetContent = new HistoryClustersBottomSheetContent();
-        mBottomSheetToolbarModel =
-                new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS);
         mToolbarModel = new PropertyModel.Builder(HistoryClustersToolbarProperties.ALL_KEYS)
                                 .with(HistoryClustersToolbarProperties.QUERY_STATE,
                                         QueryState.forQueryless())
                                 .build();
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
-                mBottomSheetToolbarModel, mToolbarModel, bottomSheetController, mBottomSheetContent,
-                historyActivityIntentFactory, tabSupplier);
+                mToolbarModel, historyActivityIntentFactory, tabSupplier);
     }
 
     public void destroy() {
@@ -89,6 +78,15 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mMediator.startSearch(query);
     }
 
+    /**
+     * Opens the History Clusters UI. On phones this opens the History Activity; on tablets, it
+     * navigates to a NativePage in the active tab.
+     * @param query The preset query to populate when opening the UI.
+     */
+    public void openHistoryClustersUi(String query) {
+        mMediator.openHistoryClustersUi(query);
+    }
+
     /** Gets the root view for a "full activity" presentation of the user's history clusters. */
     public ViewGroup getActivityContentView() {
         if (!mActivityViewInflated) {
@@ -96,14 +94,6 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         }
 
         return mActivityContentView;
-    }
-
-    /** Shows the bottom sheet, populating it with clusters matching the given query. */
-    public void showBottomSheet(String query) {
-        if (!mBottomSheetInflated) {
-            inflateBottomSheet();
-        }
-        mMediator.showBottomSheet(query);
     }
 
     void inflateActivityView() {
@@ -139,31 +129,6 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 mToolbarModel, mSelectableListLayout, HistoryClustersViewBinder::bindListLayout);
 
         mActivityViewInflated = true;
-    }
-
-    void inflateBottomSheet() {
-        mAdapter = new SimpleRecyclerViewAdapter(mModelList);
-        mAdapter.registerType(
-                ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
-
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        View contentView =
-                layoutInflater.inflate(R.layout.history_clusters_bottom_sheet_content, null);
-        RecyclerView recyclerView = contentView.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(
-                recyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        recyclerView.setItemAnimator(null);
-        recyclerView.setAdapter(mAdapter);
-        contentView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        View bottomSheetToolbar = contentView.findViewById(R.id.bottom_sheet_toolbar);
-
-        PropertyModelChangeProcessor.create(mBottomSheetToolbarModel, bottomSheetToolbar,
-                HistoryClustersViewBinder::bindBottomSheetToolbar);
-
-        mBottomSheetContent.setContentView(contentView);
-        mBottomSheetInflated = true;
     }
 
     private View buildVisitView(ViewGroup parent) {

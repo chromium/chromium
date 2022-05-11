@@ -112,7 +112,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS);
         if (historyClustersEnabled) {
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    Profile.getLastUsedRegularProfile(), activity, null, null, tabSupplier);
+                    Profile.getLastUsedRegularProfile(), activity, null, tabSupplier);
             if (!TextUtils.isEmpty(historyClustersQuery)) {
                 mHistoryClustersCoordinator.setQuery(historyClustersQuery);
             }

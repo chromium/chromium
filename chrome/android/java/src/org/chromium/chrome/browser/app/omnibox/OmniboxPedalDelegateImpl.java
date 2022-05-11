@@ -146,7 +146,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                     assert omniboxPedal instanceof HistoryClustersAction;
                     String query = ((HistoryClustersAction) omniboxPedal).getQuery();
                     assert !TextUtils.isEmpty(query);
-                    mHistoryClustersCoordinator.showBottomSheet(query);
+                    mHistoryClustersCoordinator.openHistoryClustersUi(query);
                 }
                 break;
         }

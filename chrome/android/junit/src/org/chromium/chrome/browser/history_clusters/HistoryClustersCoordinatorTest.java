@@ -83,9 +83,8 @@ public class HistoryClustersCoordinatorTest {
 
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
         mActivityScenario.onActivity(activity -> {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
-                    activity.getRootUiCoordinatorForTesting().getBottomSheetController(),
-                    () -> mIntent, () -> mTab);
+            mHistoryClustersCoordinator =
+                    new HistoryClustersCoordinator(mProfile, activity, () -> mIntent, () -> mTab);
         });
     }
 

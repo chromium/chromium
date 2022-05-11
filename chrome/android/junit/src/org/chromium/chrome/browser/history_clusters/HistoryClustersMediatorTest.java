@@ -31,7 +31,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -64,8 +63,6 @@ public class HistoryClustersMediatorTest {
     @Mock
     private GURL mGurl3;
     @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
     private Tab mTab;
 
     private ClusterVisit mVisit1;
@@ -76,8 +73,6 @@ public class HistoryClustersMediatorTest {
     private HistoryClustersResult mHistoryClustersResult;
     private ModelList mModelList;
     private PropertyModel mToolbarModel;
-    private HistoryClustersBottomSheetContent mBottomSheetContent =
-            new HistoryClustersBottomSheetContent();
     private Intent mIntent = new Intent();
     private Supplier<Intent> mHistoryActivityIntentFactory = () -> mIntent;
     private Supplier<Tab> mTabSupplier = () -> mTab;
@@ -88,11 +83,8 @@ public class HistoryClustersMediatorTest {
         doReturn(mResources).when(mContext).getResources();
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
-        mBottomSheetContent = new HistoryClustersBottomSheetContent();
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                mModelList, new PropertyModel(HistoryClustersBottomSheetToolbarProperties.ALL_KEYS),
-                mToolbarModel, mBottomSheetController, mBottomSheetContent,
-                mHistoryActivityIntentFactory, mTabSupplier);
+                mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");
@@ -128,40 +120,16 @@ public class HistoryClustersMediatorTest {
     }
 
     @Test
-    public void testShowBottomSheet() {
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mBridge).queryClusters("foo");
-
-        mMediator.showBottomSheet("foo");
-        fulfillPromise(promise, mHistoryClustersResult);
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
-
-        assertEquals(mModelList.size(), 3);
-    }
-
-    @Test
-    public void testShowBottomSheet_emptyQuery() {
-        Promise<HistoryClustersResult> promise = new Promise<>();
-        doReturn(promise).when(mBridge).queryClusters("");
-
-        mMediator.showBottomSheet("");
-        fulfillPromise(promise, mHistoryClustersResult);
-
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
-        assertEquals(mModelList.size(), 3);
-    }
-
-    @Test
     public void testOpenInFullPageTablet() {
         doReturn(2).when(mResources).getInteger(R.integer.min_screen_width_bucket);
-        mMediator.openHistoryClustersInFullPage("pandas");
+        mMediator.openHistoryClustersUi("pandas");
         verify(mTab).loadUrl(argThat(hasSameUrl("chrome://history/journeys?q=pandas")));
     }
 
     @Test
     public void testOpenInFullPagePhone() {
         doReturn(1).when(mResources).getInteger(R.integer.min_screen_width_bucket);
-        mMediator.openHistoryClustersInFullPage("pandas");
+        mMediator.openHistoryClustersUi("pandas");
 
         verify(mContext).startActivity(mIntent);
         assertTrue(IntentUtils.safeGetBooleanExtra(
