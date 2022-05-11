@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
@@ -373,6 +374,7 @@ void WebAppProvider::CheckIsConnected() const {
 // static
 void WebAppProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  UserUninstalledPreinstalledWebAppPrefs::RegisterProfilePrefs(registry);
   ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(registry);
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);

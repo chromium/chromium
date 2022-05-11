@@ -686,6 +686,7 @@ extern const char kDevToolsTCPDiscoveryConfig[];
 extern const char kDiceSigninUserMenuPromoCount[];
 #endif
 
+extern const char kUserUninstalledPreinstalledWebAppPref[];
 extern const char kManagedConfigurationPerOrigin[];
 extern const char kLastManagedConfigurationHashForOrigin[];
 

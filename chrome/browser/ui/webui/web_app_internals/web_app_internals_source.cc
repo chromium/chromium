@@ -35,6 +35,8 @@ namespace {
 // New fields must be added to BuildIndexJson().
 constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
+constexpr char kPreinstalledAppsUninstalledByUserConfigs[] =
+    "PreinstalledAppsUninstalledByUserConfigs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
 constexpr char kIconErrorLog[] = "IconErrorLog";
 constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
@@ -61,6 +63,7 @@ base::Value BuildIndexJson() {
 
   index.Append(kInstalledWebApps);
   index.Append(kPreinstalledWebAppConfigs);
+  index.Append(kPreinstalledAppsUninstalledByUserConfigs);
   index.Append(kExternallyManagedWebAppPrefs);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
@@ -187,6 +190,15 @@ base::Value BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
   return root;
 }
 
+base::Value BuildPreinstalledAppsUninstalledByUserJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kPreinstalledAppsUninstalledByUserConfigs,
+           profile->GetPrefs()
+               ->GetDictionary(prefs::kUserUninstalledPreinstalledWebAppPref)
+               ->Clone());
+  return base::Value(std::move(root));
+}
+
 base::Value BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
   base::Value root(base::Value::Type::DICTIONARY);
 
@@ -283,6 +295,7 @@ void BuildWebAppInternalsJson(
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
+  root.Append(BuildPreinstalledAppsUninstalledByUserJson(profile));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
 #if BUILDFLAG(IS_MAC)

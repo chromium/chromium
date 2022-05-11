@@ -2057,13 +2057,19 @@ const char kWebAppInstallForceList[] = "profile.web_app.install.forcelist";
 // A list of dictionaries for managing Web Apps.
 const char kWebAppSettings[] = "profile.web_app.policy_settings";
 
-// A list of dictionaries for managed configurations. Each dictionary contains
-// 3 strings -- origin to be configured, link to the configuration, and the
-// hashed value to that configuration.
+// A map of App ID to install URLs to keep track of preinstalled web apps
+// after they have been deleted.
+const char kUserUninstalledPreinstalledWebAppPref[] =
+    "web_app.app_id.install_url";
+
+// A list of dictionaries for managed configurations. Each dictionary
+// contains 3 strings -- origin to be configured, link to the configuration,
+// and the hashed value to that configuration.
 const char kManagedConfigurationPerOrigin[] =
     "profile.managed_configuration.list";
-// Dictionary that maps the hash of the last downloded managed configuration for
-// a particular origin.
+
+// Dictionary that maps the hash of the last downloaded managed configuration
+// for a particular origin.
 const char kLastManagedConfigurationHashForOrigin[] =
     "profile.managed_configuration.last_hash";
 
