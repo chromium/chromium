@@ -25,19 +25,23 @@ class PrefService;
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
+
+namespace base {
+class SystemMonitor;
+}  // namespace base
 
 namespace display {
 class Display;
-}
+}  // namespace display
 
 namespace ui {
 class ContextFactory;
-}
+}  // namespace ui
 
 namespace views {
 class TestViewsDelegate;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -49,7 +53,7 @@ class TestWallpaperControllerClient;
 
 namespace input_method {
 class MockInputMethodManager;
-}
+}  // namespace input_method
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
@@ -140,6 +144,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
   class PowerPolicyControllerInitializer;
+
+  // Must be constructed so that `base::SystemMonitor::Get()` returns a valid
+  // instance.
+  std::unique_ptr<base::SystemMonitor> system_monitor_;
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_ =
       std::make_unique<base::test::ScopedCommandLine>();

@@ -372,6 +372,11 @@ bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {
 void CaptureModeMenuGroup::AppendHighlightableItems(
     std::vector<CaptureModeSessionFocusCycler::HighlightableView*>&
         highlightable_items) {
+  // The camera menu group can be hidden if there are no cameras connected. In
+  // this case no items in this group should be highlightable.
+  if (!GetVisible())
+    return;
+
   highlightable_items.push_back(menu_header_);
   for (auto* option : options_) {
     if (option->GetEnabled())
