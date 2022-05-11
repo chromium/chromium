@@ -18,7 +18,10 @@ namespace sandbox {
 
 class AppContainer;
 
-class TargetPolicy {
+// We need [[clang::lto_visibility_public]] because instances of this class are
+// passed across module boundaries. This means different modules must have
+// compatible definitions of the class even when LTO is enabled.
+class [[clang::lto_visibility_public]] TargetPolicy {
  public:
   // Windows subsystems that can have specific rules.
   // Note: The process subsystem(SUBSYS_PROCESS) does not evaluate the request
