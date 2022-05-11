@@ -802,6 +802,19 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   if (!payment->hasIsPayment() || !payment->isPayment())
     return true;
 
+  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+    bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
+        resolver->DomWindow()->GetFrame(),
+        UserActivationUpdateSource::kRenderer);
+    if (!has_user_activation) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError,
+          "A user activation is required to create a credential in a "
+          "cross-origin iframe."));
+      return false;
+    }
+  }
+
   const auto* context = resolver->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context));
 
