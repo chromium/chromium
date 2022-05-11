@@ -204,6 +204,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ApplyRunOnOsLoginPolicyAllowed(Site site);
   void ApplyRunOnOsLoginPolicyBlocked(Site site);
   void ApplyRunOnOsLoginPolicyRunWindowed(Site site);
+  void DeletePlatformShortcut(Site site);
   void RemoveRunOnOsLoginPolicy(Site site);
   void LaunchFromChromeApps(Site site);
   void LaunchFromLaunchIcon(Site site);
@@ -296,6 +297,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(Site site);
   GURL GetScopeForSiteMode(Site site);
+  base::FilePath GetShortcutPath(base::FilePath shortcut_dir,
+                                 const std::string& app_name,
+                                 const AppId& app_id);
   GURL GetURLForSiteMode(Site site);
   void InstallCreateShortcut(bool open_in_window);
 
