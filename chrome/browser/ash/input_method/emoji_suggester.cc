@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
@@ -151,11 +152,15 @@ void EmojiSuggester::RecordAcceptanceIndex(int index) {
 }
 
 void EmojiSuggester::OnFocus(int context_id) {
-  context_id_ = context_id;
+  // Some parts of the code reserve negative/zero context_id for unfocused
+  // context. As a result we should make sure it is not being erroneously set to
+  // a negative number, and cause unexpected behaviour.
+  DCHECK(context_id > 0);
+  focused_context_id_ = context_id;
 }
 
 void EmojiSuggester::OnBlur() {
-  context_id_ = -1;
+  focused_context_id_ = absl::nullopt;
 }
 
 void EmojiSuggester::OnExternalSuggestionsUpdated(
@@ -224,7 +229,7 @@ bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
 bool EmojiSuggester::TrySuggestWithSurroundingText(const std::u16string& text,
                                                    int cursor_pos,
                                                    int anchor_pos) {
-  if (emoji_map_.empty())
+  if (emoji_map_.empty() || !focused_context_id_.has_value())
     return false;
 
   // All these below conditions are required for a emoji suggestion to be
@@ -284,20 +289,29 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
 }
 
 void EmojiSuggester::ShowSuggestionWindow() {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to show suggestion. No context id.";
+  }
+
   std::string error;
-  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties_,
-                                                    &error);
+  suggestion_handler_->SetAssistiveWindowProperties(*focused_context_id_,
+                                                    properties_, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Fail to show suggestion. " << error;
   }
 }
 
 bool EmojiSuggester::AcceptSuggestion(size_t index) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to accept suggestion. No context id.";
+    return false;
+  }
+
   if (index < 0 || index >= candidates_.size())
     return false;
 
   std::string error;
-  suggestion_handler_->AcceptSuggestionCandidate(context_id_,
+  suggestion_handler_->AcceptSuggestionCandidate(*focused_context_id_,
                                                  candidates_[index], &error);
 
   if (!error.empty()) {
@@ -311,12 +325,17 @@ bool EmojiSuggester::AcceptSuggestion(size_t index) {
 }
 
 void EmojiSuggester::DismissSuggestion() {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to dismiss suggestion. No context id.";
+    return;
+  }
+
   std::string error;
   properties_.visible = false;
   properties_.announce_string =
       l10n_util::GetStringUTF16(IDS_SUGGESTION_DISMISSED);
-  suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties_,
-                                                    &error);
+  suggestion_handler_->SetAssistiveWindowProperties(*focused_context_id_,
+                                                    properties_, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to dismiss suggestion. " << error;
     return;
@@ -327,9 +346,13 @@ void EmojiSuggester::DismissSuggestion() {
 void EmojiSuggester::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted) {
+  if (!focused_context_id_.has_value()) {
+    LOG(ERROR) << "suggest: Failed to set button highlighted. No context id.";
+    return;
+  }
   std::string error;
-  suggestion_handler_->SetButtonHighlighted(context_id_, button, highlighted,
-                                            &error);
+  suggestion_handler_->SetButtonHighlighted(*focused_context_id_, button,
+                                            highlighted, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to set button highlighted. " << error;
   }

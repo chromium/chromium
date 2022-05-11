@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -71,8 +72,8 @@ class EmojiSuggester : public Suggester {
   SuggestionHandlerInterface* const suggestion_handler_;
   Profile* profile_;
 
-  // ID of the focused text field, 0 if none is focused.
-  int context_id_ = -1;
+  // ID of the focused text field, nullopt if none is focused.
+  absl::optional<int> focused_context_id_;
 
   // If we are showing a suggestion right now.
   bool suggestion_shown_ = false;
