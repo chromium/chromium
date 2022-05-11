@@ -54,6 +54,8 @@ class LazyColorStateListSet:
 
     self._color_set_or_none = set()
     for color_dir in helpers.COLOR_STATE_LIST_DIRS:
+      if not os.path.isdir(color_dir):
+        continue
       for color_file in os.listdir(color_dir):
         if '.' in color_file:
           self._color_set_or_none.add(color_file[:color_file.index('.')])

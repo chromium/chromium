@@ -41,7 +41,6 @@ COLOR_STATE_LIST_DIRS = {
     # Generated with the command below. When color state lists in new folders
     # are added, re-run this command and update.
     # find chrome/ components/ -name *\.xml | grep "/res/color" | xargs grep "<selector" | cut -d: -f1 | xargs dirname | sort | uniq | sed "s/^/'/" | sed "s/$/\/',/"
-    'chrome/android/java/res/color/',
     'chrome/browser/feed/android/java/res/color/',
     'components/browser_ui/styles/android/java/res/color/',
     'components/browser_ui/styles/android/java/res/color-night/',
