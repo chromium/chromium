@@ -891,7 +891,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchScreenTopSuppressed"
-    enum="ContextualSearchTapSuppression" expires_after="M72">
+    enum="ContextualSearchTapSuppression" expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1051,7 +1054,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchTopLocationNotSeen" units="dps"
-    expires_after="M72">
+    expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1061,7 +1067,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchTopLocationSeen" units="dps"
-    expires_after="M72">
+    expires_after="M103">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

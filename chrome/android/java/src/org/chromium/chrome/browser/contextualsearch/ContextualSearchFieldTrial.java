@@ -211,6 +211,7 @@ public class ContextualSearchFieldTrial {
          */
         int MANDATORY_PROMO_LIMIT = 0;
         /**
+         * @deprecated
          * A Y value limit that will suppress a Tap near the top of the screen.
          * (any Y value less than the limit will suppress the Tap trigger).
          */

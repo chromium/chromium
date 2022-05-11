@@ -517,35 +517,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs the location of a Tap and whether the panel was seen and the type of the
-     * trigger.
-     * @param wasPanelSeen Whether the panel was seen.
-     * @param wasTap Whether the gesture was a Tap or not.
-     * @param triggerLocationDps The trigger location from the top of the screen.
-     */
-    public static void logScreenTopTapLocation(
-            boolean wasPanelSeen, boolean wasTap, int triggerLocationDps) {
-        // We only log Tap locations for the screen top.
-        if (!wasTap) return;
-        String histogram = wasPanelSeen ? "Search.ContextualSearchTopLocationSeen"
-                                        : "Search.ContextualSearchTopLocationNotSeen";
-        int min = 1;
-        int max = 250;
-        int numBuckets = 50;
-        RecordHistogram.recordCustomCountHistogram(
-                histogram, triggerLocationDps, min, max, numBuckets);
-    }
-
-    /**
-     * Log whether the UX was suppressed due to a Tap too close to the screen top.
-     * @param wasSuppressed Whether showing the UX was suppressed.
-     */
-    public static void logScreenTopTapSuppression(boolean wasSuppressed) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchScreenTopSuppressed", wasSuppressed);
-    }
-
-    /**
      * Logs whether results were seen based on the duration of the Tap, for both short and long
      * durations.
      * @param wasSearchContentViewSeen If the panel was opened.
