@@ -5,7 +5,7 @@
 import("./modules/modules.gni")
 import("./realbox/realbox.gni")
 
-# List of files that don't need to be passed to html_to_js().
+# List of files that don't need to be passed to html_to_wrapper().
 non_web_component_files =
     [
       "background_manager.ts",
