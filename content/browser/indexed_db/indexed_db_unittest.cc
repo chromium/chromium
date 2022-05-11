@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -31,6 +32,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using blink::IndexedDBDatabaseMetadata;
@@ -78,19 +80,20 @@ std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
 
 }  // namespace
 
-class IndexedDBTest : public testing::Test {
+class IndexedDBTest : public testing::Test,
+                      public testing::WithParamInterface<bool> {
  public:
-  const blink::StorageKey kNormalStorageKey;
-  mutable storage::BucketLocator kNormalBucketLocator;
-  const blink::StorageKey kSessionOnlyStorageKey;
-  mutable storage::BucketLocator kSessionOnlyBucketLocator;
+  blink::StorageKey kNormalFirstPartyStorageKey;
+  storage::BucketLocator kNormalFirstPartyBucketLocator;
+  blink::StorageKey kSessionOnlyFirstPartyStorageKey;
+  storage::BucketLocator kSessionOnlyFirstPartyBucketLocator;
+  blink::StorageKey kNormalThirdPartyStorageKey;
+  storage::BucketLocator kNormalThirdPartyBucketLocator;
+  blink::StorageKey kSessionOnlyThirdPartyStorageKey;
+  storage::BucketLocator kSessionOnlyThirdPartyBucketLocator;
 
   IndexedDBTest()
-      : kNormalStorageKey(
-            blink::StorageKey::CreateFromStringForTesting("http://normal/")),
-        kSessionOnlyStorageKey(blink::StorageKey::CreateFromStringForTesting(
-            "http://session-only/")),
-        quota_manager_proxy_(
+      : quota_manager_proxy_(
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
                 nullptr,
                 base::SequencedTaskRunnerHandle::Get())),
@@ -102,17 +105,50 @@ class IndexedDBTest : public testing::Test {
             /*file_system_access_context=*/mojo::NullRemote(),
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get())) {
-    kNormalBucketLocator = storage::BucketLocator();
-    kNormalBucketLocator.storage_key = kNormalStorageKey;
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kThirdPartyStoragePartitioning,
+        IsThirdPartyStoragePartitioningEnabled());
+    kNormalFirstPartyStorageKey =
+        blink::StorageKey::CreateFromStringForTesting("http://normal/");
+    kNormalFirstPartyBucketLocator = storage::BucketLocator();
+    kNormalFirstPartyBucketLocator.id = storage::BucketId::FromUnsafeValue(1);
+    kNormalFirstPartyBucketLocator.storage_key = kNormalFirstPartyStorageKey;
     context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kNormalBucketLocator);
-    kSessionOnlyBucketLocator = storage::BucketLocator();
-    kSessionOnlyBucketLocator.storage_key = kSessionOnlyStorageKey;
+        kNormalFirstPartyBucketLocator);
+    kSessionOnlyFirstPartyStorageKey =
+        blink::StorageKey::CreateFromStringForTesting("http://session-only/");
+    kSessionOnlyFirstPartyBucketLocator = storage::BucketLocator();
+    kSessionOnlyFirstPartyBucketLocator.id =
+        storage::BucketId::FromUnsafeValue(2);
+    kSessionOnlyFirstPartyBucketLocator.storage_key =
+        kSessionOnlyFirstPartyStorageKey;
     context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
-        kSessionOnlyBucketLocator);
+        kSessionOnlyFirstPartyBucketLocator);
+    kNormalThirdPartyStorageKey =
+        blink::StorageKey(url::Origin::Create(GURL("http://normal/")),
+                          url::Origin::Create(GURL("http://rando/")));
+    kNormalThirdPartyBucketLocator = storage::BucketLocator();
+    kNormalThirdPartyBucketLocator.id = storage::BucketId::FromUnsafeValue(3);
+    kNormalThirdPartyBucketLocator.storage_key = kNormalThirdPartyStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kNormalThirdPartyBucketLocator);
+    kSessionOnlyThirdPartyStorageKey =
+        blink::StorageKey(url::Origin::Create(GURL("http://session-only/")),
+                          url::Origin::Create(GURL("http://rando/")));
+    kSessionOnlyThirdPartyBucketLocator = storage::BucketLocator();
+    kSessionOnlyThirdPartyBucketLocator.id =
+        storage::BucketId::FromUnsafeValue(4);
+    kSessionOnlyThirdPartyBucketLocator.storage_key =
+        kSessionOnlyThirdPartyStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kSessionOnlyThirdPartyBucketLocator);
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        kSessionOnlyStorageKey.origin(), /*should_purge_on_shutdown=*/true));
+        kSessionOnlyFirstPartyStorageKey.origin(),
+        /*should_purge_on_shutdown=*/true));
+    policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
+        kSessionOnlyThirdPartyStorageKey.origin(),
+        /*should_purge_on_shutdown=*/true));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
 
@@ -168,8 +204,11 @@ class IndexedDBTest : public testing::Test {
     return path;
   }
 
+  bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -177,35 +216,83 @@ class IndexedDBTest : public testing::Test {
   scoped_refptr<IndexedDBContextImpl> context_;
 };
 
-TEST_F(IndexedDBTest, ClearSessionOnlyDatabases) {
-  base::FilePath normal_path;
-  base::FilePath session_only_path;
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedDBTest,
+    testing::Bool());
 
-  normal_path = GetFilePathForTesting(kNormalBucketLocator);
-  session_only_path = GetFilePathForTesting(kSessionOnlyBucketLocator);
-  ASSERT_TRUE(base::CreateDirectory(normal_path));
-  ASSERT_TRUE(base::CreateDirectory(session_only_path));
+TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
+  base::FilePath normal_path_first_party;
+  base::FilePath session_only_path_first_party;
+  base::FilePath normal_path_third_party;
+  base::FilePath session_only_path_third_party;
+
+  normal_path_first_party =
+      GetFilePathForTesting(kNormalFirstPartyBucketLocator);
+  session_only_path_first_party =
+      GetFilePathForTesting(kSessionOnlyFirstPartyBucketLocator);
+  normal_path_third_party =
+      GetFilePathForTesting(kNormalThirdPartyBucketLocator);
+  session_only_path_third_party =
+      GetFilePathForTesting(kSessionOnlyThirdPartyBucketLocator);
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_NE(normal_path_first_party, normal_path_third_party);
+    EXPECT_NE(session_only_path_first_party, session_only_path_third_party);
+  } else {
+    EXPECT_EQ(normal_path_first_party, normal_path_third_party);
+    EXPECT_EQ(session_only_path_first_party, session_only_path_third_party);
+  }
+
+  ASSERT_TRUE(base::CreateDirectory(normal_path_first_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_path_first_party));
+  ASSERT_TRUE(base::CreateDirectory(normal_path_third_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_path_third_party));
   base::RunLoop().RunUntilIdle();
 
   context()->Shutdown();
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(base::DirectoryExists(normal_path));
-  EXPECT_FALSE(base::DirectoryExists(session_only_path));
+  EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
+  EXPECT_FALSE(base::DirectoryExists(session_only_path_first_party));
+  EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    // TODO(https://crbug.com/1199077): Policy updates are per-origin.
+    EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+  } else {
+    EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
+  }
 }
 
-TEST_F(IndexedDBTest, SetForceKeepSessionState) {
-  base::FilePath normal_path;
-  base::FilePath session_only_path;
+TEST_P(IndexedDBTest, SetForceKeepSessionState) {
+  base::FilePath normal_path_first_party;
+  base::FilePath session_only_path_first_party;
+  base::FilePath normal_path_third_party;
+  base::FilePath session_only_path_third_party;
 
   // Save session state. This should bypass the destruction-time deletion.
   context()->SetForceKeepSessionState();
 
-  normal_path = GetFilePathForTesting(kNormalBucketLocator);
-  session_only_path = GetFilePathForTesting(kSessionOnlyBucketLocator);
-  ASSERT_TRUE(base::CreateDirectory(normal_path));
-  ASSERT_TRUE(base::CreateDirectory(session_only_path));
+  normal_path_first_party =
+      GetFilePathForTesting(kNormalFirstPartyBucketLocator);
+  session_only_path_first_party =
+      GetFilePathForTesting(kSessionOnlyFirstPartyBucketLocator);
+  normal_path_third_party =
+      GetFilePathForTesting(kNormalThirdPartyBucketLocator);
+  session_only_path_third_party =
+      GetFilePathForTesting(kSessionOnlyThirdPartyBucketLocator);
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_NE(normal_path_first_party, normal_path_third_party);
+    EXPECT_NE(session_only_path_first_party, session_only_path_third_party);
+  } else {
+    EXPECT_EQ(normal_path_first_party, normal_path_third_party);
+    EXPECT_EQ(session_only_path_first_party, session_only_path_third_party);
+  }
+
+  ASSERT_TRUE(base::CreateDirectory(normal_path_first_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_path_first_party));
+  ASSERT_TRUE(base::CreateDirectory(normal_path_third_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_path_third_party));
   base::RunLoop().RunUntilIdle();
 
   context()->Shutdown();
@@ -213,8 +300,10 @@ TEST_F(IndexedDBTest, SetForceKeepSessionState) {
   base::RunLoop().RunUntilIdle();
 
   // No data was cleared because of SetForceKeepSessionState.
-  EXPECT_TRUE(base::DirectoryExists(normal_path));
-  EXPECT_TRUE(base::DirectoryExists(session_only_path));
+  EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_first_party));
+  EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
 }
 
 class ForceCloseDBCallbacks : public IndexedDBCallbacks {
@@ -249,10 +338,11 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   std::unique_ptr<IndexedDBConnection> connection_;
 };
 
-TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
+TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
   auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
 
   auto open_db_callbacks =
@@ -309,10 +399,73 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
   EXPECT_FALSE(base::DirectoryExists(test_path));
 }
 
-TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
+TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
+                        url::Origin::Create(GURL("http://rando/")));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
+  bucket_locator.storage_key = kTestStorageKey;
+
+  auto open_db_callbacks =
+      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto closed_db_callbacks =
+      base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto open_callbacks =
+      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
+  auto closed_callbacks =
+      base::MakeRefCounted<ForceCloseDBCallbacks>(context(), bucket_locator);
+  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
+
+  const int64_t host_transaction_id = 0;
+  const int64_t version = 0;
+
+  IndexedDBFactory* factory = context()->GetIDBFactory();
+
+  auto create_transaction_callback1 =
+      base::BindOnce(&CreateAndBindTransactionPlaceholder);
+  factory->Open(u"opendb",
+                std::make_unique<IndexedDBPendingConnection>(
+                    open_callbacks, open_db_callbacks, host_transaction_id,
+                    version, std::move(create_transaction_callback1)),
+                bucket_locator, context()->GetDataPath(bucket_locator));
+  EXPECT_TRUE(base::DirectoryExists(test_path));
+
+  auto create_transaction_callback2 =
+      base::BindOnce(&CreateAndBindTransactionPlaceholder);
+  factory->Open(u"closeddb",
+                std::make_unique<IndexedDBPendingConnection>(
+                    closed_callbacks, closed_db_callbacks, host_transaction_id,
+                    version, std::move(create_transaction_callback2)),
+                bucket_locator, context()->GetDataPath(bucket_locator));
+  RunPostedTasks();
+  ASSERT_TRUE(closed_callbacks->connection());
+  closed_callbacks->connection()->AbortTransactionsAndClose(
+      IndexedDBConnection::CloseErrorHandling::kAbortAllReturnLastError);
+  RunPostedTasks();
+
+  context()->ForceClose(
+      bucket_locator,
+      storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
+      base::DoNothing());
+  EXPECT_TRUE(open_db_callbacks->forced_close_called());
+  EXPECT_FALSE(closed_db_callbacks->forced_close_called());
+
+  RunPostedTasks();
+
+  bool success = false;
+  storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
+  waiter.DeleteForBucket(kTestStorageKey, &success);
+  EXPECT_TRUE(success);
+
+  EXPECT_FALSE(base::DirectoryExists(test_path));
+}
+
+TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
   auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
   context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(bucket_locator);
 
@@ -336,10 +489,80 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
 
-TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailure) {
+TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
+                        url::Origin::Create(GURL("http://rando/")));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
+  bucket_locator.storage_key = kTestStorageKey;
+  context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(bucket_locator);
+
+  base::FilePath test_path = GetFilePathForTesting(bucket_locator);
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto lock = LockForTesting(test_path);
+  ASSERT_TRUE(lock);
+
+  bool success = false;
+  base::RunLoop loop;
+  context()->IDBTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
+        waiter.DeleteForBucket(kTestStorageKey, &success);
+        loop.Quit();
+      }));
+  loop.Run();
+  EXPECT_FALSE(success);
+
+  EXPECT_TRUE(base::DirectoryExists(test_path));
+}
+
+TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("http://test/");
   auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
+  bucket_locator.storage_key = kTestStorageKey;
+
+  auto* factory =
+      static_cast<IndexedDBFactoryImpl*>(context()->GetIDBFactory());
+
+  const int64_t transaction_id = 1;
+
+  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
+  auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
+  auto create_transaction_callback1 =
+      base::BindOnce(&CreateAndBindTransactionPlaceholder);
+  auto connection = std::make_unique<IndexedDBPendingConnection>(
+      callbacks, db_callbacks, transaction_id,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      std::move(create_transaction_callback1));
+  factory->Open(u"db", std::move(connection), bucket_locator,
+                context()->GetDataPath(bucket_locator));
+  RunPostedTasks();
+
+  ASSERT_TRUE(callbacks->connection());
+
+  // ConnectionOpened() is usually called by the dispatcher.
+  context()->ConnectionOpened(bucket_locator, callbacks->connection());
+
+  EXPECT_TRUE(factory->IsBackingStoreOpen(bucket_locator));
+
+  // Simulate the write failure.
+  leveldb::Status status = leveldb::Status::IOError("Simulated failure");
+  factory->HandleBackingStoreFailure(bucket_locator);
+
+  EXPECT_TRUE(db_callbacks->forced_close_called());
+  EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));
+}
+
+TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
+                        url::Origin::Create(GURL("http://rando/")));
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
 
   auto* factory =

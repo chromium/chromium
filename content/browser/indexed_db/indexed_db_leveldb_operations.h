@@ -39,6 +39,7 @@ namespace indexed_db {
 
 extern const base::FilePath::CharType kBlobExtension[];
 extern const base::FilePath::CharType kIndexedDBExtension[];
+extern const base::FilePath::CharType kIndexedDBFile[];
 extern const base::FilePath::CharType kLevelDBExtension[];
 
 base::FilePath GetBlobStoreFileName(

@@ -60,6 +60,12 @@ class MockQuotaManager : public QuotaManager {
 
   // Overrides QuotaManager's implementation to fetch from an internal
   // container populated by calls to GetOrCreateBucket.
+  void GetBucketById(
+      const BucketId& bucket_id,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  // Overrides QuotaManager's implementation to fetch from an internal
+  // container populated by calls to GetOrCreateBucket.
   void GetBucket(const blink::StorageKey& storage_key,
                  const std::string& bucket_name,
                  blink::mojom::StorageType type,
@@ -178,6 +184,8 @@ class MockQuotaManager : public QuotaManager {
     int64_t quota;
     blink::mojom::UsageBreakdownPtr usage_breakdown;
   };
+
+  QuotaErrorOr<BucketInfo> FindBucketById(const BucketId& bucket_id);
 
   QuotaErrorOr<BucketInfo> FindBucket(const blink::StorageKey& storage_key,
                                       const std::string& bucket_name,

@@ -57,9 +57,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       public storage::mojom::IndexedDBControl,
       public storage::mojom::IndexedDBControlTest {
  public:
-  // The indexed db directory.
-  static const base::FilePath::CharType kIndexedDBDirectory[];
-
   // Release `context` on the IDBTaskRunner.
   static void ReleaseOnIDBSequence(
       scoped_refptr<IndexedDBContextImpl>&& context);
@@ -256,6 +253,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void ShutdownOnIDBSequence();
 
   const base::FilePath GetFirstPartyDataPath() const;
+  const base::FilePath GetThirdPartyDataPath() const;
   base::FilePath GetBlobStorePath(
       const storage::BucketLocator& bucket_locator) const;
   base::FilePath GetLevelDBPath(
@@ -277,19 +275,29 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void InitializeFromFilesIfNeeded(base::OnceClosure callback);
   bool did_initialize_from_files_{false};
 
-  using GetOrCreateDefaultBucketCallback = base::OnceCallback<void(
+  using DidGetBucketLocatorCallback = base::OnceCallback<void(
       const absl::optional<storage::BucketLocator>& bucket_locator)>;
+
   // This function provides an easy way to wrap the common operation: find
   // bucket in `storage_key_to_bucket_locator_` if it exists, otherwise look
   // it up in the `quota_manager_proxy_`, cache it, and then run the callback.
   void GetOrCreateDefaultBucket(const blink::StorageKey& storage_key,
-                                GetOrCreateDefaultBucketCallback callback);
+                                DidGetBucketLocatorCallback callback);
+
+  // This function provides an easy way to wrap the common operation: find
+  // bucket in `bucket_id_to_bucket_locator_` if it exists, otherwise look
+  // it up in the `quota_manager_proxy_`, cache it, and then run the callback.
+  void GetBucketById(const storage::BucketId& bucket_id,
+                     DidGetBucketLocatorCallback callback);
 
   // TODO(crbug.com/1315371): We need a way to map the StorageKey to a single
   // valid BucketLocator for legacy API purposes. This member should be removed
   // as it blocks the use of non-default named buckets.
   std::map<blink::StorageKey, storage::BucketLocator>
       storage_key_to_bucket_locator_;
+
+  std::map<storage::BucketId, storage::BucketLocator>
+      bucket_id_to_bucket_locator_;
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;

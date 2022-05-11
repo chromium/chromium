@@ -98,6 +98,13 @@ void MockQuotaManager::GetOrCreateBucketDeprecated(
   std::move(callback).Run(std::move(bucket));
 }
 
+void MockQuotaManager::GetBucketById(
+    const BucketId& bucket_id,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  QuotaErrorOr<BucketInfo> bucket = FindBucketById(bucket_id);
+  std::move(callback).Run(std::move(bucket));
+}
+
 void MockQuotaManager::GetBucket(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
@@ -227,6 +234,18 @@ void MockQuotaManager::NotifyWriteFailed(const StorageKey& storage_key) {
 }
 
 MockQuotaManager::~MockQuotaManager() = default;
+
+QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucketById(
+    const BucketId& bucket_id) {
+  auto it = std::find_if(buckets_.begin(), buckets_.end(),
+                         [bucket_id](const BucketData& bucket_data) {
+                           return bucket_data.bucket.id == bucket_id;
+                         });
+  if (it != buckets_.end()) {
+    return it->bucket;
+  }
+  return QuotaError::kNotFound;
+}
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const blink::StorageKey& storage_key,

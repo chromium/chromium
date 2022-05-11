@@ -73,8 +73,7 @@ namespace content {
 
 // This browser test is aimed towards exercising the IndexedDB bindings and
 // the actual implementation that lives in the browser side.
-class IndexedDBBrowserTest : public ContentBrowserTest,
-                             public ::testing::WithParamInterface<const char*> {
+class IndexedDBBrowserTest : public ContentBrowserTest {
  public:
   IndexedDBBrowserTest() = default;
 
@@ -1026,7 +1025,21 @@ std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
 // See TODO in CorruptDBRequestHandler.  Windows does not support nested
 // message loops on the IO thread, so run this test on other platforms.
 #if !BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
+class IndexedDBBrowserTestWithCorruption
+    : public IndexedDBBrowserTest,
+      public ::testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         IndexedDBBrowserTestWithCorruption,
+                         ::testing::Values("failGetBlobJournal",
+                                           "get",
+                                           "getAll",
+                                           "iterate",
+                                           "failTransactionCommit",
+                                           "clearObjectStore"));
+
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
+                       OperationOnCorruptedOpenDatabase) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
   const blink::StorageKey storage_key = blink::StorageKey(
@@ -1062,16 +1075,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
       std::string(s_corrupt_db_test_prefix) + "corrupted_open_db_recovery.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
 }
-
-// Only instantiate on platforms that run the parameterized test.
-INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
-                         IndexedDBBrowserTest,
-                         ::testing::Values("failGetBlobJournal",
-                                           "get",
-                                           "getAll",
-                                           "iterate",
-                                           "failTransactionCommit",
-                                           "clearObjectStore"));
 #endif  // !BUILDFLAG(IS_WIN)
 
 // TODO: http://crbug.com/510520, flaky on all platforms

@@ -28,6 +28,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -51,6 +52,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -472,6 +474,27 @@ class IndexedDBBackingStoreTest : public testing::Test {
   IndexedDBValue value1_;
   IndexedDBValue value2_;
 };
+
+class IndexedDBBackingStoreTestForThirdPartyStoragePartitioning
+    : public testing::WithParamInterface<bool>,
+      public IndexedDBBackingStoreTest {
+ public:
+  IndexedDBBackingStoreTestForThirdPartyStoragePartitioning() {
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kThirdPartyStoragePartitioning,
+        IsThirdPartyStoragePartitioningEnabled());
+  }
+
+  bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+    testing::Bool());
 
 enum class ExternalObjectTestType {
   kOnlyBlobs,
@@ -1631,7 +1654,8 @@ TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
   EXPECT_EQ(db1_name, names[0]);
 }
 
-TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
+TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+       ReadCorruptionInfoForOpaqueStorageKey) {
   auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
       storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
   storage::BucketLocator bucket_locator;
@@ -1641,10 +1665,17 @@ TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
   EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(),
                                              base::FilePath(), bucket_locator)
                   .empty());
+}
 
+TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+       ReadCorruptionInfoForFirstPartyStorageKey) {
+  auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
+      storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
+  storage::BucketLocator bucket_locator;
   const base::FilePath path_base = temp_dir_.GetPath();
   bucket_locator.storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://www.google.com/");
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
   ASSERT_FALSE(path_base.empty());
   ASSERT_TRUE(PathIsWritable(path_base));
 
@@ -1656,6 +1687,96 @@ TEST_F(IndexedDBBackingStoreTest, ReadCorruptionInfo) {
   const base::FilePath info_path =
       path_base.AppendASCII("http_www.google.com_0.indexeddb.leveldb")
           .AppendASCII("corruption_info.json");
+  ASSERT_TRUE(CreateDirectory(info_path.DirName()));
+
+  // Empty file.
+  std::string dummy_data;
+  ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // File size > 4 KB.
+  dummy_data.resize(5000, 'c');
+  ASSERT_TRUE(base::WriteFile(info_path, dummy_data));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // Random string.
+  ASSERT_TRUE(base::WriteFile(info_path, "foo bar"));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // Not a dictionary.
+  ASSERT_TRUE(base::WriteFile(info_path, "[]"));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // Empty dictionary.
+  ASSERT_TRUE(base::WriteFile(info_path, "{}"));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // Dictionary, no message key.
+  ASSERT_TRUE(base::WriteFile(info_path, "{\"foo\":\"bar\"}"));
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+  EXPECT_FALSE(PathExists(info_path));
+
+  // Dictionary, message key.
+  ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"bar\"}"));
+  std::string message = indexed_db::ReadCorruptionInfo(
+      filesystem_proxy.get(), path_base, bucket_locator);
+  EXPECT_FALSE(message.empty());
+  EXPECT_FALSE(PathExists(info_path));
+  EXPECT_EQ("bar", message);
+
+  // Dictionary, message key and more.
+  ASSERT_TRUE(base::WriteFile(info_path, "{\"message\":\"foo\",\"bar\":5}"));
+  message = indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                           bucket_locator);
+  EXPECT_FALSE(message.empty());
+  EXPECT_FALSE(PathExists(info_path));
+  EXPECT_EQ("foo", message);
+}
+
+TEST_P(IndexedDBBackingStoreTestForThirdPartyStoragePartitioning,
+       ReadCorruptionInfoForThirdPartyStorageKey) {
+  auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
+      storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
+  storage::BucketLocator bucket_locator;
+  const base::FilePath path_base = temp_dir_.GetPath();
+  bucket_locator.storage_key =
+      blink::StorageKey(url::Origin::Create(GURL("http://www.google.com/")),
+                        url::Origin::Create(GURL("http://www.youtube.com/")));
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(1);
+  ASSERT_FALSE(path_base.empty());
+  ASSERT_TRUE(PathIsWritable(path_base));
+
+  // File not found.
+  EXPECT_TRUE(indexed_db::ReadCorruptionInfo(filesystem_proxy.get(), path_base,
+                                             bucket_locator)
+                  .empty());
+
+  base::FilePath info_path =
+      path_base.AppendASCII("http_www.google.com_0.indexeddb.leveldb")
+          .AppendASCII("corruption_info.json");
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    info_path = path_base.AppendASCII("1")
+                    .AppendASCII("IndexedDB")
+                    .AppendASCII("indexeddb.leveldb")
+                    .AppendASCII("corruption_info.json");
+  }
   ASSERT_TRUE(CreateDirectory(info_path.DirName()));
 
   // Empty file.

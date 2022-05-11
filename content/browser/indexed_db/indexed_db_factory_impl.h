@@ -170,26 +170,16 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
 
  private:
-  friend class IndexedDBBrowserTest;
-  friend class IndexedDBBucketState;
-
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           BackingStoreReleasedOnForcedClose);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           BackingStoreReleaseDelayedOnClose);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, BackingStoreRunPreCloseTasks);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           BackingStoreCloseImmediatelySwitch);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, BackingStoreNoSweeping);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, DatabaseFailedOpen);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
                            DeleteDatabaseClosesBackingStore);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
                            ForceCloseReleasesBackingStore);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           GetDatabaseNamesClosesBackingStore);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
-                           ForceCloseOpenDatabasesOnCommitFailure);
+                           ForceCloseOpenDatabasesOnCommitFailureFirstParty);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
+                           ForceCloseOpenDatabasesOnCommitFailureThirdParty);
 
   // `path_base` is the directory that will contain the database directory, the
   // blob directory, and any data loss info. `database_path` is the directory

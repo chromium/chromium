@@ -16,6 +16,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
@@ -50,6 +51,8 @@ class LDBComparator : public leveldb::Comparator {
 const base::FilePath::CharType kBlobExtension[] = FILE_PATH_LITERAL(".blob");
 const base::FilePath::CharType kIndexedDBExtension[] =
     FILE_PATH_LITERAL(".indexeddb");
+const base::FilePath::CharType kIndexedDBFile[] =
+    FILE_PATH_LITERAL("indexeddb");
 const base::FilePath::CharType kLevelDBExtension[] =
     FILE_PATH_LITERAL(".leveldb");
 
@@ -67,11 +70,11 @@ base::FilePath GetBlobStoreFileName(
         .AddExtension(kBlobExtension);
   } else {
     // Third-party blob files are stored at:
-    // {{third_party_data_path}}/indexeddb.blob
-    // TODO(crbug.com/1218100): Support the correct third-party blob path.
+    // {{third_party_data_path}}/{{bucket_id}}/IndexedDB/indexeddb.blob
     return base::FilePath()
-        .AppendASCII(storage::GetIdentifierFromOrigin(url::Origin()))
-        .AddExtension(kIndexedDBExtension)
+        .AppendASCII(base::NumberToString(bucket_locator.id.GetUnsafeValue()))
+        .Append(storage::kIndexedDbDirectory)
+        .Append(kIndexedDBFile)
         .AddExtension(kBlobExtension);
   }
 }
@@ -83,6 +86,7 @@ base::FilePath GetLevelDBFileName(
   if (bucket_locator.storage_key.IsFirstPartyContext()) {
     // First-party leveldb files, for legacy reasons, are stored at:
     // {{first_party_data_path}}/{{serialized_origin}}.indexeddb.leveldb
+    // TODO(crbug.com/1315371): Migrate all first party buckets to the new path.
     return base::FilePath()
         .AppendASCII(storage::GetIdentifierFromOrigin(
             bucket_locator.storage_key.origin()))
@@ -90,11 +94,12 @@ base::FilePath GetLevelDBFileName(
         .AddExtension(kLevelDBExtension);
   } else {
     // Third-party leveldb files are stored at:
-    // {{unique_bucket_path}}/indexeddb.leveldb
-    // TODO(crbug.com/1218100): Support the correct third-party leveldb path.
+    // {{third_party_data_path}}/{{bucket_id}}/IndexedDB/indexeddb.leveldb
+    // TODO(crbug.com/1315371): Use QuotaManagerProxy::GetClientBucketPath.
     return base::FilePath()
-        .AppendASCII(storage::GetIdentifierFromOrigin(url::Origin()))
-        .AddExtension(kIndexedDBExtension)
+        .AppendASCII(base::NumberToString(bucket_locator.id.GetUnsafeValue()))
+        .Append(storage::kIndexedDbDirectory)
+        .Append(kIndexedDBFile)
         .AddExtension(kLevelDBExtension);
   }
 }
