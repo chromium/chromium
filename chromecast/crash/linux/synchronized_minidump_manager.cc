@@ -303,7 +303,7 @@ bool SynchronizedMinidumpManager::ParseFiles() {
     RCHECK(dump_info.has_value(), false);
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);
-    dumps->Append(std::move(dump_info.value()));
+    dumps->GetList().Append(std::move(dump_info.value()));
   }
 
   JSONFileValueDeserializer deserializer(metadata_path_);
@@ -367,7 +367,8 @@ bool SynchronizedMinidumpManager::AddEntryToLockFile(
     return false;
   }
 
-  dumps_->Append(dump_info.GetAsValue());
+  dumps_->GetList().Append(
+      base::Value::FromUniquePtrValue(dump_info.GetAsValue()));
   return true;
 }
 
@@ -407,8 +408,10 @@ bool SynchronizedMinidumpManager::SetCurrentDumps(
     const std::vector<std::unique_ptr<DumpInfo>>& dumps) {
   dumps_->ClearList();
 
-  for (auto& dump : dumps)
-    dumps_->Append(dump->GetAsValue());
+  for (auto& dump : dumps) {
+    dumps_->GetList().Append(
+        base::Value::FromUniquePtrValue(dump->GetAsValue()));
+  }
 
   return true;
 }

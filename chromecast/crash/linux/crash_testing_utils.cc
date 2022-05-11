@@ -50,7 +50,7 @@ std::unique_ptr<base::ListValue> ParseLockFile(const std::string& path) {
     RCHECK(dump_info.has_value(), nullptr, "Invalid DumpInfo");
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), nullptr, "Invalid DumpInfo");
-    dumps->Append(std::move(dump_info.value()));
+    dumps->GetList().Append(std::move(dump_info.value()));
   }
 
   return dumps;
@@ -149,7 +149,8 @@ bool AppendLockFile(const std::string& lockfile_path,
     }
   }
 
-  contents->Append(dump.GetAsValue());
+  contents->GetList().Append(
+      base::Value::FromUniquePtrValue(dump.GetAsValue()));
 
   return WriteLockFile(lockfile_path, contents.get()) == 0;
 }
