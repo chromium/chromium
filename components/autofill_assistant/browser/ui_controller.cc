@@ -1003,6 +1003,12 @@ void UiController::SetCollectUserDataOptions(CollectUserDataOptions* options) {
   execution_delegate_->NotifyUserDataChange(UserDataFieldChange::ALL);
 }
 
+void UiController::SetCollectUserDataUiState(bool enabled) {
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnCollectUserDataUiStateChanged(enabled);
+  }
+}
+
 void UiController::SetLastSuccessfulUserDataOptions(
     std::unique_ptr<CollectUserDataOptions> collect_user_data_options) {
   last_collect_user_data_options_ = std::move(collect_user_data_options);

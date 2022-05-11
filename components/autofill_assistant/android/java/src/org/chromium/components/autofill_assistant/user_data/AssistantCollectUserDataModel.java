@@ -205,6 +205,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> DATA_ORIGIN_DIALOG_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey ENABLE_UI_INTERACTIONS =
+            new WritableBooleanPropertyKey();
+
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
                 SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, SELECTED_PHONE_NUMBER,
@@ -222,7 +225,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL,
                 ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS,
                 DATA_ORIGIN_LINK_TEXT, DATA_ORIGIN_DIALOG_TITLE, DATA_ORIGIN_DIALOG_TEXT,
-                DATA_ORIGIN_DIALOG_BUTTON_TEXT);
+                DATA_ORIGIN_DIALOG_BUTTON_TEXT, ENABLE_UI_INTERACTIONS);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -251,6 +254,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(DATA_ORIGIN_DIALOG_TITLE, "");
         set(DATA_ORIGIN_DIALOG_TEXT, "");
         set(DATA_ORIGIN_DIALOG_BUTTON_TEXT, "");
+        set(ENABLE_UI_INTERACTIONS, true);
     }
 
     @CalledByNative
@@ -640,5 +644,10 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setInitializeAddressCollectionParams(byte[] params) {
         set(INITIALIZE_ADDRESS_COLLECTION_PARAMS, params);
+    }
+
+    @CalledByNative
+    private void setEnableUiInteractions(boolean enable) {
+        set(ENABLE_UI_INTERACTIONS, enable);
     }
 }

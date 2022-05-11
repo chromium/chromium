@@ -30,6 +30,7 @@ class MockUiControllerObserver : public UiControllerObserver {
                void(const std::vector<UserAction>& user_actions));
   MOCK_METHOD1(OnCollectUserDataOptionsChanged,
                void(const CollectUserDataOptions* options));
+  MOCK_METHOD1(OnCollectUserDataUiStateChanged, void(bool enabled));
   MOCK_METHOD1(OnDetailsChanged, void(const std::vector<Details>& details));
   MOCK_METHOD1(OnInfoBoxChanged, void(const InfoBox* info_box));
   MOCK_METHOD1(OnProgressChanged, void(int progress));

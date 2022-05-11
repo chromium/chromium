@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.gridlayout.widget.GridLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -49,6 +50,9 @@ import java.util.List;
  *  - The text for the `add' and `edit' buttons can be customized.
  */
 public class AssistantChoiceList extends GridLayout {
+    public static final String ADD_BUTTON_TAG = "ADD_BUTTON";
+    public static final String EDIT_BUTTON_TAG = "EDIT_BUTTON";
+
     /**
      * Represents a single choice with a radio button, customizable content and an edit button.
      */
@@ -340,12 +344,40 @@ public class AssistantChoiceList extends GridLayout {
         mAddButtonListener = listener;
     }
 
+    /**
+     * Allows to change the visibility of the 'add' button.
+     *
+     * @param visible The flag.
+     */
     public void setAddButtonVisible(boolean visible) {
         if (mAddButton != null) {
             mAddButton.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
         if (mAddButtonLabel != null) {
             mAddButtonLabel.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * Allows to enable / disable the UI. This changes the state of the radio and edit buttons on
+     * all elements.
+     *
+     * @param enabled The flag.
+     */
+    public void setUiEnabled(boolean enabled) {
+        for (Item item : mItems) {
+            item.mCompoundButton.setEnabled(enabled);
+            if (item.mEditButton != null) {
+                item.mEditButton.setEnabled(enabled);
+                item.mEditButton.findViewWithTag(EDIT_BUTTON_TAG).setEnabled(enabled);
+            }
+        }
+        if (mAddButton != null) {
+            mAddButton.setEnabled(enabled);
+            mAddButton.findViewWithTag(ADD_BUTTON_TAG).setEnabled(enabled);
+        }
+        if (mAddButtonLabel != null) {
+            mAddButtonLabel.setEnabled(enabled);
         }
     }
 
@@ -369,6 +401,9 @@ public class AssistantChoiceList extends GridLayout {
     private View createAddButtonIcon() {
         ChromeImageView addButtonIcon = new ChromeImageView(getContext());
         addButtonIcon.setImageResource(R.drawable.ic_autofill_assistant_add_circle_24dp);
+        ApiCompatibilityUtils.setImageTintList(addButtonIcon,
+                ContextCompat.getColorStateList(getContext(), R.color.blue_when_enabled_list));
+        addButtonIcon.setTag(ADD_BUTTON_TAG);
         LinearLayout container = new LinearLayout(getContext());
         container.setGravity(Gravity.CENTER);
         container.setPadding(0, 0, mColumnSpacing, 0);
@@ -432,6 +467,7 @@ public class AssistantChoiceList extends GridLayout {
                 getContext(), editButtonDrawable, R.color.default_icon_color_tint_list));
         editButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         editButton.setLayoutParams(new ViewGroup.LayoutParams(editButtonSize, editButtonSize));
+        editButton.setTag(EDIT_BUTTON_TAG);
 
         LinearLayout editButtonLayout = createMinimumTouchSizeContainer();
         editButtonLayout.setTag(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON);

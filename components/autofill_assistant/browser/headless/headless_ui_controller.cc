@@ -136,6 +136,9 @@ void HeadlessUiController::SetCollectUserDataOptions(
     CollectUserDataOptions* options) {
   VLOG(2) << "Unexpected UI method called: " << __func__;
 }
+void HeadlessUiController::SetCollectUserDataUiState(bool enabled) {
+  VLOG(2) << "Unexpected UI method called: " << __func__;
+}
 void HeadlessUiController::SetLastSuccessfulUserDataOptions(
     std::unique_ptr<CollectUserDataOptions> collect_user_data_options) {
   VLOG(2) << "Unexpected UI method called: " << __func__;

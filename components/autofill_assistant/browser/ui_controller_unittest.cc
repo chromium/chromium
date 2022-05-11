@@ -1121,4 +1121,10 @@ TEST_F(UiControllerTest, OnExecuteScriptSetMessageAndClearUserActions) {
   EXPECT_EQ(ui_controller_->GetStatusMessage(), "script message");
 }
 
+TEST_F(UiControllerTest, SetCollectUserDataUiState) {
+  EXPECT_CALL(mock_observer_,
+              OnCollectUserDataUiStateChanged(/* enabled= */ false));
+  ui_controller_->SetCollectUserDataUiState(false);
+}
+
 }  // namespace autofill_assistant

@@ -13,6 +13,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -35,6 +37,7 @@ import static org.chromium.components.autofill_assistant.AssistantTagsForTesting
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -64,8 +67,10 @@ import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.components.autofill_assistant.user_data.AssistantChoiceList;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.components.autofill_assistant.user_data.AssistantContactField;
 import org.chromium.components.autofill_assistant.user_data.AssistantLoginChoice;
 import org.chromium.components.autofill_assistant.user_data.AssistantTermsAndConditionsState;
@@ -606,13 +611,16 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
             model.set(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE, true);
             model.set(AssistantCollectUserDataModel.SELECTED_LOGIN,
-                    new AssistantCollectUserDataModel.LoginChoiceModel(new AssistantLoginChoice(
+                    new LoginChoiceModel(new AssistantLoginChoice(
                             "id", "Guest", "Description of guest checkout", "", 0, null, "")));
         });
 
         // Non-empty sections should not display the 'add' button in their title.
         onView(allOf(withId(R.id.section_title_add_button),
                        isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
                 .check(matches(not(isDisplayed())));
         onView(allOf(withId(R.id.section_title_add_button),
                        isDescendantOfA(is(viewHolder.mPaymentSection))))
@@ -627,6 +635,9 @@ public class AutofillAssistantCollectUserDataUiTest {
         // Non-empty sections should not be 'fixed', i.e., they can be expanded.
         onView(allOf(withTagValue(is(VERTICAL_EXPANDER_CHEVRON)),
                        isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+        onView(allOf(withTagValue(is(VERTICAL_EXPANDER_CHEVRON)),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
         onView(allOf(withTagValue(is(VERTICAL_EXPANDER_CHEVRON)),
                        isDescendantOfA(is(viewHolder.mPaymentSection))))
@@ -653,6 +664,9 @@ public class AutofillAssistantCollectUserDataUiTest {
         testContact("maggie@simpson.com", "Maggie Simpson\nmaggie@simpson.com",
                 viewHolder.mContactSection.getCollapsedView(), viewHolder.mContactList.getItem(0),
                 /* isComplete = */ true);
+        testContact("555 123-4567", "555 123-4567",
+                viewHolder.mPhoneNumberSection.getCollapsedView(),
+                viewHolder.mPhoneNumberList.getItem(0), /* isComplete= */ true);
         testPaymentMethod("1111", "Jon Doe", "12/2050",
                 viewHolder.mPaymentSection.getCollapsedView(),
                 viewHolder.mPaymentMethodList.getItem(0));
@@ -668,6 +682,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         // does not trigger a notification.
         assertThat(delegate.mPaymentInstrument, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
+        assertThat(delegate.mPhoneNumber, is(nullValue()));
         assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice, is(nullValue()));
@@ -691,9 +706,143 @@ public class AutofillAssistantCollectUserDataUiTest {
         // Check delegate status. Setting items again will not send a notification to the delegate.
         assertThat(delegate.mPaymentInstrument, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
+        assertThat(delegate.mPhoneNumber, is(nullValue()));
         assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice, is(nullValue()));
+    }
+
+    /**
+     * Test that disabling the CollectUserData UI properly disables all the required elements.
+     */
+    @Test
+    @MediumTest
+    public void testDisabledState() throws Exception {
+        PersonalDataManager.AutofillProfile profileJohn = new PersonalDataManager.AutofillProfile(
+                /* guid= */ "john", "https://www.example.com", /* honorificPrefix= */ "",
+                "John Doe",
+                /* companyName= */ "", "123 Main", "California", "Los Angeles",
+                /* dependentLocality= */ "", "90210", /* sortingCode= */ "", "US", "555 123-4567",
+                "johndoe@google.com", /* languageCode= */ "");
+        PersonalDataManager.CreditCard creditCardJohn =
+                new PersonalDataManager.CreditCard(/* guid= */ "john", "https://example.com",
+                        /* isLocal= */ true, /* isCached= */ true, "John Doe", "4111111111111111",
+                        "1111", "12", "2050", "visa", R.drawable.visa_card,
+                        /* billingAddressId= */ "john", /* serverId= */ "");
+
+        AssistantCollectUserDataModel model = createCollectUserDataModel();
+        AssistantCollectUserDataCoordinator coordinator = createCollectUserDataCoordinator(model);
+        AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
+                new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
+        AutofillAssistantCollectUserDataTestHelper
+                .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
+                () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
+
+        // Disable the UI.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantCollectUserDataModel.ENABLE_UI_INTERACTIONS, false));
+
+        // Request all PR sections but leave them empty.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
+            model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
+            model.set(AssistantCollectUserDataModel.REQUEST_NAME, true);
+            model.set(AssistantCollectUserDataModel.CONTACT_SUMMARY_DESCRIPTION_OPTIONS,
+                    mDefaultContactSummaryOptions);
+            model.set(AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS,
+                    mDefaultContactFullOptions);
+            model.set(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY, true);
+            model.set(AssistantCollectUserDataModel.REQUEST_PAYMENT, true);
+            model.set(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS, true);
+            model.set(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE, true);
+        });
+
+        // Empty sections should have their title add button disabled.
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mPaymentSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withId(R.id.section_title_add_button),
+                       isDescendantOfA(is(viewHolder.mShippingSection))))
+                .check(matches(not(isEnabled())));
+        onView(is(viewHolder.mLoginsSection)).check(matches(not(isDisplayed())));
+
+        // Fill all PR sections.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<ContactModel> contacts = new ArrayList<>();
+            contacts.add(new ContactModel(createDummyContact(profileJohn)));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS, contacts);
+            model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS, contacts.get(0));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS, contacts);
+            model.set(AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER, contacts.get(0));
+            List<AddressModel> addresses = new ArrayList<>();
+            addresses.add(new AddressModel(createDummyAddress(profileJohn),
+                    /* fullDescription= */ "John", /* summaryDescription= */ "John"));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES, addresses);
+            model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS, addresses.get(0));
+            List<PaymentInstrumentModel> instruments = new ArrayList<>();
+            instruments.add(new PaymentInstrumentModel(
+                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
+                            createDummyCreditCard(creditCardJohn),
+                            createDummyAddress(profileJohn))));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS, instruments);
+            model.set(
+                    AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT, instruments.get(0));
+            model.set(AssistantCollectUserDataModel.VISIBLE, true);
+            List<AssistantLoginChoice> logins = new ArrayList<>();
+            logins.add(new AssistantLoginChoice(/* identifier= */ "john", /* label= */ "John Doe",
+                    /* sublabel= */ "", /* sublabelAccessibilityHint= */ "", /* priority= */ 0,
+                    /* infoPopup= */ null, /* editButtonContentDescription= */ ""));
+            model.set(AssistantCollectUserDataModel.AVAILABLE_LOGINS, logins);
+            model.set(AssistantCollectUserDataModel.SELECTED_LOGIN,
+                    new LoginChoiceModel(logins.get(0)));
+        });
+
+        // Radio buttons, edit icons and the add button should be disabled.
+        onView(allOf(withClassName(is(RadioButton.class.getName())),
+                       isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.EDIT_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.ADD_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mContactSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withClassName(is(RadioButton.class.getName())),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.EDIT_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.ADD_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mPhoneNumberSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withClassName(is(RadioButton.class.getName())),
+                       isDescendantOfA(is(viewHolder.mShippingSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.EDIT_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mShippingSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.ADD_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mShippingSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withClassName(is(RadioButton.class.getName())),
+                       isDescendantOfA(is(viewHolder.mPaymentSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.EDIT_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mPaymentSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withTagValue(is(AssistantChoiceList.ADD_BUTTON_TAG)),
+                       isDescendantOfA(is(viewHolder.mPaymentSection))))
+                .check(matches(not(isEnabled())));
+        onView(allOf(withClassName(is(RadioButton.class.getName())),
+                       isDescendantOfA(is(viewHolder.mLoginsSection))))
+                .check(matches(not(isEnabled())));
     }
 
     /** Tests custom summary options for the contact details section. */

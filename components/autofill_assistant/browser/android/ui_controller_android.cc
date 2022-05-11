@@ -643,6 +643,7 @@ void UiControllerAndroid::RestoreUi() {
   OnDetailsChanged(ui_delegate_->GetDetails());
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
+  OnCollectUserDataUiStateChanged(/* enabled= */ true);
   OnUserDataChanged(*execution_delegate_->GetUserData(),
                     UserDataFieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
@@ -1322,6 +1323,11 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
   }
 
   Java_AssistantCollectUserDataModel_setVisible(env, jmodel, true);
+}
+
+void UiControllerAndroid::OnCollectUserDataUiStateChanged(bool enabled) {
+  Java_AssistantCollectUserDataModel_setEnableUiInteractions(
+      AttachCurrentThread(), GetCollectUserDataModel(), enabled);
 }
 
 void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,

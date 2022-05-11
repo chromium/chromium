@@ -114,6 +114,7 @@ class AssistantCollectUserDataBinder
         handled = updateSectionTitles(model, propertyKey, view) || handled;
         handled = updateSectionContents(model, propertyKey, view) || handled;
         handled = updateSectionSelectedItem(model, propertyKey, view) || handled;
+        handled = updateUiState(model, propertyKey, view) || handled;
         // Update section visibility/padding *after* updating editors and content.
         handled = updateVisibilityAndPaddings(model, propertyKey, view) || handled;
 
@@ -445,6 +446,20 @@ class AssistantCollectUserDataBinder
                         /* notify= */ false);
             }
             // No need to reset selection if null, this will be handled by setItems().
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updateUiState(
+            AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
+        if (propertyKey == AssistantCollectUserDataModel.ENABLE_UI_INTERACTIONS) {
+            boolean enabled = model.get(AssistantCollectUserDataModel.ENABLE_UI_INTERACTIONS);
+            view.mContactDetailsSection.setEnabled(enabled);
+            view.mPhoneNumberSection.setEnabled(enabled);
+            view.mShippingAddressSection.setEnabled(enabled);
+            view.mPaymentMethodSection.setEnabled(enabled);
+            view.mLoginSection.setEnabled(enabled);
             return true;
         }
         return false;

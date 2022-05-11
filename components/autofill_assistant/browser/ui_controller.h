@@ -107,6 +107,7 @@ class UiController : public ScriptExecutorUiDelegate,
 
   void SetExpandSheetForPromptAction(bool expand) override;
   void SetCollectUserDataOptions(CollectUserDataOptions* options) override;
+  void SetCollectUserDataUiState(bool enabled) override;
   void SetLastSuccessfulUserDataOptions(std::unique_ptr<CollectUserDataOptions>
                                             collect_user_data_options) override;
   const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()

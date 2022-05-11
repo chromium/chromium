@@ -43,7 +43,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
 
     public void setEditor(AssistantEditor<AddressModel> editor) {
         mEditor = editor;
-        updateVisibility();
+        updateUi();
     }
 
     @Override

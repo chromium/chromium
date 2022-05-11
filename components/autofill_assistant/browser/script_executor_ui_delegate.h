@@ -43,6 +43,7 @@ class ScriptExecutorUiDelegate {
   virtual void ClearInfoBox() = 0;
   virtual void SetCollectUserDataOptions(
       CollectUserDataOptions* collect_user_data_options) = 0;
+  virtual void SetCollectUserDataUiState(bool enabled) = 0;
   virtual void SetLastSuccessfulUserDataOptions(
       std::unique_ptr<CollectUserDataOptions> collect_user_data_options) = 0;
   virtual const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()

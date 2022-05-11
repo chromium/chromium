@@ -25,11 +25,11 @@
                   android:layout_height="wrap_content"
                   android:orientation="horizontal">
         <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/section_title_add_button_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/plus"
-            app:tint="@macro/default_icon_color_accent1"/>
+            android:src="@drawable/plus"/>
         <Space android:layout_width="8dp" android:layout_height="0dp"/>
         <TextView android:id="@+id/section_title_add_button_label"
                   android:layout_width="wrap_content"

@@ -341,6 +341,7 @@ void ScriptExecutor::CollectUserData(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(collect_user_data_options->terms_link_callback));
   ui_delegate_->SetCollectUserDataOptions(collect_user_data_options);
+  ui_delegate_->SetCollectUserDataUiState(/* enabled= */ true);
   delegate_->EnterState(AutofillAssistantState::PROMPT);
 }
 
@@ -1084,6 +1085,7 @@ void ScriptExecutor::RequestUserData(
   DCHECK(service);
 
   delegate_->EnterState(AutofillAssistantState::RUNNING);
+  ui_delegate_->SetCollectUserDataUiState(/* enabled= */ false);
   service->GetUserData(
       options, run_id_, user_data_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,

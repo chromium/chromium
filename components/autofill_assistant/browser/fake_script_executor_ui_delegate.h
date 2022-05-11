@@ -52,6 +52,7 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   void SetUserActions(
       std::unique_ptr<std::vector<UserAction>> user_actions) override;
   void SetCollectUserDataOptions(CollectUserDataOptions* options) override;
+  void SetCollectUserDataUiState(bool enabled) override;
   void SetLastSuccessfulUserDataOptions(std::unique_ptr<CollectUserDataOptions>
                                             collect_user_data_options) override;
   const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
@@ -93,7 +94,9 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
 
   std::vector<UserAction>* GetUserActions() { return user_actions_.get(); }
 
-  CollectUserDataOptions* GetOptions() { return payment_request_options_; }
+  CollectUserDataOptions* GetOptions() { return collect_user_data_options_; }
+
+  bool GetCollectUserDataUiEnabled() { return collect_user_data_ui_enabled_; }
 
  private:
   std::string status_message_;
@@ -102,8 +105,9 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   std::vector<Details> details_;
   std::unique_ptr<InfoBox> info_box_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
-  std::unique_ptr<CollectUserDataOptions> last_payment_request_options_;
-  raw_ptr<CollectUserDataOptions> payment_request_options_;
+  std::unique_ptr<CollectUserDataOptions> last_collect_user_data_options_;
+  raw_ptr<CollectUserDataOptions> collect_user_data_options_;
+  bool collect_user_data_ui_enabled_ = true;
   std::unique_ptr<UserData> payment_request_info_;
   ConfigureBottomSheetProto::PeekMode peek_mode_ =
       ConfigureBottomSheetProto::HANDLE;
