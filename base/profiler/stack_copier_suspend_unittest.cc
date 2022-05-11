@@ -135,8 +135,9 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
-                                    stack_copy_bottom + stack.size());
+  std::vector<uintptr_t> stack_copy(
+      stack_copy_bottom,
+      stack_copy_bottom + (stack_buffer->size() / sizeof(*stack_copy_bottom)));
   // Use the buffer not being overwritten as a proxy for the unwind being
   // aborted.
   EXPECT_NE(stack, stack_copy);
