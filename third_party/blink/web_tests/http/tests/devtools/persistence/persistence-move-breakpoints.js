@@ -21,7 +21,7 @@
     async function setBreakpointInFileSystemUISourceCode(next) {
       var uiSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
       var sourceFrame = await SourcesTestRunner.showUISourceCodePromise(uiSourceCode);
-      await SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 2, '', true);
       await SourcesTestRunner.waitBreakpointSidebarPane();
       dumpBreakpointSidebarPane();
       next();
