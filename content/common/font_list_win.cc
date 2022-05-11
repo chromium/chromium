@@ -60,10 +60,10 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
     if (!localized_name)
       localized_name = native_name;
 
-    auto font_item = std::make_unique<base::ListValue>();
-    font_item->Append(native_name.value());
-    font_item->Append(localized_name.value());
-    font_list->Append(std::move(font_item));
+    base::Value::List font_item;
+    font_item.Append(native_name.value());
+    font_item.Append(localized_name.value());
+    font_list->GetList().Append(std::move(font_item));
   }
 
   return font_list;
