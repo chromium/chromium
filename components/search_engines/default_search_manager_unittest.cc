@@ -30,35 +30,35 @@ namespace {
 // TODO(caitkp): TemplateURLData-ify this.
 void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
                   bool update) {
-  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                     std::make_unique<base::Value>(1));
-  auto overrides = std::make_unique<base::ListValue>();
-  auto entry = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
+  base::Value::List overrides;
+  base::Value::Dict entry;
 
-  entry->SetStringKey("name", update ? "new_foo" : "foo");
-  entry->SetStringKey("keyword", update ? "new_fook" : "fook");
-  entry->SetStringKey("search_url", "http://foo.com/s?q={searchTerms}");
-  entry->SetStringKey("favicon_url", "http://foi.com/favicon.ico");
-  entry->SetStringKey("encoding", "UTF-8");
-  entry->SetIntKey("id", 1001);
-  entry->SetStringKey("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  base::ListValue alternate_urls;
+  entry.Set("name", update ? "new_foo" : "foo");
+  entry.Set("keyword", update ? "new_fook" : "fook");
+  entry.Set("search_url", "http://foo.com/s?q={searchTerms}");
+  entry.Set("favicon_url", "http://foi.com/favicon.ico");
+  entry.Set("encoding", "UTF-8");
+  entry.Set("id", 1001);
+  entry.Set("suggest_url", "http://foo.com/suggest?q={searchTerms}");
+  base::Value::List alternate_urls;
   alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
-  entry->SetKey("alternate_urls", std::move(alternate_urls));
-  overrides->Append(std::move(entry));
+  entry.Set("alternate_urls", std::move(alternate_urls));
+  overrides.Append(std::move(entry));
 
-  entry = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  entry->SetIntKey("id", 1002);
-  entry->SetStringKey("name", update ? "new_bar" : "bar");
-  entry->SetStringKey("keyword", update ? "new_bark" : "bark");
-  entry->SetStringKey("encoding", std::string());
-  overrides->Append(std::make_unique<base::Value>(entry->Clone()));
-  entry->SetIntKey("id", 1003);
-  entry->SetStringKey("name", "baz");
-  entry->SetStringKey("keyword", "bazk");
-  entry->SetStringKey("encoding", "UTF-8");
-  overrides->Append(std::move(entry));
-  prefs->SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  entry = base::Value::Dict();
+  entry.Set("id", 1002);
+  entry.Set("name", update ? "new_bar" : "bar");
+  entry.Set("keyword", update ? "new_bark" : "bark");
+  entry.Set("encoding", std::string());
+  overrides.Append(entry.Clone());
+  entry.Set("id", 1003);
+  entry.Set("name", "baz");
+  entry.Set("keyword", "bazk");
+  entry.Set("encoding", "UTF-8");
+  overrides.Append(std::move(entry));
+  prefs->SetUserPref(prefs::kSearchProviderOverrides,
+                     base::Value(std::move(overrides)));
 }
 
 void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
