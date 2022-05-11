@@ -526,14 +526,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   // TODO(chcunningham): We need real profiles for all of the codecs below to
   // actually handle capabilities requests correctly. http://crbug.com/784610
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
-
-  // Prefer the color space found by libavcodec if available
-  VideoColorSpace color_space =
-      VideoColorSpace(codec_context->color_primaries, codec_context->color_trc,
-                      codec_context->colorspace,
-                      codec_context->color_range == AVCOL_RANGE_JPEG
-                          ? gfx::ColorSpace::RangeID::FULL
-                          : gfx::ColorSpace::RangeID::LIMITED);
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264: {
@@ -555,39 +547,32 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case VideoCodec::kHEVC: {
-      int hevc_profile = -1;
-      // We need to parse extradata each time, because we wont add ffmpeg
-      // hevc decoder & parser to chromium and codec_context->profile
-      // should always be FF_PROFILE_UNKNOWN (-99) here
-      if (codec_context->extradata && codec_context->extradata_size) {
+      int hevc_profile = FF_PROFILE_UNKNOWN;
+      if ((codec_context->profile < FF_PROFILE_HEVC_MAIN ||
+           codec_context->profile > FF_PROFILE_HEVC_REXT) &&
+          codec_context->extradata && codec_context->extradata_size) {
         mp4::HEVCDecoderConfigurationRecord hevc_config;
         if (hevc_config.Parse(codec_context->extradata,
                               codec_context->extradata_size)) {
           hevc_profile = hevc_config.general_profile_idc;
-          if (!color_space.IsSpecified()) {
-            // We should try to parsed color space from SPS if the
-            // result from libavcodec is not specified in case
-            // that some encoder not write extra colorspace info to
-            // the container
-            color_space = hevc_config.GetColorSpace();
-          }
         }
+      } else {
+        hevc_profile = codec_context->profile;
       }
-      // The values of general_profile_idc are taken from the HEVC standard, see
-      // the latest https://www.itu.int/rec/T-REC-H.265/en
       switch (hevc_profile) {
-        case 1:
+        case FF_PROFILE_HEVC_MAIN:
           profile = HEVCPROFILE_MAIN;
           break;
-        case 2:
+        case FF_PROFILE_HEVC_MAIN_10:
           profile = HEVCPROFILE_MAIN10;
           break;
-        case 3:
+        case FF_PROFILE_HEVC_MAIN_STILL_PICTURE:
           profile = HEVCPROFILE_MAIN_STILL_PICTURE;
           break;
-        case 4:
+        case FF_PROFILE_HEVC_REXT:
           profile = HEVCPROFILE_REXT;
           break;
+        // FF will treat the following profiles as FF_PROFILE_UNKNOWN
         case 5:
           profile = HEVCPROFILE_HIGH_THROUGHPUT;
           break;
@@ -662,6 +647,13 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         static_cast<int32_t*>(display_matrix));
   }
 
+  // Prefer the color space found by libavcodec if available.
+  VideoColorSpace color_space =
+      VideoColorSpace(codec_context->color_primaries, codec_context->color_trc,
+                      codec_context->colorspace,
+                      codec_context->color_range == AVCOL_RANGE_JPEG
+                          ? gfx::ColorSpace::RangeID::FULL
+                          : gfx::ColorSpace::RangeID::LIMITED);
   if (!color_space.IsSpecified()) {
     // VP9 frames may have color information, but that information cannot
     // express new color spaces, like HDR. For that reason, color space
