@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_ava
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
-import './shared_css.js';
+import './profile_creation_shared.css.js';
 import '../icons.js';
-import '../profile_picker_shared_css.js';
+import '../profile_picker_shared.css.js';
 
 import {Theme, ThemeInfo, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

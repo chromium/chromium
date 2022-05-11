@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.js';
 import './profile_card.js';
-import './profile_picker_shared_css.js';
+import './profile_picker_shared.css.js';
 import './strings.m.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
