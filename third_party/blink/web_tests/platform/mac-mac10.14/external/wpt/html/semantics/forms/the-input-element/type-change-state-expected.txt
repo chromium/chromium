@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 462 tests; 450 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 462 tests; 446 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS change state from hidden to text
 PASS change state from hidden to search
 PASS change state from hidden to tel
@@ -24,7 +24,7 @@ PASS change state from hidden to button
 PASS change state from text to hidden
 PASS change state from text to search
 PASS change state from text to tel
-PASS change state from text to url
+FAIL change state from text to url assert_equals: selectionStart should be unchanged expected 2 but got 6
 PASS change state from text to email
 PASS change state from text to password
 PASS change state from text to datetime-local
@@ -45,7 +45,7 @@ PASS change state from text to button
 PASS change state from search to hidden
 PASS change state from search to text
 PASS change state from search to tel
-PASS change state from search to url
+FAIL change state from search to url assert_equals: selectionStart should be unchanged expected 2 but got 6
 PASS change state from search to email
 PASS change state from search to password
 PASS change state from search to datetime-local
@@ -66,7 +66,7 @@ PASS change state from search to button
 PASS change state from tel to hidden
 PASS change state from tel to text
 PASS change state from tel to search
-PASS change state from tel to url
+FAIL change state from tel to url assert_equals: selectionStart should be unchanged expected 2 but got 6
 PASS change state from tel to email
 PASS change state from tel to password
 PASS change state from tel to datetime-local
@@ -130,7 +130,7 @@ PASS change state from password to hidden
 PASS change state from password to text
 PASS change state from password to search
 PASS change state from password to tel
-PASS change state from password to url
+FAIL change state from password to url assert_equals: selectionStart should be unchanged expected 2 but got 6
 PASS change state from password to email
 PASS change state from password to datetime-local
 PASS change state from password to date

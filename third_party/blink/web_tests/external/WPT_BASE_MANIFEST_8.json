@@ -148385,7 +148385,7 @@
       ]
      ],
      "backdrop-animate-002.html": [
-      "1facc170fccf1a200b0c0c30ba6491cd4c411a93",
+      "500fb403bd738d6ca77d3acac399cb7f9ab1398d",
       [
        null,
        [
@@ -148394,7 +148394,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            1,
+            1
+           ],
+           [
+            472272,
+            472272
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "before-after-dynamic-custom-property-001.html": [
@@ -293632,6 +293648,10 @@
     "direct-sockets-disabled-by-permissions-policy.https.sub.html.headers": [
      "ba6f09f55b393880aadf79a41d9220313ed294c8",
      []
+    ],
+    "direct-sockets-disabled-by-permissions-policy.js": [
+     "fd0b100ca5ccab4db741fc9d3b216758e769a649",
+     []
     ]
    },
    "docs": {
@@ -317805,12 +317825,6 @@
       []
      ]
     }
-   },
-   "mediacapture-region": {
-    "MediaDevices-produceCropId.https.html": [
-     "682caad7e7de5e79bae3a5b8d2b0da1bdfbb498f",
-     []
-    ]
    },
    "mediacapture-streams": {
     "DIR_METADATA": [
@@ -357979,6 +357993,13 @@
        {}
       ]
      ],
+     "frame-ancestors-sandbox-same-origin-self.html": [
+      "4a2a19698d3ce4a907ff2b67defbf3a814681d19",
+      [
+       null,
+       {}
+      ]
+     ],
      "frame-ancestors-self-allow.html": [
       "a8a295dfc40cb49f76b8b9aa3f2dd137910029ec",
       [
@@ -397380,7 +397401,7 @@
    },
    "direct-sockets": {
     "direct-sockets-disabled-by-permissions-policy.https.sub.html": [
-     "5d5533613c96ccd659f62dc9edc0a6596cb49414",
+     "9e81223de1c90ff83bf09c5d6701e02f442a5b15",
      [
       null,
       {
@@ -430754,6 +430775,41 @@
          [
           "timeout",
           "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "indexeddb.tentative.https.window.js": [
+      "197d7828c84bee8f87a0a1cd7765445d3e7a1eba",
+      [
+       "html/anonymous-iframe/indexeddb.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
          ]
         ],
         "timeout": "long"
@@ -467292,7 +467348,7 @@
         ]
        ],
        "type-change-state.html": [
-        "35f151b12d682a367ebcbbcc6dcf64f42fba0f97",
+        "b2ceb517f3d7fa3cab1420dc30105d39250120de",
         [
          null,
          {}
@@ -484826,6 +484882,15 @@
       ]
      ]
     }
+   },
+   "mediacapture-region": {
+    "MediaDevices-produceCropId.https.html": [
+     "8b381b82fde6a6d5ac1e83686e2eca8ad72d69cb",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "mediacapture-streams": {
     "GUM-api.https.html": [
