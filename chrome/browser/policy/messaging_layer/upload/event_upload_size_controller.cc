@@ -30,7 +30,7 @@ void EventUploadSizeController::AccountForRecord(
 uint64_t EventUploadSizeController::GetUploadRate(
     const NetworkConditionService& network_condition_service) {
   return std::min(network_condition_service.GetUploadRate(),
-                  // This is to ensure ComputeMaxUploadSize won't overflow
+                  // This ensures ComputeMaxUploadSize won't overflow
                   std::numeric_limits<uint64_t>::max() / kTimeCeiling);
 }
 

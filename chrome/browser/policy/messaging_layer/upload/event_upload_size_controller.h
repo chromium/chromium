@@ -46,12 +46,14 @@ class EventUploadSizeController {
   static uint64_t GetUploadRate(
       const NetworkConditionService& network_condition_service);
   // Estimates the rate at which new events are coming in (bytes/sec). For now,
-  // use a low new event rate, which means no local storage limit is taken
-  // into consideration.
+  // use a low new event rate, which means no local storage limit is taken into
+  // consideration: Missive code hasn't been ready for this and storage capacity
+  // is not a concern right now. This will likely change in the future.
   static uint64_t GetNewEventRate();
   // Estimates the remaining storage capacity (bytes) here. For now, use a high
   // remaining storage capacity, which means no local storage limit is taken
-  // into consideration.
+  // into consideration: Missive code hasn't been ready for this and storage
+  // capacity is not a concern right now. This will likely change in the future.
   static uint64_t GetRemainingStorageCapacity();
   // Computes the maximum upload size.
   static uint64_t ComputeMaxUploadSize(
