@@ -4,10 +4,15 @@
 
 #include "chromeos/services/cros_healthd/private/cpp/data_collector.h"
 
+#include <fcntl.h>
+
 #include "base/check_op.h"
+#include "base/files/file_enumerator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/posix/eintr_wrapper.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace chromeos {
 namespace cros_healthd {
@@ -33,8 +38,39 @@ DataCollectorDelegateImpl::DataCollectorDelegateImpl() = default;
 DataCollectorDelegateImpl::~DataCollectorDelegateImpl() = default;
 
 std::string DataCollectorDelegateImpl::GetTouchpadLibraryName() {
-  NOTIMPLEMENTED();
-  return "";
+#if defined(USE_LIBINPUT)
+  base::FileEnumerator file_enum(base::FilePath("/dev/input/"), false,
+                                 base::FileEnumerator::FileType::FILES);
+  for (auto path = file_enum.Next(); !path.empty(); path = file_enum.Next()) {
+    base::ScopedFD fd(
+        HANDLE_EINTR(open(path.value().c_str(), O_RDWR | O_NONBLOCK)));
+    if (fd.get() < 0) {
+      LOG(ERROR) << "Couldn't open device path " << path;
+      continue;
+    }
+
+    auto devinfo = std::make_unique<ui::EventDeviceInfo>();
+    if (!devinfo->Initialize(fd.get(), path)) {
+      LOG(ERROR) << "Failed to get device info for " << path;
+      continue;
+    }
+
+    if (!devinfo->HasTouchpad() ||
+        devinfo->device_type() != ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+      continue;
+    }
+
+    if (devinfo->UseLibinput()) {
+      return "libinput";
+    }
+  }
+#endif
+
+#if defined(USE_EVDEV_GESTURES)
+  return "gestures";
+#else
+  return "Default EventConverterEvdev";
+#endif
 }
 
 DataCollectorDelegateImpl* GetDataCollectorDelegate() {
