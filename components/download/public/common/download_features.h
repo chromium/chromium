@@ -71,10 +71,6 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kAllowFileBufferSizeControl;
 
-// Whether to show warning when downloading in incognito.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kIncognitoDownloadsWarning;
-
 // Arbitrary range request support for download system.
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature kDownloadRange;
 }  // namespace features

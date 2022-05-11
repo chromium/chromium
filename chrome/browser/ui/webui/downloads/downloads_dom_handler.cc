@@ -177,12 +177,6 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
     ShowDangerPrompt(file);
 }
 
-void DownloadsDOMHandler::AcceptIncognitoWarning(const std::string& id) {
-  download::DownloadItem* file = GetDownloadByStringId(id);
-  if (file)
-    file->AcceptIncognitoWarning();
-}
-
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
   RemoveDownloadInArgs(id);

@@ -46,7 +46,6 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD0(UpdateObservers, void());
   MOCK_METHOD0(ValidateDangerousDownload, void());
   MOCK_METHOD0(ValidateMixedContentDownload, void());
-  MOCK_METHOD0(AcceptIncognitoWarning, void());
   MOCK_METHOD2(StealDangerousDownload, void(bool, AcquireFileCallback));
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD1(Resume, void(bool));
@@ -108,7 +107,6 @@ class MockDownloadItem : public DownloadItem {
               (const override));
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsMixedContent, bool());
-  MOCK_CONST_METHOD0(ShouldShowIncognitoWarning, bool());
   MOCK_CONST_METHOD0(GetDangerType, DownloadDangerType());
   MOCK_CONST_METHOD0(GetMixedContentStatus, MixedContentStatus());
   MOCK_CONST_METHOD1(TimeRemaining, bool(base::TimeDelta*));

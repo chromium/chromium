@@ -90,20 +90,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: true,
       },
 
-      isDownloadItemSafe_: {
-        computed: 'computeIsDownloadItemSafe_(data.state)',
-        type: Boolean,
-        value: false
-      },
-
       isDangerous_: {
         computed: 'computeIsDangerous_(data.state)',
-        type: Boolean,
-        value: false,
-      },
-
-      shouldShowIncognitoWarning_: {
-        computed: 'computeShouldShowIncognitoWarning_(data.state)',
         type: Boolean,
         value: false,
       },
@@ -163,8 +151,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private controlledBy_: string;
   private isActive_: boolean;
   private isDangerous_: boolean;
-  private isDownloadItemSafe_: boolean;
-  private shouldShowIncognitoWarning_: boolean;
   private isInProgress_: boolean;
   private pauseOrResumeText_: string;
   private showCancel_: boolean;
@@ -282,9 +268,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         }
         break;
 
-      case States.INCOGNITO_WARNING:
-        return loadTimeData.getString('incognitoDownloadsWarningDesc');
-
       case States.MIXED_CONTENT:
         return loadTimeData.getString('mixedContentDownloadDesc');
 
@@ -338,8 +321,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
-          dangerType === DangerType.SENSITIVE_CONTENT_WARNING ||
-          this.data.state === States.INCOGNITO_WARNING) {
+          dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
         return 'cr:warning';
       }
 
@@ -370,8 +352,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.UNCOMMON_CONTENT) ||
-          dangerType === DangerType.SENSITIVE_CONTENT_WARNING ||
-          this.data.state === States.INCOGNITO_WARNING) {
+          dangerType === DangerType.SENSITIVE_CONTENT_WARNING) {
         return 'yellow';
       }
 
@@ -522,8 +503,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.useFileIcon_ = false;
     } else if (this.data.state === States.ASYNC_SCANNING) {
       this.useFileIcon_ = false;
-    } else if (this.data.state === States.INCOGNITO_WARNING) {
-      this.useFileIcon_ = false;
     } else {
       this.$.url.href = this.data.url;
       const path = this.data.filePath;
@@ -536,16 +515,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             }
           });
     }
-  }
-
-  private computeShouldShowIncognitoWarning_(): boolean {
-    return this.data.state === States.INCOGNITO_WARNING &&
-        this.data.shouldShowIncognitoWarning;
-  }
-
-  private computeIsDownloadItemSafe_(): boolean {
-    return !this.computeIsDangerous_() &&
-        !this.computeShouldShowIncognitoWarning_();
   }
 
   private onCancelTap_() {
@@ -609,10 +578,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onSaveDangerousTap_() {
     this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
-  }
-
-  private onIncognitoWarningAccepted_() {
-    this.mojoHandler_!.acceptIncognitoWarning(this.data.id);
   }
 
   private onShowTap_() {

@@ -242,11 +242,6 @@ class DownloadUIModel {
   // Implies IsDangerous() and !IsMalicious().
   virtual bool IsMixedContent() const;
 
-  // Returns true if the item is downloaded in incognito and user has not
-  // accepted the warning yet. Return false if the item is downloaded in regular
-  // mode or user has accepted the warning.
-  virtual bool ShouldShowIncognitoWarning() const;
-
   // Is safe browsing download feedback feature available for this download?
   virtual bool ShouldAllowDownloadFeedback() const;
 

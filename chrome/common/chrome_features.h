@@ -440,6 +440,9 @@ extern const base::Feature kIncognitoBrandConsistencyForAndroid;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kIncognitoDownloadsWarning;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoNtpRevamp;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

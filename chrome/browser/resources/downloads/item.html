@@ -277,7 +277,6 @@
 
   #pauseOrResume,
   #dangerous .action-button,
-  #incognito-warning .action-button,
   #openNow {
     margin-inline-end: 8px;
   }
@@ -341,7 +340,7 @@
       </div>
     </template>
 
-    <div id="safe" class="controls" hidden="[[!isDownloadItemSafe_]]">
+    <div id="safe" class="controls" hidden="[[isDangerous_]]">
       <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
         <a is="action-link" id="show" on-click="onShowTap_"
             focus-row-control
@@ -413,21 +412,6 @@
               $i18n{dangerRestore}</cr-button>
           </span>
         </template>
-      </div>
-    </template>
-
-    <template is="dom-if" if="[[shouldShowIncognitoWarning_]]">
-      <div id="incognito-warning" class="controls">
-        <span role="gridcell">
-          <cr-button on-click="onIncognitoWarningAccepted_"
-              class="action-button" focus-row-control
-              focus-type="save">$i18n{downloadAnyway}</cr-button>
-        </span>
-        <span role="gridcell">
-          <cr-button on-click="onCancelTap_" focus-row-control
-              focus-type="cancel">
-            $i18n{controlCancel}</cr-button>
-        </span>
       </div>
     </template>
   </div>

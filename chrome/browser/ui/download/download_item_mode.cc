@@ -9,11 +9,6 @@
 namespace download {
 
 DownloadItemMode GetDesiredDownloadItemMode(DownloadUIModel* download) {
-  if (download->ShouldShowIncognitoWarning() &&
-      (download->GetState() != download::DownloadItem::CANCELLED)) {
-    return DownloadItemMode::kIncognitoWarning;
-  }
-
   if (download->IsMixedContent()) {
     const bool warn = download->GetMixedContentStatus() ==
                       download::DownloadItem::MixedContentStatus::WARN;

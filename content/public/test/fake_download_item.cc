@@ -291,10 +291,6 @@ void FakeDownloadItem::ValidateMixedContentDownload() {
   NOTREACHED();
 }
 
-void FakeDownloadItem::AcceptIncognitoWarning() {
-  NOTREACHED();
-}
-
 void FakeDownloadItem::StealDangerousDownload(bool delete_file_afterward,
                                               AcquireFileCallback callback) {
   NOTREACHED();
@@ -490,10 +486,6 @@ bool FakeDownloadItem::IsDangerous() const {
 
 bool FakeDownloadItem::IsMixedContent() const {
   return is_mixed_content_;
-}
-
-bool FakeDownloadItem::ShouldShowIncognitoWarning() const {
-  return false;
 }
 
 download::DownloadDangerType FakeDownloadItem::GetDangerType() const {

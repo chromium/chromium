@@ -119,7 +119,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
-      {"downloadAnyway", IDS_DOWNLOAD_ANYWAY}};
+  };
   source->AddLocalizedStrings(kStrings);
 
   source->AddLocalizedString("dangerDownloadDesc",
@@ -133,8 +133,6 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
   source->AddLocalizedString("mixedContentDownloadDesc",
                              IDS_BLOCK_REASON_MIXED_CONTENT);
-  source->AddLocalizedString("incognitoDownloadsWarningDesc",
-                             IDS_INCOGNITO_DOWNLOAD_WARNING);
   source->AddLocalizedString("asyncScanningDownloadDesc",
                              IDS_BLOCK_REASON_DEEP_SCANNING);
   source->AddLocalizedString("accountCompromiseDownloadDesc",

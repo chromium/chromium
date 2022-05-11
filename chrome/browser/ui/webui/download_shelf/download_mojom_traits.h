@@ -164,8 +164,6 @@ struct EnumTraits<download_shelf::mojom::DownloadMode,
         return MojoDownloadMode::kMixedContentWarn;
       case DownloadMode::kDeepScanning:
         return MojoDownloadMode::kDeepScanning;
-      case DownloadMode::kIncognitoWarning:
-        return MojoDownloadMode::kIncognitoWarning;
     }
     NOTREACHED();
     return MojoDownloadMode::kNormal;
@@ -190,9 +188,6 @@ struct EnumTraits<download_shelf::mojom::DownloadMode,
         return true;
       case MojoDownloadMode::kDeepScanning:
         *out = DownloadMode::kDeepScanning;
-        return true;
-      case MojoDownloadMode::kIncognitoWarning:
-        *out = DownloadMode::kIncognitoWarning;
         return true;
     }
     NOTREACHED();

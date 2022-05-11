@@ -291,10 +291,6 @@ bool DownloadItemModel::IsMixedContent() const {
   return download_->IsMixedContent();
 }
 
-bool DownloadItemModel::ShouldShowIncognitoWarning() const {
-  return download_->ShouldShowIncognitoWarning();
-}
-
 bool DownloadItemModel::ShouldAllowDownloadFeedback() const {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   if (!IsDangerous())
@@ -739,12 +735,6 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       [[fallthrough]];
     case DownloadCommands::KEEP:
-      // Order of these warning validations should be same as the order that
-      // GetDesiredDownloadItemMode() method follows.
-      if (ShouldShowIncognitoWarning()) {
-        download_->AcceptIncognitoWarning();
-        break;
-      }
       if (IsMixedContent()) {
         download_->ValidateMixedContentDownload();
         break;

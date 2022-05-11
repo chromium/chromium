@@ -249,7 +249,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void UpdateObservers() override;
   void ValidateDangerousDownload() override;
   void ValidateMixedContentDownload() override;
-  void AcceptIncognitoWarning() override;
   void StealDangerousDownload(bool need_removal,
                               AcquireFileCallback callback) override;
   void Pause() override;
@@ -306,7 +305,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
-  bool ShouldShowIncognitoWarning() const override;
   DownloadDangerType GetDangerType() const override;
   MixedContentStatus GetMixedContentStatus() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
@@ -793,9 +791,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // The current state of this download.
   DownloadInternalState state_ = INITIAL_INTERNAL;
-
-  // A flag for indicating whether user has accepted incognito warning or not
-  bool incognito_warning_accepted_ = false;
 
   // Current danger type for the download.
   DownloadDangerType danger_type_ = DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;

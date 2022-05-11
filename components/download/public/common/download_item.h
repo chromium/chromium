@@ -180,9 +180,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Called when the user has validated the download of a mixed content file.
   virtual void ValidateMixedContentDownload() = 0;
 
-  // Called when user accepts Incognito download warning.
-  virtual void AcceptIncognitoWarning() = 0;
-
   // Called to acquire a dangerous download. If |delete_file_afterward| is true,
   // invokes |callback| on the UI thread with the path to the downloaded file,
   // and removes the DownloadItem from views and history if appropriate.
@@ -432,11 +429,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // and we will require a call to ValidateMixedContentDownload() to complete.
   // False if not mixed content or that function has been called.
   virtual bool IsMixedContent() const = 0;
-
-  // True if file is downloaded in Incognito and user has not accepted it yet.
-  // False if file is downloaded in regular mode or has accepted the incognito
-  // warning.
-  virtual bool ShouldShowIncognitoWarning() const = 0;
 
   // Why |safety_state_| is not SAFE.
   virtual DownloadDangerType GetDangerType() const = 0;

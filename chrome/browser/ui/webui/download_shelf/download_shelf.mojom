@@ -94,8 +94,6 @@ enum DownloadMode {
   kMixedContentBlock,
   // Displaying in-progress deep scanning information.
   kDeepScanning,
-  // Displaying Incognito warning.
-  kIncognitoWarning,
 };
 
 // Mixed content details associated with a given download item. Maps to

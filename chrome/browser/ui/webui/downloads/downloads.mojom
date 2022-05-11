@@ -10,7 +10,6 @@ struct Data {
   bool file_externally_removed;
   bool is_dangerous;
   bool is_mixed_content;
-  bool should_show_incognito_warning;
   // |otr| stands for off-the-record and is true when a download entry is
   // created during an incognito or guest profile session.
   bool otr;
@@ -50,7 +49,6 @@ interface PageHandler {
   OpenFileRequiringGesture(string id);
   Drag(string id);
   SaveDangerousRequiringGesture(string id);
-  AcceptIncognitoWarning(string id);
   DiscardDangerous(string id);
   RetryDownload(string id);
   Show(string id);
