@@ -340,6 +340,7 @@ src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimension.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGatherCompare.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/textureSampleBias.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/trunc.spec.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
