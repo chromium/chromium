@@ -624,8 +624,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1150349, crbug.com/1324447): Flaky on ChromeOS ASAN and on
+// builder "linux-chromeos-dbg".
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_OnlineSetupFlowCrosComponentFailure \
   DISABLED_OnlineSetupFlowCrosComponentFailure
 #else
