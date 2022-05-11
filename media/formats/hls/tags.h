@@ -166,6 +166,18 @@ struct MEDIA_EXPORT XTargetDurationTag {
   types::DecimalInteger duration;
 };
 
+// Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
+struct MEDIA_EXPORT XMediaSequenceTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;
+  static ParseStatus::Or<XMediaSequenceTag> Parse(TagItem);
+
+  // Indicates the media sequence number to assign to the first media segment in
+  // this playlist. These numbers are useful for validating the same media
+  // playlist across reloads, but not for synchronizing media segments between
+  // playlists.
+  types::DecimalInteger number;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

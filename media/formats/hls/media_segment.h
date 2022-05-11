@@ -14,6 +14,7 @@ namespace media::hls {
 class MEDIA_EXPORT MediaSegment {
  public:
   MediaSegment(types::DecimalFloatingPoint duration,
+               types::DecimalInteger media_sequence_number,
                GURL uri,
                bool has_discontinuity,
                bool is_gap);
@@ -25,6 +26,11 @@ class MEDIA_EXPORT MediaSegment {
 
   // The approximate duration of this media segment in seconds.
   types::DecimalFloatingPoint GetDuration() const { return duration_; }
+
+  // Returns the media sequence number of this media segment.
+  types::DecimalInteger GetMediaSequenceNumber() const {
+    return media_sequence_number_;
+  }
 
   // The URI of the media resource. This will have already been resolved against
   // the playlist URI. This is guaranteed to be valid and non-empty, unless
@@ -41,6 +47,7 @@ class MEDIA_EXPORT MediaSegment {
 
  private:
   types::DecimalFloatingPoint duration_;
+  types::DecimalInteger media_sequence_number_;
   GURL uri_;
   bool has_discontinuity_;
   bool is_gap_;

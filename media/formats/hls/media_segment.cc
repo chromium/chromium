@@ -10,10 +10,12 @@
 namespace media::hls {
 
 MediaSegment::MediaSegment(types::DecimalFloatingPoint duration,
+                           types::DecimalInteger media_sequence_number,
                            GURL uri,
                            bool has_discontinuity,
                            bool is_gap)
     : duration_(duration),
+      media_sequence_number_(media_sequence_number),
       uri_(std::move(uri)),
       has_discontinuity_(has_discontinuity),
       is_gap_(is_gap) {}

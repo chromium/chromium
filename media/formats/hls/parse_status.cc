@@ -43,6 +43,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kImportedVariableUndefined);
     PARSE_STATUS_CODE_CASE(kXStreamInfTagNotFollowedByUri);
     PARSE_STATUS_CODE_CASE(kVariantMissingStreamInfTag);
+    PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeMediaSequenceTag);
   }
 
   NOTREACHED();

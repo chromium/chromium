@@ -40,6 +40,7 @@ enum class ParseStatusCode : StatusCodeType {
   kImportedVariableUndefined,
   kXStreamInfTagNotFollowedByUri,
   kVariantMissingStreamInfTag,
+  kMediaSegmentBeforeMediaSequenceTag,
 };
 
 struct ParseStatusTraits {

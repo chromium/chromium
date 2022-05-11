@@ -97,11 +97,26 @@ inline void HasComputedDuration(base::TimeDelta value,
   EXPECT_EQ(playlist.GetComputedDuration(), value) << from.ToString();
 }
 
+// Checks the media playlist's `HasMediaSequenceTag` property against
+// the given value.
+inline void HasMediaSequenceTag(bool value,
+                                const base::Location& from,
+                                const MediaPlaylist& playlist) {
+  EXPECT_EQ(playlist.HasMediaSequenceTag(), value) << from.ToString();
+}
+
 // Checks that the latest media segment has the given duration.
 inline void HasDuration(types::DecimalFloatingPoint duration,
                         const base::Location& from,
                         const MediaSegment& segment) {
   EXPECT_DOUBLE_EQ(segment.GetDuration(), duration) << from.ToString();
+}
+
+// Checks that the latest media segment has the given media sequence number.
+inline void HasMediaSequenceNumber(types::DecimalInteger number,
+                                   const base::Location& from,
+                                   const MediaSegment& segment) {
+  EXPECT_EQ(segment.GetMediaSequenceNumber(), number) << from.ToString();
 }
 
 // Checks that the latest media segment has the given URI.

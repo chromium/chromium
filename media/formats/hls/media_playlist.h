@@ -65,6 +65,12 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.3.6
   bool IsIFramesOnly() const { return i_frames_only_; }
 
+  // The presence of the EXT-X-MEDIA-SEQUENCE tag is a hint that, in the case of
+  // live playlists, media segments may become unavailable after the time this
+  // playlist was loaded + the duration of this playlist.
+  // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=nominal%20playback%20rate).-,If,-the%20Media%20Playlist
+  bool HasMediaSequenceTag() const { return has_media_sequence_tag_; }
+
   // Attempts to parse the media playlist represented by `source`. `uri` must be
   // a valid, non-empty GURL referring to the URI of this playlist. If this
   // playlist was found through a multivariant playlist, `parent_playlist` must
@@ -84,7 +90,8 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
                 std::vector<MediaSegment> segments,
                 absl::optional<PlaylistType> playlist_type,
                 bool end_list,
-                bool i_frames_only);
+                bool i_frames_only,
+                bool has_media_sequence_tag_);
 
   base::TimeDelta target_duration_;
   std::vector<MediaSegment> segments_;
@@ -92,6 +99,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   absl::optional<PlaylistType> playlist_type_;
   bool end_list_;
   bool i_frames_only_;
+  bool has_media_sequence_tag_;
 };
 
 }  // namespace media::hls

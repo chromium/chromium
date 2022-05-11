@@ -26,6 +26,25 @@ ParseStatus::Or<T> ParseEmptyTag(TagItem tag) {
   return T{};
 }
 
+template <typename T>
+ParseStatus::Or<T> ParseDecimalIntegerTag(TagItem tag,
+                                          types::DecimalInteger T::*field) {
+  DCHECK(tag.GetName() == ToTagName(T::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto value = types::ParseDecimalInteger(*tag.GetContent());
+  if (value.has_error()) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(value).error());
+  }
+
+  T out;
+  out.*field = std::move(value).value();
+  return out;
+}
+
 // Attributes expected in `EXT-X-DEFINE` tag contents.
 // These must remain sorted alphabetically.
 enum class XDefineTagAttribute {
@@ -152,26 +171,19 @@ ParseStatus::Or<M3uTag> M3uTag::Parse(TagItem tag) {
 }
 
 ParseStatus::Or<XVersionTag> XVersionTag::Parse(TagItem tag) {
-  DCHECK(tag.GetName() == ToTagName(XVersionTag::kName));
-
-  if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
-  }
-
-  auto value_result = types::ParseDecimalInteger(*tag.GetContent());
-  if (value_result.has_error()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(value_result).error());
+  auto result = ParseDecimalIntegerTag(tag, &XVersionTag::version);
+  if (result.has_error()) {
+    return std::move(result).error();
   }
 
   // Reject invalid version numbers.
   // For valid version numbers, caller will decide if the version is supported.
-  auto value = std::move(value_result).value();
-  if (value == 0) {
+  auto out = std::move(result).value();
+  if (out.version == 0) {
     return ParseStatusCode::kInvalidPlaylistVersion;
   }
 
-  return XVersionTag{.version = value};
+  return out;
 }
 
 ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
@@ -430,18 +442,11 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
 }
 
 ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
-  DCHECK(tag.GetName() == ToTagName(XTargetDurationTag::kName));
-  if (!tag.GetContent().has_value()) {
-    return ParseStatusCode::kMalformedTag;
-  }
+  return ParseDecimalIntegerTag(tag, &XTargetDurationTag::duration);
+}
 
-  auto duration = types::ParseDecimalInteger(*tag.GetContent());
-  if (duration.has_error()) {
-    return ParseStatus(ParseStatusCode::kMalformedTag)
-        .AddCause(std::move(duration).error());
-  }
-
-  return XTargetDurationTag{.duration = std::move(duration).value()};
+ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {
+  return ParseDecimalIntegerTag(tag, &XMediaSequenceTag::number);
 }
 
 }  // namespace media::hls
