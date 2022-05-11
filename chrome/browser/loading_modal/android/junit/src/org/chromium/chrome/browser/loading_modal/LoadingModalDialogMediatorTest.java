@@ -10,6 +10,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
+import android.os.SystemClock;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,7 +60,7 @@ public class LoadingModalDialogMediatorTest {
     @Test
     public void testObservesDialogManager() {
         mMediator.showDialog(mModel);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, times(1)).addObserver(mMediator);
 
         mMediator.onDismiss(mModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
@@ -75,7 +76,7 @@ public class LoadingModalDialogMediatorTest {
                 .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
 
         mMediator.dismissDialog();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, never())
                 .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
         verify(mModalDialogManager, times(1))
@@ -89,7 +90,7 @@ public class LoadingModalDialogMediatorTest {
         // Tests that dialog is immedeately dismissed if it was scheduled to be shown by the dialog
         // manager but was postponed due to higher priority dialog.
         mMediator.showDialog(mModel);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, times(1))
                 .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
 
@@ -105,7 +106,7 @@ public class LoadingModalDialogMediatorTest {
         // Tests that dialog is dismissed after at least 500 ms since it was shown. Covers the case
         // when the dialog was postponed by the Dialog Manager due higher priority dialog.
         mMediator.showDialog(mModel);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, times(1))
                 .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
 
@@ -129,10 +130,69 @@ public class LoadingModalDialogMediatorTest {
     }
 
     @Test
+    public void testTimedOutAfterBeingShown() {
+        // Tests that dialog is dismissed after the timeout is reached.
+        long startTimeMs = SystemClock.elapsedRealtime();
+        mMediator.showDialog(mModel);
+
+        // Wait for the dialog to be shown.
+        ShadowLooper.runMainLooperOneTask();
+        verify(mModalDialogManager, times(1))
+                .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
+        assertEquals(SystemClock.elapsedRealtime() - startTimeMs, 500);
+
+        mMediator.onDialogAdded(mModel);
+        assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.LOADING_SHOWN);
+
+        // Wait until timeout occurs.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(SystemClock.elapsedRealtime() - startTimeMs, 5000);
+        verify(mModalDialogManager, times(1))
+                .dismissDialog(mModel, DialogDismissalCause.CLIENT_TIMEOUT);
+
+        mMediator.onDismiss(mModel, DialogDismissalCause.CLIENT_TIMEOUT);
+        assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.TIMEOUT);
+    }
+
+    @Test
+    public void testTimedOutAfterPostponedKeepsDelay() {
+        // Test that the anti-flicker delay is respected when timeout is reached.
+        long startTimeMs = SystemClock.elapsedRealtime();
+        mMediator.showDialog(mModel);
+
+        // Wait for the dialog show request.
+        ShadowLooper.runMainLooperOneTask();
+        verify(mModalDialogManager, times(1))
+                .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
+        assertEquals(SystemClock.elapsedRealtime() - startTimeMs, 500);
+
+        // Assume the dialog visibility was postponed for due to higher priority dialog.
+        // The dialog is shown 4900 ms after requested.
+        ShadowLooper.idleMainLooper(4400, TimeUnit.MILLISECONDS);
+        mMediator.onDialogAdded(mModel);
+        assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.LOADING_SHOWN);
+        long dialogShowUpTimeMs = SystemClock.elapsedRealtime();
+
+        // Wait until timeout occurs.
+        ShadowLooper.runMainLooperOneTask();
+        assertEquals(SystemClock.elapsedRealtime() - startTimeMs, 5000);
+        assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.TIMEOUT_SHOWN);
+
+        // Wait until the dialog is dismissed.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(SystemClock.elapsedRealtime() - dialogShowUpTimeMs, 500);
+        verify(mModalDialogManager, times(1))
+                .dismissDialog(mModel, DialogDismissalCause.CLIENT_TIMEOUT);
+
+        mMediator.onDismiss(mModel, DialogDismissalCause.CLIENT_TIMEOUT);
+        assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.TIMEOUT);
+    }
+
+    @Test
     public void testIsCancelledWhenSystemBackUsed() {
         // Tests that dialog status updates correctly when cancelled.
         mMediator.showDialog(mModel);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         mMediator.onDialogAdded(mModel);
         mMediator.onDismiss(mModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.CANCELLED);
@@ -146,7 +206,7 @@ public class LoadingModalDialogMediatorTest {
         mMediator.showDialog(mModel);
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.LOADING_DELAYED);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, times(1))
                 .showDialog(mModel, ModalDialogManager.ModalDialogType.TAB);
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.LOADING_DELAYED);
@@ -157,7 +217,7 @@ public class LoadingModalDialogMediatorTest {
         mMediator.dismissDialog();
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.FINISHED_SHOWN);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         verify(mModalDialogManager, times(1))
                 .dismissDialog(mModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.FINISHED_SHOWN);
@@ -171,7 +231,7 @@ public class LoadingModalDialogMediatorTest {
         // Tests that dialog status updates correctly when the user dismisses the dialog after
         // the loading finished, but when the dialog is still visible to prevent flickering.
         mMediator.showDialog(mModel);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ShadowLooper.runMainLooperOneTask();
         mMediator.onDialogAdded(mModel);
         mMediator.dismissDialog();
         assertEquals(mMediator.getState(), LoadingModalDialogCoordinator.State.FINISHED_SHOWN);

@@ -35,7 +35,7 @@ public class LoadingModalDialogCoordinator {
 
     // Used to indicate the current loading dialog state.
     @IntDef({State.READY, State.LOADING_DELAYED, State.LOADING_SHOWN, State.FINISHED_SHOWN,
-            State.FINISHED, State.CANCELLED})
+            State.FINISHED, State.CANCELLED, State.TIMEOUT_SHOWN, State.TIMEOUT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         /** Loading is not started, the dialog is not shown. */
@@ -50,7 +50,11 @@ public class LoadingModalDialogCoordinator {
         int FINISHED = 4;
         /** User dismissed the dialog before the loading finished. */
         int CANCELLED = 5;
-        int NUM_ENTRIES = 6;
+        /** Loading timeout occurred but the dialog is still visible to prevent flickering. */
+        int TIMEOUT_SHOWN = 6;
+        /** Loading timeout occurred and the dialog was automatically dismissed. */
+        int TIMEOUT = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /**
@@ -123,6 +127,10 @@ public class LoadingModalDialogCoordinator {
         mMediator.skipDelays();
     }
 
+    @VisibleForTesting
+    void disableTimeoutForTesting() {
+        mMediator.disableTimeout();
+    }
     @VisibleForTesting
     View getButtonsView() {
         return mButtonsView;

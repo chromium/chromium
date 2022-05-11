@@ -24,6 +24,7 @@ class LoadingModalDialogMediator
         implements ModalDialogProperties.Controller, ModalDialogManagerObserver {
     private static final long SHOW_DELAY_TIME_MS = 500L;
     private static final long MINIMUM_SHOW_TIME_MS = 500L;
+    private static final long LOAD_TIMEOUT_MS = 5000L;
 
     private final Handler mHandler;
     private final ObservableSupplier<ModalDialogManager> mDialogManagerSupplier;
@@ -35,6 +36,7 @@ class LoadingModalDialogMediator
 
     private @LoadingModalDialogCoordinator.State int mState;
     private boolean mSkipDelay;
+    private boolean mDisableTimeout;
 
     /** ModalDialogProperties.Controller implementation */
     @Override
@@ -46,11 +48,7 @@ class LoadingModalDialogMediator
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         mDialogManager.removeObserver(this);
         mHandler.removeCallbacksAndMessages(null);
-        if (dismissalCause != DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED) {
-            mState = LoadingModalDialogCoordinator.State.CANCELLED;
-        } else {
-            mState = LoadingModalDialogCoordinator.State.FINISHED;
-        }
+        mState = getFinalStateByDismissalCause(dismissalCause);
     }
 
     /**
@@ -95,6 +93,11 @@ class LoadingModalDialogMediator
         mModel = model;
         mState = LoadingModalDialogCoordinator.State.LOADING_DELAYED;
         postDelayed(this::showDialogImmediately, SHOW_DELAY_TIME_MS);
+
+        if (mDisableTimeout) return;
+        Runnable timeoutDismissRunnable =
+                () -> dismissDialogWithCause(DialogDismissalCause.CLIENT_TIMEOUT);
+        postDelayed(timeoutDismissRunnable, LOAD_TIMEOUT_MS);
     }
 
     /**
@@ -104,26 +107,7 @@ class LoadingModalDialogMediator
      * time. This method should be called when the loading finishes.
      */
     void dismissDialog() {
-        if (mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED
-                && mState != LoadingModalDialogCoordinator.State.LOADING_SHOWN) {
-            return;
-        }
-
-        mHandler.removeCallbacksAndMessages(null);
-
-        final long currentTimeMs = SystemClock.elapsedRealtime();
-        if (mState == LoadingModalDialogCoordinator.State.LOADING_SHOWN
-                && mShownAtMs + MINIMUM_SHOW_TIME_MS > currentTimeMs) {
-            // Dialog dismiss should be postponed to prevent UI flicker.
-            mState = LoadingModalDialogCoordinator.State.FINISHED_SHOWN;
-            postDelayed(()
-                                -> dismissDialogImmediately(
-                                        DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED),
-                    mShownAtMs + MINIMUM_SHOW_TIME_MS - currentTimeMs);
-        } else {
-            // Dialog is not yet shown or has been visible long enough.
-            dismissDialogImmediately(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
-        }
+        dismissDialogWithCause(DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
     }
 
     /**
@@ -136,6 +120,41 @@ class LoadingModalDialogMediator
 
     void skipDelays() {
         mSkipDelay = true;
+    }
+
+    void disableTimeout() {
+        mDisableTimeout = true;
+    }
+
+    private void dismissDialogWithCause(@DialogDismissalCause int dismissalCause) {
+        if (mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED
+                && mState != LoadingModalDialogCoordinator.State.LOADING_SHOWN) {
+            return;
+        }
+
+        mHandler.removeCallbacksAndMessages(null);
+
+        final long currentTimeMs = SystemClock.elapsedRealtime();
+        if (mState == LoadingModalDialogCoordinator.State.LOADING_SHOWN
+                && mShownAtMs + MINIMUM_SHOW_TIME_MS > currentTimeMs) {
+            // Dialog dismiss should be postponed to prevent UI flicker.
+            switch (dismissalCause) {
+                case DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED:
+                    mState = LoadingModalDialogCoordinator.State.FINISHED_SHOWN;
+                    break;
+                case DialogDismissalCause.CLIENT_TIMEOUT:
+                    mState = LoadingModalDialogCoordinator.State.TIMEOUT_SHOWN;
+                    break;
+                default:
+                    assert false : "Unexpected dismissal cause: " + dismissalCause;
+                    break;
+            }
+            Runnable dismissRunnable = () -> dismissDialogImmediately(dismissalCause);
+            postDelayed(dismissRunnable, mShownAtMs + MINIMUM_SHOW_TIME_MS - currentTimeMs);
+        } else {
+            // Dialog is not yet shown or has been visible long enough.
+            dismissDialogImmediately(dismissalCause);
+        }
     }
 
     /** Immediately shows the dialog. */
@@ -152,11 +171,7 @@ class LoadingModalDialogMediator
      *                       dismissed.
      */
     private void dismissDialogImmediately(@DialogDismissalCause int dismissalCause) {
-        if (mState != LoadingModalDialogCoordinator.State.FINISHED_SHOWN
-                && mState != LoadingModalDialogCoordinator.State.LOADING_SHOWN
-                && mState != LoadingModalDialogCoordinator.State.LOADING_DELAYED) {
-            return;
-        }
+        if (!canBeImmediatelyDismissed()) return;
         mDialogManager.dismissDialog(mModel, dismissalCause);
     }
 
@@ -165,6 +180,33 @@ class LoadingModalDialogMediator
             r.run();
         } else {
             mHandler.postDelayed(r, delay);
+        }
+    }
+
+    private boolean canBeImmediatelyDismissed() {
+        switch (mState) {
+            case LoadingModalDialogCoordinator.State.LOADING_DELAYED:
+            case LoadingModalDialogCoordinator.State.LOADING_SHOWN:
+            case LoadingModalDialogCoordinator.State.FINISHED_SHOWN:
+            case LoadingModalDialogCoordinator.State.TIMEOUT_SHOWN:
+                return true;
+            case LoadingModalDialogCoordinator.State.READY:
+            case LoadingModalDialogCoordinator.State.FINISHED:
+            case LoadingModalDialogCoordinator.State.CANCELLED:
+                return false;
+        }
+        throw new AssertionError();
+    }
+
+    private @LoadingModalDialogCoordinator.State int getFinalStateByDismissalCause(
+            @DialogDismissalCause int dismissalCause) {
+        switch (dismissalCause) {
+            case DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED:
+                return LoadingModalDialogCoordinator.State.FINISHED;
+            case DialogDismissalCause.CLIENT_TIMEOUT:
+                return LoadingModalDialogCoordinator.State.TIMEOUT;
+            default:
+                return LoadingModalDialogCoordinator.State.CANCELLED;
         }
     }
 }

@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
         DialogDismissalCause.WEB_CONTENTS_DESTROYED,
         DialogDismissalCause.DIALOG_INTERACTION_DEFERRED,
         DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED,
-        DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE})
+        DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE, DialogDismissalCause.CLIENT_TIMEOUT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface DialogDismissalCause {
     // Dismissal causes that are fully controlled by clients (i.e. are not used inside the
@@ -68,4 +68,8 @@ public @interface DialogDismissalCause {
      * validate after the action was taken on the dialog content.
      */
     int ACTION_ON_DIALOG_NOT_POSSIBLE = 14;
+    /**
+     * Controlled by client: The dialog was automatically dismissed after a timeout.
+     */
+    int CLIENT_TIMEOUT = 15;
 }

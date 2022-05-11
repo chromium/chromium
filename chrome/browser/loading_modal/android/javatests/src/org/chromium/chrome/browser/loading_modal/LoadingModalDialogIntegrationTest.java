@@ -111,6 +111,7 @@ public class LoadingModalDialogIntegrationTest {
         LoadingModalDialogCoordinator coordinator =
                 LoadingModalDialogCoordinator.create(getDialogManager(), sActivity, new Handler());
         coordinator.skipDelayForTesting();
+        coordinator.disableTimeoutForTesting();
 
         runOnUiThreadBlocking(coordinator::show);
         mObserver.getDialogAddedCallbackHelper().waitForFirst();
@@ -127,6 +128,7 @@ public class LoadingModalDialogIntegrationTest {
         LoadingModalDialogCoordinator coordinator =
                 LoadingModalDialogCoordinator.create(getDialogManager(), sActivity, new Handler());
         coordinator.skipDelayForTesting();
+        coordinator.disableTimeoutForTesting();
 
         runOnUiThreadBlocking(coordinator::show);
         mObserver.getDialogAddedCallbackHelper().waitForFirst();
@@ -143,6 +145,7 @@ public class LoadingModalDialogIntegrationTest {
         LoadingModalDialogCoordinator coordinator =
                 LoadingModalDialogCoordinator.create(getDialogManager(), sActivity, new Handler());
         coordinator.skipDelayForTesting();
+        coordinator.disableTimeoutForTesting();
 
         runOnUiThreadBlocking(coordinator::show);
         mObserver.getDialogAddedCallbackHelper().waitForFirst();
