@@ -19,7 +19,7 @@ import {Paths, PersonalizationRouter} from '../personalization_router_element.js
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
-import {fetchGooglePhotosAlbums, initializeGooglePhotosData} from './wallpaper_controller.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, initializeGooglePhotosData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /** Enumeration of supported tabs. */
@@ -109,6 +109,9 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   private photosByAlbumId_: Record<string, GooglePhotosPhoto[]|null|undefined>|
       undefined;
 
+  /** Whether the list of photos is currently loading. */
+  private photosLoading_: boolean|undefined;
+
   /** The currently selected tab. */
   private tab_: Tab;
 
@@ -130,6 +133,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     this.watch<GooglePhotosCollection['photosByAlbumId_']>(
         'photosByAlbumId_',
         state => state.wallpaper.googlePhotos.photosByAlbumId);
+    this.watch<GooglePhotosCollection['photosLoading_']>(
+        'photosLoading_', state => state.wallpaper.loading.googlePhotos.photos);
 
     this.updateFromStore();
 
@@ -150,6 +155,14 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     document.title = this.i18n('googlePhotosLabel');
     this.$.main.focus();
+
+    // When the user first selects the Google Photos collection it should result
+    // in a data fetch for the user's photos.
+    if (this.photos_ === undefined && !this.photosLoading_) {
+      this.initializeGooglePhotosDataPromise_.then(() => {
+        fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
+      });
+    }
 
     // When the user first selects the Google Photos collection it should result
     // in a data fetch for the user's albums.

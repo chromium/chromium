@@ -346,6 +346,40 @@ suite('GooglePhotosCollectionTest', function() {
             wallpaperProvider.getCallCount('fetchGooglePhotosAlbums'), 0);
       }));
 
+  [true, false].forEach(
+      hidden => test('fetches photos on first show', async () => {
+        // Initialize |googlePhotosCollectionElement| in |hidden| state.
+        googlePhotosCollectionElement =
+            initElement(GooglePhotosCollection, {hidden});
+        await waitAfterNextRender(googlePhotosCollectionElement);
+
+        if (hidden) {
+          // Photos should *not* be fetched when hidden.
+          await new Promise<void>(resolve => setTimeout(resolve, 100));
+          assertEquals(
+              wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+
+          // Show |googlePhotosCollectionElement|.
+          googlePhotosCollectionElement.hidden = false;
+          await waitAfterNextRender(googlePhotosCollectionElement);
+        }
+
+        // Photos *should* be fetched when shown.
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos');
+        wallpaperProvider.reset();
+
+        // Hide and re-show |googlePhotosCollectionElement|.
+        googlePhotosCollectionElement.hidden = true;
+        await waitAfterNextRender(googlePhotosCollectionElement);
+        googlePhotosCollectionElement.hidden = false;
+        await waitAfterNextRender(googlePhotosCollectionElement);
+
+        // Photos should *not* be fetched when re-shown.
+        await new Promise<void>(resolve => setTimeout(resolve, 100));
+        assertEquals(
+            wallpaperProvider.getCallCount('fetchGooglePhotosPhotos'), 0);
+      }));
+
   test('sets aria label', async () => {
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection, {hidden: false});
