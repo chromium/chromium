@@ -1174,6 +1174,10 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     *exit_code = token && installer::StoreDMToken(*token)
                      ? installer::STORE_DMTOKEN_SUCCESS
                      : installer::STORE_DMTOKEN_FAILED;
+  } else if (cmd_line.HasSwitch(installer::switches::kDeleteDMToken)) {
+    // Delete any existing DMToken from the registry.
+    *exit_code = installer::DeleteDMToken() ? installer::DELETE_DMTOKEN_SUCCESS
+                                            : installer::DELETE_DMTOKEN_FAILED;
   } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
     // The value of the command line arguments is a DM token.  This is used
     // to send the public part of the signing key to DM server.

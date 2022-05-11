@@ -79,6 +79,21 @@
       },
       "wow_key": "KEY_WOW64_32KEY"
     },
+    "HKEY_LOCAL_MACHINE\\$CHROME_UPDATE_REGISTRY_SUBKEY\\Commands\\delete-dmtoken": {
+      "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",
+      "exists": "required",
+      "values": {
+        "CommandLine": {
+          "type": "SZ",
+          "data": "\"$PROGRAM_FILES\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --delete-dmtoken --system-level --verbose-logging"
+        },
+        "WebAccessible": {
+          "type": "DWORD",
+          "data": 1
+        }
+      },
+      "wow_key": "KEY_WOW64_32KEY"
+    },
     "HKEY_LOCAL_MACHINE\\$BINARIES_UPDATE_REGISTRY_SUBKEY": {
       "exists": "forbidden",
       "wow_key": "KEY_WOW64_32KEY"

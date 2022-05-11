@@ -358,6 +358,38 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
   cmd.AddWorkItems(root_key, cmd_key, install_list);
 }
 
+// Adds work items to add the "delete-dmtoken" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used when unenrolling Chrome browser instances from enterprise
+// management.
+void AddEnterpriseUnenrollmentWorkItems(const InstallerState& installer_state,
+                                        const base::FilePath& setup_path,
+                                        const base::Version& new_version,
+                                        WorkItemList* install_list) {
+  if (!installer_state.system_install())
+    return;
+
+  const HKEY root_key = installer_state.root_key();
+  const std::wstring cmd_key(GetCommandKey(kCmdDeleteDMToken));
+
+  // Register a command to allow Chrome to request Google Update to run
+  // setup.exe --delete-dmtoken, which will delete any existing DMToken from the
+  // registry.
+  base::CommandLine cmd_line(installer_state.GetInstallerDirectory(new_version)
+                                 .Append(setup_path.BaseName()));
+  cmd_line.AppendSwitch(switches::kDeleteDMToken);
+  cmd_line.AppendSwitch(switches::kSystemLevel);
+  cmd_line.AppendSwitch(switches::kVerboseLogging);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
+  AppCommand cmd(cmd_line.GetCommandLineString());
+
+  // TODO(rogerta): For now setting this command as web accessible is required
+  // by Google Update.  Could revisit this should Google Update change the
+  // way permissions are handled for commands.
+  cmd.set_is_web_accessible(true);
+  cmd.AddWorkItems(root_key, cmd_key, install_list);
+}
+
 // Adds work items to add the "rotate-dtkey" command to Chrome's version key.
 // This method is a no-op if this is anything other than system-level Chrome.
 // The command is used to rotate the device signing key stored in HKLM.
@@ -809,6 +841,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddEnterpriseEnrollmentWorkItems(installer_state, setup_path, new_version,
                                    install_list);
+  AddEnterpriseUnenrollmentWorkItems(installer_state, setup_path, new_version,
+                                     install_list);
   AddEnterpriseDeviceTrustWorkItems(installer_state, setup_path, new_version,
                                     install_list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING

@@ -434,23 +434,29 @@ InstallUtil::GetCloudManagementEnrollmentTokenRegistryPaths() {
 }
 
 // static
-std::pair<base::win::RegKey, std::wstring>
-InstallUtil::GetCloudManagementDmTokenLocation(
-    ReadOnly read_only,
-    BrowserLocation browser_location) {
-  // The location dictates the path and WoW bit.
-  REGSAM wow_access = 0;
-  std::wstring key_path(L"SOFTWARE\\");
+std::pair<std::wstring, std::wstring>
+InstallUtil::GetCloudManagementDmTokenPath(BrowserLocation browser_location) {
+  std::wstring key_path = L"SOFTWARE\\";
   if (browser_location) {
-    wow_access |= KEY_WOW64_64KEY;
     install_static::AppendChromeInstallSubDirectory(
         install_static::InstallDetails::Get().mode(), /*include_suffix=*/false,
         &key_path);
   } else {
-    wow_access |= KEY_WOW64_32KEY;
     key_path.append(install_static::kCompanyPathName);
   }
   key_path.append(L"\\Enrollment");
+
+  return {key_path, L"dmtoken"};
+}
+
+// static
+std::pair<base::win::RegKey, std::wstring>
+InstallUtil::GetCloudManagementDmTokenLocation(
+    ReadOnly read_only,
+    BrowserLocation browser_location) {
+  // The location dictates the WoW bit.
+  REGSAM wow_access = browser_location ? KEY_WOW64_64KEY : KEY_WOW64_32KEY;
+  auto [key_path, value_name] = GetCloudManagementDmTokenPath(browser_location);
 
   base::win::RegKey key;
   if (read_only) {
@@ -466,7 +472,7 @@ InstallUtil::GetCloudManagementDmTokenLocation(
     }
   }
 
-  return {std::move(key), L"dmtoken"};
+  return {std::move(key), value_name};
 }
 
 // static

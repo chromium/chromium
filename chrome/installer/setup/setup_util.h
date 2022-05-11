@@ -160,6 +160,9 @@ absl::optional<std::string> DecodeNonceSwitchValue(
 // install modes of the browser (i.e., stable and all three side-by-side modes).
 bool StoreDMToken(const std::string& token);
 
+// Deletes any existing DMToken from the global location on the machine.
+bool DeleteDMToken();
+
 // Rotates the device trust signing key and saves it to a global location on
 // the machine accessible to all install modes of the browser (i.e., stable and
 // all three side-by-side modes).

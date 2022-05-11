@@ -121,6 +121,12 @@ class InstallUtil {
   using ReadOnly = base::StrongAlias<class ReadOnlyTag, bool>;
   using BrowserLocation = base::StrongAlias<class BrowserLocationTag, bool>;
 
+  // Returns the path where the cloud management DMToken should be read/written.
+  // |browser_location| indicates whether the legacy browser-specific path is
+  // returned rather than the app-neutral path.
+  static std::pair<std::wstring, std::wstring> GetCloudManagementDmTokenPath(
+      BrowserLocation browser_location);
+
   // Returns the registry key and value name from/to which a cloud management DM
   // token may be read/written. |read_only| indicates whether they key is opened
   // for reading the value or writing it. |browser_location| indicates whether

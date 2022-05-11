@@ -748,6 +748,52 @@ bool StoreDMToken(const std::string& token) {
   return true;
 }
 
+bool DeleteDMToken() {
+  DCHECK(install_static::IsSystemInstall());
+
+  // Delete the token from both the app-neutral and browser-specific locations.
+  // Only the former is mandatory -- the latter is best-effort.
+  for (const auto& is_browser_location : {InstallUtil::BrowserLocation(false),
+                                          InstallUtil::BrowserLocation(true)}) {
+    auto [key_path, value_name] =
+        InstallUtil::GetCloudManagementDmTokenPath(is_browser_location);
+    REGSAM wow_access = is_browser_location ? KEY_WOW64_64KEY : KEY_WOW64_32KEY;
+
+    base::win::RegKey key;
+    auto result = key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                           KEY_SET_VALUE | wow_access);
+    if (result == ERROR_FILE_NOT_FOUND) {
+      // The registry key which stores the DMToken value was not found, so
+      // deletion is not necessary.
+      continue;
+    }
+    if (result != ERROR_SUCCESS) {
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to open registry key HKLM\\" << key_path
+                  << " for deletion";
+      // If the key couldn't be opened for the mandatory location, return
+      // failure immediately. Otherwise, continue iterating.
+      if (!is_browser_location)
+        return false;
+      continue;
+    }
+
+    if (!DeleteRegistryValue(key.Handle(), std::wstring(), wow_access,
+                             value_name)) {
+      if (!is_browser_location)
+        return false;  // Logging already performed in `DeleteRegistryValue()`.
+      continue;
+    }  // Else ignore the failure to write to the best-effort location.
+
+    // Delete the key if no other values are present.
+    base::win::RegKey(HKEY_LOCAL_MACHINE, L"", KEY_QUERY_VALUE | wow_access)
+        .DeleteEmptyKey(key_path.c_str());
+  }
+
+  VLOG(1) << "Successfully deleted DMToken from the registry.";
+  return true;
+}
+
 bool RotateDeviceTrustKey(
     std::unique_ptr<enterprise_connectors::KeyRotationManager>
         key_rotation_manager,

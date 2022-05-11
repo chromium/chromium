@@ -33,6 +33,9 @@ const char kCreateShortcuts[] = "create-shortcuts";
 // in-use Chrome should be restarted ASAP.
 const char kCriticalUpdateVersion[] = "critical-update-version";
 
+// Deletes any existing DMToken from the registry.
+const char kDeleteDMToken[] = "delete-dmtoken";
+
 // Delete files that belong to old versions of Chrome from the install
 // directory.
 const char kDeleteOldVersions[] = "delete-old-versions";
@@ -223,6 +226,7 @@ const wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
 const wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
 const wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
 const wchar_t kCmdStoreDMToken[] = L"store-dmtoken";
+const wchar_t kCmdDeleteDMToken[] = L"delete-dmtoken";
 const wchar_t kEulaSentinelFile[] = L"EULA Accepted";
 const wchar_t kInstallBinaryDir[] = L"Application";
 const wchar_t kInstallerDir[] = L"Installer";
