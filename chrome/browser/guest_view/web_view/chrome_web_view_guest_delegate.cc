@@ -79,14 +79,12 @@ std::unique_ptr<base::ListValue> ChromeWebViewGuestDelegate::MenuModelToValue(
     const ui::SimpleMenuModel& menu_model) {
   std::unique_ptr<base::ListValue> items(new base::ListValue());
   for (int i = 0; i < menu_model.GetItemCount(); ++i) {
-    std::unique_ptr<base::DictionaryValue> item_value(
-        new base::DictionaryValue());
+    base::Value::Dict item_value;
     // TODO(lazyboy): We need to expose some kind of enum equivalent of
     // |command_id| instead of plain integers.
-    item_value->SetIntKey(webview::kMenuItemCommandId,
-                          menu_model.GetCommandIdAt(i));
-    item_value->SetStringKey(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
-    items->Append(std::move(item_value));
+    item_value.Set(webview::kMenuItemCommandId, menu_model.GetCommandIdAt(i));
+    item_value.Set(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
+    items->GetList().Append(std::move(item_value));
   }
   return items;
 }
