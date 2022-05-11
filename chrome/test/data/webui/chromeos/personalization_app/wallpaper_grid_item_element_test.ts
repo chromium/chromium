@@ -6,7 +6,6 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
-
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -34,27 +33,49 @@ suite('WallpaperGridItemTest', function() {
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state.
-    assertEquals(querySelector('img'), null);
+    const img = querySelector('img');
+    assertEquals(img?.getAttribute('auto-src'), null);
+    assertEquals(img?.getAttribute('aria-hidden'), 'true');
+    assertEquals(img?.hasAttribute('clear-src'), true);
+    assertEquals(img?.hasAttribute('hidden'), true);
+    assertEquals(img?.hasAttribute('is-google-photos'), true);
     assertEquals(querySelector('.text'), null);
     assertEquals(querySelector('.primary-text'), null);
     assertEquals(querySelector('.secondary-text'), null);
   });
 
   test('displays image', async () => {
-    const imageSrc = 'foo.com';
+    let imageSrc = 'data:image/svg+xml;utf8,' +
+        '<svg xmlns="http://www.w3.org/2000/svg" height="100px" width="100px">' +
+        '<rect fill="red" height="100px" width="100px"></rect>' +
+        '</svg>';
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItem, {imageSrc});
     await waitAfterNextRender(wallpaperGridItemElement);
 
-    // Verify state.
-    assertEquals(querySelector('img')?.getAttribute('auto-src'), imageSrc);
-    assertEquals(querySelector('img')?.getAttribute('aria-hidden'), 'true');
-    assertEquals(querySelector('img')?.hasAttribute('clear-src'), true);
-    assertEquals(querySelector('img')?.hasAttribute('is-google-photos'), true);
-    assertEquals(querySelector('.text'), null);
-    assertEquals(querySelector('.primary-text'), null);
-    assertEquals(querySelector('.secondary-text'), null);
+    // Verify state. Note that |img| is shown as |imageSrc| has already loaded.
+    const img = querySelector('img');
+    assertEquals(img?.getAttribute('auto-src'), imageSrc);
+    assertEquals(img?.getAttribute('aria-hidden'), 'true');
+    assertEquals(img?.hasAttribute('clear-src'), true);
+    assertEquals(img?.hasAttribute('hidden'), false);
+    assertEquals(img?.hasAttribute('is-google-photos'), true);
+
+    // Update state. Note that |img| is hidden as |imageSrc| hasn't yet loaded.
+    imageSrc = imageSrc.replace('red', 'blue');
+    wallpaperGridItemElement.imageSrc = imageSrc;
+    assertEquals(img?.getAttribute('auto-src'), imageSrc);
+    assertEquals(img?.hasAttribute('hidden'), true);
+
+    // Verify that once |imageSrc| has loaded, |img| will be shown.
+    await new Promise<void>(resolve => {
+      setInterval(() => {
+        if (!img?.hasAttribute('hidden')) {
+          resolve();
+        }
+      }, 100);
+    });
   });
 
   test('displays primary text', async () => {
@@ -65,7 +86,6 @@ suite('WallpaperGridItemTest', function() {
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state.
-    assertEquals(querySelector('img'), null);
     assertNotEquals(querySelector('.text'), null);
     assertEquals(querySelector('.primary-text')?.innerHTML, primaryText);
     assertEquals(querySelector('.secondary-text'), null);
@@ -79,7 +99,6 @@ suite('WallpaperGridItemTest', function() {
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state.
-    assertEquals(querySelector('img'), null);
     assertNotEquals(querySelector('.text'), null);
     assertEquals(querySelector('.primary-text'), null);
     assertEquals(querySelector('.secondary-text')?.innerHTML, secondaryText);

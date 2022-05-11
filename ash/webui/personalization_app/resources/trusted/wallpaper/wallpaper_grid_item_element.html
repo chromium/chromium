@@ -140,11 +140,9 @@
 </style>
 <div class="item" aria-selected$="[[selected]]"
      style$="[[getItemPlaceholderAnimationDelay_(index)]]">
-  <template is="dom-if" if="[[isImageVisible_(imageSrc)]]">
-    <img is="cr-auto-img" aria-hidden="true" auto-src="[[imageSrc]]" clear-src
-      is-google-photos>
-    </img>
-  </template>
+  <img id="image" is="cr-auto-img" aria-hidden="true" auto-src="[[imageSrc]]"
+    clear-src hidden is-google-photos>
+  </img>
   <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
     <div class="text">
       <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]">
