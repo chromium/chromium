@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser;
 
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -36,7 +35,6 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
@@ -423,29 +421,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 };
             }
             return mLifecycleRegistry;
-        }
-    }
-
-    /**
-     * Specify the proper non-.Main-aliased Chrome Activity for the given component.
-     *
-     * @param intent The intent to set the component for.
-     * @param component The client generated component to be validated.
-     */
-    public static void setNonAliasedComponent(Intent intent, ComponentName component) {
-        assert component != null;
-        Context appContext = ContextUtils.getApplicationContext();
-        if (!TextUtils.equals(component.getPackageName(), appContext.getPackageName())) {
-            return;
-        }
-        if (component.getClassName() != null
-                && TextUtils.equals(component.getClassName(),
-                        ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME)) {
-            // Keep in sync with the activities that the .Main alias points to in
-            // AndroidManifest.xml.
-            intent.setClass(appContext, ChromeTabbedActivity.class);
-        } else {
-            intent.setComponent(component);
         }
     }
 

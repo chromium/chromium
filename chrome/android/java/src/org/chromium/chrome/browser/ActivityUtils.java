@@ -5,9 +5,14 @@
 package org.chromium.chrome.browser;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
 import org.chromium.content_public.browser.WebContents;
@@ -54,5 +59,29 @@ public final class ActivityUtils {
     public static boolean isActivityFinishingOrDestroyed(Activity activity) {
         if (activity == null) return true;
         return activity.isDestroyed() || activity.isFinishing();
+    }
+
+    /**
+     * Specify the proper non-.Main-aliased Chrome Activity for the given component.
+     *
+     * @param intent The intent to set the component for.
+     * @param component The client generated component to be validated.
+     */
+    public static void setNonAliasedComponentForMainBrowsingActivity(
+            Intent intent, ComponentName component) {
+        assert component != null;
+        Context appContext = ContextUtils.getApplicationContext();
+        if (!TextUtils.equals(component.getPackageName(), appContext.getPackageName())) {
+            return;
+        }
+        if (component.getClassName() != null
+                && TextUtils.equals(component.getClassName(),
+                        ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME)) {
+            // Keep in sync with the activities that the .Main alias points to in
+            // AndroidManifest.xml.
+            intent.setClass(appContext, ChromeTabbedActivity.class);
+        } else {
+            intent.setComponent(component);
+        }
     }
 }

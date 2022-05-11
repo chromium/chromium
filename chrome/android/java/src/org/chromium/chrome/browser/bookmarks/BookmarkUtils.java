@@ -30,7 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -535,7 +535,7 @@ public class BookmarkUtils {
      *
      * @param url Url to open.
      * @param componentName Name of the component opening the URL. If null, {@link
-     *         ChromeTabbedActivity} is used.
+     *          ChromeLauncherActivity} is used.
      * @param launchType If not null, url is opened in a new tab with the specified {@link
      *         TabLaunchType}.
      */
@@ -559,7 +559,7 @@ public class BookmarkUtils {
         }
 
         if (componentName != null) {
-            ChromeTabbedActivity.setNonAliasedComponent(intent, componentName);
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);
         } else {
             // If the bookmark manager is shown in a tab on a phone (rather than in a separate
             // activity) the component name may be null. Send the intent through

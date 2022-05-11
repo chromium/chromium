@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
@@ -168,7 +169,7 @@ public class TabDelegate extends AsyncTabCreator {
         if (componentName == null) {
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
         } else {
-            ChromeTabbedActivity.setNonAliasedComponent(intent, componentName);
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);
         }
         IntentHandler.setIntentExtraHeaders(
                 asyncParams.getLoadUrlParams().getExtraHeaders(), intent);

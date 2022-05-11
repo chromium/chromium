@@ -26,7 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -377,7 +377,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             component = mActivity.getComponentName();
         }
         if (component != null) {
-            ChromeTabbedActivity.setNonAliasedComponent(viewIntent, component);
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(viewIntent, component);
         } else {
             viewIntent.setClass(mActivity, ChromeLauncherActivity.class);
         }
