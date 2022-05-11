@@ -53,16 +53,16 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   manifest->Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
                 std::move(background_script_list));
 
-  auto permission_detail_list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < media_galleries_permissions.size(); i++)
-    permission_detail_list->Append(media_galleries_permissions[i]);
-  auto media_galleries_permission = std::make_unique<base::DictionaryValue>();
-  media_galleries_permission->Set("mediaGalleries",
-                                  std::move(permission_detail_list));
-  auto permission_list = std::make_unique<base::ListValue>();
-  permission_list->Append(std::move(media_galleries_permission));
-  manifest->Set(extensions::manifest_keys::kPermissions,
-                std::move(permission_list));
+  base::Value::List permission_detail_list;
+  for (const auto& permission : media_galleries_permissions)
+    permission_detail_list.Append(permission);
+  base::Value::Dict media_galleries_permission;
+  media_galleries_permission.Set("mediaGalleries",
+                                 std::move(permission_detail_list));
+  base::Value::List permission_list;
+  permission_list.Append(std::move(media_galleries_permission));
+  manifest->GetDict().Set(extensions::manifest_keys::kPermissions,
+                          std::move(permission_list));
 
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile);
