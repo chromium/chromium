@@ -460,6 +460,23 @@ public class PasswordManagerHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testDoesNotLaunchPasswordCheckupIntentWhenLoadingDialogTimedOut()
+            throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
+        when(mLoadingModalDialogCoordinator.getState())
+                .thenReturn(LoadingModalDialogCoordinator.State.TIMEOUT);
+
+        PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mLoadingModalDialogCoordinator);
+
+        verify(mPendingIntentMock, never())
+                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsLoadingDialogOnPasswordSettings() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -520,6 +537,22 @@ public class PasswordManagerHelperTest {
         setUpSuccessfulIntentFetchingForAccount();
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
+
+        PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
+                mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
+
+        verify(mPendingIntentMock, never())
+                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testDoesNotLaunchPasswordSettingsIntentWhenLoadingDialogTimedOut()
+            throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulIntentFetchingForAccount();
+        when(mLoadingModalDialogCoordinator.getState())
+                .thenReturn(LoadingModalDialogCoordinator.State.TIMEOUT);
 
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);

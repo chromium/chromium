@@ -253,8 +253,11 @@ public class PasswordManagerHelper {
         assert forAccount : "Local storage for preferences not ready for use";
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
 
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED) {
-            // Dialog was dismissed before the loading finished, do not launch the intent.
+        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
+                || loadingDialogCoordinator.getState()
+                        == LoadingModalDialogCoordinator.State.TIMEOUT) {
+            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
+            // the intent.
             return;
         }
 
@@ -271,8 +274,11 @@ public class PasswordManagerHelper {
                 SystemClock.elapsedRealtime() - startTimeMs);
         RecordHistogram.recordBooleanHistogram(PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, true);
 
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED) {
-            // Dialog was dismissed before the loading finished, do not launch the intent.
+        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
+                || loadingDialogCoordinator.getState()
+                        == LoadingModalDialogCoordinator.State.TIMEOUT) {
+            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
+            // the intent.
             return;
         }
 
