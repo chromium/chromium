@@ -113,6 +113,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // DesktopWindowTreeHost's transparency.
   void UpdateWindowTransparency();
 
+  // Returns true if the desktop window was created in headless mode.
+  bool IsHeadlessMode() const { return headless_mode_; }
+
  protected:
   // internal::NativeWidgetPrivate:
   void InitNativeWidget(Widget::InitParams params) override;

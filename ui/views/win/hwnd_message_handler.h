@@ -142,6 +142,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   bool IsMaximized() const;
   bool IsFullscreen() const;
   bool IsAlwaysOnTop() const;
+  bool IsHeadless() const;
 
   bool RunMoveLoop(const gfx::Vector2d& drag_offset, bool hide_on_escape);
   void EndMoveLoop();
@@ -809,6 +810,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // This is set to true when we call ShowWindow(SC_RESTORE), in order to
   // call HandleWindowMinimizedOrRestored() when we get a WM_ACTIVATE message.
   bool notify_restore_on_activate_ = false;
+
+  // This tracks headless window visibility state. In headless mode
+  // the platform window is always hidden, so we use this boolean
+  // to track the window's requested visibility state.
+  bool headless_window_visibility_state_ = false;
 
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the

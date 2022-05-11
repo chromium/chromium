@@ -358,7 +358,7 @@ class HWNDMessageHandler::ScopedRedrawLock {
         hwnd_(owner_->hwnd()),
         cancel_unlock_(false),
         should_lock_(owner_->IsVisible() && !owner->HasChildRenderingWindow() &&
-                     ::IsWindow(hwnd_) &&
+                     ::IsWindow(hwnd_) && !owner_->IsHeadless() &&
                      (!(GetWindowLong(hwnd_, GWL_STYLE) & WS_CAPTION) ||
                       !ui::win::IsAeroGlassEnabled())) {
     if (should_lock_)
@@ -694,6 +694,14 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
         break;
     }
 
+    // In headless mode the platform window is always hidden, so instead of
+    // showing it just maintain a local flag to track the expected headless
+    // window visibility state.
+    if (IsHeadless()) {
+      headless_window_visibility_state_ = true;
+      return;
+    }
+
     ShowWindow(hwnd(), native_show_state);
     // When launched from certain programs like bash and Windows Live
     // Messenger, show_state is set to SW_HIDE, so we need to correct that
@@ -720,6 +728,14 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
 }
 
 void HWNDMessageHandler::Hide() {
+  // In headless mode the platform window is always hidden, so instead of
+  // hiding it just maintain a local flag to track the expected headless
+  // window visibility state.
+  if (IsHeadless()) {
+    headless_window_visibility_state_ = false;
+    return;
+  }
+
   if (IsWindow(hwnd())) {
     // NOTE: Be careful not to activate any windows here (for example, calling
     // ShowWindow(SW_HIDE) will automatically activate another window).  This
@@ -772,7 +788,11 @@ void HWNDMessageHandler::SetAlwaysOnTop(bool on_top) {
 }
 
 bool HWNDMessageHandler::IsVisible() const {
-  return !!::IsWindowVisible(hwnd());
+  // In headless mode the platform window is always hidden, so instead of
+  // returning the actual window visibility state return the expected visibility
+  // state maintained by Show/Hide() calls.
+  return IsHeadless() ? headless_window_visibility_state_
+                      : !!::IsWindowVisible(hwnd());
 }
 
 bool HWNDMessageHandler::IsActive() const {
@@ -793,6 +813,10 @@ bool HWNDMessageHandler::IsFullscreen() const {
 
 bool HWNDMessageHandler::IsAlwaysOnTop() const {
   return (GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_TOPMOST) != 0;
+}
+
+bool HWNDMessageHandler::IsHeadless() const {
+  return delegate_->IsHeadless();
 }
 
 bool HWNDMessageHandler::RunMoveLoop(const gfx::Vector2d& drag_offset,
@@ -907,6 +931,10 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 }
 
 void HWNDMessageHandler::SetFullscreen(bool fullscreen) {
+  // Avoid setting fullscreen mode when in headless mode.
+  if (IsHeadless())
+    return;
+
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();
   fullscreen_handler()->SetFullscreen(fullscreen);

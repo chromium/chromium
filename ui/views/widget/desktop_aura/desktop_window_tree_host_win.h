@@ -205,6 +205,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool WantsMouseEventsWhenInactive() const override;
   bool WidgetSizeIsClientSize() const override;
   bool IsModal() const override;
+  bool IsHeadless() const override;
   int GetInitialShowState() const override;
   int GetNonClientComponent(const gfx::Point& point) const override;
   void GetWindowMask(const gfx::Size& size, SkPath* path) override;
