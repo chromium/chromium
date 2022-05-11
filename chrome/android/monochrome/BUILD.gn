@@ -45,8 +45,8 @@ python_library("monochrome_python_tests_py") {
   testonly = true
   pydeps_file = "scripts/monochrome_python_tests.pydeps"
   data = [
-    "${android_sdk_build_tools}/aapt2",
-    "${android_sdk_build_tools}/dexdump",
+    "${public_android_sdk_build_tools}/aapt2",
+    "${public_android_sdk_build_tools}/dexdump",
   ]
   data_deps = [
     "//build/android:devil_chromium_py",

@@ -105,6 +105,8 @@ if (is_android || is_chromeos) {
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
+  public_android_sdk_build_tools =
+      "${public_android_sdk_root}/build-tools/31.0.0"
   if (android_sdk_release == "s") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_version = "31"
