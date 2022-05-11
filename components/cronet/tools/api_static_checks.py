@@ -86,7 +86,7 @@ INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
 IMPLEMENTATION_API_VERSION_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android',
     'implementation_api_version.txt'))
-
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
 
 def find_api_calls(dump, api_classes, bad_calls):
   # Given a dump of an implementation class, find calls through API classes.
@@ -129,7 +129,8 @@ def check_api_calls(opts):
   temp_dir = tempfile.mkdtemp()
 
   # Extract API class files from jar
-  jar_cmd = ['jar', 'xf', os.path.abspath(opts.api_jar)]
+  jar_cmd = [os.path.relpath(JAR_PATH, temp_dir), 'xf',
+             os.path.abspath(opts.api_jar)]
   build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
   shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
@@ -149,7 +150,8 @@ def check_api_calls(opts):
 
   # Extract impl class files from jars
   for impl_jar in opts.impl_jar:
-    jar_cmd = ['jar', 'xf', os.path.abspath(impl_jar)]
+    jar_cmd = [os.path.relpath(JAR_PATH, temp_dir), 'xf',
+               os.path.abspath(impl_jar)]
     build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
   shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
