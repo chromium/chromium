@@ -23,6 +23,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.page_info.VrHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Delegate to call into VR. */
-public abstract class VrDelegate implements VrHandler {
+public abstract class VrDelegate implements VrHandler, BackPressHandler {
     private static final String TAG = "VrDelegate";
     private static final String VR_BOOT_SYSTEM_PROPERTY = "ro.boot.vr";
     private static final String SAMSUNG_GALAXY_PREFIX = "SM-";

@@ -2312,11 +2312,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (!BackPressManager.isEnabled()) {
             // TODO(crbug.com/1279941): should this stop propagating the event?
             TextBubble.dismissBubbles();
-        }
 
-        if (VrModuleProvider.getDelegate().onBackPressed()) return;
+            if (VrModuleProvider.getDelegate().onBackPressed()) return;
 
-        if (!BackPressManager.isEnabled()) {
             ArDelegate arDelegate = ArDelegateProvider.getDelegate();
             if (arDelegate != null && arDelegate.onBackPressed()) return;
 
@@ -2358,16 +2356,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
+            mBackPressManager.addHandler(VrModuleProvider.getDelegate(), Type.VR_DELEGATE);
+
+            if (ArDelegateProvider.getDelegate() != null) {
+                mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
+            }
 
             mLayoutManagerSupplier.addObserver((layoutManager) -> {
                 assert !mBackPressManager.has(Type.LAYOUT_MANAGER)
                     : "LayoutManager should be only set at most once";
                 mBackPressManager.addHandler(layoutManager, Type.LAYOUT_MANAGER);
             });
-
-            if (ArDelegateProvider.getDelegate() != null) {
-                mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
-            }
 
             mBrowserControlsManagerSupplier.addObserver((controlManager) -> {
                 assert !mBackPressManager.has(Type.FULLSCREEN)
