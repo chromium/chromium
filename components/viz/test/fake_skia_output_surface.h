@@ -22,8 +22,6 @@
 
 namespace viz {
 
-class TextureDeleter;
-
 class FakeSkiaOutputSurface : public SkiaOutputSurface {
  public:
   static std::unique_ptr<FakeSkiaOutputSurface> Create3d() {
@@ -151,14 +149,21 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   ContextProvider* context_provider() { return context_provider_.get(); }
   GrDirectContext* gr_context() { return context_provider()->GrContext(); }
 
+  gpu::SyncToken GenerateSyncToken();
+
   bool GetGrBackendTexture(const ImageContext& image_context,
                            GrBackendTexture* backend_texture);
   void SwapBuffersAck();
 
+  // Provided as a release callback for CopyOutputRequest.
+  void DestroyCopyOutputTexture(const gpu::Mailbox& mailbox,
+                                const gpu::SyncToken& sync_token,
+                                bool is_lost);
+
   scoped_refptr<ContextProvider> context_provider_;
   raw_ptr<OutputSurfaceClient> client_ = nullptr;
 
-  std::unique_ptr<TextureDeleter> texture_deleter_;
+  uint64_t next_sync_fence_release_ = 1;
 
   // The current render pass id set by BeginPaintRenderPass.
   AggregatedRenderPassId current_render_pass_id_;

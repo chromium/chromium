@@ -4,10 +4,13 @@
 
 #include "components/viz/test/fake_skia_output_surface.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -15,7 +18,6 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
-#include "components/viz/service/display/texture_deleter.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -32,10 +34,7 @@ namespace viz {
 FakeSkiaOutputSurface::FakeSkiaOutputSurface(
     scoped_refptr<ContextProvider> context_provider)
     : SkiaOutputSurface(SkiaOutputSurface::Type::kOpenGL),
-      context_provider_(std::move(context_provider)) {
-  texture_deleter_ =
-      std::make_unique<TextureDeleter>(base::ThreadTaskRunnerHandle::Get());
-}
+      context_provider_(std::move(context_provider)) {}
 
 FakeSkiaOutputSurface::~FakeSkiaOutputSurface() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -50,12 +49,10 @@ void FakeSkiaOutputSurface::BindToClient(OutputSurfaceClient* client) {
 
 void FakeSkiaOutputSurface::EnsureBackbuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
 }
 
 void FakeSkiaOutputSurface::DiscardBackbuffer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
 }
 
 void FakeSkiaOutputSurface::BindFramebuffer() {
@@ -273,23 +270,22 @@ void FakeSkiaOutputSurface::CopyOutput(
     // TODO(rivr): This implementation is incomplete and doesn't copy
     // anything into the mailbox, but currently the only tests that use this
     // don't actually check the returned texture data.
-    auto* sii = context_provider_->SharedImageInterface();
+    auto* sii = GetSharedImageInterface();
     gpu::Mailbox local_mailbox = sii->CreateSharedImage(
         ResourceFormat::RGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
 
-    auto* gl = context_provider_->ContextGL();
-    gpu::SyncToken sync_token;
-    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
-
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(
-        texture_deleter_->GetReleaseCallback(context_provider_, local_mailbox));
+    release_callbacks.push_back(base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
+                       weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds,
-        CopyOutputResult::TextureResult(local_mailbox, sync_token, color_space),
+        CopyOutputResult::TextureResult(local_mailbox, GenerateSyncToken(),
+                                        color_space),
         std::move(release_callbacks)));
     return;
   }
@@ -317,19 +313,13 @@ gpu::SharedImageInterface* FakeSkiaOutputSurface::GetSharedImageInterface() {
 }
 
 void FakeSkiaOutputSurface::AddContextLostObserver(
-    ContextLostObserver* observer) {
-  NOTIMPLEMENTED();
-}
+    ContextLostObserver* observer) {}
 
 void FakeSkiaOutputSurface::RemoveContextLostObserver(
-    ContextLostObserver* observer) {
-  NOTIMPLEMENTED();
-}
+    ContextLostObserver* observer) {}
 
 gpu::SyncToken FakeSkiaOutputSurface::Flush() {
-  gpu::SyncToken sync_token;
-  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
-  return sync_token;
+  return GenerateSyncToken();
 }
 
 bool FakeSkiaOutputSurface::EnsureMinNumberOfBuffers(int n) {
@@ -341,6 +331,14 @@ void FakeSkiaOutputSurface::SetOutOfOrderCallbacks(
   TestContextSupport* support =
       static_cast<TestContextSupport*>(context_provider()->ContextSupport());
   support->set_out_of_order_callbacks(out_of_order_callbacks);
+}
+
+gpu::SyncToken FakeSkiaOutputSurface::GenerateSyncToken() {
+  gpu::SyncToken sync_token(
+      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
+      gpu::CommandBufferId(), ++next_sync_fence_release_);
+  sync_token.SetVerifyFlush();
+  return sync_token;
 }
 
 bool FakeSkiaOutputSurface::GetGrBackendTexture(
@@ -369,6 +367,13 @@ void FakeSkiaOutputSurface::SwapBuffersAck() {
   client_->DidReceiveSwapBuffersAck({now, now},
                                     /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
+}
+
+void FakeSkiaOutputSurface::DestroyCopyOutputTexture(
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token,
+    bool is_lost) {
+  GetSharedImageInterface()->DestroySharedImage(sync_token, mailbox);
 }
 
 void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(
