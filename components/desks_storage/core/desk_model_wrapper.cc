@@ -42,6 +42,15 @@ void DeskModelWrapper::GetAllEntries(
 void DeskModelWrapper::GetEntryByUUID(
     const std::string& uuid,
     DeskModel::GetEntryByUuidCallback callback) {
+  // Check if this is an admin template uuid first.
+  std::unique_ptr<ash::DeskTemplate> policy_entry =
+      GetAdminDeskTemplateByUUID(uuid);
+
+  if (policy_entry) {
+    std::move(callback).Run(GetEntryByUuidStatus::kOk, std::move(policy_entry));
+    return;
+  }
+
   if (GetDeskTemplateModel()->HasUuid(uuid)) {
     GetDeskTemplateModel()->GetEntryByUUID(uuid, std::move(callback));
   } else {

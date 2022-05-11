@@ -260,8 +260,8 @@ ui::WindowShowState ToUiWindowState(WindowState state) {
   }
 }
 
-// Convert Sync proto WindowState `state` to chromeos::WindowStateType used by
-// the app_restore::WindowInfo struct.
+// Convert Sync proto WindowState `state` to chromeos::WindowStateType used
+// by the app_restore::WindowInfo struct.
 chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
   switch (state) {
     case WindowState::WorkspaceDeskSpecifics_WindowState_UNKNOWN_WINDOW_STATE:
