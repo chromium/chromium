@@ -630,6 +630,14 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
     // Insert the endpoints corresponding to this group.
     while (endpoints_it != loaded_endpoints.end() &&
            endpoints_it->group_key == group_key) {
+      if (FindEndpointIt(group_key, endpoints_it->info.url) !=
+          endpoints_.end()) {
+        // This endpoint is duplicated in the store, so discard it and move on
+        // to the next endpoint. This should not happen unless the store is
+        // corrupted.
+        ++endpoints_it;
+        continue;
+      }
       EndpointMap::iterator inserted = endpoints_.insert(
           std::make_pair(group_key, std::move(*endpoints_it)));
       endpoint_its_by_url_.insert(

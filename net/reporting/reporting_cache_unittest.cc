@@ -1917,6 +1917,43 @@ TEST_P(ReportingCacheTest, StoreLastUsedProperly) {
   EXPECT_TRUE(EndpointExistsInCache(group4, kEndpoint1_));
 }
 
+TEST_P(ReportingCacheTest, DoNotAddDuplicatedEntriesFromStore) {
+  if (!store())
+    return;
+
+  base::Time now = clock()->Now();
+
+  std::vector<ReportingEndpoint> endpoints;
+  endpoints.emplace_back(kGroupKey11_,
+                         ReportingEndpoint::EndpointInfo{kEndpoint1_});
+  endpoints.emplace_back(kGroupKey22_,
+                         ReportingEndpoint::EndpointInfo{kEndpoint2_});
+  endpoints.emplace_back(kGroupKey11_,
+                         ReportingEndpoint::EndpointInfo{kEndpoint1_});
+  std::vector<CachedReportingEndpointGroup> groups;
+  groups.emplace_back(kGroupKey11_, OriginSubdomains::DEFAULT,
+                      now + base::Minutes(1) /* expires */,
+                      now /* last_used */);
+  groups.emplace_back(kGroupKey22_, OriginSubdomains::DEFAULT,
+                      now + base::Minutes(3) /* expires */,
+                      now /* last_used */);
+  groups.emplace_back(kGroupKey11_, OriginSubdomains::DEFAULT,
+                      now + base::Minutes(1) /* expires */,
+                      now /* last_used */);
+  store()->SetPrestoredClients(endpoints, groups);
+
+  LoadReportingClients();
+
+  EXPECT_EQ(2u, cache()->GetEndpointCount());
+  EXPECT_EQ(2u, cache()->GetEndpointGroupCountForTesting());
+  EXPECT_TRUE(EndpointExistsInCache(kGroupKey11_, kEndpoint1_));
+  EXPECT_TRUE(EndpointExistsInCache(kGroupKey22_, kEndpoint2_));
+  EXPECT_TRUE(EndpointGroupExistsInCache(
+      kGroupKey11_, OriginSubdomains::DEFAULT, now + base::Minutes(1)));
+  EXPECT_TRUE(EndpointGroupExistsInCache(
+      kGroupKey22_, OriginSubdomains::DEFAULT, now + base::Minutes(3)));
+}
+
 TEST_P(ReportingCacheTest, GetIsolationInfoForEndpoint) {
   LoadReportingClients();
 
