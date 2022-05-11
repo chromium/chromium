@@ -643,7 +643,9 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
     int window_component,
     ::wm::WindowMoveSource source,
     bool grab_capture) {
-  if (window_resizer_)
+  // Do not allow resizing if there is already one in progress or if the
+  // window's state is not managed by the window manager.
+  if (window_resizer_ || !WindowState::Get(window))
     return false;
 
   std::unique_ptr<WindowResizer> resizer(

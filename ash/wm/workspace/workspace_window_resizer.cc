@@ -524,10 +524,11 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
     int window_component,
-    ::wm::WindowMoveSource source) {
+    wm::WindowMoveSource source) {
   DCHECK(window);
 
   WindowState* window_state = WindowState::Get(window);
+  DCHECK(window_state);
 
   // A resizer already exists; don't create a new one.
   if (window_state->drag_details())
