@@ -259,7 +259,8 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             features::kPrivacySandboxAdsAPIsOverride,
             privacy_sandbox::kPrivacySandboxSettings3,
             optimization_guide::features::kPageContentAnnotations,
-            optimization_guide::features::kBatchAnnotationsValidation});
+            optimization_guide::features::kPageContentAnnotationsValidation,
+        });
   }
 
  protected:

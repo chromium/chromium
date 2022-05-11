@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -83,6 +84,22 @@ const char kModelValidate[] = "optimization-guide-model-validate";
 
 const char kPageContentAnnotationsLoggingEnabled[] =
     "enable-page-content-annotations-logging";
+
+const char kPageContentAnnotationsValidationStartupDelaySeconds[] =
+    "page-content-annotations-validation-startup-delay-seconds";
+
+const char kPageContentAnnotationsValidationBatchSizeOverride[] =
+    "page-content-annotations-validation-batch-size";
+
+// Enables the specific annotation type to run validation at startup after a
+// delay. A comma separated list of inputs can be given as a value which will be
+// used as input for the validation job.
+const char kPageContentAnnotationsValidationPageTopics[] =
+    "page-content-annotations-validation-page-topics";
+const char kPageContentAnnotationsValidationPageEntities[] =
+    "page-content-annotations-validation-page-entities";
+const char kPageContentAnnotationsValidationContentVisibility[] =
+    "page-content-annotations-validation-content-visibility";
 
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
@@ -192,6 +209,78 @@ absl::optional<std::string> GetModelOverride() {
 bool ShouldLogPageContentAnnotationsInput() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kPageContentAnnotationsLoggingEnabled);
+}
+
+absl::optional<base::TimeDelta> PageContentAnnotationsValidationStartupDelay() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          kPageContentAnnotationsValidationStartupDelaySeconds)) {
+    return absl::nullopt;
+  }
+
+  std::string value = command_line->GetSwitchValueASCII(
+      kPageContentAnnotationsValidationStartupDelaySeconds);
+
+  size_t seconds = 0;
+  if (base::StringToSizeT(value, &seconds)) {
+    return base::Seconds(seconds);
+  }
+  return absl::nullopt;
+}
+
+absl::optional<size_t> PageContentAnnotationsValidationBatchSize() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          kPageContentAnnotationsValidationBatchSizeOverride)) {
+    return absl::nullopt;
+  }
+
+  std::string value = command_line->GetSwitchValueASCII(
+      kPageContentAnnotationsValidationBatchSizeOverride);
+
+  size_t size = 0;
+  if (base::StringToSizeT(value, &size)) {
+    return size;
+  }
+  return absl::nullopt;
+}
+
+bool LogPageContentAnnotationsValidationToConsole() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(kPageContentAnnotationsValidationPageTopics) ||
+         command_line->HasSwitch(
+             kPageContentAnnotationsValidationPageEntities) ||
+         command_line->HasSwitch(
+             kPageContentAnnotationsValidationContentVisibility);
+}
+
+absl::optional<std::vector<std::string>>
+PageContentAnnotationsValidationInputForType(AnnotationType type) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  std::string value;
+  switch (type) {
+    case AnnotationType::kPageTopics:
+      value = command_line->GetSwitchValueASCII(
+          kPageContentAnnotationsValidationPageTopics);
+      break;
+    case AnnotationType::kPageEntities:
+      value = command_line->GetSwitchValueASCII(
+          kPageContentAnnotationsValidationPageEntities);
+      break;
+    case AnnotationType::kContentVisibility:
+      value = command_line->GetSwitchValueASCII(
+          kPageContentAnnotationsValidationContentVisibility);
+      break;
+    default:
+      break;
+  }
+  if (value.empty()) {
+    return absl::nullopt;
+  }
+
+  return base::SplitString(value, ",", base::KEEP_WHITESPACE,
+                           base::SPLIT_WANT_ALL);
 }
 
 }  // namespace switches

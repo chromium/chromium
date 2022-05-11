@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -23,6 +24,23 @@ EntityMetadata::EntityMetadata(
       human_readable_categories(human_readable_categories) {}
 EntityMetadata::EntityMetadata(const EntityMetadata&) = default;
 EntityMetadata::~EntityMetadata() = default;
+
+base::Value EntityMetadata::AsValue() const {
+  base::Value::List categories;
+  for (const auto& iter : human_readable_categories) {
+    base::Value::Dict category;
+    category.Set("category", iter.first);
+    category.Set("score", iter.second);
+    categories.Append(std::move(category));
+  }
+
+  base::Value::Dict metadata;
+  metadata.Set("entity_id", entity_id);
+  metadata.Set("human_readable_name", human_readable_name);
+  metadata.Set("categories", std::move(categories));
+
+  return base::Value(std::move(metadata));
+}
 
 std::string EntityMetadata::ToString() const {
   std::vector<std::string> categories;
@@ -53,6 +71,13 @@ ScoredEntityMetadata::ScoredEntityMetadata(float score,
 ScoredEntityMetadata::ScoredEntityMetadata(const ScoredEntityMetadata&) =
     default;
 ScoredEntityMetadata::~ScoredEntityMetadata() = default;
+
+base::Value ScoredEntityMetadata::AsValue() const {
+  base::Value::Dict scored_md;
+  scored_md.Set("metadata", metadata.AsValue());
+  scored_md.Set("score", score);
+  return base::Value(std::move(scored_md));
+}
 
 std::string ScoredEntityMetadata::ToString() const {
   return base::StringPrintf("ScoredEntityMetadata{%f, %s}", score,

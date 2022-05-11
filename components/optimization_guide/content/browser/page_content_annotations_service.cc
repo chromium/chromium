@@ -12,10 +12,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/default_tick_clock.h"
-#include "base/timer/timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -105,14 +104,6 @@ void MaybeRecordVisibilityUKM(
 }
 #endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
-const char* kRandomWords[] = {
-    "interesting", "chunky",    "maniacal", "tickle",   "lettuce",
-    "obsequious",  "stir",      "bless",    "colossal", "squealing",
-    "elegant",     "ambitious", "eight",    "frighten", "descriptive",
-    "pretty",      "curly",     "regular",  "uneven",   "heap",
-};
-const size_t kCountRandomWords = 20;
-
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
@@ -154,22 +145,8 @@ PageContentAnnotationsService::PageContentAnnotationsService(
         database_provider, database_dir, background_task_runner);
   }
 
-  if (features::BatchAnnotationsValidationEnabled()) {
-    // Normally the caller would do this, but we are our own caller.
-    RequestAndNotifyWhenModelAvailable(
-        features::BatchAnnotationsValidationUsePageTopics()
-            ? AnnotationType::kPageTopics
-            : AnnotationType::kContentVisibility,
-        base::DoNothing());
-
-    validation_timer_ = std::make_unique<base::OneShotTimer>(
-        base::DefaultTickClock::GetInstance());
-    validation_timer_->Start(
-        FROM_HERE, features::BatchAnnotationValidationStartupDelay(),
-        base::BindRepeating(
-            &PageContentAnnotationsService::RunBatchAnnotationValidation,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+  validator_ =
+      PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
@@ -603,32 +580,6 @@ void PageContentAnnotationsService::PersistRemotePageEntities(
            // Even though we are persisting remote page entities, we store
            // these as an override to the model annotations.
            PageContentAnnotationsType::kModelAnnotations);
-}
-
-void PageContentAnnotationsService::RunBatchAnnotationValidation() {
-  DCHECK(features::BatchAnnotationsValidationEnabled());
-  DCHECK(validation_timer_);
-  validation_timer_.reset();
-
-  std::vector<std::string> dummy_inputs;
-  dummy_inputs.reserve(features::BatchAnnotationsValidationBatchSize());
-  for (size_t i = 0; i < features::BatchAnnotationsValidationBatchSize(); i++) {
-    const char* word1 = kRandomWords[base::RandGenerator(kCountRandomWords)];
-    const char* word2 = kRandomWords[base::RandGenerator(kCountRandomWords)];
-    dummy_inputs.emplace_back(base::StringPrintf("%s-%s.com", word1, word2));
-  }
-
-  LOCAL_HISTOGRAM_COUNTS_100(
-      "OptimizationGuide.PageContentAnnotationsService.ValidationRun",
-      dummy_inputs.size());
-
-  if (!features::BatchAnnotationsValidationUsePageTopics()) {
-    BatchAnnotate(base::DoNothing(), dummy_inputs,
-                  AnnotationType::kContentVisibility);
-    return;
-  }
-
-  BatchAnnotatePageTopics(base::DoNothing(), dummy_inputs);
 }
 
 // static
