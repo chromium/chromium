@@ -241,6 +241,10 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
     base::StringPiece host_mapping_rules,
     bool enable_caching) {
 #if BUILDFLAG(IS_ANDROID)
+  // Note that the logic below uses Android APIs that don't work on a sandboxed
+  // process: This is not problematic because this function is used only by
+  // Cronet which doesn't enable sandboxing.
+
   auto resolve_context = std::make_unique<ResolveContext>(
       nullptr /*url_request_context */, enable_caching);
   auto manager_options = std::move(options).value_or(ManagerOptions());
