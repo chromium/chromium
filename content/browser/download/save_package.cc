@@ -162,6 +162,10 @@ const std::u16string& GetTitle(Page& page) {
   return base::EmptyString16();
 }
 
+bool IsSavableFrame(RenderFrameHost* rfh) {
+  return rfh->IsRenderFrameLive() && !rfh->IsNestedWithinFencedFrame();
+}
+
 }  // namespace
 
 const base::FilePath::CharType SavePackage::kDefaultHtmlExtension[] =
@@ -1022,7 +1026,7 @@ void SavePackage::GetSerializedHtmlWithLocalLinks() {
 
     FrameTreeNode* frame_tree_node = frame_tree->FindByID(frame_tree_node_id);
     if (frame_tree_node &&
-        frame_tree_node->current_frame_host()->IsRenderFrameLive()) {
+        IsSavableFrame(frame_tree_node->current_frame_host())) {
       // Ask the frame for HTML to be written to the associated SaveItem.
       GetSerializedHtmlWithLocalLinksForFrame(frame_tree_node);
       number_of_frames_pending_response_++;
@@ -1200,7 +1204,7 @@ const SaveItem* SavePackage::LookupSaveItemForSender(
 
 void SavePackage::GetSavableResourceLinksForRenderFrameHost(
     RenderFrameHost* rfh) {
-  if (!rfh->IsRenderFrameLive())
+  if (!IsSavableFrame(rfh))
     return;
   ++number_of_frames_pending_response_;
   static_cast<RenderFrameHostImpl*>(rfh)->GetSavableResourceLinksFromRenderer();

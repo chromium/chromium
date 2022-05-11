@@ -14,14 +14,17 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/download/save_file_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -132,7 +135,6 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SavePackage> save_package_success_;
   // SavePackage for failed generating file name.
   scoped_refptr<SavePackage> save_package_fail_;
-
   base::ScopedTempDir temp_dir_;
 
   scoped_refptr<SaveFileManager> save_file_manager_;
@@ -283,6 +285,86 @@ TEST_F(SavePackageTest, TestGetUrlToBeSavedViewSource) {
   NavigateAndCommit(view_source_url);
   EXPECT_EQ(actual_url, GetUrlToBeSaved());
   EXPECT_EQ(view_source_url, contents()->GetLastCommittedURL());
+}
+
+class SavePackageFencedFrameTest : public SavePackageTest {
+ public:
+  SavePackageFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~SavePackageFencedFrameTest() override = default;
+
+  RenderFrameHost* CreateFencedFrame(RenderFrameHost* parent) {
+    RenderFrameHost* fenced_frame =
+        RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// FakeLocalFrame implementation that records calls to
+// GetSavableResourceLinks().
+class FakeLocalFrameWithSavableResourceLinks : public FakeLocalFrame {
+ public:
+  explicit FakeLocalFrameWithSavableResourceLinks(RenderFrameHost* rfh) {
+    Init(static_cast<TestRenderFrameHost*>(rfh)
+             ->GetRemoteAssociatedInterfaces());
+  }
+
+  bool is_called() const { return is_called_; }
+
+  // FakeLocalFrame:
+  void GetSavableResourceLinks(
+      GetSavableResourceLinksCallback callback) override {
+    is_called_ = true;
+    std::move(callback).Run(nullptr);
+  }
+
+ private:
+  bool is_called_ = false;
+};
+
+// Tests that SavePackage does not create an unnecessary task that gets the
+// resources links from fenced frames.
+// If fenced frames become savable, this test will need to be updated.
+// See https://crbug.com/1321102
+TEST_F(SavePackageFencedFrameTest,
+       DontRequestSavableResourcesFromFencedFrames) {
+  NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Create a fenced frame.
+  RenderFrameHostTester::For(contents()->GetMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+  RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(contents()->GetMainFrame());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<SavePackage> save_package(new SavePackage(
+      contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+      temp_dir.GetPath().AppendASCII("testfile" HTML_EXTENSION),
+      temp_dir.GetPath().AppendASCII("testfile_files")));
+
+  FakeLocalFrameWithSavableResourceLinks local_frame_for_primary(
+      contents()->GetMainFrame());
+  local_frame_for_primary.Init(
+      contents()->GetMainFrame()->GetRemoteAssociatedInterfaces());
+
+  FakeLocalFrameWithSavableResourceLinks local_frame_for_fenced_frame(
+      fenced_frame_rfh);
+  local_frame_for_fenced_frame.Init(
+      fenced_frame_rfh->GetRemoteAssociatedInterfaces());
+
+  EXPECT_TRUE(save_package->Init(base::DoNothing()));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(local_frame_for_primary.is_called());
+  EXPECT_FALSE(local_frame_for_fenced_frame.is_called());
 }
 
 }  // namespace content

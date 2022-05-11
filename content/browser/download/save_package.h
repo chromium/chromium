@@ -147,6 +147,8 @@ class CONTENT_EXPORT SavePackage
   friend class WebContentsImpl;
   FRIEND_TEST_ALL_PREFIXES(SavePackageTest, TestSuggestedSaveNames);
   FRIEND_TEST_ALL_PREFIXES(SavePackageTest, TestLongSafePureFilename);
+  FRIEND_TEST_ALL_PREFIXES(SavePackageFencedFrameTest,
+                           DontRequestSavableResourcesFromFencedFrames);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ImplicitCancel);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ExplicitCancel);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, Reload);
