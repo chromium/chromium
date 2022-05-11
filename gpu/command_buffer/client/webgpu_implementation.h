@@ -145,7 +145,6 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 #if BUILDFLAG(USE_DAWN)
   scoped_refptr<DawnWireServices> dawn_wire_;
 #endif
-  WGPUDevice deprecated_default_device_ = nullptr;
 
   LogSettings log_settings_;
 

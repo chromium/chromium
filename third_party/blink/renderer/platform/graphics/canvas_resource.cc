@@ -777,17 +777,11 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
       GetSkColorInfo().alphaType(), shared_image_usage_flags,
       gpu::kNullSurfaceHandle);
 
-  auto* webgpu = WebGPUInterface();
-
   // Wait for the mailbox to be ready to be used.
   WaitSyncToken(shared_image_interface->GenUnverifiedSyncToken());
 
   // Ensure Dawn wire is initialized.
-  webgpu->RequestAdapterAsync(gpu::webgpu::PowerPreference::kHighPerformance,
-                              /*force_fallback_adapter*/ false,
-                              base::DoNothing());
-  WGPUDeviceProperties properties{};
-  webgpu->RequestDeviceAsync(0, properties, base::DoNothing());
+  WebGPUInterface()->DeprecatedEnsureDefaultDeviceSync();
 
   owning_thread_data().shared_image_mailbox = shared_image_mailbox;
 }
