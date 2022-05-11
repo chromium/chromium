@@ -13,6 +13,10 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckChange(input_api, output_api):
+    # These tests contain too many Linux assumptions (pwd command, output when
+    # files are missing) for them to run on Windows, so exit early.
+    if input_api.is_windows:
+        return []
     """Presubmit checks to run on upload and on commit of a CL."""
     checks = input_api.canned_checks.GetUnitTestsRecursively(
         input_api,
