@@ -1098,6 +1098,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3978338123949022456">Modo de búsqueda, ingresa una búsqueda y presiona Intro para buscar con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Aves</translation>
+<translation id="3985750352229496475">Administrar direcciones…</translation>
 <translation id="3986705137476756801">Desactivar el Subtitulado instantáneo por el momento</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Desplazamiento del borde</translation>
@@ -1220,6 +1221,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4305666528087210886">No se pudo acceder a tu archivo</translation>
 <translation id="4306529830550717874">¿Quieres guardar la dirección?</translation>
 <translation id="4306812610847412719">portapapeles</translation>
+<translation id="4310070645992025887">Buscar tus Exploraciones</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Administrar la sincronización</translation>
@@ -2104,6 +2106,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6839929833149231406">Área</translation>
 <translation id="6846340164947227603">Usar un número de tarjeta virtual…</translation>
 <translation id="6852204201400771460">¿Deseas volver a cargar la app?</translation>
+<translation id="6857776781123259569">Administrar contraseñas…</translation>
 <translation id="686485648936420384">Recursos del consumidor</translation>
 <translation id="6865412394715372076">No se puede verificar la tarjeta en este momento</translation>
 <translation id="6869334554832814367">Préstamos personales</translation>
@@ -2430,6 +2433,7 @@ Detalles adicionales:
 <translation id="7669271284792375604">Es posible que los atacantes de este sitio intenten engañarte para que instales programas que pueden afectar tu experiencia de navegación (p. ej., podrían cambiar la página principal o mostrar más anuncios en los sitios que visitas).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Las acciones que se realizan con los datos marcados como confidenciales (1 acción desde el acceso). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}other{Las acciones que se realizan con los datos marcados como confidenciales (# acciones desde el acceso). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Buzón 6</translation>
+<translation id="7675325315208090829">Administrar formas de pago…</translation>
 <translation id="7676643023259824263">Buscar el texto <ph name="TEXT" /> en el portapapeles</translation>
 <translation id="7679367271685653708">Ver y administrar tu historial de navegación en la configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>

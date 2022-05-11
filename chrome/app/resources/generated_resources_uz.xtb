@@ -421,6 +421,7 @@
 <translation id="1415708812149920388">Klipborddan o‘qishga ruxsat berilmagan</translation>
 <translation id="1415990189994829608">“<ph name="EXTENSION_NAME" />” (identifikatori: <ph name="EXTENSION_ID" />) kengaytmasidan bu turdagi seanslarda foydalanish taqiqlanadi</translation>
 <translation id="1418552618736477642">Bildirishnomalar va ilovalar</translation>
+<translation id="1418882096915998312">Korxonani roʻyxatga olish davom etmoqda</translation>
 <translation id="1418954524306642206">Printeringiz PPD faylini tanlang</translation>
 <translation id="1420834118113404499">Media litsenziyalar</translation>
 <translation id="1420920093772172268">Ulanishga ruxsat berish uchun <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -3410,6 +3411,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4275830172053184480">Qurilmangizni qayta yuklang</translation>
 <translation id="4277434192562187284">XML konfiguratsiya manbasi</translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
+<translation id="4278498748067682896">Bu qurilma faqat kiosk yoki reklama paneli rejimida ishlashi uchun Kiosk va Reklama panelini yangilash xizmatidan foydalaning. Agar qurilma foydalanuvchilari hisobiga kirishni istasa, ortga qayting va Chrome Korporativ yangilanish xizmatiga yoziling.</translation>
 <translation id="4279129444466079448">Bu qurilmada <ph name="PROFILE_LIMIT" /> gacha eSIM profillarini oʻrnatish mumkin. Boshqa profil kiritish uchun avval mavjud profillardan birini olib tashlang.</translation>
 <translation id="4280325816108262082">Qurilma faolsizlantirilganda yoki ishlatilmayotganda avtomatik ravishda uziladi</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>

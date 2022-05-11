@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">Desactiva el tema fosc</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1827738518074806965">Galeria d'art</translation>
+<translation id="1840835860961531162">Desactiva la protecció contra escriptura</translation>
 <translation id="1851218745569890714">Videoconferències</translation>
 <translation id="1852934301711881861">Instal·la ChromeOS Flex</translation>
 <translation id="1856388568474281774">Fletxa avall</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
 <translation id="3954678691475912818">El tipus de dispositiu és desconegut.</translation>
+<translation id="3958703339436883942">S'està preparant per reiniciar...</translation>
 <translation id="3966286471246132217">Per obtenir uns resultats més precisos, tanca totes les aplicacions fins que la prova hagi finalitzat.</translation>
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3969602104473960991">S'ha actualitzat la contrasenya de Chrome OS</translation>
@@ -424,6 +426,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5275828089655680674">Torna a executar les rutines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versió <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Desactiva la protecció contra escriptura per continuar a la pantalla següent. Consulta la pàgina d'assistència del fabricant del dispositiu per obtenir instruccions.</translation>
 <translation id="5300814202279832142">Mou la finestra a l'escriptori</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Connecta</translation>
@@ -475,6 +478,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Codi del proveïdor domèstic</translation>
+<translation id="5856532218727053281">El sistema es reiniciarà després de verificar l'estat de la protecció contra escriptura</translation>
 <translation id="5859603669299126575">Àlbum de la galeria d'art</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>

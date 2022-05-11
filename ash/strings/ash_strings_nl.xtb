@@ -301,6 +301,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2834813915651407382">Recent geopend</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
+<translation id="2848120746144143659">Druk op Enter om een screenshot van het volledige scherm te maken</translation>
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="2860184359326882502">Beste resultaat</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
@@ -479,6 +480,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
+<translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
 <translation id="3886872229787704059">Vandaag geopend</translation>
 <translation id="3891340733213178823">Druk twee keer op Ctrl+Shift+Q om uit te loggen.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproken feedback)</translation>
@@ -810,6 +812,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
+<translation id="5976112937189445008">Druk op Enter om het venster op te nemen</translation>
 <translation id="5977415296283489383">Hoofdtelefoon</translation>
 <translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
@@ -1195,6 +1198,7 @@ Nieuwe installatie</translation>
 <translation id="8364673525741149932">Shelf Party aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>
 <translation id="8371991222807690464">De prestaties van randapparaten kunnen beperkt zijn in de gastmodus</translation>
+<translation id="8374601332003098278">Druk op Enter om het scherm gedeeltelijk op te nemen</translation>
 <translation id="8375916635258623388">Deze <ph name="DEVICE_NAME" /> en je telefoon maken automatisch verbinding</translation>
 <translation id="8380784334203145311">Goedenacht,</translation>
 <translation id="8382715499079447151">Weergavebeveiliging</translation>
@@ -1247,6 +1251,7 @@ Nieuwe installatie</translation>
 <translation id="8653151467777939995">Instellingen voor meldingen bekijken. Meldingen staan aan</translation>
 <translation id="8660331759611631213">Vierkantswortel van 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Druk op Enter om een gedeeltelijk screenshot te maken</translation>
 <translation id="8664753092453405566">Netwerklijst bekijken. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Open <ph name="NAME" /> om je apparaat in te stellen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
@@ -1288,6 +1293,7 @@ Nieuwe installatie</translation>
 <translation id="8909138438987180327">Batterij op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">De Google Assistent spreekt deze taal niet.</translation>
+<translation id="8924458948354692166">Druk op Enter om een screenshot van het venster te maken</translation>
 <translation id="8926951137623668982">Plank altijd verborgen</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>

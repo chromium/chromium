@@ -961,6 +961,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1892341345406963517">Bonjour <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1895658205118569222">Arrêt</translation>
+<translation id="1897120393475391208">Utilisez un mot de passe fort</translation>
 <translation id="1900305421498694955">Les applications de Google Play peuvent exiger un accès complet au système de fichiers pour lire et écrire des fichiers sur des périphériques de stockage externe. Les fichiers et les dossiers créés sur le périphérique sont visibles par tout utilisateur du disque externe. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;Tout sélectionner</translation>
 <translation id="1901396183631570154">Chrome n'a pas pu enregistrer ces mots de passe dans votre compte Google. Vous pouvez quand même les enregistrer sur cet appareil.</translation>
@@ -6549,6 +6550,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7444970023873202833">Explorez davantage vos souvenirs avec Google Photos</translation>
 <translation id="7444983668544353857">Désactiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installer automatiquement les applications</translation>
+<translation id="7449381494541372002">démarrage en cours…</translation>
 <translation id="7449752890690775568">Supprimer le mot de passe?</translation>
 <translation id="7450761244949417357">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> en cours…</translation>
 <translation id="7452166281927983300">Avertissements ignorés (<ph name="MUTED_PASSWORDS" />)</translation>

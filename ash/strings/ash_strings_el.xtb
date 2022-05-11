@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">Ανοίχτηκαν πρόσφατα</translation>
 <translation id="2841907151129139818">Έγινε εναλλαγή σε λειτουργία tablet.</translation>
 <translation id="2844169650293029770">Συσκευή USB-C (αριστερή μπροστινή θύρα)</translation>
+<translation id="2848120746144143659">Πατήστε Enter για λήψη στιγμιότυπου πλήρους οθόνης</translation>
 <translation id="2849936225196189499">Κρίσιμη</translation>
 <translation id="2860184359326882502">Βέλτιστη αντιστοίχιση</translation>
 <translation id="2865888419503095837">Πληροφορίες δικτύου</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">Δεν υπάρχουν διαθέσιμες πληροφορίες δικτύου</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="385300504083504382">Αρχή</translation>
+<translation id="3861651314799684201">Press Enter για εγγραφή πλήρους οθόνης</translation>
 <translation id="3886872229787704059">Ανοίχτηκαν σήμερα</translation>
 <translation id="3891340733213178823">Πατήστε Ctrl + Shift + Q δύο φορές για να αποσυνδεθείτε.</translation>
 <translation id="3893630138897523026">ChromeVox (προφορικά σχόλια)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="5955304353782037793">εφαρμογή</translation>
 <translation id="5958529069007801266">Εποπτευόμενος χρήστης</translation>
+<translation id="5976112937189445008">Πατήστε Enter για εγγραφή παραθύρου</translation>
 <translation id="5977415296283489383">Ακουστικά</translation>
 <translation id="5978382165065462689">Κοινόχρηστος έλεγχος της οθόνης σας μέσω της απομακρυσμένης βοήθειας.</translation>
 <translation id="5980301590375426705">Έξοδος επισκέπτη</translation>
@@ -1199,6 +1202,7 @@
 <translation id="8364673525741149932">Εναλλαγή Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>
+<translation id="8374601332003098278">Πατήστε Enter για εγγραφή μέρους της οθόνης</translation>
 <translation id="8375916635258623388">Η συσκευή <ph name="DEVICE_NAME" /> και το τηλέφωνό σας θα συνδεθούν αυτόματα</translation>
 <translation id="8380784334203145311">Καληνύχτα,</translation>
 <translation id="8382715499079447151">Προστασία προβολής</translation>
@@ -1251,6 +1255,7 @@
 <translation id="8653151467777939995">Εμφάνιση ρυθμίσεων ειδοποιήσεων. Οι ειδοποιήσεις είναι ενεργοποιημένες.</translation>
 <translation id="8660331759611631213">Τετραγωνική ρίζα του 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Πατήστε Enter για λήψη μερικού στιγμιότυπου οθόνης</translation>
 <translation id="8664753092453405566">Εμφάνιση λίστας δικτύων. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Ανοίξτε το <ph name="NAME" /> για να ρυθμίσετε τη συσκευή σας</translation>
 <translation id="8676770494376880701">Ο συνδεδεμένος φορτιστής παρέχει χαμηλή ισχύ</translation>
@@ -1292,6 +1297,7 @@
 <translation id="8909138438987180327">Η μπαταρία βρίσκεται στο <ph name="PERCENTAGE" /> τοις εκατό.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Ο Βοηθός Google δεν είναι διαθέσιμος σε αυτήν τη γλώσσα.</translation>
+<translation id="8924458948354692166">Πατήστε Enter για λήψη στιγμιότυπου οθόνης παραθύρου</translation>
 <translation id="8926951137623668982">Το ράφι θα αποκρύπτεται πάντα</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>

@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">ਹਾਲ ਹੀ ਵਿੱਚ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="2841907151129139818">ਟੈਬਲੈੱਟ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2844169650293029770">USB-C ਡੀਵਾਈਸ (ਖੱਬੇ ਪਾਸੇ ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
+<translation id="2848120746144143659">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="2849936225196189499">ਆਲੋਚਨਾਤਮਿਕ</translation>
 <translation id="2860184359326882502">ਬਿਹਤਰੀਨ ਮਿਲਾਨ</translation>
 <translation id="2865888419503095837">ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">ਕੋਈ ਵੀ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
+<translation id="3861651314799684201">ਪੂਰੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3886872229787704059">ਅੱਜ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="3891340733213178823">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Ctrl+Shift+Q ਦਬਾਓ।</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -814,6 +816,7 @@
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>
 <translation id="5955304353782037793">ਐਪ</translation>
 <translation id="5958529069007801266">ਨਿਗਰਾਨੀ ਕੀਤੇ ਵਰਤੋਂਕਾਰ</translation>
+<translation id="5976112937189445008">ਵਿੰਡੋ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="5977415296283489383">ਹੈਡਫੋਨ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -1200,6 +1203,7 @@
 <translation id="8364673525741149932">ਸ਼ੈਲਫ ਪਾਰਟੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">ਇੱਕ ਅੱਖਰ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="8371991222807690464">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
+<translation id="8374601332003098278">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8375916635258623388">ਇਹ <ph name="DEVICE_NAME" /> ਅਤੇ ਤੁਹਾਡਾ ਫ਼ੋਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਹੋ ਜਾਣਗੇ</translation>
 <translation id="8380784334203145311">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="8382715499079447151">ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ</translation>
@@ -1252,6 +1256,7 @@
 <translation id="8653151467777939995">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
 <translation id="8660331759611631213">71 ਦਾ ਵਰਗ ਮੂਲ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8664753092453405566">ਨੈੱਟਵਰਕ ਸੂਚੀ ਦਿਖਾਓ। <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ <ph name="NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="8676770494376880701">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ ਕਨੈਕਟ ਕੀਤਾ</translation>
@@ -1293,6 +1298,7 @@
 <translation id="8909138438987180327">ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਫ਼ੀਸਦ ਹੈ।</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant ਇਹ ਭਾਸ਼ਾ ਨਹੀਂ ਬੋਲਦੀ।</translation>
+<translation id="8924458948354692166">ਵਿੰਡੋ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8926951137623668982">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਲੁਕੀ ਰਹਿੰਦੀ ਹੈ</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>

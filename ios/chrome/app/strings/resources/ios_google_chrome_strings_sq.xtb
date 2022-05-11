@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="1493827051843127077">Caktoje Chrome si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="1504372625950710826">Chrome nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
+<translation id="1511320244449497906">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chrome.</translation>
 <translation id="1682483655351012182">Sinkronizo të dhënat e tua të Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Ndihmo në përmirësimin e Chrome duke i dërguar statistikat e përdorimit dhe raportet e ndërprerjeve aksidentale te Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Për të marrë maksimumin nga Chrome, identifikohu në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
+<translation id="81358522153858150">Chrome tani mbështet politikat e përdoruesit për llogarinë tënde të menaxhuar</translation>
 <translation id="8160472928944011082">Chrome nuk mund të përditësohet</translation>
 <translation id="8263079278049777200">Identifikohu në këtë sajt, "Llogarinë tënde të Google" dhe Chrome. Mund ta aktivizosh sinkronizmin më vonë.</translation>
 <translation id="8357607116237445042">Zgjidh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo do t'i mbash ato</translation>

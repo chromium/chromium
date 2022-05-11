@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
+<translation id="1511320244449497906">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
 <translation id="1682483655351012182">Sinhronizujte Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Pomozite nam da poboljšamo Chrome slanjem statistike korišćenja i izveštaja o otkazivanju Google-u</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
+<translation id="81358522153858150">Chrome sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
 <translation id="8263079278049777200">Prijavite se na ovaj sajt, Google nalog i u Chrome. Sinhronizaciju možete da uključite kasnije.</translation>
 <translation id="8357607116237445042">Odaberite da li ćete obrisati Chrome podatke sa ovog uređaja ili ih zadržati</translation>

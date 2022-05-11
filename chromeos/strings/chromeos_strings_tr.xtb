@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1204296502688602597">DNS Gecikmesi</translation>
 <translation id="123124571410524056">Portal olabilir</translation>
+<translation id="1236400083787698183">Cihazınızı yeniden başlatmadan önce powerwash işlemi yapın. Cihazınızın kapağı varsa kapağı kapatmadan önce powerwash işleminin tamamlanmasını bekleyin. Powerwash işleminin tamamlanması bir dakika kadar sürebilir.</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
+<translation id="1240699967155581440">Powerwash (fabrika ayarlarına sıfırlama) gerekiyor</translation>
 <translation id="1264116747675686718">OS sürümü güncelleniyor</translation>
 <translation id="1264369926465113395">Chromebook'un içerik üreticiler için hazırladığı yeni dijital dergisine göz atın</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
@@ -92,6 +94,7 @@
 <translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1827738518074806965">Sanat galerisi</translation>
+<translation id="1840835860961531162">Yazma korumayı devre dışı bırakma</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
 <translation id="1852934301711881861">ChromeOS Flex'i yükle</translation>
 <translation id="1856388568474281774">Aşağı ok</translation>
@@ -148,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uygun olmayan bileşenler<ph name="LINK_END" /> algılandı. Bileşenlerin yüklendiğini onaylamayı seçerseniz lütfen hemen onaylayın.</translation>
 <translation id="2363636958541445404">Ekran koruyucu seçeneklerini belirlemek için özelliği açın</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
+<translation id="236594517359128026">Devam etmeden önce dizüstü bilgisayarınızı düz bir yüzeye yerleştirin</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2407209115954268704">SIM Kilitleme Durumu</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="385832974417157471">Cihazınızı kapatmadan önce powerwash işlemi yapın. Cihazınızın kapağı varsa kapağı kapatmadan önce powerwash işleminin tamamlanmasını bekleyin. Powerwash işleminin tamamlanması bir dakika kadar sürebilir.</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
@@ -275,6 +280,7 @@
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
 <translation id="3954678691475912818">Cihazın türü bilinmiyor.</translation>
+<translation id="3958703339436883942">Yeniden başlatmaya hazırlanıyor...</translation>
 <translation id="3966286471246132217">Daha doğru sonuçlar için test tamamlanana kadar tüm uygulamaları kapatın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3969602104473960991">ChromeOS şifresi güncellendi</translation>
@@ -424,6 +430,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5275828089655680674">Rutinleri Tekrar Çalıştır</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">sürüm: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Sonraki ekrana devam etmek için yazma korumayı devre dışı bırakın. Talimatları görmek için cihaz üreticisinin destek sayfasına gidin.</translation>
 <translation id="5300814202279832142">Pencereyi masaya taşı</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Bağlan</translation>
@@ -453,6 +460,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5507300744274596613">Chrome OS'in güncel olduğundan emin olun</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Bileşenleri kalibre etme</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yeniden tara</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
@@ -475,6 +483,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5843706793424741864">Fahrenhayt</translation>
 <translation id="5849570051105887917">Ev sağlayıcı kodu</translation>
+<translation id="5856532218727053281">Yazma koruma durumu doğrulandıktan sonra sistem yeniden başlatılacak</translation>
 <translation id="5859603669299126575">Sanat galerisi albümü</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
@@ -705,6 +714,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
 <translation id="8217675307824400706">Bağlanın</translation>
+<translation id="8221728673725659466">Ayarlama tamamlandı</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
@@ -716,6 +726,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8302368968391049045">HTTPS Güvenlik Duvarı</translation>
 <translation id="8318753676953949627">Resim Yok</translation>
+<translation id="8327249300223641918">Devam etmeden önce cihazınızın tamamını (alt kısım ve kapak) düz bir yüzeye yerleştirin.</translation>
 <translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
@@ -730,6 +741,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="844521431886043384">DNS ayarlanmamış</translation>
 <translation id="8456761643544401578">Otomatik koyu mod</translation>
 <translation id="8461329675984532579">Ev sağlayıcısının adı</translation>
+<translation id="8467104829907989997">Bileşenler kalibre ediliyor...</translation>
 <translation id="8475690821716466388">Kablosuz ağ, zayıf bir protokol olan WEP PSK ile güvenlik altına alınmış</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
 <translation id="8483248364096924578">IP adresi</translation>
@@ -789,6 +801,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Cihazın pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="9003704114456258138">Frekans</translation>
+<translation id="9025198690966128418">Kişisel cihaz olarak kullan</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS çözümleme, yüksek gecikme süresine sahip</translation>
 <translation id="9073281213608662541">PAP</translation>

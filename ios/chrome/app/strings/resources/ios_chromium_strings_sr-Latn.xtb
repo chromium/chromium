@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Dozvolite prijavljivanje u Chromium</translation>
 <translation id="6337530241089703714">Odaberite da li ćete obrisati Chromium podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
+<translation id="6625409903340039086">Chromium sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="6752854822223394465">Vaša organizacija podešava Chromium...</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="7006920032187763988">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPad-u.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Chromium i uključite kameru.</translation>
 <translation id="7746854981345936341">Savet za Chromium. Neka dugmad se sada nalaze u dnu ekrana, poput dugmadi Nazad, Napred i Pretraži.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
+<translation id="7812317783196516890">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chromium-a.</translation>
 <translation id="786327964234957808">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chromium podacima upravlja <ph name="DOMAIN" />. Na ovaj način brišete podatke sa ovog uređaja, ali podaci ostaju na <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
 <translation id="7928628054454574139">Otvara Chromium svaki put kada dodirnete linkove u drugim aplikacijama</translation>

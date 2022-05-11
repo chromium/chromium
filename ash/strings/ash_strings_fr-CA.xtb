@@ -136,6 +136,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1719094688023114093">La transcription instantanée est activée.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
 <translation id="1736898441010944794">« <ph name="NAME" /> » visible par les appareils Bluetooth.</translation>
+<translation id="174102739345480129">Le marqueur est désactivé.</translation>
 <translation id="1743570585616704562">Doigt non reconnu</translation>
 <translation id="1746730358044914197">Les méthodes d'entrée sont configurées par votre administrateur.</translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
@@ -564,6 +565,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci-clavier de loupe en mode ancré. Voulez-vous l'activer?</translation>
 <translation id="439598569299422042">Téléchargement interrompu, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Impossible d'enregistrer la vidéocapture d'écran</translation>
 <translation id="4405151984121254935">Le périphérique connecté n'est pas pris en charge</translation>
 <translation id="4406883609789734330">Transcription instantanée</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
@@ -670,6 +672,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
+<translation id="5016558321564993266">Basculez le marqueur. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Le temps est écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est connecté à un nouveau téléphone</translation>
@@ -699,6 +702,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
+<translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> demande votre attention.</translation>
@@ -733,6 +737,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5433020815079095860">Entrée audio</translation>
 <translation id="544691375626129091">Tous les utilisateurs disponibles ont déjà été ajoutés à cette session.</translation>
 <translation id="54609108002486618">Géré</translation>
+<translation id="5460938382730614333">Le marqueur est activé.</translation>
 <translation id="5465662442746197494">Besoin d'aide?</translation>
 <translation id="547979256943495781">Étagère à droite</translation>
 <translation id="5491186829646618080">Des mises à jour du micrologiciel sont disponibles</translation>
@@ -774,6 +779,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5745612484876805746">La fonction Éclairage nocturne s'active automatiquement au coucher du soleil</translation>
 <translation id="5750765938512549687">Le Bluetooth est désactivé</translation>
 <translation id="5760866832697883462">Connectez votre <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Basculez le marqueur. <ph name="STATE_TEXT" /> Utilisez le pavé tactile, l'écran tactile ou le stylet pour dessiner à l'écran.</translation>
 <translation id="576341972084747908">Téléchargement du fichier dangereux <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Le mode Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Le mode Éclairage nocturne est activé.</translation>

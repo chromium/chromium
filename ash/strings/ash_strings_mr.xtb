@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">लाइव्ह कॅप्शन सुरू आहे.</translation>
 <translation id="1720011244392820496">वाय-फाय सिंक सुरू करा</translation>
 <translation id="1736898441010944794">ब्लूटूथ डिव्‍हाइसना "<ph name="NAME" />" दृश्यमान आहे.</translation>
+<translation id="174102739345480129">मार्कर बंद आहे.</translation>
 <translation id="1743570585616704562">ओळखले नाही</translation>
 <translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉंफिगर केलेल्या इनपुट पद्धती.</translation>
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">ही तुमची स्टायलस टूल आहेत</translation>
 <translation id="4389184120735010762">तुम्ही डॉक मॅग्निफायरसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="439598569299422042">थांबवले, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">स्क्रीनकास्ट सेव्ह करता आले नाही</translation>
 <translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">पुढील वाक्य</translation>
+<translation id="5016558321564993266">मार्कर टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">वेळ संपली</translation>
 <translation id="5033299697334913360">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही क्लिक करा</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> नवीन फोनशी कनेक्ट केले</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="523505283826916779">ॲक्सेसिबिलिटी सेटिंग्ज</translation>
+<translation id="5245201184978705914">ट्रान्स्क्रिप्ट जनरेट करू शकत नाही</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले, बॅटरी<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">ऑडिओ इनपुट</translation>
 <translation id="544691375626129091">सर्व उपलब्‍ध वापरकर्ते आधीपासून या सेशनवर जोडले गेले आहेत.</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
+<translation id="5460938382730614333">मार्कर सुरू आहे.</translation>
 <translation id="5465662442746197494">मदत हवी आहे?</translation>
 <translation id="547979256943495781">शेल्फ उजवीकडे आहे</translation>
 <translation id="5491186829646618080">फर्मवेअर अपडेट उपलब्ध आहेत</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">रात्रीचा प्रकाश सूर्यास्ताच्या वेळी आपोआप सुरू होतो</translation>
 <translation id="5750765938512549687">ब्लूटूथ बंद आहे</translation>
 <translation id="5760866832697883462">तुमचे <ph name="NAME" /> कनेक्ट करा</translation>
+<translation id="5762420912707163638">मार्कर टॉगल करा. <ph name="STATE_TEXT" /> स्क्रीनवर ड्रॉ करण्यासाठी ट्रॅकपॅड, टचस्क्रीन किंवा स्टायलस वापरा.</translation>
 <translation id="576341972084747908">धोकादायक <ph name="FILENAME" /> डाउनलोड करा</translation>
 <translation id="5763928712329149804">शेल्फ पार्टी बंद आहे.</translation>
 <translation id="576453121877257266">रात्रीचा प्रकाश सुरू आहे.</translation>

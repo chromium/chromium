@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="1840835860961531162">Deaktiver Write Protect</translation>
 <translation id="1851218745569890714">Videomøder</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pil ned</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
+<translation id="3958703339436883942">Forbereder genstart...</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3969602104473960991">Chrome OS-adgangskoden er opdateret</translation>
@@ -423,6 +425,7 @@
 <translation id="5275828089655680674">Kør rutiner igen</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Deaktiver Write Protect for at fortsætte til næste skærm. Gå til producentens supportside for at få vejledning.</translation>
 <translation id="5300814202279832142">Flyt vindue til skrivebord</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
@@ -474,6 +477,7 @@
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kode til udbyder til hjem</translation>
+<translation id="5856532218727053281">Systemet genstartes, efter status for Write Protection er bekræftet</translation>
 <translation id="5859603669299126575">Album i kunstgalleri</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>

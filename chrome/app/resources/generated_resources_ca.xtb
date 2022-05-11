@@ -960,6 +960,7 @@
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1895658205118569222">Aturada</translation>
+<translation id="1897120393475391208">Utilitza una contrasenya segura</translation>
 <translation id="1900305421498694955">Pot ser que les aplicacions de Google Play requereixin accés complet al sistema de fitxers per llegir i escriure fitxers en dispositius d'emmagatzematge externs. Qualsevol persona que faci servir la unitat externa podrà veure les carpetes i els fitxers creats al dispositiu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Selecciona-ho &amp;tot</translation>
 <translation id="1901396183631570154">Chrome no ha pogut desar aquestes contrasenyes al teu Compte de Google. Pots continuar desant-les en aquest dispositiu.</translation>
@@ -6543,6 +6544,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7444970023873202833">Explora més records teus a Google Fotos</translation>
 <translation id="7444983668544353857">Desactiva <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instal·lar aplicacions automàticament.</translation>
+<translation id="7449381494541372002">s'està iniciant…</translation>
 <translation id="7449752890690775568">Vols suprimir la contrasenya?</translation>
 <translation id="7450761244949417357">S'està obrint a <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Advertiments ignorats (<ph name="MUTED_PASSWORDS" />)</translation>

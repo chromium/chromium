@@ -972,7 +972,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，您好</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1895658205118569222">關閉</translation>
-<translation id="1897120393475391208">使用高強度密碼</translation>
+<translation id="1897120393475391208">使用安全性強的密碼</translation>
 <translation id="1900305421498694955">Google Play 應用程式可能會要求取得檔案系統的完整存取權，以讀取和寫入外部儲存裝置上的檔案。外置磁碟的任何使用者都能見到在此裝置上建立的檔案和資料夾。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">全部選取(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome 無法將以下這些密碼儲存在您的 Google 帳戶中，不過您仍可將密碼儲存在此裝置上。</translation>
@@ -6560,7 +6560,7 @@
 <translation id="7444970023873202833">在「Google 相片」中探索更多美好回憶</translation>
 <translation id="7444983668544353857">停用 <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
-<translation id="7449381494541372002">啟動中…</translation>
+<translation id="7449381494541372002">正在啟動…</translation>
 <translation id="7449752890690775568">要移除密碼嗎？</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
 <translation id="7452166281927983300">已關閉的警告 (<ph name="MUTED_PASSWORDS" />)</translation>

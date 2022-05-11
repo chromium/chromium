@@ -1101,6 +1101,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ຖືກບລັອກໄວ້</translation>
 <translation id="3978338123949022456">ໂໝດຊອກຫາ, ພິມຄຳຊອກຫາແລ້ວກົດ Enter ເພື່ອຊອກຫາດ້ວຍ <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">ນົກ</translation>
+<translation id="3985750352229496475">ຈັດການທີ່ຢູ່...</translation>
 <translation id="3986705137476756801">ປິດຄຳບັນຍາຍສົດສຳລັບຕອນນີ້</translation>
 <translation id="3987940399970879459">ໜ້ອຍກວ່າ 1 MB</translation>
 <translation id="3990250421422698716">ການຊົດເຊີຍພື້ນຜິວທີ່ບໍ່ສະໝໍ່າສະເໝີ</translation>
@@ -1228,6 +1229,7 @@
 <translation id="4305666528087210886">ບໍ່ສາມາດເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໄດ້</translation>
 <translation id="4306529830550717874">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="4306812610847412719">ຄລິບບອດ</translation>
+<translation id="4310070645992025887">ຊອກຫາບັນທຶກຂອງທ່ານ</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ບລັອກ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4314815835985389558">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
@@ -2112,6 +2114,7 @@
 <translation id="6839929833149231406">ເຂດ</translation>
 <translation id="6846340164947227603">ໃຊ້ໝາຍເລກບັດສະເໝືອນຈິງ...</translation>
 <translation id="6852204201400771460">ໂຫຼດແອັບຄືນໃໝ່ບໍ?</translation>
+<translation id="6857776781123259569">ຈັດການລະຫັດຜ່ານ...</translation>
 <translation id="686485648936420384">ຂໍ້ມູນຜູ້ບໍລິໂພກ</translation>
 <translation id="6865412394715372076">ບໍ່ສາມາດຢັ້ງຢືນບັດນີ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="6869334554832814367">ການໃຫ້ຄຳປຶກສາກ່ຽວກັບສິນເຊື່ອສ່ວນບຸກຄົນ</translation>
@@ -2438,6 +2441,7 @@
 <translation id="7669271284792375604">ຜູ້ໂຈມຕີໃນເວັບໄຊນີ້ອາດຈະພະຍາຍາມຫຼອກໃຫ້ທ່ານຕິດຕັ້ງໂປຣແກຣມທີ່ເປັນອັນຕະລາຍຕໍ່ກັບປະສົບການທ່ອງເວັບຂອງທ່ານຢູ່ (ເຊັ່ນວ່າ ໂດຍການປ່ຽນໜ້າຫຼັກຂອງທ່ານ ຫຼື ສະແດງໂຄສະນາເພີ່ມເຕີມຢູ່ໃນເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{ຄຳສັ່ງທີ່ໃຊ້ກັບຂໍ້ມູນແມ່ນຖືກໝາຍທຸງວ່າເປັນຄວາມລັບ (1 ຄຳສັ່ງຕັ້ງແຕ່ເຂົ້າສູ່ລະບົບມາ). <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" />}other{ຄຳສັ່ງທີ່ໃຊ້ກັບຂໍ້ມູນແມ່ນຖືກໝາຍທຸງວ່າເປັນຄວາມລັບ (# ຄຳສັ່ງຕັ້ງແຕ່ເຂົ້າສູ່ລະບົບມາ). <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">ກ່ອງຈົດໝາຍ 6</translation>
+<translation id="7675325315208090829">ຈັດການວິທີການຈ່າຍເງິນ...</translation>
 <translation id="7676643023259824263">ຊອກຫາຂໍ້ຄວາມໃນຄລິບບອດ, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">ເບິ່ງ ແລະ ຈັດການປະຫວັດການທ່ອງເວັບຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7679947978757153706">ເບສບອນ</translation>

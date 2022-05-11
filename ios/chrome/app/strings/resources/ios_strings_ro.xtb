@@ -452,6 +452,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
 <translation id="4844899002472726590">Vezi și editează subiectele care te interesează</translation>
 <translation id="4854345657858711387">Setează o parolă</translation>
+<translation id="4858786880085262208">Fă upgrade la HTTPS, dacă este posibil. Site-urile securizate pot încorpora conținut nesigur.</translation>
 <translation id="4860895144060829044">Apelează</translation>
 <translation id="4872323082491632254">Verifică parolele</translation>
 <translation id="4881695831933465202">Deschide</translation>
@@ -801,6 +802,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7781069478569868053">Pagina Filă nouă</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="778855399387580014">Începe o căutare într-o filă Chrome nouă.</translation>
+<translation id="7790892308048519147">Încearcă să folosești conexiuni securizate</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="7807060072011926525">Oferit de Google</translation>
 <translation id="7839985698273989086">Pagină offline</translation>

@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1204296502688602597">ການຕອບສະໜອງຂອງ DNS</translation>
 <translation id="123124571410524056">ສົງໄສວ່າເປັນໜ້າເວັບ</translation>
+<translation id="1236400083787698183">ກ່ອນການຣີສະຕາດ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="1238612778414822719">ເວລາແຝງ HTTPS</translation>
+<translation id="1240699967155581440">ຕ້ອງມີການ Powerwash (ຣີເຊັດເປັນຄ່າຈາກໂຮງງານ)</translation>
 <translation id="1264116747675686718">ກຳລັງອັບເດດເວີຊັນລະບົບປະຕິບັດການ</translation>
 <translation id="1264369926465113395">ກວດເບິ່ງວາລະສານດິຈິຕອນໃໝ່ຂອງ Chromebook ສຳລັບຜູ້ສ້າງ</translation>
 <translation id="1270369111467284986">ສົງໄສວ່າເປັນຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
@@ -92,6 +94,7 @@
 <translation id="1801418420130173017">ປິດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1827738518074806965">ຫ້ອງສະແດງງານສິນລະປະ</translation>
+<translation id="1840835860961531162">ປິດການປ້ອງກັນການຂຽນໄວ້</translation>
 <translation id="1851218745569890714">ການປະຊຸມຜ່ານວິດີໂອ</translation>
 <translation id="1852934301711881861">ຕິດຕັ້ງ ChromeOS Flex</translation>
 <translation id="1856388568474281774">ລູກສອນລົງ</translation>
@@ -148,6 +151,7 @@
 <translation id="2360257214555822463">ກວດພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ຫາກທ່ານເລືອກທີ່ຈະຢືນຢັນວ່ານີ້ໄດ້ຮັບການຕິດຕັ້ງແລ້ວ, ກະລຸນາເຮັດຕອນນີ້.</translation>
 <translation id="2363636958541445404">ເປີດຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
+<translation id="236594517359128026">ກ່ອນການດຳເນີນການ, ໃຫ້ວາງແລັບທັອບຂອງທ່ານໄວ້ຢູ່ພື້ນທີ່ຮາບພຽງກ່ອນ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
 <translation id="2407209115954268704">ສະຖານະການລັອກຊິມ</translation>
@@ -266,6 +270,7 @@
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="3838338534323494292">ລະຫັດຜ່ານໃໝ່</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
+<translation id="385832974417157471">ກ່ອນການປິດເຄື່ອງ, ໃຫ້ດຳເນີນການ Powerwash ອຸປະກອນຂອງທ່ານກ່ອນ. ຫາກອຸປະກອນຂອງທ່ານມີຝາປິດ, ໃຫ້ລໍຖ້າຈົນກວ່າຂັ້ນຕອນ Powerwash ຈະສຳເລັດກ່ອນການປິດຝາ. ຂັ້ນຕອນ Powerwash ອາດໃຊ້ເວລາຮອດໜຶ່ງນາທີຈຶ່ງຈະສຳເລັດ.</translation>
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
@@ -275,6 +280,7 @@
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
 <translation id="3954678691475912818">ບໍ່ຮູ້ປະເພດອຸປະກອນ.</translation>
+<translation id="3958703339436883942">ກຳລັງກະກຽມຣີສະຕາດ...</translation>
 <translation id="3966286471246132217">ເພື່ອຮັບຜົນການຊອກຫາທີ່ມີຄວາມຖືກຕ້ອງຍິ່ງຂຶ້ນ, ໃຫ້ປິດແອັບທັງໝົດຈົນກວ່າການທົດສອບຈະສຳເລັດ.</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3969602104473960991">ອັບເດດລະຫັດຜ່ານ ChromeOS ແລ້ວ</translation>
@@ -425,6 +431,7 @@
 <translation id="5275828089655680674">ເປີດສິ່ງທີ່ເຮັດປະຈຳຄືນໃໝ່</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">ກະລຸນາປິດການນຳໃຊ້ການປ້ອງກັນການຂຽນເພື່ອສືບຕໍ່ໄປຫາໜ້າຈໍຕໍ່ໄປ. ໃຫ້ເຂົ້າໄປໜ້າຊ່ວຍເຫຼືອຂອງຜູ້ຜະລິດອຸປະກອນເພື່ອເບິ່ງຄຳແນະນຳ.</translation>
 <translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
@@ -454,6 +461,7 @@
 <translation id="5507300744274596613">ໃຫ້ກວດສອບວ່າອັບເດດ Chrome OS ແລ້ວ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">ປັບທຽບອົງປະກອບ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
@@ -476,6 +484,7 @@
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5843706793424741864">ຟາເຣນຮາຍ</translation>
 <translation id="5849570051105887917">ລະຫັດຜູ້ໃຫ້ບໍລິການ Home</translation>
+<translation id="5856532218727053281">ລະບົບຈະຣີສະຕາດຫຼັງຈາກການຢັ້ງຢືນສະຖານະການປ້ອງກັນການຂຽນ</translation>
 <translation id="5859603669299126575">ອະລະບໍ້າແກເລີຣີສິນລະປະ</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
@@ -707,6 +716,7 @@
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8217675307824400706">ເລີ່ມການເຊື່ອມຕໍ່</translation>
+<translation id="8221728673725659466">​ການ​ປັບ​ທຽ​ບ​ສຳ​ເລັດ​ແລ້ວ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8246209727385807362">ຜູ້ໃຫ້ບໍລິການທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -718,6 +728,7 @@
 <translation id="8297006494302853456">ອ່ອນ</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">ບໍ່ມີຮູບ</translation>
+<translation id="8327249300223641918">ກ່ອນດຳເນີນການຕໍ່, ໃຫ້ວາງອຸປະກອນຂອງທ່ານ (ທັງຖານ ແລະ ຝາ) ໄວ້ພື້ນທີ່ຮາບພຽງກ່ອນ.</translation>
 <translation id="8336739000755212683">ປ່ຽນຮູບບັນຊີຂອງອຸປະກອນ</translation>
 <translation id="8347227221149377169">ວຽກການພິມ</translation>
 <translation id="8352772353338965963">ເພີ່ມບັນຊີໃສ່ຫຼາຍການລົງຊື່ເຂົ້າໃສ່. ສາມາດເຂົ້າ​ຫາທຸກບັນຊີທີ່ລົງຊື່ເຂົ້າ​ໃຊ້ແລ້ວໂດຍບໍ່ຕ້ອງມີລະຫັດຜ່ານ, ດັ່ງນັ້ນຄວນໃຊ້ແຕ່ຄຸນສົມບັດນີ້ກັບແຕ່ບັນຊີທີ່ເຊື່ອຖືໄດ້ເທົ່ານັ້ນ.</translation>
@@ -732,6 +743,7 @@
 <translation id="844521431886043384">ບໍ່ໄດ້ຕັ້ງຄ່າ DNS ເທື່ອ</translation>
 <translation id="8456761643544401578">ໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="8461329675984532579">ຊື່ຜູ້ໃຫ້ບໍລິການ Home</translation>
+<translation id="8467104829907989997">ກຳລັງປັບທຽບອົງປະກອບ...</translation>
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
 <translation id="8483248364096924578">ທີ່ຢູ່ IP</translation>
@@ -791,6 +803,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ສະແກນ}=1{ສະແກນໜ້າ {NUMBER_OF_PAGES}}other{ສະແກນໜ້າ {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">ອຸປະກອນມີແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">ຄວາມຖີ່</translation>
+<translation id="9025198690966128418">ໃຊ້ເປັນອຸປະກອນສ່ວນຕົວ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9073281213608662541">PAP</translation>

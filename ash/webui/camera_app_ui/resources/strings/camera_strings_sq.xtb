@@ -61,6 +61,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3411958449466169012">Çaktivizo kohëmatësin</translation>
 <translation id="3448774564454087943">Videoja nuk është ruajtur duke qenë se është shumë e shkurtër</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
+<translation id="3511295087439225876">Butoni i heqjes së zërit është aktiv</translation>
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
 <translation id="3566302376254083266">Po zhvendoset majtas për lart</translation>
 <translation id="3569311554794739032">Vërtet dëshiron të heqësh <ph name="FILE" />?</translation>
@@ -118,6 +119,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Ndaj</translation>
+<translation id="6617916774429601017">Shfaq të gjitha rezolucionet</translation>
 <translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
 <translation id="6652737148136672975">Zhvendos pozicionin e këndit me tastet e shigjetave</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -151,6 +153,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8167081290930651932">Ruaje si fotografi</translation>
+<translation id="8236532224592646488">Butoni i heqjes së zërit është joaktiv</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8425673304802773841">Ano për poshtë</translation>

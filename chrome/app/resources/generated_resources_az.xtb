@@ -957,6 +957,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1892341345406963517">Salam <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Digər dillərdə</translation>
 <translation id="1895658205118569222">Söndürün</translation>
+<translation id="1897120393475391208">Güclü paroldan istifadə edin</translation>
 <translation id="1900305421498694955">Google Play tətbiqləri xarici yaddaş cihazlarında faylları oxumaq və yazmaq üçün bütün fayl sisteminə giriş istəyə bilər. Cihazda yaradılan fayl və qovluqları xarici diskdən istifadə edən hər kəs görə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Hamısını seçin</translation>
 <translation id="1901396183631570154">Chrome bu parolları Google Hesabınızda saxlaya bilmədi. Onları bu cihazda saxlaya bilərsiniz.</translation>
@@ -6541,6 +6542,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7444970023873202833">Google Fotoda daha çox xatirənizə baxın</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> deaktiv edin</translation>
 <translation id="7448430327655618736">Tətbiqləri avtomatik quraşdırın</translation>
+<translation id="7449381494541372002">başlayır…</translation>
 <translation id="7449752890690775568">Parol silinsin?</translation>
 <translation id="7450761244949417357">İndi <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqində açılır</translation>
 <translation id="7452166281927983300">Qapadılmış xəbərdarlıqlar (<ph name="MUTED_PASSWORDS" />)</translation>

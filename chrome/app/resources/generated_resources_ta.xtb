@@ -423,6 +423,7 @@
 <translation id="1415708812149920388">கிளிப்போர்டைப் படிப்பதற்கான அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="1415990189994829608">இந்த வகை அமர்வில் <ph name="EXTENSION_NAME" /> (நீட்டிப்பு ஐடி "<ph name="EXTENSION_ID" />") ஆனது அனுமதிக்கப்படாது.</translation>
 <translation id="1418552618736477642">அறிவிப்புகள் &amp; ஆப்ஸ்</translation>
+<translation id="1418882096915998312">Enterprise பதிவுசெய்தல் செயலில் உள்ளது</translation>
 <translation id="1418954524306642206">பிரிண்ட்டர் PPDயைக் குறிப்பிட உலாவுக</translation>
 <translation id="1420834118113404499">மீடியா உரிமங்கள்</translation>
 <translation id="1420920093772172268">இணைக்க, <ph name="TURN_ON_BLUETOOTH_LINK" />ஐ அனுமதிக்கவும்</translation>
@@ -3423,6 +3424,7 @@
 <translation id="4275830172053184480">உங்கள் சாதனத்தை மீண்டும் தொடங்கவும்</translation>
 <translation id="4277434192562187284">XML உள்ளமைவு ஆதாரம்</translation>
 <translation id="4278390842282768270">அனுமதிக்கப்பட்டது</translation>
+<translation id="4278498748067682896">சாதனத்தைக் கியோஸ்க்/சைனேஜ் பயன்முறையில் மட்டுமே இயங்க அனுமதிக்கும் Kiosk &amp; Signage Upgradeடைப் பயன்படுத்துவீர்கள். சாதனத்தில், பயனர்கள் உள்நுழைய வேண்டுமென நீங்கள் விரும்பினால் முந்தைய படிக்குச் சென்று Chrome Enterprise Upgrade மூலம் பதிவுசெய்யவும்.</translation>
 <translation id="4279129444466079448">இந்தச் சாதனத்தில் அதிகபட்சம் <ph name="PROFILE_LIMIT" /> eSIM சுயவிவரங்களை அமைக்கலாம். மற்றொரு சுயவிவரத்தைச் சேர்க்க, ஏற்கெனவே இருக்கும் ஒன்றை அகற்றவும்.</translation>
 <translation id="4280325816108262082">சாதனம் ஆஃப் செய்யப்பட்டிருந்தாலோ பயன்படுத்தப்படவில்லை என்றாலோ அதன் இணைப்பு தானாகவே துண்டிக்கப்படும்</translation>
 <translation id="4281844954008187215">சேவை விதிமுறைகள்</translation>

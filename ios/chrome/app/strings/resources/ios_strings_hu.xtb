@@ -190,6 +190,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2690858294534178585">A kamera épp használatban van</translation>
 <translation id="2691653761409724435">Nem érhető el offline</translation>
 <translation id="2695507686909505111">Oldal lefordítva</translation>
+<translation id="2697526135132990015">Kijelentkezés és adatok törlése</translation>
 <translation id="2700241355396984822">Az engedélyek beállítására vonatkozó lehetőségek</translation>
 <translation id="2702801445560668637">Olvasási lista</translation>
 <translation id="2704491540504985681">Letöltések</translation>
@@ -364,6 +365,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="4121993058175073134">Net-export adatok küldéséhez, kérjük, konfigurálja e-mail fiókját a Beállítások alkalmazásban.</translation>
 <translation id="4124987746317609294">Időintervallum</translation>
 <translation id="4133265950310064865">Speciális védelem</translation>
+<translation id="4148023517926189160">Ez a webhely egy fájlt szeretne letölteni és hozzáadni az Ön naptárához.</translation>
 <translation id="4152011295694446843">Itt láthatja majd a könyvjelzőit</translation>
 <translation id="4172051516777682613">Mindig mutassa</translation>
 <translation id="418156467088430727">Offline verzió megtekintése új lapon</translation>
@@ -692,6 +694,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6760509555861141183">Vissza a legutóbbi lapra</translation>
 <translation id="6762812039470893796">Összes kijelölés törlése</translation>
 <translation id="6780034285637185932">Irányítószám</translation>
+<translation id="6781260999953472352">Bekapcsolja a szinkronizálást?</translation>
 <translation id="6785453220513215166">Hibajelentés küldése…</translation>
 <translation id="6797885426782475225">Hangalapú keresés</translation>
 <translation id="6801927553864092214">Privát böngészéshez nyisson inkognitó lapot</translation>
@@ -804,6 +807,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7807060072011926525">A Google biztosítja</translation>
 <translation id="7839985698273989086">Offline oldal</translation>
 <translation id="7840771868269352570">A kiválasztott elemek törlődnek.</translation>
+<translation id="784551991304901159">Tartalmak megjelenítéséhez válassza a Bekapcsolás lehetőséget a menüben</translation>
 <translation id="7853202427316060426">Aktivitás</translation>
 <translation id="7856733331829174190">Nem sikerült letölteni</translation>
 <translation id="7859704718976024901">Böngészési előzmények</translation>

@@ -82,6 +82,7 @@
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
+<translation id="6625409903340039086">Chromium unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="6752854822223394465">Deine Organisation richtet Chromium ein…</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="7006920032187763988">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
@@ -103,6 +104,7 @@
 <translation id="7674213385180944843">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Chromium“ und aktiviere die Kamera.</translation>
 <translation id="7746854981345936341">Chromium-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
 <translation id="7763454117143368771">Wenn du Chromium als Standardbrowser verwendest, bist du bestmöglich vor gefährlichen Websites geschützt und kannst auch deine Passwörter besser schützen</translation>
+<translation id="7812317783196516890">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chromium verändern können.</translation>
 <translation id="786327964234957808">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
 <translation id="7928628054454574139">Chromium immer öffnen, wenn du auf Links in anderen Apps tippst</translation>

@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa.</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
+<translation id="1511320244449497906">Prijavljeni ste i vaši se podaci sinkroniziraju s računom kojim upravlja web-lokacija <ph name="DOMAIN" />. Administrator sada može postaviti korisnička pravila koja se odnose na taj račun i koja mogu promijeniti ponašanje Chromea.</translation>
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Pomozite nam da poboljšamo Chrome slanjem statistike korištenja i izvještaja o padovima aplikacije Googleu</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
+<translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
 <translation id="8263079278049777200">Prijavite se na ovu web lokaciju, Google račun i Chrome. Sinhronizaciju možete uključiti kasnije.</translation>
 <translation id="8357607116237445042">Odaberite želite li obrisati podatke Chromea s ovog uređaja ili ih želite zadržati</translation>

@@ -301,6 +301,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2834813915651407382">Kürzlich geöffnet</translation>
 <translation id="2841907151129139818">Zum Tabletmodus gewechselt</translation>
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
+<translation id="2848120746144143659">Eingabetaste drücken, um einen Screenshot vom ganzen Bildschirm aufzunehmen</translation>
 <translation id="2849936225196189499">Kritisch</translation>
 <translation id="2860184359326882502">Beste Ergebnisse</translation>
 <translation id="2865888419503095837">Netzwerkinformationen</translation>
@@ -479,6 +480,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="385300504083504382">Anfang</translation>
+<translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
@@ -810,6 +812,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="595202126637698455">Leistungsnachverfolgung aktiviert</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Betreuter Nutzer</translation>
+<translation id="5976112937189445008">Eingabetaste drücken, um Fenster aufzuzeichnen</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
 <translation id="5978382165065462689">Du teilst dir die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
@@ -1195,6 +1198,7 @@ Neuinstallation</translation>
 <translation id="8364673525741149932">Shelf Party ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Weiter um einen Buchstaben</translation>
 <translation id="8371991222807690464">Die Leistung von Peripheriegeräten kann im Gastmodus eingeschränkt sein</translation>
+<translation id="8374601332003098278">Eingabetaste drücken, um einen Teil des Bildschirms aufzuzeichnen</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> und dein Smartphone werden automatisch miteinander verbunden</translation>
 <translation id="8380784334203145311">Gute Nacht,</translation>
 <translation id="8382715499079447151">Spionageschutz</translation>
@@ -1247,6 +1251,7 @@ Neuinstallation</translation>
 <translation id="8653151467777939995">Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind aktiviert.</translation>
 <translation id="8660331759611631213">Quadratwurzel aus 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Eingabetaste drücken, um einen Bildschirmausschnitt aufzunehmen</translation>
 <translation id="8664753092453405566">Netzwerkliste anzeigen. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727"><ph name="NAME" /> öffnen, um das Gerät einzurichten</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
@@ -1288,6 +1293,7 @@ Neuinstallation</translation>
 <translation id="8909138438987180327">Akkustand: <ph name="PERCENTAGE" />.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant spricht diese Sprache nicht.</translation>
+<translation id="8924458948354692166">Eingabetaste drücken, um einen Screenshot eines Fensters aufzunehmen</translation>
 <translation id="8926951137623668982">Ablage immer ausgeblendet</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>

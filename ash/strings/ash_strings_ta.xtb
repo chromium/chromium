@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">சமீபத்தில் திறக்கப்பட்டது</translation>
 <translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
+<translation id="2848120746144143659">முழுத்திரையை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="2860184359326882502">சிறப்பாகப் பொருந்துபவை</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">நெட்வொர்க் தகவல் எதுவும் இல்லை</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="385300504083504382">தொடக்கம்</translation>
+<translation id="3861651314799684201">முழுத்திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
 <translation id="3886872229787704059">இன்று திறக்கப்பட்டது</translation>
 <translation id="3891340733213178823">வெளியேற Ctrl+Shift+Q ஐ இருமுறை அழுத்தவும்.</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5958529069007801266">மேற்பார்வையிடப்படும் பயனர்</translation>
+<translation id="5976112937189445008">சாளரத்தை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
 <translation id="5977415296283489383">ஹெட்ஃபோன்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
 <translation id="5980301590375426705">விருந்தினரிலிருந்து வெளியேறவும்</translation>
@@ -1199,6 +1202,7 @@
 <translation id="8364673525741149932">'ஷெல்ஃப் பார்ட்டி' பயன்முறையை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
 <translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
+<translation id="8374601332003098278">பகுதியளவு திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
 <translation id="8375916635258623388">இந்த <ph name="DEVICE_NAME" /> உம் உங்கள் ஃபோனும் தானாக இணைக்கப்படும்</translation>
 <translation id="8380784334203145311">இரவு வணக்கம்,</translation>
 <translation id="8382715499079447151">பார்ப்பதற்கான கட்டுப்பாடு</translation>
@@ -1251,6 +1255,7 @@
 <translation id="8653151467777939995">அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். அறிவிப்புகள் இயக்கப்பட்டுள்ளன</translation>
 <translation id="8660331759611631213">71ன் வர்க்கமூலம்</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">பகுதியளவு ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="8664753092453405566">நெட்வொர்க் பட்டியலைக் காண்பிக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">உங்கள் சாதனைத்தை அமைக்க <ph name="NAME" /> ஐத் திறக்கவும்</translation>
 <translation id="8676770494376880701">குறைந்த சக்தியிலான சார்ஜர் இணைக்கப்பட்டுள்ளது</translation>
@@ -1292,6 +1297,7 @@
 <translation id="8909138438987180327">பேட்டரி: <ph name="PERCENTAGE" /> சதவீதம்.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google அசிஸ்டண்ட், இந்த மொழியை ஆதரிக்கவில்லை.</translation>
+<translation id="8924458948354692166">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்க Enter பட்டனை அழுத்தவும்</translation>
 <translation id="8926951137623668982">ஷெல்ஃப் எப்போதும் மறைக்கப்படும்</translation>
 <translation id="8936501819958976551">முடக்கப்பட்டது</translation>
 <translation id="8938800817013097409">USB-C சாதனம் (பின்பக்கம் உள்ள வலது போர்ட்)</translation>

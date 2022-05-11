@@ -190,6 +190,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2690858294534178585">Fotoaparat je aktivan</translation>
 <translation id="2691653761409724435">Nije dostupno offline</translation>
 <translation id="2695507686909505111">Stranica je prevedena</translation>
+<translation id="2697526135132990015">Odjava i brisanje podataka</translation>
 <translation id="2700241355396984822">Opcije postavljanja dopuštenja</translation>
 <translation id="2702801445560668637">Popis za čitanje</translation>
 <translation id="2704491540504985681">Preuzimanja</translation>
@@ -364,6 +365,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4121993058175073134">Za slanje neto izvezenih datoteka konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
 <translation id="4133265950310064865">Poboljšana zaštita</translation>
+<translation id="4148023517926189160">Web-lokacija želi preuzeti datoteku i dodati je na kalendar.</translation>
 <translation id="4152011295694446843">Ovdje ćete pronaći svoje oznake</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="418156467088430727">Prikaži offline verziju na novoj kartici</translation>
@@ -450,6 +452,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4840495572919996524">Vaše oznake, povijest, zaporke i druge stavke više se neće sinkronizirati s vašim Google računom.</translation>
 <translation id="4844899002472726590">Pregled i uređivanje tema koje vas zanimaju</translation>
 <translation id="4854345657858711387">Postavite šifru zaporke</translation>
+<translation id="4858786880085262208">Nadogradite na HTTPS, kad je moguće. Sigurne web-lokacije mogu ugraditi sadržaj koji nije siguran.</translation>
 <translation id="4860895144060829044">Poziv</translation>
 <translation id="4872323082491632254">Provjera zaporki</translation>
 <translation id="4881695831933465202">Otvori</translation>
@@ -691,6 +694,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6760509555861141183">Natrag na karticu Nedavno</translation>
 <translation id="6762812039470893796">Poništi sve</translation>
 <translation id="6780034285637185932">Poštanski broj</translation>
+<translation id="6781260999953472352">Uključiti sinkronizaciju?</translation>
 <translation id="6785453220513215166">Slanje izvješća o rušenju programa...</translation>
 <translation id="6797885426782475225">Glasovno pretraživanje</translation>
 <translation id="6801927553864092214">Da biste pregledavali privatno, otvorite anonimnu karticu</translation>
@@ -798,10 +802,12 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7781069478569868053">Web-stranica nove kartice</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="778855399387580014">Pokrenite pretraživanje u novoj kartici Chromea.</translation>
+<translation id="7790892308048519147">Pokušajte koristiti sigurne veze</translation>
 <translation id="7791543448312431591">Dodavanje</translation>
 <translation id="7807060072011926525">Omogućuje Google</translation>
 <translation id="7839985698273989086">Izvanmrežna stranica</translation>
 <translation id="7840771868269352570">Odabrane će se stavke ukloniti.</translation>
+<translation id="784551991304901159">Za pregled podataka na izborniku odaberite Uključi</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije moguće</translation>
 <translation id="7859704718976024901">Povijest pregledavanja</translation>

@@ -423,6 +423,7 @@
 <translation id="1415708812149920388">Odbijen pristup za čitanje međuspreminka</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID proširenja "<ph name="EXTENSION_ID" />") nije dopušten u ovoj vrsti sesije.</translation>
 <translation id="1418552618736477642">Obavijesti i aplikacije</translation>
+<translation id="1418882096915998312">U tijeku je prijava poduzeća</translation>
 <translation id="1418954524306642206">Pregledajte da biste naveli PPD pisača</translation>
 <translation id="1420834118113404499">Licence medijskog sadržaja</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da biste omogućili uparivanje</translation>
@@ -1005,6 +1006,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1942600407708803723">Isključivanje kada se zatvori poklopac</translation>
 <translation id="1944528062465413897">Bluetoothov kôd za uparivanje:</translation>
 <translation id="1944921356641260203">Pronađeno je ažuriranje</translation>
+<translation id="1947136734041527201">Omogućuje vam da se prijavite na web-lokacije pomoću računa koji imate na usluzi za identitet</translation>
 <translation id="1949584741547056205">Brzi odgovori</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954597385941141174">Web-lokacije mogu tražiti dopuštenje za povezivanje s USB uređajima</translation>
@@ -2403,6 +2405,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="32939749466444286">Linuxov spremnik nije se pokrenuo. Pokušajte ponovo.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistika upotrebe i izvješća o padu programa</translation>
+<translation id="3297105622164376095">Dopušteno je prikazivanje upita za prijavu treće strane</translation>
 <translation id="3297536526040732495">Privremeno povezuje te podatke s vašim Google računom kad ste prijavljeni kako biste bili zaštićeni u Googleovim aplikacijama</translation>
 <translation id="329838636886466101">Popravak</translation>
 <translation id="3298789223962368867">Unesen je nevažeći URL.</translation>
@@ -3409,6 +3412,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4275830172053184480">Ponovo pokrenite svoj uređaj</translation>
 <translation id="4277434192562187284">Izvor XML konfiguracije</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
+<translation id="4278498748067682896">Upotrebljavat ćete nadogradnju kioska i znakovlja koja uređaju omogućuje pokretanje samo načina rada kioska ili znakovlja. Ako želite da se korisnici prijave na uređaj, vratite se i registrirajte pomoću Nadogradnje za Chrome za poduzeća.</translation>
 <translation id="4279129444466079448">Na ovom uređaju možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profila. Da biste dodali još jedan profil, trebate ukloniti jedan od postojećih.</translation>
 <translation id="4280325816108262082">Veza s uređajem prekinut će se automatski kad se uređaj isključi ili ne upotrebljava</translation>
 <translation id="4281844954008187215">Uvjeti upotrebe usluge</translation>
@@ -3657,6 +3661,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4527929807707405172">Omogući obrnuto pomicanje. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Prijedlog prijevoda</translation>
+<translation id="4529455689802245339">Chromeovi automatski titlovi možda neće funkcionirati</translation>
 <translation id="4530494379350999373">Podrijetlo</translation>
 <translation id="4531924570968473143">Koga želite dodati na ovaj uređaj <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">Uređaj "<ph name="USB_DEVICE_NAME" />" se upotrebljava. Ponovna dodjela uređaja koji je upotrebi može uzrokovati pogreške. Jeste li sigurni da želite nastaviti?</translation>
@@ -3854,6 +3859,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="471880041731876836">Nemaš dopuštenje za posjet toj web-lokaciji</translation>
 <translation id="4722735765955348426">Zaporka za <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> dijeli vaš zaslon.</translation>
+<translation id="4722989931633062466">Nije dopušteno prikazivanje upita za prijavu treće strane</translation>
 <translation id="4723140812774948886">Zamijeni sljedećim</translation>
 <translation id="4724450788351008910">Promijenjena afilijacija</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4822,6 +4828,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5711010025974903573">Zapisnici usluge</translation>
 <translation id="5711983031544731014">Otključavanje nije moguće. Unesite svoju zaporku.</translation>
 <translation id="5712153969432126546">Web-lokacije ponekad objavljuju PDF-ove, primjerice dokumente, ugovore i obrasce</translation>
+<translation id="571222594670061844">Web-lokacije mogu prikazivati upite za prijavu usluga za identitet</translation>
 <translation id="5713158217420111469">Povezano s uređajem <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Broker dodatka: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Zadane tražilice</translation>
@@ -4980,6 +4987,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5876851302954717356">Nova kartica s desne strane</translation>
 <translation id="5877064549588274448">Kanal je promijenjen. Ponovo pokrenite uređaj za primjenu promjena.</translation>
 <translation id="5877584842898320529">Odabrani pisač nije dostupan ili nije ispravno instaliran. <ph name="BR" /> Provjerite pisač ili pokušajte odabrati neki drugi.</translation>
+<translation id="5878945009165002849">Blokiraj upite za prijavu usluga za identitet</translation>
 <translation id="5882919346125742463">Poznate mreže</translation>
 <translation id="5883356647197510494">Automatski je blokirano sljedeće: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Kartica je povezana s USB uređajem.</translation>
@@ -5615,6 +5623,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6513247462497316522">Google Chrome upotrijebit će mobilne podatke ako niste povezani na drugu mrežu.</translation>
 <translation id="6514010653036109809">Dostupan uređaj:</translation>
 <translation id="6514565641373682518">Ova stranica onemogućila je pokazivač miša.</translation>
+<translation id="6517709704288360414">Vaš uređaj možda više neće pravilno funkcionirati i možda ćete imati problema sa sigurnošću i izvedbom. Isključivanje ažuriranja može utjecati i na vaše pravo na podnošenje pravnih zahtjeva ako budete imali poteškoća.</translation>
 <translation id="6518014396551869914">Kop&amp;iraj sliku</translation>
 <translation id="6518133107902771759">Potvrdi</translation>
 <translation id="651942933739530207">Želite li da <ph name="APP_NAME" /> dijeli vaš zaslon i audioizlaz?</translation>

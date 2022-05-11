@@ -973,6 +973,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1892341345406963517">Hej <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1895658205118569222">Nedlukning</translation>
+<translation id="1897120393475391208">Brug en stærk adgangskode</translation>
 <translation id="1900305421498694955">Apps fra Google Play skal muligvis have fuld adgang til filsystemet for at læse og skrive filer på eksterne lagerenheder. De filer og mapper, som oprettes på enheden, er synlige for alle, der bruger det eksterne drev. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Vælg &amp;alle</translation>
 <translation id="1901396183631570154">Chrome kunne ikke gemme disse adgangskoder på din Google-konto. Du kan stadig gemme dem på denne enhed.</translation>
@@ -6564,6 +6565,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7444970023873202833">Udforsk flere af dine minder i Google Fotos</translation>
 <translation id="7444983668544353857">Deaktiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installer apps automatisk</translation>
+<translation id="7449381494541372002">starter...</translation>
 <translation id="7449752890690775568">Vil du fjerne adgangskoden?</translation>
 <translation id="7450761244949417357">Åbner i <ph name="ALTERNATIVE_BROWSER_NAME" /> nu</translation>
 <translation id="7452166281927983300">Lukkede advarsler (<ph name="MUTED_PASSWORDS" />)</translation>

@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
+<translation id="1840835860961531162">إيقاف ميزة "الحماية من إضافة المعلومات أو تغييرها"</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
 <translation id="1852934301711881861">‏تثبيت نظام التشغيل ChromeOS Flex</translation>
 <translation id="1856388568474281774">السهم المتّجه للأسفل</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
 <translation id="3954678691475912818">نوع الجهاز غير معروف.</translation>
+<translation id="3958703339436883942">جارٍ إعادة تشغيل الجهاز...</translation>
 <translation id="3966286471246132217">للحصول على نتائج أكثر دقة، عليك إغلاق كل التطبيقات إلى أن يكتمل الاختبار.</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3969602104473960991">‏تم تعديل كلمة مرور نظام التشغيل Chrome</translation>
@@ -424,6 +426,7 @@
 <translation id="5275828089655680674">إعادة تشغيل سلاسل الإجراءات</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">الإصدار <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">عليك إيقاف ميزة "الحماية من إضافة المعلومات أو تغييرها" للانتقال إلى الشاشة التالية. يمكنك الانتقال إلى صفحة دعم الشركة المصنِّعة للجهاز للحصول على التعليمات.</translation>
 <translation id="5300814202279832142">نقل النافذة إلى سطح المكتب</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">اتصال</translation>
@@ -475,6 +478,7 @@
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5843706793424741864">فهرنهايت</translation>
 <translation id="5849570051105887917">رمز مقدم الخدمة الرئيسي</translation>
+<translation id="5856532218727053281">ستتم إعادة تشغيل النظام بعد التحقق من حالة ميزة "الحماية من إضافة المعلومات أو تغييرها"</translation>
 <translation id="5859603669299126575">ألبوم معرض الفنون</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>

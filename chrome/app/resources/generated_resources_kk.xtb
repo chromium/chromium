@@ -957,6 +957,7 @@
 <translation id="1892341345406963517">Сәлеметсіз бе, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Басқа тілдер</translation>
 <translation id="1895658205118569222">Өшіру</translation>
+<translation id="1897120393475391208">Күрделі құпия сөз пайдалану керек пе?</translation>
 <translation id="1900305421498694955">Google Play қолданбалары сыртқы жад құрылғыларындағы файлдарды оқу және жазу үшін файл жүйесін толық пайдалану рұқсатын қажет етуі мүмкін. Бұл құрылғыда жасалған файлдар мен қалталарды сыртқы дискіні қолданатын кез келген адам көре алады. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Барлығын &amp;таңдау</translation>
 <translation id="1901396183631570154">Chrome браузері Google аккаунтын сақтай алмады. Оларды осы құрылғыға сақтай алады.</translation>
@@ -6538,6 +6539,7 @@
 <translation id="7444970023873202833">Google Photos арқылы басқа да естеліктеріңізді қарап шығыңыз.</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> өшіру</translation>
 <translation id="7448430327655618736">Қолданбаларды автоматты түрде орнатыңыз</translation>
+<translation id="7449381494541372002">іске қосылуда…</translation>
 <translation id="7449752890690775568">Құпия сөз өшірілсін бе?</translation>
 <translation id="7450761244949417357"><ph name="ALTERNATIVE_BROWSER_NAME" /> браузерінде ашылады.</translation>
 <translation id="7452166281927983300">Жабылған ескертулер (<ph name="MUTED_PASSWORDS" />)</translation>

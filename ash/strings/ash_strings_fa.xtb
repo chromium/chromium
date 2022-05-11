@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">اخیراً باز شده است</translation>
 <translation id="2841907151129139818">به حالت رایانه لوحی رفته‌اید</translation>
 <translation id="2844169650293029770">‏دستگاه USB-C (درگاه جلوی سمت چپ)</translation>
+<translation id="2848120746144143659">برای ضبط نماگرفت از تمام صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="2849936225196189499">مهم</translation>
 <translation id="2860184359326882502">بهترین مورد منطبق</translation>
 <translation id="2865888419503095837">اطلاعات شبکه</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="385300504083504382">آغاز</translation>
+<translation id="3861651314799684201">برای ضبط تمام صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="3886872229787704059">امروز باز شده است</translation>
 <translation id="3891340733213178823">‏برای خروج از سیستم Ctrl+Shift+Q را دو بار فشار دهید.</translation>
 <translation id="3893630138897523026">‏ChromeVox (بازخورد گفتاری)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">ردیابی عملکرد فعال شد</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">کاربر نظارت‌شده</translation>
+<translation id="5976112937189445008">برای ضبط پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="5977415296283489383">هدفون</translation>
 <translation id="5978382165065462689">هم‌رسانی کنترل صفحه‌تان از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="5980301590375426705">خروج از مهمان</translation>
@@ -1199,6 +1202,7 @@
 <translation id="8364673525741149932">روشن/ خاموش کردن «گروه قفسه‌ها». <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">جلو رفتن حرف‌به‌حرف</translation>
 <translation id="8371991222807690464">ممکن است در «حالت مهمان» عملکرد لوازم جانبی محدود باشد</translation>
+<translation id="8374601332003098278">برای ضبط بخشی از صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="8375916635258623388">این <ph name="DEVICE_NAME" /> و تلفنتان به‌طور خودکار متصل می‌شوند</translation>
 <translation id="8380784334203145311">شب‌به‌خیر،</translation>
 <translation id="8382715499079447151">محافظت دربرابر مشاهده</translation>
@@ -1251,6 +1255,7 @@
 <translation id="8653151467777939995">نمایش تنظیمات اعلان. اعلان‌ها روشن است</translation>
 <translation id="8660331759611631213">‏Square root of 71 (جذر ۷۱)</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">برای ضبط نماگرفت از یک بخش صفحه، کلید «ورود» را فشار دهید</translation>
 <translation id="8664753092453405566">نمایش فهرست شبکه. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">برای راه‌اندازی دستگاه، <ph name="NAME" /> را باز کنید</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
@@ -1292,6 +1297,7 @@
 <translation id="8909138438987180327">شارژ باتری <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏«دستیار Google» به این زبان صحبت نمی‌کند.</translation>
+<translation id="8924458948354692166">برای ضبط نماگرفت از پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="8926951137623668982">قفسه همیشه پنهان می‌شود</translation>
 <translation id="8936501819958976551">غیرفعال</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>

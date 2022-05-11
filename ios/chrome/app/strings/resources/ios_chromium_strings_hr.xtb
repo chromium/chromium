@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Dopusti prijavu u Chromium</translation>
 <translation id="6337530241089703714">Odaberite želite li podatke iz Chromiuma izbrisati s ovog uređaja ili ih zadržati</translation>
 <translation id="6424492062988593837">Chromium je postao još bolji! Dostupna je nova verzija.</translation>
+<translation id="6625409903340039086">Chromium sada za vaš upravljani račun podržava korisnička pravila</translation>
 <translation id="6752854822223394465">Vaša organizacija postavlja Chromium...</translation>
 <translation id="6820823224820483452">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
 <translation id="7006920032187763988">Zaporke koje ste spremili u Upravitelj zaporki možete koristiti u drugim aplikacijama na iPadu.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Otvorite Postavke &gt; Privatnost &gt; Fotoaparat &gt; Chromium i uključite fotoaparat.</translation>
 <translation id="7746854981345936341">Savjet za Chromium. Neki se gumbi sada nalaze pri dnu zaslona, primjerice za natrag, naprijed i pretraživanje.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao zadani preglednik da biste se zaštitili od opasnih web-lokacija i očuvali sigurnost svojih zaporki</translation>
+<translation id="7812317783196516890">Prijavljeni ste i vaši se podaci sinkroniziraju s računom kojim upravlja web-lokacija <ph name="DOMAIN" />. Administrator sada može postaviti korisnička pravila koja se odnose na taj račun i koja mogu promijeniti ponašanje Chromiuma.</translation>
 <translation id="786327964234957808">Prebacujete sinkronizirane račune s korisnika <ph name="USER_EMAIL1" /> na korisnika <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromiumu upravlja <ph name="DOMAIN" />. Ovime će se izbrisati vaši podaci s vašeg uređaja, no oni će ostati na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Počnite koristiti Chromiumov skener</translation>
 <translation id="7928628054454574139">Otvorite Chromium svaki put kada dodirnite veze u drugim aplikacijama</translation>

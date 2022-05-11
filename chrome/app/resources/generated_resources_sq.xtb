@@ -421,6 +421,7 @@
 <translation id="1415708812149920388">Qasja për leximin e kujtesës së fragmenteve u refuzua</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID-ja e shtesës "<ph name="EXTENSION_ID" />") nuk lejohet në këtë lloj seance.</translation>
 <translation id="1418552618736477642">Njoftimet dhe aplikacionet</translation>
+<translation id="1418882096915998312">Regjistrimi i Chrome Enterprise në vazhdim</translation>
 <translation id="1418954524306642206">Shfleto për të specifikuar skedarin PPD për printerin tënd</translation>
 <translation id="1420834118113404499">Licencat e medias</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> për të lejuar çiftimin</translation>
@@ -957,6 +958,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1892341345406963517">Përshëndetje <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
 <translation id="1895658205118569222">Mbyllja</translation>
+<translation id="1897120393475391208">Përdor një fjalëkalim i fortë</translation>
 <translation id="1900305421498694955">Aplikacionet nga Google Play mund të kërkojnë qasje të plotë të sistemit të skedarëve për të lexuar dhe për të shkruar te skedarët në pajisjet e jashtme të hapësirës ruajtëse. Skedarët dhe dosjet e krijuara në pajisje janë të dukshme për këdo që përdor diskun e jashtëm. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Zgjidhi &amp;të gjitha</translation>
 <translation id="1901396183631570154">Chrome nuk mund t'i ruante këto fjalëkalime në "Llogarinë tënde të Google". Mund t'i ruash ato ende në këtë pajisje.</translation>
@@ -3404,6 +3406,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4277434192562187284">Burimi i konfigurimeve të XML-së</translation>
 <translation id="4278390842282768270">Të lejuara</translation>
+<translation id="4278498748067682896">Do të përdorësh një përmirësim të kioskës dhe sinjalizimit, i cili e lejon pajisjen të ekzekutohet vetëm në modalitetin e kioskës ose të sinjalizimit. Nëse dëshiron që përdoruesit të identifikohen në këtë pajisje, kthehu dhe regjistrohu duke përdorur përmirësimin e Chrome Enterprise.</translation>
 <translation id="4279129444466079448">Mund të instalosh deri në <ph name="PROFILE_LIMIT" /> profile të kartës eSIM në këtë pajisje. Për të shtuar një profil tjetër, në fillim hiq një profil ekzistues.</translation>
 <translation id="4280325816108262082">Pajisja shkëputet automatikisht kur fiket ose kur nuk përdoret</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
@@ -6542,6 +6545,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="7444970023873202833">Eksploro më shumë nga kujtimet e tua në "Fotografitë e Google"</translation>
 <translation id="7444983668544353857">Çaktivizoje <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalo automatikisht aplikacionet</translation>
+<translation id="7449381494541372002">po fillon…</translation>
 <translation id="7449752890690775568">Të hiqet fjalëkalimi?</translation>
 <translation id="7450761244949417357">Po hapet në <ph name="ALTERNATIVE_BROWSER_NAME" /> tani</translation>
 <translation id="7452166281927983300">Paralajmërimet e hequra (<ph name="MUTED_PASSWORDS" />)</translation>

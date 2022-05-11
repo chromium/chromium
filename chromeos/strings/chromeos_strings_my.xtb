@@ -94,6 +94,7 @@
 <translation id="1801418420130173017">မှောင်သည့် အပြင်အဆင် ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
+<translation id="1840835860961531162">Write Protect ပိတ်ရန်</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
@@ -279,6 +280,7 @@
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
 <translation id="3942420633017001071">အမှားရှာဖွေမှုများ</translation>
 <translation id="3954678691475912818">ကိရိယာအမျိုးအစား မသိပါ။</translation>
+<translation id="3958703339436883942">ပြန်စရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="3966286471246132217">ပိုမိုတိကျသော ရလဒ်များအတွက် စစ်ဆေးမှုပြီးသည်အထိ အက်ပ်အားလုံးကို ပိတ်ပါ။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3969602104473960991">ChromeOS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
@@ -427,6 +429,7 @@
 <translation id="5275828089655680674">ပုံမှန်အစီအစဉ်များသို့ ပြန်သွားရန်</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် Write Protect ပိတ်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
 <translation id="5300814202279832142">ဝင်းဒိုးကို မျက်နှာပြင်နေရာသို့ ရွှေ့ရန်</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
@@ -479,6 +482,7 @@
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5843706793424741864">ဖာရင်ဟိုက်</translation>
 <translation id="5849570051105887917">ပင်မထောက်ပံ့သူကုဒ်</translation>
+<translation id="5856532218727053281">Write Protection အခြေအနေ အတည်ပြုပြီးနောက် စနစ်ကို ပြန်စမည်</translation>
 <translation id="5859603669299126575">အနုပညာပြခန်း အယ်လ်ဘမ်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5860491529813859533">ဖွင့်ရန်</translation>

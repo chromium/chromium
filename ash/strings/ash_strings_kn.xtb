@@ -143,6 +143,7 @@
 <translation id="1749109475624620922">ವಿಂಡೋ <ph name="WINDOW_TITLE" /> ಅನ್ನು ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ</translation>
 <translation id="1750088060796401187">ಕೇವಲ <ph name="MAX_DESK_LIMIT" /> ಡೆಸ್ಕ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ. ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಹಾಗೂ ಹೊಸದನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1756833229520115364">ಟೆಂಪ್ಲೇಟ್ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಹಲವಾರು ವಿಂಡೋಗಳು ಅಥವಾ ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದುಕೊಂಡಿವೆ.</translation>
+<translation id="1757857692711134412">ಸೂರ್ಯಾಸ್ತದವರೆಗೆ ಆಫ್</translation>
 <translation id="1761222317188459878">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ಪಿರಿಯಡ್ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. ಇನ್‌ಸರ್ಟ್ ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಶಿಫ್ಟ್ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> ಸಾಲು, <ph name="COLUMN_NUMBER" /> ಕಾಲಮ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
@@ -304,6 +305,7 @@
 <translation id="2834813915651407382">ಇತ್ತೀಚೆಗೆ ತೆರೆದಿದ್ದೀರಿ</translation>
 <translation id="2841907151129139818">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
+<translation id="2848120746144143659">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಸೆರೆಹಿಡಿಯಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="2849936225196189499">ಗಂಭೀರ</translation>
 <translation id="2860184359326882502">ಅತ್ಯುತ್ತಮ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="2865888419503095837">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ</translation>
@@ -482,6 +484,7 @@
 <translation id="3846575436967432996">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="385300504083504382">ಪ್ರಾರಂಭ</translation>
+<translation id="3861651314799684201">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="3886872229787704059">ಇಂದು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3891340733213178823">ಸೈನ್ ಔಟ್ ಮಾಡಲು Ctrl+Shift+Q ಅನ್ನು ಎರಡುಬಾರಿ ಒತ್ತಿರಿ.</translation>
 <translation id="3893630138897523026">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
@@ -506,6 +509,7 @@
 <translation id="3995138139523574647">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="40062176907008878">ಕೈಬರಹ</translation>
 <translation id="4017989525502048489">ಲೇಸರ್ ಪಾಯಿಂಟರ್</translation>
+<translation id="401993194061514265">ಮಾರ್ಕರ್ ಲಭ್ಯವಿಲ್ಲ. ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಅನ್ನು ಮರುತೆರೆಯಿರಿ.</translation>
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4028481283645788203">ಹೆಚ್ಚಿನ ಭದ್ರತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -520,6 +524,7 @@
 <translation id="412298498316631026">ವಿಂಡೋ</translation>
 <translation id="4123259114412175274">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4129129681837227511">ನಿಮ್ಮ ಲಾಕ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು, ಸೆಟ್ಟಿಂಗ್ ಬದಲಾಯಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="4136724716305260864">ಸೂರ್ಯೋದಯದವರೆಗೆ ಆನ್</translation>
 <translation id="4146833061457621061">ಸಂಗೀತ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="4165275524535002941">ಡಿಸ್‌ಪ್ಲೇಗಳನ್ನು ಕೇಬಲ್ ಬೆಂಬಲಿಸದಿರಬಹುದು</translation>
 <translation id="4177913004758410636">{0,plural, =1{ಒಂದು ದಿನದೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
@@ -572,6 +577,7 @@
 <translation id="4421231901400348175">ರಿಮೋಟ್ ಸಹಾಯದ ಮೂಲಕ <ph name="HELPER_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಪರದೆಯ ನಿಯಂತ್ರಣವನ್ನು ಹಂಚಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="4424159417645388645">ಡೆಸ್ಕ್ 5</translation>
 <translation id="4430019312045809116">ವಾಲ್ಯೂಮ್</translation>
+<translation id="4435022394553622295">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4441283832827406317">ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4445159312344259901">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ಪ್ರಮುಖ ಅಧಿಸೂಚನೆ}one{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}other{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}}</translation>
@@ -699,6 +705,7 @@
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ಇತರ 1 ಅಧಿಸೂಚನೆ}one{ಇತರ # ಅಧಿಸೂಚನೆಗಳು}other{ಇತರ # ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="5208059991603368177">ಆನ್ ಮಾಡಿ</translation>
+<translation id="5216991270656129561"><ph name="TIME" /> ವರೆಗೆ ಆಫ್ ಆಗಿರುತ್ತದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="523505283826916779">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -748,6 +755,7 @@
 <translation id="553675580533261935">ಸೆಷನ್ ನಿರ್ಗಮಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5537725057119320332">ಪಾತ್ರವರ್ಗ</translation>
 <translation id="554893713779400387">ಡಿಕ್ಟೇಶನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="5560420195677022218">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5571066253365925590">ಬ್ಲೂಟೂತ್‌ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="557563299383177668">ಮುಂದಿನ ಪ್ಯಾರಾಗ್ರಾಫ್</translation>
@@ -813,6 +821,7 @@
 <translation id="595202126637698455">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸಿಂಗ್ ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="5955304353782037793">ಅಪ್ಲಿಕೇಶನ್‌</translation>
 <translation id="5958529069007801266">ಮೇಲ್ವಿಚಾರಣೆಗೊಳಪಟ್ಟ ಬಳಕೆದಾರರು</translation>
+<translation id="5976112937189445008">ವಿಂಡೋವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5977415296283489383">ಹೆಡ್‌ಫೋನ್</translation>
 <translation id="5978382165065462689">ರಿಮೋಟ್ ಸಹಾಯಕದ ಮೂಲಕ ನಿಮ್ಮ ಪರದೆಯ ಹಂಚಿಕೆಯ ನಿಯಂತ್ರಣ</translation>
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -966,6 +975,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6884665277231944629">ಈ ದಿನಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="6886172995547742638">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಕಾರ್ಯಕ್ಷಮತೆಯು ಕಡಿಮೆಯಾಗಬಹುದು. ಪ್ರಮಾಣೀಕೃತ <ph name="PREFERRED_MINIMUM_POWER" />W ಅಥವಾ ಹೆಚ್ಚುವರಿ USB-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="688631446150864480">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಲು ಡೌನ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
+<translation id="6891721121089053234">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6896758677409633944">ನಕಲಿಸು</translation>
 <translation id="6901883536534621389">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6919251195245069855">ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1094,6 +1104,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7684531502177797067">ಕ್ಯಾಮರಾ ಇನ್‌ಪುಟ್ ಅನ್ನು <ph name="CAMERA_NAME" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="7720400844887872976"><ph name="TIME" /> ವರೆಗೆ ಆನ್ ಆಗಿರುತ್ತದೆ</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ಅಧಿಸೂಚನೆ}one{# ಅಧಿಸೂಚನೆಗಳು}other{# ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
@@ -1176,6 +1187,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="8183592608247778598">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ, ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8192202700944119416">ಅಧಿಸೂಚನೆಗಳು ಮರೆಯಾಗಿವೆ.</translation>
 <translation id="8196787716797768628">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ನಲ್ಲಿ, ಆ್ಯಪ್‌ಗಳ ನಡುವೆ ತ್ವರಿತವಾಗಿ ಬದಲಿಸಲು ಮತ್ತು ನಿಮ್ಮ Chromebook ಜೊತೆಗೆ ಸಂವಾದ ನಡೆಸಲು ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
@@ -1200,6 +1212,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8364673525741149932">ಶೆಲ್ಫ್ ಪಾರ್ಟಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">ಅಕ್ಷರದ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="8371991222807690464">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಬಾಹ್ಯ ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆಯು ಸೀಮಿತವಾಗಿರಬಹುದು</translation>
+<translation id="8374601332003098278">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="8375916635258623388">ಈ <ph name="DEVICE_NAME" /> ಸಾಧನ ಮತ್ತು ನಿಮ್ಮ ಫೋನ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="8380784334203145311">ಶುಭ ರಾತ್ರಿ,</translation>
 <translation id="8382715499079447151">ವೀಕ್ಷಣೆ ಸುರಕ್ಷತೆ</translation>
@@ -1252,6 +1265,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8653151467777939995">ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಅಧಿಸೂಚನೆಗಳು ಆನ್ ಆಗಿವೆ</translation>
 <translation id="8660331759611631213">71 ರ ವರ್ಗಮೂಲ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಸೆರೆಹಿಡಿಯಲು Enter ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="8664753092453405566">ನೆಟ್‌ವರ್ಕ್ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸೆಟಪ್ ಮಾಡಲು <ph name="NAME" /> ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8676770494376880701">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್ ಸಂಪರ್ಕಪಡಿಸಲಾಗಿದೆ</translation>
@@ -1293,6 +1307,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8909138438987180327">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" /> ಪ್ರತಿಶತ ಇದೆ.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google ಸಹಾಯಕವು ಈ ಭಾಷೆಯನ್ನು ಮಾತನಾಡುವುದಿಲ್ಲ.</translation>
+<translation id="8924458948354692166">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಸೆರೆಹಿಡಿಯಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="8926951137623668982">ಶೆಲ್ಫ್ ಯಾವಾಗಲೂ ಮರೆಯಾಗಿದೆ</translation>
 <translation id="8936501819958976551">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>

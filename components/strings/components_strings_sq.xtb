@@ -1100,6 +1100,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
 <translation id="3978338123949022456">Modaliteti i kërkimit; shkruaj një kërkesë dhe shtyp "Enter" për të kërkuar me <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Shpendët</translation>
+<translation id="3985750352229496475">Menaxho adresat...</translation>
 <translation id="3986705137476756801">Çaktivizo "Titrat në çast" për momentin</translation>
 <translation id="3987940399970879459">Më pak se 1 MB</translation>
 <translation id="3990250421422698716">Zhvendosja e bordurës</translation>
@@ -1225,6 +1226,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4305666528087210886">Qasja te skedari ishte e pamundur</translation>
 <translation id="4306529830550717874">Të ruhet adresa?</translation>
 <translation id="4306812610847412719">kujtesa e fragmenteve</translation>
+<translation id="4310070645992025887">Kërko për udhëtime</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
 <translation id="4314815835985389558">Menaxho sinkronizimin</translation>
@@ -2108,6 +2110,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6839929833149231406">Zona</translation>
 <translation id="6846340164947227603">Përdor një numër karte virtuale...</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
+<translation id="6857776781123259569">Menaxho fjalëkalimet...</translation>
 <translation id="686485648936420384">Burimet e konsumatorit</translation>
 <translation id="6865412394715372076">Kjo kartë nuk mund të verifikohet për momentin</translation>
 <translation id="6869334554832814367">Kreditë personale</translation>
@@ -2434,6 +2437,7 @@ Detaje shtesë:
 <translation id="7669271284792375604">Sulmuesit në këtë sajt mund të përpiqen të të mashtrojnë të instalosh programe që dëmtojnë përvojën tënde të shfletimit (për shembull, duke ndryshuar faqen kryesore ose duke shfaqur reklama shtesë në sajtet që viziton).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Veprimet e kryera me të dhënat e raportuara si konfidenciale (1 veprim që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}other{Veprimet e kryera me të dhënat e raportuara si konfidenciale (# veprime që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Kutia postare 6</translation>
+<translation id="7675325315208090829">Menaxho mënyrat e pagesës...</translation>
 <translation id="7676643023259824263">Kërko për tekstin e kujtesës së fragmenteve, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Shiko dhe menaxho historikun e shfletimit te cilësimet e Chrome</translation>
 <translation id="7679947978757153706">Bejsbolli</translation>

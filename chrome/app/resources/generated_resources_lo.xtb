@@ -423,6 +423,7 @@
 <translation id="1415708812149920388">ການເຂົ້າອ່ານຄລິບບອດຖືກປະຕິເສດ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຢູ່ໃນຊ່ວງ​ເວລາ​​ເຂົ້າ​ໃຊ້ປະເພດນີ້.</translation>
 <translation id="1418552618736477642">ການແຈ້ງເຕືອນ ແລະ ແອັບ</translation>
+<translation id="1418882096915998312">ກຳລັງລົງທະບຽນອົງກອນຢູ່</translation>
 <translation id="1418954524306642206">ເລື່ອນເບິ່ງເພື່ອລະບຸ PPD ເຄື່ອງພິມຂອງທ່ານ</translation>
 <translation id="1420834118113404499">ໃບອະນຸຍາດສື່</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> ເພື່ອອະນຸຍາດການຈັບຄູ່</translation>
@@ -969,6 +970,7 @@
 <translation id="1892341345406963517">ສະບາຍດີ <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">​ພາ​ສາ​ອື່ນໆ</translation>
 <translation id="1895658205118569222">ມອດ</translation>
+<translation id="1897120393475391208">ໃຊ້ລະຫັດຜ່ານຍາກ</translation>
 <translation id="1900305421498694955">ແອັບຈາກ Google Play ອາດຈະຈຳເປັນຕ້ອງມີສິດເຂົ້າເຖິງລະບົບໄຟລ໌ເຕັມເພື່ອອ່ານ ແລະ ຂຽນໄຟລ໌ໃນອຸປະກອນຈັດເກັບຂໍ້ມູນພາຍນອກ. ໄຟລ໌ ແລະ ໂຟນເດີທີ່ສ້າງຂຶ້ນໃນອຸປະກອນສາມາດເບິ່ງເຫັນໄດ້ຕໍ່ກັບທຸກຄົນຜູ້ໃຊ້ໄດຣຟ໌ພາຍນອກ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="1901396183631570154">Chrome ບໍ່ສາມາດບັນທຶກລະຫັດຜ່ານເຫຼົ່ານີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດບັນທຶກພວກມັນໄວ້ໃນອຸປະກອນນີ້ໄດ້.</translation>
@@ -3421,6 +3423,7 @@
 <translation id="4275830172053184480">ເລີ່ມຕົ້ນອຸປະກອນຂອງທ່ານໃໝ່</translation>
 <translation id="4277434192562187284">ແຫຼ່ງທີ່ມາການຕັ້ງຄ່າ XML</translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
+<translation id="4278498748067682896">ທ່ານຈະໃຊ້ອັບເກຣດຄີອອສ ແລະ ປ້າຍເຊິ່ງອະນຸຍາດໃຫ້ອຸປະກອນເອີ້ນໃຊ້ໃນໂໝດຄີອອສ ຫຼື ປ້າຍເທົ່ານັ້ນ. ຫາກທ່ານຢາກໃຫ້ຜູ້ໃຊ້ເຂົ້າສູ່ລະບົບຫາອຸປະກອນ, ກະລຸນາກັບຄືນໄປແລ້ວລົງທະບຽນໂດຍໃຊ້ Chrome Enterprise Upgrade.</translation>
 <translation id="4279129444466079448">ທ່ານສາມາດຕິດຕັ້ງໂປຣໄຟລ໌ eSIM ໄດ້ສູງສຸດ <ph name="PROFILE_LIMIT" /> ໂປຣໄຟລ໌ຢູ່ອຸປະກອນນີ້. ເພື່ອເພີ່ມໂປຣໄຟລ໌ອື່ນ, ໃຫ້ລຶບໂປຣໄຟລ໌ທີ່ມີຢູ່ກ່ອນແລ້ວອອກກ່ອນ.</translation>
 <translation id="4280325816108262082">ອຸປະກອນຈະຕັດການເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອມັນຖືກປິດໄວ້ ຫຼື ບໍ່ໄດ້ໃຊ້</translation>
 <translation id="4281844954008187215">ຂໍ້ກໍານົດການບໍລິການ</translation>
@@ -6559,6 +6562,7 @@
 <translation id="7444970023873202833">ສຳຫຼວດຄວາມຊົງຈຳເພີ່ມເຕີມຂອງທ່ານໃນ Google ຮູບພາບ</translation>
 <translation id="7444983668544353857">ປິດໃຊ້ງານ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">ຕິດຕັ້ງແອັບໂດຍອັດຕະໂນມັດ</translation>
+<translation id="7449381494541372002">ກຳລັງເລີ່ມ...</translation>
 <translation id="7449752890690775568">ລຶບລະຫັດຜ່ານອອກບໍ?</translation>
 <translation id="7450761244949417357">ກຳລັງເປີດໃນ <ph name="ALTERNATIVE_BROWSER_NAME" /> ຕອນນີ້</translation>
 <translation id="7452166281927983300">ປິດຄຳເຕືອນໄວ້ແລ້ວ (<ph name="MUTED_PASSWORDS" />)</translation>

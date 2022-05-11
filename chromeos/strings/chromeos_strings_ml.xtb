@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1380220803921738821">പിശകുകൾ ഉണ്ടായി. റീബൂട്ട് ചെയ്യാൻ ശ്രമിക്കുക അല്ലെങ്കിൽ USB തമ്പ്ഡ്രൈവ് ഉപയോഗിച്ച് ഫേംവെയർ വീണ്ടെടുക്കുക.</translation>
 <translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1394661041439318933">ഉപകരണത്തിന്റെ കെയ്‌സിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">ശരി</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
+<translation id="2827359915699915567">RSU കോഡ് നേടാൻ ഈ URL നേരിട്ട് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2859243502336719778">നിർണ്ണായക അപ്ഡേറ്റ്</translation>
 <translation id="2860473693272905224">സ്‌കാനറിൽ മറ്റൊരു പേജ് വയ്ക്കുക</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
@@ -224,6 +226,7 @@
 <translation id="3291996639387199448">കീയുടെ ദിശ</translation>
 <translation id="3310640316857623290">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ വളരെ മുകളിലാണ്</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
+<translation id="3333527094307156612">8 പ്രതീകങ്ങളുള്ള അൺലോക്ക് കോഡ് നേടാൻ ഈ QR കോഡ് ഉപയോഗിക്കുക. നിങ്ങൾക്ക് <ph name="LINK_BEGIN" />ഈ URL<ph name="LINK_END" /> നേരിട്ട് ടൈപ്പ് ചെയ്യാം.</translation>
 <translation id="3336855445806447827">ഉറപ്പില്ല</translation>
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
@@ -257,6 +260,7 @@
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
 <translation id="3621202678540785336">ഇൻപുട്ട്</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
+<translation id="3643810137582748570">കാലിബ്രേറ്റ് ചെയ്യുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="3678765385266369662">റൈറ്റ് പരിരക്ഷ ഓഫാക്കേണ്ടത് എങ്ങനെയെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> പരിശോധന</translation>
 <translation id="370665806235115550">ലോഡ്ചെയ്യുന്നു...</translation>
@@ -407,6 +411,7 @@
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
 <translation id="5051044138948155788">ഇത് അവസാനത്തെ പേജാണ്. ഇത് നീക്കം ചെയ്യുന്നത് നിങ്ങളെ സ്‌കാനിംഗിന്റെ ആരംഭ സ്ക്രീനിലേക്ക് കൊണ്ടുപോകും.</translation>
+<translation id="506768878203270635">8 പ്രതീകങ്ങൾ നൽകുക</translation>
 <translation id="5088172560898466307">സെർവർ ഹോസ്റ്റ്‌നാമം</translation>
 <translation id="5089810972385038852">സ്റ്റേറ്റ്</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -467,6 +472,7 @@
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
 <translation id="5655283760733841251">കീബോർഡ് തെളിച്ചം കൂട്ടുക</translation>
+<translation id="5661196929408385351">Powerwash ചെയ്ത് ഷട്ട്ഡൗൺ ചെയ്യുക</translation>
 <translation id="5669267381087807207">സജീവമാക്കുന്നു</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">കുടുംബം</translation>
@@ -478,6 +484,7 @@
 <translation id="576835345334454681">ഡിസ്‌പ്ലേ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
+<translation id="578753362485952307">മറ്റൊരു ഉപകരണത്തിൽ ഉപയോഗിക്കേണ്ട മെയിൻബോർഡിൽ റീവർക്ക് നടത്തുകയാണെങ്കിൽ, <ph name="LINK_BEGIN" />റീവർക്ക് ഫ്ലോയിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5843706793424741864">ഫാരൻഹീറ്റ്</translation>
@@ -534,6 +541,7 @@
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ഡാർക്ക് തീം ഓണാക്കുക</translation>
+<translation id="6295178529664209245">റിപ്പയർ തുടരണോ?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> എന്നതിൽ ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6321407676395378991">സ്ക്രീൻ സേവർ ഓണാക്കുക</translation>
@@ -569,6 +577,7 @@
 <translation id="6575134580692778371">ക്രമീകരിച്ചിട്ടില്ല</translation>
 <translation id="6579509898032828423">ഈ ഫോട്ടോ ഉപയോഗിക്കുക</translation>
 <translation id="6596816719288285829">IP വിലാസം</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> റിപ്പയറിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6620487321149975369">നേരിട്ട് നീക്കം ചെയ്തില്ലെങ്കിൽ പ്രിന്റ് ജോലികൾ ചരിത്രത്തിൽ ദൃശ്യമാകും</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
@@ -581,6 +590,7 @@
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6723847290197874913">കീബോർഡ് ബാക്ക്‌ലൈറ്റ്</translation>
 <translation id="672609503628871915">പുതിയതെന്താണെന്ന് കാണുക</translation>
+<translation id="6746847322826305075">മെയിൻബോർഡ് വീണ്ടും സ്റ്റോക്ക് ചെയ്യാൻ പൂർണ്ണമായ റിപ്പയർ അല്ലെങ്കിൽ ഉപകരണം Powerwash (ഫാക്ടറി റീസെറ്റ്) ചെയ്ത് തുടരാം.</translation>
 <translation id="6747215703636344499">പ്രിന്റ് ജോലി നിർത്തി - ഔട്ട്പുട്ട് നിറഞ്ഞിരിക്കുന്നു</translation>
 <translation id="6749473226660745022">ഫോട്ടോകൾ</translation>
 <translation id="6753452347192452143">ഉപകരണം ഒരു കമ്പ്യൂട്ടറാണ്.</translation>
@@ -628,6 +638,7 @@
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">ഒന്നോ ഒന്നിലധികമോ കമ്പോണന്റുകൾ തിരഞ്ഞെടുത്ത് വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ കാലിബ്രേഷൻ ഒഴിവാക്കുക</translation>
 <translation id="7281657306185710294">ഇളം കാറ്റ് അനുഭവിക്കൂ</translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>
 <translation id="7297226631177386107">HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
@@ -658,11 +669,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ടച്ച്സ്ക്രീൻ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
+<translation id="760845693386726841">ഈ കമ്പോണന്റ് തിരിച്ചറിയാനാകുന്നില്ല.</translation>
 <translation id="7620771111601174153">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
 <translation id="7626501172915339021">RMA സെർവർ അൺലോക്ക് (RSU) പ്രവർത്തനം നടപ്പാക്കുക</translation>
 <translation id="763165478673169849">അവസാനം റീസെറ്റ് ചെയ്‌ത സമയം</translation>
 <translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="7656388927906093505">ഉപകരണം ഒരു മൗസാണ്.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> റിപ്പയറിൽ പിശക്</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7665800271478495366">അവതാർ മാറ്റുക</translation>
 <translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
@@ -704,6 +717,7 @@
 <translation id="8083281199617904460">ഈ റിപ്പയർ പ്രക്രിയ, പരിശീലനം ലഭിച്ച റിപ്പയർ ടെക്‌നീഷ്യന് വേണ്ടി രൂപകൽപ്പന ചെയ്തതാണ്. തകരാറുള്ള ഘടകങ്ങൾ മാറ്റിയ ശേഷം മാത്രം ആരംഭിക്കുക.</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
+<translation id="8109786307828817014">പരാജയപ്പെട്ട കാലിബ്രേഷനുകളുമായി മുന്നോട്ടുപോകണോ?</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
@@ -726,6 +740,7 @@
 <translation id="8302368968391049045">HTTPS ഫയര്‍വാള്‍</translation>
 <translation id="8318753676953949627">ഇമേജുകളൊന്നുമില്ല</translation>
 <translation id="8327249300223641918">തുടരുന്നതിന് മുമ്പ്, നിങ്ങളുടെ ഉപകരണം മുഴുവനായി (ബേസും ലിഡും) നിരപ്പുള്ള ഒരു പ്രതലത്തിൽ വയ്ക്കുക.</translation>
+<translation id="8330949592403310082">ഏതൊക്കെ കമ്പോണന്റുകളാണ് മാറ്റി നൽകിയതെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8336739000755212683">ഉപകരണ അക്കൗണ്ട് ചിത്രം മാറ്റുക</translation>
 <translation id="8347227221149377169">പ്രിന്റ് ജോലികൾ</translation>
 <translation id="8352772353338965963">ഒന്നിലധികം സൈൻ-ഇന്നിനായി ഒരു അക്കൗണ്ട് ചേർക്കുക. സൈൻ-ഇൻ ചെയ്‌ത അക്കൗണ്ടുകളെല്ലാം ഒരു പാസ്‌വേഡില്ലാതെ ആക്‌സസ് ചെയ്യാനാകുമെന്നതിനാൽ ഈ സവിശേഷത പരിചയമുള്ള അക്കൗണ്ടുകളിൽ മാത്രമേ ഉപയോഗിക്കാവൂ.</translation>
@@ -749,6 +764,7 @@
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>
 <translation id="8503836310948963452">കുറച്ച് മിനിറ്റുകൾ കൂടി മാത്രം…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">കാലിബ്രേറ്റ് ചെയ്യാൻ ഘടകങ്ങൾ ശരിയായി പ്രവർത്തിക്കില്ല</translation>
 <translation id="8575298406870537639">നിങ്ങളുടെ സേവനദാതാവിന് അവരുടെ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഈ ഓപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം. വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ സേവനദാതാവുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
@@ -803,6 +819,7 @@
 <translation id="9025198690966128418">വ്യക്തിപര ഉപകരണമായി ഉപയോഗിക്കുക</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS റെസല്യൂഷൻ പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുക്കുന്നു</translation>
+<translation id="9063121522582193837">ചില ഘടകങ്ങൾ കാലിബ്രേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">ഈ വീഡിയോ ഉപയോഗിക്കുക</translation>

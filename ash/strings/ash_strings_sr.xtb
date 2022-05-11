@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">Недавно отварано</translation>
 <translation id="2841907151129139818">Прешли сте у режим таблета</translation>
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
+<translation id="2848120746144143659">Притисните Enter да бисте направили снимак целог екрана</translation>
 <translation id="2849936225196189499">Од пресудне важности</translation>
 <translation id="2860184359326882502">Најбоље подударање</translation>
 <translation id="2865888419503095837">Информације о мрежи</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">Нису доступне информације о мрежи</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
+<translation id="3861651314799684201">Притисните Enter да бисте снимили цео екран</translation>
 <translation id="3886872229787704059">Отварано данас</translation>
 <translation id="3891340733213178823">Двапут притисните Ctrl+Shift+Q да бисте се одјавили.</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
@@ -813,6 +815,7 @@
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
+<translation id="5976112937189445008">Притисните Enter да бисте снимили прозор</translation>
 <translation id="5977415296283489383">Слушалице</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>
 <translation id="5980301590375426705">Затвори као гост</translation>
@@ -1199,6 +1202,7 @@
 <translation id="8364673525741149932">Укључите/искључите Журку на полици. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Слово унапред</translation>
 <translation id="8371991222807690464">Учинак периферног уређаја је можда ограничен у режиму госта</translation>
+<translation id="8374601332003098278">Притисните Enter да бисте снимили део екрана</translation>
 <translation id="8375916635258623388">Овај <ph name="DEVICE_NAME" /> и телефон ће се аутоматски повезати</translation>
 <translation id="8380784334203145311">Лаку ноћ,</translation>
 <translation id="8382715499079447151">Заштита од прегледа</translation>
@@ -1251,6 +1255,7 @@
 <translation id="8653151467777939995">Прегледајте подешавања обавештења. Обавештења су укључена</translation>
 <translation id="8660331759611631213">Квадратни корен броја 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Притисните Enter да бисте направили делимичан снимак екрана</translation>
 <translation id="8664753092453405566">Прегледајте листу мрежа. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Отворите <ph name="NAME" /> да бисте подесили уређај</translation>
 <translation id="8676770494376880701">Повезан је пуњач мале снаге</translation>
@@ -1292,6 +1297,7 @@
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google помоћник не говори овај језик.</translation>
+<translation id="8924458948354692166">Притисните Enter да бисте направили снимак екрана прозора</translation>
 <translation id="8926951137623668982">Полица је увек сакривена</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>

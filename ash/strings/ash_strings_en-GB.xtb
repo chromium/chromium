@@ -143,6 +143,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1749109475624620922">Window <ph name="WINDOW_TITLE" /> assigned to all desks</translation>
 <translation id="1750088060796401187">Only <ph name="MAX_DESK_LIMIT" /> desks allowed. Remove a desk to open a new one.</translation>
 <translation id="1756833229520115364">Couldn’t save template. Too many windows or tabs.</translation>
+<translation id="1757857692711134412">Off until sunset</translation>
 <translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1770726142253415363">Moved to row <ph name="ROW_NUMBER" />, column <ph name="COLUMN_NUMBER" />.</translation>
@@ -508,6 +509,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="40062176907008878">Handwriting</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
+<translation id="401993194061514265">Marker unavailable. Re-open Screencast.</translation>
 <translation id="4021716437419160885">Scroll down</translation>
 <translation id="4028481283645788203">Password required for more security</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +524,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">To unlock your Chromebook, make sure that your phone's Bluetooth is on</translation>
 <translation id="4129129681837227511">To see notifications on your lock screen, unlock to change the setting</translation>
+<translation id="4136724716305260864">On until sunrise</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4165275524535002941">Cable may not support displays</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
@@ -574,6 +577,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">volume</translation>
+<translation id="4435022394553622295">View your phone's notifications and apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Apps are sorted by name</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
@@ -634,6 +638,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use function keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="473775607612524610">Update</translation>
+<translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -701,6 +706,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 other notification}other{# other notifications}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="5208059991603368177">On</translation>
+<translation id="5216991270656129561">Off until <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
@@ -750,6 +756,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
+<translation id="5560420195677022218">View your phone's apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5571066253365925590">Bluetooth enabled</translation>
 <translation id="557563299383177668">Next paragraph</translation>
@@ -968,6 +975,7 @@ New install</translation>
 <translation id="6884665277231944629">Go back to today</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
+<translation id="6891721121089053234">View your phone's recent photos, media and apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
@@ -1096,6 +1104,7 @@ New install</translation>
 <translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Add new mobile network</translation>
+<translation id="7720400844887872976">On until <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TRY AGAIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}other{# notifications}}</translation>
 <translation id="7724603315864178912">Cut</translation>
@@ -1178,6 +1187,7 @@ New install</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> This setting is managed by your administrator.</translation>
 <translation id="8155628902202578800">Open info dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Using <ph name="LOCALE_NAME" /></translation>
+<translation id="8183592608247778598">View your phone's recent photos, media, notifications and apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Notifications are hidden.</translation>
 <translation id="8196787716797768628">Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.</translation>
 <translation id="8200772114523450471">Resume</translation>

@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Lejo identifikimin në Chromium</translation>
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
+<translation id="6625409903340039086">Chromium tani mbështet politikat e përdoruesit për llogarinë tënde të menaxhuar</translation>
 <translation id="6752854822223394465">Organizata jote po konfiguron Chromium...</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
 <translation id="7006920032187763988">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve" mund t'i përdorësh në aplikacione të tjera në iPad.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Hap Cilësimet &gt; Privatësia &gt; Kamera &gt; Chromium dhe aktivizo kamerën.</translation>
 <translation id="7746854981345936341">Këshillë për Chromium. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
+<translation id="7812317783196516890">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chromium.</translation>
 <translation id="786327964234957808">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chromium po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Fillo të përdorësh skanerin e Chromium</translation>
 <translation id="7928628054454574139">Hap gjithmonë Chromium kur troket te lidhjet në aplikacionet e tjera</translation>

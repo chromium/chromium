@@ -423,6 +423,7 @@
 <translation id="1415708812149920388">Pristup za čitanje privremene memorije je odbijen</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID dodatka „<ph name="EXTENSION_ID" />“) nije dozvoljen u ovom tipu sesije.</translation>
 <translation id="1418552618736477642">Obaveštenja i aplikacije</translation>
+<translation id="1418882096915998312">Registracija za preduzeća je u toku</translation>
 <translation id="1418954524306642206">Pregledajte da biste naveli PPD štampača</translation>
 <translation id="1420834118113404499">Licence za medije</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da biste omogućili uparivanje</translation>
@@ -3407,6 +3408,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4275830172053184480">Ponovno pokretanje uređaja</translation>
 <translation id="4277434192562187284">Izvor XML konfiguracije</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
+<translation id="4278498748067682896">Koristićete nadogradnju kioska ili uređaja za prijavljivanje koja dozvoljava uređaju da radi samo u režimu kioska ili prijavljivanja. Ako želite da se korisnici prijavljuju na uređaj, vratite se i registrujte pomoću nadogradnje na Chrome za preduzeća.</translation>
 <translation id="4279129444466079448">Na ovom uređaju možete da instalirate najviše <ph name="PROFILE_LIMIT" /> eSIM ppofila. Da biste dodali još jedan profil, uklonite postojeći.</translation>
 <translation id="4280325816108262082">Veza sa uređajem će se automatski isključiti kada se uređaj isključi ili se ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>

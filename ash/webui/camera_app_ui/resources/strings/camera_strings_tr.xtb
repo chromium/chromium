@@ -61,6 +61,7 @@
 <translation id="3411958449466169012">Zamanlayıcı kapalı</translation>
 <translation id="3448774564454087943">Video çok kısa olduğu için kaydedilmedi</translation>
 <translation id="346539236881580388">Tekrar çek</translation>
+<translation id="3511295087439225876">Mikrofonu kapatma düğmesi açık</translation>
 <translation id="3517926952904427380">Portre fotoğrafı çekilemiyor</translation>
 <translation id="3566302376254083266">Sol üste doğru hareket ediyor</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> dosyasını kaldırmak istediğinizden emin misiniz?</translation>
@@ -118,6 +119,7 @@
 Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fotoğraf veya video ekleyip sorunun ne olduğunu açıklayın. (Örneğin, fotoğraf çok karanlık veya özne net değil.)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="6527303717912515753">Paylaş</translation>
+<translation id="6617916774429601017">Tüm çözünürlükleri göster</translation>
 <translation id="6631515515009660915">Yansıtma kapalı</translation>
 <translation id="6652737148136672975">Köşe konumunu ok tuşlarıyla taşıyın</translation>
 <translation id="667999046851023355">Doküman</translation>
@@ -151,6 +153,7 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8145038249676204903">Fotoğraf çekme moduna geç</translation>
 <translation id="8167081290930651932">Fotoğraf olarak kaydet</translation>
+<translation id="8236532224592646488">Mikrofonu kapatma düğmesi kapalı</translation>
 <translation id="8239780215768881278">Video anlık görüntüsü yakala</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8425673304802773841">Yatır</translation>

@@ -424,6 +424,7 @@
 <translation id="1415708812149920388">ਕਲਿੱਪਬੋਰਡ ਪੜ੍ਹਨ ਦੀ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ਐਕਸਟੈਸ਼ਨ ID "<ph name="EXTENSION_ID" />") ਦੀ ਇਸ ਤਰਾਂ ਦੇ ਸੈਸ਼ਨ ਲਈ ਅਨੁਮਤੀ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1418552618736477642">ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ</translation>
+<translation id="1418882096915998312">Enterprise ਵਿੱਚ ਦਰਜ ਹੋਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਹੈ</translation>
 <translation id="1418954524306642206">ਆਪਣੀ ਪ੍ਰਿੰਟਰ PPD ਫ਼ਾਈਲ ਨੂੰ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
 <translation id="1420834118113404499">ਮੀਡੀਆ ਲਾਇਸੰਸ</translation>
 <translation id="1420920093772172268">ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -3423,6 +3424,7 @@
 <translation id="4275830172053184480">ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4277434192562187284">XML ਸੰਰੂਪਣ ਸਰੋਤ</translation>
 <translation id="4278390842282768270">ਆਗਿਆ ਦਿੱਤੀ</translation>
+<translation id="4278498748067682896">ਤੁਸੀਂ Kiosk &amp; Signage Upgrade ਦੀ ਵਰਤੋਂ ਕਰੋਗੇ ਜੋ ਡੀਵਾਈਸ ਨੂੰ ਸਿਰਫ਼ ਕਿਓਸਕ ਜਾਂ ਸਾਈਨੇਜ ਮੋਡ ਵਿੱਚ ਚਲਾਉਣ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ ਵਰਤੋਂਕਾਰ ਡੀਵਾਈਸ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਵਾਪਸ ਜਾਓ, Chrome Enterprise Upgrade ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਦਰਜ ਕਰੋ।</translation>
 <translation id="4279129444466079448">ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="PROFILE_LIMIT" /> ਤੱਕ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਸਥਾਪਤ ਕਰ ਸਕਦੇ ਹੋ। ਇੱਕ ਹੋਰ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਪਹਿਲਾਂ ਮੋਜੂਦਾ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="4280325816108262082">ਡੀਵਾਈਸ ਦੇ ਬੰਦ ਹੋਣ 'ਤੇ ਜਾਂ ਵਰਤੋਂ ਵਿੱਚ ਨਾ ਹੋਣ 'ਤੇ ਇਹ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="4281844954008187215">ਸੇਵਾ ਦੀਆਂ ਮਦਾਂ</translation>

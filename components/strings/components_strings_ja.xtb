@@ -1097,6 +1097,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> はブロックされています</translation>
 <translation id="3978338123949022456">検索モードです。クエリを入力して Enter キーを押すと、<ph name="KEYWORD_SUFFIX" /> で検索できます</translation>
 <translation id="398470910934384994">鳥</translation>
+<translation id="3985750352229496475">住所を管理...</translation>
 <translation id="3986705137476756801">今回のみ自動字幕起こしをオフにする</translation>
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
@@ -1219,6 +1220,7 @@
 <translation id="4305666528087210886">ファイルにアクセスできませんでした</translation>
 <translation id="4306529830550717874">住所を保存しますか？</translation>
 <translation id="4306812610847412719">クリップボード</translation>
+<translation id="4310070645992025887">ジャーニーを検索</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
 <translation id="4314815835985389558">同期の管理</translation>
@@ -2103,6 +2105,7 @@
 <translation id="6839929833149231406">地区</translation>
 <translation id="6846340164947227603">仮想カード番号を使用...</translation>
 <translation id="6852204201400771460">アプリを再読み込みしますか？</translation>
+<translation id="6857776781123259569">パスワードを管理...</translation>
 <translation id="686485648936420384">消費者資源</translation>
 <translation id="6865412394715372076">現在、このカードを確認できません</translation>
 <translation id="6869334554832814367">個人ローン</translation>
@@ -2429,6 +2432,7 @@
 <translation id="7669271284792375604">このサイトを利用すると、悪意のあるユーザーによって、閲覧時のエクスペリエンスを損なうプログラム（ホームページを改ざんする、アクセス先のサイトに追加の広告を表示するなどのプログラム）をインストールするよう誘導される可能性があります。</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{機密として指定されたデータに対する操作（ログイン以降 1 件）。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />}other{機密として指定されたデータに対する操作（ログイン以降 # 件）。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">用紙受け 6</translation>
+<translation id="7675325315208090829">お支払い方法を管理...</translation>
 <translation id="7676643023259824263">クリップボードにあるテキスト<ph name="TEXT" />を検索します</translation>
 <translation id="7679367271685653708">Chrome の設定で閲覧履歴を表示、管理します</translation>
 <translation id="7679947978757153706">野球</translation>

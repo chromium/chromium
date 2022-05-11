@@ -1101,6 +1101,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3978338123949022456">Søgetilstand, skriv en forespørgsel, og tryk på Enter for at søge på <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Fugle</translation>
+<translation id="3985750352229496475">Administrer adresser...</translation>
 <translation id="3986705137476756801">Deaktiver Livetekstning indtil videre</translation>
 <translation id="3987940399970879459">Mindre end 1 MB</translation>
 <translation id="3990250421422698716">Langsom offsetkørsel</translation>
@@ -1228,6 +1229,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4305666528087210886">Din fil kunne ikke tilgås</translation>
 <translation id="4306529830550717874">Vil du gemme adressen?</translation>
 <translation id="4306812610847412719">udklipsholder</translation>
+<translation id="4310070645992025887">Søg i dine søgeforløb</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloker (standardindstilling)</translation>
 <translation id="4314815835985389558">Administrer synkronisering</translation>
@@ -2112,6 +2114,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6839929833149231406">Område</translation>
 <translation id="6846340164947227603">Brug et virtuelt kortnummer...</translation>
 <translation id="6852204201400771460">Vil du genindlæse appen?</translation>
+<translation id="6857776781123259569">Administrer adgangskoder...</translation>
 <translation id="686485648936420384">Forbrugerressourcer</translation>
 <translation id="6865412394715372076">Dette kort kan ikke bekræftes lige nu</translation>
 <translation id="6869334554832814367">Privatlån</translation>
@@ -2438,6 +2441,7 @@ Yderligere oplysninger:
 <translation id="7669271284792375604">Hackere på dette website kan forsøge at narre dig til at installere programmer, der skader din browseroplevelse (f.eks. ved at ændre din startside eller vise flere annoncer på de websites, du besøger).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (1 handling siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}one{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (# handling siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}other{Handlinger, som er foretaget i forbindelse med data, der er rapporteret som fortrolige (# handlinger siden login). <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Postkasse 6</translation>
+<translation id="7675325315208090829">Administrer betalingsmetoder…</translation>
 <translation id="7676643023259824263">Søg efter tekst i udklipsholderen, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Se og administrer din browserhistorik i Chrome-indstillingerne</translation>
 <translation id="7679947978757153706">Baseball</translation>

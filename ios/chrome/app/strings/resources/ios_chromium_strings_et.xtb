@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
+<translation id="6625409903340039086">Chromium toetab nüüd hallatud konto puhul kasutajareegleid</translation>
 <translation id="6752854822223394465">Teie organisatsioon seadistab Chromiumi …</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="7006920032187763988">Saate paroolihaldurisse salvestatud paroole oma iPadi muudes rakendustes kasutada.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Avage menüü Seaded &gt; Privaatsus &gt; Kaamera &gt; Chromium ja lülitage kaamera sisse.</translation>
 <translation id="7746854981345936341">Chromiumi nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
+<translation id="7812317783196516890">Olete sisse logitud ja andmed sünkroonitakse kontoga, mida haldab <ph name="DOMAIN" />, kus selle administraator saab nüüd määrata konto kasutajareegleid, millega saab Chromiumi käitumist muuta.</translation>
 <translation id="786327964234957808">Vahetate sünkroonitavad kontod aadressilt <ph name="USER_EMAIL1" /> aadressile <ph name="USER_EMAIL2" />. Teie olemasolevaid Chromiumi andmeid haldab domeen <ph name="DOMAIN" />. Teie andmed kustutatakse sellest seadmest, kuid need jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="7928628054454574139">Kui muudes rakendustes linke puudutate, avaneb alati Chromium</translation>

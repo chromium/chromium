@@ -421,6 +421,7 @@
 <translation id="1415708812149920388">Leestoegang voor klembord geweigerd</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is niet toegestaan in dit type sessie.</translation>
 <translation id="1418552618736477642">Meldingen en apps</translation>
+<translation id="1418882096915998312">Enterprise-inschrijving in behandeling</translation>
 <translation id="1418954524306642206">Browsen om de PPD van je printer op te geven</translation>
 <translation id="1420834118113404499">Medialicenties</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> om te koppelen</translation>
@@ -3406,6 +3407,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4275830172053184480">Je apparaat opnieuw opstarten</translation>
 <translation id="4277434192562187284">XML-configuratiebron</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
+<translation id="4278498748067682896">Je gebruikt een upgrade voor kiosks en digitale borden waardoor het apparaat alleen de kioskmodus of modus voor digitale borden kan gebruiken. Als je wilt dat gebruikers kunnen inloggen op het apparaat, ga je terug en schrijf je het in via Chrome Enterprise Upgrade.</translation>
 <translation id="4279129444466079448">Je kunt maximaal <ph name="PROFILE_LIMIT" /> e-simkaartprofielen installeren op dit apparaat. Als je nog een profiel wilt toevoegen, verwijder je eerst een bestaand profiel.</translation>
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>

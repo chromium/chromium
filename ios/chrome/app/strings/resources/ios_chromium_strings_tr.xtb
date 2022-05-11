@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Chromium'da Oturum Açmaya İzin Ver</translation>
 <translation id="6337530241089703714">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
 <translation id="6424492062988593837">Chromium daha da iyi hale geldi! Yeni bir sürüm var.</translation>
+<translation id="6625409903340039086">Chromium artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="6752854822223394465">Kuruluşunuz, Chromium'u kuruyor...</translation>
 <translation id="6820823224820483452">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="7006920032187763988">Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPad'inizdeki diğer uygulamalarda kullanabilirsiniz.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Chromium'a gidin ve kamerayı açın.</translation>
 <translation id="7746854981345936341">Chromium için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
+<translation id="7812317783196516890">Oturumunuz açık ve verilerinizi <ph name="DOMAIN" /> tarafından yönetilen bir hesapla senkronize ediyorsunuz. Buradaki yönetici artık söz konusu hesaba özel kullanıcı politikaları belirleyebilir ve bunlar da Chromium'un davranışını değiştirebilir.</translation>
 <translation id="786327964234957808">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chromium verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>
 <translation id="7890287942691234100">Chromium tarayıcıyı kullanmaya başlayın</translation>
 <translation id="7928628054454574139">Diğer uygulamalardaki bağlantılara dokunduğunuzda Chromium açılır</translation>

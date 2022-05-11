@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1204296502688602597">DNS ਵਿਲੰਬਤਾ</translation>
 <translation id="123124571410524056">ਪੋਰਟਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
+<translation id="1236400083787698183">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕਰੋ। ਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਲਿਡ ਹੈ, ਤਾਂ ਲਿਡ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪਾਵਰਵਾਸ਼ ਦੇ ਪੂਰੇ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ। ਪਾਵਰਵਾਸ਼ ਨੂੰ ਪੂਰਾ ਹੋਣ ਵਿੱਚ ਇੱਕ ਮਿੰਟ ਤੱਕ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1238612778414822719">HTTPS ਵਿਲੰਬਤਾ</translation>
+<translation id="1240699967155581440">ਪਾਵਰਵਾਸ਼ (ਫੈਕਟਰੀ ਰੀਸੈੱਟ) ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="1264116747675686718">OS ਵਰਜਨ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1264369926465113395">ਰਚਨਾਕਾਰਾਂ ਲਈ Chromebook ਦਾ ਨਵਾਂ ਡਿਜੀਟਲ ਰਸਾਲਾ ਦੇਖੋ</translation>
 <translation id="1270369111467284986">ਕੈਪਟਿਵ ਪੋਰਟਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />ਅਯੋਗ ਹਿੱਸਿਆਂ<ph name="LINK_END" /> ਦਾ ਪਤਾ ਲੱਗਿਆ। ਜੇ ਤੁਸੀਂ ਇਸ ਗੱਲ ਦੀ ਤਸਦੀਕ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ ਕਿ ਇਸਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਇਹ ਹੁਣੇ ਕਰੋ।</translation>
 <translation id="2363636958541445404">ਸਕ੍ਰੀਨ-ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2364498172489649528">ਪਾਸ ਕੀਤਾ</translation>
+<translation id="236594517359128026">ਅੱਗੇ ਵਧਣ ਤੋਂ ਪਹਿਲਾਂ, ਆਪਣੇ ਲੈਪਟਾਪ ਨੂੰ ਪੱਧਰੀ ਸਤ੍ਹਾ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
 <translation id="2391082728065870591">ਵਿਚਾਰ ਸੰਬੰਧੀ ਰਿਪੋਰਟ ਭੇਜੋ</translation>
 <translation id="2407209115954268704">ਸਿਮ ਦੀ ਲਾਕ ਸਥਿਤੀ</translation>
@@ -267,6 +270,7 @@
 <translation id="3820172043799983114">ਅਵੈਧ ਪਿੰਨ।</translation>
 <translation id="3838338534323494292">ਨਵਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
+<translation id="385832974417157471">ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕਰੋ। ਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਲਿਡ ਹੈ, ਤਾਂ ਲਿਡ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪਾਵਰਵਾਸ਼ ਦੇ ਪੂਰੇ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ। ਪਾਵਰਵਾਸ਼ ਨੂੰ ਪੂਰਾ ਹੋਣ ਵਿੱਚ ਇੱਕ ਮਿੰਟ ਤੱਕ ਦਾ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3865414814144988605">ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="387301095347517405">ਤੁਹਾਡੀ ਬੈਟਰੀ ਵੱਲੋਂ ਚਾਰਜ ਹੋਣ ਦੇ ਚੱਕਰ ਨੂੰ ਪੂਰਾ ਕੀਤੇ ਜਾਣ ਦੀ ਗਿਣਤੀ</translation>
@@ -455,6 +459,7 @@
 <translation id="5507300744274596613">ਪੱਕਾ ਕਰੋ ਕਿ Chrome OS ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">ਕੰਪੋਨੈਂਟਾਂ ਨੂੰ ਕੈਲੀਬ੍ਰੇਟ ਕਰਨਾ</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ਮੁੜ-ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
@@ -708,6 +713,7 @@
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
 <translation id="8217675307824400706">ਕਨੈਕਟ ਹੋਵੋ</translation>
+<translation id="8221728673725659466">ਕੈਲੀਬਰੇਸ਼ਨ ਮੁਕੰਮਲ ਹੋਈ</translation>
 <translation id="8226628635270268143">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਫ਼ੋਟੋਆਂ ਅਤੇ ਐਲਬਮਾਂ ਚੁਣੋ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8246209727385807362">ਅਗਿਆਤ ਕੈਰੀਅਰ</translation>
@@ -719,6 +725,7 @@
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8302368968391049045">HTTPS ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="8318753676953949627">ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ</translation>
+<translation id="8327249300223641918">ਅੱਗੇ ਵਧਣ ਤੋਂ ਪਹਿਲਾਂ, ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸ ਨੂੰ (ਆਧਾਰ ਅਤੇ ਲਿਡ) ਪੱਧਰੀ ਸਤ੍ਹਾ 'ਤੇ ਰੱਖੋ।</translation>
 <translation id="8336739000755212683">ਡੀਵਾਈਸ ਦੇ ਖਾਤੇ ਦਾ ਚਿੱਤਰ ਬਦਲੋ</translation>
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
 <translation id="8352772353338965963">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਲਈ ਇੱਕ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ। ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤਿਆਂ ਤੱਕ ਬਿਨਾਂ ਕਿਸੇ ਪਾਸਵਰਡ ਦੇ ਪਹੁੰਚਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਇਸਲਈ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਸਿਰਫ਼ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਵਰਤੀ ਜਾਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
@@ -733,6 +740,7 @@
 <translation id="844521431886043384">DNS ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8456761643544401578">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="8461329675984532579">ਹੋਮ ਪ੍ਰਦਾਨਕ ਨਾਮ</translation>
+<translation id="8467104829907989997">ਕੰਪੋਨੈਂਟਾਂ ਨੂੰ ਕੈਲੀਬ੍ਰੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8475690821716466388">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP PSK ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
 <translation id="8477551185774834963">DNS ਵਿਲੰਬਤਾ ਇਜਾਜ਼ਤਯੋਗ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਥੋੜ੍ਹੀ ਜਿਹੀ ਉੱਤੇ ਹੈ</translation>
 <translation id="8483248364096924578">IP ਪਤਾ</translation>
@@ -792,6 +800,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ਸਕੈਨ ਕਰੋ}=1{{NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕਰੋ}other{{NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕਰੋ}}</translation>
 <translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
+<translation id="9025198690966128418">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਵਿੱਚ ਉੱਚ ਵਿਲੰਬਤਾ ਹੈ</translation>
 <translation id="9073281213608662541">PAP</translation>

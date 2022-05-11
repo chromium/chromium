@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">自動字幕起こしはオンになっています。</translation>
 <translation id="1720011244392820496">Wi-Fi 同期をオンにする</translation>
 <translation id="1736898441010944794">Bluetooth デバイスに「<ph name="NAME" />」が表示されます。</translation>
+<translation id="174102739345480129">マーカーはオフになっています。</translation>
 <translation id="1743570585616704562">認識されませんでした</translation>
 <translation id="1746730358044914197">入力方法は管理者によって設定されています。</translation>
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">タッチペン ツール</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
 <translation id="439598569299422042">一時停止中、<ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">スクリーンキャストを保存できません</translation>
 <translation id="4405151984121254935">接続されている周辺機器のタイプはサポートされていません</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> はオフになっています。</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />、
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">次の文</translation>
+<translation id="5016558321564993266">マーカーを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">時間切れです</translation>
 <translation id="5033299697334913360">全画面をキャプチャするには任意の場所をクリックしてください</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
+<translation id="5245201184978705914">文字起こしを生成できません</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています、電池残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">デスク 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">音声入力</translation>
 <translation id="544691375626129091">該当するすべてのユーザーをこのセッションに追加済みです。</translation>
 <translation id="54609108002486618">管理対象</translation>
+<translation id="5460938382730614333">マーカーはオンになっています。</translation>
 <translation id="5465662442746197494">不明点がある場合</translation>
 <translation id="547979256943495781">シェルフは右側にあります</translation>
 <translation id="5491186829646618080">利用可能なファームウェアのアップデートがあります</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="5750765938512549687">Bluetooth はオフです</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> を接続</translation>
+<translation id="5762420912707163638">マーカーを切り替えます。<ph name="STATE_TEXT" />トラックパッド、タッチスクリーン、またはタッチペンを使用して画面に描画できます。</translation>
 <translation id="576341972084747908">危険な <ph name="FILENAME" /> をダウンロードしています</translation>
 <translation id="5763928712329149804">シェルフ グループはオフです。</translation>
 <translation id="576453121877257266">夜間モードはオンです。</translation>

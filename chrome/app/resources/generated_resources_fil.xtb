@@ -424,6 +424,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1415708812149920388">Tinanggihan ang read access sa clipboard</translation>
 <translation id="1415990189994829608">Ang <ph name="EXTENSION_NAME" /> (extension ID "<ph name="EXTENSION_ID" />") ay hindi pinapayagan sa ganitong uri ng session.</translation>
 <translation id="1418552618736477642">Mga notification at app</translation>
+<translation id="1418882096915998312">Kasalukuyang nag-e-enroll sa Enterprise</translation>
 <translation id="1418954524306642206">Mag-browse para matukoy ang PPD ng iyong printer</translation>
 <translation id="1420834118113404499">Mga lisensya ng media</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> upang payagan ang pagpapares</translation>
@@ -3424,6 +3425,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4277434192562187284">Source ng XML configuration</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
+<translation id="4278498748067682896">Gagamit ka ng Pag-upgrade sa Kiosk at Signage na nagbibigay-daan lang sa device na tumakbo sa kiosk o signage mode. Kung gusto mong mag-sign in sa device ang mga user, bumalik at mag-enroll gamit ang Chrome Enterprise Upgrade.</translation>
 <translation id="4279129444466079448">Puwede kang mag-install nang hanggang <ph name="PROFILE_LIMIT" /> (na) profile ng eSIM sa device na ito. Para magdagdag ng isa pang profile, mag-alis muna ng dati nang profile.</translation>
 <translation id="4280325816108262082">Awtomatikong madidiskonekta ang device kapag na-off ito o hindi ito ginagamit</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>

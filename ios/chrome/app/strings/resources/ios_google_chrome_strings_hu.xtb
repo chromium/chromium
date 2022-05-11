@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">A Chrome ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
+<translation id="1511320244449497906">Ön a(z) <ph name="DOMAIN" /> által felügyelt fiókba van bejelentkezve, és szinkronizálja vele az adatait. Ennek a domainnek a rendszergazdája mostantól beállíthat olyan felhasználói házirendeket erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
 <translation id="1682483655351012182">Chrome-adatok szinkronizálása</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Küldjön használati statisztikákat és hibajelentéseket a Google-nak, így segíthet a Chrome fejlesztésében</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Annak érdekében, hogy a legtöbbet hozhassa ki a Chrome-ból, jelentkezzen be Google-fiókjával a Chrome-ba.</translation>
 <translation id="7855730255114109580">A Google Chrome naprakész</translation>
 <translation id="8022947259858476807">A Chrome-ot alapértelmezett böngészőként használva linkek nyithatók meg, modulokban lehet keresni, és jelszavak tölthetők be automatikusan az egyéb alkalmazásokban</translation>
+<translation id="81358522153858150">A Chrome mostantól támogatja a felhasználói házirendeket az Ön felügyelt fiókjánál</translation>
 <translation id="8160472928944011082">Nem lehet frissíteni a Chrome-ot</translation>
 <translation id="8263079278049777200">Jelentkezzen be erre a webhelyre, a Google-fiókjába és a Chrome-ba. A szinkronizálást később is bekapcsolhatja.</translation>
 <translation id="8357607116237445042">Döntse el, hogy törli-e a Chrome adatait erről az eszközről, vagy megtartja őket.</translation>

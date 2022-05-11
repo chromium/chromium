@@ -974,6 +974,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1892341345406963517">Olá, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Encerramento</translation>
+<translation id="1897120393475391208">Use uma senha forte</translation>
 <translation id="1900305421498694955">Os apps do Google Play podem exigir acesso total ao sistema de arquivos para a leitura e a gravação de arquivos em dispositivos de armazenamento externo. Os arquivos e pastas criados no dispositivo ficam visíveis para qualquer pessoa que use o drive externo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Selecionar &amp;tudo</translation>
 <translation id="1901396183631570154">Não foi possível salvar estas senhas na sua Conta do Google. Você ainda pode salvá-las no dispositivo.</translation>
@@ -2332,6 +2333,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Senha salva</translation>
 <translation id="3192947282887913208">Arquivos de áudio</translation>
+<translation id="3193695589337931419">Utilitários de sinais do sistema</translation>
 <translation id="3194786596445804250">Mostrar detalhes sobre bloquear cookies de terceiros</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do mouse ou tocar na tela e mantê-la pressionada, informações relacionadas à seleção de texto são exibidas</translation>
 <translation id="3199127022143353223">Servidores</translation>
@@ -6568,6 +6570,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7444970023873202833">Veja mais recordações no Google Fotos</translation>
 <translation id="7444983668544353857">Desativar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instalar apps automaticamente</translation>
+<translation id="7449381494541372002">Iniciando…</translation>
 <translation id="7449752890690775568">Remover a senha?</translation>
 <translation id="7450761244949417357">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7452166281927983300">Avisos dispensados (<ph name="MUTED_PASSWORDS" />)</translation>

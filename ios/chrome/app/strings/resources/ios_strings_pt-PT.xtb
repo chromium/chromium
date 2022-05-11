@@ -190,6 +190,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
 <translation id="2691653761409724435">Não disponível offline</translation>
 <translation id="2695507686909505111">Página traduzida</translation>
+<translation id="2697526135132990015">Terminar sessão e limpar dados</translation>
 <translation id="2700241355396984822">Opções para definir autorizações</translation>
 <translation id="2702801445560668637">Lista de leitura</translation>
 <translation id="2704491540504985681">Transferências</translation>
@@ -364,6 +365,7 @@ Siga os passos abaixo:</translation>
 <translation id="4121993058175073134">P/enviar dados exp. da Int., config. a conta de email na ap. Definiç.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
 <translation id="4133265950310064865">Proteção melhorada</translation>
+<translation id="4148023517926189160">Este Website quer transferir um ficheiro e adicioná-lo ao seu calendário.</translation>
 <translation id="4152011295694446843">Os seus marcadores serão apresentados aqui</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versão offline num novo separador</translation>
@@ -450,6 +452,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4840495572919996524">Os seus marcadores, o histórico, as palavras-passe, entre outros, deixam de ser sincronizados com a sua Conta Google.</translation>
 <translation id="4844899002472726590">Veja e edite tópicos nos quais tem interesse</translation>
 <translation id="4854345657858711387">Definir um código secreto</translation>
+<translation id="4858786880085262208">Sempre que possível, atualize para HTTPS. Os sites seguros podem incorporar conteúdo que não é seguro.</translation>
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4872323082491632254">Verifique palavras-passe</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -691,6 +694,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6760509555861141183">Volte ao separador Recentes</translation>
 <translation id="6762812039470893796">Desmarcar tudo</translation>
 <translation id="6780034285637185932">Código postal</translation>
+<translation id="6781260999953472352">Ativar a sincronização?</translation>
 <translation id="6785453220513215166">A enviar relatório de falha...</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
 <translation id="6801927553864092214">Para navegar em privado, abra um separador de navegação anónima</translation>
@@ -798,10 +802,12 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7781069478569868053">Página Novo separador</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="778855399387580014">Inicie uma pesquisa no novo separador do Chrome.</translation>
+<translation id="7790892308048519147">Tentar usar ligações seguras</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>
 <translation id="7839985698273989086">Página offline</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
+<translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>

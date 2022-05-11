@@ -1101,6 +1101,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloqué</translation>
 <translation id="3978338123949022456">Mode Recherche ; saisissez une requête et appuyez sur Entrée pour effectuer une recherche avec "<ph name="KEYWORD_SUFFIX" />"</translation>
 <translation id="398470910934384994">Oiseaux</translation>
+<translation id="3985750352229496475">Gérer les adresses…</translation>
 <translation id="3986705137476756801">Désactiver les sous-titres instantanés pour le moment</translation>
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
@@ -1228,6 +1229,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
 <translation id="4306529830550717874">Enregistrer l'adresse ?</translation>
 <translation id="4306812610847412719">presse-papiers</translation>
+<translation id="4310070645992025887">Effectuer une recherche parmi vos parcours</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
@@ -2112,6 +2114,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6839929833149231406">Zone</translation>
 <translation id="6846340164947227603">Utiliser un numéro de carte virtuelle…</translation>
 <translation id="6852204201400771460">Actualiser l'application ?</translation>
+<translation id="6857776781123259569">Gérer les mots de passe…</translation>
 <translation id="686485648936420384">Ressources pour les consommateurs</translation>
 <translation id="6865412394715372076">Impossible de valider cette carte pour le moment</translation>
 <translation id="6869334554832814367">Prêts personnels</translation>
@@ -2439,6 +2442,7 @@ Informations supplémentaires :
 <translation id="7669271284792375604">Des individus malveillants à l'œuvre sur ce site pourraient vous inciter à installer des programmes qui nuisent à votre confort de navigation (par exemple, en changeant votre page d'accueil ou en affichant des annonces supplémentaires sur les sites que vous consultez.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions effectuées sur des données signalées comme confidentielles (1 action depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}one{Actions effectuées sur des données signalées comme confidentielles (# action depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}other{Actions effectuées sur des données signalées comme confidentielles (# actions depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Boîte aux lettres 6</translation>
+<translation id="7675325315208090829">Gérer les modes de paiement…</translation>
 <translation id="7676643023259824263">Rechercher le texte du presse-papier "<ph name="TEXT" />"</translation>
 <translation id="7679367271685653708">Affichez et gérez votre historique de navigation dans les paramètres Chrome</translation>
 <translation id="7679947978757153706">Base-ball</translation>

@@ -1100,6 +1100,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> on blokeeritud</translation>
 <translation id="3978338123949022456">Otsingurežiim. Sisestage päring ja vajutage sisestusklahvi, et otsida teenuses <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Linnud</translation>
+<translation id="3985750352229496475">Aadresside haldamine …</translation>
 <translation id="3986705137476756801">Reaalajas subtiitrite praeguseks väljalülitamine</translation>
 <translation id="3987940399970879459">Alla 1 MB</translation>
 <translation id="3990250421422698716">Astme nihe</translation>
@@ -1227,6 +1228,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4305666528087210886">Teie failile ei pääsetud juurde</translation>
 <translation id="4306529830550717874">Kas salvestada aadress?</translation>
 <translation id="4306812610847412719">lõikelaud</translation>
+<translation id="4310070645992025887">Otsige teekondadest</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokeeri (vaikimisi)</translation>
 <translation id="4314815835985389558">Sünkroonimise haldamine</translation>
@@ -2111,6 +2113,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6839929833149231406">Ala</translation>
 <translation id="6846340164947227603">Kasuta virtuaalkaardi numbrit …</translation>
 <translation id="6852204201400771460">Kas soovite rakenduse uuesti laadida?</translation>
+<translation id="6857776781123259569">Paroolide haldamine …</translation>
 <translation id="686485648936420384">Tarbijatele mõeldud teabeallikad</translation>
 <translation id="6865412394715372076">Seda kaarti ei saa praegu kinnitada</translation>
 <translation id="6869334554832814367">Eraisikulaenud</translation>
@@ -2437,6 +2440,7 @@ Lisateave:
 <translation id="7669271284792375604">Sellel saidil asuvad ründajad võivad proovida meelitada teid installima programme, mis kahjustavad sirvimiskogemust (nt muudavad avalehte või kuvavad külastatavatel saitidel lisareklaame).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Andmetega seotud tegevused märgitakse konfidentsiaalseks (alates sisselogimisest on toimunud 1 toiming). <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" />}other{Andmetega seotud tegevused märgitakse konfidentsiaalseks (alates sisselogimisest on toimunud # toimingut). <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Postkast 6</translation>
+<translation id="7675325315208090829">Makseviiside haldamine …</translation>
 <translation id="7676643023259824263">Lõikelaua teksti otsimine, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Vaadake ja hallake Chrome'i seadetes oma sirvimisajalugu</translation>
 <translation id="7679947978757153706">Pesapall</translation>

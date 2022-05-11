@@ -136,6 +136,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
 <translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
+<translation id="174102739345480129">Marķieris ir izslēgts.</translation>
 <translation id="1743570585616704562">Nav atpazīts</translation>
 <translation id="1746730358044914197">Administrators konfigurē ievades metodes.</translation>
 <translation id="1747827819627189109">Ekrāna tastatūra iespējota</translation>
@@ -564,6 +565,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4379531060876907730">Šie ir jūsu skārienekrāna pildspalvas rīki</translation>
 <translation id="4389184120735010762">Jūs nospiedāt dokotās lupas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
 <translation id="439598569299422042">Apturēta, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Nevar saglabāt ekrānierakstu</translation>
 <translation id="4405151984121254935">Pievienotās perifērās ierīces veids netiek atbalstīts.</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
@@ -670,6 +672,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Nākamais teikums</translation>
+<translation id="5016558321564993266">Pārslēdziet marķieri. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Izmantošanas laiks beidzies</translation>
 <translation id="5033299697334913360">Noklikšķiniet jebkurā vietā, lai tvertu visu ekrānu.</translation>
 <translation id="5035236842988137213">Ierīce <ph name="DEVICE_NAME" /> ir savienota ar jaunu tālruni</translation>
@@ -699,6 +702,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
+<translation id="5245201184978705914">Nevar ģenerēt transkripciju.</translation>
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">4. galds</translation>
 <translation id="5283099933536931082">Lietotne <ph name="APP_ITEM_TITLE" /> aicina pievērst tai uzmanību.</translation>
@@ -733,6 +737,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5433020815079095860">Audio ievade</translation>
 <translation id="544691375626129091">Visi pieejamie lietotāji jau ir pievienoti šai sesijai.</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
+<translation id="5460938382730614333">Marķieris ir ieslēgts.</translation>
 <translation id="5465662442746197494">Vai nepieciešama palīdzība?</translation>
 <translation id="547979256943495781">Plaukts tiek rādīts labajā pusē</translation>
 <translation id="5491186829646618080">Pieejami aparātprogrammatūras atjauninājumi</translation>
@@ -774,6 +779,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5745612484876805746">Nakts režīms tiek automātiski ieslēgts saulrietā.</translation>
 <translation id="5750765938512549687">Bluetooth ir izslēgts</translation>
 <translation id="5760866832697883462">Savienojuma izveide ar ierīci (<ph name="NAME" />)</translation>
+<translation id="5762420912707163638">Pārslēdziet marķieri. <ph name="STATE_TEXT" /> Izmantojiet skārienpaliktni, skārienekrānu vai skārienekrāna pildspalvu, lai zīmētu ekrānā.</translation>
 <translation id="576341972084747908">Notiek bīstama faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="5763928712329149804">Režīms Shelf Party ir izslēgts.</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>

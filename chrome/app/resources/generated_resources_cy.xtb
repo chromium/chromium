@@ -427,6 +427,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1415708812149920388">Gwrthodwyd mynediad darllen y clipfwrdd</translation>
 <translation id="1415990189994829608">Ni chaniateir <ph name="EXTENSION_NAME" /> (rhif adnabod yr estyniad "<ph name="EXTENSION_ID" />") yn y math hwn o sesiwn.</translation>
 <translation id="1418552618736477642">Hysbysiadau ac apiau</translation>
+<translation id="1418882096915998312">Wrthi'n cofrestru i Enterprise</translation>
 <translation id="1418954524306642206">Porwch i nodi PPD eich argraffydd</translation>
 <translation id="1420834118113404499">Trwyddedau cyfryngau</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> i ganiatáu paru</translation>
@@ -3426,6 +3427,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4275830172053184480">Ailgychwynnwch eich dyfais</translation>
 <translation id="4277434192562187284">Ffynhonnell ffurfweddiad XML</translation>
 <translation id="4278390842282768270">Caniateir</translation>
+<translation id="4278498748067682896">Byddwch yn defnyddio Uwchraddiad Ciosg ac Arwyddion sydd ond yn caniatáu i'r ddyfais redeg yn y modd ciosg neu arwyddion. Os hoffech i ddefnyddwyr fewngofnodi i'r ddyfais, ewch yn ôl a chofrestrwch gan ddefnyddio Uwchraddiad Chrome Enterprise.</translation>
 <translation id="4279129444466079448">Gallwch osod hyd at <ph name="PROFILE_LIMIT" /> o broffiliau eSIM ar y ddyfais hon. I ychwanegu proffil arall, tynnwch broffil sydd eisoes yn bodoli'n gyntaf.</translation>
 <translation id="4280325816108262082">Bydd y ddyfais yn datgysylltu'n awtomatig pan fydd wedi'i diffodd neu pan nad yw'n cael ei defnyddio</translation>
 <translation id="4281844954008187215">Telerau Gwasanaeth</translation>

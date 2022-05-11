@@ -424,6 +424,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1415708812149920388">Ukufinyelela ukufunda kubhodi lokunamathisela kunqatshelwe</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (I-ID yesandiso se-"<ph name="EXTENSION_ID" />") ayivunyelwe kule nhlobo yeseshini.</translation>
 <translation id="1418552618736477642">Izaziso nama-app</translation>
+<translation id="1418882096915998312">Ukubhaliswa kwe-Enterprise kuyaqhubeka</translation>
 <translation id="1418954524306642206">Phequlula ukuze ucacise i-PPD yephrinta yakho</translation>
 <translation id="1420834118113404499">Amalayisense abezindaba</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> ukuze uvumele ukumatanisa</translation>
@@ -3423,6 +3424,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4275830172053184480">Qalisa kabusha idivayisi yakho</translation>
 <translation id="4277434192562187284">Umthombo wokulungiselelwa kwe-XML</translation>
 <translation id="4278390842282768270">Kuvunyelwe</translation>
+<translation id="4278498748067682896">Uzosebenzisa i-Kiosk ne-Signage Upgrade evumela kuphela idivayisi ukuthi isebenze kukhiyoski noma kumodi yezimpawu. Uma ungathanda ukuthi abasebenzisi bangene ngemvume kudivayisi, sicela ubuyele emuva bese ubhalisa usebenzisa i-Chrome Enterprise Upgrade.</translation>
 <translation id="4279129444466079448">Ungafaka amaphrofayela we-eSIM afika kwangu-<ph name="PROFILE_LIMIT" /> kule divayisi. Ukwengeza elinye iphrofayela, susa kuqala iphrofayela elikhona kakade.</translation>
 <translation id="4280325816108262082">Idivayisi izonqamuka ngokuzenzakalela uma ivaliwe noma ingasetshenziswa</translation>
 <translation id="4281844954008187215">Imigomo yesevisi</translation>

@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Chromium-bejelentkezés engedélyezése</translation>
 <translation id="6337530241089703714">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket</translation>
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
+<translation id="6625409903340039086">A Chromium mostantól támogatja a felhasználói házirendeket az Ön felügyelt fiókjánál</translation>
 <translation id="6752854822223394465">A szervezete beállítja a Chromiumot…</translation>
 <translation id="6820823224820483452">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="7006920032187763988">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Nyissa meg a Beállítások &gt; Adatvédelem &gt; Kamera &gt; Chromium elemet, és kapcsolja be a kamerát.</translation>
 <translation id="7746854981345936341">Tipp a Chromium használatához. Egyes gombok (például a Vissza, az Előre vagy a Keresés) mostantól a képernyő alján jelennek meg.</translation>
 <translation id="7763454117143368771">A Chromiumot alapértelmezett böngészőként beállítva biztosíthatja a veszélyes webhelyekkel szembeni védelmét, és gondoskodhat jelszavai biztonságáról is.</translation>
+<translation id="7812317783196516890">Ön a(z) <ph name="DOMAIN" /> által felügyelt fiókba van bejelentkezve, és szinkronizálja vele az adatait. Ennek a domainnek a rendszergazdája mostantól beállíthat olyan felhasználói házirendeket erre a fiókra vonatkozóan, amelyek módosíthatják a Chromium viselkedését.</translation>
 <translation id="786327964234957808">A(z) <ph name="USER_EMAIL1" /> szinkronizált fiókról a következőre vált át: <ph name="USER_EMAIL2" />. A meglévő Chromium-adatokat a(z) <ph name="DOMAIN" /> kezeli. Ezzel törli az adatait erről az eszközről, viszont azok továbbra is megmaradnak a(z) <ph name="USER_EMAIL1" /> fiókban.</translation>
 <translation id="7890287942691234100">Használja a Chromium szkennerét</translation>
 <translation id="7928628054454574139">A Chromium megnyitása mindig, amikor más alkalmazásokban lévő linkekre koppint</translation>

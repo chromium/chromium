@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Videobeállítások</translation>
 <translation id="2144806332417375165">Egyedi videóparaméterek</translation>
 <translation id="2175927920773552910">QR-kód</translation>
+<translation id="2244252133441425811">FPS-választó engedélyezése a videóknál</translation>
 <translation id="2271433936731426666">Teljes méretű videó-pillanatkép engedélyezése</translation>
 <translation id="229579744168541441">Exportálás lemezre</translation>
 <translation id="2320741269052147773">Pásztázás balra</translation>
@@ -61,6 +62,7 @@
 <translation id="3411958449466169012">Időzítés ki</translation>
 <translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
 <translation id="346539236881580388">Új kép készítése</translation>
+<translation id="3511295087439225876">Némítás gomb bekapcsolva</translation>
 <translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
 <translation id="3566302376254083266">Mozgatás a bal felső sarok irányába</translation>
 <translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
@@ -152,6 +154,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8145038249676204903">Váltás fotókészítésre</translation>
 <translation id="8167081290930651932">Mentés fotóként</translation>
+<translation id="8236532224592646488">Némítás gomb kikapcsolva</translation>
 <translation id="8239780215768881278">Pillanatkép készítése a videóból</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8425673304802773841">Billentés lefelé</translation>

@@ -190,6 +190,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2690858294534178585">Kaamera on kasutusel</translation>
 <translation id="2691653761409724435">Pole võrguühenduseta saadaval</translation>
 <translation id="2695507686909505111">Leht tõlgitud</translation>
+<translation id="2697526135132990015">Logi välja ja kustuta andmed</translation>
 <translation id="2700241355396984822">Lubade määramise valikud</translation>
 <translation id="2702801445560668637">Lugemisloend</translation>
 <translation id="2704491540504985681">Allalaadimised</translation>
@@ -364,6 +365,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="4121993058175073134">Netiekspordi andmete saatmiseks seadistage meilikonto rakenduses Seaded.</translation>
 <translation id="4124987746317609294">Ajavahemik</translation>
 <translation id="4133265950310064865">Täiustatud kaitse</translation>
+<translation id="4148023517926189160">See veebisait soovib faili alla laadida ja lisada selle teie kalendrisse.</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
 <translation id="4172051516777682613">Kuva alati</translation>
 <translation id="418156467088430727">Kuva uuel vahelehel võrguühenduseta versioon</translation>
@@ -692,6 +694,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6760509555861141183">Naaske eelmisele vahelehele</translation>
 <translation id="6762812039470893796">Tühista kõik valikud</translation>
 <translation id="6780034285637185932">Sihtnumber</translation>
+<translation id="6781260999953472352">Kas lülitada sünkroonimine sisse?</translation>
 <translation id="6785453220513215166">Krahhiaruande saatmine ...</translation>
 <translation id="6797885426782475225">Häälotsing</translation>
 <translation id="6801927553864092214">Privaatselt sirvimiseks avage inkognito vaheleht</translation>
@@ -804,6 +807,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7807060072011926525">Pakub Google</translation>
 <translation id="7839985698273989086">Võrguühenduseta leht</translation>
 <translation id="7840771868269352570">Teie valitud üksused eemaldatakse.</translation>
+<translation id="784551991304901159">Sisu nägemiseks tehke menüüs valik Lülita sisse</translation>
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7856733331829174190">Ei saanud alla laadida</translation>
 <translation id="7859704718976024901">Sirvimisajalugu</translation>

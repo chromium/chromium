@@ -957,6 +957,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1892341345406963517">Hola, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1895658205118569222">Cierre</translation>
+<translation id="1897120393475391208">Usar una contraseña segura</translation>
 <translation id="1900305421498694955">Es posible que las apps de Google Play necesiten acceder a todo el sistema de archivos para leer y escribir archivos en dispositivos externos de almacenamiento. Cualquier persona que use la unidad externa podrá ver los archivos y carpetas creados en este dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1901396183631570154">Chrome no pudo guardar estas contraseñas en tu Cuenta de Google. De todos modos puedes guardarlas en este dispositivo.</translation>
@@ -6542,6 +6543,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7444970023873202833">Explora más recuerdos en Google Fotos</translation>
 <translation id="7444983668544353857">Inhabilitar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instala apps automáticamente</translation>
+<translation id="7449381494541372002">Iniciando…</translation>
 <translation id="7449752890690775568">¿Quieres quitar la contraseña?</translation>
 <translation id="7450761244949417357">Se está abriendo en <ph name="ALTERNATIVE_BROWSER_NAME" /> en este momento</translation>
 <translation id="7452166281927983300">Advertencias descartadas (<ph name="MUTED_PASSWORDS" />)</translation>

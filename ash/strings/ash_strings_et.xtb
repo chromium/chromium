@@ -136,6 +136,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1719094688023114093">Reaalajas subtiitrid on sisse lülitatud.</translation>
 <translation id="1720011244392820496">Lülitage WiFi sünkroonimine sisse</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ on Bluetooth-seadmetele nähtav.</translation>
+<translation id="174102739345480129">Marker on välja lülitatud.</translation>
 <translation id="1743570585616704562">Ei tuvastatud</translation>
 <translation id="1746730358044914197">Sisestusmeetodid seadistab teie administraator.</translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
@@ -303,6 +304,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2834813915651407382">Hiljuti avatud</translation>
 <translation id="2841907151129139818">Lülitati tahvelarvutirežiimile</translation>
 <translation id="2844169650293029770">C-tüüpi USB-seade (eesmine vasakpoolne port)</translation>
+<translation id="2848120746144143659">Vajutage täisekraani jäädvustamiseks sisestusklahvi</translation>
 <translation id="2849936225196189499">Kriitiline</translation>
 <translation id="2860184359326882502">Parim vaste</translation>
 <translation id="2865888419503095837">Võrguteave</translation>
@@ -482,6 +484,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3846575436967432996">Võrguteave ei ole saadaval</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="385300504083504382">Algus</translation>
+<translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -565,6 +568,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4379531060876907730">Need on teie elektronpliiatsi tööriistad</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
 <translation id="439598569299422042">Pausil, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Ei saa ekraaniülekannet salvestada</translation>
 <translation id="4405151984121254935">Ühendatud välisseadme tüüpi ei toetata</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
@@ -671,6 +675,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
+<translation id="5016558321564993266">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Aeg on läbi</translation>
 <translation id="5033299697334913360">Täisekraani jäädvustamiseks klõpsake ekraanikuval kus tahes</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ühendati uue telefoniga</translation>
@@ -700,6 +705,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
+<translation id="5245201184978705914">Ei saa transkriptsiooni luua</translation>
 <translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vajab teie tähelepanu.</translation>
@@ -734,6 +740,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5433020815079095860">Helisisend</translation>
 <translation id="544691375626129091">Kõik saadaval kasutajad on sellesse seanssi juba lisatud.</translation>
 <translation id="54609108002486618">Hallatud</translation>
+<translation id="5460938382730614333">Marker on sisse lülitatud.</translation>
 <translation id="5465662442746197494">Kas vajate abi?</translation>
 <translation id="547979256943495781">Riiul asub paremal</translation>
 <translation id="5491186829646618080">Saadaval on püsivaravärskendused</translation>
@@ -775,6 +782,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5745612484876805746">Öövalgus lülitub päikeseloojangul automaatselt sisse</translation>
 <translation id="5750765938512549687">Bluetooth on välja lülitatud</translation>
 <translation id="5760866832697883462">Ühendage oma <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /> Kasutage ekraanikuvale joonistamiseks puuteplaati, puuteekraani või elektronpliiatsit.</translation>
 <translation id="576341972084747908">Ohtliku faili <ph name="FILENAME" /> allalaadimine</translation>
 <translation id="5763928712329149804">Shelf Party on välja lülitatud.</translation>
 <translation id="576453121877257266">Öövalgus on sees.</translation>
@@ -808,6 +816,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
 <translation id="5955304353782037793">rak</translation>
 <translation id="5958529069007801266">Valvatav kasutaja</translation>
+<translation id="5976112937189445008">Vajutage akna salvestamiseks sisestusklahvi</translation>
 <translation id="5977415296283489383">Kõrvaklapid</translation>
 <translation id="5978382165065462689">Ekraani juhtimise jagamine kaugabi kaudu.</translation>
 <translation id="5980301590375426705">Välju kül. seansist</translation>
@@ -1194,6 +1203,7 @@ Uus installimine</translation>
 <translation id="8364673525741149932">Režiimi Shelf Party sisse- ja väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>
 <translation id="8371991222807690464">Välisseadme jõudlus võib külalisrežiimis olla piiratud</translation>
+<translation id="8374601332003098278">Vajutage osalise ekraanikuva salvestamiseks sisestusklahvi</translation>
 <translation id="8375916635258623388">See <ph name="DEVICE_NAME" /> ja teie telefon ühendatakse automaatselt</translation>
 <translation id="8380784334203145311">Head ööd!</translation>
 <translation id="8382715499079447151">Vaatamiskaitse</translation>
@@ -1246,6 +1256,7 @@ Uus installimine</translation>
 <translation id="8653151467777939995">Kuvab märguandeseaded. Märguanded on sisse lülitatud</translation>
 <translation id="8660331759611631213">Ruutjuur 71-st</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Vajutage osalise ekraanipildi jäädvustamiseks sisestusklahvi</translation>
 <translation id="8664753092453405566">Kuvab võrkude loendi. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Avage <ph name="NAME" />, et oma seade seadistada</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
@@ -1287,6 +1298,7 @@ Uus installimine</translation>
 <translation id="8909138438987180327">Aku laetuse tase on <ph name="PERCENTAGE" /> protsenti.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google'i assistent ei räägi selles keeles.</translation>
+<translation id="8924458948354692166">Vajutage akna ekraanipildi jäädvustamiseks sisestusklahvi</translation>
 <translation id="8926951137623668982">Riiul on alati peidetud</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>

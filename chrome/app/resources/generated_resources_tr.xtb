@@ -421,6 +421,7 @@
 <translation id="1415708812149920388">Pano okuma erişimi reddedildi</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (uzantı kimliği: "<ph name="EXTENSION_ID" />") bu tür bir oturum için izinli değil.</translation>
 <translation id="1418552618736477642">Bildirimler ve uygulamalar</translation>
+<translation id="1418882096915998312">Kurumsal kayıt devam ediyor</translation>
 <translation id="1418954524306642206">Yazıcı PPD'nizi belirtmek için göz atın</translation>
 <translation id="1420834118113404499">Medya lisansları</translation>
 <translation id="1420920093772172268">Eşlemeye izin vermek için <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -960,6 +961,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1892341345406963517">Merhaba <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Diğer diller</translation>
 <translation id="1895658205118569222">Kapat</translation>
+<translation id="1897120393475391208">Güçlü şifre kullan</translation>
 <translation id="1900305421498694955">Google Play uygulamaları, harici depolama cihazlarında bulunan dosyaları ve klasörleri okuyup yazmak için tam dosya sistemi erişim izni gerektirebilir. Cihazda oluşturulan dosyalar ve klasörler, harici sürücüyü kullanan herkes tarafından görülebilir. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Tümünü &amp;seç</translation>
 <translation id="1901396183631570154">Chrome bu şifreleri Google Hesabınıza kaydedemedi. Yine de bu cihaza kaydedebilirsiniz.</translation>
@@ -3404,6 +3406,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4275830172053184480">Cihazınızı yeniden başlatın</translation>
 <translation id="4277434192562187284">XML yapılandırma kaynağı</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
+<translation id="4278498748067682896">Cihazın yalnızca kiosk veya tabela modunda çalışmasına izin veren Kiosk ve Tabela Güncellemesi'ni kullanacaksınız. Kullanıcıların cihazda oturum açmasını istiyorsanız lütfen geri dönüp Chrome Enterprise Yükseltme kullanarak kaydolun.</translation>
 <translation id="4279129444466079448">Bu cihazda en fazla <ph name="PROFILE_LIMIT" /> eSIM profili yükleyebilirsiniz. Başka bir profil eklemek için mevcut profillerden birini kaldırın.</translation>
 <translation id="4280325816108262082">Cihaz kapalı olduğunda veya kullanılmadığında bağlantısı otomatik olarak kesilir</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
@@ -6543,6 +6546,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7444970023873202833">Google Fotoğraflar'da daha fazla anınızı keşfedin</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> ağ cihazını devre dışı bırak</translation>
 <translation id="7448430327655618736">Uygulamaları otomatik olarak yükle</translation>
+<translation id="7449381494541372002">başlatılıyor…</translation>
 <translation id="7449752890690775568">Şifre kaldırılsın mı?</translation>
 <translation id="7450761244949417357">Şimdi <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısında açılıyor</translation>
 <translation id="7452166281927983300">Kapatılan uyarılar (<ph name="MUTED_PASSWORDS" />)</translation>

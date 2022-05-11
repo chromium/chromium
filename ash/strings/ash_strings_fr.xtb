@@ -136,6 +136,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1719094688023114093">Sous-titres instantanés activés.</translation>
 <translation id="1720011244392820496">Activer Sync Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" est visible par les appareils Bluetooth.</translation>
+<translation id="174102739345480129">Le repère est désactivé.</translation>
 <translation id="1743570585616704562">Non reconnu</translation>
 <translation id="1746730358044914197">Les modes de saisie sont configurés par votre administrateur.</translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
@@ -564,6 +565,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci clavier de la loupe ancrée. Voulez-vous l'activer ?</translation>
 <translation id="439598569299422042">Suspendu, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Impossible d'enregistrer l'enregistrement d'écran</translation>
 <translation id="4405151984121254935">Le périphérique connecté n'est pas compatible</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
@@ -670,6 +672,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
+<translation id="5016558321564993266">Activer/Désactiver le repère. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Temps écoulé</translation>
 <translation id="5033299697334913360">Cliquez n'importe où pour effectuer une capture en plein écran</translation>
 <translation id="5035236842988137213">L'appareil <ph name="DEVICE_NAME" /> est associé à un nouveau téléphone</translation>
@@ -699,6 +702,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
+<translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiert votre attention.</translation>
@@ -733,6 +737,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5433020815079095860">Entrée audio</translation>
 <translation id="544691375626129091">Tous les utilisateurs disponibles ont déjà été ajoutés à cette session.</translation>
 <translation id="54609108002486618">Géré</translation>
+<translation id="5460938382730614333">Le repère est activé.</translation>
 <translation id="5465662442746197494">Besoin d'aide ?</translation>
 <translation id="547979256943495781">Étagère à droite</translation>
 <translation id="5491186829646618080">Mises à jour du micrologiciel disponibles</translation>
@@ -774,6 +779,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5745612484876805746">La fonctionnalité Éclairage nocturne est activée automatiquement au coucher du soleil</translation>
 <translation id="5750765938512549687">Bluetooth désactivé</translation>
 <translation id="5760866832697883462">Branchez "<ph name="NAME" />"</translation>
+<translation id="5762420912707163638">Activer/Désactiver le repère. <ph name="STATE_TEXT" /> Utilisez le pavé tactile, l'écran tactile ou le stylet pour dessiner à l'écran.</translation>
 <translation id="576341972084747908">Téléchargement du fichier dangereux <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party est désactivé.</translation>
 <translation id="576453121877257266">Éclairage nocturne activé.</translation>

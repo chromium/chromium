@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">'တိုက်ရိုက်စာတန်း' ကို ဖွင့်ထားသည်။</translation>
 <translation id="1720011244392820496">'Wi-Fi စင့်ခ်' ဖွင့်ခြင်း</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" ကို ဘလူးတုသ်သုံးစက်များက မြင်နိုင်သည်။</translation>
+<translation id="174102739345480129">ညွှန်မှတ် ပိတ်ထားသည်။</translation>
 <translation id="1743570585616704562">မသိပါ</translation>
 <translation id="1746730358044914197">ထည့်သွင်းရန်နည်းလမ်းများကို သင်၏ စီမံခန့်ခွဲသူက စီစဉ်သတ်မှတ်ထားခြင်းဖြစ်သည်။</translation>
 <translation id="1747827819627189109">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ဖွင့်ထား</translation>
@@ -566,6 +567,7 @@
 <translation id="4379531060876907730">ဤအရာများသည် သင်၏ စတိုင်လပ်စ်ကိရိယာများ ဖြစ်သည်</translation>
 <translation id="4389184120735010762">တပ်ဆင်ထားသည့် မှန်ဘီလူးအတွက် ကီးဘုတ်ဖြတ်လမ်းလင့်ခ်ကို သင်နှိပ်လိုက်ပါသည်။ ၎င်းကို ဖွင့်လိုပါသလား။</translation>
 <translation id="439598569299422042">ခဏရပ်ထားသည်၊ <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">ဖန်သားပြင် ထုတ်လွှင့်ခြင်းကို သိမ်း၍မရပါ</translation>
 <translation id="4405151984121254935">တပ်ဆင်ထားသည့် ချိတ်ဆက်ပစ္စည်းအမျိုးအစားကို ပံ့ပိုးမထားပါ</translation>
 <translation id="4406883609789734330">တိုက်ရိုက်စာတန်း</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
@@ -672,6 +674,7 @@
         <ph name="NOTIFICATION_2" />၊
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">နောက် ဝါကျ</translation>
+<translation id="5016558321564993266">ညွှန်မှတ် ပြောင်းရန်ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">အချိန်စေ့ပါပြီ</translation>
 <translation id="5033299697334913360">ဖန်သားပြင်အပြည့် ရိုက်ယူရန် မည်သည့်နေရာကိုမဆို နှိပ်ပါ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> က ဖုန်းအသစ်သို့ ချိတ်ဆက်ထားသည်</translation>
@@ -701,6 +704,7 @@
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="523505283826916779">ရယူသုံးနိုင်မှု ဆက်တင်များ</translation>
+<translation id="5245201184978705914">စာသားမှတ်တမ်း ထုတ်ယူ၍မရပါ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> တွင် ကြည့်စရာရှိသည်။</translation>
@@ -735,6 +739,7 @@
 <translation id="5433020815079095860">အသံ အဝင်</translation>
 <translation id="544691375626129091">အသုံးပြုနိုင်သူ အားလုံးအား ဤ ကဏ္ဍသို့ ပေါင်းထည့်ပြီး ဖြစ်၏။</translation>
 <translation id="54609108002486618">ကြီးကြပ်ထားသည်</translation>
+<translation id="5460938382730614333">ညွှန်မှတ် ဖွင့်ထားသည်။</translation>
 <translation id="5465662442746197494">အကူအညီ လိုပါသလား?</translation>
 <translation id="547979256943495781">စင်ကို ညာဘက် ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="5491186829646618080">ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ</translation>
@@ -776,6 +781,7 @@
 <translation id="5745612484876805746">နေဝင်ချိန်တွင် 'ညအလင်းရောင်' အလိုအလျောက် ပွင့်လာပါမည်</translation>
 <translation id="5750765938512549687">ဘလူးတုသ်ကို ပိတ်ထားသည်</translation>
 <translation id="5760866832697883462">သင့် <ph name="NAME" /> နှင့် ချိတ်ဆက်ရန်</translation>
+<translation id="5762420912707163638">ညွှန်မှတ် ပြောင်းရန်ခလုတ်။ <ph name="STATE_TEXT" /> ဖန်သားပြင်ပေါ်တွင် ပုံဆွဲရန် တာ့ချ်ပက်၊ တို့ထိမျက်နှာပြင် (သို့) စတိုင်လပ်စ် သုံးနိုင်သည်။</translation>
 <translation id="576341972084747908">အန္တရာယ်ရှိသော <ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
 <translation id="5763928712329149804">Shelf Party ပိတ်ထားသည်။</translation>
 <translation id="576453121877257266">'ညအလင်းရောင်' ဖွင့်ထားသည်။</translation>
@@ -1025,7 +1031,7 @@
 <translation id="731589979057211264">Shelf Party ဖွင့်ထားသည်။</translation>
 <translation id="7319740667687257810">Launcher၊ တစ်စိတ်တစ်ပိုင်း မြင်ကွင်း</translation>
 <translation id="7346909386216857016">OK</translation>
-<translation id="7348093485538360975">မျက်နှာပြင်ပေါ်ရှိ လက်ကွက်</translation>
+<translation id="7348093485538360975">ဖန်သားပြင်လက်ကွက်</translation>
 <translation id="735745346212279324">VPN ချိတ်ဆက်မှု ဖြတ်ခဲ့</translation>
 <translation id="7360036564632145207">ချိတ်ဆက်ပစ္စည်းများ ဆက်တင်အတွက် ဒေတာသုံးခွင့်အကာအကွယ်ကို ပြောင်းခြင်းက စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်အောင်ပြုလုပ်နိုင်သည်</translation>
 <translation id="7371404428569700291">ဝင်းဒိုးကို ရိုက်ကူးရန်</translation>

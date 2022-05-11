@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpass til skanneområdet</translation>
 <translation id="1367951781824006909">Velg en fil</translation>
+<translation id="1380220803921738821">Vi opplever feil. Prøv å starte på nytt eller gjenopprette fastvaren med en USB-minnepinne.</translation>
 <translation id="1387854245479784695">Dette er en sammenstilling av alle kjernene</translation>
 <translation id="1394661041439318933">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="28232023175184696">Kan ikke koble til internett. Klikk for å prøve på nytt.</translation>
+<translation id="2827359915699915567">Skriv inn denne nettadressen manuelt for å få RSU-koden</translation>
 <translation id="2859243502336719778">Kritisk oppdatering</translation>
 <translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="2872961005593481000">Slå av</translation>
@@ -224,6 +226,7 @@
 <translation id="3291996639387199448">Nøkkelretning</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
+<translation id="3333527094307156612">Bruk denne QR-koden for å få opplåsingskoden på åtte tegn. Du kan også skrive inn <ph name="LINK_BEGIN" />denne nettadressen<ph name="LINK_END" /> manuelt.</translation>
 <translation id="3336855445806447827">Usikker</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
@@ -257,6 +260,7 @@
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="3621202678540785336">Inndata</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
+<translation id="3643810137582748570">Hopp over kalibreringen</translation>
 <translation id="3678765385266369662">Velg hvordan du vil slå av skrivebeskyttelsen</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
@@ -407,6 +411,7 @@
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste siden. Dette medfører at du blir sendt til startskjermbildet for skanning.</translation>
+<translation id="506768878203270635">Skriv inn de åtte tegnene</translation>
 <translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -468,6 +473,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
 <translation id="5655283760733841251">Tastaturlysstyrke opp</translation>
+<translation id="5661196929408385351">Utfør en powerwash og slå av enheten</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -479,6 +485,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="576835345334454681">Skjermlysstyrke opp</translation>
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
+<translation id="578753362485952307">Hvis du skal gjenbruke et hovedkort i en annen enhet, går du til <ph name="LINK_BEGIN" />gjenbruksflyten<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -535,6 +542,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Slå på mørkt tema</translation>
+<translation id="6295178529664209245">Vil du fortsette reparasjonen?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="6319207335391420837">Oppdater fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skjermspareren</translation>
@@ -570,6 +578,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6575134580692778371">Ikke konfigurert</translation>
 <translation id="6579509898032828423">Bruk dette bildet</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
+<translation id="6611280807952151149">Avslutt <ph name="DEVICE_TYPE" />-reparasjonen</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>
@@ -582,6 +591,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Bakgrunnsbelysning for tastatur</translation>
 <translation id="672609503628871915">Se hva som er nytt</translation>
+<translation id="6746847322826305075">Du kan fortsette med den fullstendige reparasjonen, eller du kan utføre en powerwash (tilbakestilling til fabrikkstandard) på enheten for å fylle på hovedkortet på nytt.</translation>
 <translation id="6747215703636344499">Stoppet – utskriftsmottaket er fullt</translation>
 <translation id="6749473226660745022">Bilder</translation>
 <translation id="6753452347192452143">Enheten er en datamaskin.</translation>
@@ -629,6 +639,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv på nytt senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Velg én eller flere komponenter og prøv på nytt, eller hopp over kalibreringen</translation>
 <translation id="7281657306185710294">Kjenn brisen</translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
 <translation id="7297226631177386107">Kan ikke koble til HTTPS-nettsteder gjennom brannmuren</translation>
@@ -659,11 +670,13 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
+<translation id="760845693386726841">Fant ikke denne komponenten.</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
 <translation id="7626501172915339021">Utfør RMA-tjeneropplåsing (RSU)</translation>
 <translation id="763165478673169849">Forrige tidspunkt for tilbakestilling</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="7656388927906093505">Enheten er en mus.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" />-reparasjonsfeil</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665800271478495366">Bytt brukerbilde</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
@@ -705,6 +718,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8083281199617904460">Denne reparasjonsprosessen er beregnet på en kvalifisert reparatør. Den skal kun startes etter at de ikke-fungerende komponentene er byttet ut.</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8104083085214006426">Du bruker et åpent og usikret nettverk</translation>
+<translation id="8109786307828817014">Vil du gå videre med de mislykkede kalibreringene?</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Be om trafikktellere</translation>
@@ -727,6 +741,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8302368968391049045">HTTPS-brannmur</translation>
 <translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8327249300223641918">Før du går videre, må du plassere hele enheten (base og lokk) på en flat overflate.</translation>
+<translation id="8330949592403310082">Velg hvilke komponenter som er byttet ut</translation>
 <translation id="8336739000755212683">Endre bildet for enhetskontoen</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
@@ -750,6 +765,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Hvis komponentene ikke kalibreres, kan det hende at de ikke virker som de skal</translation>
 <translation id="8575298406870537639">Det kan hende operatøren din krever dette alternativet for at du skal kunne koble til nettverket deres Kontakt operatøren for mer informasjon.</translation>
 <translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="8620617069779373398">Status for roaming</translation>
@@ -804,6 +820,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9025198690966128418">Bruk som personlig enhet</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-oppslag har høy tidsforsinkelse</translation>
+<translation id="9063121522582193837">Kunne ikke kalibrere enkelte komponenter</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bruk denne videoen</translation>

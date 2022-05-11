@@ -1100,6 +1100,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3978338123949022456">Modo de busca. Escribe unha consulta e preme Introducir para facer a busca con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Aves</translation>
+<translation id="3985750352229496475">Xestiona os enderezos…</translation>
 <translation id="3986705137476756801">Desactivar polo momento a función Subtítulos instantáneos</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
@@ -1227,6 +1228,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4305666528087210886">Non se puido acceder ao ficheiro</translation>
 <translation id="4306529830550717874">Queres gardar o enderezo?</translation>
 <translation id="4306812610847412719">portapapeis</translation>
+<translation id="4310070645992025887">Busca os teus percorridos</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
@@ -2111,6 +2113,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6839929833149231406">Área</translation>
 <translation id="6846340164947227603">Usar un número de conta virtual…</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
+<translation id="6857776781123259569">Xestiona os contrasinais…</translation>
 <translation id="686485648936420384">Recursos para consumidores</translation>
 <translation id="6865412394715372076">Esta tarxeta non puido verificarse neste momento</translation>
 <translation id="6869334554832814367">Préstamos persoais</translation>
@@ -2437,6 +2440,7 @@ Detalles adicionais:
 <translation id="7669271284792375604">Os atacantes deste sitio poden tentar enganarte para que instales programas que afectan negativamente á túa experiencia de navegación (por exemplo, cambiando a páxina de inicio ou mostrando anuncios adicionais nos sitios que visitas).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Accións realizadas con datos marcados como confidenciais (1 acción desde o inicio de sesión). <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" />}other{Accións realizadas con datos marcados como confidenciais (# accións desde o inicio de sesión). <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Caixa de correo 6</translation>
+<translation id="7675325315208090829">Xestiona os métodos de pago...</translation>
 <translation id="7676643023259824263">Buscar texto do portapapeis, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Ver e xestionar o teu historial de navegación na configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>

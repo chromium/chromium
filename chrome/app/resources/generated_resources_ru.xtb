@@ -962,6 +962,7 @@
 <translation id="1892341345406963517">Здравствуйте, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Другие языки</translation>
 <translation id="1895658205118569222">Завершение работы</translation>
+<translation id="1897120393475391208">Используйте надежный пароль.</translation>
 <translation id="1900305421498694955">Приложения из Google Play могут запрашивать разрешение на полный доступ к чтению и записи файлов на внешних запоминающих устройствах. При этом созданные на устройстве файлы и папки будут видны всем пользователям внешнего запоминающего устройства. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Выделить &amp;все</translation>
 <translation id="1901396183631570154">Chrome не удалось сохранить эти пароли в вашем аккаунте Google, но вы можете сохранить их на текущем устройстве.</translation>
@@ -6552,6 +6553,7 @@
 <translation id="7444970023873202833">Посмотрите другие воспоминания в Google Фото</translation>
 <translation id="7444983668544353857">Отключить <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
+<translation id="7449381494541372002">Подготовка к работе…</translation>
 <translation id="7449752890690775568">Удалить пароль?</translation>
 <translation id="7450761244949417357">Открывается <ph name="ALTERNATIVE_BROWSER_NAME" />…</translation>
 <translation id="7452166281927983300">Закрытые предупреждения (<ph name="MUTED_PASSWORDS" />)</translation>

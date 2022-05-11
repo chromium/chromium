@@ -190,6 +190,7 @@
 <translation id="2690858294534178585">ກ້ອງຖ່າຍຮູບຖືກໃຊ້ຢູ່</translation>
 <translation id="2691653761409724435">ບໍ່ສາມາດໃຊ້ໄດ້ແບບອອບລາຍ</translation>
 <translation id="2695507686909505111">ແປໜ້າແລ້ວ</translation>
+<translation id="2697526135132990015">ອອກຈາກລະບົບ ແລະ ລຶບລ້າງຂໍ້ມູນ</translation>
 <translation id="2700241355396984822">ຕົວເລືອກເພື່ອຕັ້ງການອະນຸຍາດ</translation>
 <translation id="2702801445560668637">ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="2704491540504985681">ດາວໂຫລດ</translation>
@@ -364,6 +365,7 @@
 <translation id="4121993058175073134">ເພື່ອສົ່ງຂໍ້ມູນສົ່ງອອກເຄືອຂ່າຍ, ກະລຸນາປັບຕັ້ງຄ່າບັນຊີອີເມວຂອງທ່ານຢູ່ໃນແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="4124987746317609294">ຂອບເຂດເວລາ</translation>
 <translation id="4133265950310064865">ການປົກປ້ອງຂັ້ນສູງ</translation>
+<translation id="4148023517926189160">ເວັບໄຊນີ້ຕ້ອງການດາວໂຫຼດໄຟລ໌ ແລະ ເພີ່ມມັນໃສ່ປະຕິທິນຂອງທ່ານ.</translation>
 <translation id="4152011295694446843">ທ່ານຈະເຫັນບຸກມາກຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="4172051516777682613">ສະ​ແດງ​ຢູ່ສະ​ເຫມີ​</translation>
 <translation id="418156467088430727">ເບິ່ງເວີຊັນອອບລາຍຢູ່ໃນແຖບໃໝ່</translation>
@@ -692,6 +694,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6760509555861141183">ກັບໄປຫາແຖບຫຼ້າສຸດ</translation>
 <translation id="6762812039470893796">ເຊົາເລືອກທັງໝົດ</translation>
 <translation id="6780034285637185932">ລະ​ຫັດ​ໄປສະນີ</translation>
+<translation id="6781260999953472352">ເປີດໃຊ້ການຊິ້ງຂໍ້ມູນບໍ?</translation>
 <translation id="6785453220513215166">ກຳ​ລັງ​ສົ່ງລາຍງານການຂັດຂ້ອງ...</translation>
 <translation id="6797885426782475225">​ການຊອກຫາ​ດ້ວຍສຽງ</translation>
 <translation id="6801927553864092214">ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ, ກະລຸນາເປີດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -804,6 +807,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7807060072011926525">ສະໜອງໃຫ້ໂດຍ Google</translation>
 <translation id="7839985698273989086">ໜ້າອອບລາຍ</translation>
 <translation id="7840771868269352570">ລາຍການທີ່ທ່ານເລືອກຈະຖືກລຶບອອກ.</translation>
+<translation id="784551991304901159">ເພື່ອເບິ່ງເນື້ອຫາ, ໃຫ້ເລືອກເປີດໃຊ້ຈາກເມນູ</translation>
 <translation id="7853202427316060426">ການເຄື່ອນໄຫວ</translation>
 <translation id="7856733331829174190">ບໍ່ສາມາດດາວໂຫລດໄດ້</translation>
 <translation id="7859704718976024901">ປະຫວັດການທ່ອງເວັບ</translation>

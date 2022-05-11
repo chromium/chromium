@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">Қараңғы режимді өшіру</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
+<translation id="1840835860961531162">Жазудан қорғауды өшіру</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
 <translation id="1852934301711881861">ChromeOS Flex-ті орнату</translation>
 <translation id="1856388568474281774">Төмен бағыт пернесі</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
 <translation id="3954678691475912818">Құрылғының түрі белгісіз.</translation>
+<translation id="3958703339436883942">Өшіріп қосуға дайындалуда...</translation>
 <translation id="3966286471246132217">Нәтижелер нақтырақ болу үшін, сынақ аяқталғанша барлық қолданбаларды жабыңыз.</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3969602104473960991">ChromeOS құпия сөзі жаңартылды</translation>
@@ -423,6 +425,7 @@
 <translation id="5275828089655680674">Режимдерді қайта іске қосу</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-нұсқа</translation>
+<translation id="5298334025463010990">Келесі экранға өту үшін жазуды қорғау функциясын өшіріңіз. Нұсқаулықтар үшін құрылғы өндірушісінің қолдау көрсету бетіне өтіңіз.</translation>
 <translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Қосылу</translation>
@@ -474,6 +477,7 @@
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="5849570051105887917">Жергілікті провайдер коды</translation>
+<translation id="5856532218727053281">Жүйе жазудан қорғау күйін тексерген соң, өшіріліп қосылады</translation>
 <translation id="5859603669299126575">Өнер галереясы альбомы</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>

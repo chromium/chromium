@@ -1005,6 +1005,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1942600407708803723">Când capacul este închis: oprire</translation>
 <translation id="1944528062465413897">Cod de asociere prin Bluetooth:</translation>
 <translation id="1944921356641260203">A fost găsită o actualizare</translation>
+<translation id="1947136734041527201">Îți dă posibilitatea să te conectezi pe site-uri folosind contul creat într-un serviciu de identitate</translation>
 <translation id="1949584741547056205">Răspunsuri rapide</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954597385941141174">Site-urile pot solicita permisiunea de a se conecta la dispozitive USB</translation>
@@ -2402,6 +2403,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="32939749466444286">Containerul Linux nu a pornit. Încearcă din nou.</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3294686910656423119">Statistici de utilizare și rapoarte de blocare</translation>
+<translation id="3297105622164376095">Au permisiunea de a afișa solicitări de conectare prin terți</translation>
 <translation id="3297536526040732495">Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google</translation>
 <translation id="329838636886466101">Repară</translation>
 <translation id="3298789223962368867">A fost introdusă o adresă URL nevalidă.</translation>
@@ -3657,6 +3659,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="452750746583162491">Examinează datele sincronizate</translation>
 <translation id="4527929807707405172">Activează derularea inversă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestie de traducere</translation>
+<translation id="4529455689802245339">Este posibil ca Subtitrările live din Chrome să nu funcționeze</translation>
 <translation id="4530494379350999373">Origine</translation>
 <translation id="4531924570968473143">Pe cine vrei să adaugi la acest <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">„<ph name="USB_DEVICE_NAME" />” este în uz. Reatribuirea dispozitivului cât timp este folosit poate cauza erori. Sigur vrei să continui?</translation>
@@ -3854,6 +3857,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="471880041731876836">Nu ai permisiunea să accesezi acest site</translation>
 <translation id="4722735765955348426">Parola pentru <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplicația <ph name="APP_NAME" /> are acces la ecran.</translation>
+<translation id="4722989931633062466">Nu au permisiunea de a afișa solicitări de conectare prin terți</translation>
 <translation id="4723140812774948886">Schimbă cu următorul</translation>
 <translation id="4724450788351008910">Afilierea a fost schimbată</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4824,6 +4828,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5711010025974903573">Jurnale de service</translation>
 <translation id="5711983031544731014">Nu se poate debloca. Introdu parola.</translation>
 <translation id="5712153969432126546">Site-urile publică uneori fișiere PDF, cum ar documente, contracte și formulare</translation>
+<translation id="571222594670061844">Site-urile pot afișa solicitări de conectare de la servicii de identitate</translation>
 <translation id="5713158217420111469">Conectat la <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Broker pluginuri: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motoarele de căutare prestabilite</translation>
@@ -4982,6 +4987,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5876851302954717356">Filă nouă la dreapta</translation>
 <translation id="5877064549588274448">Canalul a fost schimbat. Reporniți dispozitivul pentru a aplica modificările.</translation>
 <translation id="5877584842898320529">Imprimanta selectată nu este disponibilă sau nu este instalată corect. <ph name="BR" /> Verifică imprimanta sau încearcă să selectezi altă imprimantă.</translation>
+<translation id="5878945009165002849">Blochează solicitările de conectare de la serviciile de identitate</translation>
 <translation id="5882919346125742463">Rețele cunoscute</translation>
 <translation id="5883356647197510494">Permisiuni blocate automat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Această filă este conectată la un dispozitiv USB.</translation>
@@ -5618,6 +5624,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6513247462497316522">Google Chrome va utiliza date mobile dacă nu ești conectat(ă) la altă rețea.</translation>
 <translation id="6514010653036109809">Dispozitiv disponibil:</translation>
 <translation id="6514565641373682518">Această pagină a dezactivat cursorul mouse-ului dvs.</translation>
+<translation id="6517709704288360414">Este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță. Dezactivarea actualizărilor îți poate afecta dreptul de a face reclamații legale în cazul în care întâmpini probleme.</translation>
 <translation id="6518014396551869914">Cop&amp;iază imaginea</translation>
 <translation id="6518133107902771759">Confirmați</translation>
 <translation id="651942933739530207">Doriți ca aplicația <ph name="APP_NAME" /> să aibă acces la ecran și la ieșirea audio?</translation>

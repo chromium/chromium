@@ -421,6 +421,7 @@
 <translation id="1415708812149920388">Lesezugriff auf Zwischenablage verweigert</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") ist bei diesem Sitzungstyp nicht zulässig.</translation>
 <translation id="1418552618736477642">Benachrichtigungen und Apps</translation>
+<translation id="1418882096915998312">Enterprise-Registrierung wird durchgeführt</translation>
 <translation id="1418954524306642206">Dateien durchsuchen und PPD für den Drucker auswählen</translation>
 <translation id="1420834118113404499">Medienlizenzen</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, um eine Kopplung zu ermöglichen</translation>
@@ -3405,6 +3406,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
 <translation id="4277434192562187284">XML-Konfigurationsquelle</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
+<translation id="4278498748067682896">Mit diesem Upgrade für Kioske und digitale Beschilderung kann das Gerät nur im Modus für Kioske oder digitale Beschilderung genutzt werden. Wenn du möchtest, dass die Nutzer sich auf dem Gerät anmelden, gehe zurück und registriere dich für das Chrome Enterprise-Upgrade.</translation>
 <translation id="4279129444466079448">Du kannst bis zu <ph name="PROFILE_LIMIT" /> eSIM-Profile auf diesem Gerät installieren. Damit du ein weiteres Profil hinzufügen kannst, musst du zuerst ein vorhandenes Profil entfernen.</translation>
 <translation id="4280325816108262082">Gerät wird automatisch getrennt, wenn es ausgeschaltet oder nicht verwendet wird</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>

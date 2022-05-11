@@ -961,6 +961,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1892341345406963517">Ciao <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1895658205118569222">Chiusura</translation>
+<translation id="1897120393475391208">Usa password efficace</translation>
 <translation id="1900305421498694955">Le app di Google Play potrebbero richiedere accesso completo al file system per leggere e scrivere sui file memorizzati sui dispositivi di archiviazione esterni. I file e le cartelle creati sul dispositivo sono visibili a chiunque usi l'unità esterna. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleziona &amp;tutto</translation>
 <translation id="1901396183631570154">Chrome non ha potuto salvare queste password nel tuo Account Google, ma puoi comunque salvarle sul dispositivo.</translation>
@@ -6544,6 +6545,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7444970023873202833">Esplora altri ricordi in Google Foto</translation>
 <translation id="7444983668544353857">Disabilita <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installare automaticamente le app</translation>
+<translation id="7449381494541372002">avvio in corso…</translation>
 <translation id="7449752890690775568">Vuoi rimuovere la password?</translation>
 <translation id="7450761244949417357">Apertura in <ph name="ALTERNATIVE_BROWSER_NAME" /> ora</translation>
 <translation id="7452166281927983300">Avvisi ignorati (<ph name="MUTED_PASSWORDS" />)</translation>

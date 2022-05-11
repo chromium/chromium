@@ -143,6 +143,7 @@
 <translation id="1749109475624620922">വിൻഡോ <ph name="WINDOW_TITLE" /> എല്ലാ ഡെസ്ക്കുകളിലേക്കും അസൈൻ ചെയ്തു</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> ഡെസ്‌കുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം തുറക്കാൻ ഒരു ഡെസ്‌ക് നീക്കം ചെയ്യുക.</translation>
 <translation id="1756833229520115364">ടെംപ്ലേറ്റ് സംരക്ഷിക്കാനാകുന്നില്ല. നിരവധി വിൻഡോകളും ടാബുകളും.</translation>
+<translation id="1757857692711134412">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>
 <translation id="1761222317188459878">നെറ്റ്‌വർക്ക് കണക്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + പീരിയഡ് കീബോർഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Insert കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ Shift + Backspace അമർത്തുക.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
@@ -508,6 +509,7 @@
 <translation id="3995138139523574647">USB-C ഉപകരണം (വലതുവശത്ത് പിന്നിലെ പോർട്ട്)</translation>
 <translation id="40062176907008878">കൈയ്യെഴുത്ത്</translation>
 <translation id="4017989525502048489">ലേസർ പോയിന്റർ</translation>
+<translation id="401993194061514265">മാർക്കർ ലഭ്യമല്ല. സ്ക്രീൻകാസ്റ്റ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="4021716437419160885">താഴേയ്‌ക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="4028481283645788203">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +524,7 @@
 <translation id="412298498316631026">വിൻഡോ</translation>
 <translation id="4123259114412175274">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫോണിന്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="4136724716305260864">സൂര്യോദയം വരെ ഓണാണ്</translation>
 <translation id="4146833061457621061">സംഗീതം പ്ലേ ചെയ്യുക</translation>
 <translation id="4165275524535002941">കേബിൾ, ഡിസ്പ്ലേകളെ പിന്തുണച്ചേക്കില്ല</translation>
 <translation id="4177913004758410636">{0,plural, =1{ഒരു ദിവസത്തിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# ദിവസത്തിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
@@ -574,6 +577,7 @@
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> ഉപയോഗിച്ച് നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="4424159417645388645">ഡെസ്ക് 5</translation>
 <translation id="4430019312045809116">അളവ്</translation>
+<translation id="4435022394553622295"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകളും ആപ്പുകളും കാണുക</translation>
 <translation id="4441283832827406317">പേര് അനുസരിച്ച് ആപ്പുകൾ അടുക്കിയിരിക്കുന്നു</translation>
 <translation id="4445159312344259901">അൺലോക്കുചെയ്യാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{പ്രധാനപ്പെട്ട ഒരു അറിയിപ്പ്}other{പ്രധാനപ്പെട്ട # അറിയിപ്പുകൾ}}</translation>
@@ -701,6 +705,7 @@
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{മറ്റൊരു അറിയിപ്പ്}other{മറ്റ് # അറിയിപ്പുകൾ}}</translation>
 <translation id="5207949376430453814">ടെക്‌സ്‌റ്റ് കാരറ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="5208059991603368177">ഓണാണ്</translation>
+<translation id="5216991270656129561"><ph name="TIME" /> വരെ ഓഫാണ്</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="523505283826916779">ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ</translation>
@@ -750,6 +755,7 @@
 <translation id="553675580533261935">സെഷനിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="5537725057119320332">കാസ്റ്റ്</translation>
 <translation id="554893713779400387">പറഞ്ഞ് കൊടുക്കൽ മാറ്റുക</translation>
+<translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുക</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5571066253365925590">Bluetooth പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="557563299383177668">അടുത്ത ഖണ്ഡിക</translation>
@@ -968,6 +974,7 @@
 <translation id="6884665277231944629">ഇന്നത്തെ തീയതിയിലേക്ക് മടങ്ങുക</translation>
 <translation id="6886172995547742638">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണം കുറഞ്ഞ പ്രകടനം കാഴ്‌ച വച്ചേക്കാം. സർട്ടിഫൈ ചെയ്‌ത <ph name="PREFERRED_MINIMUM_POWER" />W അല്ലെങ്കിൽ USB-C പവർ അഡാപ്‌റ്റർ ഉപയോഗിക്കുക.</translation>
 <translation id="688631446150864480">വിന്‍ഡോകോൾക്കിടയിൽ മാറാൻ താഴേക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
+<translation id="6891721121089053234"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6901883536534621389">നാവിഗേറ്റ് ചെയ്യാൻ ജെസ്ച്ചറുകളുടെ ഉപയോഗിക്കുക</translation>
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
@@ -1096,6 +1103,7 @@
 <translation id="7684531502177797067">ക്യാമറാ ഇൻപുട്ട് ആയി <ph name="CAMERA_NAME" /> സജ്ജീകരിച്ചു.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">പുതിയ സെല്ലുലാർ നെറ്റ്‌വർക്ക് ചേർക്കുക</translation>
+<translation id="7720400844887872976"><ph name="TIME" /> വരെ ഓണാണ്</translation>
 <translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
@@ -1178,6 +1186,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ഉപയോഗിക്കുന്നു</translation>
+<translation id="8183592608247778598"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുക</translation>
 <translation id="8192202700944119416">അറിയിപ്പുകൾ അദൃശ്യമാക്കിയിരിക്കുന്നു.</translation>
 <translation id="8196787716797768628">ആപ്പുകൾക്കിടയിൽ വേഗത്തിൽ മാറാനും ടാബ്‌ലെറ്റ് മോഡിൽ നിങ്ങളുടെ Chromebook-മായി സംവദിക്കാനും വിരൽചലനങ്ങൾ ഉപയോഗിക്കുക.</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>

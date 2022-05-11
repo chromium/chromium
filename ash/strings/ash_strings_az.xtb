@@ -136,6 +136,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1719094688023114093">Canlı Altyazı aktivdir.</translation>
 <translation id="1720011244392820496">Wi-Fi Sinxronlaşdırmasını aktiv edin</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth cihazlarına görünür.</translation>
+<translation id="174102739345480129">Marker deaktivdir.</translation>
 <translation id="1743570585616704562">Tanınmır</translation>
 <translation id="1746730358044914197">Daxiletmə üsulları administrator tərəfindən konfiqurasiya edilir.</translation>
 <translation id="1747827819627189109">Ekrandakı klaviaturanı aktiv edin</translation>
@@ -566,6 +567,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4379531060876907730">Fırça alətləriniz</translation>
 <translation id="4389184120735010762">Daxili böyüdücü üçün klaviatura qısayoluna basdınız. Onu aktiv etmək istəyirsiniz?</translation>
 <translation id="439598569299422042">Durdurulub, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Enkran yayımını yadda saxlamaq olmur</translation>
 <translation id="4405151984121254935">Qoşulmuş əlavə qurğu növü dəstəklənmir</translation>
 <translation id="4406883609789734330">Avtomatik subtitrlər</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> deaktivdir.</translation>
@@ -672,6 +674,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
+<translation id="5016558321564993266">Markeri dəyişin. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Vaxt bitdi</translation>
 <translation id="5033299697334913360">Tam ekranı çəkmək üçün istənilən yerə klikləyin</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> yeni telefona qoşuldu</translation>
@@ -701,6 +704,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="523505283826916779">Əlçatımlılıq ayarları</translation>
+<translation id="5245201184978705914">Transkript yaratmaq olmur</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> adlı cihaza qoşulub, enerji: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Masa 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> diqqətinizi tələb edir.</translation>
@@ -735,6 +739,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5433020815079095860">Audio daxiletməsi</translation>
 <translation id="544691375626129091">Bütün əlçatımlı istifadəçilər bu sessiyaya əlavə edilib.</translation>
 <translation id="54609108002486618">İdarə edilən</translation>
+<translation id="5460938382730614333">Marker aktivdir.</translation>
 <translation id="5465662442746197494">Kömək lazımdır?</translation>
 <translation id="547979256943495781">Rəf sağdadır</translation>
 <translation id="5491186829646618080">Proqram güncəlləmələri əlçatandır</translation>
@@ -776,6 +781,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5745612484876805746">Gecə İşığı gün batanda avtomatik aktiv edilir</translation>
 <translation id="5750765938512549687">Bluetooth deaktivdir</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> cihazınızı qoşun</translation>
+<translation id="5762420912707163638">Markeri dəyişin. <ph name="STATE_TEXT" /> Ekranda çəkmək üçün trekped, sensor ekran və ya qələmdən istifadə edin.</translation>
 <translation id="576341972084747908"><ph name="FILENAME" /> endirilməsi təhlükəlidir</translation>
 <translation id="5763928712329149804">Shelf Party rejimi deaktivdir.</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>

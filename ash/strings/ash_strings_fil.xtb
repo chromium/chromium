@@ -304,6 +304,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2834813915651407382">Binuksan kamakailan</translation>
 <translation id="2841907151129139818">Lumipat sa tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (port sa kaliwang bahagi sa harap)</translation>
+<translation id="2848120746144143659">Pindutin ang enter para mag-capture screenshot ng full screen</translation>
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="2860184359326882502">Pinakatumutugma</translation>
 <translation id="2865888419503095837">Impormasyon ng network</translation>
@@ -482,6 +483,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
+<translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
 <translation id="3891340733213178823">Pindutin ang Ctrl+Shift+Q nang dalawang beses upang mag-sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
@@ -813,6 +815,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Pinangangasiwaang user</translation>
+<translation id="5976112937189445008">Pindutin ang enter para i-record ang window</translation>
 <translation id="5977415296283489383">Headphone</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
 <translation id="5980301590375426705">Lumabas</translation>
@@ -1199,6 +1202,7 @@ Kaka-install lang</translation>
 <translation id="8364673525741149932">I-toggle ang Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>
 <translation id="8371991222807690464">Posibleng maging limitado ang performance ng peripheral sa Guest mode</translation>
+<translation id="8374601332003098278">Pindutin ang enter para mag-record ng bahagyang screen</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
 <translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8382715499079447151">Proteksyon sa pagtingin</translation>
@@ -1251,6 +1255,7 @@ Kaka-install lang</translation>
 <translation id="8653151467777939995">Ipakita ang mga setting ng notification. Naka-on ang mga notification</translation>
 <translation id="8660331759611631213">Square root ng 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Pindutin ang enter para mag-capture ng bahagyang screenshot</translation>
 <translation id="8664753092453405566">Ipakita ang listahan ng network. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Buksan ang <ph name="NAME" /> para i-set up ang iyong device</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
@@ -1292,6 +1297,7 @@ Kaka-install lang</translation>
 <translation id="8909138438987180327">Nasa <ph name="PERCENTAGE" /> porsyento ang baterya.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Hindi nagsasalita ng ganitong wika ang Google Assistant.</translation>
+<translation id="8924458948354692166">Pindutin ang enter para i-capture ang screenshot ng window</translation>
 <translation id="8926951137623668982">Palaging nakatago ang shelf</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>

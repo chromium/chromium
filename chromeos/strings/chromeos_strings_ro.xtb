@@ -161,6 +161,7 @@
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2461822463642141190">Actual</translation>
+<translation id="2480034874476596812">Dezactivează manual</translation>
 <translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -256,6 +257,7 @@
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
+<translation id="3678765385266369662">Selectează cum dorești să dezactivezi protecția la scriere</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
@@ -313,6 +315,7 @@
 <translation id="4244962993387259361">Ai nevoie de minimum 500 MB de spațiu disponibil pentru a rula un test de memorie. Pentru a elibera spațiu, accesează Setări &gt; Gestionarea stocării.</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4258281355379922695">Latența solicitărilor HTTP</translation>
+<translation id="4258561075226177474">Dispozitivul va avea același utilizator. Ștergi datele utilizatorului?</translation>
 <translation id="4271957103967917607">Afișează pe tot ecranul</translation>
 <translation id="4275799948641988986">Cine va folosi dispozitivul după reparare?</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
@@ -361,6 +364,7 @@
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="4773299976671772492">Oprit</translation>
+<translation id="4774530504324923332">Vei avea nevoie de o cheie de securitate activată pentru RSU, un scanner de coduri QR și un al doilea dispozitiv cu conexiune la internet</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
 <translation id="4793710386569335688">Pentru mai mult ajutor, accesează <ph name="BEGIN_LINK" />Centrul de ajutor<ph name="END_LINK" /></translation>
@@ -441,6 +445,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5372659122375744710">Rețeaua Wi-Fi nu este sigură</translation>
 <translation id="5376354385557966694">Modul luminos automat</translation>
 <translation id="537872351913703572">Dispozitivul va avea alt utilizator sau altă organizație</translation>
+<translation id="5395600419410242651">Șterge toate datele</translation>
 <translation id="5400907029458559844">Dispozitivul se conectează.</translation>
 <translation id="5401938042319910061">Rulează toate rutinele</translation>
 <translation id="5423849171846380976">Activat</translation>
@@ -655,6 +660,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7570674786725311828">Ecran tactil USB</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
+<translation id="7626501172915339021">Deblochează serverul RMA (RSU)</translation>
 <translation id="763165478673169849">Data ultimei resetări</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7656388927906093505">Dispozitivul este un mouse.</translation>
@@ -804,6 +810,8 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="90977145661420967">Va trebui să dezasamblezi dispozitivul</translation>
+<translation id="9098156406873149060">Păstrează datele utilizatorului</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>

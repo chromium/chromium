@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1204296502688602597">DNS தாமதம்</translation>
 <translation id="123124571410524056">போர்டல் இருப்பதுபோல் தெரிகிறது</translation>
+<translation id="1236400083787698183">மீண்டும் தொடங்குவதற்கு முன்பு சாதனத்தைப் பவர்வாஷ் செய்யவும். உங்கள் சாதனத்திற்கு மூடி இருந்தால் பவர்வாஷ் நிறைவடையும் வரை அதை மூடாதீர்கள். பவர்வாஷ் நிறைவடைய ஒரு நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="1238612778414822719">HTTPS தாமதம்</translation>
+<translation id="1240699967155581440">பவர்வாஷ் (ஆரம்பநிலை மீட்டமைத்தல்) தேவை</translation>
 <translation id="1264116747675686718">OS பதிப்பைப் புதுப்பிக்கிறது</translation>
 <translation id="1264369926465113395">Chromebookகின், கிரியேட்டர்களுக்கான புதிய டிஜிட்டல் பத்திரிகையைப் பார்க்கவும்</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />தகுதிபெறாத காம்பனென்ட்கள்<ph name="LINK_END" /> கண்டறியப்பட்டுள்ளன. இது நிறுவப்பட்டது என உறுதிசெய்ய நினைத்தால், அதை இப்போதே செய்யுங்கள்.</translation>
 <translation id="2363636958541445404">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க, அம்சத்தை இயக்கவும்</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
+<translation id="236594517359128026">தொடர்வதற்கு முன்பு, உங்கள் லேப்டாப்பை ஒரு சமதள மேற்பரப்பில் வைக்கவும்</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2407209115954268704">சிம் நிலை</translation>
@@ -267,6 +270,7 @@
 <translation id="3820172043799983114">தவறான பின்.</translation>
 <translation id="3838338534323494292">புதிய கடவுச்சொல்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
+<translation id="385832974417157471">ஷட் டவுன் செய்வதற்கு முன்பு உங்கள் சாதனத்தைப் பவர்வாஷ் செய்யவும். உங்கள் சாதனத்திற்கு மூடி இருந்தால் பவர்வாஷ் நிறைவடையும் வரை அதை மூடாதீர்கள். பவர்வாஷ் நிறைவடைய ஒரு நிமிடம் வரை ஆகலாம்.</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="387301095347517405">உங்கள் பேட்டரி முழுமையாகச் சார்ஜ் செய்யப்பட்ட எண்ணிக்கை</translation>
@@ -456,6 +460,7 @@
 <translation id="5507300744274596613">Chrome OS பதிப்பு சமீபத்தியதாக இருப்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">காம்பனென்ட்டுகளைச் சரிசெய்தல்</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">மீண்டும் ஸ்கேன் செய்</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -709,6 +714,7 @@
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8217675307824400706">இணையத்துடன் இணைத்திடுங்கள்</translation>
+<translation id="8221728673725659466">சரிசெய்தல் நிறைவடைந்தது</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
@@ -720,6 +726,7 @@
 <translation id="8297006494302853456">வலுவாக இல்லை</translation>
 <translation id="8302368968391049045">HTTPS ஃபயர்வால்</translation>
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
+<translation id="8327249300223641918">தொடர்வதற்கு முன்பு, முழுச் சாதனத்தையும் (அடிப்பகுதி மற்றும் மூடி) சமதள மேற்பரப்பில் வைக்கவும்.</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
 <translation id="8352772353338965963">பல உள்நுழைவுக்குக் கணக்கைச் சேர்க்கவும். உள்நுழைந்த அனைத்து கணக்குகளையும் கடவுச்சொல் இல்லாமலே அணுகலாம் என்பதால் இந்த அம்சத்தை நம்பகமான கணக்குகளுடன் மட்டுமே பயன்படுத்த வேண்டும்.</translation>
@@ -734,6 +741,7 @@
 <translation id="844521431886043384">DNS அமைக்கப்படவில்லை</translation>
 <translation id="8456761643544401578">தானியங்கு டார்க் பயன்முறை</translation>
 <translation id="8461329675984532579">உள்நாட்டு மொபைல் சேவை வழங்குநர் பெயர்</translation>
+<translation id="8467104829907989997">காம்பனென்ட்டுகளைச் சரிசெய்கிறது...</translation>
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
@@ -793,6 +801,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
 <translation id="8997710128084572139">சாதனத்தின் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
+<translation id="9025198690966128418">தனிப்பட்ட சாதனமாகப் பயன்படுத்து</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ரெசல்யூஷனில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="9073281213608662541">PAP</translation>

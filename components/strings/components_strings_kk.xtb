@@ -1100,6 +1100,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> бөгелген</translation>
 <translation id="3978338123949022456">Іздеу режимі: <ph name="KEYWORD_SUFFIX" /> сөзі арқылы іздеу үшін сұрауды жазып, Enter пернесін басыңыз.</translation>
 <translation id="398470910934384994">Құстар</translation>
+<translation id="3985750352229496475">Мекенжайларды басқару...</translation>
 <translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
 <translation id="3987940399970879459">1 МБ-тан аз</translation>
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
@@ -1227,6 +1228,7 @@
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
 <translation id="4306529830550717874">Мекенжайды сақтау керек пе?</translation>
 <translation id="4306812610847412719">буфер</translation>
+<translation id="4310070645992025887">Саяхаттарыңызды іздеңіз</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
@@ -2111,6 +2113,7 @@
 <translation id="6839929833149231406">Аудан</translation>
 <translation id="6846340164947227603">Виртуалды карта нөмірін пайдалану...</translation>
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
+<translation id="6857776781123259569">Құпия сөздерді басқару...</translation>
 <translation id="686485648936420384">Тұтыну ресурстары</translation>
 <translation id="6865412394715372076">Бұл картаны дәл қазір растау мүмкін емес</translation>
 <translation id="6869334554832814367">Тұтынушылық несиелер</translation>
@@ -2437,6 +2440,7 @@
 <translation id="7669271284792375604">Осы сайттағы шабуылдаушылар шолу әрекетіңізге зиян келтіретін бағдарламаларды айлакерлікпен (мысалы, басты бетіңізді өзгерту немесе сіз кірген сайттарда қосымша жарнамалар көрсету арқылы) орнатқызуы мүмкін.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Құпия деп белгіленген деректерге қатысты қолданылған әрекеттер (кіргелі бері 1 әрекет). <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" />}other{Құпия деп белгіленген деректерге қатысты қолданылған әрекеттер (кіргелі бері # әрекет). <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6-шы пошта жәшігі</translation>
+<translation id="7675325315208090829">Төлеу әдістерін басқару…</translation>
 <translation id="7676643023259824263">Буфер мәтінін (<ph name="TEXT" />) іздеу</translation>
 <translation id="7679367271685653708">Chrome параметрлерінен браузерді қолдану тарихын көру және басқару</translation>
 <translation id="7679947978757153706">Бейсбол</translation>

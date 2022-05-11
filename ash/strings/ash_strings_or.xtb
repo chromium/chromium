@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ଚାଲୁ ଅଛି।</translation>
 <translation id="1720011244392820496">ୱାଇ-ଫାଇ ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1736898441010944794">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକରେ "<ph name="NAME" />" ଦେଖାଯାଏ।</translation>
+<translation id="174102739345480129">ମାର୍କର ବନ୍ଦ ଅଛି।</translation>
 <translation id="1743570585616704562">ଚିହ୍ନଟ ହେଲାନାହିଁ</translation>
 <translation id="1746730358044914197">ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତିକୁ ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା କନ୍‌ଫିଗର୍‍ କରାଯାଇଛି।</translation>
 <translation id="1747827819627189109">ଅନ୍ ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
@@ -566,6 +567,7 @@
 <translation id="4379531060876907730">ଏଗୁଡ଼ିକ ଆପଣଙ୍କର ଷ୍ଟାଇଲସ୍ ଟୁଲ୍ ଅଟେ</translation>
 <translation id="4389184120735010762">ଆପଣ ଡକ୍‍ ହୋ‍ଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ କ’ଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="439598569299422042">ବିରତ କରାଯାଇଛି, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">ସ୍କ୍ରିନକାଷ୍ଟକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4405151984121254935">ସଂଯୋଗ କରାଯାଇଥିବା ପେରିଫେରାଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
@@ -672,6 +674,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">ପରବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
+<translation id="5016558321564993266">ମାର୍କରକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">ସମୟ ଶେଷ ହୋ‍ଇଛି</translation>
 <translation id="5033299697334913360">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବାକୁ ସ୍କ୍ରିନର ଯେ କୌଣସି ସ୍ଥାନରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> ଏକ ନୂଆ ଫୋନ୍ ସହ ସଂଯୁକ୍ତ ହୋଇଛି</translation>
@@ -701,6 +704,7 @@
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
 <translation id="523505283826916779">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍‌</translation>
+<translation id="5245201184978705914">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି, ବ୍ୟାଟେରୀରେ <ph name="BATTERY_PERCENTAGE" />% ଚାର୍ଜ ଅଛି</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
@@ -735,6 +739,7 @@
 <translation id="5433020815079095860">ଅଡିଓ ଇନପୁଟ</translation>
 <translation id="544691375626129091">ଏହି ଅବଧିରେ ସମସ୍ତ ଉପଲବ୍ଧ ଥିବା ଉପଯୋଗକର୍ତ୍ତା ପୂର୍ବରୁ ଯୋଗ କରାଯାଇଛନ୍ତି</translation>
 <translation id="54609108002486618">ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="5460938382730614333">ମାର୍କର ଚାଲୁ ଅଛି।</translation>
 <translation id="5465662442746197494">ସାହାଯ୍ୟ ଦରକାର?</translation>
 <translation id="547979256943495781">ଡାହାଣପଟେ ସେଲ୍ଫ ଅଛି</translation>
 <translation id="5491186829646618080">ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
@@ -776,6 +781,7 @@
 <translation id="5745612484876805746">ସୂର୍ଯ୍ୟାସ୍ତ ପରେ ନାଇଟ୍ ଲାଇଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ଚାଲୁ ହୋଇଥାଏ</translation>
 <translation id="5750765938512549687">ବ୍ଲୁଟୁଥ୍‌ ବନ୍ଦ ଅଛି</translation>
 <translation id="5760866832697883462">ଆପଣଙ୍କ <ph name="NAME" />କୁ କନେକ୍ଟ କରନ୍ତୁ</translation>
+<translation id="5762420912707163638">ମାର୍କରକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /> ସ୍କ୍ରିନରେ ଡ୍ର କରିବାକୁ ଟ୍ରାକପ୍ୟାଡ, ଟଚସ୍କ୍ରିନ କିମ୍ବା ଷ୍ଟାଇଲସ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="576341972084747908">ବିପଦଜନକ <ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5763928712329149804">ସେଲ୍ଫ ପାର୍ଟି ବନ୍ଦ ଅଛି।</translation>
 <translation id="576453121877257266">ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ ଅଛି।</translation>

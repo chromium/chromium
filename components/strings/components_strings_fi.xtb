@@ -1102,6 +1102,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> on estetty</translation>
 <translation id="3978338123949022456">Hakutila, kirjoita hakulauseke ja paina Enter, niin <ph name="KEYWORD_SUFFIX" /> tekee haun</translation>
 <translation id="398470910934384994">Linnut</translation>
+<translation id="3985750352229496475">Muuta osoitteita…</translation>
 <translation id="3986705137476756801">Laita Livetekstitys päälle toistaiseksi</translation>
 <translation id="3987940399970879459">Alle 1 Mt</translation>
 <translation id="3990250421422698716">Jog offset</translation>
@@ -1229,6 +1230,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4305666528087210886">Tiedostoa ei voi käyttää</translation>
 <translation id="4306529830550717874">Tallennetaanko osoite?</translation>
 <translation id="4306812610847412719">leikepöytä</translation>
+<translation id="4310070645992025887">Hae selailutiedoista</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Estä (oletus)</translation>
 <translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
@@ -2113,6 +2115,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6839929833149231406">Alue</translation>
 <translation id="6846340164947227603">Käytä virtuaalista korttinumeroa…</translation>
 <translation id="6852204201400771460">Ladataanko sovellus uudelleen?</translation>
+<translation id="6857776781123259569">Muuta salasana-asetuksia…</translation>
 <translation id="686485648936420384">Tiedot kuluttajille</translation>
 <translation id="6865412394715372076">Korttia ei voi vahvistaa juuri nyt.</translation>
 <translation id="6869334554832814367">Henkilökohtaiset lainat</translation>
@@ -2439,6 +2442,7 @@ Lisätietoja:
 <translation id="7669271284792375604">Tämän sivuston hyökkääjät saattavat yrittää huijata sinua asentamaan ohjelmia, jotka ovat haitallisia selauskokemuksellesi (esimerkiksi vaihtamalla aloitussivusi tai näyttämällä ylimääräisiä mainoksia käymilläsi sivustoilla).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Luottamukselliseen dataan liittyvät tapahtumat (1 tapahtuma kirjautumisen jälkeen). <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />}other{Luottamukselliseen dataan liittyvät tapahtumat (# tapahtumaa kirjautumisen jälkeen). <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Postilaatikko 6</translation>
+<translation id="7675325315208090829">Muuta maksutapoja…</translation>
 <translation id="7676643023259824263">Hae leikepöydän tekstiä <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Katso ja ylläpidä selaushistoriaasi Chromen asetuksista</translation>
 <translation id="7679947978757153706">Baseball</translation>

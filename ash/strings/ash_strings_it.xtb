@@ -133,6 +133,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1719094688023114093">La funzionalità Sottotitoli in tempo reale è attiva.</translation>
 <translation id="1720011244392820496">Attiva Sync Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visibile ai dispositivi Bluetooth.</translation>
+<translation id="174102739345480129">Evidenziatore OFF.</translation>
 <translation id="1743570585616704562">Non riconosciuta</translation>
 <translation id="1746730358044914197">I metodi di immissione vengono configurati dall'amministratore.</translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
@@ -564,6 +565,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4379531060876907730">Ecco gli strumenti per il tuo stilo</translation>
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
 <translation id="439598569299422042">In pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Impossibile salvare lo screencast</translation>
 <translation id="4405151984121254935">Il tipo periferico connesso non è supportato</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
@@ -670,6 +672,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Frase successiva</translation>
+<translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
 <translation id="5035236842988137213">Il dispositivo <ph name="DEVICE_NAME" /> si è connesso a un nuovo telefono</translation>
@@ -699,6 +702,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
+<translation id="5245201184978705914">Impossibile generare la trascrizione</translation>
 <translation id="5253783950165989294">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" />; batteria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Scrivania 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> richiede la tua attenzione.</translation>
@@ -733,6 +737,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5433020815079095860">Ingresso audio</translation>
 <translation id="544691375626129091">A questa sessione sono già stati aggiunti tutti gli utenti disponibili.</translation>
 <translation id="54609108002486618">Gestito</translation>
+<translation id="5460938382730614333">Evidenziatore ON.</translation>
 <translation id="5465662442746197494">Hai bisogno di assistenza?</translation>
 <translation id="547979256943495781">Barra delle app a destra</translation>
 <translation id="5491186829646618080">Aggiornamenti firmware disponibili</translation>
@@ -774,6 +779,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
 <translation id="5750765938512549687">Bluetooth non attivo.</translation>
 <translation id="5760866832697883462">Connetti <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /> Usa il trackpad, il touchscreen o lo stilo per disegnare sullo schermo.</translation>
 <translation id="576341972084747908">Download di <ph name="FILENAME" /> (pericoloso) in corso…</translation>
 <translation id="5763928712329149804">Modalità Shelf Party non attiva.</translation>
 <translation id="576453121877257266">Luminosità notturna attiva.</translation>

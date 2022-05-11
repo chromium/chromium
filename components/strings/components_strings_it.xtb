@@ -1098,6 +1098,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
 <translation id="3978338123949022456">Modalità di ricerca, digita una query e premi Invio per cercare con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Uccelli</translation>
+<translation id="3985750352229496475">Gestisci indirizzi…</translation>
 <translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
 <translation id="3987940399970879459">Meno di 1 MB</translation>
 <translation id="3990250421422698716">Offset jog</translation>
@@ -1225,6 +1226,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4305666528087210886">Impossibile accedere al file</translation>
 <translation id="4306529830550717874">Vuoi salvare l'indirizzo?</translation>
 <translation id="4306812610847412719">appunti</translation>
+<translation id="4310070645992025887">Cerca nei percorsi</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
 <translation id="4314815835985389558">Gestisci sincronizzazione</translation>
@@ -2108,6 +2110,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6839929833149231406">Area</translation>
 <translation id="6846340164947227603">Usa un numero di carta virtuale…</translation>
 <translation id="6852204201400771460">Ricaricare l'app?</translation>
+<translation id="6857776781123259569">Gestisci password…</translation>
 <translation id="686485648936420384">Risorse per i consumatori</translation>
 <translation id="6865412394715372076">Al momento non è possibile verificare questa carta.</translation>
 <translation id="6869334554832814367">Prestiti personali</translation>
@@ -2434,6 +2437,7 @@ Ulteriori dettagli:
 <translation id="7669271284792375604">I malintenzionati su questo sito potrebbero cercare di indurti con l'inganno a installare programmi che danneggiano la tua navigazione (ad esempio cambiando la tua pagina iniziale o mostrando annunci extra sui siti che visiti).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Azioni intraprese con dati segnalati come riservati (1 azione dall'accesso). <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />}other{Azioni intraprese con dati segnalati come riservati (# azioni dall'accesso). <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
+<translation id="7675325315208090829">Gestisci metodi di pagamento…</translation>
 <translation id="7676643023259824263">Cerca testo negli appunti, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Visualizza e gestisci la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="7679947978757153706">Baseball</translation>

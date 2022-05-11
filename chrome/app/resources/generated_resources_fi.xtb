@@ -971,6 +971,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1892341345406963517">Hei <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Muut kielet</translation>
 <translation id="1895658205118569222">Sulkeminen</translation>
+<translation id="1897120393475391208">Käytä vahvaa salasanaa</translation>
 <translation id="1900305421498694955">Google Playn sovellukset voivat edellyttää täysiä tiedostojärjestelmän käyttöoikeuksia, jotta ne voivat kirjoittaa ja lukea ulkoisten tallennustilalaitteiden tiedostoja. Kaikki ulkoisen aseman käyttäjät voivat nähdä laitteella luodut tiedostot ja kansiot. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Valitse &amp;kaikki</translation>
 <translation id="1901396183631570154">Chrome ei voinut tallentaa näitä salasanoja Google-tilillesi. Voit kuitenkin tallentaa ne laitteellesi.</translation>
@@ -6557,6 +6558,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7444970023873202833">Käy läpi muita muistoja Google Kuvissa</translation>
 <translation id="7444983668544353857">Poista <ph name="NETWORKDEVICE" /> käytöstä </translation>
 <translation id="7448430327655618736">asentaa sovellukset automaattisesti</translation>
+<translation id="7449381494541372002">käynnistyy…</translation>
 <translation id="7449752890690775568">Poistetaanko salasana?</translation>
 <translation id="7450761244949417357">Avataan nyt selaimessa <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Ohitettuja varoituksia (<ph name="MUTED_PASSWORDS" />)</translation>

@@ -136,6 +136,7 @@
 <translation id="1719094688023114093">Автоматические субтитры включены</translation>
 <translation id="1720011244392820496">Включить синхронизацию Wi-Fi</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />": видно устройствам Bluetooth.</translation>
+<translation id="174102739345480129">отключен.</translation>
 <translation id="1743570585616704562">Не распознано</translation>
 <translation id="1746730358044914197">Способы ввода настраиваются администратором</translation>
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
@@ -564,6 +565,7 @@
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
 <translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Не удалось сохранить скринкаст</translation>
 <translation id="4405151984121254935">Подключенное периферийное устройство этого типа не поддерживается.</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
@@ -670,6 +672,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
+<translation id="5016558321564993266">Статус фломастера: <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Время вышло</translation>
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
@@ -699,6 +702,7 @@
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="523505283826916779">Настройки специальных возможностей</translation>
+<translation id="5245201184978705914">Не удается создать расшифровку.</translation>
 <translation id="5253783950165989294">Установлено подключение к устройству "<ph name="DEVICE_NAME" />", заряд батареи – <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5260676007519551770">Рабочий стол 4</translation>
 <translation id="5283099933536931082">Приложение "<ph name="APP_ITEM_TITLE" />" требует вашего внимания.</translation>
@@ -733,6 +737,7 @@
 <translation id="5433020815079095860">Ввод аудио</translation>
 <translation id="544691375626129091">В этот сеанс уже добавлены все доступные пользователи.</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
+<translation id="5460938382730614333">включен.</translation>
 <translation id="5465662442746197494">Справка</translation>
 <translation id="547979256943495781">Временное хранилище расположено справа</translation>
 <translation id="5491186829646618080">Доступны обновления</translation>
@@ -774,6 +779,7 @@
 <translation id="5745612484876805746">Ночная подсветка включается автоматически на закате</translation>
 <translation id="5750765938512549687">Bluetooth выключен</translation>
 <translation id="5760866832697883462">Подключите <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Статус фломастера: <ph name="STATE_TEXT" /> В зависимости от типа экрана для рисования можно использовать сенсорную панель, палец или стилус.</translation>
 <translation id="576341972084747908">Скачивание опасного файла <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Режим отключен.</translation>
 <translation id="576453121877257266">Ночная подсветка включена</translation>

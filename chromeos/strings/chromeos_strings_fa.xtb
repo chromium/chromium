@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
+<translation id="1236400083787698183">‏قبل‌از بازراه‌اندازی، Powerwash را در دستگاهتان اجرا کنید. اگر دستگاهتان درب دارد، تا زمانی که Powerwash تکمیل نشده است، درب را نبندید. تکمیل Powerwash ممکن است حداکثر یک دقیقه طول بکشد.</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
+<translation id="1240699967155581440">‏Powerwash (بازنشانی کارخانه‌ای) لازم است</translation>
 <translation id="1264116747675686718">درحال به‌روزرسانی نسخه سیستم‌عامل</translation>
 <translation id="1264369926465113395">‏مجله دیجیتال جدید Chromebook برای سازندگان محتوا را بررسی کنید</translation>
 <translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />قطعات غیرمجاز<ph name="LINK_END" /> شناسایی شد. اگر می‌خواهید تأیید کنید این قطعات نصب شده‌اند، لطفاً اکنون این کار را انجام دهید.</translation>
 <translation id="2363636958541445404">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، این ویژگی را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
+<translation id="236594517359128026">قبل‌از ادامه، رایانه کیفی‌تان را روی سطحی صاف قرار دهید</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2407209115954268704">وضعیت قفل سیم‌کارت</translation>
@@ -267,6 +270,7 @@
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="385051799172605136">بازگشت</translation>
+<translation id="385832974417157471">‏قبل‌از خاموش کردن، Powerwash را در دستگاهتان اجرا کنید. اگر دستگاهتان درب دارد، تا زمانی که Powerwash تکمیل نشده است، درب را نبندید. تکمیل Powerwash ممکن است حداکثر یک دقیقه طول بکشد.</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
@@ -456,6 +460,7 @@
 <translation id="5507300744274596613">‏اطمینان از به‌روز بودن Chrome OS</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">واسنجی اجزا</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">اسکن مجدد</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -709,6 +714,7 @@
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8217675307824400706">متصل شوید</translation>
+<translation id="8221728673725659466">واسنجی تکمیل شد</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
@@ -720,6 +726,7 @@
 <translation id="8297006494302853456">ضعیف</translation>
 <translation id="8302368968391049045">‏دیواره آتش HTTPS</translation>
 <translation id="8318753676953949627">تصویری وجود ندارد</translation>
+<translation id="8327249300223641918">قبل‌از ادامه، کل دستگاهتان (پایه و درب) را روی سطحی صاف قرار دهید.</translation>
 <translation id="8336739000755212683">تغییر تصویر حساب دستگاه</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
@@ -734,6 +741,7 @@
 <translation id="844521431886043384">ساناد تنظیم نشده است</translation>
 <translation id="8456761643544401578">حالت تاریک خودکار</translation>
 <translation id="8461329675984532579">نام ارائه‌دهنده اصلی</translation>
+<translation id="8467104829907989997">درحال واسنجی اجزا…</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
@@ -793,6 +801,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکن}=1{اسکن کردن صفحه {NUMBER_OF_PAGES}}one{اسکن کردن صفحه {NUMBER_OF_PAGES}}other{اسکن کردن صفحه {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">باتری دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="9003704114456258138">فرکانس</translation>
+<translation id="9025198690966128418">استفاده به‌عنوان دستگاه شخصی</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">تفکیک ساناد تأخیر زیادی دارد</translation>
 <translation id="9073281213608662541">PAP</translation>

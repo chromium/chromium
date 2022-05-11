@@ -94,6 +94,7 @@
 <translation id="1801418420130173017">Disabilita il tema scuro</translation>
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1827738518074806965">Galleria d'arte</translation>
+<translation id="1840835860961531162">Disattiva protezione scrittura</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
 <translation id="1852934301711881861">Installa Chrome OS Flex</translation>
 <translation id="1856388568474281774">Freccia giù</translation>
@@ -279,6 +280,7 @@
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
 <translation id="3954678691475912818">Tipo di dispositivo sconosciuto.</translation>
+<translation id="3958703339436883942">Preparazione al riavvio in corso…</translation>
 <translation id="3966286471246132217">Per risultati più accurati, chiudi tutte le app fino al completamento del test.</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3969602104473960991">Password di Chrome OS aggiornata</translation>
@@ -428,6 +430,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5275828089655680674">Riesegui le routine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">versione <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Disattiva la protezione scrittura per continuare con la prossima schermata. Vai alla pagina di assistenza del produttore del dispositivo per istruzioni in proposito.</translation>
 <translation id="5300814202279832142">Sposta finestra nella scrivania</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Connetti</translation>
@@ -480,6 +483,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Codice del provider principale</translation>
+<translation id="5856532218727053281">Il sistema si riavvierà dopo aver verificato lo stato della protezione scrittura</translation>
 <translation id="5859603669299126575">Album di Galleria d'arte</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>

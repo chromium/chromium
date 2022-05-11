@@ -1100,6 +1100,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
 <translation id="3978338123949022456">Meklēšanas režīms; ierakstiet vaicājumu un nospiediet taustiņu Enter, lai veiktu meklēšanu pakalpojumā <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="398470910934384994">Putni</translation>
+<translation id="3985750352229496475">Pārvaldīt adreses…</translation>
 <translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
@@ -1227,6 +1228,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4305666528087210886">Jūsu failam nevarēja piekļūt</translation>
 <translation id="4306529830550717874">Vai saglabāt adresi?</translation>
 <translation id="4306812610847412719">starpliktuve</translation>
+<translation id="4310070645992025887">Meklēt jūsu ceļos</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloķēt (pēc noklusējuma)</translation>
 <translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
@@ -2111,6 +2113,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6839929833149231406">Apgabals</translation>
 <translation id="6846340164947227603">Izmantot virtuālās kartes numuru...</translation>
 <translation id="6852204201400771460">Vai atkārtoti ielādēt lietotni?</translation>
+<translation id="6857776781123259569">Pārvaldīt paroles…</translation>
 <translation id="686485648936420384">Patērētāju resursi</translation>
 <translation id="6865412394715372076">Pašlaik nevar verificēt šo karti.</translation>
 <translation id="6869334554832814367">Aizdevumi privātpersonām</translation>
@@ -2437,6 +2440,7 @@ Papildu informācija:
 <translation id="7669271284792375604">Uzbrucēji šajā vietnē var mudināt jūs uz tādu programmu instalēšanu, kuras traucē pārlūkošanu (piemēram, mainot sākumlapu vai apmeklētajās vietnēs rādot papildu reklāmas).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Darbības ar datiem, kas atzīmēti kā konfidenciāli (viena darbība kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}zero{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbības kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}one{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbība kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}other{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbības kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6. pastkaste</translation>
+<translation id="7675325315208090829">Pārvaldīt maksājumu veidus…</translation>
 <translation id="7676643023259824263">Meklēt starpliktuves tekstu <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome iestatījumos skatīt un pārvaldīt pārlūkošanas vēsturi</translation>
 <translation id="7679947978757153706">Beisbols</translation>

@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
+<translation id="1511320244449497906">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="8022947259858476807">Chrome standardmäßig verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch auszufüllen</translation>
+<translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8263079278049777200">Melde dich bei dieser Website, in deinem Google-Konto und in Chrome an. Du kannst die Synchronisierung später aktivieren.</translation>
 <translation id="8357607116237445042">Möchtest du deine Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>

@@ -304,6 +304,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2834813915651407382">Aberto recentemente</translation>
 <translation id="2841907151129139818">Mudou para o modo de tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
+<translation id="2848120746144143659">Prima Enter para fazer uma captura de ecrã inteiro</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
 <translation id="2865888419503095837">Informações da rede</translation>
@@ -482,6 +483,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3846575436967432996">Não existem informações de rede disponíveis</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="385300504083504382">Início</translation>
+<translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Prima Ctrl+Shift+Q duas vezes para terminar sessão.</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -813,6 +815,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="595202126637698455">Rastreio do desempenho ativado</translation>
 <translation id="5955304353782037793">aplicação</translation>
 <translation id="5958529069007801266">Utilizador supervisionado</translation>
+<translation id="5976112937189445008">Prima Enter para gravar a janela</translation>
 <translation id="5977415296283489383">Auscultador</translation>
 <translation id="5978382165065462689">A partilhar o controlo do seu ecrã através da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sess. de conv.</translation>
@@ -1199,6 +1202,7 @@ Nova instalação</translation>
 <translation id="8364673525741149932">Ative/desative o Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8371991222807690464">O desempenho periférico pode estar limitado no Modo convidado.</translation>
+<translation id="8374601332003098278">Prima Enter para gravar o ecrã parcial</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
 <translation id="8382715499079447151">Proteção da visualização</translation>
@@ -1251,6 +1255,7 @@ Nova instalação</translation>
 <translation id="8653151467777939995">Mostrar definições de notificação. As notificações estão ativadas</translation>
 <translation id="8660331759611631213">Raiz quadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Prima Enter para fazer uma captura de ecrã parcial</translation>
 <translation id="8664753092453405566">Mostrar lista de redes. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Abra <ph name="NAME" /> para configurar o dispositivo</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
@@ -1292,6 +1297,7 @@ Nova instalação</translation>
 <translation id="8909138438987180327">A bateria está a <ph name="PERCENTAGE" /> por cento.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">O Assistente Google não fala este idioma.</translation>
+<translation id="8924458948354692166">Prima Enter para fazer uma captura de ecrã da janela</translation>
 <translation id="8926951137623668982">Prateleira sempre oculta</translation>
 <translation id="8936501819958976551">desativada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>

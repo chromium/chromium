@@ -304,6 +304,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2834813915651407382">Agorwyd yn ddiweddar</translation>
 <translation id="2841907151129139818">Wedi newid i'r modd llechen</translation>
 <translation id="2844169650293029770">Dyfais USB-C (porth chwith ar y blaen)</translation>
+<translation id="2848120746144143659">Pwyswch Enter i dynnu sgrinlun sgrîn lawn</translation>
 <translation id="2849936225196189499">Critigol</translation>
 <translation id="2860184359326882502">Y Canlyniad Mwyaf Perthnasol</translation>
 <translation id="2865888419503095837">Gwybodaeth am y rhwydwaith</translation>
@@ -482,6 +483,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3846575436967432996">Nid oes unrhyw wybodaeth rhwydwaith ar gael</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="385300504083504382">Y dechrau</translation>
+<translation id="3861651314799684201">Pwyswch Enter i recordio'r sgrîn lawn</translation>
 <translation id="3886872229787704059">Agorwyd heddiw</translation>
 <translation id="3891340733213178823">Pwyswch Ctrl+Shift+Q ddwywaith i allgofnodi.</translation>
 <translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
@@ -813,6 +815,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="595202126637698455">Mae olrhain perfformiad wedi'i alluogi</translation>
 <translation id="5955304353782037793">ap</translation>
 <translation id="5958529069007801266">Defnyddiwr dan oruchwyliaeth</translation>
+<translation id="5976112937189445008">Pwyswch Enter i recordio'r ffenestr</translation>
 <translation id="5977415296283489383">Clustffon</translation>
 <translation id="5978382165065462689">Rhannu rheolaeth o'ch sgrîn drwy Gymorth o Bell.</translation>
 <translation id="5980301590375426705">Gadael gwestai</translation>
@@ -1199,6 +1202,7 @@ Gosodiad newydd</translation>
 <translation id="8364673525741149932">Toglo'r modd Parti Silff. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Ymlaen wrth y llythyren</translation>
 <translation id="8371991222807690464">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig yn y modd Gwestai</translation>
+<translation id="8374601332003098278">Pwyswch Enter i recordio'r sgrîn yn rhannol</translation>
 <translation id="8375916635258623388">Bydd y <ph name="DEVICE_NAME" /> hwn a'ch ffôn yn cysylltu'n awtomatig</translation>
 <translation id="8380784334203145311">Nos da,</translation>
 <translation id="8382715499079447151">Wrthi'n gweld amddiffyniad</translation>
@@ -1251,6 +1255,7 @@ Gosodiad newydd</translation>
 <translation id="8653151467777939995">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u troi ymlaen</translation>
 <translation id="8660331759611631213">Isradd 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Pwyswch Enter i dynnu sgrinlun rhannol</translation>
 <translation id="8664753092453405566">Dangos rhestr rhwydwaith. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Agorwch <ph name="NAME" /> i osod eich dyfais</translation>
 <translation id="8676770494376880701">Mae gwefrydd pŵer isel wedi'i gysylltu</translation>
@@ -1292,6 +1297,7 @@ Gosodiad newydd</translation>
 <translation id="8909138438987180327">Mae <ph name="PERCENTAGE" /> y cant o'r batri'n weddill.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Nid yw Google Assistant yn siarad yr iaith hon.</translation>
+<translation id="8924458948354692166">Pwyswch Enter i dynnu sgrinlun ffenestr</translation>
 <translation id="8926951137623668982">Silff yn cael ei guddio bob amser</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>

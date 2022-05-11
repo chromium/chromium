@@ -971,6 +971,7 @@
 <translation id="1892341345406963517">हाय <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">इतर भाषा</translation>
 <translation id="1895658205118569222">बंद करा</translation>
+<translation id="1897120393475391208">क्लिष्ट पासवर्ड वापरा</translation>
 <translation id="1900305421498694955">Google Play वरील ॲप्सना कदाचित बाह्य स्टोरेज डिव्हाइसवरील फाइल रीड आणि राइट करण्यासाठी संपूर्ण फाइल सिस्टम ॲक्सेसची आवश्यकता असू शकते. डिव्हाइसवर तयार केलेल्या फाइल आणि फोल्डर हे बाह्य ड्राइव्ह वापरणार्‍या कोणालाही दिसतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">&amp;सर्व निवडा</translation>
 <translation id="1901396183631570154">Chrome ला हे पासवर्ड तुमच्या Google खाते मध्ये सेव्ह करता आले नाहीत. तुम्ही तरीही ते या डिव्हाइसवर सेव्ह करू शकता.</translation>
@@ -6559,6 +6560,7 @@
 <translation id="7444970023873202833">Google Photos मध्ये तुमच्या आणखी आठवणी एक्सप्लोर करा</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> अक्षम करा</translation>
 <translation id="7448430327655618736">अ‍ॅप्स आपोआप इंस्टॉल करा</translation>
+<translation id="7449381494541372002">सुरू करत आहे…</translation>
 <translation id="7449752890690775568">पासवर्ड काढायचा?</translation>
 <translation id="7450761244949417357">आता <ph name="ALTERNATIVE_BROWSER_NAME" /> मध्ये उघडत आहे</translation>
 <translation id="7452166281927983300">डिसमिस केलेल्या चेतावण्या (<ph name="MUTED_PASSWORDS" />)</translation>

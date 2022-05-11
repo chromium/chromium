@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
+<translation id="6625409903340039086">Suportado na ngayon ng Chromium ang mga patakaran ng user para sa iyong pinamamahalaang account</translation>
 <translation id="6752854822223394465">Sine-set up ng iyong organisasyon ang Chromium...</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="7006920032187763988">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPad.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Chromium at i-on ang camera.</translation>
 <translation id="7746854981345936341">Tip sa Chromium. Nasa ibaba na ng iyong screen ang ilang button, tulad ng Bumalik, Susunod, at Maghanap.</translation>
 <translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
+<translation id="7812317783196516890">Naka-sign in ka at sini-sync ang iyong data sa isang account na pinamamahalaan ng <ph name="DOMAIN" /> kung saan magagawa na ng administrator nito na magtakda ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa pagkilos ng Chromimum.</translation>
 <translation id="786327964234957808">Pinapalitan mo ang mga sync account mula sa <ph name="USER_EMAIL1" /> patungo sa <ph name="USER_EMAIL2" />. Ang iyong data ng Chromium ay pinamamahalaan ng <ph name="DOMAIN" />. Ide-delete nito ang iyong data mula sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Simulang gamitin ang scanner ng Chromium</translation>
 <translation id="7928628054454574139">Buksan ang Chromium sa tuwing magta-tap ka sa mga link sa iba pang app</translation>

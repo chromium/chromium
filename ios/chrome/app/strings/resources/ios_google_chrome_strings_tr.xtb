@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="1493827051843127077">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chrome'u varsayılan olarak ayarlayın</translation>
 <translation id="1504372625950710826">Chrome, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
+<translation id="1511320244449497906">Oturumunuz açık ve verilerinizi <ph name="DOMAIN" /> tarafından yönetilen bir hesapla senkronize ediyorsunuz. Buradaki yönetici artık söz konusu hesaba özel kullanıcı politikaları belirleyebilir ve bunlar da Chrome'un davranışını değiştirebilir.</translation>
 <translation id="1682483655351012182">Chrome Verilerimi Senkronize Et</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chrome'u geliştirmemize yardımcı olun</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda parolaları otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
+<translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
 <translation id="8263079278049777200">Bu sitede, Google Hesabınızda ve Chrome'da oturum açın. Senkronizasyonu daha sonra açabilirsiniz.</translation>
 <translation id="8357607116237445042">Chrome verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>

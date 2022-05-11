@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1204296502688602597">Cuddni DNS</translation>
 <translation id="123124571410524056">Mae porth yn debygol</translation>
+<translation id="1236400083787698183">Cyn ailgychwyn, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="1238612778414822719">Cuddni HTTPS</translation>
+<translation id="1240699967155581440">Mae angen Powerwash (ailosod i'r gosodiadau ffatri)</translation>
 <translation id="1264116747675686718">Wrthi'n diweddaru fersiwn yr OS</translation>
 <translation id="1264369926465113395">Dewch i weld cylchgrawn digidol newydd Chromebook ar gyfer crewyr</translation>
 <translation id="1270369111467284986">Porth caeth yn debygol</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">Canfuwyd <ph name="LINK_BEGIN" />cydrannau sydd heb gymhwyso<ph name="LINK_END" />. Os dewiswch gadarnhau bod hwn wedi'i osod, gwnewch hynny nawr.</translation>
 <translation id="2363636958541445404">Trowch y nodwedd ymlaen i ddewis opsiynau arbedwr sgrîn</translation>
 <translation id="2364498172489649528">Pasiwyd</translation>
+<translation id="236594517359128026">Cyn parhau, gosodwch eich gliniadur ar arwyneb fflat</translation>
 <translation id="2380886658946992094">Cyfreithiol</translation>
 <translation id="2391082728065870591">Anfon Adroddiad Adborth</translation>
 <translation id="2407209115954268704">Statws Cloi SIM</translation>
@@ -267,6 +270,7 @@
 <translation id="3820172043799983114">PIN annilys.</translation>
 <translation id="3838338534323494292">Cyfrinair newydd</translation>
 <translation id="385051799172605136">Nôl</translation>
+<translation id="385832974417157471">Cyn diffodd, defnyddiwch Powerwash ar eich dyfais. Os oes gan eich dyfais gaead, arhoswch nes bod Powerwash wedi'i gwblhau cyn cau'r caead. Gall gymryd hyd at funud i gwblhau Powerwash.</translation>
 <translation id="3858860766373142691">Enw</translation>
 <translation id="3865414814144988605">Cydraniad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
@@ -456,6 +460,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5507300744274596613">Gwnewch yn siŵr bod Chrome OS yn gyfredol</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Calibradu cydrannau</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ail-sganio</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -709,6 +714,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
 <translation id="8217675307824400706">Cysylltu</translation>
+<translation id="8221728673725659466">Wedi gorffen calibradu</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
 <translation id="8246209727385807362">Cludwr anhysbys</translation>
@@ -720,6 +726,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8297006494302853456">Gwan</translation>
 <translation id="8302368968391049045">Wal Dân HTTPS</translation>
 <translation id="8318753676953949627">Dim Delweddau</translation>
+<translation id="8327249300223641918">Cyn parhau, gosodwch eich dyfais gyfan (sylfaen a chaead) ar arwyneb fflat.</translation>
 <translation id="8336739000755212683">Newid llun cyfrif y ddyfais</translation>
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
 <translation id="8352772353338965963">Ychwanegu cyfrif at fewngofnodi o sawl cyfrif. Gellir cael mynediad at bob cyfrif sydd wedi'i fewngofnodi heb gyfrinair, felly dim ond gyda chyfrifon dibynadwy y dylid defnyddio'r nodwedd hon.</translation>
@@ -734,6 +741,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="844521431886043384">Nid yw'r DNS wedi'i osod</translation>
 <translation id="8456761643544401578">Modd tywyll awtomatig</translation>
 <translation id="8461329675984532579">Enw'r darparwr hafan</translation>
+<translation id="8467104829907989997">Wrthi'n calibradu cydrannau...</translation>
 <translation id="8475690821716466388">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP PSK</translation>
 <translation id="8477551185774834963">Mae cuddni DNS ychydig yn uwch na'r trothwy a ganiateir</translation>
 <translation id="8483248364096924578">Cyfeiriad IP</translation>
@@ -793,6 +801,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Sganio}=1{Sganio tudalen {NUMBER_OF_PAGES}}two{Sganio tudalen {NUMBER_OF_PAGES}}few{Sganio tudalen {NUMBER_OF_PAGES}}many{Sganio tudalen {NUMBER_OF_PAGES}}other{Sganio tudalen {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri.</translation>
 <translation id="9003704114456258138">Amlder</translation>
+<translation id="9025198690966128418">Defnyddio fel dyfais bersonol</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Mae gan y datrysiad DNS guddni uchel</translation>
 <translation id="9073281213608662541">PAP</translation>

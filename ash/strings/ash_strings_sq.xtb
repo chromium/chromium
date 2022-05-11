@@ -136,6 +136,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1719094688023114093">"Titrat në çast" janë aktivë.</translation>
 <translation id="1720011244392820496">Aktivizo "Sinkronizimin e Wi-Fi"</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" i dukshëm për pajisjet me Bluetooth.</translation>
+<translation id="174102739345480129">Treguesi është joaktiv.</translation>
 <translation id="1743570585616704562">Nuk njihet</translation>
 <translation id="1746730358044914197">Metodat e hyrjes konfigurohen nga administratori yt.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
@@ -303,6 +304,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2834813915651407382">Hapur së fundi</translation>
 <translation id="2841907151129139818">Kaloi në modalitetin e tabletit</translation>
 <translation id="2844169650293029770">Pajisja USB-C (porta e përparme, majtas)</translation>
+<translation id="2848120746144143659">Shtyp "Enter" për të nxjerrë pamjen e ekranit në ekran të plotë</translation>
 <translation id="2849936225196189499">Vendimtar</translation>
 <translation id="2860184359326882502">Përputhja më e mirë</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
@@ -481,6 +483,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="385300504083504382">Fillimi</translation>
+<translation id="3861651314799684201">Shtyp "Enter" për të regjistruar ekranin e plotë</translation>
 <translation id="3886872229787704059">Hapur sot</translation>
 <translation id="3891340733213178823">Shtyp Ctrl+Shift+Q për të dalë nga llogaria.</translation>
 <translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
@@ -564,6 +567,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4379531060876907730">Këto janë veglat e tua të stilolapsit</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
 <translation id="439598569299422042">Në pauzë, <ph name="SIZE_INFO" /></translation>
+<translation id="440113666232554208">Transmetimi i ekranit nuk mund të ruhet</translation>
 <translation id="4405151984121254935">Lloji i pajisjes së lidhur periferike nuk mbështetet</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
@@ -670,6 +674,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="5003993274120026347">Fjalia tjetër</translation>
+<translation id="5016558321564993266">Ndrysho treguesin. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Koha mbaroi</translation>
 <translation id="5033299697334913360">Kliko diku për të regjistruar ekranin e plotë</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> u lidh me një telefon të ri</translation>
@@ -699,6 +704,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
+<translation id="5245201184978705914">Transkripti nuk mund të krijohet</translation>
 <translation id="5253783950165989294">U lidh me një pajisje me emrin "<ph name="DEVICE_NAME" />". Niveli i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> kërkon vëmendjen tënde.</translation>
@@ -733,6 +739,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5433020815079095860">Hyrja e audios</translation>
 <translation id="544691375626129091">Të gjithë përdoruesit e gatshëm janë shtuar tashmë te ky sesion.</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
+<translation id="5460938382730614333">Shënuesi është aktiv.</translation>
 <translation id="5465662442746197494">Ke nevojë për ndihmë?</translation>
 <translation id="547979256943495781">Rafti në të djathtë</translation>
 <translation id="5491186829646618080">Ofrohen përditësime të firmuerit</translation>
@@ -774,6 +781,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5745612484876805746">"Drita e natës" aktivizohet automatikisht kur perëndon dielli</translation>
 <translation id="5750765938512549687">Bluetooth-i është joaktiv</translation>
 <translation id="5760866832697883462">Lidh <ph name="NAME" /></translation>
+<translation id="5762420912707163638">Aktivizo/çaktivizo shënuesin. <ph name="STATE_TEXT" /> Përdor bllokun e prekjes, ekranin me prekje ose stilolapsin për të vizatuar në ekran.</translation>
 <translation id="576341972084747908">Shkarko <ph name="FILENAME" /> me rrezik</translation>
 <translation id="5763928712329149804">"Grupi i rafteve" është joaktiv.</translation>
 <translation id="576453121877257266">"Drita e natës" është aktive.</translation>
@@ -807,6 +815,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5955304353782037793">aplikacion</translation>
 <translation id="5958529069007801266">Përdorues i mbikëqyrur</translation>
+<translation id="5976112937189445008">Shtyp "Enter" për të regjistruar një video për dritaren</translation>
 <translation id="5977415296283489383">Kufjet</translation>
 <translation id="5978382165065462689">Po ndan kontrollin e ekranit përmes "Ndihmës në distancë".</translation>
 <translation id="5980301590375426705">Dil si vizitor</translation>
@@ -1193,6 +1202,7 @@ Instalim i ri</translation>
 <translation id="8364673525741149932">Aktivizo/çaktivizo "Grupin e rafteve". <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Përpara një shkronjë</translation>
 <translation id="8371991222807690464">Performanca e pajisjes periferike mund të jetë e kufizuar në modalitetin "vizitor"</translation>
+<translation id="8374601332003098278">Shtyp "Enter" për të regjistruar një pjesë të ekranit</translation>
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>
 <translation id="8380784334203145311">Natën e mirë,</translation>
 <translation id="8382715499079447151">Mbrojtja e shikimit</translation>
@@ -1245,6 +1255,7 @@ Instalim i ri</translation>
 <translation id="8653151467777939995">Shfaq cilësimet e njoftimeve. Njoftimet janë aktive</translation>
 <translation id="8660331759611631213">Rrënja katrore e 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Shtyp "Enter" për të nxjerrë një pamje të pjesshme të ekranit</translation>
 <translation id="8664753092453405566">Shfaq listën e njoftimeve. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Hap <ph name="NAME" /> për të konfiguruar pajisjen tënde</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
@@ -1286,6 +1297,7 @@ Instalim i ri</translation>
 <translation id="8909138438987180327">Bateria është në <ph name="PERCENTAGE" /> për qind.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">"Asistenti i Google" nuk e flet këtë gjuhë.</translation>
+<translation id="8924458948354692166">Shtyp "Enter" për të nxjerrë pamjen e ekranit për dritaren</translation>
 <translation id="8926951137623668982">Rafti gjithmonë i fshehur</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>

@@ -957,6 +957,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" /> さん</translation>
 <translation id="189358972401248634">その他の言語</translation>
 <translation id="1895658205118569222">シャットダウン</translation>
+<translation id="1897120393475391208">安全なパスワードを使用</translation>
 <translation id="1900305421498694955">Google Play のアプリで外部ストレージ デバイスのファイルの読み取りと書き込みを行うには、ファイル システムへのフルアクセスが必要となる場合があります。デバイス上に作成されたファイルやフォルダは、外部ドライブを使用する全員に表示されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
 <translation id="1901396183631570154">Chrome では、次のパスワードを Google アカウントに保存できませんでした。ただし、このデバイスに保存することは可能です。</translation>
@@ -6525,6 +6526,7 @@
 <translation id="7444970023873202833">Google フォトで思い出の写真に簡単アクセス</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> を無効にする</translation>
 <translation id="7448430327655618736">アプリの自動インストール</translation>
+<translation id="7449381494541372002">起動しています...</translation>
 <translation id="7449752890690775568">パスワードを削除しますか？</translation>
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
 <translation id="7452166281927983300">閉じた警告（<ph name="MUTED_PASSWORDS" /> 件）</translation>

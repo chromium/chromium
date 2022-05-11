@@ -962,6 +962,7 @@
 <translation id="1892341345406963517">مرحبًا <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">لغات أخرى</translation>
 <translation id="1895658205118569222">إيقاف التشغيل</translation>
+<translation id="1897120393475391208">ننصحك باستخدام كلمة مرور قوية.</translation>
 <translation id="1900305421498694955">‏يمكن أن تتطلب التطبيقات من Google Play إذن الوصول الكامل إلى نظام الملفات لقراءة الملفات وكتابتها على أجهزة التخزين الخارجية. تظهر الملفات والمجلدات التي تم إنشاؤها على الجهاز لأيّ شخص يستخدم محرك الأقراص الخارجي. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">تح&amp;ديد الكلّ</translation>
 <translation id="1901396183631570154">‏تعذَّر حفظ كلمات المرور هذه على Chrome في حسابك على Google. ولا يزال بإمكانك حفظها على هذا الجهاز.</translation>
@@ -6555,6 +6556,7 @@
 <translation id="7444970023873202833">‏يمكنك الاطّلاع على المزيد من ذكرياتك في "صور Google".</translation>
 <translation id="7444983668544353857">إيقاف <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">يمكنك تثبيت التطبيقات تلقائيًا.</translation>
+<translation id="7449381494541372002">جارٍ البدء…</translation>
 <translation id="7449752890690775568">هل تريد إزالة كلمة المرور؟</translation>
 <translation id="7450761244949417357">سيتم الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> الآن.</translation>
 <translation id="7452166281927983300">التحذيرات التي تم إغلاقها (<ph name="MUTED_PASSWORDS" />)</translation>

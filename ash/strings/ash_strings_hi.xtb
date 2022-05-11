@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">इसे हाल ही में खोला गया था</translation>
 <translation id="2841907151129139818">टैबलेट मोड पर स्विच किया गया</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
+<translation id="2848120746144143659">पूरी स्क्रीन का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="2849936225196189499">महत्वपूर्ण</translation>
 <translation id="2860184359326882502">सबसे ज़्यादा मिलते-जुलते नतीजे</translation>
 <translation id="2865888419503095837">नेटवर्क जानकारी</translation>
@@ -483,6 +484,7 @@
 <translation id="3846575436967432996">कोई नेटवर्क जानकारी उपलब्ध नहीं</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="385300504083504382">टेक्स्ट की शुरुआत में जाएं</translation>
+<translation id="3861651314799684201">पूरी स्क्रीन को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="3886872229787704059">इसे आज खोला गया था</translation>
 <translation id="3891340733213178823">साइन आउट करने के लिए दो बार Ctrl+Shift+Q दबाएं.</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
@@ -814,6 +816,7 @@
 <translation id="595202126637698455">निष्पादन ट्रेसिंग सक्षम है</translation>
 <translation id="5955304353782037793">ऐप्लिकेशन</translation>
 <translation id="5958529069007801266">निगरानी में रखा गया उपयोगकर्ता</translation>
+<translation id="5976112937189445008">विंडो को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="5977415296283489383">हेडफ़ोन</translation>
 <translation id="5978382165065462689">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायका के द्वारा शेयर किया जा रहा है.</translation>
 <translation id="5980301590375426705">मेहमान मोड से निकलें</translation>
@@ -1200,6 +1203,7 @@
 <translation id="8364673525741149932">शेल्फ़ पार्टी मोड को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">एक वर्ण आगे जाएं</translation>
 <translation id="8371991222807690464">हो सकता है कि मेहमान मोड में आपके सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) पूरी तरह काम न कर पाएं</translation>
+<translation id="8374601332003098278">स्क्रीन के किसी खास हिस्से को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="8375916635258623388">यह <ph name="DEVICE_NAME" /> और आपका फ़ोन, अपने आप कनेक्ट हो जाएंगे</translation>
 <translation id="8380784334203145311">गुड नाइट,</translation>
 <translation id="8382715499079447151">व्यूइंग प्रोटेक्शन</translation>
@@ -1252,6 +1256,7 @@
 <translation id="8653151467777939995">सूचना सेटिंग दिखाएं. सूचनाएं चालू हैं</translation>
 <translation id="8660331759611631213">71 का वर्गमूल बताओ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">स्क्रीन के किसी खास हिस्से का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="8664753092453405566">नेटवर्क सूची दिखाएं. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">अपना डिवाइस सेट अप करने के लिए <ph name="NAME" /> खोलें</translation>
 <translation id="8676770494376880701">कम-शक्ति वाला चार्जर</translation>
@@ -1293,6 +1298,7 @@
 <translation id="8909138438987180327"><ph name="PERCENTAGE" /> बैटरी बची है.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant सेवा इस भाषा में उपलब्ध नहीं है.</translation>
+<translation id="8924458948354692166">विंडो का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
 <translation id="8926951137623668982">शेल्फ़ को हमेशा के लिए छिपाकर रखा गया है</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>

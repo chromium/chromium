@@ -423,6 +423,7 @@
 <translation id="1415708812149920388">Juurdepääsu lõikelaua lugemiseks ei antud</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (laienduse ID „<ph name="EXTENSION_ID" />”) ei ole seda tüüpi seansi puhul lubatud.</translation>
 <translation id="1418552618736477642">Märguanded ja rakendused</translation>
+<translation id="1418882096915998312">Enterprise'is registreerimine on pooleli</translation>
 <translation id="1418954524306642206">Sirvige printeri PPD-faili määramiseks</translation>
 <translation id="1420834118113404499">Meedialitsentsid</translation>
 <translation id="1420920093772172268">Sidumise lubamiseks <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -963,6 +964,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1892341345406963517">Tere, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Teised keeled</translation>
 <translation id="1895658205118569222">Sulgemine</translation>
+<translation id="1897120393475391208">Kasutage tugevat parooli</translation>
 <translation id="1900305421498694955">Google Playst pärinevad rakendused võivad vajada täielikku juurdepääsu failisüsteemile, et välistelt salvestusseadmetelt faile lugeda ja neid sinna kirjutada. Selles seadmes loodud failid ja kaustad on nähtavad kõigile, kes välist ketast kasutavad. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Vali &amp;kõik</translation>
 <translation id="1901396183631570154">Chrome'il ei õnnestunud neid paroole teie Google'i kontole salvestada. Saate need siiski salvestada sellesse seadmesse.</translation>
@@ -3413,6 +3415,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4275830172053184480">Taaskäivitage seade</translation>
 <translation id="4277434192562187284">XML-i seadistuste allikas</translation>
 <translation id="4278390842282768270">Lubatud</translation>
+<translation id="4278498748067682896">Kasutate kioski- ja teabeseadmete versiooniuuendust, mis lubab seadet käitada ainult kioski- või teabeseadme režiimis. Kui soovite, et kasutajad logiksid seadmesse sisse, minge tagasi ja registreeruge Chrome Enterprise'i versiooniuuenduse kaudu.</translation>
 <translation id="4279129444466079448">Saate sellesse seadmesse installida kuni <ph name="PROFILE_LIMIT" /> eSIM-i profiili. Veel ühe profiili lisamiseks eemaldage mõni olemasolev.</translation>
 <translation id="4280325816108262082">Kui seade on välja lülitatud või seda ei kasutata, katkestatakse automaatselt selle ühendus</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
@@ -6551,6 +6554,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7444970023873202833">Avastage teenuses Google Photos oma mälestusi</translation>
 <translation id="7444983668544353857">Keela <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Rakenduste automaatne installimine</translation>
+<translation id="7449381494541372002">käivitamine …</translation>
 <translation id="7449752890690775568">Kas eemaldada parool?</translation>
 <translation id="7450761244949417357">Brauser <ph name="ALTERNATIVE_BROWSER_NAME" /> avatakse kohe</translation>
 <translation id="7452166281927983300">Hoiatustest loobuti (<ph name="MUTED_PASSWORDS" />)</translation>

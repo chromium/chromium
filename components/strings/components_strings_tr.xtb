@@ -1098,6 +1098,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
 <translation id="3978338123949022456">Arama modu, <ph name="KEYWORD_SUFFIX" /> ile arama yapmak için bir sorgu yazıp Enter'a basın</translation>
 <translation id="398470910934384994">Kuşlar</translation>
+<translation id="3985750352229496475">Adresleri Yönet...</translation>
 <translation id="3986705137476756801">Canlı Altyazı'yı şimdilik kapat</translation>
 <translation id="3987940399970879459">1 MB'tan az</translation>
 <translation id="3990250421422698716">Jog ofset</translation>
@@ -1221,6 +1222,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4305666528087210886">Dosyanıza erişilemedi</translation>
 <translation id="4306529830550717874">Adres kaydedilsin mi?</translation>
 <translation id="4306812610847412719">pano</translation>
+<translation id="4310070645992025887">Arama yolculuklarınızı arayın</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Engelle (varsayılan)</translation>
 <translation id="4314815835985389558">Senkronizasyonu yönetin</translation>
@@ -2105,6 +2107,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6839929833149231406">Bölge</translation>
 <translation id="6846340164947227603">Sanal kart numarası kullanın...</translation>
 <translation id="6852204201400771460">Uygulama yeniden yüklensin mi?</translation>
+<translation id="6857776781123259569">Şifreleri Yönet...</translation>
 <translation id="686485648936420384">Tüketici kaynakları</translation>
 <translation id="6865412394715372076">Bu kart şu anda doğrulanamıyor</translation>
 <translation id="6869334554832814367">Bireysel krediler</translation>
@@ -2431,6 +2434,7 @@ Ek ayrıntılar:
 <translation id="7669271284792375604">Bu sitedeki saldırganlar web'e göz atma deneyiminize zarar veren programlar yüklemeniz için sizi kandırmayı (örneğin ana sayfanızı değiştirerek ya da ziyaret ettiğiniz sitelerde ek reklamlar görüntüleyerek) deneyebilir.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren 1 işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}other{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren # işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Posta kutusu 6</translation>
+<translation id="7675325315208090829">Ödeme Yöntemlerini yönet...</translation>
 <translation id="7676643023259824263">Panoda metni (<ph name="TEXT" />) ara</translation>
 <translation id="7679367271685653708">Chrome ayarlarında tarama geçmişinizi görüntüleyin ve yönetin</translation>
 <translation id="7679947978757153706">Beyzbol</translation>

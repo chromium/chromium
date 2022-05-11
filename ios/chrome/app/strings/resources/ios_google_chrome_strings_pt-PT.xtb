@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
+<translation id="1511320244449497906">Tem sessão iniciada e está a sincronizar os seus dados com uma conta gerida pelo domínio <ph name="DOMAIN" />, onde o respetivo administrador pode agora definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chrome.</translation>
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Ajudar a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Para tirar o máximo partido do Chrome, inicie sessão no mesmo com a sua Conta Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
+<translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
 <translation id="8263079278049777200">Inicie sessão neste site, na sua Conta Google e no Chrome. Pode ativar a sincronização mais tarde.</translation>
 <translation id="8357607116237445042">Escolha se pretende limpar os seus dados do Chrome deste dispositivo ou mantê-los</translation>

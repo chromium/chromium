@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
+<translation id="6625409903340039086">Chromium ondersteunt nu gebruikersbeleid voor je beheerde account</translation>
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="7006920032187763988">Je kunt de wachtwoorden die je in Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPad.</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
 <translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
 <translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
+<translation id="7812317783196516890">Je bent ingelogd en synchroniseert je gegevens met een account dat wordt beheerd door <ph name="DOMAIN" />. De beheerder kan nu specifiek gebruikersbeleid voor dat account instellen om het gedrag van Chromium te wijzigen.</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7928628054454574139">Chromium openen wanneer je op links in andere apps tikt</translation>

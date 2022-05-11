@@ -1100,6 +1100,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> अवरोधित केले आहे</translation>
 <translation id="3978338123949022456">शोध मोड, क्वेरी टाइप करा आणि <ph name="KEYWORD_SUFFIX" /> सह शोधण्यासाठी एंटर दाबा</translation>
 <translation id="398470910934384994">पक्षी</translation>
+<translation id="3985750352229496475">पत्ते व्यवस्थापित करा…</translation>
 <translation id="3986705137476756801">आतापुरते लाइव्ह कॅप्शन बंद करा</translation>
 <translation id="3987940399970879459">1 MB पेक्षा कमी</translation>
 <translation id="3990250421422698716">जॉग ऑफसेट</translation>
@@ -1227,6 +1228,7 @@
 <translation id="4305666528087210886">तुमची फाइल अ‍ॅक्सेस करता आली नाही</translation>
 <translation id="4306529830550717874">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
+<translation id="4310070645992025887">तुमचे प्रवास शोधा</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">अवरोधित करा (डीफॉल्ट)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापित करा</translation>
@@ -2112,6 +2114,7 @@
 <translation id="6839929833149231406">क्षेत्र</translation>
 <translation id="6846340164947227603">व्हर्च्युअल कार्ड नंबर वापरा...</translation>
 <translation id="6852204201400771460">ॲप रीलोड करायचे?</translation>
+<translation id="6857776781123259569">पासवर्ड व्यवस्थापित करा…</translation>
 <translation id="686485648936420384">ग्राहक संसाधने</translation>
 <translation id="6865412394715372076">या कार्डची पडताळणी आता करू शकत नाही</translation>
 <translation id="6869334554832814367">वैयक्तिक कर्ज</translation>
@@ -2438,6 +2441,7 @@
 <translation id="7669271284792375604">या साइट वरील आक्रमणकर्ते कदाचित तुमच्या ब्राउझिंग अनुभवास हानी पोहोचविणारे प्रोग्राम (उदाहरणार्थ, तुमचे होम बदलून किंवा तुम्ही भेट देता त्या साइटवर अतिरिक्त जाहिराती दर्शवून) इंस्टॉल करून तुमची फसवणूक करण्‍याचा प्रयत्न करू शकतात.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{डेटाशी संबंधित कृती गोपनीय म्हणून फ्लॅग केल्या (लॉगिन केल्यापासून एक कृती). <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />}other{डेटाशी संबंधित कृती गोपनीय म्हणून फ्लॅग केल्या (लॉगिन केल्यापासून # कृती). <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">मेलबॉक्स ६</translation>
+<translation id="7675325315208090829">पेमेंट पद्धती व्यवस्थापित करा…</translation>
 <translation id="7676643023259824263">क्लिपबोर्ड मजकूर, <ph name="TEXT" /> शोधा</translation>
 <translation id="7679367271685653708">Chrome सेटिंग्जमध्ये तुमचा ब्राउझिंग इतिहास पहा आणि व्‍यवस्‍थापित करा</translation>
 <translation id="7679947978757153706">बेसबॉल</translation>

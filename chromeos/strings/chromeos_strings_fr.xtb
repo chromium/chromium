@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
+<translation id="1840835860961531162">Désactiver la protection en écriture</translation>
 <translation id="1851218745569890714">Visioconférence</translation>
 <translation id="1852934301711881861">Installer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Flèche vers le bas</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3954678691475912818">Le type d'appareil est inconnu.</translation>
+<translation id="3958703339436883942">Redémarrage en cours de préparation</translation>
 <translation id="3966286471246132217">Pour obtenir des résultats plus précis, gardez toutes les applis fermées jusqu'à la fin du test.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3969602104473960991">Le mot de passe de Chrome OS a été mis à jour</translation>
@@ -424,6 +426,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5275828089655680674">Exécuter de nouveau les routines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Désactivez la protection en écriture pour passer à l'écran suivant. Accédez à la page d'assistance du fabricant de l'appareil pour obtenir des instructions.</translation>
 <translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5304899856529773394">EvDo</translation>
 <translation id="5308380583665731573">Connexion</translation>
@@ -475,6 +478,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Code du fournisseur personnel</translation>
+<translation id="5856532218727053281">Le système redémarrera après avoir validé l'état de la protection en écriture</translation>
 <translation id="5859603669299126575">Album de la Galerie d'art</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>

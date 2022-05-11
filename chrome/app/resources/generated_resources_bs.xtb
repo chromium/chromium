@@ -425,6 +425,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1415708812149920388">Pristup čitanju međumemorije je odbijen</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" /> (ID ekstenzije "<ph name="EXTENSION_ID" />") nije dozvoljen u ovoj vrsti sesije.</translation>
 <translation id="1418552618736477642">Obavještenja i aplikacije</translation>
+<translation id="1418882096915998312">U tijeku je prijava poduzeća</translation>
 <translation id="1418954524306642206">Pregledajte da navedete PPD štampača</translation>
 <translation id="1420834118113404499">Licence za medije</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> da omogućite uparivanje</translation>
@@ -3421,6 +3422,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4275830172053184480">Ponovo pokrenite uređaj</translation>
 <translation id="4277434192562187284">Izvor konfiguracije za XML</translation>
 <translation id="4278390842282768270">Dozvoljeno</translation>
+<translation id="4278498748067682896">Upotrebljavat ćete nadogradnju kioska i znakovlja koja uređaju omogućuje pokretanje samo načina rada kioska ili znakovlja. Ako želite da se korisnici prijave na uređaj, vratite se i registrirajte pomoću Nadogradnje za Chrome za poduzeća.</translation>
 <translation id="4279129444466079448">Možete instalirati najviše <ph name="PROFILE_LIMIT" /> eSIM profil/a na ovom uređaju. Da dodate drugi profil, najprije uklonite postojeći profil.</translation>
 <translation id="4280325816108262082">Povezanost s uređajem se neće automatski prekinuti kada se isključi ili ne koristi</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>

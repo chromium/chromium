@@ -1100,6 +1100,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> imezuiwa.</translation>
 <translation id="3978338123949022456">Hali ya kutafuta, andika hoja na ubonyeze Enter ili utafute kwa kutumia <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Ndege</translation>
+<translation id="3985750352229496475">Dhibiti Anwani...</translation>
 <translation id="3986705137476756801">Zima kipengele cha Manukuu Papo Hapo kwa sasa</translation>
 <translation id="3987940399970879459">Chini ya MB 1</translation>
 <translation id="3990250421422698716">Kunja kuwa katika muundo wa Z</translation>
@@ -1227,6 +1228,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4305666528087210886">Imeshindwa kufikia faili yako</translation>
 <translation id="4306529830550717874">Ungependa kuhifadhi anwani?</translation>
 <translation id="4306812610847412719">ubao wa kunakili</translation>
+<translation id="4310070645992025887">Tafuta Ziara zako</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Zuia (chaguomsingi)</translation>
 <translation id="4314815835985389558">Dhibiti usawazishaji</translation>
@@ -2111,6 +2113,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6839929833149231406">Eneo</translation>
 <translation id="6846340164947227603">Tumia nambari ya kadi pepe...</translation>
 <translation id="6852204201400771460">Ungependa kupakia programu upya?</translation>
+<translation id="6857776781123259569">Dhibiti Manenosiri...</translation>
 <translation id="686485648936420384">Rasilimali za watumiaji</translation>
 <translation id="6865412394715372076">Imeshindwa kuthibitisha kadi hii kwa sasa</translation>
 <translation id="6869334554832814367">Mikopo binafsi</translation>
@@ -2435,6 +2438,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7669271284792375604">Wavamizi kwenye tovuti hii wanaweza kujaribu kukulaghai kusakinisha programu zinazoathiri hali yako ya kuvinjari (kwa mfano, kwa kubadilisha ukurasa wako wa kwanza au kwa kuonyesha matangazo ya ziada kwenye tovuti unazotembelea).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Hatua zilizochukuliwa kwenye data iliyotiwa alama kuwa ni ya siri (hatua moja tangu wakati wa kuingia katika akaunti). <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" />}other{Hatua zilizochukuliwa kwenye data iliyotiwa alama kuwa ni ya siri (hatua # tangu wakati wa kuingia katika akaunti). <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Kikasha cha barua cha sita</translation>
+<translation id="7675325315208090829">Dhibiti Njia za Kulipa...</translation>
 <translation id="7676643023259824263">Tafuta maandishi ya ubao wa kunakili, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Angalia na udhibiti historia yako ya kuvinjari katika mipangilio ya Chrome</translation>
 <translation id="7679947978757153706">Mpira wa besiboli</translation>

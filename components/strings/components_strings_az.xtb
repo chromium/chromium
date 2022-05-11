@@ -1097,6 +1097,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> blok edilib</translation>
 <translation id="3978338123949022456">Axtarış rejimi, <ph name="KEYWORD_SUFFIX" /> ilə axtarmaq üçün sorğu yazın və Enter düyməsinə basın</translation>
 <translation id="398470910934384994">Quşlar</translation>
+<translation id="3985750352229496475">Ünvanları İdarə Edin...</translation>
 <translation id="3986705137476756801">Canlı Subtitri hələlik deaktiv edin</translation>
 <translation id="3987940399970879459">1 MB-dan az</translation>
 <translation id="3990250421422698716">Kənarını bükün</translation>
@@ -1223,6 +1224,7 @@
 <translation id="4305666528087210886">Faylınıza giriş mümkün olmadı</translation>
 <translation id="4306529830550717874">Ünvan saxlanılsın?</translation>
 <translation id="4306812610847412719">mübadilə buferi</translation>
+<translation id="4310070645992025887">Səyahətlərinizi axtarın</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
 <translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
@@ -2107,6 +2109,7 @@
 <translation id="6839929833149231406">Sahə</translation>
 <translation id="6846340164947227603">Virtual kart nömrəsini istifadə edin:</translation>
 <translation id="6852204201400771460">Tətbiq yenidən yüklənilsin?</translation>
+<translation id="6857776781123259569">Parolları idarə edin...</translation>
 <translation id="686485648936420384">İstehlak resursları</translation>
 <translation id="6865412394715372076">Bu kart hazırda doğrulana bilməz</translation>
 <translation id="6869334554832814367">Şəxsi istiqrazlar</translation>
@@ -2433,6 +2436,7 @@
 <translation id="7669271284792375604">Saytdakı hücumçular işinizə zərər gətirəcək proqramları quraşdırmaq üçün Sizi aldatmağa cəhd edə bilər (məsələn, əsas səhifəni dəyişməklə və ya daxil olduğunuz saytlarda əlavə reklamlar göstərməklə).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Məxfi olaraq işarələnmiş məlumatlarla aparılan əməliyyatlar (girişdən sonra 1 əməliyyat). <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" />}other{Məxfi olaraq işarələnmiş məlumatlarla aparılan əməliyyatlar (girişdən sonra # əməliyyat). <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Poçt qutusu 6</translation>
+<translation id="7675325315208090829">Ödəniş Metodlarını İdarə Edin...</translation>
 <translation id="7676643023259824263">Mübadilə buferində mətni axtarın, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Chrome ayarlarında brauzer tarixçənizə baxın və idarə edin</translation>
 <translation id="7679947978757153706">Beysbol</translation>

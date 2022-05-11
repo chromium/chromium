@@ -874,6 +874,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1813278315230285598">Services</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Paste as Plain Text</translation>
+<translation id="1815097521077272760">You’ve been invited to try out keyboard control for this game.</translation>
 <translation id="1815181278146012280">Ask when a site wants to access HID devices</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> more...</translation>
 <translation id="1816036116994822943">Keyboard scanning speed</translation>
@@ -1008,6 +1009,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1935303383381416800">Allowed to see your location</translation>
 <translation id="1936931585862840749">Use a number to indicate how many copies to print (1 to <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER" /> with this device which is <ph name="ARCHITECTURE_DEVICE" />. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.</translation>
+<translation id="1938320257168860255">Something went wrong. Make sure that your phone is close by, unlocked and Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="1938351510777341717">External command</translation>
 <translation id="1940546824932169984">Connected devices</translation>
 <translation id="1941410638996203291">Start time <ph name="TIME" /></translation>
@@ -1090,6 +1092,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2031639749079821948">Your password is saved in your Google Account</translation>
 <translation id="2031914984822377766">Add your preferred <ph name="LINK_BEGIN" />website languages<ph name="LINK_END" />. The top language from the list will be used for translations.</translation>
+<translation id="2033758234986231162">Can't maintain a connection with your phone. Make sure that your phone is close by, unlocked and Bluetooth and Wi-Fi are turned on.</translation>
 <translation id="2034346955588403444">Add other Wi-Fi network</translation>
 <translation id="203574396658008164">Enable note taking from lock screen</translation>
 <translation id="2037445849770872822">Supervision is set up for this Google account. To set up more parental controls, select Continue.
@@ -2332,6 +2335,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192947282887913208">Audio Files</translation>
+<translation id="3193695589337931419">System signals utilities</translation>
 <translation id="3194786596445804250">Show details about blocking third-party cookies</translation>
 <translation id="3197453258332670132">With a right-click or long press, show related info for your text selection</translation>
 <translation id="3199127022143353223">Servers</translation>
@@ -3765,6 +3769,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="461661862154729886">Energy source</translation>
 <translation id="4617001782309103936">Too short</translation>
 <translation id="4617270414136722281">Extension options</translation>
+<translation id="4617880081511131945">Can't establish connection</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
 <translation id="4620809267248568679">This setting is enforced by an extension.</translation>
@@ -4058,6 +4063,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4907306957610201395">Permission Category</translation>
 <translation id="4908811072292128752">Open a new tab to browse two sites at once</translation>
 <translation id="4909038193460299775">Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device. However, your data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="4912265719039610598">App streaming is disabled by your phone's administrator.</translation>
 <translation id="4912643508233590958">Idle Wake Ups</translation>
 <translation id="4915961947098019832">Allowed to show images</translation>
 <translation id="4916542008280060967">Let site edit <ph name="FILE_NAME" />?</translation>
@@ -6894,6 +6900,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
 <translation id="7760004034676677601">Is this the start-up page that you were expecting?</translation>
+<translation id="7762024824096060040">Can't use this account</translation>
 <translation id="7762463735017901568">Notification syncing is disabled by your phone's administrator</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7064,6 +7071,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Add words that you want spell check to skip</translation>
+<translation id="7921347341284348270">You can't view your phone's notifications on this managed account. Try again with a different account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">Show details about blocking third-party cookies in Incognito</translation>
 <translation id="7923564237306226146">Linux upgrade complete</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>

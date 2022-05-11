@@ -972,6 +972,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1892341345406963517">Hej <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Övriga språk</translation>
 <translation id="1895658205118569222">Stängning</translation>
+<translation id="1897120393475391208">Använd ett starkt lösenord</translation>
 <translation id="1900305421498694955">Appar från Google Play kan behöva fullständig åtkomst till filsystemet för att kunna läsa och skriva filer på externa lagringsenheter. Alla som använder den externa enheten kan se filer och mappar som skapats på den. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Välj &amp;alla</translation>
 <translation id="1901396183631570154">Chrome kunde inte spara lösenorden i Google-kontot. Du kan fortfarande spara dem på den här enheten.</translation>
@@ -6561,6 +6562,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7444970023873202833">Utforska fler av dina minnen i Google Foto</translation>
 <translation id="7444983668544353857">Inaktivera <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Installera appar automatiskt</translation>
+<translation id="7449381494541372002">startar …</translation>
 <translation id="7449752890690775568">Vill du ta bort lösenordet?</translation>
 <translation id="7450761244949417357">Öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" /> nu</translation>
 <translation id="7452166281927983300">Ignorerade varningar (<ph name="MUTED_PASSWORDS" />)</translation>

@@ -898,6 +898,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3399952811970034796">Naslov za dostavo</translation>
 <translation id="3402261774528610252">Povezava, prek katere je bilo naloženo to spletno mesto, uporablja standard TLS 1.0 ali TLS 1.1; ta standarda sta zastarela in bosta v prihodnje onemogočena. Ko bosta onemogočena, bo uporabnikom preprečeno naložiti to spletno mesto. V strežniku omogočite standard TLS 1.2 ali novejšega.</translation>
 <translation id="3405664148539009465">Prilagodi pisave</translation>
+<translation id="3407789382767355356">prijava prek zunanjih ponudnikov</translation>
 <translation id="3409896703495473338">Upravljanje varnostnih nastavitev</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3417660076059365994">Datoteke, ki jih naložite ali pripnete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo.</translation>
@@ -1100,6 +1101,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3973234410852337861">Spletno mesto <ph name="HOST_NAME" /> je blokirano</translation>
 <translation id="3978338123949022456">Način za iskanje, vnesite poizvedbo in pritisnite tipko Enter, če želite iskati s tem: <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="398470910934384994">Ptice</translation>
+<translation id="3985750352229496475">Upravljanje naslovov …</translation>
 <translation id="3986705137476756801">Izklop samodejnih podnapisov za zdaj</translation>
 <translation id="3987940399970879459">Manj kot 1 MB</translation>
 <translation id="3990250421422698716">Zamik v načinu dela »jog«</translation>
@@ -1227,6 +1229,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4305666528087210886">Ni bilo mogoče dostopati do datoteke</translation>
 <translation id="4306529830550717874">Želite shraniti naslov?</translation>
 <translation id="4306812610847412719">odložišče</translation>
+<translation id="4310070645992025887">Iščite po poteh</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokira (privzeto)</translation>
 <translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
@@ -2111,6 +2114,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6839929833149231406">Območje</translation>
 <translation id="6846340164947227603">Uporabi številko virtualne kartice ...</translation>
 <translation id="6852204201400771460">Želite znova naložiti aplikacijo?</translation>
+<translation id="6857776781123259569">Upravljanje gesel …</translation>
 <translation id="686485648936420384">Potrošniški viri</translation>
 <translation id="6865412394715372076">Te kartice trenutno ni mogoče preveriti</translation>
 <translation id="6869334554832814367">Osebna posojila</translation>
@@ -2437,6 +2441,7 @@ Dodatne podrobnosti:
 <translation id="7669271284792375604">Napadalci na tem spletnem mestu vas bodo morda poskusili zavesti, da bi namestili programe, ki škodljivo vplivajo na brskanje (na primer tako, da spremenijo vašo domačo stran ali na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo 1 dejanje). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}one{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo # dejanje). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}two{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave sta bili # dejanji). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}few{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave so bila # dejanja). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}other{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo # dejanj). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Nabiralnik 6</translation>
+<translation id="7675325315208090829">Upravljanje plačilnih sredstev …</translation>
 <translation id="7676643023259824263">Iskanje besedila v odložišču, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Ogled in upravljanje zgodovine brskanja v Chromovih nastavitvah</translation>
 <translation id="7679947978757153706">Bejzbol</translation>

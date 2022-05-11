@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, not roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
+<translation id="1328223165223065150">Wallpaper colour</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Fit to scan area</translation>
 <translation id="1367951781824006909">Choose a file</translation>
+<translation id="1380220803921738821">We're running into errors. Try rebooting or recover the firmware using a USB thumbdrive.</translation>
 <translation id="1387854245479784695">This is an aggregation of all cores</translation>
 <translation id="1394661041439318933">Device has <ph name="BATTERY_PERCENTAGE" />% case battery.</translation>
 <translation id="1397738625398125236">Gateway can be pinged</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">Image source</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1459693405370120464">Weather</translation>
+<translation id="1459784442280469416">Save to USB</translation>
 <translation id="1468664791493211953">Offers</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> manages this user and may remotely manage settings and monitor user activity.</translation>
 <translation id="150962533380566081">Invalid PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1512982610995527443">Device will shut down in five seconds</translation>
+<translation id="1522984060396982789">Your repair was successful. You can shut down the device or take some additional actions.</translation>
 <translation id="152892567002884378">Volume up</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">Hardware revision</translation>
 <translation id="1905710495812624430">Maximum allowed attempts exceeded.</translation>
 <translation id="1908234395526491708">UDP request failures</translation>
+<translation id="1932611479324127242">Battery cut-off</translation>
 <translation id="1947737735496445907">Printed</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1977994649430373166">Google profile photo</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
+<translation id="2154739667870063220">Reboot</translation>
 <translation id="2157959690810728433">QUEUED</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
 <translation id="2161394479394250669">Cancel print job</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">Layout switch</translation>
 <translation id="225692081236532131">Activation status</translation>
 <translation id="2271469253353559191">Dark mode schedule</translation>
+<translation id="2275586345903859204">Repair is complete</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Use current keypair</translation>
 <translation id="2320295602967756579">Enable Light theme</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">Enable dark colour mode</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
+<translation id="2756652381241102009">Run diagnostics</translation>
 <translation id="2783010256799387990">PASSED</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
+<translation id="2827359915699915567">Manually type this URL to get the RSU code</translation>
 <translation id="2859243502336719778">Critical update</translation>
 <translation id="2860473693272905224">Place another page on the scanner</translation>
 <translation id="2872961005593481000">Shut down</translation>
@@ -224,6 +234,7 @@
 <translation id="3291996639387199448">Key direction</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>
+<translation id="3333527094307156612">Use this QR code to get the eight-character unlock code. You can also manually type <ph name="LINK_BEGIN" />this URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Not sure</translation>
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3368922792935385530">Connected</translation>
@@ -257,6 +268,7 @@
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
+<translation id="3643810137582748570">Skip calibration</translation>
 <translation id="3678765385266369662">Select how you would like to turn off write protect</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
@@ -327,6 +339,7 @@
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">Restarting <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">Current avatar</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> is off</translation>
 <translation id="4429881212383817840">Kerberos ticket expires soon</translation>
@@ -363,6 +376,7 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
+<translation id="4751272708893364980">See RMA logs</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4774530504324923332">You'll need an RSU-enabled security key, a QR code scanner and a second device with an Internet connection</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
@@ -407,6 +421,7 @@
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
+<translation id="506768878203270635">Enter the eight characters</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -445,9 +460,11 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
 <translation id="537872351913703572">Device will go to a different user or organisation</translation>
+<translation id="5389224261615877010">Rainbow</translation>
 <translation id="5395600419410242651">Erase all data</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
 <translation id="5401938042319910061">Run all routines</translation>
+<translation id="5406131354638931058">Perform battery cut-off for devices being dispatched or stored</translation>
 <translation id="5423849171846380976">Activated</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
@@ -468,6 +485,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5649768706273821470">Listen</translation>
 <translation id="5655283760733841251">Keyboard brightness up</translation>
+<translation id="5661196929408385351">Powerwash and shut down</translation>
 <translation id="5669267381087807207">Activating</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Family</translation>
@@ -479,6 +497,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="576835345334454681">Display brightness up</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
+<translation id="578753362485952307">If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN" />rework flow<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -498,6 +517,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5931523347251946569">File not found</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
+<translation id="5951259522948394825">Confirm everything's in the right place and view the diagnostic report</translation>
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
 <translation id="6017514345406065928">Green</translation>
@@ -535,6 +555,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
+<translation id="6295178529664209245">Continue repair?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Turn on screensaver</translation>
@@ -570,6 +591,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6575134580692778371">Not configured</translation>
 <translation id="6579509898032828423">Use this photo</translation>
 <translation id="6596816719288285829">IP Address</translation>
+<translation id="6611280807952151149">Exit <ph name="DEVICE_TYPE" /> repair</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -582,6 +604,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Keyboard backlight</translation>
 <translation id="672609503628871915">See what's new</translation>
+<translation id="6746847322826305075">You can continue with the full repair or Powerwash (factory reset) the device to restock the mainboard.</translation>
 <translation id="6747215703636344499">Stopped – output full</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6753452347192452143">Device is a computer.</translation>
@@ -629,6 +652,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Select one or more components and try again, or skip calibration</translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
 <translation id="7297226631177386107">Can't connect through firewall to HTTPS websites</translation>
@@ -659,11 +683,13 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
+<translation id="760845693386726841">This component couldn't be detected.</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
 <translation id="7626501172915339021">Perform RMA server unlock (RSU)</translation>
 <translation id="763165478673169849">Last reset time</translation>
 <translation id="7648838807254605802">High HTTPS latency</translation>
 <translation id="7656388927906093505">Device is a mouse.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> repair error</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665800271478495366">Change avatar</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
@@ -705,12 +731,14 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8083281199617904460">This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
+<translation id="8109786307828817014">Proceed with failed calibrations?</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">RMA logs</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8217675307824400706">Get connected</translation>
@@ -727,6 +755,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">No images</translation>
 <translation id="8327249300223641918">Before proceeding, place your whole device (base and lid) on a flat surface.</translation>
+<translation id="8330949592403310082">Select which components were replaced</translation>
 <translation id="8336739000755212683">Change device account image</translation>
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
@@ -742,6 +771,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8456761643544401578">Automatic dark mode</translation>
 <translation id="8461329675984532579">Home provider name</translation>
 <translation id="8467104829907989997">Calibrating components…</translation>
+<translation id="8474030592808010086">Unplug the device to perform battery cut-off</translation>
 <translation id="8475690821716466388">Wi-Fi network is secured with weak protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
 <translation id="8483248364096924578">IP address</translation>
@@ -750,6 +780,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8503836310948963452">Just a few more minutes…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Components may not work correctly unless calibrated</translation>
 <translation id="8575298406870537639">Your operator may require this option to connect to their network. Contact your operator for details.</translation>
 <translation id="8576249514688522074">Uninitialised</translation>
 <translation id="8620617069779373398">Roaming status</translation>
@@ -786,6 +817,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8898840733695078011">Signal strength</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">See what's been fixed</translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
 <translation id="8923267550422472772">Day of month for reset</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
@@ -804,6 +836,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9025198690966128418">Use as a personal device</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS resolution has high latency</translation>
+<translation id="9063121522582193837">Couldn't calibrate some components</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Use this video</translation>

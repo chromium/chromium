@@ -106,6 +106,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
+<translation id="1513814250881909472">Sync to get your tabs from your other devices</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1518421282666914498">Emotion GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Active today</translation>
@@ -184,6 +185,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1995884366040846621">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
+<translation id="2011996512573319870">Sync to get the most relevant content from Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
 <translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
@@ -267,6 +269,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2461822463642141190">Current</translation>
 <translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
+<translation id="2481251096908459228">See stories for you</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2494974097748878569">Google Assistant in Chrome</translation>
@@ -308,6 +311,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
 <translation id="265156376773362237">Standard preloading</translation>
 <translation id="2656405586795711023">Web apps</translation>
+<translation id="2700802943130197326">Sync to get your passwords, bookmarks and more on all your other devices.</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2707726405694321444">Refresh page</translation>
@@ -569,6 +573,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
+<translation id="4177222230309051052">Get all your bookmarks</translation>
 <translation id="4181841719683918333">Languages</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196597275619698563">Create card</translation>
@@ -724,6 +729,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="5001388021414335527">Follow this site here</translation>
+<translation id="500351648694011114">Browse more easily</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
 <translation id="5005141133360250920">Reaction deleted</translation>
 <translation id="5005498671520578047">Copy password</translation>
@@ -876,6 +882,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5864419784173784555">Waiting for another download…</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
+<translation id="5869789175361934029">Continue from another device</translation>
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
 <translation id="5880748256563468367">Go to feed</translation>
 <translation id="5884076754568147479">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant</translation>
@@ -1449,6 +1456,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8920114477895755567">Waiting for details of parents.</translation>
+<translation id="8921980840204105660">Sync to get your bookmarks from your other devices</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>

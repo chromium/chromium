@@ -962,6 +962,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1892341345406963517">Sveiki, <ph name="PARENT_NAME" />!</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1895658205118569222">Izslēgšana</translation>
+<translation id="1897120393475391208">Izmantojiet drošu paroli</translation>
 <translation id="1900305421498694955">Dažreiz veikalā Google Play iegādātajām lietotnēm ir nepieciešama pilnīga piekļuve failu sistēmai, lai varētu lasīt un rakstīt failus ārējās krātuves ierīcēs. Ierīcē izveidotie faili un mapes ir redzamas visiem, kas lieto ārējo disku. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1901303067676059328">Izvēlēties visus</translation>
 <translation id="1901396183631570154">Pārlūks Chrome nevarēja saglabāt šīs paroles jūsu Google kontā. Tās joprojām varat saglabāt šajā ierīcē.</translation>
@@ -6548,6 +6549,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7444970023873202833">Izpētiet arī citas atmiņas Google fotoattēlos</translation>
 <translation id="7444983668544353857">Atspējot <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Automātiski instalējiet lietotnes</translation>
+<translation id="7449381494541372002">notiek palaišana…</translation>
 <translation id="7449752890690775568">Vai noņemt paroli?</translation>
 <translation id="7450761244949417357">Notiek atvēršana <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Noraidītie brīdinājumi (<ph name="MUTED_PASSWORDS" />)</translation>

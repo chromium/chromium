@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1204296502688602597">Λανθάνων χρόνος DNS</translation>
 <translation id="123124571410524056">Πιθανή ύπαρξη πύλης</translation>
+<translation id="1236400083787698183">Πριν από την επανεκκίνηση, κάντε Powerwash της συσκευής. Εάν η συσκευή σας έχει καπάκι, πριν το κλείσετε, περιμένετε να ολοκληρωθεί το Powerwash. Η ολοκλήρωση του Powerwash μπορεί να διαρκέσει έως και ένα λεπτό.</translation>
 <translation id="1238612778414822719">Λανθάνων χρόνος HTTPS</translation>
+<translation id="1240699967155581440">Απαιτείται Powerwash (επαναφορά εργοστασιακών ρυθμίσεων)</translation>
 <translation id="1264116747675686718">Ενημέρωση έκδοσης λειτουργικού συστήματος</translation>
 <translation id="1264369926465113395">Δείτε το νέο ψηφιακό περιοδικό του Chromebook για δημιουργούς</translation>
 <translation id="1270369111467284986">Η πύλη υποδοχής είναι ύποπτη</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">Εντοπίστηκαν <ph name="LINK_BEGIN" />ακατάλληλα στοιχεία<ph name="LINK_END" />. Αν επιλέξετε να επιβεβαιώσετε την εγκατάσταση αυτών των στοιχείων, κάντε το τώρα.</translation>
 <translation id="2363636958541445404">Ενεργοποιήστε τη λειτουργία για να ορίσετε επιλογές για την προφύλαξη οθόνης</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
+<translation id="236594517359128026">Πριν συνεχίσετε, τοποθετήστε τον φορητό υπολογιστή σας σε μια επίπεδη επιφάνεια</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
 <translation id="2407209115954268704">Κατάσταση κλειδώματος SIM</translation>
@@ -267,6 +270,7 @@
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="385051799172605136">Πίσω</translation>
+<translation id="385832974417157471">Πριν από την απενεργοποίηση, κάντε Powerwash της συσκευής σας. Εάν η συσκευή σας έχει καπάκι, πριν το κλείσετε, περιμένετε να ολοκληρωθεί το Powerwash. Η ολοκλήρωση του Powerwash μπορεί να διαρκέσει έως και ένα λεπτό.</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3865414814144988605">Ανάλυση</translation>
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
@@ -456,6 +460,7 @@
 <translation id="5507300744274596613">Βεβαιωθείτε ότι το Chrome OS είναι ενημερωμένο</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Βαθμονόμηση στοιχείων</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Επανάληψη σάρωσης</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
@@ -709,6 +714,7 @@
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
 <translation id="8217675307824400706">Συνδεθείτε</translation>
+<translation id="8221728673725659466">Η βαθμονόμηση ολοκληρώθηκε</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
@@ -720,6 +726,7 @@
 <translation id="8297006494302853456">Αδύναμο</translation>
 <translation id="8302368968391049045">Τείχος προστασίας HTTPS</translation>
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
+<translation id="8327249300223641918">Πριν συνεχίσετε, τοποθετήστε ολόκληρη τη συσκευή (βάση και καπάκι) σε μια επίπεδη επιφάνεια.</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
@@ -734,6 +741,7 @@
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>
 <translation id="8456761643544401578">Αυτόματη λειτουργία χαμηλού φωτισμού</translation>
 <translation id="8461329675984532579">Όνομα παρόχου αρχικής σελίδας</translation>
+<translation id="8467104829907989997">Βαθμονόμηση στοιχείων…</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
@@ -793,6 +801,7 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Η μπαταρία της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
+<translation id="9025198690966128418">Χρήση ως προσωπική συσκευή</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Η επίλυση DNS έχει υψηλό λανθάνοντα χρόνο</translation>
 <translation id="9073281213608662541">PAP</translation>

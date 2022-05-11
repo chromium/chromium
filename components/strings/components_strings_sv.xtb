@@ -1101,6 +1101,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> har blockerats</translation>
 <translation id="3978338123949022456">Sökläge: skriv en sökfråga och tryck på Retur för sökning på <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Fåglar</translation>
+<translation id="3985750352229496475">Hantera adresser …</translation>
 <translation id="3986705137476756801">Inaktivera Live Caption tills vidare</translation>
 <translation id="3987940399970879459">Mindre än 1 MB</translation>
 <translation id="3990250421422698716">Stötvis förskjutning</translation>
@@ -1228,6 +1229,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4305666528087210886">Ingen åtkomst till filen</translation>
 <translation id="4306529830550717874">Vill du spara adressen?</translation>
 <translation id="4306812610847412719">urklipp</translation>
+<translation id="4310070645992025887">Sök bland dina sökningar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>
 <translation id="4314815835985389558">Hantera synkronisering</translation>
@@ -2112,6 +2114,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6839929833149231406">Område</translation>
 <translation id="6846340164947227603">Använd ett virtuellt kreditkortsnummer …</translation>
 <translation id="6852204201400771460">Vill du läsa in appen igen?</translation>
+<translation id="6857776781123259569">Hantera lösenord …</translation>
 <translation id="686485648936420384">Resurser för konsumenter</translation>
 <translation id="6865412394715372076">Det går inte att verifiera kortet just nu</translation>
 <translation id="6869334554832814367">Privatlån</translation>
@@ -2438,6 +2441,7 @@ Mer information.
 <translation id="7669271284792375604">Angripare på den här webbplatsen kan försöka lura dig att installera program som skadar din webbupplevelse (till exempel genom att byta ut din startsida eller visa extra annonser på webbplatser som du besöker).</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Åtgärder som gjorts med data som markerats som konfidentiell (1 åtgärd sedan inloggningen) <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />}other{Åtgärder som gjorts med data som markerats som konfidentiell (# åtgärder sedan inloggningen) <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Postfack 6</translation>
+<translation id="7675325315208090829">Hantera betalningsmetoder …</translation>
 <translation id="7676643023259824263">Sök efter texten i Urklipp, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="7679947978757153706">Baseboll</translation>

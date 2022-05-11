@@ -959,6 +959,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1892341345406963517">Ola, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1895658205118569222">Apagar</translation>
+<translation id="1897120393475391208">Usa este contrasinal seguro</translation>
 <translation id="1900305421498694955">As aplicacións de Google Play poden necesitar acceso total ao sistema de ficheiros para ler e editar ficheiros no almacenamento externo. Os ficheiros e os cartafoles creados no dispositivo son visibles para todos os usuarios da unidade externa. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Seleccion&amp;ar todo</translation>
 <translation id="1901396183631570154">Chrome non puido gardar estes contrasinais na túa Conta de Google. Así e todo, podes gardalos neste dispositivo.</translation>
@@ -6540,6 +6541,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7444970023873202833">Explora máis recordos en Google Fotos</translation>
 <translation id="7444983668544353857">Desactivar <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Instala aplicacións automaticamente</translation>
+<translation id="7449381494541372002">iniciando…</translation>
 <translation id="7449752890690775568">Queres quitar o contrasinal?</translation>
 <translation id="7450761244949417357">Abrindo a páxina no navegador <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7452166281927983300">Advertencias ignoradas (<ph name="MUTED_PASSWORDS" />)</translation>

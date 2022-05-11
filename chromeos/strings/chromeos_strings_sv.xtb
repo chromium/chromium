@@ -92,6 +92,7 @@
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
+<translation id="1840835860961531162">Inaktivera skrivskydd</translation>
 <translation id="1851218745569890714">Videokonferenser</translation>
 <translation id="1852934301711881861">Installera ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedåtpiltangenten</translation>
@@ -275,6 +276,7 @@
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3954678691475912818">Enhetstypen är okänd.</translation>
+<translation id="3958703339436883942">Förbereder för omstart …</translation>
 <translation id="3966286471246132217">Du får mer exakta resultat om du stänger alla appar tills testet är slutfört.</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3969602104473960991">Lösenordet för Chrome OS har uppdaterats</translation>
@@ -424,6 +426,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5275828089655680674">Kör rutinerna igen</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5298334025463010990">Inaktivera skrivskydd för att fortsätta till nästa skärm. Du hittar anvisningar på enhetstillverkarens supportsida.</translation>
 <translation id="5300814202279832142">Flytta fönstret till ett skrivbord</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">Anslut</translation>
@@ -475,6 +478,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Kod för hemleverantör</translation>
+<translation id="5856532218727053281">Systemet startas om när statusen för skrivskydd har verifierats</translation>
 <translation id="5859603669299126575">Konstgallerialbum</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>

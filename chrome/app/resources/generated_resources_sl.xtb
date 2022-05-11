@@ -976,6 +976,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1892341345406963517">Pozdravljeni, <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
 <translation id="1895658205118569222">Zaprt</translation>
+<translation id="1897120393475391208">Uporabite zapleteno geslo</translation>
 <translation id="1900305421498694955">Aplikacije v Googlu Play za branje in pisanje datotek v zunanjih napravah za shranjevanje morda zahtevajo popoln dostop do datotečnega sistema. Datoteke in mape, ustvarjene v tej napravi, so vidne vsem, ki uporabljajo zunanji pogon. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">Izberi &amp;vse</translation>
 <translation id="1901396183631570154">Chromu ni uspelo shraniti teh gesel v računu Google. Še vedno jih lahko shranite v tej napravi.</translation>
@@ -1018,6 +1019,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1942600407708803723">Zaustavitev, ko je pokrov zaprt</translation>
 <translation id="1944528062465413897">Koda za seznanitev prek Bluetootha:</translation>
 <translation id="1944921356641260203">Najdena je bila posodobitev</translation>
+<translation id="1947136734041527201">Omogoča prijavo na spletnih mestih z računom, ki ga imate pri storitvi za identiteto.</translation>
 <translation id="1949584741547056205">Hitri odgovori</translation>
 <translation id="1951012854035635156">Pomočnik</translation>
 <translation id="1954597385941141174">Spletna mesta lahko zahtevajo vzpostavitev povezave z napravami USB</translation>
@@ -2333,6 +2335,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3189187154924005138">Velik kazalec</translation>
 <translation id="3190558889382726167">Geslo je shranjeno</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
+<translation id="3193695589337931419">Orodja za sistemske signale</translation>
 <translation id="3194786596445804250">Prikaži podrobnosti o blokiranju piškotkov drugih mest</translation>
 <translation id="3197453258332670132">Z desnim klikom ali dolgim pritiskom prikažete informacije, povezane z izbranim besedilom.</translation>
 <translation id="3199127022143353223">Strežniki</translation>
@@ -2418,6 +2421,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="32939749466444286">Vsebnik za Linux se ni zagnal. Poskusite znova.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistični podatki o uporabi in poročila o zrušitvah</translation>
+<translation id="3297105622164376095">Dovoljeno prikazovanje pozivov za prijavo drugih ponudnikov</translation>
 <translation id="3297536526040732495">Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
 <translation id="329838636886466101">Popravi</translation>
 <translation id="3298789223962368867">Neveljaven spletni naslov.</translation>
@@ -3674,6 +3678,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4527929807707405172">Omogoči obratno pomikanje. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Predlog prevoda</translation>
+<translation id="4529455689802245339">Samodejni podnapisi v Chromu morda ne bodo delovali</translation>
 <translation id="4530494379350999373">Izvor</translation>
 <translation id="4531924570968473143">Koga želite dodati tej napravi <ph name="DEVICE_TYPE" />?</translation>
 <translation id="4532625150642446981">Naprava »<ph name="USB_DEVICE_NAME" />« je v uporabi. Če znova dodelite napravo, medtem ko je v uporabi, lahko pride do napak. Ali ste prepričani, da želite nadaljevati?</translation>
@@ -3871,6 +3876,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="471880041731876836">Nimate dovoljenja za obisk tega spletnega mesta</translation>
 <translation id="4722735765955348426">Geslo za uporabniško ime <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> souporablja vaš zaslon.</translation>
+<translation id="4722989931633062466">Ni dovoljeno prikazovanje pozivov za prijavo drugih ponudnikov</translation>
 <translation id="4723140812774948886">Zamenjaj z naslednjim</translation>
 <translation id="4724450788351008910">Zveza je prekinjena</translation>
 <translation id="4725511304875193254">Valižanski ovčar</translation>
@@ -4843,6 +4849,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5711010025974903573">Dnevniki storitve</translation>
 <translation id="5711983031544731014">Odklepanje ni mogoče. Vnesite geslo.</translation>
 <translation id="5712153969432126546">Spletna mesta občasno objavijo datoteke PDF, na primer dokumente, pogodbe in obrazce.</translation>
+<translation id="571222594670061844">Spletna mesta lahko prikazujejo pozive za prijavo storitev za identiteto</translation>
 <translation id="5713158217420111469">Vzpostavljena povezava z napravo <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Posrednik za vtičnik: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Privzeti iskalniki</translation>
@@ -5001,6 +5008,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5876851302954717356">Novi zavihek na desni</translation>
 <translation id="5877064549588274448">Kanal spremenjen. Znova zaženite napravo, da uveljavite spremembe.</translation>
 <translation id="5877584842898320529">Izbrani tiskalnik ni na voljo ali ni pravilno nameščen. <ph name="BR" /> Preverite tiskalnik ali izberite drugega.</translation>
+<translation id="5878945009165002849">Blokiranje pozivov za prijavo storitev za identiteto</translation>
 <translation id="5882919346125742463">Znana omrežja</translation>
 <translation id="5883356647197510494">Samodejno blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Ta zavihek je povezan z napravo USB.</translation>
@@ -5637,6 +5645,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6513247462497316522">Google Chrome bo uporabil mobilno podatkovno povezavo, če niste povezani z drugim omrežjem.</translation>
 <translation id="6514010653036109809">Razpoložljiva naprava:</translation>
 <translation id="6514565641373682518">Ta stran je onemogočila miškin kazalec.</translation>
+<translation id="6517709704288360414">Naprava morda ne deluje več ustrezno in morda se srečujete z varnostnimi težavami in težavami z zmogljivostjo. Če izklopite posodobitve, to morda tudi vpliva na vašo pravico do zakonitih zahtevkov, če imate kakšne težave.</translation>
 <translation id="6518014396551869914">Kop&amp;iraj sliko</translation>
 <translation id="6518133107902771759">Preveri</translation>
 <translation id="651942933739530207">Ali želite, da <ph name="APP_NAME" /> souporablja vaš zaslon in zvočni izhod?</translation>
@@ -6567,6 +6576,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7444970023873202833">Raziščite več spominov v Googlu Foto</translation>
 <translation id="7444983668544353857">Onemogoči <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Samodejno nameščanje aplikacij</translation>
+<translation id="7449381494541372002">Zagon …</translation>
 <translation id="7449752890690775568">Želite odstraniti geslo?</translation>
 <translation id="7450761244949417357">Odpiranje v brskalniku <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7452166281927983300">Opuščena opozorila (<ph name="MUTED_PASSWORDS" />)</translation>
