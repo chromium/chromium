@@ -46,6 +46,9 @@ try_.builder(
 try_.builder(
     name = "mac-official",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/mac-official",
+    ],
     cores = None,
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
