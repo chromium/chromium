@@ -40,12 +40,7 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
   Close();
 
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
-  if (!browser)
-    return;
-
-  browser->tab_strip_model()->RemoveObserver(this);
+  TabStripModelObserver::StopObservingAll(this);
 }
 
 void FedCmAccountSelectionView::Show(
