@@ -994,12 +994,16 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
         break;
       }
       case EBaselineShiftType::kSub:
-        baseline_shift = LayoutUnit(
-            box->font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
+        if (const auto* font_data = box->font->PrimaryFont()) {
+          baseline_shift =
+              LayoutUnit(font_data->GetFontMetrics().FloatHeight() / 2);
+        }
         break;
       case EBaselineShiftType::kSuper:
-        baseline_shift = LayoutUnit(
-            -box->font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
+        if (const auto* font_data = box->font->PrimaryFont()) {
+          baseline_shift =
+              LayoutUnit(-font_data->GetFontMetrics().FloatHeight() / 2);
+        }
         break;
     }
     baseline_shift += ComputeAlignmentBaselineShift(box);
