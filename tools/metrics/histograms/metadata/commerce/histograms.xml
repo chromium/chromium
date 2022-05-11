@@ -310,6 +310,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
 </histogram>
 
+<histogram name="Commerce.SignIn.AccountWaaStatus"
+    enum="AccountWaaStatusForCommerce" expires_after="2022-10-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the web and app activity status of user account. Emitted for clients
+    in our experiment when Chrome is foregrounded. Recorded at most once in a
+    one-day moving window. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Subscriptions.TabEligible" enum="Boolean"
     expires_after="2022-10-01">
   <owner>zhiyuancai@chromium.org</owner>

@@ -1222,6 +1222,12 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="With signed in, no match"/>
 </enum>
 
+<enum name="AccountWaaStatusForCommerce">
+  <int value="0" label="Account signed out"/>
+  <int value="1" label="Account signed in, WAA disabled"/>
+  <int value="2" label="Account signed in, WAA enabled"/>
+</enum>
+
 <enum name="AccuracyTipInteraction">
   <int value="0" label="kNoAction"/>
   <int value="1" label="kLearnMore"/>

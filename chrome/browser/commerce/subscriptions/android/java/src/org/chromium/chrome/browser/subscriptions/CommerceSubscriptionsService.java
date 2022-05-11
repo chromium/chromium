@@ -96,23 +96,24 @@ public class CommerceSubscriptionsService {
     }
 
     private void maybeRecordMetricsAndInitializeSubscriptions() {
-        if ((!PriceTrackingUtilities.isPriceDropNotificationEligible())
-                || (System.currentTimeMillis()
-                                - mSharedPreferencesManager.readLong(
-                                        CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
-                        < TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
-                                                            .getStaleTabLowerBoundSeconds()))) {
+        if (System.currentTimeMillis()
+                        - mSharedPreferencesManager.readLong(
+                                CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
+                < TimeUnit.SECONDS.toMillis(
+                        CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds())) {
             return;
         }
         mSharedPreferencesManager.writeLong(
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
-        recordMetrics();
+        mMetrics.recordAccountWaaStatus();
+        if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return;
+        recordMetricsForEligibleAccount();
         if (mImplicitPriceDropSubscriptionsManager != null) {
             mImplicitPriceDropSubscriptionsManager.initializeSubscriptions();
         }
     }
 
-    private void recordMetrics() {
+    private void recordMetricsForEligibleAccount() {
         // Record notification opt-in metrics.
         mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
         mPriceDropNotificationManager.recordMetricsForNotificationCounts();
