@@ -1287,7 +1287,7 @@ const base::Feature kSettingsAppThemeChangeAnimation{
 // Enables launcher nudge that animates the home button to guide users to open
 // the launcher.
 const base::Feature kShelfLauncherNudge{"ShelfLauncherNudge",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the shelf party.
 const base::Feature kShelfParty{"ShelfParty",
@@ -2149,7 +2149,8 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 }
 
 bool IsShelfLauncherNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kShelfLauncherNudge);
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kShelfLauncherNudge);
 }
 
 bool IsShimlessRMAFlowEnabled() {

@@ -148,6 +148,12 @@ bool LauncherNudgeController::ShouldShowNudge(base::Time& recheck_time) const {
   if (!prefs)
     return false;
 
+  if (GetFirstLoginTime(prefs).is_null()) {
+    // Don't show the nudge to existing users. See
+    // `OnActiveUserPrefServiceChanged()` for details.
+    return false;
+  }
+
   // Only show the launcher nudge in clamshell mode.
   if (Shell::Get()->IsInTabletMode())
     return false;
