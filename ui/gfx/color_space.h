@@ -262,6 +262,13 @@ class COLOR_SPACE_EXPORT ColorSpace {
                       RangeID::LIMITED);
   }
 
+  // The default number of nits for SDR white. This is used for transformations
+  // between color spaces that do not specify an SDR white for tone mapping
+  // (e.g, in 2D canvas).
+  // TODO(https://crbug.com/1286076): Replace both kDefaultSDRWhiteLevel and
+  // kDefaultScrgbLinearSdrWhiteLevel with this constant.
+  static constexpr float kDefaultSDRWhiteLevelV2 = 203.f;
+
   // On macOS and on ChromeOS, sRGB's (1,1,1) always coincides with PQ's 100
   // nits (which may not be 100 physical nits). On Windows, sRGB's (1,1,1)
   // maps to scRGB linear's (1,1,1) when the SDR white level is set to 80 nits.

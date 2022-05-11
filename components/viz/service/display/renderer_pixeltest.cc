@@ -4773,8 +4773,7 @@ class ColorTransformPixelTest
     }
 
     gfx::ColorTransform::Options options;
-    options.sdr_max_luminance_nits =
-        display_color_spaces_.GetSDRMaxLuminanceNits();
+    options.sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevelV2;
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(this->src_color_space_,
                                                this->dst_color_space_, options);
@@ -4887,8 +4886,7 @@ gfx::ColorSpace src_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
-    gfx::ColorSpace::CreateHDR10(50.f),
-    gfx::ColorSpace::CreateHDR10(250.f),
+    gfx::ColorSpace::CreateHDR10(),
 };
 
 gfx::ColorSpace dst_color_spaces[] = {

@@ -69,11 +69,15 @@ skcms_TransferFunction GetHLGSkTransferFunction(float sdr_white_level) {
   if (sdr_white_level == 0.f)
     sdr_white_level = ColorSpace::kDefaultSDRWhiteLevel;
 
-  // The reference white level for HLG is 100 nits. We want to setup the
-  // returned transfer function such that output values are scaled by the white
-  // level; Skia uses the |f| transfer function parameter for this.
+  // The kHLG constant will evaluate to values in the range [0, 12].
   skcms_TransferFunction fn = SkNamedTransferFn::kHLG;
-  fn.f = ColorSpace::kDefaultSDRWhiteLevel / sdr_white_level - 1;
+
+  // The value of k is equal to kHLG evaluated at 0.75 (3.77) , divided by kHLG
+  // evaluated at 1 (12), multiplied by 203 nits. This value is selected such
+  // that a signal of 0.75 will map to the same value that a PQ signal for 203
+  // nits will map to.
+  constexpr float k = 63.84549817071231f;
+  fn.f = k / sdr_white_level - 1;
   return fn;
 }
 
@@ -733,11 +737,11 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
       break;
     case TransferID::HLG:
       transfer_fn = GetHLGSkTransferFunction(
-          sdr_white_level.value_or(transfer_params_[0]));
+          sdr_white_level.value_or(kDefaultSDRWhiteLevelV2));
       break;
     case TransferID::PQ:
       transfer_fn = GetPQSkTransferFunction(
-          sdr_white_level.value_or(transfer_params_[0]));
+          sdr_white_level.value_or(kDefaultSDRWhiteLevelV2));
       break;
     default:
       if (!GetTransferFunction(&transfer_fn, sdr_white_level)) {

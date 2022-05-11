@@ -235,59 +235,45 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   }
 }
 
-TEST(ColorSpace, PQToSkColorSpace) {
-  ColorSpace color_space;
-  ColorSpace roundtrip_color_space;
-  float roundtrip_sdr_white_level;
-  const float kEpsilon = 1.e-5f;
+TEST(ColorSpace, PQAndHLGToSkColorSpace) {
+  const float kEpsilon = 1.0e-2f;
+  const auto hlg = ColorSpace::CreateHLG();
+  const auto pq = ColorSpace::CreateHDR10();
 
-  // We expect that when a white point is specified, the conversion from
-  // ColorSpace -> SkColorSpace -> ColorSpace be the identity. Because of
-  // rounding error, this will not quite be the case.
-  color_space = ColorSpace::CreateHDR10(50.f);
-  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
-  EXPECT_TRUE(
-      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
-  EXPECT_NEAR(50.f, roundtrip_sdr_white_level, kEpsilon);
-  EXPECT_EQ(ColorSpace::TransferID::PQ, roundtrip_color_space.GetTransferID());
+  // For each test case, `pq_signal` maps to `pq_nits`.
+  constexpr size_t kNumCases = 3;
+  float pq_signal[kNumCases] = {
+      0.508078421517399f,
+      0.5806888810416109f,
+      0.6765848107833876,
+  };
+  float pq_nits[kNumCases] = {
+      100,
+      203,
+      500,
+  };
+  const float kPQSignalFor203Nits = pq_signal[1];
+  const float kHLGSignalFor203Nits = 0.75f;
 
-  // When no white level is specified, we should get an SkColorSpace that
-  // specifies the default white level. Of note is that in the roundtrip, the
-  // value of kDefaultSDRWhiteLevel gets baked in.
-  color_space = ColorSpace::CreateHDR10();
-  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
-  EXPECT_TRUE(
-      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
-  EXPECT_NEAR(ColorSpace::kDefaultSDRWhiteLevel, roundtrip_sdr_white_level,
-              kEpsilon);
-}
+  for (size_t i = 0; i < kNumCases; ++i) {
+    const float sdr_white_level = pq_nits[i];
+    sk_sp<SkColorSpace> sk_hlg = hlg.ToSkColorSpace(sdr_white_level);
+    sk_sp<SkColorSpace> sk_pq = pq.ToSkColorSpace(sdr_white_level);
 
-TEST(ColorSpace, HLGToSkColorSpace) {
-  ColorSpace color_space;
-  ColorSpace roundtrip_color_space;
-  float roundtrip_sdr_white_level;
-  const float kEpsilon = 1.0e-3f;
+    // The PQ signal that maps to `sdr_white_level` nits should map to 1.
+    skcms_TransferFunction pq_fn = {0};
+    sk_pq->transferFn(&pq_fn);
+    EXPECT_NEAR(1.f, skcms_TransferFunction_eval(&pq_fn, pq_signal[i]),
+                kEpsilon);
 
-  // We expect that when a white point is specified, the conversion from
-  // ColorSpace -> SkColorSpace -> ColorSpace be the identity. Because of
-  // rounding error, this will not quite be the case.
-  constexpr float kSDRWhiteLevel = 50.0f;
-  color_space = ColorSpace::CreateHLG().GetWithSDRWhiteLevel(kSDRWhiteLevel);
-  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
-  EXPECT_TRUE(
-      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
-  EXPECT_FLOAT_EQ(kSDRWhiteLevel, roundtrip_sdr_white_level);
-  EXPECT_EQ(ColorSpace::TransferID::HLG, roundtrip_color_space.GetTransferID());
-
-  // When no white level is specified, we should get an SkColorSpace that
-  // specifies the default white level. Of note is that in the roundtrip, the
-  // value of kDefaultSDRWhiteLevel gets baked in.
-  color_space = ColorSpace::CreateHLG();
-  roundtrip_color_space = ColorSpace(*color_space.ToSkColorSpace());
-  EXPECT_TRUE(
-      roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
-  EXPECT_NEAR(ColorSpace::kDefaultSDRWhiteLevel, roundtrip_sdr_white_level,
-              kEpsilon);
+    // The HLG signal value of 0.75 should always map to the same value that
+    // the PQ signal for 203 nits maps to.
+    skcms_TransferFunction hlg_fn = {0};
+    sk_hlg->transferFn(&hlg_fn);
+    EXPECT_NEAR(skcms_TransferFunction_eval(&pq_fn, kPQSignalFor203Nits),
+                skcms_TransferFunction_eval(&hlg_fn, kHLGSignalFor203Nits),
+                kEpsilon);
+  }
 }
 
 TEST(ColorSpace, MixedInvalid) {
