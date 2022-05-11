@@ -260,7 +260,7 @@ class ObserverList {
       live_iterators_.head()->value()->Invalidate();
     if (check_empty) {
       Compact();
-      DCHECK(observers_.empty()) << GetObserversCreationStackString();
+      DCHECK(observers_.empty()) << "\n" << GetObserversCreationStackString();
     }
   }
 
