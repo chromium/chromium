@@ -36,22 +36,20 @@ ReceiverSessionImpl::ReceiverSessionImpl(
 ReceiverSessionImpl::~ReceiverSessionImpl() = default;
 
 void ReceiverSessionImpl::StartStreamingAsync(
-    mojo::AssociatedRemote<mojom::CastStreamingReceiver>
-        cast_streaming_receiver) {
+    mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
   DCHECK(HasNetworkContextGetter());
 
   DVLOG(1) << __func__;
-  cast_streaming_receiver_ = std::move(cast_streaming_receiver);
+  demuxer_connector_ = std::move(demuxer_connector);
 
-  cast_streaming_receiver_->EnableReceiver(base::BindOnce(
+  demuxer_connector_->EnableReceiver(base::BindOnce(
       &ReceiverSessionImpl::OnReceiverEnabled, weak_factory_.GetWeakPtr()));
-  cast_streaming_receiver_.set_disconnect_handler(base::BindOnce(
+  demuxer_connector_.set_disconnect_handler(base::BindOnce(
       &ReceiverSessionImpl::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
 }
 
 void ReceiverSessionImpl::StartStreamingAsync(
-    mojo::AssociatedRemote<mojom::CastStreamingReceiver>
-        cast_streaming_receiver,
+    mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector,
     mojo::AssociatedRemote<mojom::RendererController> renderer_controller) {
   DCHECK(!renderer_control_config_);
   external_renderer_controls_ =
@@ -60,7 +58,7 @@ void ReceiverSessionImpl::StartStreamingAsync(
   renderer_control_config_.emplace(std::move(renderer_controller),
                                    external_renderer_controls_->Bind());
 
-  StartStreamingAsync(std::move(cast_streaming_receiver));
+  StartStreamingAsync(std::move(demuxer_connector));
 }
 
 ReceiverSession::RendererController*
@@ -131,8 +129,8 @@ void ReceiverSessionImpl::OnSessionInitialization(
             std::move(std::move(video_pipe_consumer.value()))));
   }
 
-  cast_streaming_receiver_->OnStreamsInitialized(std::move(audio_info),
-                                                 std::move(video_info));
+  demuxer_connector_->OnStreamsInitialized(std::move(audio_info),
+                                           std::move(video_info));
 
   InformClientOfConfigChange();
 }
@@ -216,7 +214,7 @@ void ReceiverSessionImpl::OnSessionEnded() {
   DVLOG(1) << __func__;
 
   // Tear down the Mojo connection.
-  cast_streaming_receiver_.reset();
+  demuxer_connector_.reset();
 
   // Tear down all remaining Mojo objects if needed. This is necessary if the
   // Cast Streaming Session ending was initiated by the receiver component.

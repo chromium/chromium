@@ -19,11 +19,11 @@ StreamingControllerRemoting::~StreamingControllerRemoting() = default;
 
 void StreamingControllerRemoting::StartPlayback(
     cast_streaming::ReceiverSession* receiver_session,
-    mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-        cast_streaming_receiver,
+    mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
+        demuxer_connector,
     mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
         renderer_connection) {
-  receiver_session->StartStreamingAsync(std::move(cast_streaming_receiver),
+  receiver_session->StartStreamingAsync(std::move(demuxer_connector),
                                         std::move(renderer_connection));
 
   auto* renderer_controller = receiver_session->GetRendererControls();

@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "cast_streaming_session.mojom",
+    "demuxer_connector.mojom",
     "renderer_controller.mojom",
   ]
   public_deps = [

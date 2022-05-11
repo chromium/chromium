@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -45,8 +45,8 @@ class StreamingControllerBase : public StreamingController,
   // Begins playback of |receiver_session|.
   virtual void StartPlayback(
       cast_streaming::ReceiverSession* receiver_session,
-      mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-          cast_streaming_receiver,
+      mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
+          demuxer_connector,
       mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
           renderer_connection) = 0;
 
@@ -86,8 +86,8 @@ class StreamingControllerBase : public StreamingController,
   // Mojo connections. Initially populated in MainFrameReadyToCommitNavigation()
   // with connections to the Renderer process, and transferred to
   // StartPlayback() when it is first called.
-  mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-      cast_streaming_receiver_;
+  mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
+      demuxer_connector_;
   mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
       renderer_connection_;
 

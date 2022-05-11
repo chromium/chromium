@@ -58,8 +58,8 @@ source_set("resource_provider_impl") {
   sources = [
     "cast_streaming_demuxer.cc",
     "cast_streaming_demuxer.h",
-    "cast_streaming_receiver.cc",
-    "cast_streaming_receiver.h",
+    "demuxer_connector.cc",
+    "demuxer_connector.h",
     "renderer_controller_proxy.cc",
     "renderer_controller_proxy.h",
     "resource_provider_impl.cc",

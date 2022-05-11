@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/cast_streaming/renderer/cast_streaming_receiver.h"
 #include "components/cast_streaming/renderer/decoder_buffer_reader.h"
+#include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/timestamp_constants.h"
@@ -284,14 +284,14 @@ class CastStreamingVideoDemuxerStream final
 };
 
 CastStreamingDemuxer::CastStreamingDemuxer(
-    CastStreamingReceiver* receiver,
+    DemuxerConnector* demuxer_connector,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : media_task_runner_(std::move(media_task_runner)),
       original_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      receiver_(receiver),
+      demuxer_connector_(demuxer_connector),
       weak_factory_(this) {
   DVLOG(1) << __func__;
-  DCHECK(receiver_);
+  DCHECK(demuxer_connector_);
 }
 
 CastStreamingDemuxer::~CastStreamingDemuxer() {
@@ -299,8 +299,8 @@ CastStreamingDemuxer::~CastStreamingDemuxer() {
 
   if (was_initialization_successful_) {
     original_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CastStreamingReceiver::OnDemuxerDestroyed,
-                                  base::Unretained(receiver_)));
+        FROM_HERE, base::BindOnce(&DemuxerConnector::OnDemuxerDestroyed,
+                                  base::Unretained(demuxer_connector_)));
   }
 }
 
@@ -371,9 +371,9 @@ void CastStreamingDemuxer::Initialize(media::DemuxerHost* host,
   initialized_cb_ = std::move(status_cb);
 
   original_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastStreamingReceiver::SetDemuxer,
-                     base::Unretained(receiver_), base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&DemuxerConnector::SetDemuxer,
+                                base::Unretained(demuxer_connector_),
+                                base::Unretained(this)));
 }
 
 void CastStreamingDemuxer::AbortPendingReads() {

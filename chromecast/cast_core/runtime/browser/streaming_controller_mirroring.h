@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chromecast/cast_core/runtime/browser/streaming_controller_base.h"
-#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -40,8 +40,8 @@ class StreamingControllerMirroring : public StreamingControllerBase {
   // StreamingControllerBase overrides:
   void StartPlayback(
       cast_streaming::ReceiverSession* receiver_session,
-      mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-          cast_streaming_receiver,
+      mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
+          demuxer_connector,
       mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
           renderer_connection) override;
   void ProcessAVConstraints(

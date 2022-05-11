@@ -604,13 +604,13 @@ void FrameImpl::MaybeStartCastStreaming(
   if (!context_->has_cast_streaming_enabled() || !receiver_session_client_)
     return;
 
-  mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-      cast_streaming_receiver;
+  mojo::AssociatedRemote<cast_streaming::mojom::DemuxerConnector>
+      demuxer_connector;
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&cast_streaming_receiver);
+      ->GetInterface(&demuxer_connector);
   receiver_session_client_->SetCastStreamingReceiver(
-      std::move(cast_streaming_receiver));
+      std::move(demuxer_connector));
 }
 
 void FrameImpl::UpdateRenderViewZoomLevel(

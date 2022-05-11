@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_RECEIVER_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_RECEIVER_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_DEMUXER_CONNECTOR_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_DEMUXER_CONNECTOR_H_
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
-#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -21,18 +21,18 @@ class CastStreamingDemuxer;
 
 // Handles initiating the streaming session between the browser-process sender
 // and renderer-process receiver of the Cast Streaming Session. Specifically,
-// this class manages the CastStreamingReceiver's lifetime in the renderer
+// this class manages the DemuxerConnector's lifetime in the renderer
 // process. The lifetime of this object should match that of |render_frame| with
 // which it is associated, and is guaranteed to outlive the CastStreamingDemuxer
 // that uses it, as the RenderFrame destruction will have triggered its
 // destruction first.
-class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
+class DemuxerConnector final : public mojom::DemuxerConnector {
  public:
-  explicit CastStreamingReceiver(content::RenderFrame* render_frame);
-  ~CastStreamingReceiver() override;
+  explicit DemuxerConnector(content::RenderFrame* render_frame);
+  ~DemuxerConnector() override;
 
-  CastStreamingReceiver(const CastStreamingReceiver&) = delete;
-  CastStreamingReceiver& operator=(const CastStreamingReceiver&) = delete;
+  DemuxerConnector(const DemuxerConnector&) = delete;
+  DemuxerConnector& operator=(const DemuxerConnector&) = delete;
 
   void SetDemuxer(CastStreamingDemuxer* demuxer);
   void OnDemuxerDestroyed();
@@ -42,20 +42,20 @@ class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
 
  private:
   void BindToReceiver(
-      mojo::PendingAssociatedReceiver<mojom::CastStreamingReceiver> receiver);
+      mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> connector);
 
   void MaybeCallEnableReceiverCallback();
 
   void OnReceiverDisconnected();
 
-  // mojom::CastStreamingReceiver implementation.
+  // mojom::DemuxerConnector implementation.
   void EnableReceiver(EnableReceiverCallback callback) override;
   void OnStreamsInitialized(
       mojom::AudioStreamInitializationInfoPtr audio_stream_info,
       mojom::VideoStreamInitializationInfoPtr video_stream_info) override;
 
-  mojo::AssociatedReceiver<mojom::CastStreamingReceiver>
-      cast_streaming_receiver_receiver_{this};
+  mojo::AssociatedReceiver<mojom::DemuxerConnector> demuxer_connector_receiver_{
+      this};
 
   EnableReceiverCallback enable_receiver_callback_;
   CastStreamingDemuxer* demuxer_ = nullptr;
@@ -66,4 +66,4 @@ class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_RECEIVER_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_DEMUXER_CONNECTOR_H_

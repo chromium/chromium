@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
-#include "components/cast_streaming/renderer/cast_streaming_receiver.h"
+#include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "components/cast_streaming/renderer/renderer_controller_proxy.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -61,9 +61,7 @@ class ResourceProviderImpl : public ResourceProvider {
                             EndOfLifeCB end_of_life_cb);
     ~PerRenderFrameResources() override;
 
-    CastStreamingReceiver& cast_streaming_receiver() {
-      return cast_streaming_receiver_;
-    }
+    DemuxerConnector& demuxer_connector() { return demuxer_connector_; }
 
     RendererControllerProxy& renderer_controller_proxy() {
       DCHECK(renderer_controller_proxy_);
@@ -81,7 +79,7 @@ class ResourceProviderImpl : public ResourceProvider {
     // The singleton associated with forming the mojo connection used to pass
     // DecoderBuffers from the browser process into the renderer process's
     // DemuxerStream used by the media pipeline.
-    CastStreamingReceiver cast_streaming_receiver_;
+    DemuxerConnector demuxer_connector_;
 
     // The singleton associated with sending playback commands from the browser
     // to the renderer process. Only populated if remoting is enabled.

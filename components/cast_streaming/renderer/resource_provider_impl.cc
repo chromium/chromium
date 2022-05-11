@@ -61,14 +61,14 @@ std::unique_ptr<media::Demuxer> ResourceProviderImpl::OverrideDemuxerForUrl(
 
     // Do not create a CastStreamingDemuxer if the Cast Streaming MessagePort
     // was not set in the browser process. This will manifest as an unbound
-    // CastStreamingReceiver object in the renderer process.
+    // DemuxerProvider object in the renderer process.
     // TODO(crbug.com/1082821): Simplify the instantiation conditions for the
     // CastStreamingDemuxer.
     DCHECK(iter->second);
-    CastStreamingReceiver& receiver = iter->second->cast_streaming_receiver();
-    if (receiver.IsBound()) {
+    DemuxerConnector& demuxer_connector = iter->second->demuxer_connector();
+    if (demuxer_connector.IsBound()) {
       return std::make_unique<CastStreamingDemuxer>(
-          &receiver, std::move(media_task_runner));
+          &demuxer_connector, std::move(media_task_runner));
     }
   }
 
@@ -90,7 +90,7 @@ ResourceProviderImpl::PerRenderFrameResources::PerRenderFrameResources(
     content::RenderFrame* render_frame,
     EndOfLifeCB end_of_life_callback)
     : content::RenderFrameObserver(render_frame),
-      cast_streaming_receiver_(render_frame),
+      demuxer_connector_(render_frame),
       end_of_life_cb_(std::move(end_of_life_callback)) {
   DCHECK(render_frame);
   DCHECK(end_of_life_cb_);

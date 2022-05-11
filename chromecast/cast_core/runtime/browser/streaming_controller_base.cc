@@ -34,12 +34,12 @@ void StreamingControllerBase::MainFrameReadyToCommitNavigation(
 
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&cast_streaming_receiver_);
+      ->GetInterface(&demuxer_connector_);
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&renderer_connection_);
 
-  DCHECK(cast_streaming_receiver_);
+  DCHECK(demuxer_connector_);
   DCHECK(renderer_connection_);
 
   TryStartPlayback();
@@ -69,7 +69,7 @@ void StreamingControllerBase::StartPlaybackAsync(PlaybackStartedCB cb) {
 }
 
 void StreamingControllerBase::TryStartPlayback() {
-  if (playback_started_cb_ && constraints_ && cast_streaming_receiver_) {
+  if (playback_started_cb_ && constraints_ && demuxer_connector_) {
     cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
         base::BindOnce(
             [](std::unique_ptr<cast_api_bindings::MessagePort> port) {
@@ -80,7 +80,7 @@ void StreamingControllerBase::TryStartPlayback() {
         std::move(constraints_), std::move(message_port_provider), client_);
     DCHECK(receiver_session_);
 
-    StartPlayback(receiver_session_.get(), std::move(cast_streaming_receiver_),
+    StartPlayback(receiver_session_.get(), std::move(demuxer_connector_),
                   std::move(renderer_connection_));
     std::move(playback_started_cb_).Run();
   }

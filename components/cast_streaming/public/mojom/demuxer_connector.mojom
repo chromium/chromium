@@ -81,7 +81,7 @@ struct VideoStreamInitializationInfo {
 // Implemented by the renderer, used to start the Cast Streaming Session.
 // Closure of the Mojo channel will trigger the end of the Cast Streaming
 // Session.
-interface CastStreamingReceiver {
+interface DemuxerConnector {
   // Used for synchronization between the browser and the renderer. The browser
   // should invoke this after binding the interface, and wait for the reply
   // callback to know when the renderer is ready to receive and render frames.
@@ -89,7 +89,7 @@ interface CastStreamingReceiver {
 
   // Called when the streams have been successfully initialized. At least one of
   // |audio_buffer_requester| or |video_buffer_requester| must be set. This will
-  // only be called once per the lifetime of CastStreamingReceiver.
+  // only be called once per the lifetime of DemuxerConnector.
   OnStreamsInitialized(
       AudioStreamInitializationInfo? audio_buffer_requester,
       VideoStreamInitializationInfo? video_buffer_requester);

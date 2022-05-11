@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_CAST_STREAMING_DEMUXER_H_
 
-#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "media/base/demuxer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,9 +17,9 @@ class SingleThreadTaskRunner;
 
 namespace cast_streaming {
 
-class CastStreamingReceiver;
 class CastStreamingAudioDemuxerStream;
 class CastStreamingVideoDemuxerStream;
+class DemuxerConnector;
 
 // media::Demuxer implementation for a Cast Streaming Receiver.
 // This object is instantiated on the main thread, whose task runner is stored
@@ -27,11 +27,11 @@ class CastStreamingVideoDemuxerStream;
 // on the main thread. Every other method is called on the media thread, whose
 // task runner is |media_task_runner_|.
 // TODO(crbug.com/1082821): Simplify the CastStreamingDemuxer initialization
-// sequence when the CastStreamingReceiver Component has been implemented.
+// sequence when the DemuxerConnector Component has been implemented.
 class CastStreamingDemuxer final : public media::Demuxer {
  public:
   CastStreamingDemuxer(
-      CastStreamingReceiver* receiver,
+      DemuxerConnector* demuxer_connector,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
   ~CastStreamingDemuxer() override;
 
@@ -81,7 +81,7 @@ class CastStreamingDemuxer final : public media::Demuxer {
   // Set to true if the Demuxer was successfully initialized.
   bool was_initialization_successful_ = false;
   media::PipelineStatusCallback initialized_cb_;
-  CastStreamingReceiver* const receiver_;
+  DemuxerConnector* const demuxer_connector_;
 
   base::WeakPtrFactory<CastStreamingDemuxer> weak_factory_;
 };

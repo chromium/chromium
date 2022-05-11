@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/cast_streaming_receiver.h"
+#include "components/cast_streaming/renderer/demuxer_connector.h"
 
 #include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
 #include "content/public/renderer/render_frame.h"
@@ -10,8 +10,7 @@
 
 namespace cast_streaming {
 
-CastStreamingReceiver::CastStreamingReceiver(
-    content::RenderFrame* render_frame) {
+DemuxerConnector::DemuxerConnector(content::RenderFrame* render_frame) {
   DVLOG(1) << __func__;
   DCHECK(render_frame);
 
@@ -19,15 +18,15 @@ CastStreamingReceiver::CastStreamingReceiver(
   // AssociatedInterfaceRegistry, owned by |render_frame| will be torn-down at
   // the same time as |this|.
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&CastStreamingReceiver::BindToReceiver,
+      base::BindRepeating(&DemuxerConnector::BindToReceiver,
                           base::Unretained(this)));
 }
 
-CastStreamingReceiver::~CastStreamingReceiver() {
+DemuxerConnector::~DemuxerConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void CastStreamingReceiver::SetDemuxer(CastStreamingDemuxer* demuxer) {
+void DemuxerConnector::SetDemuxer(CastStreamingDemuxer* demuxer) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(demuxer);
@@ -53,38 +52,38 @@ void CastStreamingReceiver::SetDemuxer(CastStreamingDemuxer* demuxer) {
   }
 }
 
-void CastStreamingReceiver::OnDemuxerDestroyed() {
+void DemuxerConnector::OnDemuxerDestroyed() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(demuxer_);
 
   demuxer_ = nullptr;
   is_demuxer_initialized_ = false;
-  cast_streaming_receiver_receiver_.reset();
+  demuxer_connector_receiver_.reset();
 }
 
-void CastStreamingReceiver::BindToReceiver(
-    mojo::PendingAssociatedReceiver<mojom::CastStreamingReceiver> receiver) {
+void DemuxerConnector::BindToReceiver(
+    mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!cast_streaming_receiver_receiver_.is_bound());
+  DCHECK(!demuxer_connector_receiver_.is_bound());
 
-  cast_streaming_receiver_receiver_.Bind(std::move(receiver));
+  demuxer_connector_receiver_.Bind(std::move(receiver));
 
   // Mojo service disconnection means the Cast Streaming Session ended or the
   // Cast Streaming Sender disconnected.
-  cast_streaming_receiver_receiver_.set_disconnect_handler(base::BindOnce(
-      &CastStreamingReceiver::OnReceiverDisconnected, base::Unretained(this)));
+  demuxer_connector_receiver_.set_disconnect_handler(base::BindOnce(
+      &DemuxerConnector::OnReceiverDisconnected, base::Unretained(this)));
 }
 
-bool CastStreamingReceiver::IsBound() const {
+bool DemuxerConnector::IsBound() const {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return cast_streaming_receiver_receiver_.is_bound();
+  return demuxer_connector_receiver_.is_bound();
 }
 
-void CastStreamingReceiver::MaybeCallEnableReceiverCallback() {
+void DemuxerConnector::MaybeCallEnableReceiverCallback() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -92,11 +91,11 @@ void CastStreamingReceiver::MaybeCallEnableReceiverCallback() {
     std::move(enable_receiver_callback_).Run();
 }
 
-void CastStreamingReceiver::OnReceiverDisconnected() {
+void DemuxerConnector::OnReceiverDisconnected() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cast_streaming_receiver_receiver_.reset();
+  demuxer_connector_receiver_.reset();
   enable_receiver_callback_.Reset();
 
   if (demuxer_ && !is_demuxer_initialized_) {
@@ -105,7 +104,7 @@ void CastStreamingReceiver::OnReceiverDisconnected() {
   }
 }
 
-void CastStreamingReceiver::EnableReceiver(EnableReceiverCallback callback) {
+void DemuxerConnector::EnableReceiver(EnableReceiverCallback callback) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!enable_receiver_callback_);
@@ -115,7 +114,7 @@ void CastStreamingReceiver::EnableReceiver(EnableReceiverCallback callback) {
   MaybeCallEnableReceiverCallback();
 }
 
-void CastStreamingReceiver::OnStreamsInitialized(
+void DemuxerConnector::OnStreamsInitialized(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
