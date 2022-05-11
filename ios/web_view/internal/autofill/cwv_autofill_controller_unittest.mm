@@ -336,6 +336,32 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
     [delegate verify];
 }
 
+// Tests CWVAutofillController delegate input callback is invoked by keyup
+// events.
+TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
+  [[delegate expect] autofillController:autofill_controller_
+          didInputInFieldWithIdentifier:kTestFieldIdentifier
+                              fieldType:@""
+                               formName:kTestFormName
+                                frameID:frame_id_
+                                  value:kTestFieldValue
+                          userInitiated:YES];
+
+  autofill::FormActivityParams params;
+  params.form_name = base::SysNSStringToUTF8(kTestFormName);
+  params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+  params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  params.frame_id = web::kMainFakeFrameId;
+  params.type = "keyup";
+  params.has_user_gesture = true;
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  [delegate verify];
+}
+
 // Tests CWVAutofillController delegate blur callback is invoked.
 TEST_F(CWVAutofillControllerTest, BlurCallback) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));

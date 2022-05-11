@@ -520,7 +520,7 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
                                   value:nsValue
                           userInitiated:userInitiated];
     }
-  } else if (params.type == "input") {
+  } else if (params.type == "input" || params.type == "keyup") {
     if ([_delegate respondsToSelector:@selector
                    (autofillController:
                        didInputInFieldWithIdentifier:fieldType:formName:frameID
