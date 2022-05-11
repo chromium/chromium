@@ -501,12 +501,16 @@ bool ShouldCreateLogMessage(int severity) {
 bool ShouldLogToStderr(int severity) {
   if (g_logging_destination & LOG_TO_STDERR)
     return true;
-#if !BUILDFLAG(IS_FUCHSIA)
-  // High-severity logs go to stderr by default, except on Fuchsia.
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia will persist data logged to stdio by a component, so do not emit
+  // logs to stderr unless explicitly configured to do so.
+  return false;
+#else
   if (severity >= kAlwaysPrintErrorLevel)
     return (g_logging_destination & ~LOG_TO_FILE) == LOG_NONE;
-#endif
   return false;
+#endif
 }
 
 int GetVlogVerbosity() {
