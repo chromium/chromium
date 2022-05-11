@@ -14263,9 +14263,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   scrollbar->SetBounds(scrollbar_size);
   host_impl_->set_force_smooth_wheel_scrolling_for_testing(true);
 
+  const int thumb_len = 50;
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetThumbLength(thumb_len);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14298,11 +14299,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
                     .scrollbar_controller_for_testing()
                     ->drag_state_.has_value());
 
-    // This verifies that the jump click delta was accounted for correctly.
+    // This verifies that the start/snap-back position is the scroll position
+    // before any jump-click
     EXPECT_FLOAT_EQ(GetInputHandler()
                         .scrollbar_controller_for_testing()
                         ->drag_state_->scroll_position_at_start_,
-                    243.80952f);
+                    0.0f);
+
+    EXPECT_FLOAT_EQ(GetInputHandler()
+                        .scrollbar_controller_for_testing()
+                        ->drag_state_->drag_origin.y(),
+                    15.0f + thumb_len / 2.0f);
   }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.

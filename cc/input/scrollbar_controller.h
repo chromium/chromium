@@ -273,8 +273,13 @@ class CC_EXPORT ScrollbarController {
   gfx::PointF GetScrollbarRelativePosition(const gfx::PointF position_in_widget,
                                            bool* clipped) const;
 
-  // Decides if the scroller should snap to the offset that it was originally at
-  // (i.e the offset before the thumb drag).
+  // Computes an aritificial drag origin for jump clicks, to give the scrollbar
+  // a proper place to snap back to on a jump click then drag
+  gfx::PointF DragOriginForJumpClick(
+      const ScrollbarLayerImplBase* scrollbar) const;
+
+  // Decides if the scroller should snap to the offset that it was
+  // originally at (i.e the offset before the thumb drag).
   bool SnapToDragOrigin(const gfx::PointF pointer_position_in_widget) const;
 
   // Decides whether a track autoscroll should be aborted (or restarted) due to
