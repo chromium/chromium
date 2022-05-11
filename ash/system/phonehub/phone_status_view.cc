@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -254,7 +255,11 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
 
   if (IsBatterySaverModeOn(phone_status)) {
     info.icon_badge = &kPhoneHubBatterySaverIcon;
-    info.badge_outline = &kPhoneHubBatterySaverOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info.badge_outline = &kPhoneHubBatterySaverOutlineMaskIcon;
+    } else {
+      info.badge_outline = &kPhoneHubBatterySaverOutlineIcon;
+    }
     return info;
   }
 
@@ -263,16 +268,28 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
       info.alert_if_low = true;
       if (info.charge_percent < PowerStatus::kCriticalBatteryChargePercentage) {
         info.icon_badge = &kUnifiedMenuBatteryAlertIcon;
-        info.badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+        if (features::IsDarkLightModeEnabled()) {
+          info.badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
+        } else {
+          info.badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+        }
       }
       break;
     case PhoneStatusModel::ChargingState::kChargingAc:
       info.icon_badge = &kUnifiedMenuBatteryBoltIcon;
-      info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+      if (features::IsDarkLightModeEnabled()) {
+        info.badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+      } else {
+        info.badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+      }
       break;
     case PhoneStatusModel::ChargingState::kChargingUsb:
       info.icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-      info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+      if (features::IsDarkLightModeEnabled()) {
+        info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+      } else {
+        info.badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+      }
       break;
   }
 
