@@ -99,26 +99,25 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
 
   void SetApps(const std::vector<policy::ArcKioskAppBasicInfo>& apps,
                const std::string& auto_login_account) {
-    base::ListValue device_local_accounts;
+    base::Value::List device_local_accounts;
     for (const policy::ArcKioskAppBasicInfo& app : apps) {
-      std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(GenerateAccountId(app.package_name())));
-      entry->SetKey(
-          kAccountsPrefDeviceLocalAccountsKeyType,
-          base::Value(policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                    base::Value(app.package_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                    base::Value(app.class_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                    base::Value(app.action()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                    base::Value(app.display_name()));
+      base::Value::Dict entry;
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                GenerateAccountId(app.package_name()));
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                app.package_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                app.class_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                app.action());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                app.display_name());
       device_local_accounts.Append(std::move(entry));
     }
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
-                                 device_local_accounts);
+                                 base::Value(std::move(device_local_accounts)));
 
     if (!auto_login_account.empty()) {
       owner_settings_service_->SetString(
