@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -54,7 +55,7 @@ public class TabbedNavigationBarColorControllerTest {
     @Rule
     public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
     private Window mWindow;
-    private int mLightNavigationColor;
+    private int mRegularNavigationColor;
     private int mDarkNavigationColor;
 
     @Before
@@ -62,34 +63,34 @@ public class TabbedNavigationBarColorControllerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mWindow = mActivityTestRule.getActivity().getWindow();
         Context context = mActivityTestRule.getActivity();
-        mLightNavigationColor = context.getColor(R.color.default_bg_color_light);
+        mRegularNavigationColor = SemanticColorUtils.getBottomSystemNavColor(context);
         mDarkNavigationColor = context.getColor(R.color.default_bg_color_dark);
     }
 
     @Test
     @SmallTest
     public void testToggleOverview() {
-        assertEquals("Navigation bar should be white before entering overview mode.",
-                mLightNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface before entering overview mode.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
-        assertEquals("Navigation bar should be white in overview mode.", mLightNavigationColor,
-                mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface in overview mode.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
-        assertEquals("Navigation bar should be white after exiting overview mode.",
-                mLightNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface after exiting overview mode.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
     }
 
     @Test
     @SmallTest
     public void testToggleIncognito() {
-        assertEquals("Navigation bar should be white on normal tabs.", mLightNavigationColor,
-                mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface on normal tabs.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
 
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), true, true);
@@ -100,15 +101,15 @@ public class TabbedNavigationBarColorControllerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), false, true);
 
-        assertEquals("Navigation bar should be white after switching back to normal tab.",
-                mLightNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface after switching back to normal tab.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
     }
 
     @Test
     @MediumTest
     public void testToggleFullscreen() throws TimeoutException {
-        assertEquals("Navigation bar should be white before entering fullscreen mode.",
-                mLightNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface before entering fullscreen mode.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
 
         String url =
                 mTestServerRule.getServer().getURL("/content/test/data/media/video-player.html");
@@ -125,8 +126,8 @@ public class TabbedNavigationBarColorControllerTest {
 
         exitFullscreen(observer, activity.getCurrentWebContents());
 
-        assertEquals("Navigation bar should be white after exiting fullscreen mode.",
-                mLightNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals("Navigation bar should be colorSurface after exiting fullscreen mode.",
+                mRegularNavigationColor, mWindow.getNavigationBarColor());
     }
 
     private void enterFullscreen(FullscreenToggleObserver observer, WebContents webContents)
