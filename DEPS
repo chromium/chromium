@@ -4215,6 +4215,18 @@ hooks = [
     ],
   },
 
+  # Download test data for Maps telemetry_gpu_integration_test.
+  {
+    'name': 'maps_perf_test_load_dataset',
+    'pattern': '\\.sha1',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--no_auth',
+                '--bucket', 'chromium-telemetry',
+                '-s', 'src/tools/perf/page_sets/maps_perf_test/load_dataset.sha1',
+    ],
+  },
 
   # This is used to ensure that all network operations are properly
   # annotated so we can document what they're for.
