@@ -10,14 +10,13 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#include "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
@@ -83,6 +82,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 // favicon images.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 
+// Service to know whether passwords are synced.
+@property(nonatomic, assign) syncer::SyncService* syncService;
+
 @end
 
 @implementation PasswordsMediator
@@ -96,6 +98,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
                      syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
+    _syncService = syncService;
     _faviconLoader = faviconLoader;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
@@ -152,6 +155,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 - (void)disconnect {
   _identityManagerObserver.reset();
   _syncObserver.reset();
+  _syncService = nullptr;
 }
 
 #pragma mark - PasswordsTableViewControllerDelegate
@@ -238,6 +242,19 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   }
   return [[NSMutableAttributedString alloc] initWithString:message
                                                 attributes:textAttributes];
+}
+
+// Returns the on-device encryption state according to the sync service.
+- (OnDeviceEncryptionState)onDeviceEncryptionState {
+  if (ShouldOfferTrustedVaultOptIn(_syncService)) {
+    return OnDeviceEncryptionStateOfferOptIn;
+  }
+  syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
+  if (syncUserSettings->GetPassphraseType() ==
+      syncer::PassphraseType::kTrustedVaultPassphrase) {
+    return OnDeviceEncryptionStateOptedIn;
+  }
+  return OnDeviceEncryptionStateNotShown;
 }
 
 #pragma mark - PasswordCheckObserver

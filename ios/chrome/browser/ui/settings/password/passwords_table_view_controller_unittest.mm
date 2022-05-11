@@ -39,6 +39,8 @@
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/sync_test_util.h"
+#include "ios/chrome/test/scoped_key_window.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,10 +61,26 @@ using ::testing::Return;
 
 // Declaration to conformance to SavePasswordsConsumerDelegate and keep tests in
 // this file working.
-@interface PasswordsTableViewController (Test) <
-    UISearchBarDelegate,
-    PasswordsConsumer>
+@interface PasswordsTableViewController (Test) <PasswordsConsumer,
+                                                UISearchBarDelegate,
+                                                UISearchControllerDelegate>
 - (void)updateExportPasswordsButton;
+@end
+
+// TODO(crbug.com/1324555): Remove this double and uses TestSyncUserSettings
+@interface TestPasswordsMediator : PasswordsMediator
+
+@property(nonatomic) OnDeviceEncryptionState encryptionState;
+
+@end
+
+@implementation TestPasswordsMediator
+
+- (OnDeviceEncryptionState)onDeviceEncryptionState:
+    (ChromeBrowserState*)browserState {
+  return self.encryptionState;
+}
+
 @end
 
 namespace {
@@ -96,7 +114,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     CreateController();
 
     ChromeBrowserState* browserState = browser_->GetBrowserState();
-    mediator_ = [[PasswordsMediator alloc]
+    mediator_ = [[TestPasswordsMediator alloc]
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForBrowserState(browserState)
                     syncSetupService:nil
@@ -287,7 +305,9 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  PasswordsMediator* mediator_;
+  TestPasswordsMediator* mediator_;
+  ScopedKeyWindow scoped_window_;
+  UIViewController* root_view_controller_ = nil;
 };
 
 // Tests default case has no saved sites and no blocked sites.
@@ -522,6 +542,51 @@ TEST_F(PasswordsTableViewControllerTest,
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
+}
+
+// Tests that adding "on device encryption" don’t break during search.
+TEST_F(PasswordsTableViewControllerTest, TestOnDeviceEncryptionWhileSearching) {
+  root_view_controller_ = [[UIViewController alloc] init];
+  scoped_window_.Get().rootViewController = root_view_controller_;
+
+  PasswordsTableViewController* passwords_controller =
+      static_cast<PasswordsTableViewController*>(controller());
+
+  // Present the view controller.
+  __block bool presentation_finished = NO;
+  UINavigationController* navigation_controller =
+      [[UINavigationController alloc]
+          initWithRootViewController:passwords_controller];
+  [root_view_controller_ presentViewController:navigation_controller
+                                      animated:NO
+                                    completion:^{
+                                      presentation_finished = YES;
+                                    }];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return presentation_finished;
+      }));
+
+  // Disable on device encryption to prepare the state.
+  mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
+  [passwords_controller updateOnDeviceEncryptionSessionAndUpdateTableView];
+
+  // start of the actual test.
+  passwords_controller.navigationItem.searchController.active = YES;
+  mediator_.encryptionState = OnDeviceEncryptionStateOptedIn;
+  [passwords_controller updateOnDeviceEncryptionSessionAndUpdateTableView];
+
+  passwords_controller.navigationItem.searchController.active = NO;
+  // Dismiss |view_controller_| and waits for the dismissal to finish.
+  __block bool dismissal_finished = NO;
+  [root_view_controller_ dismissViewControllerAnimated:NO
+                                            completion:^{
+                                              dismissal_finished = YES;
+                                            }];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return dismissal_finished;
+      }));
 }
 
 // Tests that the "Export Passwords..." button is greyed out in edit mode.

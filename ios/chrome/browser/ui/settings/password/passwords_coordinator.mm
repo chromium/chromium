@@ -140,6 +140,7 @@
 }
 
 - (void)stop {
+  self.passwordsViewController.delegate = nil;
   self.passwordsViewController = nil;
 
   [self.passwordIssuesCoordinator stop];
