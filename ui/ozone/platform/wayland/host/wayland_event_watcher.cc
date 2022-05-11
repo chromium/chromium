@@ -10,10 +10,21 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ui {
 
 namespace {
+
+// Formats the |message| by removing '@' char followed by any digits until the
+// next char. Also removes new line, tab and carriage-return.
+void FormatErrorMessage(std::string* message) {
+  const re2::RE2 kInvalidChars[] = {"\n", "\r", "\t", "[@]+[0-9]+"};
+  if (message) {
+    for (const auto& pattern : kInvalidChars)
+      re2::RE2::Replace(message, pattern, "");
+  }
+}
 
 // Wayland error log that will be stored if the client (Chromium) is
 // disconnected due to a protocol error.
@@ -23,6 +34,9 @@ void wayland_log(const char* fmt, va_list argp) {
   DCHECK(!g_error_log);
   g_error_log = new std::string(base::StringPrintV(fmt, argp));
   LOG(ERROR) << "libwayland: " << *g_error_log;
+  // Format the error message only after it's printed. Otherwise, object id will
+  // be lost and local development and debugging will be harder to do.
+  FormatErrorMessage(g_error_log);
 }
 
 std::string GetWaylandProtocolError(int err, wl_display* display) {
@@ -36,17 +50,18 @@ std::string GetWaylandProtocolError(int err, wl_display* display) {
           "Fatal Wayland protocol error %u on interface %s (object %u). "
           "Shutting down..",
           ec, intf->name, id);
-      LOG(ERROR) << error_string;
     } else {
       error_string = base::StringPrintf(
           "Fatal Wayland protocol error %u. Shutting down..", ec);
-      LOG(ERROR) << error_string;
     }
   } else {
     error_string = base::StringPrintf("Fatal Wayland communication error: %s.",
                                       std::strerror(err));
-    LOG(ERROR) << error_string;
   }
+  LOG(ERROR) << error_string;
+  // Format the error message only after it's printed. Otherwise, object id will
+  // be lost and local development and debugging will be harder to do.
+  FormatErrorMessage(&error_string);
   return error_string;
 }
 
