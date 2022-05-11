@@ -403,6 +403,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
+    expires_after="2023-05-01">
+  <owner>campello@google.com</owner>
+  <owner>chromeos-fwupd@google.com</owner>
+  <summary>
+    Indicates the return value of a firmware activation operation via fwupd.
+    Reported once per activation operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Fwupd.UpdateDuration" units="seconds"
+    expires_after="2023-05-01">
+  <owner>campello@google.com</owner>
+  <owner>chromeos-fwupd@google.com</owner>
+  <summary>
+    Time elapsed during the firmware update operation. Sent after every
+    sucessful update firmware operation via fwupd.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Fwupd.UpdateStatus" enum="FwupdReturnValue"
+    expires_after="2023-05-01">
+  <owner>campello@google.com</owner>
+  <owner>chromeos-fwupd@google.com</owner>
+  <summary>
+    Indicates the return value of a firmware update operation via fwupd.
+    Reported once per update operation.
+  </summary>
+</histogram>
+
 <histogram name="Platform.IntelMaxMicroArchitecture"
     enum="IntelMaxMicroArchitecture" expires_after="2022-10-09">
   <owner>fbarchard@chromium.org</owner>

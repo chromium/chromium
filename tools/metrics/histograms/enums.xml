@@ -42659,6 +42659,12 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FwupdReturnValue">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Nothing to do"/>
+</enum>
+
 <enum name="GaiaCookieStateOnSignedInNavigation">
   <int value="0" label="Gaia cookie is present"/>
   <int value="1" label="Gaia cookie is missing from Google-associated domain"/>
