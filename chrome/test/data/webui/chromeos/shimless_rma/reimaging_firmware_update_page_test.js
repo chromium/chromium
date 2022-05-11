@@ -51,9 +51,7 @@ export function reimagingFirmwareUpdatePageTest() {
     const updateStatus =
         component.shadowRoot.querySelector('#firmwareUpdateStatus');
     assertFalse(updateStatus.hidden);
-    assertEquals(
-        loadTimeData.getString('firmwareUpdateWaitForUsbText'),
-        updateStatus.textContent.trim());
+    assertEquals('', updateStatus.textContent.trim());
   });
 
   test('RoFirmwareUpdateStartingDisablesNext', async () => {
