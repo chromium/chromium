@@ -1395,6 +1395,7 @@ EXPORTS
     ?AssignLargeString@Cord@absl@@AEAAAEAV12@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?AssignNext@?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__1@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@QEAAXPEAUPayload@status_internal@3@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AEAAXAEBV123@@Z
+    ?AsyncSignalSafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?At@TimeZone@absl@@QEBA?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QEBA?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
     ?Avail@FormatSinkImpl@str_format_internal@absl@@AEBA_KXZ
@@ -2065,7 +2066,7 @@ EXPORTS
     ?RegisterCondVarTracer@absl@@YAXP6AXPEBDPEBX@Z@Z
     ?RegisterDebugStackTraceHook@debugging_internal@absl@@YAXP6AXQEBQEAXHP6AXPEBDPEAX@Z2@Z@Z
     ?RegisterInternalLogFunction@raw_logging_internal@absl@@YAXP6AXW4LogSeverity@2@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@Z
-    ?RegisterLogPrefixHook@raw_logging_internal@absl@@YAXP6A_NW4LogSeverity@2@PEBDHPEAPEADPEAH@Z@Z
+    ?RegisterLogFilterAndPrefixHook@raw_logging_internal@absl@@YAXP6A_NW4LogSeverity@2@PEBDHPEAPEADPEAH@Z@Z
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPEBDPEBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPEBX_J@Z@Z
@@ -2096,7 +2097,6 @@ EXPORTS
     ?RoundUp@cord_internal@absl@@YA_K_K0@Z
     ?RoundUpForTag@cord_internal@absl@@YA_K_K@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
-    ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@AEAUSamplingState@12@_K@Z
     ?Seek@CordRepBtreeNavigator@cord_internal@absl@@QEAA?AUPosition@123@_K@Z
     ?Seek@CordRepBtreeReader@cord_internal@absl@@QEAA?AVstring_view@3@_K@Z

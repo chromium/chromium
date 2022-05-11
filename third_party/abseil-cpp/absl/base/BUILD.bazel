@@ -75,6 +75,7 @@ cc_library(
         ":atomic_hook",
         ":config",
         ":core_headers",
+        ":errno_saver",
         ":log_severity",
     ],
 )

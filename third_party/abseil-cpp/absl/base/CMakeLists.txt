@@ -66,6 +66,7 @@ absl_cc_library(
     absl::atomic_hook
     absl::config
     absl::core_headers
+    absl::errno_saver
     absl::log_severity
   COPTS
     ${ABSL_DEFAULT_COPTS}

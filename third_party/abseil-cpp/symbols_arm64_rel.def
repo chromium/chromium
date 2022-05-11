@@ -121,6 +121,7 @@ EXPORTS
     ??0ByAnyChar@absl@@QEAA@Vstring_view@1@@Z
     ??0ByLength@absl@@QEAA@_J@Z
     ??0ByString@absl@@QEAA@Vstring_view@1@@Z
+    ??0ChunkIterator@Cord@absl@@AEAA@PEAUCordRep@cord_internal@2@@Z
     ??0ChunkIterator@Cord@absl@@AEAA@PEBV12@@Z
     ??0Condition@absl@@AEAA@XZ
     ??0Condition@absl@@QEAA@P6A_NPEAX@Z0@Z
@@ -255,6 +256,7 @@ EXPORTS
     ?AssignLargeString@Cord@absl@@AEAAAEAV12@$$QEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?AssignNext@?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__1@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@QEAAXPEAUPayload@status_internal@3@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AEAAXAEBV123@@Z
+    ?AsyncSignalSafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?At@TimeZone@absl@@QEBA?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QEBA?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
     ?Await@Mutex@absl@@QEAAXAEBVCondition@2@@Z
@@ -670,7 +672,7 @@ EXPORTS
     ?RegisterCondVarTracer@absl@@YAXP6AXPEBDPEBX@Z@Z
     ?RegisterDebugStackTraceHook@debugging_internal@absl@@YAXP6AXQEBQEAXHP6AXPEBDPEAX@Z2@Z@Z
     ?RegisterInternalLogFunction@raw_logging_internal@absl@@YAXP6AXW4LogSeverity@2@PEBDHAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z@Z
-    ?RegisterLogPrefixHook@raw_logging_internal@absl@@YAXP6A_NW4LogSeverity@2@PEBDHPEAPEADPEAH@Z@Z
+    ?RegisterLogFilterAndPrefixHook@raw_logging_internal@absl@@YAXP6A_NW4LogSeverity@2@PEBDHPEAPEADPEAH@Z@Z
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPEBDPEBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPEBX_J@Z@Z
@@ -691,7 +693,6 @@ EXPORTS
     ?Rethrow@variant_internal@absl@@YAXXZ
     ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
-    ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
     ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@AEAUSamplingState@12@_K@Z
     ?Seek@CordRepBtreeReader@cord_internal@absl@@QEAA?AVstring_view@3@_K@Z
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QEAAX_K@Z

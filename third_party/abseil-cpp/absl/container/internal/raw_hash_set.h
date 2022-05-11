@@ -95,14 +95,21 @@
 // Storing control bytes in a separate array also has beneficial cache effects,
 // since more logical slots will fit into a cache line.
 //
+// # Hashing
+//
+// We compute two separate hashes, `H1` and `H2`, from the hash of an object.
+// `H1(hash(x))` is an index into `slots`, and essentially the starting point
+// for the probe sequence. `H2(hash(x))` is a 7-bit value used to filter out
+// objects that cannot possibly be the one we are looking for.
+//
 // # Table operations.
 //
-// The key operations are `insert`, `find`, and `erase_at`; the operations below
+// The key operations are `insert`, `find`, and `erase`.
 //
-// `insert` and `erase` are implemented in terms of find, so we describe that
-// one first. To `find` a value `x`, we compute `hash(x)`. From `H1(hash(x))`
-// and the capacity, we construct a `probe_seq` that visits every group of
-// slots in some interesting order.
+// Since `insert` and `erase` are implemented in terms of `find`, we describe
+// `find` first. To `find` a value `x`, we compute `hash(x)`. From
+// `H1(hash(x))` and the capacity, we construct a `probe_seq` that visits every
+// group of slots in some interesting order.
 //
 // We now walk through these indices. At each index, we select the entire group
 // starting with that index and extract potential candidates: occupied slots
@@ -112,32 +119,21 @@
 // next probe index. Tombstones effectively behave like full slots that never
 // match the value we're looking for.
 //
-// The `H2` bits ensure that if we perform a ==, a false positive is very very
-// rare (assuming the hash function looks enough like a random oracle). To see
-// this, note that in a group, there will be at most 8 or 16 `H2` values, but
-// an `H2` can be any one of 128 values. Viewed as a birthday attack, we can use
-// the rule of thumb that the probability of a collision among n choices of m
-// symbols is `p(n, m) ~ n^2/2m. In table form:
+// The `H2` bits ensure when we compare a slot to an object with `==`, we are
+// likely to have actually found the object.  That is, the chance is low that
+// `==` is called and returns `false`.  Thus, when we search for an object, we
+// are unlikely to call `==` many times.  This likelyhood can be analyzed as
+// follows (assuming that H2 is a random enough hash function).
 //
-//  n |  p(n) |  n |  p(n)
-//  0 | 0.000 |  8 | 0.250
-//  1 | 0.004 |  9 | 0.316
-//  2 | 0.016 | 10 | 0.391
-//  3 | 0.035 | 11 | 0.473
-//  4 | 0.062 | 12 | 0.562
-//  5 | 0.098 | 13 | 0.660
-//  6 | 0.141 | 14 | 0.766
-//  7 | 0.191 | 15 | 0.879
-//
-// The rule of thumb breaks down at around `n = 12`, but such groups would only
-// occur for tables close to their max load factor. This is far better than an
-// ordinary open-addressing table, which needs to perform an == at every step of
-// the probe sequence. These probabilities don't tell the full story (for
-// example, because elements are inserted into a group from the front, and
-// candidates are =='ed from the front, the collision is only effective in
-// rare cases e.g. another probe sequence inserted into a deleted slot in front
-// of us).
-//
+// Let's assume that there are `k` "wrong" objects that must be examined in a
+// probe sequence.  For example, when doing a `find` on an object that is in the
+// table, `k` is the number of objects between the start of the probe sequence
+// and the final found object (not including the final found object).  The
+// expected number of objects with an H2 match is then `k/128`.  Measurements
+// and analysis indicate that even at high load factors, `k` is less than 32,
+// meaning that the number of "false positive" comparisons we must perform is
+// less than 1/8 per `find`.
+
 // `insert` is implemented in terms of `unchecked_insert`, which inserts a
 // value presumed to not be in the table (violating this requirement will cause
 // the table to behave erratically). Given `x` and its hash `hash(x)`, to insert
@@ -232,7 +228,7 @@ void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
 //
 // Currently, the sequence is a triangular progression of the form
 //
-//   p(i) := Width * (i^2 - i)/2 + hash (mod mask + 1)
+//   p(i) := Width * (i^2 + i)/2 + hash (mod mask + 1)
 //
 // The use of `Width` ensures that each probe step does not overlap groups;
 // the sequence effectively outputs the addresses of *groups* (although not
@@ -245,6 +241,10 @@ void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
 // for selecting candidates. However, when those candidates' slots are
 // actually inspected, there are no corresponding slots for the cloned bytes,
 // so we need to make sure we've treated those offsets as "wrapping around".
+//
+// It turns out that this probe sequence visits every group exactly once if the
+// number of groups is a power of two, since (i^2+i)/2 is a bijection in
+// Z/(2^m). See https://en.wikipedia.org/wiki/Quadratic_probing
 template <size_t Width>
 class probe_seq {
  public:

@@ -27,6 +27,11 @@
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
+#if defined(__cplusplus) && __cplusplus >= 202002L
+// In C++20, volatile-qualified return types are deprecated.
+#define ABSL_VOLATILE_RETURN_TYPES_DEPRECATED 1
+#endif
+
 // The following types help test an internal compiler error in GCC5 though
 // GCC10. The case OptionalTest.InternalCompilerErrorInGcc5ToGcc10 crashes the
 // compiler without a workaround. This test case should remain at the beginning
@@ -231,6 +236,7 @@ TEST(optionalTest, CopyConstructor) {
     EXPECT_TRUE(opt42_copy);
     EXPECT_EQ(42, *opt42_copy);
   }
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   {
     absl::optional<volatile int> empty, opt42 = 42;
     absl::optional<volatile int> empty_copy(empty);
@@ -239,6 +245,7 @@ TEST(optionalTest, CopyConstructor) {
     EXPECT_TRUE(opt42_copy);
     EXPECT_EQ(42, *opt42_copy);
   }
+#endif
   // test copyablility
   EXPECT_TRUE(std::is_copy_constructible<absl::optional<int>>::value);
   EXPECT_TRUE(std::is_copy_constructible<absl::optional<Copyable>>::value);
@@ -250,18 +257,11 @@ TEST(optionalTest, CopyConstructor) {
 
   EXPECT_FALSE(
       absl::is_trivially_copy_constructible<absl::optional<Copyable>>::value);
-#if defined(ABSL_USES_STD_OPTIONAL) && defined(__GLIBCXX__)
-  // libstdc++ std::optional implementation (as of 7.2) has a bug: when T is
-  // trivially copyable, optional<T> is not trivially copyable (due to one of
-  // its base class is unconditionally nontrivial).
-#define ABSL_GLIBCXX_OPTIONAL_TRIVIALITY_BUG 1
-#endif
-#ifndef ABSL_GLIBCXX_OPTIONAL_TRIVIALITY_BUG
   EXPECT_TRUE(
       absl::is_trivially_copy_constructible<absl::optional<int>>::value);
   EXPECT_TRUE(
       absl::is_trivially_copy_constructible<absl::optional<const int>>::value);
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   // See defect report "Trivial copy/move constructor for class with volatile
   // member" at
   // http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#2094
@@ -270,8 +270,7 @@ TEST(optionalTest, CopyConstructor) {
   // Also a cv-qualified scalar type should be trivially copyable.
   EXPECT_TRUE(absl::is_trivially_copy_constructible<
               absl::optional<volatile int>>::value);
-#endif  // _MSC_VER
-#endif  // ABSL_GLIBCXX_OPTIONAL_TRIVIALITY_BUG
+#endif  // !defined(_MSC_VER) && !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
 
   // constexpr copy constructor for trivially copyable types
   {
@@ -301,17 +300,10 @@ TEST(optionalTest, CopyConstructor) {
     EXPECT_TRUE(absl::is_trivially_copy_constructible<
                 absl::optional<const TrivialCopyable>>::value);
 #endif
-    // When testing with VS 2017 15.3, there seems to be a bug in MSVC
-    // std::optional when T is volatile-qualified. So skipping this test.
-    // Bug report:
-    // https://connect.microsoft.com/VisualStudio/feedback/details/3142534
-#if defined(ABSL_USES_STD_OPTIONAL) && defined(_MSC_VER) && _MSC_VER >= 1911
-#define ABSL_MSVC_OPTIONAL_VOLATILE_COPY_BUG 1
-#endif
-#ifndef ABSL_MSVC_OPTIONAL_VOLATILE_COPY_BUG
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
     EXPECT_FALSE(std::is_copy_constructible<
                  absl::optional<volatile TrivialCopyable>>::value);
-#endif
+#endif  // !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   }
 }
 
@@ -331,11 +323,9 @@ TEST(optionalTest, MoveConstructor) {
   EXPECT_FALSE(std::is_move_constructible<absl::optional<NonMovable>>::value);
   // test noexcept
   EXPECT_TRUE(std::is_nothrow_move_constructible<absl::optional<int>>::value);
-#ifndef ABSL_USES_STD_OPTIONAL
   EXPECT_EQ(
       absl::default_allocator_is_nothrow::value,
       std::is_nothrow_move_constructible<absl::optional<MoveableThrow>>::value);
-#endif
   EXPECT_TRUE(std::is_nothrow_move_constructible<
               absl::optional<MoveableNoThrow>>::value);
 }
@@ -664,8 +654,7 @@ TEST(optionalTest, CopyAssignment) {
   EXPECT_TRUE(absl::is_copy_assignable<NonTrivial>::value);
   EXPECT_FALSE(absl::is_trivially_copy_assignable<NonTrivial>::value);
 
-  // std::optional doesn't support volatile nontrivial types.
-#ifndef ABSL_USES_STD_OPTIONAL
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   {
     StructorListener listener;
     Listenable::listener = &listener;
@@ -684,7 +673,7 @@ TEST(optionalTest, CopyAssignment) {
     EXPECT_EQ(1, listener.destruct);
     EXPECT_EQ(1, listener.volatile_copy_assign);
   }
-#endif  // ABSL_USES_STD_OPTIONAL
+#endif  // !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
 }
 
 TEST(optionalTest, MoveAssignment) {
@@ -707,8 +696,7 @@ TEST(optionalTest, MoveAssignment) {
     EXPECT_EQ(1, listener.destruct);
     EXPECT_EQ(1, listener.move_assign);
   }
-  // std::optional doesn't support volatile nontrivial types.
-#ifndef ABSL_USES_STD_OPTIONAL
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   {
     StructorListener listener;
     Listenable::listener = &listener;
@@ -728,7 +716,7 @@ TEST(optionalTest, MoveAssignment) {
     EXPECT_EQ(1, listener.destruct);
     EXPECT_EQ(1, listener.volatile_move_assign);
   }
-#endif  // ABSL_USES_STD_OPTIONAL
+#endif  // !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   EXPECT_FALSE(absl::is_move_assignable<absl::optional<const int>>::value);
   EXPECT_TRUE(absl::is_move_assignable<absl::optional<Copyable>>::value);
   EXPECT_TRUE(absl::is_move_assignable<absl::optional<MoveableThrow>>::value);
@@ -1064,6 +1052,7 @@ TEST(optionalTest, Value) {
 #endif
   EXPECT_EQ("c&&", TypeQuals(OC(absl::in_place, "xvalue_c").value()));
 
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   // test on volatile type
   using OV = absl::optional<volatile int>;
   OV lvalue_v(absl::in_place, 42);
@@ -1071,6 +1060,7 @@ TEST(optionalTest, Value) {
   EXPECT_EQ(42, OV(42).value());
   EXPECT_TRUE((std::is_same<volatile int&, decltype(lvalue_v.value())>::value));
   EXPECT_TRUE((std::is_same<volatile int&&, decltype(OV(42).value())>::value));
+#endif  // !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
 
   // test exception throw on value()
   absl::optional<int> empty;
@@ -1113,6 +1103,7 @@ TEST(optionalTest, DerefOperator) {
 #endif
   EXPECT_EQ("c&&", TypeQuals(*OC(absl::in_place, "xvalue_c")));
 
+#if !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
   // test on volatile type
   using OV = absl::optional<volatile int>;
   OV lvalue_v(absl::in_place, 42);
@@ -1120,6 +1111,7 @@ TEST(optionalTest, DerefOperator) {
   EXPECT_EQ(42, *OV(42));
   EXPECT_TRUE((std::is_same<volatile int&, decltype(*lvalue_v)>::value));
   EXPECT_TRUE((std::is_same<volatile int&&, decltype(*OV(42))>::value));
+#endif  // !defined(ABSL_VOLATILE_RETURN_TYPES_DEPRECATED)
 
   constexpr absl::optional<int> opt1(1);
   static_assert(*opt1 == 1, "");
@@ -1584,12 +1576,10 @@ TEST(optionalTest, NoExcept) {
   static_assert(
       std::is_nothrow_move_constructible<absl::optional<MoveMeNoThrow>>::value,
       "");
-#ifndef ABSL_USES_STD_OPTIONAL
   static_assert(absl::default_allocator_is_nothrow::value ==
                     std::is_nothrow_move_constructible<
                         absl::optional<MoveMeThrow>>::value,
                 "");
-#endif
   std::vector<absl::optional<MoveMeNoThrow>> v;
   for (int i = 0; i < 10; ++i) v.emplace_back();
 }
