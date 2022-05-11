@@ -27,8 +27,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class WebLayerAssistantDependencies
         extends WebLayerAssistantStaticDependencies implements AssistantDependencies {
-    public WebLayerAssistantDependencies(WebContents webContents) {
-        super(webContents);
+    public WebLayerAssistantDependencies(WebContents webContents,
+            WebLayerAssistantTabChangeObserver webLayerAssistantTabChangeObserver) {
+        super(webContents, webLayerAssistantTabChangeObserver);
         maybeUpdateDependencies(webContents);
     }
 
@@ -109,7 +110,7 @@ public class WebLayerAssistantDependencies
 
     @Override
     public Destroyable observeTabChanges(AssistantTabChangeObserver tabChangeObserver) {
-        // TODO(b/222671580): Implement
-        return null;
+        mWebLayerAssistantTabChangeObserver.addObserver(tabChangeObserver);
+        return () -> mWebLayerAssistantTabChangeObserver.removeObserver(tabChangeObserver);
     }
 }

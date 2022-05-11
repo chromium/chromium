@@ -185,6 +185,7 @@ android_library("java") {
     "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantDependencies.java",
     "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantStaticDependencies.java",
+    "org/chromium/weblayer_private/autofill_assistant/WebLayerAssistantTabChangeObserver.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothChooserAndroidDelegate.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothScanningPromptAndroidDelegate.java",
     "org/chromium/weblayer_private/media/MediaRouteDialogFragmentImpl.java",

@@ -63,6 +63,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.weblayer_private.autofill_assistant.WebLayerAssistantTabChangeObserver;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
@@ -151,6 +152,9 @@ public final class TabImpl extends ITab.Stub {
     private ActionModeCallback mActionModeCallback;
 
     private WebLayerAccessibilityUtil.Observer mAccessibilityObserver;
+
+    private final WebLayerAssistantTabChangeObserver mWebLayerAssistantTabChangeObserver =
+            new WebLayerAssistantTabChangeObserver();
 
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
 
@@ -354,7 +358,7 @@ public final class TabImpl extends ITab.Stub {
      * Sets the BrowserImpl this TabImpl is contained in.
      */
     public void attachToBrowser(BrowserImpl browser) {
-        // NOTE: during tab creation this is called with |mBrowser| set to |browser|. This happens
+        // NOTE: during tab creation this is called with |browser| set to |mBrowser|. This happens
         // because the tab is created with |mBrowser| already set (to avoid having a bunch of null
         // checks).
         mBrowser = browser;
@@ -399,6 +403,8 @@ public final class TabImpl extends ITab.Stub {
                         new AutofillActionModeCallback(mBrowser.getContext(), mAutofillProvider));
             }
         }
+
+        mWebLayerAssistantTabChangeObserver.onBrowserAttachmentChanged(mWebContents);
     }
 
     @VisibleForTesting
@@ -1000,6 +1006,8 @@ public final class TabImpl extends ITab.Stub {
         assert mInterceptNavigationDelegate != null;
 
         TabImplJni.get().removeTabFromBrowserBeforeDestroying(mNativeTab);
+
+        mWebLayerAssistantTabChangeObserver.onTabDestroyed(mWebContents);
 
         // Notify the client that this instance is being destroyed to prevent it from calling
         // back into this object if the embedder mistakenly tries to do so.

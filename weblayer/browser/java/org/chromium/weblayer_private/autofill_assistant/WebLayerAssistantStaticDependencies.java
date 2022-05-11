@@ -44,9 +44,13 @@ import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 public class WebLayerAssistantStaticDependencies
         implements AssistantStaticDependencies, SimpleFactoryKeyHandle {
     protected final WebContents mWebContents;
+    protected final WebLayerAssistantTabChangeObserver mWebLayerAssistantTabChangeObserver;
 
-    WebLayerAssistantStaticDependencies(WebContents webContents) {
+    // There exists one instance of this class per WebContents and per TabImpl.
+    WebLayerAssistantStaticDependencies(WebContents webContents,
+            WebLayerAssistantTabChangeObserver webLayerAssistantTabChangeObserver) {
         mWebContents = webContents;
+        mWebLayerAssistantTabChangeObserver = webLayerAssistantTabChangeObserver;
     }
 
     // AssistantStaticDependencies implementation:
@@ -54,12 +58,13 @@ public class WebLayerAssistantStaticDependencies
     @Override
     public long createNative() {
         return WebLayerAssistantStaticDependenciesJni.get().init(
-                new WebLayerAssistantStaticDependencies(mWebContents));
+                new WebLayerAssistantStaticDependencies(
+                        mWebContents, mWebLayerAssistantTabChangeObserver));
     }
 
     @Override
     public AssistantDependencies createDependencies(Activity activity) {
-        return new WebLayerAssistantDependencies(mWebContents);
+        return new WebLayerAssistantDependencies(mWebContents, mWebLayerAssistantTabChangeObserver);
     }
 
     @Override
