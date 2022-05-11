@@ -20,8 +20,9 @@ constexpr char kFieldsParameterName[] = "fields";
 // should return the participant/requester only as an attendee.
 constexpr int kMaxAttendees = 1;
 constexpr char kCalendarEventListFields[] =
-    "timeZone,etag,kind,items(id,summary,colorId, "
-    "status,start(dateTime),end(dateTime),htmlLink,attendees)";
+    "timeZone,etag,kind,items(id,kind,summary,colorId,"
+    "status,start(dateTime),end(dateTime),htmlLink,"
+    "attendees(responseStatus,self),attendeesOmitted,creator(self))";
 
 CalendarApiGetRequest::CalendarApiGetRequest(RequestSender* sender,
                                              const std::string& fields)

@@ -76,7 +76,7 @@ TEST(CalendarAPIResponseTypesTest,
   ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
   auto event_list = EventList::CreateFrom(*events);
 
-  EXPECT_EQ(5U, event_list->items().size());
+  EXPECT_EQ(8U, event_list->items().size());
 
   EXPECT_EQ(event_list->items()[0]->self_response_status(),
             CalendarEvent::ResponseStatus::kUnknown);
@@ -88,6 +88,12 @@ TEST(CalendarAPIResponseTypesTest,
             CalendarEvent::ResponseStatus::kNeedsAction);
   EXPECT_EQ(event_list->items()[4]->self_response_status(),
             CalendarEvent::ResponseStatus::kTentative);
+  EXPECT_EQ(event_list->items()[5]->self_response_status(),
+            CalendarEvent::ResponseStatus::kAccepted);
+  EXPECT_EQ(event_list->items()[6]->self_response_status(),
+            CalendarEvent::ResponseStatus::kUnknown);
+  EXPECT_EQ(event_list->items()[7]->self_response_status(),
+            CalendarEvent::ResponseStatus::kUnknown);
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseFailed) {

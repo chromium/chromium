@@ -107,9 +107,10 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
       "&timeMax=2021-06-16T10%3A00%3A00.000Z"
       "&singleEvents=true"
       "&maxAttendees=1"
-      "&fields=timeZone%2Cetag%2Ckind%2Citems(id%"
-      "2Csummary%2CcolorId%2C+status%2Cstart(dateTime)%2Cend(dateTime)%"
-      "2ChtmlLink%2Cattendees)",
+      "&fields=timeZone%2Cetag%2Ckind%2Citems(id%2Ckind%"
+      "2Csummary%2CcolorId%2Cstatus%2Cstart(dateTime)%2Cend(dateTime)%"
+      "2ChtmlLink%2Cattendees(responseStatus%2Cself)%2CattendeesOmitted%"
+      "2Ccreator(self))",
       http_request_.relative_url);
 
   ASSERT_TRUE(events.get());
