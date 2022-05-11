@@ -5,6 +5,7 @@
 package org.chromium.components.translate;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,9 +31,15 @@ class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
     private final ListView mListView;
     private final List<Runnable> mClickRunnables;
 
-    public TranslateMessageSecondaryMenu(Context context, Handler handler, MenuItem[] menuItems) {
+    public TranslateMessageSecondaryMenu(Context context, Handler handler,
+            DataSetObserver dataSetObserver, MenuItem[] menuItems) {
         mHandler = handler;
         mAdapter = new TranslateMessageSecondaryMenuAdapter(context, menuItems);
+        // The dataSetObserver *must* be registered on mAdapter before the call to
+        // mListView.setAdapter() below, so that the dimensions of the AnchoredPopupWindow are
+        // updated before the ListView's DataSetObserver is called, which will update the ListView's
+        // appearance.
+        mAdapter.registerDataSetObserver(dataSetObserver);
 
         mContentView = LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
         mListView = mContentView.findViewById(R.id.app_menu_list);
