@@ -19,7 +19,9 @@ message ClientInfo {
     ANDROID_ID = 1;
     IOS = 2;
   }
-  enum AppType { CHROME_ANDROID = 3; }
+  enum AppType {
+    CHROME_ANDROID = 3;
+  }
   optional PlatformType platform_type = 1;
   optional Version platform_version = 2;
   optional AppType app_type = 3;

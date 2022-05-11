@@ -11,6 +11,14 @@ import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
 
 option optimize_for = LITE_RUNTIME;
 
+enum WebFeedChangeReason {
+  WEB_FEED_CHANGE_REASON_UNSPECIFIED = 0;
+  WEB_PAGE_MENU = 1;
+  WEB_PAGE_ACCELERATOR = 2;
+  MANAGEMENT = 3;
+  IN_FEED_RECOMMENDATION = 4;
+  BACK_OF_CARD_UNFOLLOW = 5;
+}
 message WebFeed {
   enum State {
     STATE_UNSPECIFIED = 0;
@@ -46,6 +54,7 @@ message FollowWebFeedRequest {
   string canonical_uri = 5;
   repeated string page_rss_uris = 3;
   ConsistencyToken consistency_token = 4;
+  WebFeedChangeReason change_reason = 6;
 }
 message FollowWebFeedResponse {
   WebFeed web_feed = 1;
@@ -54,6 +63,7 @@ message FollowWebFeedResponse {
 message UnfollowWebFeedRequest {
   string name = 1;
   ConsistencyToken consistency_token = 2;
+  WebFeedChangeReason change_reason = 3;
 }
 message UnfollowWebFeedResponse {
   ConsistencyToken consistency_token = 1;

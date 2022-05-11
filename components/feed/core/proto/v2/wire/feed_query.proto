@@ -8,12 +8,15 @@ package feedwire;
 
 import "components/feed/core/proto/v2/wire/chrome_fulfillment_info.proto";
 import "components/feed/core/proto/v2/wire/feed_entry_point_data.proto";
+import "components/feed/core/proto/v2/wire/feed_preferences.proto";
 import "components/feed/core/proto/v2/wire/token.proto";
 
 option optimize_for = LITE_RUNTIME;
 
 message FeedQuery {
-  message Tokens { repeated Token tokens = 1; }
+  message Tokens {
+    repeated Token tokens = 1;
+  }
   enum RequestReason {
     UNKNOWN_REQUEST_REASON = 0;
     MANUAL_REFRESH = 1;
@@ -35,4 +38,5 @@ message FeedQuery {
   optional ContentOrder order_by = 8;
   optional FeedEntryPointData feed_entry_point_data = 9;
   optional ChromeFulfillmentInfo chrome_fulfillment_info = 341477699;
+  optional FeedPreferences feed_preferences = 445876180;
 }

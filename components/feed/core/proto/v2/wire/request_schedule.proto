@@ -14,5 +14,7 @@ message RequestSchedule {
   message TimeBasedSchedule {
     repeated Duration refresh_time_from_response_time = 1;
   }
-  oneof schedule { TimeBasedSchedule time_based_schedule = 1; }
+  oneof schedule {
+    TimeBasedSchedule time_based_schedule = 1;
+  }
 }

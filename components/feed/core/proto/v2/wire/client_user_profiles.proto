@@ -10,6 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 message ClientUserProfiles {
   optional DiscoverUserActionsProfile discover_user_actions_profile = 1;
+  optional ViewDemotionProfile view_demotion_profile = 2;
 }
 message ActionCounts {
   message Counts {
@@ -26,6 +27,7 @@ message ActionCounts {
 }
 message DiscoverUserActionsProfile {
   message ContentMediaXEntityActionCounts {
+    optional uint64 content_category_media_type = 1;
     optional uint64 mid = 2;
     repeated ActionCounts counts = 3;
   }
@@ -37,3 +39,4 @@ message DiscoverUserActionsProfile {
   repeated ContentMediaXEntityActionCounts content_media_x_entity = 2;
   repeated CardCategoryXEntityActionCounts card_category_x_entity = 3;
 }
+message ViewDemotionProfile {}
