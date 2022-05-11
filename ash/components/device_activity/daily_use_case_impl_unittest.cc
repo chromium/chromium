@@ -55,12 +55,11 @@ class DailyUseCaseImplTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 };
 
-TEST_F(DailyUseCaseImplTest, GetLastKnownPingTimestampReturnsEpochOnNoPrefs) {
-  EXPECT_EQ(daily_use_case_impl_->GetLastKnownPingTimestamp(),
-            base::Time::UnixEpoch());
+TEST_F(DailyUseCaseImplTest, CheckIfLastKnownPingTimestampNotSet) {
+  EXPECT_FALSE(daily_use_case_impl_->IsLastKnownPingTimestampSet());
 }
 
-TEST_F(DailyUseCaseImplTest, CheckLocalStateUpdatesCorrectly) {
+TEST_F(DailyUseCaseImplTest, CheckIfLastKnownPingTimestampSet) {
   // Create fixed timestamp to see if local state updates value correctly.
   base::Time new_daily_ts;
   EXPECT_TRUE(
@@ -70,6 +69,7 @@ TEST_F(DailyUseCaseImplTest, CheckLocalStateUpdatesCorrectly) {
   daily_use_case_impl_->SetLastKnownPingTimestamp(new_daily_ts);
 
   EXPECT_EQ(daily_use_case_impl_->GetLastKnownPingTimestamp(), new_daily_ts);
+  EXPECT_TRUE(daily_use_case_impl_->IsLastKnownPingTimestampSet());
 }
 
 TEST_F(DailyUseCaseImplTest, CheckGenerateUTCWindowIdentifierHasValidFormat) {

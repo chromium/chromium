@@ -445,8 +445,7 @@ void DeviceActivityClient::TransitionOutOfIdle(
         // new, powerwashed, recovered, RMA, or the local state was corrupted.
         if (base::FeatureList::IsEnabled(
                 features::kDeviceActiveClientDailyCheckMembership) &&
-            (current_use_case->GetLastKnownPingTimestamp() ==
-             base::Time::UnixEpoch())) {
+            !current_use_case->IsLastKnownPingTimestampSet()) {
           TransitionToCheckMembershipOprf(current_use_case);
           return;
         } else {
@@ -460,8 +459,7 @@ void DeviceActivityClient::TransitionOutOfIdle(
         // new, powerwashed, recovered, RMA, or the local state was corrupted.
         if (base::FeatureList::IsEnabled(
                 features::kDeviceActiveClientMonthlyCheckMembership) &&
-            (current_use_case->GetLastKnownPingTimestamp() ==
-             base::Time::UnixEpoch())) {
+            !current_use_case->IsLastKnownPingTimestampSet()) {
           TransitionToCheckMembershipOprf(current_use_case);
           return;
         }

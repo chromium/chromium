@@ -31,6 +31,7 @@ constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
 
 }  // namespace
 
+// TODO(hirthanan): Move shared tests to DeviceActiveUseCase base class.
 class MonthlyUseCaseImplTest : public testing::Test {
  public:
   MonthlyUseCaseImplTest() = default;
@@ -55,12 +56,11 @@ class MonthlyUseCaseImplTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 };
 
-TEST_F(MonthlyUseCaseImplTest, GetLastKnownPingTimestampReturnsEpochOnNoPrefs) {
-  EXPECT_EQ(monthly_use_case_impl_->GetLastKnownPingTimestamp(),
-            base::Time::UnixEpoch());
+TEST_F(MonthlyUseCaseImplTest, CheckIfLastKnownPingTimestampNotSet) {
+  EXPECT_FALSE(monthly_use_case_impl_->IsLastKnownPingTimestampSet());
 }
 
-TEST_F(MonthlyUseCaseImplTest, CheckLocalStateUpdatesCorrectly) {
+TEST_F(MonthlyUseCaseImplTest, CheckIfLastKnownPingTimestampSet) {
   // Create fixed timestamp to see if local state updates value correctly.
   base::Time new_monthly_ts;
   EXPECT_TRUE(
@@ -71,6 +71,7 @@ TEST_F(MonthlyUseCaseImplTest, CheckLocalStateUpdatesCorrectly) {
 
   EXPECT_EQ(monthly_use_case_impl_->GetLastKnownPingTimestamp(),
             new_monthly_ts);
+  EXPECT_TRUE(monthly_use_case_impl_->IsLastKnownPingTimestampSet());
 }
 
 TEST_F(MonthlyUseCaseImplTest, CheckGenerateUTCWindowIdentifierHasValidFormat) {
