@@ -67,6 +67,13 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     }
 
     @Override
+    public boolean onAreNotificationsEnabled(@NonNull String channelName) {
+        // Pretend notifications are enabled, even on Android T where they'll be disabled by
+        // default.
+        return true;
+    }
+
+    @Override
     public void onCancelNotification(String platformTag, int platformId) {
         MessengerService.sMessageHandler.recordCancelNotification(platformTag, platformId);
     }
