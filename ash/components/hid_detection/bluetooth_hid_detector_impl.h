@@ -28,10 +28,6 @@ class BluetoothHidDetectorImpl
   ~BluetoothHidDetectorImpl() override;
 
   // BluetoothHidDetector:
-  void StartBluetoothHidDetection(
-      Delegate* delegate,
-      InputDevicesStatus input_devices_status) override;
-  void StopBluetoothHidDetection() override;
   void SetInputDevicesStatus(InputDevicesStatus input_devices_status) override;
   const BluetoothHidDetectionStatus GetBluetoothHidDetectionStatus() override;
 
@@ -55,6 +51,11 @@ class BluetoothHidDetectorImpl
     // for external reasons.
     kStoppedExternally,
   };
+
+  // BluetoothHidDetector:
+  void PerformStartBluetoothHidDetection(
+      InputDevicesStatus input_devices_status) override;
+  void PerformStopBluetoothHidDetection() override;
 
   // chromeos::bluetooth_config::mojom::SystemPropertiesObserver
   void OnPropertiesUpdated(
@@ -106,7 +107,7 @@ class BluetoothHidDetectorImpl
   // Resets properties related to discovery, pairing handlers and queueing.
   void ResetDiscoveryState();
 
-  // Informs |delegate_| "DisplayPasskey" or "DisplayPinCode" pairing
+  // Informs the client "DisplayPasskey" or "DisplayPinCode" pairing
   // authorization is required.
   void RequirePairingCode(
       const std::string& code,
@@ -131,7 +132,6 @@ class BluetoothHidDetectorImpl
   // code that should be displayed to the user for them to enter into the HID.
   absl::optional<BluetoothHidPairingState> current_pairing_state_;
 
-  Delegate* delegate_ = nullptr;
   InputDevicesStatus input_devices_status_;
   State state_ = kNotStarted;
 

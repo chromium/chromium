@@ -78,5 +78,23 @@ BluetoothHidDetector::BluetoothHidDetector() {
 
 BluetoothHidDetector::~BluetoothHidDetector() = default;
 
+void BluetoothHidDetector::StartBluetoothHidDetection(
+    Delegate* delegate,
+    InputDevicesStatus input_devices_status) {
+  DCHECK(!delegate_);
+  delegate_ = delegate;
+  PerformStartBluetoothHidDetection(input_devices_status);
+}
+
+void BluetoothHidDetector::StopBluetoothHidDetection() {
+  DCHECK(delegate_);
+  PerformStopBluetoothHidDetection();
+  delegate_ = nullptr;
+}
+
+void BluetoothHidDetector::NotifyBluetoothHidDetectionStatusChanged() {
+  delegate_->OnBluetoothHidStatusChanged();
+}
+
 }  // namespace hid_detection
 }  // namespace ash

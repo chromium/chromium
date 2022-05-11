@@ -86,13 +86,12 @@ class BluetoothHidDetector {
   // OnBluetoothHidStatusChanged() for |delegate| whenever the HID detection
   // status updates. Calling this method when HID detection has already started
   // is an error.
-  virtual void StartBluetoothHidDetection(
-      Delegate* delegate,
-      InputDevicesStatus input_devices_status) = 0;
+  void StartBluetoothHidDetection(Delegate* delegate,
+                                  InputDevicesStatus input_devices_status);
 
   // Stops scanning for Bluetooth devices. Calling this method when HID
   // detection has not been started is an error.
-  virtual void StopBluetoothHidDetection() = 0;
+  void StopBluetoothHidDetection();
 
   // Informs BluetoothHidDetector which HID types have been connected.
   virtual void SetInputDevicesStatus(
@@ -104,6 +103,20 @@ class BluetoothHidDetector {
 
  protected:
   BluetoothHidDetector();
+
+  // Implementation-specific version of StartBluetoothHidDetection().
+  virtual void PerformStartBluetoothHidDetection(
+      InputDevicesStatus input_devices_status) = 0;
+
+  // Implementation-specific version of StopBluetoothHidDetection().
+  virtual void PerformStopBluetoothHidDetection() = 0;
+
+  // Notifies |delegate_| of status changes; should be called by derived
+  // types to notify observers of status changes.
+  void NotifyBluetoothHidDetectionStatusChanged();
+
+ private:
+  Delegate* delegate_ = nullptr;
 };
 
 }  // namespace hid_detection

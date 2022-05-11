@@ -43,40 +43,6 @@ BluetoothHidDetectorImpl::~BluetoothHidDetectorImpl() {
                                  << "BluetoothHidDetectorImpl is destroyed.";
 }
 
-void BluetoothHidDetectorImpl::StartBluetoothHidDetection(
-    Delegate* delegate,
-    InputDevicesStatus input_devices_status) {
-  DCHECK(input_devices_status.pointer_is_missing ||
-         input_devices_status.keyboard_is_missing)
-      << " StartBluetoothHidDetection() called when neither pointer or "
-      << "keyboard is missing";
-  DCHECK_EQ(kNotStarted, state_);
-  HID_LOG(EVENT) << "Starting Bluetooth HID detection, pointer missing: "
-                 << input_devices_status.pointer_is_missing
-                 << ", keyboard missing: "
-                 << input_devices_status.keyboard_is_missing;
-  delegate_ = delegate;
-  input_devices_status_ = input_devices_status;
-  state_ = kStarting;
-  GetBluetoothConfigService(
-      cros_bluetooth_config_remote_.BindNewPipeAndPassReceiver());
-  cros_bluetooth_config_remote_->ObserveSystemProperties(
-      system_properties_observer_receiver_.BindNewPipeAndPassRemote());
-}
-
-void BluetoothHidDetectorImpl::StopBluetoothHidDetection() {
-  DCHECK_NE(kNotStarted, state_)
-      << " Call to StopBluetoothHidDetection() while "
-      << "HID detection is inactive.";
-  HID_LOG(EVENT) << "Stopping Bluetooth HID detection";
-  state_ = kNotStarted;
-  cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive(false);
-  cros_bluetooth_config_remote_.reset();
-  system_properties_observer_receiver_.reset();
-  ResetDiscoveryState();
-  delegate_ = nullptr;
-}
-
 void BluetoothHidDetectorImpl::SetInputDevicesStatus(
     InputDevicesStatus input_devices_status) {
   HID_LOG(EVENT) << "Input devices status set, pointer missing: "
@@ -140,6 +106,37 @@ BluetoothHidDetectorImpl::GetBluetoothHidDetectionStatus() {
           base::UTF16ToUTF8(current_pairing_device_.value()->public_name),
           hid_type.value()},
       std::move(pairing_state)};
+}
+
+void BluetoothHidDetectorImpl::PerformStartBluetoothHidDetection(
+    InputDevicesStatus input_devices_status) {
+  DCHECK(input_devices_status.pointer_is_missing ||
+         input_devices_status.keyboard_is_missing)
+      << " StartBluetoothHidDetection() called when neither pointer or "
+      << "keyboard is missing";
+  DCHECK_EQ(kNotStarted, state_);
+  HID_LOG(EVENT) << "Starting Bluetooth HID detection, pointer missing: "
+                 << input_devices_status.pointer_is_missing
+                 << ", keyboard missing: "
+                 << input_devices_status.keyboard_is_missing;
+  input_devices_status_ = input_devices_status;
+  state_ = kStarting;
+  GetBluetoothConfigService(
+      cros_bluetooth_config_remote_.BindNewPipeAndPassReceiver());
+  cros_bluetooth_config_remote_->ObserveSystemProperties(
+      system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void BluetoothHidDetectorImpl::PerformStopBluetoothHidDetection() {
+  DCHECK_NE(kNotStarted, state_)
+      << " Call to StopBluetoothHidDetection() while "
+      << "HID detection is inactive.";
+  HID_LOG(EVENT) << "Stopping Bluetooth HID detection";
+  state_ = kNotStarted;
+  cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive(false);
+  cros_bluetooth_config_remote_.reset();
+  system_properties_observer_receiver_.reset();
+  ResetDiscoveryState();
 }
 
 void BluetoothHidDetectorImpl::OnPropertiesUpdated(
@@ -301,7 +298,7 @@ void BluetoothHidDetectorImpl::HandleKeyEntered(uint8_t num_keys_entered) {
   HID_LOG(EVENT) << "HandleKeyEntered called with " << num_keys_entered
                  << " keys entered";
   current_pairing_state_->num_keys_entered = num_keys_entered;
-  delegate_->OnBluetoothHidStatusChanged();
+  NotifyBluetoothHidDetectionStatusChanged();
 }
 
 bool BluetoothHidDetectorImpl::IsHidTypeMissing(
@@ -360,7 +357,7 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
       device_pairing_delegate_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&BluetoothHidDetectorImpl::OnPairDevice,
                      weak_ptr_factory_.GetWeakPtr()));
-  delegate_->OnBluetoothHidStatusChanged();
+  NotifyBluetoothHidDetectionStatusChanged();
 }
 
 void BluetoothHidDetectorImpl::OnPairDevice(
@@ -397,7 +394,7 @@ void BluetoothHidDetectorImpl::ClearCurrentPairingState() {
   current_pairing_state_.reset();
   device_pairing_delegate_receiver_.reset();
   key_entered_handler_receiver_.reset();
-  delegate_->OnBluetoothHidStatusChanged();
+  NotifyBluetoothHidDetectionStatusChanged();
   ProcessQueue();
 }
 
@@ -415,8 +412,8 @@ void BluetoothHidDetectorImpl::ResetDiscoveryState() {
       chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
   queued_device_ids_.clear();
 
-  // Inform |delegate_| that no device is currently pairing.
-  delegate_->OnBluetoothHidStatusChanged();
+  // Inform the client that no device is currently pairing.
+  NotifyBluetoothHidDetectionStatusChanged();
 }
 
 void BluetoothHidDetectorImpl::RequirePairingCode(
@@ -430,7 +427,7 @@ void BluetoothHidDetectorImpl::RequirePairingCode(
   key_entered_handler_receiver_.Bind(std::move(handler));
   current_pairing_state_ =
       BluetoothHidPairingState{code, /*num_keys_entered=*/0u};
-  delegate_->OnBluetoothHidStatusChanged();
+  NotifyBluetoothHidDetectionStatusChanged();
 }
 
 }  // namespace hid_detection
