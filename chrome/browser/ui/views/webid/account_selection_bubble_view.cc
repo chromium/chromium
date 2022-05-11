@@ -17,6 +17,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "skia/ext/image_operations.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -32,6 +33,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -97,6 +99,14 @@ class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
  private:
   const std::u16string letter_;
 };
+
+void SendAccessibilityEvent(views::Widget* widget) {
+  if (!widget)
+    return;
+
+  widget->GetRootView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
+                                                  true);
+}
 
 }  // namespace
 
@@ -398,6 +408,8 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   AddChildView(CreateAccountChooser(accounts));
   SizeToContents();
   PreferredSizeChanged();
+
+  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::OnAccountSelected(
@@ -423,6 +435,8 @@ void AccountSelectionBubbleView::ShowVerifySheet(
   AddChildView(row.release());
   SizeToContents();
   PreferredSizeChanged();
+
+  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
