@@ -1721,6 +1721,13 @@ const char kManagedWebHidAllowDevicesWithHidUsagesForUrls[] =
     "managed.web_hid_allow_devices_with_hid_usages_for_urls";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Boolean indicating whether the user has given consent to use Autofill
+// Assistant. Prefs are not synced across devices or platforms and pref
+// keys differ.
+const char kAutofillAssistantOnDesktopEnabled[] = "autofill_assistant.enabled";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Directory of the last profile used.
 const char kProfileLastUsed[] = "profile.last_used";
 

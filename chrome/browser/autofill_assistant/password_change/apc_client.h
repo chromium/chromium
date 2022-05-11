@@ -8,6 +8,7 @@
 #include <string>
 
 class GURL;
+class PrefRegistrySimple;
 
 namespace content {
 class WebContents;
@@ -16,6 +17,10 @@ class WebContents;
 // Abstract interface to encapsulate an automated password change (APC) flow.
 class ApcClient {
  public:
+  // Registers the prefs that are related to automated password change on
+  // Desktop.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   // Static method that acts as a factory function. It is actually implemented
   // |ApcClientImpl|.
   static ApcClient* GetOrCreateForWebContents(
