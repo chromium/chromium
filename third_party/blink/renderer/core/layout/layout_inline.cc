@@ -549,30 +549,7 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
       !new_child->IsTablePart()) {
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
         !ForceLegacyLayout()) {
-      DCHECK(!new_child->IsInline());
-      LayoutBlockFlow* anonymous_box;
-      if (!before_child) {
-        anonymous_box = DynamicTo<LayoutBlockFlow>(LastChild());
-      } else if (before_child->IsInline() ||
-                 before_child->IsFloatingOrOutOfFlowPositioned()) {
-        anonymous_box =
-            DynamicTo<LayoutBlockFlow>(before_child->PreviousSibling());
-      } else {
-        // If |before_child| is not inline, it should have been added to the
-        // anonymous block.
-        anonymous_box = DynamicTo<LayoutBlockFlow>(before_child->Parent());
-        DCHECK(anonymous_box);
-        DCHECK(anonymous_box->IsBlockInInline());
-        anonymous_box->AddChild(new_child, before_child);
-        return;
-      }
-      if (!anonymous_box || !anonymous_box->IsBlockInInline()) {
-        anonymous_box =
-            CreateAnonymousContainerForBlockChildren(/* split_flow */ false);
-        LayoutBoxModelObject::AddChild(anonymous_box, before_child);
-      }
-      DCHECK(anonymous_box->IsBlockInInline());
-      anonymous_box->AddChild(new_child);
+      AddChildAsBlockInInline(new_child, before_child);
       return;
     }
     LayoutBlockFlow* new_box =
@@ -600,6 +577,35 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
 
   new_child->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kChildChanged);
+}
+
+void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
+                                           LayoutObject* before_child) {
+  DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
+  DCHECK(!ForceLegacyLayout());
+  DCHECK(!new_child->IsInline());
+  LayoutBlockFlow* anonymous_box;
+  if (!before_child) {
+    anonymous_box = DynamicTo<LayoutBlockFlow>(LastChild());
+  } else if (before_child->IsInline() ||
+             before_child->IsFloatingOrOutOfFlowPositioned()) {
+    anonymous_box = DynamicTo<LayoutBlockFlow>(before_child->PreviousSibling());
+  } else {
+    // If |before_child| is not inline, it should have been added to the
+    // anonymous block.
+    anonymous_box = DynamicTo<LayoutBlockFlow>(before_child->Parent());
+    DCHECK(anonymous_box);
+    DCHECK(anonymous_box->IsBlockInInline());
+    anonymous_box->AddChild(new_child, before_child);
+    return;
+  }
+  if (!anonymous_box || !anonymous_box->IsBlockInInline()) {
+    anonymous_box =
+        CreateAnonymousContainerForBlockChildren(/* split_flow */ false);
+    LayoutBoxModelObject::AddChild(anonymous_box, before_child);
+  }
+  DCHECK(anonymous_box->IsBlockInInline());
+  anonymous_box->AddChild(new_child);
 }
 
 LayoutInline* LayoutInline::Clone() const {

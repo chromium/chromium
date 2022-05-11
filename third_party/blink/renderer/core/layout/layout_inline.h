@@ -355,6 +355,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                               LayoutObject* before_child);
   void AddChildIgnoringContinuation(LayoutObject* new_child,
                                     LayoutObject* before_child = nullptr) final;
+  void AddChildAsBlockInInline(LayoutObject* new_child,
+                               LayoutObject* before_child);
 
   void MoveChildrenToIgnoringContinuation(LayoutInline* to,
                                           LayoutObject* start_child);
