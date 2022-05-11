@@ -75,7 +75,13 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
       root_window_(root_window),
       surface_(connection->CreateSurface()) {}
 
-WaylandSurface::~WaylandSurface() = default;
+WaylandSurface::~WaylandSurface() {
+  if (explicit_release_callback_.is_null())
+    return;
+  for (auto& release : linux_buffer_releases_) {
+    explicit_release_callback_.Run(release.second.buffer, base::ScopedFD());
+  }
+}
 
 uint32_t WaylandSurface::GetSurfaceId() const {
   if (!surface_)
@@ -634,12 +640,12 @@ void WaylandSurface::SetApplyStateImmediately() {
 
 void WaylandSurface::ExplicitRelease(
     struct zwp_linux_buffer_release_v1* linux_buffer_release,
-    absl::optional<int32_t> fence) {
+    base::ScopedFD fence) {
   auto iter = linux_buffer_releases_.find(linux_buffer_release);
   DCHECK(iter != linux_buffer_releases_.end());
   DCHECK(iter->second.buffer);
   if (!explicit_release_callback_.is_null())
-    explicit_release_callback_.Run(iter->second.buffer, fence);
+    explicit_release_callback_.Run(iter->second.buffer, std::move(fence));
   linux_buffer_releases_.erase(iter);
 }
 
@@ -738,8 +744,9 @@ void WaylandSurface::FencedRelease(
     void* data,
     struct zwp_linux_buffer_release_v1* linux_buffer_release,
     int32_t fence) {
+  auto fd = base::ScopedFD(fence);
   static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
-                                                      fence);
+                                                      std::move(fd));
 }
 
 // static
@@ -747,7 +754,7 @@ void WaylandSurface::ImmediateRelease(
     void* data,
     struct zwp_linux_buffer_release_v1* linux_buffer_release) {
   static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
-                                                      absl::nullopt);
+                                                      base::ScopedFD());
 }
 
 }  // namespace ui

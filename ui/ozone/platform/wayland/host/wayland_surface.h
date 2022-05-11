@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -34,7 +35,7 @@ class WaylandBufferHandle;
 class WaylandSurface {
  public:
   using ExplicitReleaseCallback =
-      base::RepeatingCallback<void(wl_buffer*, absl::optional<int32_t>)>;
+      base::RepeatingCallback<void(wl_buffer*, base::ScopedFD)>;
 
   WaylandSurface(WaylandConnection* connection, WaylandWindow* ro_window);
   WaylandSurface(const WaylandSurface&) = delete;
@@ -289,7 +290,7 @@ class WaylandSurface {
   std::vector<uint32_t> entered_outputs_;
 
   void ExplicitRelease(struct zwp_linux_buffer_release_v1* linux_buffer_release,
-                       absl::optional<int32_t> fence);
+                       base::ScopedFD fence);
 
   // wl_surface_listener
   static void Enter(void* data,

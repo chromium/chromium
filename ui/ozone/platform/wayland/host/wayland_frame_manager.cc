@@ -442,10 +442,9 @@ void WaylandFrameManager::VerifyNumberOfSubmittedFrames() {
   }
 }
 
-void WaylandFrameManager::OnExplicitBufferRelease(
-    WaylandSurface* surface,
-    struct wl_buffer* wl_buffer,
-    absl::optional<int32_t> fence) {
+void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
+                                                  struct wl_buffer* wl_buffer,
+                                                  base::ScopedFD fence) {
   DCHECK(wl_buffer);
 
   // Releases may not necessarily come in order, so search the submitted
@@ -458,14 +457,12 @@ void WaylandFrameManager::OnExplicitBufferRelease(
       // linux_explicit_synchronization is used.
       result->second->OnExplicitRelease();
 
-      if (fence.has_value()) {
-        base::ScopedFD fd{fence.value()};
-        // Accumulate release fences into a single fence.
+      if (fence.is_valid()) {
         if (frame->merged_release_fence_fd.is_valid()) {
-          frame->merged_release_fence_fd.reset(
-              sync_merge("", frame->merged_release_fence_fd.get(), fd.get()));
+          frame->merged_release_fence_fd.reset(sync_merge(
+              "", frame->merged_release_fence_fd.get(), fence.get()));
         } else {
-          frame->merged_release_fence_fd = std::move(fd);
+          frame->merged_release_fence_fd = std::move(fence);
         }
         DCHECK(frame->merged_release_fence_fd.is_valid());
       }
