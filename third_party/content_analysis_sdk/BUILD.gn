@@ -1,0 +1,54 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+# Local content analysis SDK.
+source_set("liblcasdk") {
+  public = [ "src/browser/include/content_analysis/sdk/analysis_client.h" ]
+
+  sources = [
+    "src/browser/src/client_base.cc",
+    "src/browser/src/client_base.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "src/browser/src/client_win.cc",
+      "src/browser/src/client_win.h",
+      "src/common/utils_win.cc",
+      "src/common/utils_win.h",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "src/browser/src/client_posix.cc",
+      "src/browser/src/client_posix.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "src/browser/src/client_mac.cc",
+      "src/browser/src/client_mac.h",
+    ]
+  }
+
+  include_dirs = [
+    "src",
+    "src/browser/include",
+    "gen/third_party/content_analysis_sdk/src/proto",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+proto_library("proto") {
+  proto_in_dir = "src/proto"
+  sources = [ "src/proto/content_analysis/sdk/analysis.proto" ]
+}
