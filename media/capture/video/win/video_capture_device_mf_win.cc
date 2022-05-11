@@ -1143,8 +1143,6 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   // event. For the lack of any other events indicating success, we have to wait
   // for the first video frame to arrive before sending our |OnStarted| event to
   // |client_|.
-  // We still need to wait for MF_CAPTURE_ENGINE_PREVIEW_STARTED event to ensure
-  // that we won't call StopPreview before the preview is started.
   has_sent_on_started_to_client_ = false;
   hr = engine_->StartPreview();
   if (FAILED(hr)) {
@@ -1153,13 +1151,10 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     return;
   }
 
-  hr = WaitOnCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STARTED);
-  if (SUCCEEDED(hr)) {
-    is_started_ = true;
-  }
-
   selected_video_capability_ =
       std::make_unique<CapabilityWin>(best_match_video_capability);
+
+  is_started_ = true;
 
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Win.Device.InternalPixelFormat",
@@ -1179,12 +1174,8 @@ void VideoCaptureDeviceMFWin::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock lock(lock_);
 
-  if (is_started_ && engine_) {
-    HRESULT hr = engine_->StopPreview();
-    if (SUCCEEDED(hr)) {
-      WaitOnCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STOPPED);
-    }
-  }
+  if (is_started_ && engine_)
+    engine_->StopPreview();
   is_started_ = false;
 
   client_.reset();
@@ -1768,22 +1759,16 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
   media_event->GetStatus(&hr);
   media_event->GetExtendedType(&capture_event_guid);
 
+  // TODO(http://crbug.com/1093521): Add cases for Start
+  // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
   // When MF_CAPTURE_ENGINE_ERROR is returned the captureengine object is no
   // longer valid.
   if (capture_event_guid == MF_CAPTURE_ENGINE_ERROR || FAILED(hr)) {
-    last_error_hr_ = hr;
     capture_error_.Signal();
     // There should always be a valid error
     hr = SUCCEEDED(hr) ? E_UNEXPECTED : hr;
-  } else {
-    if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
-      capture_initialize_.Signal();
-    } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
-      capture_stopped_.Signal();
-    } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
-      capture_started_.Signal();
-    }
-    return;
+  } else if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
+    capture_initialize_.Signal();
   }
 
   // Lock is taken after events are signalled, because if the capture
@@ -1860,12 +1845,10 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
   HRESULT hr = S_OK;
   HANDLE events[] = {nullptr, capture_error_.handle()};
 
+  // TODO(http://crbug.com/1093521): Add cases for Start
+  // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
   if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
     events[0] = capture_initialize_.handle();
-  } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
-    events[0] = capture_stopped_.handle();
-  } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
-    events[0] = capture_started_.handle();
   } else {
     // no registered event handle for the event requested
     hr = E_NOTIMPL;
@@ -1883,10 +1866,7 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
       LogError(FROM_HERE, hr);
       break;
     default:
-      hr = last_error_hr_;
-      if (SUCCEEDED(hr)) {
-        hr = MF_E_UNEXPECTED;
-      }
+      hr = E_UNEXPECTED;
       LogError(FROM_HERE, hr);
       break;
   }
