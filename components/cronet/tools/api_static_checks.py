@@ -87,6 +87,8 @@ IMPLEMENTATION_API_VERSION_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android',
     'implementation_api_version.txt'))
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
+
 
 def find_api_calls(dump, api_classes, bad_calls):
   # Given a dump of an implementation class, find calls through API classes.
@@ -162,10 +164,12 @@ def check_api_calls(opts):
       continue
     # Dump classes
     dump_file = os.path.join(temp_dir, 'dump.txt')
-    if os.system('javap -c %s > %s' % (
-        ' '.join(os.path.join(dirpath, f) for f in filenames).replace(
-            '$', '\\$'),
-        dump_file)):
+    javap_cmd = '%s -c %s > %s' % (
+        JAVAP_PATH,
+        ' '.join(os.path.join(dirpath, f) for f in filenames).replace('$',
+                                                                      '\\$'),
+        dump_file)
+    if os.system(javap_cmd):
       print('ERROR: javap failed on ' + ' '.join(filenames))
       return False
     # Process class dump

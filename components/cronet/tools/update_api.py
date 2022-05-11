@@ -18,6 +18,12 @@ import sys
 import tempfile
 
 
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+from util import build_utils  # pylint: disable=wrong-import-position
+
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android', 'api.txt'))
@@ -33,6 +39,9 @@ CLASS_RE = re.compile(r'.*class ([^ ]*) .*\{')
 # for example 'Foo$1'.
 UNNAMED_CLASS_RE = re.compile(r'.*\$[0-9]')
 
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
+
 
 def generate_api(api_jar, output_filename):
   # Dumps the API in |api_jar| into |outpuf_filename|.
@@ -45,8 +54,9 @@ def generate_api(api_jar, output_filename):
   temp_dir = tempfile.mkdtemp()
   old_cwd = os.getcwd()
   api_jar_path = os.path.abspath(api_jar)
+  jar_cmd = '%s xf %s' % (os.path.relpath(JAR_PATH, temp_dir), api_jar_path)
   os.chdir(temp_dir)
-  if os.system('jar xf %s' % api_jar_path):
+  if os.system(jar_cmd):
     print('ERROR: jar failed on ' + api_jar)
     return False
   os.chdir(old_cwd)
@@ -59,8 +69,10 @@ def generate_api(api_jar, output_filename):
   api_class_files.sort()
 
   # Dump API class files into |output_filename|
-  javap_cmd = ('javap -protected %s >> %s' % (' '.join(api_class_files),
-      output_filename)).replace('$', '\\$')
+  javap_cmd = (
+      '%s -protected %s >> %s' % (
+          JAVAP_PATH, ' '.join(api_class_files), output_filename)
+  ).replace('$', '\\$')
   if os.system(javap_cmd):
     print('ERROR: javap command failed: ' + javap_cmd)
     return False
