@@ -664,21 +664,6 @@ const base::Feature kListWebAppsSwitch{"ListWebAppsSwitch",
 #endif
 
 #if BUILDFLAG(IS_MAC)
-// Uses NSWindowStyleMaskFullSizeContentView where available instead of adding
-// our own views to the window frame. This is a temporary kill switch, it can be
-// removed once we feel okay about leaving it on.
-const base::Feature kMacFullSizeContentView{"MacFullSizeContentView",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
-#endif
-
-#if BUILDFLAG(IS_MAC)
-// Enables the Material Design download shelf on Mac.
-const base::Feature kMacMaterialDesignDownloadShelf{
-    "MacMDDownloadShelf", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_MAC)
 // Enable screen capture system permission check on Mac 10.15+.
 const base::Feature kMacSystemScreenCapturePermissionCheck{
     "MacSystemScreenCapturePermissionCheck", base::FEATURE_ENABLED_BY_DEFAULT};
