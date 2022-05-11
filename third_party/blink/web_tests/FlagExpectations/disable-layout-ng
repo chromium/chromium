@@ -621,6 +621,8 @@ crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/
 crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
 
 ### external/wpt/css/css-ruby/
+crbug.com/591099 external/wpt/css/css-ruby/abs-in-ruby-base-container.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ruby/abs-in-ruby-base.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/br-clear-all-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-002.html [ Failure ]

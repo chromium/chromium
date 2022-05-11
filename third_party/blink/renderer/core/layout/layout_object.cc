@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
 #include "third_party/blink/renderer/core/layout/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -3760,6 +3761,12 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     if (destroy_root_parent->Parent() &&
         destroy_root_parent->Parent()->IsLayoutNGFieldset())
       break;
+    // RubyBase should be kept if RubyText exists
+    if (destroy_root_parent->IsRubyBase()) {
+      auto* ruby_run = DynamicTo<LayoutRubyRun>(destroy_root_parent->Parent());
+      if (ruby_run && ruby_run->HasRubyText())
+        break;
+    }
 
     // We need to keep the anonymous parent, if it won't become empty by the
     // removal of this LayoutObject.

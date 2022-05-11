@@ -96,6 +96,7 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
   if (!last_run || last_run->HasRubyText()) {
     last_run = LayoutRubyRun::StaticCreateRubyRun(this, *ContainingBlock());
     LayoutInline::AddChild(last_run, before_child);
+    last_run->RubyBaseSafe();
   }
   last_run->AddChild(child);
 }
@@ -164,6 +165,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
   if (!last_run || last_run->HasRubyText()) {
     last_run = LayoutRubyRun::StaticCreateRubyRun(this, *this);
     LayoutBlockFlow::AddChild(last_run, before_child);
+    last_run->RubyBaseSafe();
   }
   last_run->AddChild(child);
 }

@@ -114,8 +114,9 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
       DCHECK_EQ(before_child->Parent(), this);
       LayoutObject* ruby = Parent();
       DCHECK(ruby->IsRuby());
-      LayoutBlock* new_run = StaticCreateRubyRun(ruby, *ContainingBlock());
+      auto* new_run = StaticCreateRubyRun(ruby, *ContainingBlock());
       ruby->AddChild(new_run, NextSibling());
+      new_run->RubyBaseSafe();
       // Add the new ruby text and move the old one to the new run
       // Note: Doing it in this order and not using LayoutRubyRun's methods,
       // in order to avoid automatic removal of the ruby run in case there is no
@@ -123,13 +124,14 @@ void LayoutRubyRun::AddChild(LayoutObject* child, LayoutObject* before_child) {
       LayoutBlockFlow::AddChild(child, before_child);
       LayoutBlockFlow::RemoveChild(before_child);
       new_run->AddChild(before_child);
-    } else if (HasRubyBase()) {
+    } else if (RubyBase()->FirstChild()) {
       // Insertion before a ruby base object.
       // In this case we need insert a new run before the current one and split
       // the base.
       LayoutObject* ruby = Parent();
       LayoutRubyRun* new_run = StaticCreateRubyRun(ruby, *ContainingBlock());
       ruby->AddChild(new_run, this);
+      new_run->RubyBaseSafe();
       new_run->AddChild(child);
 
       // Make sure we don't leave anything in the percentage descendant
@@ -158,16 +160,14 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
   if (!BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
     LayoutRubyBase* base = RubyBase();
     LayoutObject* right_neighbour = NextSibling();
-    if (base && right_neighbour && right_neighbour->IsRubyRun()) {
-      // Ruby run without a base can happen only at the first run.
+    if (base->FirstChild() && right_neighbour && right_neighbour->IsRubyRun()) {
       auto* right_run = To<LayoutRubyRun>(right_neighbour);
-      if (right_run->HasRubyBase()) {
-        LayoutRubyBase* right_base = right_run->RubyBaseSafe();
+      LayoutRubyBase* right_base = right_run->RubyBaseSafe();
+      if (right_base->FirstChild()) {
         // Collect all children in a single base, then swap the bases.
         right_base->MoveChildren(base);
         MoveChildTo(right_run, base);
         right_run->MoveChildTo(this, right_base);
-        // The now empty ruby base will be removed below.
         DCHECK(!RubyBase()->FirstChild());
       }
     }
@@ -176,16 +176,12 @@ void LayoutRubyRun::RemoveChild(LayoutObject* child) {
   LayoutBlockFlow::RemoveChild(child);
 
   if (!BeingDestroyed() && !DocumentBeingDestroyed()) {
-    // Check if our base (if any) is now empty. If so, destroy it.
+    // If this has only an empty LayoutRubyBase, destroy this sub-tree.
     LayoutBlockFlow* base = RubyBase();
-    if (base && !base->FirstChild()) {
+    if (!HasRubyText() && !base->FirstChild()) {
       LayoutBlockFlow::RemoveChild(base);
       base->DeleteLineBoxTree();
       base->Destroy();
-    }
-
-    // If any of the above leaves the run empty, destroy it as well.
-    if (!HasRubyText() && !HasRubyBase()) {
       DeleteLineBoxTree();
       Destroy();
     }
@@ -200,6 +196,7 @@ LayoutRubyBase* LayoutRubyRun::CreateRubyBase() const {
       GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           StyleRef(), EDisplay::kBlock);
   new_style->SetTextAlign(ETextAlign::kCenter);  // FIXME: use WEBKIT_CENTER?
+  new_style->SetHasLineIfEmpty(true);
   layout_object->SetStyle(std::move(new_style));
   return layout_object;
 }
