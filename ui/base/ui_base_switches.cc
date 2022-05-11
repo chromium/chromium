@@ -26,7 +26,8 @@ const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable resources file sharing with ash-chrome.
-// This flag is enabled when feature::kLacrosResourcesFileSharing is set.
+// This flag is enabled when feature::kLacrosResourcesFileSharing is set and
+// ash-side operation is successfully done.
 const char kEnableResourcesFileSharing[] = "enable-resouces-file-sharing";
 #endif
 

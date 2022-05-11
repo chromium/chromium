@@ -150,16 +150,16 @@ class UI_DATA_PACK_EXPORT DataPackWithResourceSharing : public ResourceHandle {
       std::map<uint16_t, base::StringPiece> fallback_resources,
       size_t margin_to_skip,
       ScopedFileWriter& file);
-  // Empty the content in `path` before finishing a file generation.
-  // Close `file` which is ScopedFileWriter for `path` and reopen it to empty
-  // the whole content.
+  // Close and delete temp shared resource file used for generating and create
+  // `shared_resource_path` with an empty content.
   // This should be called when failing during generating a shared resource.
   // DO NOT remove a file itself with empty content because zygote/utility
-  // processes will check if `path` exists or not to distinguish followings:
+  // processes will check if `shared_resource_path` exists or not to distinguish
+  // following 2 cases:
   // 1. A file generation has finished with failure.
   // 2. A file is still under construction.
   static void OnFailedToGenerate(ScopedFileWriter& file,
-                                 const base::FilePath& path);
+                                 const base::FilePath& shared_resource_path);
 
   std::unique_ptr<DataPack::DataSource> data_source_;
 

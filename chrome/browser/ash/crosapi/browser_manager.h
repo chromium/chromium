@@ -280,6 +280,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
     // An fd for a log file.
     base::ScopedFD logfd;
+
+    // Set true if Lacros uses resource file sharing.
+    bool enable_resource_file_sharing = false;
   };
 
  protected:
@@ -572,6 +575,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Tracks whether lacros-chrome is terminated.
   bool is_terminated_ = false;
+
+  // True if Lacros has not yet launched after the latest ash reboot.
+  // This value is used for resource sharing feature where ash deletes cached
+  // shared resource file after ash is rebooted.
+  bool is_initial_lacros_launch_after_reboot_ = true;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

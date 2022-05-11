@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/version.h"
 #include "components/version_info/version_info.h"
+#include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
 
 namespace {
 
@@ -308,10 +309,18 @@ bool DataPackWithResourceSharing::IsSharedResourceValid(
 // static
 void DataPackWithResourceSharing::OnFailedToGenerate(
     ScopedFileWriter& file,
-    const base::FilePath& path) {
+    const base::FilePath& shared_resource_path) {
+  // Close and delete temp shared resource file.
   file.Close();
-  // Reopen `file` to empty the content.
-  ScopedFileWriter reopen_file(path);
+  base::FilePath temp_shared_resource_path =
+      GetPathForTemporarySharedResourceFile(shared_resource_path);
+  // Skip error checking since this DeleteFile() is for abandoning a file which
+  // is no longer useful and it won't affect the behavior itself even if
+  // DeleteFile() fails.
+  base::DeleteFile(temp_shared_resource_path);
+
+  // Create `shared_resource_path` file with an empty content.
+  ScopedFileWriter reopen_file(shared_resource_path);
   reopen_file.Close();
 }
 
@@ -412,9 +421,23 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
     const base::FilePath& lacros_path,
     const base::FilePath& shared_resource_path,
     ResourceScaleFactor resource_scale_factor) {
-  // If `shared_resource_path` is already valid, skip regenerating.
-  if (IsSharedResourceValid(shared_resource_path))
+  // Shared resource file should be moved to .temp on Lacros launch by
+  // ash-chrome, so `shared_resource_path` must be empty.
+  // If this is not empty, it might fail to load resources asynchronously by
+  // zygote or utility process.
+  DCHECK(!base::PathExists(shared_resource_path));
+
+  // Get the loction of cached shared resource file. This file does not exist
+  // if this is the first time to generate it after ash reboot.
+  base::FilePath temp_shared_resource_path =
+      GetPathForTemporarySharedResourceFile(shared_resource_path);
+
+  // If `temp_shared_resource_path` is already valid, move it back to
+  // `shared_resource_path` and skip regenerating.
+  if (IsSharedResourceValid(temp_shared_resource_path) &&
+      base::Move(temp_shared_resource_path, shared_resource_path)) {
     return true;
+  }
 
   // Write fallback_resources and mapping_table to `shared_resource_path`.
   // Generate file even if the data generation fails. If the file creation
@@ -423,7 +446,7 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
   // file asynchronously will distinguish the cases where the file is under
   // construction or the case where the file generation fails by checking the
   // existence of `shared_resource_path` file.
-  ScopedFileWriter file(shared_resource_path);
+  ScopedFileWriter file(temp_shared_resource_path);
   if (!file.valid()) {
     LOG(ERROR) << "Failed to open shared resource data pack file. In this "
                << "case, the file does not exist.";
@@ -567,7 +590,10 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
     return false;
   }
 
-  return file.Close();
+  // As shared resource file is successfully generated at
+  // `temp_shared_resource_path`, move the contents to `shared_resource_path`.
+  file.Close();
+  return base::Move(temp_shared_resource_path, shared_resource_path);
 }
 
 // statoc

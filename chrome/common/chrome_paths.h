@@ -94,7 +94,7 @@ enum {
                         // This includes data for internal pages (e.g., html
                         // files and images), unless these resources are
                         // purposefully split into a separate file.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   FILE_RESOURCES_FOR_SHARING_PACK,  // Full path to the shared_resources.pak
                                     // tile containing binary data. This
                                     // includes mapping table from lacros
@@ -102,6 +102,8 @@ enum {
                                     // fallback resources info consists of
                                     // resources not included in
                                     // ASH_RESOURCES_PACK.
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   FILE_ASH_RESOURCES_PACK,  // Full path to ash resources.pak file.
 #endif
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing

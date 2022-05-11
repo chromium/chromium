@@ -366,12 +366,14 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case chrome::FILE_RESOURCES_FOR_SHARING_PACK:
       if (!GetDefaultUserDataDirectory(&cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources_for_sharing.rspak"));
       break;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     case chrome::FILE_ASH_RESOURCES_PACK:
       if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
                                   &cur))

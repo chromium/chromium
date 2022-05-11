@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
@@ -66,6 +67,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/startup/startup_switches.h"
@@ -84,6 +86,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -192,11 +195,44 @@ bool RotateLacrosLogs() {
   return false;
 }
 
+// Return false when there is a failure that might break resource file sharing
+// feature.
+bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
+  base::FilePath shared_resource_path;
+  // If shared resource pak doesn't exit, do nothing.
+  if (!base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
+                              &shared_resource_path) ||
+      !base::PathExists(shared_resource_path)) {
+    return true;
+  }
+
+  // Clear shared resource file cache if `clear_shared_resource_file` is true.
+  if (clear_shared_resource_file) {
+    if (!base::DeleteFile(shared_resource_path)) {
+      LOG(ERROR) << "Failed to delete cached shared resource file.";
+      return false;
+    }
+    return true;
+  }
+
+  base::FilePath renamed_shared_resource_path =
+      ui::GetPathForTemporarySharedResourceFile(shared_resource_path);
+
+  // Move shared resource pak to `renamed_shared_resource_path`.
+  if (!base::Move(shared_resource_path, renamed_shared_resource_path)) {
+    LOG(ERROR) << "Failed to move cached shared resource file to temporary "
+               << "location.";
+    return false;
+  }
+  return true;
+}
+
 // This method runs some work on a background thread prior to launching lacros.
 // The returns struct is used by the main thread as parameters to launch Lacros.
 LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     base::FilePath lacros_dir,
-    bool cleared_user_data_dir) {
+    bool cleared_user_data_dir,
+    bool clear_shared_resource_file) {
   LaunchParamsFromBackground params;
 
   if (!RotateLacrosLogs()) {
@@ -221,6 +257,20 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   }
 
   params.logfd = base::ScopedFD(fd);
+
+  params.enable_resource_file_sharing =
+      base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing);
+  // If resource file sharing feature is disabled, clear the cached shared
+  // resource file anyway.
+  if (!params.enable_resource_file_sharing)
+    clear_shared_resource_file = true;
+
+  // Clear shared resource file cache if it's initial lacros launch after ash
+  // reboot. If not, rename shared resource file cache to temporal name on
+  // Lacros launch.
+  if (!ClearOrMoveSharedResourceFile(clear_shared_resource_file))
+    params.enable_resource_file_sharing = false;
+
   return params;
 }
 
@@ -881,10 +931,14 @@ void BrowserManager::Start(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
-                     cleared_user_data_dir),
+                     cleared_user_data_dir,
+                     is_initial_lacros_launch_after_reboot_),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr(),
                      std::move(initial_browser_action)));
+
+  // Set false to prepare for the next Lacros launch.
+  is_initial_lacros_launch_after_reboot_ = false;
 }
 
 void BrowserManager::StartWithLogFile(
@@ -1049,7 +1103,7 @@ void BrowserManager::StartWithLogFile(
     command_line.AppendSwitch(switches::kEnableCrashpad);
   }
 
-  if (base::FeatureList::IsEnabled(features::kLacrosResourcesFileSharing)) {
+  if (params.enable_resource_file_sharing) {
     // Pass a flag to enable resources file sharing to Lacros.
     // To use resources file sharing feature on Lacros, it's required for ash to
     // run with enabling the feature as well since the feature is based on some

@@ -56,6 +56,12 @@ component("ui_data_pack") {
 
   defines = [ "UI_DATA_PACK_IMPLEMENTATION" ]
 
+  if (is_chromeos) {
+    sources += [
+      "resource/temporary_shared_resource_path_chromeos.cc",
+      "resource/temporary_shared_resource_path_chromeos.h",
+    ]
+  }
   if (is_chromeos_lacros) {
     sources += [
       "resource/data_pack_with_resource_sharing_lacros.cc",
