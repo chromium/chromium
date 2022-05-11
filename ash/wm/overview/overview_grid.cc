@@ -32,13 +32,13 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -1929,8 +1929,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   }
 
   // Enable/disable button and update tooltip.
-  const DesksTemplatesPresenter* desk_templates_presenter =
-      DesksTemplatesPresenter::Get();
+  const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
   SaveDeskTemplateButtonContainer* container =
       static_cast<SaveDeskTemplateButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
@@ -1938,13 +1937,13 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // `DeskTemplateType`, update `kSaveForLaterButton` to use its own count.
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveAsTemplate,
-      desk_templates_presenter->GetEntryCount(),
-      desk_templates_presenter->GetMaxEntryCount(), num_incognito_windows_,
+      saved_desk_presenter->GetEntryCount(),
+      saved_desk_presenter->GetMaxEntryCount(), num_incognito_windows_,
       num_unsupported_windows_, size());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveForLater,
-      desk_templates_presenter->GetEntryCount(),
-      desk_templates_presenter->GetMaxEntryCount(), num_incognito_windows_,
+      saved_desk_presenter->GetEntryCount(),
+      saved_desk_presenter->GetMaxEntryCount(), num_incognito_windows_,
       num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
@@ -2472,13 +2471,13 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
-  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kTemplate,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }
 
 void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
-  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kSaveAndRecall,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }

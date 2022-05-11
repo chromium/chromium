@@ -25,7 +25,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/templates/save_desk_template_button_container.h"
@@ -36,6 +35,7 @@
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -953,10 +953,9 @@ TEST_F(DesksTemplatesTest, SaveDeskButtonsEnabledDisabled) {
   // Exit and reopen overview to delete the template.
   ToggleOverview();
   OpenOverviewAndShowTemplatesGrid();
-  const DesksTemplatesPresenter* desk_templates_presenter =
-      DesksTemplatesPresenter::Get();
-  EXPECT_EQ(desk_templates_presenter->GetMaxEntryCount(),
-            desk_templates_presenter->GetEntryCount());
+  const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
+  EXPECT_EQ(saved_desk_presenter->GetMaxEntryCount(),
+            saved_desk_presenter->GetEntryCount());
 
   // Verify that the button is re-enabled after we delete all templates and exit
   // the templates grid.
@@ -2921,7 +2920,7 @@ TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   WaitForDesksTemplatesUI();
 
   // Mocks saving templates with some browsers.
-  DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
+  SavedDeskPresenter::Get()->SaveOrUpdateDeskTemplate(
       /*is_update=*/false, Shell::GetPrimaryRootWindow(),
       std::move(desk_template));
 
@@ -3501,7 +3500,7 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
             // `LocalDeskStorage` does not support
             // `EntriesAddedOrUpdatedRemotely`, so
             // manually call it to simluate what the real model would do.
-            DesksTemplatesPresenter::Get()->EntriesAddedOrUpdatedRemotely(
+            SavedDeskPresenter::Get()->EntriesAddedOrUpdatedRemotely(
                 {entry.get()});
             ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
             ASSERT_EQ(u"Desk 2", second_item->desk_template()->template_name());

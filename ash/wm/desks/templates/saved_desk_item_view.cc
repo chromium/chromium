@@ -20,12 +20,12 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -301,7 +301,7 @@ void SavedDeskItemView::MaybeRemoveNameNumber() {
 void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
   // get template name collisions.
-  DesksTemplatesPresenter::Get()->DeleteEntry(uuid);
+  SavedDeskPresenter::Get()->DeleteEntry(uuid);
   UpdateTemplateName();
   RecordReplaceTemplateHistogram();
 }
@@ -505,7 +505,7 @@ void SavedDeskItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
-  DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
+  SavedDeskPresenter::Get()->SaveOrUpdateDeskTemplate(
       /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
       desk_template_->Clone());
 }
@@ -631,7 +631,7 @@ SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
 }
 
 void SavedDeskItemView::OnDeleteTemplate() {
-  DesksTemplatesPresenter::Get()->DeleteEntry(
+  SavedDeskPresenter::Get()->DeleteEntry(
       desk_template_->uuid().AsLowercaseString());
 }
 
@@ -664,7 +664,7 @@ void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
     delay = base::Seconds(3);
 #endif
 
-  DesksTemplatesPresenter::Get()->LaunchDeskTemplate(
+  SavedDeskPresenter::Get()->LaunchDeskTemplate(
       desk_template_->uuid().AsLowercaseString(), delay,
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }

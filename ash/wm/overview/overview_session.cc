@@ -31,9 +31,9 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -184,9 +184,8 @@ void OverviewSession::Init(const WindowList& windows,
   }
 
   // Create this before the desks bar widget.
-  if (saved_desk_util::IsSavedDesksEnabled() && !desks_templates_presenter_) {
-    desks_templates_presenter_ =
-        std::make_unique<DesksTemplatesPresenter>(this);
+  if (saved_desk_util::IsSavedDesksEnabled() && !saved_desk_presenter_) {
+    saved_desk_presenter_ = std::make_unique<SavedDeskPresenter>(this);
     saved_desk_dialog_controller_ =
         std::make_unique<SavedDeskDialogController>();
   }
@@ -298,7 +297,7 @@ void OverviewSession::Shutdown() {
 
   // Stop the presenter from receiving any events that may update the model or
   // UI.
-  desks_templates_presenter_.reset();
+  saved_desk_presenter_.reset();
 
   // Resetting here will close any dialogs, and DCHECK anyone trying to open a
   // dialog past this point.
@@ -1036,7 +1035,7 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
   // Only ask for all entries if it is the first time creating the grid widgets.
   // Otherwise, add or update the entries one at a time.
   if (created_grid_widgets)
-    desks_templates_presenter_->GetAllEntries(item_to_focus, root_window);
+    saved_desk_presenter_->GetAllEntries(item_to_focus, root_window);
   UpdateNoWindowsWidgetOnEachGrid();
 
   UpdateAccessibilityFocus();
@@ -1301,7 +1300,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         return;
 
       // There are no templates to be viewed.
-      if (!DesksTemplatesPresenter::Get()->should_show_templates_ui())
+      if (!saved_desk_presenter_->should_show_templates_ui())
         return;
 
       DCHECK(!grid_list_.empty());
@@ -1422,8 +1421,8 @@ void OverviewSession::OnTabletModeEnded() {
 
 void OverviewSession::OnTabletModeChanged() {
   DCHECK(saved_desk_util::IsSavedDesksEnabled());
-  DCHECK(desks_templates_presenter_);
-  desks_templates_presenter_->UpdateDesksTemplatesUI();
+  DCHECK(saved_desk_presenter_);
+  saved_desk_presenter_->UpdateDesksTemplatesUI();
 }
 
 void OverviewSession::Move(bool reverse) {

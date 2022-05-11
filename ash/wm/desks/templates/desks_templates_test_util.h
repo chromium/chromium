@@ -26,26 +26,26 @@ class Label;
 namespace ash {
 
 class CloseButton;
-class DesksTemplatesPresenter;
 class OverviewGrid;
 class PillButton;
 class RoundedImageView;
+class SavedDeskLibraryView;
+class SavedDeskPresenter;
 
-// Wrapper for `DesksTemplatesPresenter` that exposes internal state to test
+// Wrapper for `SavedDeskPresenter` that exposes internal state to test
 // functions.
-class DesksTemplatesPresenterTestApi {
+class SavedDeskPresenterTestApi {
  public:
-  explicit DesksTemplatesPresenterTestApi(DesksTemplatesPresenter* presenter);
-  DesksTemplatesPresenterTestApi(const DesksTemplatesPresenterTestApi&) =
+  explicit SavedDeskPresenterTestApi(SavedDeskPresenter* presenter);
+  SavedDeskPresenterTestApi(const SavedDeskPresenterTestApi&) = delete;
+  SavedDeskPresenterTestApi& operator=(const SavedDeskPresenterTestApi&) =
       delete;
-  DesksTemplatesPresenterTestApi& operator=(
-      const DesksTemplatesPresenterTestApi&) = delete;
-  ~DesksTemplatesPresenterTestApi();
+  ~SavedDeskPresenterTestApi();
 
   void SetOnUpdateUiClosure(base::OnceClosure closure);
 
  private:
-  DesksTemplatesPresenter* const presenter_;
+  SavedDeskPresenter* const presenter_;
 };
 
 // Wrapper for `SavedDeskLibraryView` that exposes internal state to test

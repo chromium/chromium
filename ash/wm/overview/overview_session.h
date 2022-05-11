@@ -44,13 +44,13 @@ class Widget;
 
 namespace ash {
 
-class DesksTemplatesPresenter;
-class SavedDeskDialogController;
 class OverviewDelegate;
 class OverviewGrid;
 class OverviewHighlightController;
 class OverviewItem;
 class OverviewWindowDragController;
+class SavedDeskDialogController;
+class SavedDeskPresenter;
 
 // The Overview shows a grid of all of your windows, allowing to select
 // one by clicking or tapping on it.
@@ -373,8 +373,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return highlight_controller_.get();
   }
 
-  DesksTemplatesPresenter* desks_templates_presenter() {
-    return desks_templates_presenter_.get();
+  SavedDeskPresenter* saved_desk_presenter() {
+    return saved_desk_presenter_.get();
   }
 
   void set_auto_add_windows_enabled(bool enabled) {
@@ -474,7 +474,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
 
   // The object responsible to talking to the desk model.
-  std::unique_ptr<DesksTemplatesPresenter> desks_templates_presenter_;
+  std::unique_ptr<SavedDeskPresenter> saved_desk_presenter_;
 
   std::unique_ptr<SavedDeskDialogController> saved_desk_dialog_controller_;
 

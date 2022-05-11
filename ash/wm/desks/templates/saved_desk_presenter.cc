@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
@@ -34,7 +34,7 @@ namespace ash {
 
 namespace {
 
-DesksTemplatesPresenter* g_instance = nullptr;
+SavedDeskPresenter* g_instance = nullptr;
 
 // Toast names.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
@@ -51,8 +51,7 @@ desks_storage::DeskModel* GetDeskModel() {
 
 }  // namespace
 
-DesksTemplatesPresenter::DesksTemplatesPresenter(
-    OverviewSession* overview_session)
+SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
     : overview_session_(overview_session) {
   DCHECK(overview_session_);
 
@@ -64,42 +63,42 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
 }
 
-DesksTemplatesPresenter::~DesksTemplatesPresenter() {
+SavedDeskPresenter::~SavedDeskPresenter() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
 // static
-DesksTemplatesPresenter* DesksTemplatesPresenter::Get() {
+SavedDeskPresenter* SavedDeskPresenter::Get() {
   DCHECK(g_instance);
   return g_instance;
 }
 
-size_t DesksTemplatesPresenter::GetEntryCount() const {
+size_t SavedDeskPresenter::GetEntryCount() const {
   return GetDeskModel()->GetEntryCount();
 }
 
-size_t DesksTemplatesPresenter::GetMaxEntryCount() const {
+size_t SavedDeskPresenter::GetMaxEntryCount() const {
   return GetDeskModel()->GetMaxEntryCount();
 }
 
-size_t DesksTemplatesPresenter::GetDeskTemplateEntryCount() const {
+size_t SavedDeskPresenter::GetDeskTemplateEntryCount() const {
   return GetDeskModel()->GetDeskTemplateEntryCount();
 }
 
-size_t DesksTemplatesPresenter::GetMaxDeskTemplateEntryCount() const {
+size_t SavedDeskPresenter::GetMaxDeskTemplateEntryCount() const {
   return GetDeskModel()->GetMaxDeskTemplateEntryCount();
 }
 
-size_t DesksTemplatesPresenter::GetSaveAndRecallDeskEntryCount() const {
+size_t SavedDeskPresenter::GetSaveAndRecallDeskEntryCount() const {
   return GetDeskModel()->GetSaveAndRecallDeskEntryCount();
 }
 
-size_t DesksTemplatesPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
+size_t SavedDeskPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
   return GetDeskModel()->GetMaxSaveAndRecallDeskEntryCount();
 }
 
-void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
+void SavedDeskPresenter::UpdateDesksTemplatesUI() {
   // The save as desk template button is hidden in tablet mode. The desks
   // templates button on the desk bar view and the desks templates grid are
   // hidden in tablet mode and if there no templates to view.
@@ -123,26 +122,25 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
   }
 }
 
-void DesksTemplatesPresenter::GetAllEntries(const base::GUID& item_to_focus,
-                                            aura::Window* const root_window) {
+void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
+                                       aura::Window* const root_window) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->GetAllEntries(base::BindOnce(
-      &DesksTemplatesPresenter::OnGetAllEntries, weak_ptr_factory_.GetWeakPtr(),
+      &SavedDeskPresenter::OnGetAllEntries, weak_ptr_factory_.GetWeakPtr(),
       item_to_focus, root_window));
 }
 
-void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
+void SavedDeskPresenter::DeleteEntry(const std::string& template_uuid) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
       template_uuid,
-      base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
+      base::BindOnce(&SavedDeskPresenter::OnDeleteEntry,
                      weak_ptr_factory_.GetWeakPtr(), template_uuid));
 }
 
-void DesksTemplatesPresenter::LaunchDeskTemplate(
-    const std::string& template_uuid,
-    base::TimeDelta delay,
-    aura::Window* root_window) {
+void SavedDeskPresenter::LaunchDeskTemplate(const std::string& template_uuid,
+                                            base::TimeDelta delay,
+                                            aura::Window* root_window) {
   // If we are at the max desk limit (currently is 8), a new desk
   // cannot be created, and a toast will be displayed to the user.
   if (!DesksController::Get()->CanCreateDesks()) {
@@ -161,22 +159,22 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
 
   GetDeskModel()->GetEntryByUUID(
       template_uuid,
-      base::BindOnce(&DesksTemplatesPresenter::OnGetTemplateForDeskLaunch,
+      base::BindOnce(&SavedDeskPresenter::OnGetTemplateForDeskLaunch,
                      weak_ptr_factory_.GetWeakPtr(), base::Time::Now(), delay,
                      root_window));
 }
 
-void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate(
+void SavedDeskPresenter::MaybeSaveActiveDeskAsTemplate(
     DeskTemplateType template_type,
     aura::Window* root_window_to_show) {
   DesksController::Get()->CaptureActiveDeskAsTemplate(
-      base::BindOnce(&DesksTemplatesPresenter::SaveOrUpdateDeskTemplate,
+      base::BindOnce(&SavedDeskPresenter::SaveOrUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*is_update=*/false, root_window_to_show),
       template_type, root_window_to_show);
 }
 
-void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
+void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
     bool is_update,
     aura::Window* const root_window,
     std::unique_ptr<DeskTemplate> desk_template) {
@@ -198,26 +196,26 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
-      base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
+      base::BindOnce(&SavedDeskPresenter::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), is_update, root_window,
                      std::move(desk_template_clone)));
 }
 
-void DesksTemplatesPresenter::OnDeskModelDestroying() {
+void SavedDeskPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
 }
 
-void DesksTemplatesPresenter::EntriesAddedOrUpdatedRemotely(
+void SavedDeskPresenter::EntriesAddedOrUpdatedRemotely(
     const std::vector<const DeskTemplate*>& new_entries) {
   AddOrUpdateUIEntries(new_entries);
 }
 
-void DesksTemplatesPresenter::EntriesRemovedRemotely(
+void SavedDeskPresenter::EntriesRemovedRemotely(
     const std::vector<std::string>& uuids) {
   RemoveUIEntries(uuids);
 }
 
-void DesksTemplatesPresenter::OnGetAllEntries(
+void SavedDeskPresenter::OnGetAllEntries(
     const base::GUID& item_to_focus,
     aura::Window* const root_window,
     desks_storage::DeskModel::GetAllEntriesStatus status,
@@ -254,7 +252,7 @@ void DesksTemplatesPresenter::OnGetAllEntries(
     std::move(on_update_ui_closure_for_testing_).Run();
 }
 
-void DesksTemplatesPresenter::OnDeleteEntry(
+void SavedDeskPresenter::OnDeleteEntry(
     const std::string& template_uuid,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
@@ -265,7 +263,7 @@ void DesksTemplatesPresenter::OnDeleteEntry(
   RemoveUIEntries({template_uuid});
 }
 
-void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
+void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
     base::Time time_launch_started,
     base::TimeDelta delay,
     aura::Window* root_window,
@@ -283,7 +281,7 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   const bool activate_desk = entry->type() == DeskTemplateType::kTemplate;
   DesksController::Get()->CreateNewDeskForTemplate(
       template_name, activate_desk,
-      base::BindOnce(&DesksTemplatesPresenter::OnNewDeskCreatedForTemplate,
+      base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
                      time_launch_started, delay, root_window));
 
@@ -293,7 +291,7 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   RecordLaunchTemplateHistogram();
 }
 
-void DesksTemplatesPresenter::OnNewDeskCreatedForTemplate(
+void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
     std::unique_ptr<DeskTemplate> desk_template,
     base::Time time_launch_started,
     base::TimeDelta delay,
@@ -325,7 +323,7 @@ void DesksTemplatesPresenter::OnNewDeskCreatedForTemplate(
     DeleteEntry(template_uuid);
 }
 
-void DesksTemplatesPresenter::OnAddOrUpdateEntry(
+void SavedDeskPresenter::OnAddOrUpdateEntry(
     bool was_update,
     aura::Window* const root_window,
     std::unique_ptr<DeskTemplate> desk_template,
@@ -403,7 +401,7 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   // wait for the `GetAllEntries` fired in `ShowDesksTemplatesGrids`.
 }
 
-void DesksTemplatesPresenter::AddOrUpdateUIEntries(
+void SavedDeskPresenter::AddOrUpdateUIEntries(
     const std::vector<const DeskTemplate*>& new_entries) {
   if (new_entries.empty())
     return;
@@ -423,7 +421,7 @@ void DesksTemplatesPresenter::AddOrUpdateUIEntries(
     std::move(on_update_ui_closure_for_testing_).Run();
 }
 
-void DesksTemplatesPresenter::RemoveUIEntries(
+void SavedDeskPresenter::RemoveUIEntries(
     const std::vector<std::string>& uuids) {
   if (uuids.empty())
     return;

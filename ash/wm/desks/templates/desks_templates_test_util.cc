@@ -8,10 +8,10 @@
 #include "ash/style/close_button.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -69,15 +69,15 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
 
 }  // namespace
 
-DesksTemplatesPresenterTestApi::DesksTemplatesPresenterTestApi(
-    DesksTemplatesPresenter* presenter)
+SavedDeskPresenterTestApi::SavedDeskPresenterTestApi(
+    SavedDeskPresenter* presenter)
     : presenter_(presenter) {
   DCHECK(presenter_);
 }
 
-DesksTemplatesPresenterTestApi::~DesksTemplatesPresenterTestApi() = default;
+SavedDeskPresenterTestApi::~SavedDeskPresenterTestApi() = default;
 
-void DesksTemplatesPresenterTestApi::SetOnUpdateUiClosure(
+void SavedDeskPresenterTestApi::SetOnUpdateUiClosure(
     base::OnceClosure closure) {
   DCHECK(!presenter_->on_update_ui_closure_for_testing_);
   presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
@@ -213,7 +213,7 @@ void WaitForDesksTemplatesUI() {
   DCHECK(overview_session);
 
   base::RunLoop run_loop;
-  DesksTemplatesPresenterTestApi(overview_session->desks_templates_presenter())
+  SavedDeskPresenterTestApi(overview_session->saved_desk_presenter())
       .SetOnUpdateUiClosure(run_loop.QuitClosure());
   run_loop.Run();
 }

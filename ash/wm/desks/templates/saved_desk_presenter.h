@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
-#define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
+#ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_PRESENTER_H_
+#define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_PRESENTER_H_
 
 #include <vector>
 
@@ -22,24 +22,24 @@ class DeskTemplate;
 class OverviewSession;
 enum class DeskTemplateType;
 
-// DesksTemplatesPresenter is the presenter for the desks templates UI. It
-// handles all calls to the model, and lets the UI know what to show or update.
+// SavedDeskPresenter is the presenter for the saved desk UI. It handles all
+// calls to the model, and lets the UI know what to show or update.
 // OverviewSession will create and own an instance of this object. It will be
 // created after the desks bar is visible and destroyed once we receive an
 // overview shutdown signal, to prevent calls to the model during shutdown.
-class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
+class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
  public:
-  explicit DesksTemplatesPresenter(OverviewSession* overview_session);
-  DesksTemplatesPresenter(const DesksTemplatesPresenter&) = delete;
-  DesksTemplatesPresenter& operator=(const DesksTemplatesPresenter&) = delete;
-  ~DesksTemplatesPresenter() override;
+  explicit SavedDeskPresenter(OverviewSession* overview_session);
+  SavedDeskPresenter(const SavedDeskPresenter&) = delete;
+  SavedDeskPresenter& operator=(const SavedDeskPresenter&) = delete;
+  ~SavedDeskPresenter() override;
 
   // Convenience function to get the presenter instance, which is created and
   // owned by `OverviewSession`.
   // TODO(crbug.com/1322553): Remove this function as `Get()` is normally used
   // for singletons, or for objects whose lifetimes are deterministic and live
   // as long as ash lives.
-  static DesksTemplatesPresenter* Get();
+  static SavedDeskPresenter* Get();
 
   bool should_show_templates_ui() { return should_show_templates_ui_; }
 
@@ -97,7 +97,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void EntriesRemovedLocally(const std::vector<std::string>& uuids) override {}
 
  private:
-  friend class DesksTemplatesPresenterTestApi;
+  friend class SavedDeskPresenterTestApi;
 
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.
@@ -154,9 +154,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // the model.
   base::OnceClosure on_update_ui_closure_for_testing_;
 
-  base::WeakPtrFactory<DesksTemplatesPresenter> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SavedDeskPresenter> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_PRESENTER_H_
+#endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_PRESENTER_H_

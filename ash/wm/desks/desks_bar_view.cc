@@ -30,7 +30,7 @@
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
-#include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -219,7 +219,7 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       const bool should_show_templates_ui =
           saved_desk_util::IsSavedDesksEnabled() &&
           !bar_view_->overview_grid()->overview_session()->is_shutting_down() &&
-          DesksTemplatesPresenter::Get()->should_show_templates_ui();
+          SavedDeskPresenter::Get()->should_show_templates_ui();
       auto* zero_state_desks_templates_button =
           bar_view_->zero_state_desks_templates_button();
       const gfx::Size zero_state_desks_templates_button_size =
@@ -993,7 +993,7 @@ void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
     return;
 
   const bool should_show_ui =
-      DesksTemplatesPresenter::Get()->should_show_templates_ui();
+      SavedDeskPresenter::Get()->should_show_templates_ui();
   const bool is_zero_state = IsZeroState();
 
   zero_state_desks_templates_button_->SetVisible(should_show_ui &&
