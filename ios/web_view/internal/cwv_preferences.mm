@@ -8,6 +8,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 
@@ -41,8 +42,6 @@
   translate::TranslatePrefs translatePrefs(_prefService);
   translatePrefs.ResetToDefaults();
 }
-
-#pragma mark - Autofill
 
 - (void)setProfileAutofillEnabled:(BOOL)enabled {
   autofill::prefs::SetAutofillProfileEnabled(_prefService, enabled);
@@ -78,6 +77,18 @@
 - (BOOL)isPasswordLeakCheckEnabled {
   return _prefService->GetBoolean(
       password_manager::prefs::kPasswordLeakDetectionEnabled);
+}
+
+- (void)setSafeBrowsingEnabled:(BOOL)enabled {
+  safe_browsing::SetSafeBrowsingState(
+      _prefService,
+      enabled ? safe_browsing::SafeBrowsingState::STANDARD_PROTECTION
+              : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING,
+      /*is_esb_enabled_in_sync=*/false);
+}
+
+- (BOOL)isSafeBrowsingEnabled {
+  return safe_browsing::IsSafeBrowsingEnabled(*_prefService);
 }
 
 @end

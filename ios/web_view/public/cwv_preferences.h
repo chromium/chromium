@@ -48,6 +48,13 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isPasswordLeakCheckEnabled)
     BOOL passwordLeakCheckEnabled;
 
+// Whether or not safe browsing is enabled.
+// Specifically this controls whether or not
+// -[CWVNavigationDelegate handleUnsafeURLWithHandler:] is called.
+// Defaults to |YES|.
+@property(nonatomic, assign, getter=isSafeBrowsingEnabled)
+    BOOL safeBrowsingEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will
