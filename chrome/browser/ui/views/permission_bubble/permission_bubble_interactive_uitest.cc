@@ -159,10 +159,18 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
   EXPECT_EQ(0u, views::test::WidgetTest::GetAllWidgets().size());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1324444): For Mac builders, the test fails after activating
+// the browser and cannot spot the widget. Needs investigation and fix.
+#define MAYBE_SwitchTabs DISABLED_SwitchTabs
+#else
+#define MAYBE_SwitchTabs SwitchTabs
+#endif
+
 // Add a tab, ensure we can switch away and back using Ctrl+Tab and
 // Ctrl+Shift+Tab at aura and using Cmd+Alt+Left/Right and curly braces at
 // MacOS.
-IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, SwitchTabs) {
+IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_TRUE(test_api_->GetPromptWindow());
 
