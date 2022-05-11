@@ -43,7 +43,7 @@ import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 @JNINamespace("weblayer")
 public class WebLayerAssistantStaticDependencies
         implements AssistantStaticDependencies, SimpleFactoryKeyHandle {
-    private final WebContents mWebContents;
+    protected final WebContents mWebContents;
 
     WebLayerAssistantStaticDependencies(WebContents webContents) {
         mWebContents = webContents;
