@@ -7421,7 +7421,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           </message>
         </if>
         <if expr="use_titlecase">
-          <message name="IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON" desc="Button text to check left compromised passwords.">
+          <message name="IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON" desc="In Title Case: Button text to check left compromised passwords.">
             Check Remaining Passwords
           </message>
         </if>
