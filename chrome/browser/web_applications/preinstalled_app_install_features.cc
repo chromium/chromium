@@ -75,7 +75,7 @@ const base::Feature kCursiveStylusPreinstall{"CursiveStylusPreinstall",
 
 // Enables installing the Messages app on unmanaged devices.
 const base::Feature kMessagesPreinstall{"MessagesPreinstall",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
