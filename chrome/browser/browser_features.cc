@@ -120,9 +120,10 @@ const base::Feature kPrewarmSearchResultsPageFonts{
 // Implementation bug: https://crbug.com/1253379
 // I2S: https://groups.google.com/a/chromium.org/g/blink-dev/c/-t-f7I6VvOI
 //
-// To be enabled in M103
+// Enabled in M103. Flag to be removed in M106
 const base::Feature kSandboxExternalProtocolBlocked{
-    "SandboxExternalProtocolBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SandboxExternalProtocolBlocked", base::FEATURE_ENABLED_BY_DEFAULT};
+// Enabled in M100. Flag to be removed in M106
 const base::Feature kSandboxExternalProtocolBlockedWarning{
     "SandboxExternalProtocolBlockedWarning", base::FEATURE_ENABLED_BY_DEFAULT};
 
