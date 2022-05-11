@@ -68,6 +68,11 @@ export interface ClearBrowsingDataBrowserProxy {
    * @return Signal when the setup is complete.
    */
   initialize(): Promise<void>;
+
+  /**
+   * @return A promise with the current sync state.
+   */
+  getSyncState(): Promise<UpdateSyncStateEvent>;
 }
 
 export class ClearBrowsingDataBrowserProxyImpl implements
@@ -85,6 +90,10 @@ export class ClearBrowsingDataBrowserProxyImpl implements
 
   initialize() {
     return sendWithPromise('initializeClearBrowsingData');
+  }
+
+  getSyncState() {
+    return sendWithPromise('getSyncState');
   }
 
   static getInstance(): ClearBrowsingDataBrowserProxy {

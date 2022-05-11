@@ -104,6 +104,10 @@ void ClearBrowsingDataHandler::RegisterMessages() {
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSyncState",
+      base::BindRepeating(&ClearBrowsingDataHandler::HandleGetSyncState,
+                          base::Unretained(this)));
 }
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
@@ -430,11 +434,22 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, base::Value() /* Promise<void> */);
 }
 
+void ClearBrowsingDataHandler::HandleGetSyncState(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, CreateSyncStateEvent());
+}
+
 void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
   UpdateSyncState();
 }
 
 void ClearBrowsingDataHandler::UpdateSyncState() {
+  FireWebUIListener("update-sync-state", CreateSyncStateEvent());
+}
+
+base::DictionaryValue ClearBrowsingDataHandler::CreateSyncStateEvent() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   base::DictionaryValue event;
@@ -469,7 +484,7 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
             : l10n_util::GetStringUTF16(
                   IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
   }
-  FireWebUIListener("update-sync-state", event);
+  return event;
 }
 
 void ClearBrowsingDataHandler::RefreshHistoryNotice() {
