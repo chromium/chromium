@@ -133,10 +133,10 @@ void MaybeAddResult(app_list::SearchProvider::Results* results,
 // Linearly maps |score| to the range [min, max].
 // |score| is assumed to be within [0.0, 1.0]; if it's greater than 1.0
 // then max is returned; if it's less than 0.0, then min is returned.
-float ReRange(const float score, const float min, const float max) {
-  if (score >= 1.0f)
+double ReRange(const double score, const double min, const double max) {
+  if (score >= 1.0)
     return max;
-  if (score <= 0.0f)
+  if (score <= 0.0)
     return min;
 
   return min + score * (max - min);
@@ -259,8 +259,8 @@ class AppSearchProvider::App {
 
   // Relevance must exceed the threshold to appear as a search result. Exact
   // matches are always surfaced.
-  float relevance_threshold() const { return relevance_threshold_; }
-  void set_relevance_threshold(float threshold) {
+  double relevance_threshold() const { return relevance_threshold_; }
+  void set_relevance_threshold(double threshold) {
     relevance_threshold_ = threshold;
   }
 
@@ -278,7 +278,7 @@ class AppSearchProvider::App {
   bool recommendable_ = true;
   bool searchable_ = true;
   std::vector<std::u16string> searchable_text_;
-  float relevance_threshold_ = 0.f;
+  double relevance_threshold_ = 0.0;
   // Set to true in case app was installed internally, by sync, policy or as a
   // default app.
   const bool installed_internally_;
@@ -551,10 +551,10 @@ void AppSearchProvider::UpdateRecommendedResults(
     } else if (find_in_app_list != id_to_app_list_index.end()) {
       // Case 3: if it's in the app_list_index, set the relevance in [0.1, 0.33]
       result->set_relevance(
-          ReRange(1.0f / (1.0f + find_in_app_list->second), 0.1, 0.33));
+          ReRange(1.0 / (1.0 + find_in_app_list->second), 0.1, 0.33));
     } else {
-      // Case 4: otherwise set the relevance as 0.0f;
-      result->set_relevance(0.0f);
+      // Case 4: otherwise set the relevance as 0.0;
+      result->set_relevance(0.0);
     }
 
     if (ash::features::IsProductivityLauncherEnabled()) {
