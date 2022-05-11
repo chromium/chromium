@@ -3187,8 +3187,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 }
 
+// TODO(crbug.com/1324410): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       SkipEnrollmentAfterRollback) {
+                       DISABLED_SkipEnrollmentAfterRollback) {
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
