@@ -270,7 +270,8 @@ void WiFiServiceMac::GetVisibleNetworks(const std::string& network_type,
        ++it) {
     std::unique_ptr<base::DictionaryValue> network(
         it->ToValue(!include_details));
-    network_list->Append(std::move(network));
+    network_list->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(network)));
   }
 }
 
