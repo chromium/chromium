@@ -8,6 +8,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "content/browser/webui/content_web_ui_configs.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/network_service_util.h"
@@ -68,6 +69,8 @@ void ContentTestSuite::Initialize() {
         gpu_feature_info->disabled_extensions);
     gl::init::InitializeExtensionSettingsOneOffPlatform();
   }
+
+  RegisterContentWebUIConfigs();
 }
 
 }  // namespace content

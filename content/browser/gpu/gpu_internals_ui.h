@@ -11,7 +11,7 @@
 
 namespace content {
 
-class CONTENT_EXPORT GpuInternalsUIConfig : public WebUIConfig {
+class GpuInternalsUIConfig : public WebUIConfig {
  public:
   GpuInternalsUIConfig();
 

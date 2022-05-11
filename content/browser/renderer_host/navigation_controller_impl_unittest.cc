@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_url_handler_impl.h"
-#include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -935,8 +934,6 @@ TEST_F(NavigationControllerTest, LoadURL_ExistingPending) {
 // navigation to a cross-process, privileged URL. This will happen if the user
 // hits back, but before that commits, they navigate somewhere new.
 TEST_F(NavigationControllerTest, LoadURL_PrivilegedPending) {
-  ScopedWebUIConfigRegistration gpu_webui(
-      std::make_unique<GpuInternalsUIConfig>());
   NavigationControllerImpl& controller = controller_impl();
 
   // First make some history, starting with a privileged URL.

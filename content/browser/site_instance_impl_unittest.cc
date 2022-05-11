@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -1041,8 +1040,6 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
   EXPECT_TRUE(instance->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(
       GURL("javascript:alert(document.location.href);"))));
 
-  ScopedWebUIConfigRegistration gpu_webui(
-      std::make_unique<GpuInternalsUIConfig>());
   EXPECT_FALSE(instance->IsSuitableForUrlInfo(
       UrlInfo::CreateForTesting(GetWebUIURL(kChromeUIGpuHost))));
 
@@ -1108,8 +1105,6 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfoInSitePerProcess) {
   EXPECT_TRUE(instance->IsSuitableForUrlInfo(UrlInfo::CreateForTesting(
       GURL("javascript:alert(document.location.href);"))));
 
-  ScopedWebUIConfigRegistration gpu_webui(
-      std::make_unique<GpuInternalsUIConfig>());
   EXPECT_FALSE(instance->IsSuitableForUrlInfo(
       UrlInfo::CreateForTesting(GetWebUIURL(kChromeUIGpuHost))));
 
@@ -1130,8 +1125,6 @@ TEST_F(SiteInstanceTest, ProcessPerSiteWithWrongBindings) {
 
   // Simulate navigating to a WebUI URL in a process that does not have WebUI
   // bindings.  This already requires bypassing security checks.
-  ScopedWebUIConfigRegistration gpu_webui(
-      std::make_unique<GpuInternalsUIConfig>());
   const GURL webui_url(GetWebUIURL(kChromeUIGpuHost));
   instance->SetSite(UrlInfo::CreateForTesting(webui_url));
   EXPECT_TRUE(instance->HasSite());
