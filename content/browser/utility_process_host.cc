@@ -56,6 +56,13 @@
 #include "media/capture/capture_switches.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/posix/global_descriptors.h"
+#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/startup_switches.h"  // nogncheck
+#include "content/public/common/content_descriptors.h"
+#endif
+
 namespace content {
 
 UtilityMainThreadFactoryFunction g_utility_main_thread_factory = nullptr;
@@ -325,12 +332,32 @@ bool UtilityProcessHost::StartProcess() {
     }
 #endif
 
+    auto file_data = std::make_unique<ChildProcessLauncherFileData>();
+#if BUILDFLAG(IS_POSIX)
+    file_data->files_to_preload = GetV8SnapshotFilesToPreload();
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Create the file descriptor for Cros startup data and pass it.
+    // This FD will be used to obtain BrowserInitParams in Utility process.
+    base::ScopedFD cros_startup_fd =
+        chromeos::BrowserInitParams::CreateStartupData();
+    if (cros_startup_fd.is_valid()) {
+      constexpr int kStartupDataFD =
+          kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
+      cmd_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                                  base::NumberToString(kStartupDataFD));
+      file_data->additional_remapped_fds.emplace(kStartupDataFD,
+                                                 std::move(cros_startup_fd));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(
             sandbox_type_, env_, *cmd_line);
 
-    process_->LaunchWithPreloadedFiles(std::move(delegate), std::move(cmd_line),
-                                       GetV8SnapshotFilesToPreload(), true);
+    process_->LaunchWithFileData(std::move(delegate), std::move(cmd_line),
+                                 std::move(file_data), true);
   }
 
   return true;

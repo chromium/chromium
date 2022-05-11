@@ -40,8 +40,8 @@ std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   return CreateDefaultPosixFilesToMap(
-      child_process_id(), mojo_channel_->remote_endpoint(), files_to_preload_,
-      GetProcessType(), command_line());
+      child_process_id(), mojo_channel_->remote_endpoint(),
+      file_data_->files_to_preload, GetProcessType(), command_line());
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
@@ -54,6 +54,11 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   if (GetProcessType() == switches::kRendererProcess) {
     const int sandbox_fd = SandboxHostLinux::GetInstance()->GetChildSocket();
     options->fds_to_remap.push_back(std::make_pair(sandbox_fd, GetSandboxFD()));
+  }
+
+  for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
+    options->fds_to_remap.emplace_back(remapped_fd.second.get(),
+                                       remapped_fd.first);
   }
 
   options->environment = delegate_->GetEnvironment();

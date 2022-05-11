@@ -217,19 +217,9 @@ void BrowserChildProcessHostImpl::Launch(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,
     bool terminate_on_shutdown) {
-  LaunchWithPreloadedFiles(std::move(delegate), std::move(cmd_line),
-                           /*files_to_preload=*/{}, terminate_on_shutdown);
-}
-
-void BrowserChildProcessHostImpl::LaunchWithPreloadedFiles(
-    std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-    std::unique_ptr<base::CommandLine> cmd_line,
-    std::map<std::string, base::FilePath> files_to_preload,
-    bool terminate_on_shutdown) {
-  GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line.get(),
-                                                                data_.id);
-  LaunchWithoutExtraCommandLineSwitches(
-      std::move(delegate), std::move(cmd_line), std::move(files_to_preload),
+  LaunchWithFileData(
+      std::move(delegate), std::move(cmd_line),
+      /*file_data=*/std::make_unique<ChildProcessLauncherFileData>(),
       terminate_on_shutdown);
 }
 
@@ -279,10 +269,22 @@ void BrowserChildProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
   child_process_host_->AddFilter(filter->GetFilter());
 }
 
+void BrowserChildProcessHostImpl::LaunchWithFileData(
+    std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
+    std::unique_ptr<base::CommandLine> cmd_line,
+    std::unique_ptr<ChildProcessLauncherFileData> file_data,
+    bool terminate_on_shutdown) {
+  GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line.get(),
+                                                                data_.id);
+  LaunchWithoutExtraCommandLineSwitches(
+      std::move(delegate), std::move(cmd_line), std::move(file_data),
+      terminate_on_shutdown);
+}
+
 void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     std::unique_ptr<base::CommandLine> cmd_line,
-    std::map<std::string, base::FilePath> files_to_preload,
+    std::unique_ptr<ChildProcessLauncherFileData> file_data,
     bool terminate_on_shutdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const base::CommandLine& browser_command_line =
@@ -331,7 +333,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       base::BindRepeating(&BrowserChildProcessHostImpl::OnMojoError,
                           weak_factory_.GetWeakPtr(),
                           base::ThreadTaskRunnerHandle::Get()),
-      std::move(files_to_preload), terminate_on_shutdown);
+      std::move(file_data), terminate_on_shutdown);
   ShareMetricsAllocatorToProcess();
 
   if (!has_legacy_ipc_channel_)

@@ -2613,6 +2613,8 @@ source_set("browser") {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/startup",
+      "//chromeos/startup:constants",
     ]
   }
 

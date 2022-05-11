@@ -1041,8 +1041,8 @@ void ChromeMainDelegate::PreSandboxStartup() {
     InitializeUserDataDir(base::CommandLine::ForCurrentProcess());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Initialize BrowserInitParams only for browser process and zygote process.
-  if (process_type.empty() || process_type == switches::kZygoteProcess) {
+  if (process_type.empty() || process_type == switches::kZygoteProcess ||
+      process_type == switches::kUtilityProcess) {
     // TODO(elkurin): Add comments here when resource loading using ash
     // resources is implemented.
     const crosapi::mojom::BrowserInitParams* init_params =

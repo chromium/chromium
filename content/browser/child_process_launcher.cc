@@ -52,6 +52,10 @@ void ChildProcessLauncherPriority::WriteIntoTrace(
 #endif
 }
 
+ChildProcessLauncherFileData::ChildProcessLauncherFileData() = default;
+
+ChildProcessLauncherFileData::~ChildProcessLauncherFileData() = default;
+
 #if BUILDFLAG(IS_ANDROID)
 bool ChildProcessLauncher::Client::CanUseWarmUpConnection() {
   return true;
@@ -65,7 +69,7 @@ ChildProcessLauncher::ChildProcessLauncher(
     Client* client,
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
-    std::map<std::string, base::FilePath> files_to_preload,
+    std::unique_ptr<ChildProcessLauncherFileData> file_data,
     bool terminate_on_shutdown)
     : client_(client),
       starting_(true),
@@ -85,8 +89,7 @@ ChildProcessLauncher::ChildProcessLauncher(
 #if BUILDFLAG(IS_ANDROID)
       client_->CanUseWarmUpConnection(),
 #endif
-      std::move(mojo_invitation), process_error_callback,
-      std::move(files_to_preload));
+      std::move(mojo_invitation), process_error_callback, std::move(file_data));
   helper_->StartLaunchOnClientThread();
 }
 

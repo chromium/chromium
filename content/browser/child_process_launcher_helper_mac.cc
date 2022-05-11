@@ -99,6 +99,11 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
         base::StringPrintf("%s%d", sandbox::switches::kSeatbeltClient, pipe));
   }
 
+  for (const auto& remapped_fd : file_data_->additional_remapped_fds) {
+    options->fds_to_remap.emplace_back(remapped_fd.second.get(),
+                                       remapped_fd.first);
+  }
+
   return true;
 }
 

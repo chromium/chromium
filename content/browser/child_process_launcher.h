@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
@@ -31,6 +32,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/files/scoped_file.h"
 #endif
 
 namespace base {
@@ -145,6 +150,29 @@ struct ChildProcessLauncherPriority {
 #endif
 };
 
+// Data to pass as file descriptors.
+struct ChildProcessLauncherFileData {
+  ChildProcessLauncherFileData();
+  ChildProcessLauncherFileData(const ChildProcessLauncherFileData& others) =
+      delete;
+  ChildProcessLauncherFileData& operator=(const ChildProcessLauncherFileData&) =
+      delete;
+  ~ChildProcessLauncherFileData();
+
+#if BUILDFLAG(IS_POSIX)
+  // Files opened by the browser and passed as corresponding file descriptors
+  // in the child process.
+  // Currently only supported on Linux, ChromeOS and Android platforms.
+  std::map<std::string, base::FilePath> files_to_preload;
+
+  // Map of file descriptors to pass. This is used instead of
+  // `files_to_preload` when the data is already contained as a file
+  // descriptor.
+  // Currently only supported on POSIX platforms.
+  std::map<int, base::ScopedFD> additional_remapped_fds;
+#endif
+};
+
 // Launches a process asynchronously and notifies the client of the process
 // handle when it's available.  It's used to avoid blocking the calling thread
 // on the OS since often it can take > 100 ms to create the process.
@@ -172,15 +200,19 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // this object destructs, it will be terminated.
   // Takes ownership of cmd_line.
   //
-  // If |process_error_callback| is provided, it will be called if a Mojo error
+  // If `process_error_callback` is provided, it will be called if a Mojo error
   // is encountered when processing messages from the child process. This
   // callback must be safe to call from any thread.
   //
-  // |files_to_preload| is a map of key names to file paths. These files will be
+  // `file_data` consists of 2 members:
+  // files_to_preload: a map of key names to file paths. These files will be
   // opened by the browser process and corresponding file descriptors inherited
   // by the new child process, accessible using the corresponding key via some
   // platform-specific mechanism (such as base::FileDescriptorStore on POSIX).
-  // Currently only supported on POSIX platforms.
+  // Currently only supported on Linux, ChromeOS and Android platforms.
+  // additional_remapped_fds: is a map of file descriptors to pass. This is
+  // used instead of files_to_preload when the data is already contained as a
+  // file descriptor. Currently only supported on POSIX platforms.
   ChildProcessLauncher(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
@@ -188,7 +220,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
       Client* client,
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
-      std::map<std::string, base::FilePath> files_to_preload,
+      std::unique_ptr<ChildProcessLauncherFileData> file_data,
       bool terminate_on_shutdown = true);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;

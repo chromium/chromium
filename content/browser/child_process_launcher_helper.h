@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -56,6 +57,7 @@ namespace content {
 
 class ChildProcessLauncher;
 class SandboxedProcessLauncherDelegate;
+struct ChildProcessLauncherFileData;
 struct ChildProcessLauncherPriority;
 struct ChildProcessTerminationInfo;
 
@@ -104,7 +106,7 @@ class ChildProcessLauncherHelper :
 #endif
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
-      std::map<std::string, base::FilePath> files_to_preload);
+      std::unique_ptr<ChildProcessLauncherFileData> file_data);
 
   // The methods below are defined in the order they are called.
 
@@ -240,7 +242,7 @@ class ChildProcessLauncherHelper :
   bool terminate_on_shutdown_;
   mojo::OutgoingInvitation mojo_invitation_;
   const mojo::ProcessErrorCallback process_error_callback_;
-  const std::map<std::string, base::FilePath> files_to_preload_;
+  std::unique_ptr<ChildProcessLauncherFileData> file_data_;
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
