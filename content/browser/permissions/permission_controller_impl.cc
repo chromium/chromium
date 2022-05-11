@@ -247,14 +247,14 @@ void PermissionControllerImpl::ResetOverridesForDevTools() {
   const auto old_statuses = GetSubscriptionsStatuses();
   devtools_permission_overrides_ = DevToolsPermissionOverrides();
 
-  // If any statuses changed because they lost their overrides, the subscribers
-  // must be notified manually.
-  NotifyChangedSubscriptions(old_statuses);
-
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate)
     delegate->ResetPermissionOverridesForDevTools();
+
+  // If any statuses changed because they lost their overrides, the subscribers
+  // must be notified manually.
+  NotifyChangedSubscriptions(old_statuses);
 }
 
 void PermissionControllerImpl::UpdateDelegateOverridesForDevTools(
