@@ -378,11 +378,11 @@ std::vector<DefaultUserImage> GetCurrentImageSet() {
 std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue() {
   auto image_urls = std::make_unique<base::ListValue>();
   for (auto& user_image : GetCurrentImageSet()) {
-    auto image_data = std::make_unique<base::DictionaryValue>();
-    image_data->SetIntKey("index", user_image.index);
-    image_data->SetStringKey("title", std::move(user_image.title));
-    image_data->SetStringKey("url", user_image.url.spec());
-    image_urls->Append(std::move(image_data));
+    base::Value::Dict image_data;
+    image_data.Set("index", user_image.index);
+    image_data.Set("title", std::move(user_image.title));
+    image_data.Set("url", user_image.url.spec());
+    image_urls->GetList().Append(std::move(image_data));
   }
   return image_urls;
 }

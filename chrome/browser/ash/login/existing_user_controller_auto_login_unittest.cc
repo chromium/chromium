@@ -70,15 +70,14 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
         FakeSessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
     DeviceSettingsService::Get()->Load();
 
-    std::unique_ptr<base::DictionaryValue> account(new base::DictionaryValue);
-    account->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(auto_login_user_id_));
-    account->SetKey(
-        kAccountsPrefDeviceLocalAccountsKeyType,
-        base::Value(policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-    base::ListValue accounts;
+    base::Value::Dict account;
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, auto_login_user_id_);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+    base::Value::List accounts;
     accounts.Append(std::move(account));
-    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts, accounts);
+    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
+                         base::Value(std::move(accounts)));
 
     // Prevent settings changes from auto-starting the timer.
     existing_user_controller_->local_account_auto_login_id_subscription_ = {};
