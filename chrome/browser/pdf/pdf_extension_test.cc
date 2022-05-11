@@ -4292,7 +4292,15 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetAXTestValues()),
                          testing::PrintToStringParamName());
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {
+// TODO(crbug.com/1324362): Fix Mac flakes.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HelloWorld DISABLED_HelloWorld
+#else
+#define MAYBE_HelloWorld HelloWorld
+#endif
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
+                       MAYBE_HelloWorld) {
   RunPDFTest(FILE_PATH_LITERAL("hello-world.pdf"));
 }
 
@@ -4327,7 +4335,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, Highlights) {
   RunPDFTest(FILE_PATH_LITERAL("highlights.pdf"));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextFields) {
+// TODO(crbug.com/1324362): Fix Mac flakes.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextFields DISABLED_TextFields
+#else
+#define MAYBE_TextFields TextFields
+#endif
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest,
+                       MAYBE_TextFields) {
   RunPDFTest(FILE_PATH_LITERAL("text_fields.pdf"));
 }
 
