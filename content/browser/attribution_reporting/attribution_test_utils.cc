@@ -378,7 +378,7 @@ void MockAttributionManager::NotifyReportsChanged(
 }
 
 void MockAttributionManager::NotifySourceDeactivated(
-    const DeactivatedSource& source) {
+    const StoredSource& source) {
   for (auto& observer : observers_)
     observer.OnSourceDeactivated(source);
 }
@@ -876,14 +876,6 @@ bool operator==(const SendResult& a, const SendResult& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const DeactivatedSource& a, const DeactivatedSource& b) {
-  const auto tie = [](const DeactivatedSource& deactivated_source) {
-    return std::make_tuple(deactivated_source.source,
-                           deactivated_source.reason);
-  };
-  return tie(a) == tie(b);
-}
-
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b) {
   const auto tie = [](const AttributionAggregatableTriggerData& trigger_data) {
@@ -983,15 +975,6 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
       out << "prohibitedByBrowserPolicy";
-      break;
-  }
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason) {
-  switch (reason) {
-    case DeactivatedSource::Reason::kReplacedByNewerSource:
-      out << "kReplacedByNewerSource";
       break;
   }
   return out;
@@ -1235,12 +1218,6 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
   return out << "{status=" << info.status
              << ",network_error=" << net::ErrorToShortString(info.network_error)
              << ",http_response_code=" << info.http_response_code << "}";
-}
-
-std::ostream& operator<<(std::ostream& out,
-                         const DeactivatedSource& deactivated_source) {
-  return out << "{source=" << deactivated_source.source
-             << ",reason=" << deactivated_source.reason << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {

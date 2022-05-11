@@ -8,29 +8,10 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
-
-struct CONTENT_EXPORT DeactivatedSource {
-  enum class Reason {
-    kReplacedByNewerSource,
-  };
-
-  DeactivatedSource(StoredSource source, Reason reason);
-  ~DeactivatedSource();
-
-  DeactivatedSource(const DeactivatedSource&);
-  DeactivatedSource(DeactivatedSource&&);
-
-  DeactivatedSource& operator=(const DeactivatedSource&);
-  DeactivatedSource& operator=(DeactivatedSource&&);
-
-  StoredSource source;
-  Reason reason;
-};
 
 class CONTENT_EXPORT CreateReportResult {
  public:

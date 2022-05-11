@@ -827,7 +827,7 @@ void AttributionManagerImpl::NotifyReportsChanged(
 }
 
 void AttributionManagerImpl::NotifySourceDeactivated(
-    const DeactivatedSource& source) {
+    const StoredSource& source) {
   for (auto& observer : observers_)
     observer.OnSourceDeactivated(source);
 }

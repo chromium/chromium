@@ -125,10 +125,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   // Deactivates active, converted sources with the given conversion destination
   // and reporting origin. Returns at most `limit` of those, or null on error.
-  [[nodiscard]] absl::optional<std::vector<DeactivatedSource>>
-  DeactivateSources(const std::string& serialized_conversion_destination,
-                    const std::string& serialized_reporting_origin,
-                    int return_limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  [[nodiscard]] absl::optional<std::vector<StoredSource>> DeactivateSources(
+      const std::string& serialized_conversion_destination,
+      const std::string& serialized_reporting_origin,
+      int return_limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
   [[nodiscard]] bool DeleteSources(

@@ -24,8 +24,6 @@ class AttributionTrigger;
 class CreateReportResult;
 class StoredSource;
 
-struct DeactivatedSource;
-
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
 // itself. Calls to a AttributionStorage instance that failed to initialize
@@ -35,7 +33,7 @@ class AttributionStorage {
   struct CONTENT_EXPORT StoreSourceResult {
     explicit StoreSourceResult(
         StorableSource::Result status,
-        std::vector<DeactivatedSource> deactivated_sources = {},
+        std::vector<StoredSource> deactivated_sources = {},
         absl::optional<base::Time> min_fake_report_time = absl::nullopt);
 
     ~StoreSourceResult();
@@ -47,7 +45,7 @@ class AttributionStorage {
     StoreSourceResult& operator=(StoreSourceResult&&);
 
     StorableSource::Result status;
-    std::vector<DeactivatedSource> deactivated_sources;
+    std::vector<StoredSource> deactivated_sources;
     // The earliest report time for any fake reports stored alongside the
     // source, if any.
     absl::optional<base::Time> min_fake_report_time;

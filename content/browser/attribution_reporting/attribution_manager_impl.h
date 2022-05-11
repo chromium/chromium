@@ -50,8 +50,8 @@ class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
+class StoredSource;
 
-struct DeactivatedSource;
 struct SendResult;
 
 // UI thread class that manages the lifetime of the underlying attribution
@@ -158,7 +158,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::ReportType report_type);
-  void NotifySourceDeactivated(const DeactivatedSource& source);
+  void NotifySourceDeactivated(const StoredSource& source);
   void NotifyReportSent(bool is_debug_report, AttributionReport, SendResult);
 
   bool IsReportAllowed(const AttributionReport&) const;

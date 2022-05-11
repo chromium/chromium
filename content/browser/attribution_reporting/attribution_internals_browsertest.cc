@@ -272,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .BuildStored()}));
 
   manager_.NotifySourceDeactivated(
-      DeactivatedSource(SourceBuilder(now + base::Hours(3)).BuildStored(),
-                        DeactivatedSource::Reason::kReplacedByNewerSource));
+      SourceBuilder(now + base::Hours(3)).BuildStored());
 
   // This shouldn't result in a row, as registration succeeded.
   manager_.NotifySourceHandled(SourceBuilder(now).Build(),
@@ -630,9 +629,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillByDefault(InvokeCallback(
           {SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
 
-  manager_.NotifySourceDeactivated(DeactivatedSource(
-      SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).BuildStored(),
-      DeactivatedSource::Reason::kReplacedByNewerSource));
+  manager_.NotifySourceDeactivated(
+      SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).BuildStored());
 
   EXPECT_CALL(manager_, ClearData)
       .WillOnce([](base::Time delete_begin, base::Time delete_end,

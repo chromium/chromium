@@ -58,18 +58,4 @@ CreateReportResult& CreateReportResult::operator=(const CreateReportResult&) =
 CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
     default;
 
-DeactivatedSource::DeactivatedSource(StoredSource source, Reason reason)
-    : source(std::move(source)), reason(reason) {}
-
-DeactivatedSource::~DeactivatedSource() = default;
-
-DeactivatedSource::DeactivatedSource(const DeactivatedSource&) = default;
-
-DeactivatedSource::DeactivatedSource(DeactivatedSource&&) = default;
-
-DeactivatedSource& DeactivatedSource::operator=(const DeactivatedSource&) =
-    default;
-
-DeactivatedSource& DeactivatedSource::operator=(DeactivatedSource&&) = default;
-
 }  // namespace content

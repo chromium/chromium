@@ -1103,10 +1103,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
-    EXPECT_CALL(observer,
-                OnSourceDeactivated(DeactivatedSource{
-                    builder.SetDefaultFilterData().BuildStored(),
-                    DeactivatedSource::Reason::kReplacedByNewerSource}));
+    EXPECT_CALL(observer, OnSourceDeactivated(
+                              builder.SetDefaultFilterData().BuildStored()));
   }
 
   attribution_manager_->HandleSource(source);

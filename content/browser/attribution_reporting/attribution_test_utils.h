@@ -350,7 +350,7 @@ class MockAttributionManager : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::ReportType report_type);
-  void NotifySourceDeactivated(const DeactivatedSource& source);
+  void NotifySourceDeactivated(const StoredSource& source);
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
@@ -391,7 +391,7 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnSourceDeactivated,
-              (const DeactivatedSource& source),
+              (const StoredSource& source),
               (override));
 
   MOCK_METHOD(void,
@@ -665,8 +665,6 @@ bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SendResult& a, const SendResult& b);
 
-bool operator==(const DeactivatedSource& a, const DeactivatedSource& b);
-
 bool operator==(const AttributionAggregatableTriggerData& a,
                 const AttributionAggregatableTriggerData& b);
 
@@ -678,8 +676,6 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          AttributionTrigger::AggregatableResult status);
-
-std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
@@ -731,9 +727,6 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::ActiveState active_state);
-
-std::ostream& operator<<(std::ostream& out,
-                         const DeactivatedSource& deactivated_source);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 

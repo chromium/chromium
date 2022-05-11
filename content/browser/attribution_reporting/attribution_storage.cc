@@ -16,7 +16,7 @@ using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 
 StoreSourceResult::StoreSourceResult(
     StorableSource::Result status,
-    std::vector<DeactivatedSource> deactivated_sources,
+    std::vector<StoredSource> deactivated_sources,
     absl::optional<base::Time> min_fake_report_time)
     : status(status),
       deactivated_sources(std::move(deactivated_sources)),

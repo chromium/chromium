@@ -395,12 +395,12 @@ AttributionStorageSql::~AttributionStorageSql() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-absl::optional<std::vector<DeactivatedSource>>
+absl::optional<std::vector<StoredSource>>
 AttributionStorageSql::DeactivateSources(
     const std::string& serialized_conversion_destination,
     const std::string& serialized_reporting_origin,
     int return_limit) {
-  std::vector<DeactivatedSource> deactivated_sources;
+  std::vector<StoredSource> deactivated_sources;
 
   if (return_limit != 0) {
     // Get at most `return_limit` sources that will be deactivated. We do this
@@ -428,9 +428,7 @@ AttributionStorageSql::DeactivateSources(
       if (!source_data.has_value())
         return absl::nullopt;
 
-      deactivated_sources.emplace_back(
-          std::move(source_data->source),
-          DeactivatedSource::Reason::kReplacedByNewerSource);
+      deactivated_sources.push_back(std::move(source_data->source));
     }
     if (!get_statement.Succeeded())
       return absl::nullopt;
@@ -458,10 +456,10 @@ AttributionStorageSql::DeactivateSources(
 
   for (auto& deactivated_source : deactivated_sources) {
     absl::optional<std::vector<uint64_t>> dedup_keys =
-        ReadDedupKeys(deactivated_source.source.source_id());
+        ReadDedupKeys(deactivated_source.source_id());
     if (!dedup_keys.has_value())
       return absl::nullopt;
-    deactivated_source.source.SetDedupKeys(std::move(*dedup_keys));
+    deactivated_source.SetDedupKeys(std::move(*dedup_keys));
   }
 
   return deactivated_sources;
@@ -528,7 +526,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   // In the case where we get a new source for a given <reporting_origin,
   // conversion_destination> we should mark all active, converted impressions
   // with the matching <reporting_origin, conversion_destination> as not active.
-  absl::optional<std::vector<DeactivatedSource>> deactivated_sources =
+  absl::optional<std::vector<StoredSource>> deactivated_sources =
       DeactivateSources(serialized_conversion_destination,
                         serialized_reporting_origin,
                         deactivated_source_return_limit);

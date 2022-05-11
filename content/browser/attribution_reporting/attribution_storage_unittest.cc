@@ -1655,9 +1655,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
 
   builder1.SetDedupKeys({13});
   EXPECT_THAT(storage()->StoreSource(builder2.Build()).deactivated_sources,
-              ElementsAre(DeactivatedSource(
-                  builder1.SetDefaultFilterData().BuildStored(),
-                  DeactivatedSource::Reason::kReplacedByNewerSource)));
+              ElementsAre(builder1.SetDefaultFilterData().BuildStored()));
 
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(builder2.SetDefaultFilterData().BuildStored()));
@@ -1691,9 +1689,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
                   ->StoreSource(builder3.Build(),
                                 /*deactivated_source_return_limit=*/1)
                   .deactivated_sources,
-              ElementsAre(DeactivatedSource(
-                  builder1.SetDefaultFilterData().BuildStored(),
-                  DeactivatedSource::Reason::kReplacedByNewerSource)));
+              ElementsAre(builder1.SetDefaultFilterData().BuildStored()));
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(builder3.SetDefaultFilterData().BuildStored()));
 }

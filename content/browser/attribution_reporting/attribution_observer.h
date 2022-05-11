@@ -13,8 +13,8 @@ namespace content {
 
 class AttributionTrigger;
 class CreateReportResult;
+class StoredSource;
 
-struct DeactivatedSource;
 struct SendResult;
 
 // Observes events in the Attribution Reporting API. Observers are registered on
@@ -35,7 +35,7 @@ class AttributionObserver : public base::CheckedObserver {
 
   // Called when a source is deactivated. Note that this isn't called when a
   // source reaches the attribution limit.
-  virtual void OnSourceDeactivated(const DeactivatedSource& source) {}
+  virtual void OnSourceDeactivated(const StoredSource& source) {}
 
   // Called when a report is sent, regardless of success, but not for attempts
   // that will be retried.
