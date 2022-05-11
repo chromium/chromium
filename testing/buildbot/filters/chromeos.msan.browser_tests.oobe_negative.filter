@@ -80,6 +80,7 @@
 -EnterpriseEnrollmentTestBase.*
 -EulaOfflineTest.*
 -EulaTest.*
+-ExistingUserControllerAuthFailureTest.*
 -FamilyLinkNoticeScreenChildTest.*
 -FamilyLinkNoticeScreenManagedTest.*
 -FamilyLinkNoticeScreenTest.*
