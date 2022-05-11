@@ -21,6 +21,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -261,7 +262,8 @@ public class ExternalAuthUtils {
      */
     protected int checkGooglePlayServicesAvailable(final Context context) {
         // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
+                TraceEvent e = TraceEvent.scoped("checkGooglePlayServicesAvailable")) {
             return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);
         }
     }
