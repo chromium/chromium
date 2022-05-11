@@ -7766,7 +7766,10 @@ test("unit_tests") {
 
     if (is_chromeos) {
       sources += [ "//chrome/browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc" ]
-      deps += [ "//chrome/browser/chromeos/extensions/login_screen:unit_tests" ]
+      deps += [
+        "//chrome/browser/chromeos/extensions/login_screen:unit_tests",
+        "//chromeos/dbus/missive:missive",
+      ]
     }
 
     if (is_chromeos_ash) {

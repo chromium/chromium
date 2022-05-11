@@ -16,7 +16,20 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/profile.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chromeos/dbus/missive/missive_client.h"
+#include "components/policy/core/common/cloud/dm_token.h"
+#include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/statusor.h"
+#endif
+
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "net/cert/x509_util.h"
@@ -470,5 +483,124 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
 
   Respond(OneArgument(base::Value::FromUniquePtrValue(ret.ToValue())));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+// enqueueRecord
+
+EnterpriseReportingPrivateEnqueueRecordFunction::
+    EnterpriseReportingPrivateEnqueueRecordFunction() = default;
+
+EnterpriseReportingPrivateEnqueueRecordFunction::
+    ~EnterpriseReportingPrivateEnqueueRecordFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  DCHECK(profile);
+
+  if (!IsProfileAffiliated(profile)) {
+    return RespondNow(Error(kErrorProfileNotAffiliated));
+  }
+
+  std::unique_ptr<api::enterprise_reporting_private::EnqueueRecord::Params>
+      params(api::enterprise_reporting_private::EnqueueRecord::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // Parse params
+  const auto event_type = params->request.event_type;
+  ::reporting::Record record;
+  ::reporting::Priority priority;
+  if (!TryParseParams(std::move(params), record, priority)) {
+    return RespondNow(Error(kErrorInvalidEnqueueRecordRequest));
+  }
+
+  // Attach appropriate DM token to record
+  if (!TryAttachDMTokenToRecord(record, event_type)) {
+    return RespondNow(Error(kErrorCannotAssociateRecordWithUser));
+  }
+
+  // Initiate enqueue and subsequent upload
+  auto enqueue_completion_cb = base::BindOnce(
+      &EnterpriseReportingPrivateEnqueueRecordFunction::OnRecordEnqueued, this);
+  auto* reporting_client = ::chromeos::MissiveClient::Get();
+  DCHECK(reporting_client);
+  reporting_client->EnqueueRecord(priority, record,
+                                  std::move(enqueue_completion_cb));
+  return RespondLater();
+}
+
+bool EnterpriseReportingPrivateEnqueueRecordFunction::TryParseParams(
+    std::unique_ptr<api::enterprise_reporting_private::EnqueueRecord::Params>
+        params,
+    ::reporting::Record& record,
+    ::reporting::Priority& priority) {
+  if (params->request.record_data.empty()) {
+    return false;
+  }
+
+  const auto* record_data =
+      reinterpret_cast<const char*>(params->request.record_data.data());
+  if (!record.ParseFromArray(record_data, params->request.record_data.size())) {
+    // Invalid record payload
+    return false;
+  }
+
+  if (!::reporting::Priority_IsValid(params->request.priority) ||
+      !::reporting::Priority_Parse(
+          ::reporting::Priority_Name(params->request.priority), &priority)) {
+    // Invalid priority
+    return false;
+  }
+
+  // Valid
+  return true;
+}
+
+bool EnterpriseReportingPrivateEnqueueRecordFunction::TryAttachDMTokenToRecord(
+    ::reporting::Record& record,
+    api::enterprise_reporting_private::EventType event_type) {
+  if (event_type ==
+      api::enterprise_reporting_private::EventType::EVENT_TYPE_DEVICE) {
+    // Device DM tokens are automatically appended during uploads, so we need
+    // not specify them with the record.
+    return true;
+  }
+
+  auto* profile = Profile::FromBrowserContext(browser_context());
+
+  const policy::DMToken& dm_token = policy::GetDMToken(profile);
+  if (!dm_token.is_valid()) {
+    return false;
+  }
+
+  record.set_dm_token(dm_token.value());
+  return true;
+}
+
+void EnterpriseReportingPrivateEnqueueRecordFunction::OnRecordEnqueued(
+    ::reporting::Status result) {
+  if (!result.ok()) {
+    Respond(Error(kUnexpectedErrorEnqueueRecordRequest));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+bool EnterpriseReportingPrivateEnqueueRecordFunction::IsProfileAffiliated(
+    Profile* profile) {
+  if (profile_is_affiliated_for_testing_) {
+    return true;
+  }
+  return chrome::enterprise_util::IsProfileAffiliated(profile);
+}
+
+void EnterpriseReportingPrivateEnqueueRecordFunction::
+    SetProfileIsAffiliatedForTesting(bool is_affiliated) {
+  profile_is_affiliated_for_testing_ = is_affiliated;
+}
+#endif
 
 }  // namespace extensions

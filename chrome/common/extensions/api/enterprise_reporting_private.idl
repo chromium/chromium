@@ -104,6 +104,27 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>getCertificate</code> to return the selected certificate.
   callback CertificateCallback = void(Certificate certificate);
 
+  // Captures the type of event so it can be associated with user or device in
+  // Chrome for reporting purposes
+  [platforms = ("chromeos", "lacros")]
+  enum EventType { DEVICE, USER };
+
+  // Composite object that captures the information we need to report events.
+  // Some fields like the record and priority are serialized to avoid any
+  // dependency on proto definitions here, given the fact that they will likely
+  // change in the future. These will be deserialized and validated in Chrome.
+  [platforms = ("chromeos", "lacros")]
+  dictionary EnqueueRecordRequest {
+    // Serialized record data binary based on the proto definition in
+    // //components/reporting/proto/synced/record.proto.
+    [instanceOf=Uint8Array] ArrayBufferView recordData;
+    // Serialized priority based on the proto definition in
+    // //components/reporting/proto/synced/record_constants.proto. Used to
+    // determine which records are shed first.
+    long priority;
+    EventType eventType;
+  };
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -146,6 +167,15 @@ namespace enterprise.reportingPrivate {
     // AutoSelectCertificateForUrls policy for <code>url</code>.
     [supportsPromises] static void getCertificate(DOMString url,
                                                   CertificateCallback callback);
+
+    // Enqueues a record for upload to the reporting service
+    // |request|: Composite object that captures everything
+    // we need for uploading records.
+    // |callback|: Callback that is triggered upon completion
+    [platforms = ("chromeos", "lacros"), supportsPromises]
+    static void enqueueRecord(
+        EnqueueRecordRequest request,
+        optional DoneCallback callback);
   };
 
 };
