@@ -33,7 +33,7 @@ namespace {
 
 // String format of the screencast name.
 constexpr char kScreencastPathFmtStr[] =
-    "Recording %d-%02d-%02d %02d.%02d.%02d";
+    "Screencast %d-%02d-%02d %02d.%02d.%02d";
 
 constexpr char kScreencastDefaultThumbnailFileName[] = "thumbnail.png";
 

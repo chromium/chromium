@@ -360,7 +360,7 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
           // Verify that |SaveMetadata| in |ProjectorMetadataController| is
           // called with the expected path.
           const std::string expected_screencast_name =
-              "Recording 2021-01-02 20.02.10";
+              "Screencast 2021-01-02 20.02.10";
           const base::FilePath expected_path =
               screencast_container_path.Append("root")
                   .Append("projector_data")
