@@ -140,9 +140,11 @@ void UnifiedMessageCenterView::Init() {
 void UnifiedMessageCenterView::SetMaxHeight(int max_height) {
   int max_scroller_height = max_height;
   if (notification_bar_->GetVisible()) {
-    max_scroller_height -= is_notifications_refresh_enabled_
-                               ? notification_bar_->GetPreferredSize().height()
-                               : kStackedNotificationBarHeight;
+    max_scroller_height -=
+        is_notifications_refresh_enabled_
+            ? notification_bar_->GetPreferredSize().height() +
+                  2 * kMessageCenterPadding
+            : kStackedNotificationBarHeight;
   }
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
