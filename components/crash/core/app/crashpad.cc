@@ -222,26 +222,28 @@ bool InitializeCrashpadImpl(bool initial_client,
 bool InitializeCrashpad(bool initial_client, const std::string& process_type) {
   return InitializeCrashpadImpl(initial_client, process_type, std::string(),
                                 base::FilePath(), std::vector<std::string>(),
-                                false);
+                                /*embedded_handler=*/false);
 }
 
 #if BUILDFLAG(IS_WIN)
-void InitializeCrashpadWithEmbeddedHandler(bool initial_client,
+bool InitializeCrashpadWithEmbeddedHandler(bool initial_client,
                                            const std::string& process_type,
                                            const std::string& user_data_dir,
                                            const base::FilePath& exe_path) {
-  InitializeCrashpadImpl(initial_client, process_type, user_data_dir, exe_path,
-                         std::vector<std::string>(), true);
+  return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
+                                exe_path, std::vector<std::string>(),
+                                /*embedded_handler=*/true);
 }
 
-void InitializeCrashpadWithDllEmbeddedHandler(
+bool InitializeCrashpadWithDllEmbeddedHandler(
     bool initial_client,
     const std::string& process_type,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments) {
-  InitializeCrashpadImpl(initial_client, process_type, user_data_dir, exe_path,
-                         initial_arguments, true);
+  return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
+                                exe_path, initial_arguments,
+                                /*embedded_handler=*/true);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

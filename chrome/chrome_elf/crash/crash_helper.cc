@@ -67,10 +67,10 @@ bool InitializeCrashReporting() {
   if (g_crash_helper_enabled)
     return true;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
   assert(g_crash_reports == nullptr);
   assert(g_set_unhandled_exception_filter == nullptr);
-#endif  // _DEBUG
+#endif  // defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
 
   // No global objects with destructors, so using global pointers.
   // DllMain on detach will clean these up.
@@ -98,16 +98,19 @@ void ShutdownCrashReporting() {
 // Please refer to the comment on g_set_unhandled_exception_filter for more
 // information about why we intercept the SetUnhandledExceptionFilter API.
 void DisableSetUnhandledExceptionFilter() {
-  if (!g_crash_helper_enabled)
-    return;
+#if defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
+  // Should never patch SetUnhandledExceptionFilter before crashpad has called
+  // it.
+  assert(g_crash_helper_enabled);
+#endif  // defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
   if (g_set_unhandled_exception_filter->Hook(
           ::GetModuleHandle(nullptr), "kernel32.dll",
           "SetUnhandledExceptionFilter",
           reinterpret_cast<void*>(SetUnhandledExceptionFilterPatch)) !=
       NO_ERROR) {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
     assert(false);
-#endif  // _DEBUG
+#endif  // defined(_DEBUG) || defined(DCHECK_ALWAYS_ON)
   }
 }
 

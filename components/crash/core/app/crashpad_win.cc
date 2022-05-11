@@ -75,6 +75,8 @@ bool PlatformCrashpadInitialization(
 
   CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
 
+  bool initialized = false;
+
   if (initial_client) {
     std::wstring database_path_str;
     if (crash_reporter_client->GetCrashDumpLocation(&database_path_str))
@@ -140,21 +142,27 @@ bool PlatformCrashpadInitialization(
     arguments.push_back(std::string("--monitor-self-annotation=ptype=") +
                         switches::kCrashpadHandler);
 
-    GetCrashpadClient().StartHandler(exe_file, *database_path, metrics_path,
-                                     url, process_annotations, arguments, false,
-                                     false);
+    initialized = GetCrashpadClient().StartHandler(
+        exe_file, *database_path, metrics_path, url, process_annotations,
+        arguments, /*restartable=*/false, /*asynchronous_start=*/false);
 
-    // If we're the browser, push the pipe name into the environment so child
-    // processes can connect to it. If we inherited another crashpad_handler's
-    // pipe name, we'll overwrite it here.
-    env->SetVar(kPipeNameVar,
-                base::WideToUTF8(GetCrashpadClient().GetHandlerIPCPipe()));
+    if (initialized) {
+      // If we're the browser, push the pipe name into the environment so child
+      // processes can connect to it. If we inherited another crashpad_handler's
+      // pipe name, we'll overwrite it here.
+      env->SetVar(kPipeNameVar,
+                  base::WideToUTF8(GetCrashpadClient().GetHandlerIPCPipe()));
+    }
   } else {
     std::string pipe_name_utf8;
     if (env->GetVar(kPipeNameVar, &pipe_name_utf8)) {
-      GetCrashpadClient().SetHandlerIPCPipe(base::UTF8ToWide(pipe_name_utf8));
+      initialized = GetCrashpadClient().SetHandlerIPCPipe(
+          base::UTF8ToWide(pipe_name_utf8));
     }
   }
+
+  if (!initialized)
+    return false;
 
   if (crash_reporter_client->GetShouldDumpLargerDumps()) {
     const uint32_t kIndirectMemoryLimit = 4 * 1024 * 1024;

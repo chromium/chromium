@@ -55,9 +55,11 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
     if (process_type.empty())
       install_static::GetUserDataDirectory(&user_data_dir, nullptr);
 
-    crash_reporter::InitializeCrashpadWithEmbeddedHandler(
-        process_type.empty(), install_static::WideToUTF8(process_type),
+    bool success = crash_reporter::InitializeCrashpadWithEmbeddedHandler(
+        /*initial_client=*/process_type.empty(),
+        install_static::WideToUTF8(process_type),
         install_static::WideToUTF8(user_data_dir), base::FilePath());
+    DCHECK(success);
   }
 }
 #endif  // !defined(NACL_WIN64)
