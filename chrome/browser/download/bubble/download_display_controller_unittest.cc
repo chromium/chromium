@@ -176,6 +176,7 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(Return(base::Time::Now()));
     EXPECT_CALL(item(index), GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+    EXPECT_CALL(item(index), IsDangerous()).WillRepeatedly(Return(false));
     int received_bytes =
         state == download::DownloadItem::IN_PROGRESS ? 50 : 100;
     EXPECT_CALL(item(index), GetReceivedBytes())
@@ -499,6 +500,35 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_EmptyFilePath) {
       .WillRepeatedly(
           ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("bar.pdf"))));
   controller().OnNewItem(/*show_details=*/true);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       UpdateToolbarButtonState_DangerousDownload) {
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  EXPECT_CALL(item(0), IsDangerous()).WillRepeatedly(Return(true));
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
+                     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+                     /*show_details_if_done=*/true);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  // Downloads prompted for deep scanning should be considered in progress.
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
+                     download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+                     /*show_details_if_done=*/true);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
