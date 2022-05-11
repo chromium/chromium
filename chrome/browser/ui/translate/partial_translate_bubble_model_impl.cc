@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 // replace and take the role of the TranslateUIDelegate. TranslateUIDelegate
 // calls have been left in this implementation as future reference for
 // implementing PartialTranslateManager.
-PartialTranslateBubbleModel::PartialTranslateBubbleModel(
+PartialTranslateBubbleModelImpl::PartialTranslateBubbleModelImpl(
     ViewState view_state,
     std::unique_ptr<translate::TranslateUIDelegate> ui_delegate)
     : ui_delegate_(std::move(ui_delegate)) {
@@ -23,76 +23,76 @@ PartialTranslateBubbleModel::PartialTranslateBubbleModel(
   current_view_state_ = view_state;
 }
 
-PartialTranslateBubbleModel::~PartialTranslateBubbleModel() = default;
+PartialTranslateBubbleModelImpl::~PartialTranslateBubbleModelImpl() = default;
 
-PartialTranslateBubbleModel::ViewState
-PartialTranslateBubbleModel::GetViewState() const {
+PartialTranslateBubbleModelImpl::ViewState
+PartialTranslateBubbleModelImpl::GetViewState() const {
   return current_view_state_;
 }
 
-void PartialTranslateBubbleModel::SetViewState(
-    PartialTranslateBubbleModel::ViewState view_state) {
+void PartialTranslateBubbleModelImpl::SetViewState(
+    PartialTranslateBubbleModelImpl::ViewState view_state) {
   current_view_state_ = view_state;
 }
 
-void PartialTranslateBubbleModel::ShowError(
+void PartialTranslateBubbleModelImpl::ShowError(
     translate::TranslateErrors::Type error_type) {
   // TODO(crbug/1314825): implement when partial translate specific
   // metrics are added.
 }
 
-int PartialTranslateBubbleModel::GetNumberOfSourceLanguages() const {
+int PartialTranslateBubbleModelImpl::GetNumberOfSourceLanguages() const {
   return ui_delegate_->GetNumberOfLanguages();
 }
 
-int PartialTranslateBubbleModel::GetNumberOfTargetLanguages() const {
+int PartialTranslateBubbleModelImpl::GetNumberOfTargetLanguages() const {
   // Subtract 1 to account for unknown language option being omitted.
   return ui_delegate_->GetNumberOfLanguages() - 1;
 }
 
-std::u16string PartialTranslateBubbleModel::GetSourceLanguageNameAt(
+std::u16string PartialTranslateBubbleModelImpl::GetSourceLanguageNameAt(
     int index) const {
   return ui_delegate_->GetLanguageNameAt(index);
 }
 
-std::u16string PartialTranslateBubbleModel::GetTargetLanguageNameAt(
+std::u16string PartialTranslateBubbleModelImpl::GetTargetLanguageNameAt(
     int index) const {
   // Add 1 to account for unknown language option at index 0 in
   // TranslateUIDelegate language list.
   return ui_delegate_->GetLanguageNameAt(index + 1);
 }
 
-int PartialTranslateBubbleModel::GetSourceLanguageIndex() const {
+int PartialTranslateBubbleModelImpl::GetSourceLanguageIndex() const {
   return ui_delegate_->GetSourceLanguageIndex();
 }
 
-void PartialTranslateBubbleModel::UpdateSourceLanguageIndex(int index) {
+void PartialTranslateBubbleModelImpl::UpdateSourceLanguageIndex(int index) {
   ui_delegate_->UpdateSourceLanguageIndex(index);
 }
 
-int PartialTranslateBubbleModel::GetTargetLanguageIndex() const {
+int PartialTranslateBubbleModelImpl::GetTargetLanguageIndex() const {
   // Subtract 1 to account for unknown language option being omitted from the
   // bubble target language list.
   return ui_delegate_->GetTargetLanguageIndex() - 1;
 }
 
-void PartialTranslateBubbleModel::UpdateTargetLanguageIndex(int index) {
+void PartialTranslateBubbleModelImpl::UpdateTargetLanguageIndex(int index) {
   // Add 1 to account for unknown language option at index 0 in
   // TranslateUIDelegate language list.
   ui_delegate_->UpdateTargetLanguageIndex(index + 1);
 }
 
-void PartialTranslateBubbleModel::Translate() {
+void PartialTranslateBubbleModelImpl::Translate() {
   // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
   // complete.
 }
 
-void PartialTranslateBubbleModel::RevertTranslation() {
+void PartialTranslateBubbleModelImpl::RevertTranslation() {
   // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
   // complete.
 }
 
-bool PartialTranslateBubbleModel::IsCurrentSelectionTranslated() const {
+bool PartialTranslateBubbleModelImpl::IsCurrentSelectionTranslated() const {
   // TODO(crbug/1314825): Update implementation when PartialTranslateManager is
   // complete.
 

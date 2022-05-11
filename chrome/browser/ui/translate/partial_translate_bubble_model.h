@@ -42,53 +42,39 @@ class PartialTranslateBubbleModel : public TranslateLanguageListModel {
     VIEW_STATE_TARGET_LANGUAGE
   };
 
-  PartialTranslateBubbleModel(
-      ViewState view_state,
-      std::unique_ptr<translate::TranslateUIDelegate> ui_delegate);
-
-  PartialTranslateBubbleModel(const PartialTranslateBubbleModel&) = delete;
-  PartialTranslateBubbleModel& operator=(const PartialTranslateBubbleModel&) =
-      delete;
-
-  ~PartialTranslateBubbleModel() override;
+  ~PartialTranslateBubbleModel() override = default;
 
   // Returns the current view state.
-  ViewState GetViewState() const;
+  virtual ViewState GetViewState() const = 0;
 
   // Transitions the view state.
-  void SetViewState(ViewState view_state);
+  virtual void SetViewState(ViewState view_state) = 0;
 
   // Shows an error.
-  void ShowError(translate::TranslateErrors::Type error_type);
+  virtual void ShowError(translate::TranslateErrors::Type error_type) = 0;
 
   // Goes back from the 'Advanced' view state.
-  void GoBackFromAdvanced();
+  virtual void GoBackFromAdvanced() = 0;
 
   // TranslateLanguageListModel:
-  int GetNumberOfSourceLanguages() const override;
-  int GetNumberOfTargetLanguages() const override;
-  std::u16string GetSourceLanguageNameAt(int index) const override;
-  std::u16string GetTargetLanguageNameAt(int index) const override;
-  int GetSourceLanguageIndex() const override;
-  void UpdateSourceLanguageIndex(int index) override;
-  int GetTargetLanguageIndex() const override;
-  void UpdateTargetLanguageIndex(int index) override;
+  int GetNumberOfSourceLanguages() const override = 0;
+  int GetNumberOfTargetLanguages() const override = 0;
+  std::u16string GetSourceLanguageNameAt(int index) const override = 0;
+  std::u16string GetTargetLanguageNameAt(int index) const override = 0;
+  int GetSourceLanguageIndex() const override = 0;
+  void UpdateSourceLanguageIndex(int index) override = 0;
+  int GetTargetLanguageIndex() const override = 0;
+  void UpdateTargetLanguageIndex(int index) override = 0;
 
   // Starts translating the selected text.
-  void Translate();
+  virtual void Translate() = 0;
 
   // Reverts translation.
-  void RevertTranslation();
+  virtual void RevertTranslation() = 0;
 
   // Returns true if the current text selection is translated in the currently
   // selected source and target language.
-  bool IsCurrentSelectionTranslated() const;
-
- private:
-  std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
-
-  // The current view type.
-  ViewState current_view_state_;
+  virtual bool IsCurrentSelectionTranslated() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_H_
