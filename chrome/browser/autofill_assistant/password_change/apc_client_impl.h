@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -49,6 +50,10 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // The state of the |ApcClient| to avoid that a run is started while
   // another is already ongoing in the tab.
   bool is_running_ = false;
+
+  // Orchestrates prompting the user for consent if it has not been given
+  // previously.
+  std::unique_ptr<ApcOnboardingCoordinator> onboarding_coordinator_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

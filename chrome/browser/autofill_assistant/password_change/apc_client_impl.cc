@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 

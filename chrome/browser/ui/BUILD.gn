@@ -953,6 +953,11 @@ static_library("ui") {
       "apps/chrome_app_window_client.h",
       "apps/directory_access_confirmation_dialog.cc",
       "apps/directory_access_confirmation_dialog.h",
+      "autofill_assistant/password_change/assistant_display_delegate.h",
+      "autofill_assistant/password_change/assistant_onboarding_controller.h",
+      "autofill_assistant/password_change/assistant_onboarding_controller_impl.cc",
+      "autofill_assistant/password_change/assistant_onboarding_controller_impl.h",
+      "autofill_assistant/password_change/assistant_onboarding_prompt.h",
       "blocked_content/framebust_block_tab_helper.cc",
       "blocked_content/framebust_block_tab_helper.h",
       "blocked_content/popunder_preventer.cc",
@@ -4135,6 +4140,8 @@ static_library("ui") {
       "views/autofill/save_update_address_profile_icon_view.h",
       "views/autofill/update_address_profile_view.cc",
       "views/autofill/update_address_profile_view.h",
+      "views/autofill_assistant/password_change/assistant_onboarding_view.cc",
+      "views/autofill_assistant/password_change/assistant_onboarding_view.h",
       "views/bookmarks/bookmark_bar_view.cc",
       "views/bookmarks/bookmark_bar_view.h",
       "views/bookmarks/bookmark_bar_view_observer.h",
@@ -5625,6 +5632,12 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "autofill_assistant/password_change/mock_assistant_display_delegate.cc",
+      "autofill_assistant/password_change/mock_assistant_display_delegate.h",
+      "autofill_assistant/password_change/mock_assistant_onboarding_controller.cc",
+      "autofill_assistant/password_change/mock_assistant_onboarding_controller.h",
+      "autofill_assistant/password_change/mock_assistant_onboarding_prompt.cc",
+      "autofill_assistant/password_change/mock_assistant_onboarding_prompt.h",
       "exclusive_access/exclusive_access_test.cc",
       "exclusive_access/exclusive_access_test.h",
       "exclusive_access/fullscreen_controller_state_test.cc",
