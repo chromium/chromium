@@ -7421,14 +7421,23 @@ You have # more compromised passwords. Google Password Manager recommends checki
         <message name="IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE_GOOGLE_PASSWORD_MANAGER" desc="The content of the bubble notifying that there are more problems to fix after the user changed a compromised password.">
           Successfully changed the compromised password.
 
-Check your passwords anytime in  <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.
+Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.
         </message>
         <message name="IDS_PASSWORD_MANAGER_SAFE_STATE_SETTINGS" meaning="The hyperlink text referring to Chrome settings. It replaces the placeholder in 'Check your passwords anytime in $1' string">
           Settings
         </message>
-        <message name="IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON" desc="Button text to check left compromised passwords.">
-          Check remaining passwords
-        </message>
+
+        <if expr="not use_titlecase">
+          <message name="IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON" desc="Button text to check left compromised passwords.">
+            Check remaining passwords
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON" desc="Button text to check left compromised passwords.">
+            Check Remaining Passwords
+          </message>
+        </if>
+
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Save button text for password manager">
           Save
         </message>
