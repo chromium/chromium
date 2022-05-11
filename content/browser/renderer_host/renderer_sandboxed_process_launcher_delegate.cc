@@ -10,6 +10,12 @@
 #include "content/public/common/content_client.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "base/win/nt_status.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/security_level.h"
@@ -102,6 +108,34 @@ bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
 
   return GetContentClient()->browser()->PreSpawnChild(
       policy, sandbox::mojom::Sandbox::kRenderer, flags);
+}
+
+void RendererSandboxedProcessLauncherDelegateWin::PostSpawnTarget(
+    base::ProcessHandle process) {
+  FILETIME creation_time, exit_time, kernel_time, user_time;
+  // Should never fail. If it does, then something really bad has happened, such
+  // as something external unsuspending the renderer process.
+  if (!::GetProcessTimes(process, &creation_time, &exit_time, &kernel_time,
+                         &user_time)) {
+    // If this fails, then Win32 ::GetLastError might be ambiguous, so obtain
+    // the NT status from the TEB.
+    base::UmaHistogramSparse(
+        "BrowserRenderProcessHost.SuspendedChild.Win32Error", ::GetLastError());
+    base::UmaHistogramSparse("BrowserRenderProcessHost.SuspendedChild.NtStatus",
+                             base::win::GetLastNtStatus());
+    return;
+  }
+
+  // These should always be zero but if they are not, then something on the
+  // client has triggered execution in the child process putting it into a
+  // undefined state. Try and detect this here to diagnose this happening in the
+  // wild.
+  base::UmaHistogramBoolean(
+      "BrowserRenderProcessHost.SuspendedChild.UserExecutionRecorded",
+      base::TimeDelta::FromFileTime(user_time).InMicroseconds() > 0);
+  base::UmaHistogramBoolean(
+      "BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded",
+      base::TimeDelta::FromFileTime(kernel_time).InMicroseconds() > 0);
 }
 
 bool RendererSandboxedProcessLauncherDelegateWin::CetCompatible() {

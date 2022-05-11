@@ -65,9 +65,11 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/switches.h"
 #endif
 
 namespace content {
@@ -1934,5 +1936,34 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
   // isn't found at that time when iterating over other frames in the process.
   EXPECT_EQ(0, rfh_deletion_observer.render_frame_host_iterator_count());
 }
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ZeroExecutionTimes) {
+  // This test only works if the renderer process is sandboxed.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          sandbox::policy::switches::kNoSandbox)) {
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  EXPECT_TRUE(process->IsReady());
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SuspendedChild.UserExecutionRecorded", false,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded", false,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SuspendedChild.Win32Error", 0);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SuspendedChild.NtStatus", 0);
+  process->Cleanup();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

@@ -5,10 +5,8 @@
 #ifndef BASE_WIN_NT_STATUS_H_
 #define BASE_WIN_NT_STATUS_H_
 
-#include <windows.h>
-#include <winternl.h>
-
 #include "base/base_export.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 namespace win {

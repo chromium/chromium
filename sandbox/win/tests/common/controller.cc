@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -236,6 +237,15 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 
   if (SBOX_ALL_OK != result)
     return SBOX_TEST_FAILED_TO_RUN_TEST;
+
+  FILETIME creation_time, exit_time, kernel_time, user_time;
+  // Can never fail. If it does, then something really bad has happened.
+  CHECK(::GetProcessTimes(target.hProcess, &creation_time, &exit_time,
+                          &kernel_time, &user_time));
+
+  // Execution times should be zero. If not, something has changed in Windows.
+  CHECK_EQ(0, base::TimeDelta::FromFileTime(user_time).InMicroseconds());
+  CHECK_EQ(0, base::TimeDelta::FromFileTime(kernel_time).InMicroseconds());
 
   ::ResumeThread(target.hThread);
 
