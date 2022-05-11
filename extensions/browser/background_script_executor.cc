@@ -188,7 +188,8 @@ bool BackgroundScriptExecutor::ExecuteScriptInBackgroundPage(
       browsertest_util::ScriptUserActivation::kActivate) {
     content::ExecuteScriptAsync(host->host_contents(), script_);
   } else {
-    NOTREACHED() << "Not yet supported. Use ExecuteScriptInBackgroundPage().";
+    content::ExecuteScriptAsyncWithoutUserGesture(host->host_contents(),
+                                                  script_);
   }
   return true;
 }

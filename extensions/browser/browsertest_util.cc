@@ -33,30 +33,6 @@ std::string ExecuteScriptInBackgroundPage(
     const std::string& extension_id,
     const std::string& script,
     ScriptUserActivation script_user_activation) {
-  // BackgroundScriptExecutor does not yet support kDontActivate.
-  // TODO(https://crbug.com/1319642): Make it so.
-  if (script_user_activation == ScriptUserActivation::kDontActivate) {
-    ExtensionHost* host =
-        ProcessManager::Get(context)->GetBackgroundHostForExtension(
-            extension_id);
-    if (!host) {
-      ADD_FAILURE() << "Extension " << extension_id
-                    << " has no background page.";
-      return std::string();
-    }
-
-    std::string result;
-    bool success = content::ExecuteScriptWithoutUserGestureAndExtractString(
-        host->host_contents(), script, &result);
-    if (!success) {
-      ADD_FAILURE() << "Executing script failed: " << GetScriptToLog(script);
-      result.clear();
-    }
-    return result;
-  }
-
-  DCHECK_EQ(ScriptUserActivation::kActivate, script_user_activation);
-
   BackgroundScriptExecutor script_executor(context);
   // Legacy scripts were written to pass the (string) result via
   // window.domAutomationController.send().

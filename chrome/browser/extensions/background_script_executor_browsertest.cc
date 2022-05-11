@@ -67,7 +67,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
           "background": {"scripts": ["background.js"]},
           "version": "0.1"
         })";
-  constexpr char kBackgroundScript[] = R"(self.myTestFlag = 'HELLO!';)";
+
+  constexpr char kBackgroundScript[] = R"(
+    function createResult() {
+      return {
+        testFlag: 'flag',
+        userGesture: chrome.test.isProcessingUserGesture(),
+      };
+    })";
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
@@ -76,38 +83,59 @@ IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
   ASSERT_TRUE(extension);
 
   {
+    // Synchronous result with no user gesture.
+    // NOTE: This test has to come first. User gestures are timed, so once a
+    // script executes with a user gesture, it affects subsequent injections
+    // because the gesture is still considered active.
+    // (This is okay because we really only need to check once each for user
+    // gesture; if we wanted to do more involved testing, we'll need to pull
+    // these two tests apart or otherwise flush the gesture state.)
+    base::Value value = BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(),
+        "chrome.test.sendScriptResult(createResult());",
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
+        browsertest_util::ScriptUserActivation::kDontActivate);
+    EXPECT_THAT(value, base::test::IsJson(
+                           R"({"testFlag":"flag","userGesture":false})"));
+  }
+
+  {
     // Synchronous result.
     base::Value value = BackgroundScriptExecutor::ExecuteScript(
-        profile(), extension->id(), "chrome.test.sendScriptResult(myTestFlag);",
+        profile(), extension->id(),
+        "chrome.test.sendScriptResult(createResult());",
         BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
         browsertest_util::ScriptUserActivation::kActivate);
-    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+    EXPECT_THAT(
+        value, base::test::IsJson(R"({"testFlag":"flag","userGesture":true})"));
   }
 
   {
     // Asynchronous result with sendScriptResult().
     static constexpr char kScript[] =
         R"(setTimeout(() => {
-             chrome.test.sendScriptResult(myTestFlag);
+             chrome.test.sendScriptResult(createResult());
            }, 0);)";
     base::Value value = BackgroundScriptExecutor::ExecuteScript(
         profile(), extension->id(), kScript,
         BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
         browsertest_util::ScriptUserActivation::kActivate);
-    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+    EXPECT_THAT(
+        value, base::test::IsJson(R"({"testFlag":"flag","userGesture":true})"));
   }
 
   {
     // Asynchronous result with domAutomationController.send().
     static constexpr char kScript[] =
         R"(setTimeout(() => {
-             window.domAutomationController.send(myTestFlag);
+             window.domAutomationController.send(createResult());
            }, 0);)";
     base::Value value = BackgroundScriptExecutor::ExecuteScript(
         profile(), extension->id(), kScript,
         BackgroundScriptExecutor::ResultCapture::kWindowDomAutomationController,
         browsertest_util::ScriptUserActivation::kActivate);
-    EXPECT_THAT(value, base::test::IsJson(R"("HELLO!")"));
+    EXPECT_THAT(
+        value, base::test::IsJson(R"({"testFlag":"flag","userGesture":true})"));
   }
 }
 

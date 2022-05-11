@@ -525,6 +525,11 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
                         const std::string& script);
 
+// Same as `content::ExecuteScriptAsync()`, but doesn't send a user gesture to
+// the renderer.
+void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
+                                          const std::string& script);
+
 // The following methods execute the passed |script| in the specified frame and
 // sets |result| to the value passed to "window.domAutomationController.send" by
 // the executed script. They return true on success, false if the script
