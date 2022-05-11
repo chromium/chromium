@@ -33,6 +33,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -50,9 +54,8 @@ namespace optimization_guide {
 class LocalPageEntitiesMetadataProvider;
 class OptimizationGuideModelProvider;
 class PageContentAnnotationsModelManager;
-class PageContentAnnotationsServiceBrowserTest;
 class PageContentAnnotationsServiceTest;
-class PageContentAnnotationsValidator;
+class PageContentAnnotationsServiceBrowserTest;
 class PageContentAnnotationsWebContentsObserver;
 
 // The information used by HistoryService to identify a visit to a URL.
@@ -252,6 +255,10 @@ class PageContentAnnotationsService : public KeyedService,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
+  // Runs a batch annotation validation, that is calls |BatchAnnotate| with
+  // dummy input and discards the output.
+  void RunBatchAnnotationValidation();
+
   // A metadata-only provider for page entities (as opposed to |model_manager_|
   // which does both entity model execution and metadata providing) that uses a
   // local database to provide the metadata for a given entity id. This is only
@@ -291,9 +298,8 @@ class PageContentAnnotationsService : public KeyedService,
   // no visits are actively be annotated and a new batch can be started.
   std::vector<HistoryVisit> current_visit_annotation_batch_;
 
-  // Set during this' ctor if the corresponding command line or feature flags
-  // are set.
-  std::unique_ptr<PageContentAnnotationsValidator> validator_;
+  // Is only ever set when the feature is enabled.
+  std::unique_ptr<base::OneShotTimer> validation_timer_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

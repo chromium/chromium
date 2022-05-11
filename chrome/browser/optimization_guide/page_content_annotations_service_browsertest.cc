@@ -128,8 +128,7 @@ class PageContentAnnotationsServiceValidationBrowserTest
  public:
   PageContentAnnotationsServiceValidationBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints,
-         features::kPageContentAnnotationsValidation},
+        {features::kOptimizationHints, features::kBatchAnnotationsValidation},
         {features::kPageContentAnnotations});
   }
 
@@ -906,6 +905,34 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceModelNotLoadedOnStartupTest,
       ExecutionStatus::kSuccess, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PageVisibility", 2);
+}
+
+class PageContentAnnotationsServiceValidationTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceValidationTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kBatchAnnotationsValidation, {
+                                                   {"startup_delay", "5"},
+                                                   {"batch_size", "10"},
+                                               });
+  }
+  ~PageContentAnnotationsServiceValidationTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceValidationTest,
+                       StartsValidation) {
+  base::HistogramTester histogram_tester;
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun", 10, 1);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

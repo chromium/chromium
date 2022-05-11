@@ -8,13 +8,27 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/json/json_writer.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace optimization_guide {
+
+// Each of these string values is used in UMA histograms so please update the
+// variants there when any changes are made.
+// //tools/metrics/histograms/metadata/optimization/histograms.xml
+std::string AnnotationTypeToString(AnnotationType type) {
+  switch (type) {
+    case AnnotationType::kUnknown:
+      return "Unknown";
+    case AnnotationType::kPageTopics:
+      return "PageTopics";
+    case AnnotationType::kContentVisibility:
+      return "ContentVisibility";
+    case AnnotationType::kPageEntities:
+      return "PageEntities";
+  }
+}
 
 WeightedIdentifier::WeightedIdentifier(int32_t value, double weight)
     : value_(value), weight_(weight) {
@@ -32,13 +46,6 @@ bool WeightedIdentifier::operator==(const WeightedIdentifier& other) const {
 
 std::string WeightedIdentifier::ToString() const {
   return base::StringPrintf("WeightedIdentifier{%d,%f}", value(), weight());
-}
-
-base::Value WeightedIdentifier::AsValue() const {
-  base::Value::Dict wi;
-  wi.Set("value", value());
-  wi.Set("weight", weight());
-  return base::Value(std::move(wi));
 }
 
 std::ostream& operator<<(std::ostream& stream, const WeightedIdentifier& ws) {
@@ -64,42 +71,6 @@ bool BatchAnnotationResult::HasOutputForType() const {
   }
 }
 
-base::Value BatchAnnotationResult::AsValue() const {
-  base::Value::Dict result;
-  result.Set("input", input());
-  result.Set("type", AnnotationTypeToString(type()));
-
-  if (topics()) {
-    base::Value::List list;
-    for (const auto& wi : *topics()) {
-      list.Append(wi.AsValue());
-    }
-    result.Set("topics", std::move(list));
-  }
-
-  if (entities()) {
-    base::Value::List list;
-    for (const auto& md : *entities()) {
-      list.Append(md.AsValue());
-    }
-    result.Set("entities", std::move(list));
-  }
-
-  if (visibility_score()) {
-    result.Set("visibility_score", *visibility_score());
-  }
-
-  return base::Value(std::move(result));
-}
-
-std::string BatchAnnotationResult::ToJSON() const {
-  std::string json;
-  if (base::JSONWriter::Write(AsValue(), &json)) {
-    return json;
-  }
-  return std::string();
-}
-
 std::string BatchAnnotationResult::ToString() const {
   std::string output = "nullopt";
   if (topics_) {
@@ -119,10 +90,10 @@ std::string BatchAnnotationResult::ToString() const {
   }
   return base::StringPrintf(
       "BatchAnnotationResult{"
-      "\"%s\", "
+      "\"<input with length %zu>\", "
       "type: %s, "
       "output: %s}",
-      input_.c_str(), AnnotationTypeToString(type_).c_str(), output.c_str());
+      input_.size(), AnnotationTypeToString(type_).c_str(), output.c_str());
 }
 
 std::ostream& operator<<(std::ostream& stream,

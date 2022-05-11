@@ -9,12 +9,33 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/values.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
+
+// The type of annotation that is being done on the given input.
+//
+// Each of these is used in UMA histograms so please update the variants there
+// when any changes are made.
+// //tools/metrics/histograms/metadata/optimization/histograms.xml
+enum class AnnotationType {
+  kUnknown,
+
+  // The input will be annotated with the topics on the page. These topics are
+  // fairly high-level like "sports" or "news".
+  kPageTopics,
+
+  // The input will be annotated for the visibility of the content.
+  kContentVisibility,
+
+  // The input will be annotated with the entities on the page. If the entities
+  // will be persisted, make sure that only the entity IDs are persisted. To map
+  // the IDs back to human-readable strings, use `EntityMetadataProvider`.
+  kPageEntities,
+};
+
+std::string AnnotationTypeToString(AnnotationType type);
 
 // A weighted ID value.
 class WeightedIdentifier {
@@ -27,8 +48,6 @@ class WeightedIdentifier {
   double weight() const { return weight_; }
 
   std::string ToString() const;
-
-  base::Value AsValue() const;
 
   bool operator==(const WeightedIdentifier& other) const;
 
@@ -81,9 +100,6 @@ class BatchAnnotationResult {
   absl::optional<double> visibility_score() const { return visibility_score_; }
 
   std::string ToString() const;
-  std::string ToJSON() const;
-
-  base::Value AsValue() const;
 
   bool operator==(const BatchAnnotationResult& other) const;
 
