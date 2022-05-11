@@ -646,17 +646,12 @@
       },
     },
   },
+  # TODO(crbug.com/1260217): Remove the xenial mixin once the MSAN bots have
+  # migrated to focal.
   'linux-xenial': {
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-16.04',
-      },
-    },
-  },
-  'linux-xenial-or-bionic': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-16.04|Ubuntu-18.04',
       },
     },
   },
