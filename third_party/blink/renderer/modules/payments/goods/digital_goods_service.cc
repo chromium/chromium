@@ -6,10 +6,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_service.h"

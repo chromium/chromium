@@ -2528,6 +2528,7 @@ static_library("browser") {
       "//chromeos/services/network_health/public/mojom:mojom",
       "//chromeos/system",
       "//components/certificate_transparency",
+      "//components/digital_goods/mojom",
       "//components/drive",
       "//components/quirks",
       "//components/session_manager/core",

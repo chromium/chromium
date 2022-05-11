@@ -6,7 +6,29 @@
 
 module arc.mojom;
 
-import "third_party/blink/public/mojom/digital_goods/digital_goods.mojom";
+import "components/digital_goods/mojom/digital_goods.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Deprecated, replaced with |payments.mojom.PurchaseReference|.
+// See https://wicg.github.io/digital-goods/#purchaseDetails-dictionary
+[Stable, RenamedFrom="payments.mojom.PurchaseDetails"]
+struct PurchaseDetails {
+  string item_id;
+  string purchase_token;
+  bool acknowledged;
+  PurchaseState purchase_state;
+  // Microseconds since the Unix epoch.
+  mojo_base.mojom.TimeDelta purchase_time;
+  bool will_auto_renew;
+};
+
+// Deprecated: only used by the (also) deprecated PurchaseDetails.
+[Extensible, Stable, RenamedFrom="payments.mojom.PurchaseState"]
+enum PurchaseState {
+  kUnknown,
+  kPurchased,
+  kPending,
+};
 
 // Allows the browser process to forward calls for the Digital Goods API to
 // ARC++
@@ -35,7 +57,7 @@ interface DigitalGoodsInstance {
   [MinVersion=0] DeprecatedListPurchases@2(string package_name,
                                  string scope)
     => (payments.mojom.BillingResponseCode code,
-        array<payments.mojom.PurchaseDetails> purchase_details_list);
+        array<PurchaseDetails> purchase_details_list);
 
   // Queries a package for information on all items that are currently owned by
   // the user. May include unconfirmed purchases.
