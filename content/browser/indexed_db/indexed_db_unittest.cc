@@ -91,6 +91,10 @@ class IndexedDBTest : public testing::Test,
   storage::BucketLocator kNormalThirdPartyBucketLocator;
   blink::StorageKey kSessionOnlyThirdPartyStorageKey;
   storage::BucketLocator kSessionOnlyThirdPartyBucketLocator;
+  blink::StorageKey kInvertedNormalThirdPartyStorageKey;
+  storage::BucketLocator kInvertedNormalThirdPartyBucketLocator;
+  blink::StorageKey kInvertedSessionOnlyThirdPartyStorageKey;
+  storage::BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
 
   IndexedDBTest()
       : quota_manager_proxy_(
@@ -142,12 +146,29 @@ class IndexedDBTest : public testing::Test,
         kSessionOnlyThirdPartyStorageKey;
     context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
         kSessionOnlyThirdPartyBucketLocator);
+    kInvertedNormalThirdPartyStorageKey =
+        blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
+                          url::Origin::Create(GURL("http://normal/")));
+    kInvertedNormalThirdPartyBucketLocator = storage::BucketLocator();
+    kInvertedNormalThirdPartyBucketLocator.id =
+        storage::BucketId::FromUnsafeValue(3);
+    kInvertedNormalThirdPartyBucketLocator.storage_key =
+        kInvertedNormalThirdPartyStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kInvertedNormalThirdPartyBucketLocator);
+    kInvertedSessionOnlyThirdPartyStorageKey =
+        blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
+                          url::Origin::Create(GURL("http://session-only/")));
+    kInvertedSessionOnlyThirdPartyBucketLocator = storage::BucketLocator();
+    kInvertedSessionOnlyThirdPartyBucketLocator.id =
+        storage::BucketId::FromUnsafeValue(4);
+    kInvertedSessionOnlyThirdPartyBucketLocator.storage_key =
+        kInvertedSessionOnlyThirdPartyStorageKey;
+    context()->RegisterBucketLocatorToSkipQuotaLookupForTesting(
+        kInvertedSessionOnlyThirdPartyBucketLocator);
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
         kSessionOnlyFirstPartyStorageKey.origin(),
-        /*should_purge_on_shutdown=*/true));
-    policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        kSessionOnlyThirdPartyStorageKey.origin(),
         /*should_purge_on_shutdown=*/true));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
@@ -226,6 +247,8 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::FilePath session_only_path_first_party;
   base::FilePath normal_path_third_party;
   base::FilePath session_only_path_third_party;
+  base::FilePath inverted_normal_path_third_party;
+  base::FilePath inverted_session_only_path_third_party;
 
   normal_path_first_party =
       GetFilePathForTesting(kNormalFirstPartyBucketLocator);
@@ -235,32 +258,44 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
       GetFilePathForTesting(kNormalThirdPartyBucketLocator);
   session_only_path_third_party =
       GetFilePathForTesting(kSessionOnlyThirdPartyBucketLocator);
+  inverted_normal_path_third_party =
+      GetFilePathForTesting(kInvertedNormalThirdPartyBucketLocator);
+  inverted_session_only_path_third_party =
+      GetFilePathForTesting(kInvertedSessionOnlyThirdPartyBucketLocator);
   if (IsThirdPartyStoragePartitioningEnabled()) {
     EXPECT_NE(normal_path_first_party, normal_path_third_party);
     EXPECT_NE(session_only_path_first_party, session_only_path_third_party);
+    EXPECT_NE(inverted_normal_path_third_party,
+              inverted_session_only_path_third_party);
   } else {
     EXPECT_EQ(normal_path_first_party, normal_path_third_party);
     EXPECT_EQ(session_only_path_first_party, session_only_path_third_party);
+    EXPECT_EQ(inverted_normal_path_third_party,
+              inverted_session_only_path_third_party);
   }
 
   ASSERT_TRUE(base::CreateDirectory(normal_path_first_party));
   ASSERT_TRUE(base::CreateDirectory(session_only_path_first_party));
   ASSERT_TRUE(base::CreateDirectory(normal_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(session_only_path_third_party));
+  ASSERT_TRUE(base::CreateDirectory(inverted_normal_path_third_party));
+  ASSERT_TRUE(base::CreateDirectory(inverted_session_only_path_third_party));
+
+  context()->ForceInitializeFromFilesForTesting(base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   context()->Shutdown();
-
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
   EXPECT_FALSE(base::DirectoryExists(session_only_path_first_party));
   EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
+  EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
+  EXPECT_TRUE(base::DirectoryExists(inverted_normal_path_third_party));
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    // TODO(https://crbug.com/1199077): Policy updates are per-origin.
-    EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+    EXPECT_FALSE(base::DirectoryExists(inverted_session_only_path_third_party));
   } else {
-    EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
+    EXPECT_TRUE(base::DirectoryExists(inverted_session_only_path_third_party));
   }
 }
 
@@ -272,6 +307,7 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
 
   // Save session state. This should bypass the destruction-time deletion.
   context()->SetForceKeepSessionState();
+  base::RunLoop().RunUntilIdle();
 
   normal_path_first_party =
       GetFilePathForTesting(kNormalFirstPartyBucketLocator);
@@ -293,10 +329,11 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   ASSERT_TRUE(base::CreateDirectory(session_only_path_first_party));
   ASSERT_TRUE(base::CreateDirectory(normal_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(session_only_path_third_party));
+
+  context()->ForceInitializeFromFilesForTesting(base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   context()->Shutdown();
-
   base::RunLoop().RunUntilIdle();
 
   // No data was cleared because of SetForceKeepSessionState.

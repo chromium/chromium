@@ -605,37 +605,23 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
   idb_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](IndexedDBContextImpl* context) {
-            context->force_keep_session_state_ = true;
-          },
-          // `this` is destroyed on idb_task_runner_ so it's safe to post raw.
-          base::Unretained(this)));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<IndexedDBContextImpl> context) {
+                       if (context)
+                         context->force_keep_session_state_ = true;
+                     },
+                     weak_factory_.GetWeakPtr()));
 }
 
 void IndexedDBContextImpl::ApplyPolicyUpdates(
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   for (const auto& update : policy_updates) {
-    // TODO(https://crbug.com/1199077): Use the real StorageKey when available.
-    GetOrCreateDefaultBucket(
-        blink::StorageKey(update->origin),
-        base::BindOnce(&IndexedDBContextImpl::ApplyPolicyUpdateImpl,
-                       weak_factory_.GetWeakPtr(), *update));
-  }
-}
-
-void IndexedDBContextImpl::ApplyPolicyUpdateImpl(
-    const storage::mojom::StoragePolicyUpdate& policy_update,
-    const absl::optional<storage::BucketLocator>& bucket_locator) {
-  if (!bucket_locator)
-    return;
-  DCHECK_EQ(blink::StorageKey(policy_update.origin),
-            bucket_locator->storage_key);
-  if (!policy_update.purge_on_shutdown) {
-    buckets_to_purge_on_shutdown_.erase(*bucket_locator);
-  } else {
-    buckets_to_purge_on_shutdown_.insert(*bucket_locator);
+    if (!update->purge_on_shutdown) {
+      sites_to_purge_on_shutdown_.erase(net::SchemefulSite(update->origin));
+    } else {
+      sites_to_purge_on_shutdown_.insert(net::SchemefulSite(update->origin));
+    }
   }
 }
 
@@ -650,12 +636,12 @@ void IndexedDBContextImpl::AddObserver(
   IDBTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](IndexedDBContextImpl* context,
+          [](base::WeakPtr<IndexedDBContextImpl> context,
              mojo::PendingRemote<storage::mojom::IndexedDBObserver> observer) {
-            context->observers_.Add(std::move(observer));
+            if (context)
+              context->observers_.Add(std::move(observer));
           },
-          // `this` is destroyed on idb_task_runner_ so it's safe to post raw.
-          base::Unretained(this), std::move(observer)));
+          weak_factory_.GetWeakPtr(), std::move(observer)));
 }
 
 void IndexedDBContextImpl::GetBaseDataPathForTesting(
@@ -1044,7 +1030,7 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
     return;
 
   // Clear session-only databases.
-  if (buckets_to_purge_on_shutdown_.empty())
+  if (sites_to_purge_on_shutdown_.empty())
     return;
 
   IndexedDBFactoryImpl* factory = GetIDBFactory();
@@ -1052,7 +1038,16 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
       DefaultBucketFilePerFirstPartyStorageKey(GetFirstPartyDataPath());
   const auto& bucket_id_to_file_path =
       DefaultBucketFilePerThirdPartyBucketId(GetThirdPartyDataPath());
-  for (const auto& bucket_locator : buckets_to_purge_on_shutdown_) {
+  for (const auto& bucket_locator : bucket_set_) {
+    const auto& origin_it = sites_to_purge_on_shutdown_.find(
+        net::SchemefulSite(bucket_locator.storage_key.origin()));
+    const auto& top_site_it = sites_to_purge_on_shutdown_.find(
+        bucket_locator.storage_key.top_level_site());
+    if (origin_it == sites_to_purge_on_shutdown_.end() &&
+        top_site_it == sites_to_purge_on_shutdown_.end()) {
+      // No match for a site we want to clear in this bucket locator.
+      continue;
+    }
     base::FilePath path;
     const auto& first_party_it =
         storage_key_to_file_path.find(bucket_locator.storage_key);
@@ -1082,8 +1077,12 @@ void IndexedDBContextImpl::Shutdown() {
     return;
 
   idb_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
-                                base::WrapRefCounted(this)));
+      FROM_HERE,
+      base::BindOnce(
+          &IndexedDBContextImpl::InitializeFromFilesIfNeeded,
+          weak_factory_.GetWeakPtr(),
+          base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
+                         base::WrapRefCounted(this))));
 }
 
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(
@@ -1161,31 +1160,29 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
       GetOrCreateDefaultBucket(
           iter->first,
           base::BindOnce(
-              [](IndexedDBContextImpl* context,
+              [](base::WeakPtr<IndexedDBContextImpl> context,
                  base::OnceClosure inner_callback,
                  const absl::optional<storage::BucketLocator>& bucket_locator) {
-                if (bucket_locator)
-                  context->bucket_set_.insert(*bucket_locator);
+                if (context) {
+                  if (bucket_locator)
+                    context->bucket_set_.insert(*bucket_locator);
+                  context->did_initialize_from_files_ = true;
+                }
                 std::move(inner_callback).Run();
-                context->did_initialize_from_files_ = true;
               },
-              // `this` is destroyed on idb_task_runner_ so it's safe to post
-              // raw.
-              base::Unretained(this), std::move(callback)));
+              weak_factory_.GetWeakPtr(), std::move(callback)));
       // This path is only invoked once but the analyzer doesn't know that.
       callback = base::DoNothing();
     } else {
       GetOrCreateDefaultBucket(
           iter->first,
           base::BindOnce(
-              [](IndexedDBContextImpl* context,
+              [](base::WeakPtr<IndexedDBContextImpl> context,
                  const absl::optional<storage::BucketLocator>& bucket_locator) {
-                if (bucket_locator)
+                if (bucket_locator && context)
                   context->bucket_set_.insert(*bucket_locator);
               },
-              // `this` is destroyed on idb_task_runner_ so it's safe to post
-              // raw.
-              base::Unretained(this)));
+              weak_factory_.GetWeakPtr()));
     }
   }
   for (auto iter = bucket_id_to_file_path.begin();
@@ -1196,31 +1193,29 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
       GetBucketById(
           iter->first,
           base::BindOnce(
-              [](IndexedDBContextImpl* context,
+              [](base::WeakPtr<IndexedDBContextImpl> context,
                  base::OnceClosure inner_callback,
                  const absl::optional<storage::BucketLocator>& bucket_locator) {
-                if (bucket_locator)
-                  context->bucket_set_.insert(*bucket_locator);
+                if (context) {
+                  if (bucket_locator)
+                    context->bucket_set_.insert(*bucket_locator);
+                  context->did_initialize_from_files_ = true;
+                }
                 std::move(inner_callback).Run();
-                context->did_initialize_from_files_ = true;
               },
-              // `this` is destroyed on idb_task_runner_ so it's safe to post
-              // raw.
-              base::Unretained(this), std::move(callback)));
+              weak_factory_.GetWeakPtr(), std::move(callback)));
       // This path is only invoked once but the analyzer doesn't know that.
       callback = base::DoNothing();
     } else {
       GetBucketById(
           iter->first,
           base::BindOnce(
-              [](IndexedDBContextImpl* context,
+              [](base::WeakPtr<IndexedDBContextImpl> context,
                  const absl::optional<storage::BucketLocator>& bucket_locator) {
-                if (bucket_locator)
+                if (bucket_locator && context)
                   context->bucket_set_.insert(*bucket_locator);
               },
-              // `this` is destroyed on idb_task_runner_ so it's safe to post
-              // raw.
-              base::Unretained(this)));
+              weak_factory_.GetWeakPtr()));
     }
   }
 }
@@ -1246,23 +1241,24 @@ void IndexedDBContextImpl::GetOrCreateDefaultBucket(
     quota_manager_proxy_->GetOrCreateBucket(
         storage::BucketInitParams(storage_key), idb_task_runner_,
         base::BindOnce(
-            [](IndexedDBContextImpl* context,
+            [](base::WeakPtr<IndexedDBContextImpl> context,
                DidGetBucketLocatorCallback inner_callback,
                storage::QuotaErrorOr<storage::BucketInfo> result) {
               if (result.ok()) {
                 const auto& bucket_locator = result->ToBucketLocator();
-                context->storage_key_to_bucket_locator_[bucket_locator
-                                                            .storage_key] =
-                    bucket_locator;
-                context->bucket_id_to_bucket_locator_[bucket_locator.id] =
-                    bucket_locator;
+                if (context) {
+                  context->storage_key_to_bucket_locator_[bucket_locator
+                                                              .storage_key] =
+                      bucket_locator;
+                  context->bucket_id_to_bucket_locator_[bucket_locator.id] =
+                      bucket_locator;
+                }
                 std::move(inner_callback).Run(bucket_locator);
               } else {
                 std::move(inner_callback).Run(absl::nullopt);
               }
             },
-            // `this` is destroyed on idb_task_runner_ so it's safe to post raw.
-            base::Unretained(this), std::move(callback)));
+            weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     std::move(callback).Run(bucket_locator->second);
   }
@@ -1276,23 +1272,24 @@ void IndexedDBContextImpl::GetBucketById(const storage::BucketId& bucket_id,
     quota_manager_proxy_->GetBucketById(
         bucket_id, idb_task_runner_,
         base::BindOnce(
-            [](IndexedDBContextImpl* context,
+            [](base::WeakPtr<IndexedDBContextImpl> context,
                DidGetBucketLocatorCallback inner_callback,
                storage::QuotaErrorOr<storage::BucketInfo> result) {
               if (result.ok()) {
                 const auto& bucket_locator = result->ToBucketLocator();
-                context->storage_key_to_bucket_locator_[bucket_locator
-                                                            .storage_key] =
-                    bucket_locator;
-                context->bucket_id_to_bucket_locator_[bucket_locator.id] =
-                    bucket_locator;
+                if (context) {
+                  context->storage_key_to_bucket_locator_[bucket_locator
+                                                              .storage_key] =
+                      bucket_locator;
+                  context->bucket_id_to_bucket_locator_[bucket_locator.id] =
+                      bucket_locator;
+                }
                 std::move(inner_callback).Run(bucket_locator);
               } else {
                 std::move(inner_callback).Run(absl::nullopt);
               }
             },
-            // `this` is destroyed on idb_task_runner_ so it's safe to post raw.
-            base::Unretained(this), std::move(callback)));
+            weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     std::move(callback).Run(bucket_locator->second);
   }

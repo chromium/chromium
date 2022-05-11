@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -246,9 +247,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void DownloadBucketDataImpl(
       DownloadBucketDataCallback callback,
       const absl::optional<storage::BucketLocator>& bucket_locator);
-  void ApplyPolicyUpdateImpl(
-      const storage::mojom::StoragePolicyUpdate& policy_update,
-      const absl::optional<storage::BucketLocator>& bucket_locator);
 
   void ShutdownOnIDBSequence();
 
@@ -317,8 +315,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   std::set<storage::BucketLocator> bucket_set_;
   std::map<storage::BucketLocator, int64_t> bucket_size_map_;
-  // The set of buckets whose storage should be cleared on shutdown.
-  std::set<storage::BucketLocator> buckets_to_purge_on_shutdown_;
+  // The set of sites whose storage should be cleared on shutdown. These are
+  // matched against the origin and top level site in each bucket's StorageKey.
+  std::set<net::SchemefulSite> sites_to_purge_on_shutdown_;
   const raw_ptr<base::Clock> clock_;
 
   const std::unique_ptr<IndexedDBQuotaClient> quota_client_;
