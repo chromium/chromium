@@ -53,19 +53,14 @@ bool WebTimeNavigationObserver::IsWebApp() const {
   return !web_app_helper->GetAppId().empty();
 }
 
-void WebTimeNavigationObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(yilkal): Handle case when navigation didn't happen in the main frame.
-  if (!navigation_handle->IsInMainFrame())
-    return;
-
+void WebTimeNavigationObserver::PrimaryPageChanged(content::Page& page) {
   if (!last_navigation_info_.has_value())
     last_navigation_info_ = NavigationInfo();
 
   last_navigation_info_->navigation_finish_time = base::Time::Now();
-  last_navigation_info_->is_error = navigation_handle->IsErrorPage();
+  last_navigation_info_->is_error = page.GetMainDocument().IsErrorDocument();
   last_navigation_info_->is_web_app = IsWebApp();
-  last_navigation_info_->url = navigation_handle->GetURL();
+  last_navigation_info_->url = page.GetMainDocument().GetLastCommittedURL();
   last_navigation_info_->web_contents = web_contents();
 
   for (auto& listener : listeners_)

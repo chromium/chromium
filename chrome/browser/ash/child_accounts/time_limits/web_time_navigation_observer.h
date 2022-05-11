@@ -17,7 +17,6 @@
 
 namespace content {
 class WebContents;
-class NavigationHandle;
 class NavigationEntry;
 }  // namespace content
 
@@ -64,8 +63,7 @@ class WebTimeNavigationObserver
   bool IsWebApp() const;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
