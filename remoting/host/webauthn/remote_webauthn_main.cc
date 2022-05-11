@@ -8,13 +8,16 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
@@ -87,12 +90,17 @@ int RemoteWebAuthnMain(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_POSIX)
 
   auto native_messaging_host =
-      std::make_unique<RemoteWebAuthnNativeMessagingHost>(task_runner);
+      std::make_unique<RemoteWebAuthnNativeMessagingHost>(
+          base::MakeRefCounted<AutoThreadTaskRunner>(task_runner,
+                                                     run_loop.QuitClosure()));
   native_messaging_host->Start(&native_messaging_pipe);
   native_messaging_pipe.Start(std::move(native_messaging_host),
                               std::move(channel));
 
   run_loop.Run();
+
+  // Block until tasks blocking shutdown have completed their execution.
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return kSuccessExitCode;
 }
