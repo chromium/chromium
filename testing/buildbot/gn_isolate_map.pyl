@@ -863,7 +863,7 @@
     "type": "console_test_launcher",
   },
   "fuchsia_sizes": {
-    "label": "//fuchsia/release:fuchsia_sizes",
+    "label": "//tools/fuchsia/size_tests:fuchsia_sizes",
     "type": "generated_script",
   },
   "gcm_unit_tests": {

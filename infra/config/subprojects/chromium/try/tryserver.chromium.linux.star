@@ -75,7 +75,7 @@ try_.builder(
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
-                "//fuchsia/release:fuchsia_sizes",
+                "//tools/fuchsia/size_tests:fuchsia_sizes",
             ],
             "compile_targets": [
                 "fuchsia_sizes",

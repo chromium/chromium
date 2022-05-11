@@ -264,9 +264,9 @@ group("gn_all") {
       ":d8_fuchsia",
       "//build/fuchsia/cipd",
       "//fuchsia/engine:web_engine",
-      "//fuchsia/release:fuchsia_sizes",
       "//fuchsia/runners:cast_runner",
       "//fuchsia/runners:web_runner",
+      "//tools/fuchsia/size_tests:fuchsia_sizes",
 
       # Ensure this target, used by cipd, is built in all configurations.
       # TODO(crbug.com/1265618): Remove this once it has a natural dependency.

@@ -1910,7 +1910,7 @@
         },
         'args': [
           '--sizes-path',
-          'fuchsia/release/size_tests/fyi_sizes_smoketest.json',
+          'tools/fuchsia/size_tests/fyi_sizes_smoketest.json',
         ],
       },
     },

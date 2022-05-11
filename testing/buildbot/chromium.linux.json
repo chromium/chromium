@@ -2980,7 +2980,7 @@
       {
         "args": [
           "--sizes-path",
-          "fuchsia/release/size_tests/fyi_sizes_smoketest.json"
+          "tools/fuchsia/size_tests/fyi_sizes_smoketest.json"
         ],
         "isolate_name": "fuchsia_sizes",
         "merge": {
@@ -2998,7 +2998,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://fuchsia/release:fuchsia_sizes/"
+        "test_id_prefix": "ninja://tools/fuchsia/size_tests:fuchsia_sizes/"
       }
     ]
   },

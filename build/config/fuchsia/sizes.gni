@@ -30,7 +30,7 @@ template("compute_fuchsia_package_sizes") {
     # swarming test client.
     data += [
       "//build/fuchsia/",
-      "//fuchsia/release/size_tests/",
+      "//tools/fuchsia/size_tests/",
       "//third_party/fuchsia-sdk/sdk/arch/",
       "//third_party/fuchsia-sdk/sdk/tools/${target_cpu}/",
     ]

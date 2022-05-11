@@ -84,7 +84,7 @@ def create_tarfile(output_path, dependencies):
   with tarfile.open(output_path, 'w:gz') as tar_file:
     for idx, dep in enumerate(dependencies):
       dep = os.path.normpath(dep)
-      archive_name = os.path.join('fuchsia/release', dep)
+      archive_name = os.path.join('tools/fuchsia/size_tests', dep)
       archive_name = os.path.normpath(archive_name)
       tar_file.add(dep, arcname=archive_name)
       if idx % step == 0 or idx == (total_deps - 1):
