@@ -194,15 +194,8 @@ void ProfilePolicyConnector::Init(
     policy_providers_.push_back(connector->command_line_policy_provider());
 #endif
 
-  if (configuration_policy_provider) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    AppendPolicyProviderWithSchemaTracking(configuration_policy_provider,
-                                           schema_registry);
-    configuration_policy_provider_ = wrapped_policy_providers_.back().get();
-#else
+  if (configuration_policy_provider)
     policy_providers_.push_back(configuration_policy_provider);
-#endif
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user) {

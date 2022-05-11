@@ -681,8 +681,7 @@ void BrowserServiceLacros::OpenForFullRestoreWithProfile(Profile* profile) {
 
 void BrowserServiceLacros::UpdateComponentPolicy(
     policy::ComponentPolicyMap policy) {
-  chromeos::LacrosService::Get()->NotifyComponentPolicyUpdated(
-      std::move(policy));
+  // TODO(crbug.com/1284279): Process received data in Lacros.
 }
 
 void BrowserServiceLacros::OnBrowserAdded(Browser* browser) {

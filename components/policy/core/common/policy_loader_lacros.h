@@ -16,7 +16,6 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
-#include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -62,15 +61,6 @@ class POLICY_EXPORT PolicyLoaderLacros
   // Update the latest policy fetch attempt timestamp.
   void OnPolicyFetchAttempt() override;
 
-  // chromeos::LacrosService::Observer implementation.
-  void OnComponentPolicyUpdated(
-      const policy::ComponentPolicyMap& component_policy) override;
-
-  // Returns the current device account policies for components.
-  const PolicyBundle* component_policy() const {
-    return component_policy_.get();
-  }
-
   // Return if the main user is a device local account (i.e. Kiosk, MGS) user.
   static bool IsDeviceLocalAccountUser();
 
@@ -91,16 +81,11 @@ class POLICY_EXPORT PolicyLoaderLacros
   base::Time last_fetch_timestamp() { return last_fetch_timestamp_; }
 
  private:
-  void SetComponentPolicy(const policy::ComponentPolicyMap& component_policy);
-
   // The filter for policy data to install.
   const PolicyPerProfileFilter per_profile_;
 
   // Serialized blob of PolicyFetchResponse object received from the server.
   absl::optional<std::vector<uint8_t>> policy_fetch_response_;
-
-  // The component policy of the device account.
-  std::unique_ptr<PolicyBundle> component_policy_;
 
   // The parsed policy objects received from Ash.
   std::unique_ptr<enterprise_management::PolicyData> policy_data_;

@@ -698,10 +698,4 @@ void LacrosService::NotifyPolicyFetchAttempt() {
   observer_list_->Notify(FROM_HERE, &Observer::OnPolicyFetchAttempt);
 }
 
-void LacrosService::NotifyComponentPolicyUpdated(ComponentPolicyMap policy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  observer_list_->Notify(FROM_HERE, &Observer::OnComponentPolicyUpdated,
-                         std::move(policy));
-}
-
 }  // namespace chromeos
