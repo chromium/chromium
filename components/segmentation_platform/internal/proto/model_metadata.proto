@@ -15,10 +15,13 @@ import "components/segmentation_platform/internal/proto/types.proto";
 // new feature added to metadata proto, and add a log of the new changes in the
 // current version in this file.
 // Version 0 supports UMA features and aggregation in |features| field.
-// Version 1 supports UMA features and custom inputs in |input_features| field.
+// Version 1 supports UMA features, custom inputs and sql features in
+// |input_features| field.
 // Version 2 supports training data output collection in |training_outputs|
 // field.
-enum CurrentVersion { METADATA_VERSION = 0; }
+enum CurrentVersion {
+  METADATA_VERSION = 1;
+}
 
 // Version information for segmentation models.
 message VersionInfo {
