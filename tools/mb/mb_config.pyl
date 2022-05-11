@@ -292,7 +292,7 @@
       'Libfuzzer Upload Linux32 V8-ARM ASan': 'libfuzzer_asan_release_bot_x86_v8_arm_reclient',
       'Libfuzzer Upload Linux32 V8-ARM ASan Debug': 'libfuzzer_asan_debug_bot_x86_v8_arm_reclient',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
-      'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot_reclient',
+      'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
       'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
       'MSAN Release (chained origins)': 'msan_release_bot_reclient',
       'MSAN Release (no origins)': 'msan_no_origins_release_bot_reclient',
@@ -430,7 +430,7 @@
       'win-fieldtrial-rel': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'win-pixel-builder-rel': 'release_bot_reclient',
       'win-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
-      'win10-code-coverage': 'clang_code_coverage_reclient',
+      'win10-code-coverage': 'clang_code_coverage',
       'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
       'win32-arm64-rel': 'win32_arm64_release_bot_reclient',
@@ -725,7 +725,7 @@
       'Win x64 Builder': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Win x64 Builder Code Coverage': 'gpu_tests_release_bot_minimal_symbols_code_coverage',
-      'Windows deterministic': 'release_bot_x86_minimal_symbols_reclient',
+      'Windows deterministic': 'release_bot_x86_minimal_symbols',
     },
 
     'client.devtools-frontend.integration': {
@@ -2174,10 +2174,6 @@
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
-    'clang_code_coverage_reclient': [
-      'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols',
-    ],
-
     'clang_tot_asan_lsan_static_release': [
       'clang_tot', 'asan', 'lsan', 'static', 'release',
     ],
@@ -2942,13 +2938,6 @@
       'libfuzzer', 'asan', 'release_bot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
     ],
 
-    # Note that because of optimize_for_fuzzing, Windows cannot share a config
-    # with other libFuzzer builds. optimize_for_fuzzing is used by the other
-    # libFuzzer build configs but it does not work on Windows.
-    'libfuzzer_windows_asan_release_bot_reclient': [
-      'libfuzzer', 'asan', 'release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
-    ],
-
     'libfuzzer_windows_asan_release_trybot': [
       'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
     ],
@@ -3274,10 +3263,6 @@
 
     'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs': [
       'release_bot', 'x86', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
-    ],
-
-    'release_bot_x86_minimal_symbols_reclient': [
-      'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
     'release_fuchsia_arm64': [
