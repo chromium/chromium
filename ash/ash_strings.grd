@@ -3467,8 +3467,16 @@ This file contains the strings for ash.
         Show previous month
       </message>
 
+      <message name="IDS_ASH_CALENDAR_UP_BUTTON_EVENT_LIST_ACCESSIBLE_DESCRIPTION" desc="The accessible/tooltip description of the calendar up button in the event list mode.">
+        Show previous week
+      </message>
+
       <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible/tooltip description of the calendar down button.">
         Show next month
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_EVENT_LIST_ACCESSIBLE_DESCRIPTION" desc="The accessible/tooltip description of the calendar down button in the event list mode.">
+        Show next week
       </message>
 
       <message name="IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar today's button.">

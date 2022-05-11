@@ -1562,12 +1562,22 @@ void CalendarView::OnOpenEventListAnimationComplete() {
     next_next_month_->DisableFocus();
     content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
+
+  up_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_CALENDAR_UP_BUTTON_EVENT_LIST_ACCESSIBLE_DESCRIPTION));
+  down_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_CALENDAR_DOWN_BUTTON_EVENT_LIST_ACCESSIBLE_DESCRIPTION));
 }
 
 void CalendarView::OnCloseEventListAnimationComplete() {
   RemoveChildViewT(event_list_view_);
   event_list_view_ = nullptr;
   calendar_view_controller_->OnEventListClosed();
+
+  up_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
+  down_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
 }
 
 BEGIN_METADATA(CalendarView, views::View)
