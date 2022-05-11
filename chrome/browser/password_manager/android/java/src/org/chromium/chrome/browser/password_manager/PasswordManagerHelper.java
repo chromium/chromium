@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWO
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,6 +37,10 @@ public class PasswordManagerHelper {
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
 
     private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
+
+    // Loading dialog is dismissed with this delay after sending an intent to prevent
+    // the old activity from showing up before the new one is shown.
+    private static final long LOADING_DIALOG_DISMISS_DELAY_MS = 300L;
 
     // |PasswordSettings| full class name to open the fragment. Will be changed to
     // |PasswordSettings.class.getName()| once it's modularized.
@@ -229,22 +232,16 @@ public class PasswordManagerHelper {
                 kGetIntentErrorHistogram, error, CredentialManagerError.COUNT);
     }
 
-    private static boolean launchIntent(PendingIntent intent, Runnable onLaunchFinishedCallback) {
+    private static void launchIntentAndRecordSuccess(
+            PendingIntent intent, String intentLaunchSuccessHistogram) {
         boolean launchIntentSuccessfully = true;
         try {
-            PendingIntent.OnFinished onFinished = new PendingIntent.OnFinished() {
-                @Override
-                public void onSendFinished(PendingIntent pendingIntent, Intent intent,
-                        int resultCode, String resultData, Bundle resultExtras) {
-                    onLaunchFinishedCallback.run();
-                }
-            };
-            intent.send(0, onFinished, new Handler(Looper.getMainLooper()));
+            intent.send();
         } catch (CanceledException e) {
             launchIntentSuccessfully = false;
-            onLaunchFinishedCallback.run();
         }
-        return launchIntentSuccessfully;
+        RecordHistogram.recordBooleanHistogram(
+                intentLaunchSuccessHistogram, launchIntentSuccessfully);
     }
 
     private static void launchCredentialManagerIntent(PendingIntent intent, long startTimeMs,
@@ -253,19 +250,9 @@ public class PasswordManagerHelper {
         assert forAccount : "Local storage for preferences not ready for use";
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
 
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
-                || loadingDialogCoordinator.getState()
-                        == LoadingModalDialogCoordinator.State.TIMEOUT) {
-            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
-            // the intent.
-            return;
-        }
-
-        boolean launchIntentSuccessfully = launchIntent(intent, loadingDialogCoordinator::dismiss);
-        RecordHistogram.recordBooleanHistogram(forAccount
-                        ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
-                        : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
-                launchIntentSuccessfully);
+        maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
+                forAccount ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
+                           : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
     }
 
     private static void launchPasswordCheckupIntent(PendingIntent intent, long startTimeMs,
@@ -274,18 +261,8 @@ public class PasswordManagerHelper {
                 SystemClock.elapsedRealtime() - startTimeMs);
         RecordHistogram.recordBooleanHistogram(PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, true);
 
-        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
-                || loadingDialogCoordinator.getState()
-                        == LoadingModalDialogCoordinator.State.TIMEOUT) {
-            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
-            // the intent.
-            return;
-        }
-
-        boolean launchIntentSuccessfully = launchIntent(intent, loadingDialogCoordinator::dismiss);
-        RecordHistogram.recordBooleanHistogram(
-                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
-                launchIntentSuccessfully);
+        maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
+                PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
     }
 
     private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
@@ -298,5 +275,49 @@ public class PasswordManagerHelper {
 
         RecordHistogram.recordTimesHistogram(kGetIntentLatencyHistogram, elapsedTimeMs);
         RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, true);
+    }
+
+    /**
+     * Launches the pending intent and reports metrics if the loading dialog was not cancelled or
+     * timed out. Intent launch metric is not recorded if the loading was cancelled or timed out.
+     *
+     * @param loadingDialogCoordinator {@link LoadingModalDialogCoordinator}.
+     * @param intent {@link PendingIntent} to be launched.
+     * @param intentLaunchSuccessHistogram Name of the intent launch success histogram.
+     */
+    private static void maybeLaunchIntentWithLoadingDialog(
+            LoadingModalDialogCoordinator loadingDialogCoordinator, PendingIntent intent,
+            String intentLaunchSuccessHistogram) {
+        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.CANCELLED
+                || loadingDialogCoordinator.getState()
+                        == LoadingModalDialogCoordinator.State.TIMED_OUT) {
+            // Dialog was dismissed or timeout occurred before the loading finished, do not launch
+            // the intent.
+            return;
+        }
+        if (loadingDialogCoordinator.getState() == LoadingModalDialogCoordinator.State.PENDING) {
+            // Dialog is not yet visible, dismiss immediately.
+            loadingDialogCoordinator.dismiss();
+            launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+        } else if (loadingDialogCoordinator.isImmediatelyDismissable()) {
+            // Dialog is visible and dismissable. Dismiss with a small delay to cover the intent
+            // launch delay.
+            launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+            new Handler(Looper.getMainLooper())
+                    .postDelayed(
+                            loadingDialogCoordinator::dismiss, LOADING_DIALOG_DISMISS_DELAY_MS);
+        } else {
+            // Dialog could not be dismissed right now, wait for it to become immediately
+            // dismissable.
+            loadingDialogCoordinator.addObserver(new LoadingModalDialogCoordinator.Observer() {
+                @Override
+                public void onDismissable() {
+                    launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+                    new Handler(Looper.getMainLooper())
+                            .postDelayed(loadingDialogCoordinator::dismiss,
+                                    LOADING_DIALOG_DISMISS_DELAY_MS);
+                }
+            });
+        }
     }
 }

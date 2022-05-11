@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.loading_modal;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -34,27 +35,42 @@ public class LoadingModalDialogCoordinator {
     private final View mButtonsView;
 
     // Used to indicate the current loading dialog state.
-    @IntDef({State.READY, State.LOADING_DELAYED, State.LOADING_SHOWN, State.FINISHED_SHOWN,
-            State.FINISHED, State.CANCELLED, State.TIMEOUT_SHOWN, State.TIMEOUT})
+    @IntDef({State.READY, State.PENDING, State.SHOWN, State.FINISHED, State.CANCELLED,
+            State.TIMED_OUT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         /** Loading is not started, the dialog is not shown. */
         int READY = 0;
-        /** Loading in progress, the dialog is delayed. */
-        int LOADING_DELAYED = 1;
-        /** Loading in progress, the dialog is visible. */
-        int LOADING_SHOWN = 2;
-        /** Loading finished, the dialog dismissal is delayed. */
-        int FINISHED_SHOWN = 3;
-        /** Loading finished, the dialog is dismissed. */
-        int FINISHED = 4;
+        /** The dialog is scheduled to be shown after the default delay. */
+        int PENDING = 1;
+        /** The dialog is visible. */
+        int SHOWN = 2;
+        /**
+         * Dialog is dismissed by the client as the loading operation finished. It may be still
+         * visible for a short period to prevent UI flickering.
+         */
+        int FINISHED = 3;
         /** User dismissed the dialog before the loading finished. */
-        int CANCELLED = 5;
-        /** Loading timeout occurred but the dialog is still visible to prevent flickering. */
-        int TIMEOUT_SHOWN = 6;
+        int CANCELLED = 4;
         /** Loading timeout occurred and the dialog was automatically dismissed. */
-        int TIMEOUT = 7;
-        int NUM_ENTRIES = 8;
+        int TIMED_OUT = 5;
+        int NUM_ENTRIES = 6;
+    }
+
+    /**
+     * An observer of the LoadingModalDialogCoordinator intended to broadcast notifications
+     * about the loading dialog dismissals and the readiness to be immediately dismissed.
+     */
+    public interface Observer {
+        /**
+         * A notification that the dialog could be dismissed without causing the UI to flicker.
+         */
+        default void onDismissable(){};
+
+        /**
+         * A notification that the dialog was dismissed with given final state.
+         */
+        default void onDismissedWithState(@State int finalState){};
     }
 
     /**
@@ -66,7 +82,7 @@ public class LoadingModalDialogCoordinator {
      */
     public static LoadingModalDialogCoordinator create(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
-        return create(modalDialogManagerSupplier, context, new Handler());
+        return create(modalDialogManagerSupplier, context, new Handler(Looper.getMainLooper()));
     }
 
     @VisibleForTesting
@@ -95,7 +111,10 @@ public class LoadingModalDialogCoordinator {
         mButtonsView = buttonsView;
     }
 
-    /** Shows the loading modal dialog. */
+    /**
+     * Schedules the dialog to be shown after delay. The dialog will not be shown if
+     * {@link #finishLoading()} called before it become visible.
+     */
     public void show() {
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -107,12 +126,17 @@ public class LoadingModalDialogCoordinator {
                         .build();
         mButtonsView.findViewById(R.id.cancel_loading_modal)
                 .setOnClickListener(view -> mMediator.onClick(dialogModel, ButtonType.NEGATIVE));
-        mMediator.showDialog(dialogModel);
+        mMediator.show(dialogModel);
     }
 
-    /** Dismisses the loading modal dialog. */
+    /**
+     * Dismisses the currently visible dialog or cancelling the pending dialog if it is not visible
+     * yet. If dialog is already visible for at least {@link #MINIMUM_SHOW_TIME_MS}, it will be
+     * dismissed immediately. Otherwise it will be dismissed after being visible for that period of
+     * time.
+     */
     public void dismiss() {
-        mMediator.dismissDialog();
+        mMediator.dismiss();
     }
 
     /**
@@ -134,5 +158,22 @@ public class LoadingModalDialogCoordinator {
     @VisibleForTesting
     View getButtonsView() {
         return mButtonsView;
+    }
+
+    /**
+     * Indicates if the dailog could be immediately dismissed.
+     */
+    public boolean isImmediatelyDismissable() {
+        return mMediator.isImmediatelyDismissable();
+    }
+
+    /**
+     * Add the listener that will be notified when the dialog is cancelled, timed out or is ready to
+     * be dismissed.
+     *
+     * @param listener {@link Observer} that will be notified.
+     */
+    public void addObserver(Observer listener) {
+        mMediator.addObserver(listener);
     }
 }

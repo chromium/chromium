@@ -5,17 +5,16 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
-import android.os.Handler;
 
 import com.google.common.base.Optional;
 
@@ -105,8 +104,12 @@ public class PasswordManagerHelperTest {
     @Mock
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
+    private ModalDialogManager mModalDialogManager;
+
     @Mock
     LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
+
+    private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
 
     @Before
     public void setUp() {
@@ -114,7 +117,16 @@ public class PasswordManagerHelperTest {
         MockitoAnnotations.initMocks(this);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mLoadingModalDialogCoordinator.getState())
-                .thenReturn(LoadingModalDialogCoordinator.State.LOADING_SHOWN);
+                .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
+        mModalDialogManager = new ModalDialogManager(
+                mock(ModalDialogManager.Presenter.class), ModalDialogManager.ModalDialogType.APP);
+        when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
+        doAnswer(invocation -> {
+            mLoadingDialogCoordinatorObserver = invocation.getArgument(0);
+            return null;
+        })
+                .when(mLoadingModalDialogCoordinator)
+                .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
     }
 
     @Test
@@ -249,9 +261,7 @@ public class PasswordManagerHelperTest {
     public void testRecordsMetricsWhenAccountIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
-        doThrow(CanceledException.class)
-                .when(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
@@ -307,8 +317,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
                 PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
                 mSyncServiceMock, mModalDialogManagerSupplier);
-        verify(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        verify(mPendingIntentMock).send();
     }
 
     @Test
@@ -363,9 +372,7 @@ public class PasswordManagerHelperTest {
     public void testRecordsMetricsWhenPasswordCheckupIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
-        doThrow(CanceledException.class)
-                .when(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
         PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
                 PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
@@ -401,7 +408,6 @@ public class PasswordManagerHelperTest {
     public void testDismissesLoadingDialogWhenPasswordCheckupIntentSent() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
-        setUpSuccessfulPendingIntentSending();
 
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
@@ -416,9 +422,7 @@ public class PasswordManagerHelperTest {
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
-        doThrow(CanceledException.class)
-                .when(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
@@ -454,8 +458,7 @@ public class PasswordManagerHelperTest {
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        verify(mPendingIntentMock, never())
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        verify(mPendingIntentMock, never()).send();
     }
 
     @Test
@@ -465,14 +468,31 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
         when(mLoadingModalDialogCoordinator.getState())
-                .thenReturn(LoadingModalDialogCoordinator.State.TIMEOUT);
+                .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
 
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
                 mLoadingModalDialogCoordinator);
 
-        verify(mPendingIntentMock, never())
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        verify(mPendingIntentMock, never()).send();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordCheckupLaunchWaitsForDialogDismissability() throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
+        when(mLoadingModalDialogCoordinator.getState())
+                .thenReturn(LoadingModalDialogCoordinator.State.SHOWN);
+
+        PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mLoadingModalDialogCoordinator);
+
+        verify(mPendingIntentMock, never()).send();
+
+        mLoadingDialogCoordinatorObserver.onDismissable();
+        verify(mPendingIntentMock).send();
     }
 
     @Test
@@ -492,7 +512,6 @@ public class PasswordManagerHelperTest {
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
-        setUpSuccessfulPendingIntentSending();
 
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
@@ -506,9 +525,7 @@ public class PasswordManagerHelperTest {
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
-        doThrow(CanceledException.class)
-                .when(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
@@ -541,8 +558,7 @@ public class PasswordManagerHelperTest {
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        verify(mPendingIntentMock, never())
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        verify(mPendingIntentMock, never()).send();
     }
 
     @Test
@@ -552,13 +568,29 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
         when(mLoadingModalDialogCoordinator.getState())
-                .thenReturn(LoadingModalDialogCoordinator.State.TIMEOUT);
+                .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
 
         PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
                 mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
 
-        verify(mPendingIntentMock, never())
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
+        verify(mPendingIntentMock, never()).send();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordSettingsLaunchWaitsForDialogDismissability() throws CanceledException {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        setUpSuccessfulIntentFetchingForAccount();
+        when(mLoadingModalDialogCoordinator.getState())
+                .thenReturn(LoadingModalDialogCoordinator.State.SHOWN);
+
+        PasswordManagerHelper.launchTheCredentialManager(ManagePasswordsReferrer.CHROME_SETTINGS,
+                mCredentialManagerLauncherMock, mSyncServiceMock, mLoadingModalDialogCoordinator);
+
+        verify(mPendingIntentMock, never()).send();
+
+        mLoadingDialogCoordinatorObserver.onDismissable();
+        verify(mPendingIntentMock).send();
     }
 
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {
@@ -614,15 +646,5 @@ public class PasswordManagerHelperTest {
                 .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
                         eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
                         any(Callback.class));
-    }
-
-    private void setUpSuccessfulPendingIntentSending() throws CanceledException {
-        doAnswer(invocation -> {
-            PendingIntent.OnFinished onFinished = invocation.getArgument(1);
-            onFinished.onSendFinished(null, null, 0, "", null);
-            return true;
-        })
-                .when(mPendingIntentMock)
-                .send(anyInt(), any(PendingIntent.OnFinished.class), any(Handler.class));
     }
 }
