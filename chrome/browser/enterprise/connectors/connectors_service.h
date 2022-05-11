@@ -67,6 +67,9 @@ class ConnectorsService : public KeyedService {
                                                   const std::string& tag);
   absl::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
                                        const std::string& tag);
+  absl::optional<bool> GetBypassJustificationRequired(
+      AnalysisConnector connector,
+      const std::string& tag);
   bool HasCustomInfoToDisplay(AnalysisConnector connector,
                               const std::string& tag);
 

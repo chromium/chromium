@@ -158,6 +158,7 @@ FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
 FileMetadata::~FileMetadata() = default;
 
 const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";
+ScanResult::ScanResult() = default;
 ScanResult::ScanResult(FileMetadata metadata) {
   file_metadata.push_back(std::move(metadata));
 }

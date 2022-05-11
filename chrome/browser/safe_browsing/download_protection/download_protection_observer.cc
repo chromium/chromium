@@ -122,7 +122,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
           metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
           DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
-          /*user_justification=*/absl::nullopt);
+          stored_result->user_justification);
     }
   } else {
     std::string raw_digest_sha256 = download->GetHash();

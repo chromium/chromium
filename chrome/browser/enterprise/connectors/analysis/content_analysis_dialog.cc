@@ -863,9 +863,10 @@ void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
 
   // Set the color to red initially because a 0 length message is invalid, but
   // the label doesn't have a Color Provider yet when it's created.
-  bypass_justification_text_length_->SetEnabledColor(
-      bypass_justification_text_length_->GetColorProvider()->GetColor(
-          ui::kColorAlertHighSeverity));
+  // TODO(b/232104687): Re-enable once the bug is fixed
+  // bypass_justification_text_length_->SetEnabledColor(
+  //     bypass_justification_text_length_->GetColorProvider()->GetColor(
+  //         ui::kColorAlertHighSeverity));
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {

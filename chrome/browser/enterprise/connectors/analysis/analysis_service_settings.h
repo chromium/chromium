@@ -37,6 +37,7 @@ class AnalysisServiceSettings {
   // settings are invalid or if the message/URL are empty.
   absl::optional<std::u16string> GetCustomMessage(const std::string& tag);
   absl::optional<GURL> GetLearnMoreUrl(const std::string& tag);
+  absl::optional<bool> GetBypassJustificationRequired(const std::string& tag);
 
   std::string service_provider_name() const { return service_provider_name_; }
 

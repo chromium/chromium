@@ -369,6 +369,15 @@ absl::optional<GURL> ConnectorsService::GetLearnMoreUrl(
   return connectors_manager_->GetLearnMoreUrl(connector, tag);
 }
 
+absl::optional<bool> ConnectorsService::GetBypassJustificationRequired(
+    AnalysisConnector connector,
+    const std::string& tag) {
+  if (!ConnectorsEnabled())
+    return absl::nullopt;
+
+  return connectors_manager_->GetBypassJustificationRequired(connector, tag);
+}
+
 bool ConnectorsService::HasCustomInfoToDisplay(AnalysisConnector connector,
                                                const std::string& tag) {
   return GetCustomMessage(connector, tag) || GetLearnMoreUrl(connector, tag);

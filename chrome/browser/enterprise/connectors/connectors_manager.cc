@@ -242,6 +242,23 @@ absl::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
   return absl::nullopt;
 }
 
+absl::optional<bool> ConnectorsManager::GetBypassJustificationRequired(
+    AnalysisConnector connector,
+    const std::string& tag) {
+  if (IsConnectorEnabled(connector)) {
+    if (analysis_connector_settings_.count(connector) == 0)
+      CacheAnalysisConnectorPolicy(connector);
+
+    if (analysis_connector_settings_.count(connector) &&
+        !analysis_connector_settings_.at(connector).empty()) {
+      return analysis_connector_settings_.at(connector)
+          .at(0)
+          .GetBypassJustificationRequired(tag);
+    }
+  }
+  return absl::nullopt;
+}
+
 std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
     AnalysisConnector connector) {
   if (IsConnectorEnabled(connector)) {

@@ -186,6 +186,12 @@ absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
   return element->second.learn_more_url;
 }
 
+absl::optional<bool> AnalysisServiceSettings::GetBypassJustificationRequired(
+    const std::string& tag) {
+  return tags_requiring_justification_.find(tag) !=
+         tags_requiring_justification_.end();
+}
+
 void AnalysisServiceSettings::AddUrlPatternSettings(
     const base::Value& url_settings_value,
     bool enabled,

@@ -185,11 +185,13 @@ struct FileMetadata {
 // User data class to persist scanning results for multiple files corresponding
 // to a single base::SupportsUserData object.
 struct ScanResult : public base::SupportsUserData::Data {
+  ScanResult();
   explicit ScanResult(FileMetadata metadata);
   ~ScanResult() override;
   static const char kKey[];
 
   std::vector<FileMetadata> file_metadata;
+  absl::optional<std::u16string> user_justification;
 };
 
 // User data to persist a save package's final callback allowing/denying

@@ -6,6 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -766,6 +768,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:
+  ContentAnalysisDialogPlainTests() {
+    scoped_feature_list_.InitAndEnableFeature(kBypassJustificationEnabled);
+  }
   void OpenCallback() { ++times_open_called_; }
 
   void DiscardCallback() { ++times_discard_called_; }
@@ -861,6 +866,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
  private:
   raw_ptr<ContentAnalysisDialog> dialog_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
@@ -969,32 +975,44 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateBypassWarning) {
+  download::MockDownloadItem mock_download_item;
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
-          u"", u"", GURL(),
+          u"", u"", GURL(), true,
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))),
+                         base::Unretained(this)),
+          &mock_download_item),
       ContentAnalysisDelegateBase::FinalResult::WARNING);
 
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
 
+  std::u16string test_user_justification = u"user's justification for bypass";
+  dialog->GetBypassJustificationTextareaForTesting()->InsertOrReplaceText(
+      test_user_justification);
   dialog->AcceptDialog();
   EXPECT_EQ(1, times_open_called_);
   EXPECT_EQ(0, times_discard_called_);
+  enterprise_connectors::ScanResult* stored_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          mock_download_item.GetUserData(
+              enterprise_connectors::ScanResult::kKey));
+  ASSERT_TRUE(stored_result);
+  EXPECT_EQ(stored_result->user_justification, test_user_justification);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardWarning) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
-          u"", u"", GURL(),
+          u"", u"", GURL(), false,
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))),
+                         base::Unretained(this)),
+          nullptr),
       ContentAnalysisDelegateBase::FinalResult::WARNING);
 
   EXPECT_EQ(0, times_open_called_);
@@ -1009,11 +1027,12 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                        TestWithDownloadsDelegateDiscardBlock) {
   ContentAnalysisDialog* dialog = CreateContentAnalysisDialog(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
-          u"", u"", GURL(),
+          u"", u"", GURL(), false,
           base::BindOnce(&ContentAnalysisDialogPlainTests::OpenCallback,
                          base::Unretained(this)),
           base::BindOnce(&ContentAnalysisDialogPlainTests::DiscardCallback,
-                         base::Unretained(this))),
+                         base::Unretained(this)),
+          nullptr),
       ContentAnalysisDelegateBase::FinalResult::FAILURE);
 
   EXPECT_EQ(0, times_open_called_);
@@ -1024,7 +1043,9 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   EXPECT_EQ(1, times_discard_called_);
 }
 
-class ContentAnalysysDialogUiTest : public DialogBrowserTest {
+class ContentAnalysysDialogUiTest
+    : public DialogBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ContentAnalysysDialogUiTest() = default;
   ContentAnalysysDialogUiTest(const ContentAnalysysDialogUiTest&) = delete;
@@ -1032,11 +1053,24 @@ class ContentAnalysysDialogUiTest : public DialogBrowserTest {
       delete;
   ~ContentAnalysysDialogUiTest() override = default;
 
+  bool custom_message_provided() const { return std::get<0>(GetParam()); }
+  bool custom_url_provided() const { return std::get<1>(GetParam()); }
+  bool bypass_justification_enabled() const { return std::get<2>(GetParam()); }
+
+  std::u16string get_custom_message() {
+    return custom_message_provided() ? u"Admin comment" : u"";
+  }
+
+  GURL get_custom_url() {
+    return custom_url_provided() ? GURL("http://learn-more-url.com/") : GURL();
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto delegate = std::make_unique<ContentAnalysisDownloadsDelegate>(
-        u"File Name", u"Admin comment", GURL("http://learn-more-url.com/"),
-        base::DoNothing(), base::DoNothing());
+        u"File Name", get_custom_message(), get_custom_url(),
+        bypass_justification_enabled(), base::DoNothing(), base::DoNothing(),
+        nullptr);
 
     // This ctor ends up calling into constrained_window to show itself, in a
     // way that relinquishes its ownership. Because of this, new it here and
@@ -1044,13 +1078,20 @@ class ContentAnalysysDialogUiTest : public DialogBrowserTest {
     new ContentAnalysisDialog(
         std::move(delegate),
         browser()->tab_strip_model()->GetActiveWebContents(),
-        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 0,
+        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 1,
         ContentAnalysisDelegateBase::FinalResult::WARNING);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogUiTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysysDialogUiTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysysDialogUiTest,
+                         testing::Combine(
+                             /*custom_message_exists*/ testing::Bool(),
+                             /*custom_url_exists*/ testing::Bool(),
+                             /*bypass_justification_enabled*/ testing::Bool()));
 
 }  // namespace enterprise_connectors

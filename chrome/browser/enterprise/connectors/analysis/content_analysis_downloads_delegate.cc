@@ -4,7 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,18 +17,39 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     const std::u16string& filename,
     const std::u16string& custom_message,
     GURL custom_learn_more_url,
+    bool bypass_justification_required,
     base::OnceCallback<void()> open_file_callback,
-    base::OnceCallback<void()> discard_file_callback)
+    base::OnceCallback<void()> discard_file_callback,
+    download::DownloadItem* download_item)
     : filename_(filename),
       custom_message_(custom_message),
       custom_learn_more_url_(custom_learn_more_url),
+      bypass_justification_required_(bypass_justification_required),
       open_file_callback_(std::move(open_file_callback)),
-      discard_file_callback_(std::move(discard_file_callback)) {}
+      discard_file_callback_(std::move(discard_file_callback)),
+      download_item_(download_item) {}
 
 ContentAnalysisDownloadsDelegate::~ContentAnalysisDownloadsDelegate() = default;
 
 void ContentAnalysisDownloadsDelegate::BypassWarnings(
     absl::optional<std::u16string> user_justification) {
+  if (download_item_) {
+    enterprise_connectors::ScanResult* stored_result =
+        static_cast<enterprise_connectors::ScanResult*>(
+            download_item_->GetUserData(
+                enterprise_connectors::ScanResult::kKey));
+
+    if (stored_result) {
+      stored_result->user_justification = user_justification;
+    } else {
+      auto stored_result =
+          std::make_unique<enterprise_connectors::ScanResult>();
+      stored_result->user_justification = user_justification;
+      download_item_->SetUserData(enterprise_connectors::ScanResult::kKey,
+                                  std::move(stored_result));
+    }
+  }
+
   if (open_file_callback_)
     std::move(open_file_callback_).Run();
   ResetCallbacks();
@@ -60,7 +83,10 @@ absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
 }
 
 bool ContentAnalysisDownloadsDelegate::BypassRequiresJustification() const {
-  return false;
+  if (!base::FeatureList::IsEnabled(kBypassJustificationEnabled))
+    return false;
+
+  return bypass_justification_required_;
 }
 
 std::u16string ContentAnalysisDownloadsDelegate::GetBypassJustificationLabel()

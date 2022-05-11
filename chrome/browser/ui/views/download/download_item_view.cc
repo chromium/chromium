@@ -1341,15 +1341,23 @@ void DownloadItemView::ReviewButtonPressed() {
               enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, tag)
           .value_or(GURL());
 
+  bool bypass_justification_required =
+      connectors_service
+          ->GetBypassJustificationRequired(
+              enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, tag)
+          .value_or(false);
+
   // This dialog opens itself, and is thereafter owned by constrained window
   // code.
   new enterprise_connectors::ContentAnalysisDialog(
       std::make_unique<enterprise_connectors::ContentAnalysisDownloadsDelegate>(
           filename, custom_message, learn_more_url,
+          bypass_justification_required,
           base::BindOnce(&DownloadItemView::ExecuteCommand,
                          base::Unretained(this), DownloadCommands::KEEP),
           base::BindOnce(&DownloadItemView::ExecuteCommand,
-                         base::Unretained(this), DownloadCommands::DISCARD)),
+                         base::Unretained(this), DownloadCommands::DISCARD),
+          model_->download()),
       shelf_->browser()->tab_strip_model()->GetActiveWebContents(),
       safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1, state);
 }
