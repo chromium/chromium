@@ -149,7 +149,6 @@ class TranslateMessage {
 
   // Constructed the first time ShowTranslateStep is called.
   std::unique_ptr<TranslateUIDelegate> ui_delegate_;
-  base::android::ScopedJavaGlobalRef<jobject> java_translate_message_;
   TranslateStep translate_step_ = TRANSLATE_STEP_TRANSLATE_ERROR;
 };
 
