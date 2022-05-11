@@ -356,6 +356,21 @@ ci.builder(
 ci.builder(
     name = "mac-official",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_pgo_profiles",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_bits = 64,
+        ),
+    ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
