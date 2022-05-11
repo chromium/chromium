@@ -91,6 +91,7 @@ namespace {
 }  // namespace
 
 @interface NewTabPageCoordinator () <AppStateObserver,
+                                     BooleanObserver,
                                      ContentSuggestionsHeaderCommands,
                                      DiscoverFeedDelegate,
                                      DiscoverFeedObserverBridgeDelegate,
@@ -267,6 +268,8 @@ namespace {
   self.feedExpandedPref = [[PrefBackedBoolean alloc]
       initWithPrefService:_prefService
                  prefName:feed::prefs::kArticlesListVisible];
+  // Observer is necessary for multiwindow NTPs to remain in sync.
+  [self.feedExpandedPref setObserver:self];
 
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
@@ -391,6 +394,7 @@ namespace {
     [omniboxCommandHandler cancelOmniboxEdit];
   }
 
+  [self.feedExpandedPref setObserver:nil];
   self.feedExpandedPref = nil;
 
   _prefChangeRegistrar.reset();
@@ -771,6 +775,12 @@ namespace {
   [self updateVisible];
 }
 
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  [self handleFeedVisibilityDidChange];
+}
+
 #pragma mark - DiscoverFeedDelegate
 
 - (void)contentSuggestionsWasUpdated {
@@ -1079,8 +1089,7 @@ namespace {
 - (void)setFeedVisibleFromHeader:(BOOL)visible {
   [self.feedExpandedPref setValue:visible];
   [self.feedMetricsRecorder recordDiscoverFeedVisibilityChanged:visible];
-  [self updateNTPForFeed];
-  [self.feedHeaderViewController updateForFeedVisibilityChanged];
+  [self handleFeedVisibilityDidChange];
 }
 
 // Configures and returns the NTP mediator.
@@ -1137,6 +1146,13 @@ namespace {
   self.feedManagementCoordinator.navigationDelegate = self;
   self.feedManagementCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
   [self.feedManagementCoordinator start];
+}
+
+// Handles how the NTP should react when the feed visbility preference is
+// changed.
+- (void)handleFeedVisibilityDidChange {
+  [self updateNTPForFeed];
+  [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 
 #pragma mark - Getters
