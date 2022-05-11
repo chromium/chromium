@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+
 BatteryLevelProvider::BatteryState::BatteryState(
     size_t interface_count,
     size_t battery_count,
@@ -80,3 +82,5 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
   return {battery_interfaces.size(), battery_count, charge_level, on_battery,
           capture_time};
 }
+
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()

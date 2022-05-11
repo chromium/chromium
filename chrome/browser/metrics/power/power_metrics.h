@@ -43,6 +43,7 @@ struct BatteryDischarge {
   absl::optional<int64_t> rate;
 };
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 // Computes and returns the battery discharge mode and rate during the interval.
 // If the discharge rate isn't valid, the returned rate is nullopt and the
 // reason is indicated per BatteryDischargeMode.
@@ -55,6 +56,7 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
 void ReportBatteryHistograms(base::TimeDelta interval_duration,
                              BatteryDischarge battery_discharge,
                              const std::vector<const char*>& suffixes);
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -108,3 +110,5 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesInvalid) {
   EXPECT_FALSE(state.charge_level.has_value());
   EXPECT_FALSE(state.on_battery);
 }
+
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()

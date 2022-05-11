@@ -16,10 +16,12 @@
 
 namespace {
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
@@ -61,6 +63,7 @@ void ReportAggregatedProcessMetricsHistograms(
   }
 }
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 BatteryDischarge GetBatteryDischargeDuringInterval(
     const BatteryLevelProvider::BatteryState& previous_battery_state,
     const BatteryLevelProvider::BatteryState& new_battery_state,
@@ -118,6 +121,7 @@ void ReportBatteryHistograms(base::TimeDelta interval_duration,
     }
   }
 }
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 #if BUILDFLAG(IS_MAC)
 void ReportShortIntervalHistograms(

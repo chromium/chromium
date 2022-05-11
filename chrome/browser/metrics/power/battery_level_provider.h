@@ -10,7 +10,13 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#define HAS_BATTERY_LEVEL_PROVIDER_IMPL() \
+  (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 // BatteryLevelProvider provides an interface for querying battery state.
 // A platform specific implementation is obtained with
@@ -96,5 +102,7 @@ class BatteryLevelProvider {
   static BatteryState MakeBatteryState(
       const std::vector<BatteryInterface>& battery_interfaces);
 };
+
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
 #endif  // CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_

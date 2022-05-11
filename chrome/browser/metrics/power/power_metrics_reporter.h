@@ -61,9 +61,12 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   explicit PowerMetricsReporter(
       ProcessMonitor* process_monitor,
       UsageScenarioDataStore* short_usage_scenario_data_store = nullptr,
-      UsageScenarioDataStore* long_usage_scenario_data_store = nullptr,
+      UsageScenarioDataStore* long_usage_scenario_data_store = nullptr
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+      ,
       std::unique_ptr<BatteryLevelProvider> battery_level_provider =
           BatteryLevelProvider::Create()
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 #if BUILDFLAG(IS_MAC)
           ,
       std::unique_ptr<CoalitionResourceUsageProvider>
@@ -75,6 +78,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   PowerMetricsReporter& operator=(const PowerMetricsReporter& rhs) = delete;
   ~PowerMetricsReporter() override;
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   BatteryLevelProvider::BatteryState& battery_state_for_testing() {
     return battery_state_;
   }
@@ -87,16 +91,11 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   // |callback| is called synchronously if the first battery state is already
   // available.
   void OnFirstSampleForTesting(base::OnceClosure callback);
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
 
  protected:
-  static void ReportLongIntervalHistograms(
-      const ProcessMonitor::Metrics& aggregated_process_metrics,
-      base::TimeDelta interval_duration,
-      BatteryDischarge battery_discharge,
-      const std::vector<const char*> histogram_suffixes);
-
 #if BUILDFLAG(IS_MAC)
   // Emit trace event when CPU usage is high for 10 secondes or more.
   void MaybeEmitHighCPUTraceEvent(
@@ -109,10 +108,12 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void OnAggregatedMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics) override;
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   void OnFirstBatteryStateSampled(
       const BatteryLevelProvider::BatteryState& battery_state);
   void OnBatteryAndAggregatedProcessMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics,
+      base::TimeDelta interval_duration,
       base::TimeTicks battery_sample_begin_time,
       const BatteryLevelProvider::BatteryState& new_battery_state);
 
@@ -122,6 +123,16 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
       const ProcessMonitor::Metrics& aggregated_process_metrics,
       base::TimeDelta interval_duration,
       BatteryDischarge battery_discharge);
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+
+  // Called when the long interval (and the short one on Mac) ends.
+  void ReportMetrics(base::TimeDelta interval_duration,
+                     const ProcessMonitor::Metrics& aggregated_process_metrics
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
+                     ,
+                     BatteryDischarge battery_discharge
+#endif
+  );
 
 #if BUILDFLAG(IS_MAC)
   // Invoked at the beginning of a "short" interval (~10 seconds before
@@ -141,10 +152,12 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   std::unique_ptr<UsageScenarioTracker> long_usage_scenario_tracker_;
   raw_ptr<UsageScenarioDataStore> long_usage_scenario_data_store_;
 
+#if HAS_BATTERY_LEVEL_PROVIDER_IMPL()
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
   BatteryLevelProvider::BatteryState battery_state_{0, 0, absl::nullopt, false,
                                                     base::TimeTicks::Now()};
+#endif  // HAS_BATTERY_LEVEL_PROVIDER_IMPL()
 
   base::TimeTicks interval_begin_;
 
