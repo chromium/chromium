@@ -148,9 +148,11 @@ WidgetBase::WidgetBase(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool hidden,
     bool never_composited,
-    bool is_for_child_local_root)
+    bool is_embedded,
+    bool is_for_scalable_page)
     : never_composited_(never_composited),
-      is_for_child_local_root_(is_for_child_local_root),
+      is_embedded_(is_embedded),
+      is_for_scalable_page_(is_for_scalable_page),
       client_(client),
       widget_host_(std::move(widget_host), task_runner),
       receiver_(this, std::move(widget), task_runner),
@@ -175,7 +177,6 @@ WidgetBase::~WidgetBase() {
 
 void WidgetBase::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    bool for_child_local_root_frame,
     const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -195,7 +196,7 @@ void WidgetBase::InitializeCompositing(
   if (!settings) {
     const display::ScreenInfo& screen_info = screen_infos.current();
     default_settings = GenerateLayerTreeSettings(
-        compositing_thread_scheduler, for_child_local_root_frame,
+        compositing_thread_scheduler, is_embedded_, is_for_scalable_page_,
         screen_info.rect.size(), screen_info.device_scale_factor);
     settings = &default_settings.value();
   }
@@ -542,7 +543,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   // correct choice. If client is meant to designate the widget type, then
   // kOOPIF would denote that it is not for the main frame. However, kRenderer
   // would also be used for other widgets such as popups.
-  const char* client_name = is_for_child_local_root_ ? kOOPIF : kRenderer;
+  const char* client_name = is_embedded_ ? kOOPIF : kRenderer;
   const bool for_web_tests = WebTestMode();
   // Misconfigured bots (eg. crbug.com/780757) could run web tests on a
   // machine where gpu compositing doesn't work. Don't crash in that case.
@@ -705,7 +706,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
 #if BUILDFLAG(IS_ANDROID)
   if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
-      !is_for_child_local_root_) {
+      !is_embedded_) {
     // TODO(ericrk): Collapse with non-webview registration below.
     if (::features::IsUsingVizFrameSubmissionForWebView()) {
       widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),

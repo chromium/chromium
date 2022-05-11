@@ -86,7 +86,8 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
         std::move(widget_receiver), base::ThreadTaskRunnerHandle::Get(),
         /*is_hidden=*/false,
         /*never_composited=*/false,
-        /*is_for_child_local_root=*/false);
+        /*is_for_child_local_root=*/false,
+        /*is_for_scalable_page=*/true);
 
     widget_compositor_ = base::MakeRefCounted<FakeWidgetCompositor>(
         layer_tree_host(), widget_base_->GetWeakPtr(),

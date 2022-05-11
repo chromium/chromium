@@ -712,16 +712,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Compositing.ResourcePoolMemoryUsage" units="MB"
-    expires_after="2022-05-01">
-  <owner>sunnyps@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Size of the in-use portion of the ResourcePool for CC layer tree. Recorded
-    each time resources are reclaimed after tile work completes.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly"
     units="boolean" expires_after="2022-10-04">
   <owner>penghuang@chromium.org</owner>

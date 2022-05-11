@@ -3560,13 +3560,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Renderer4.StartToFinish"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LayerTreeClient" separator=".">
-  <suffix name="Browser" label="Browser"/>
-  <suffix name="OOPIF" label="OOPIF (out-of-process iframe) renderer"/>
-  <suffix name="Renderer" label="Non-OOPIF renderer"/>
-  <affected-histogram name="Compositing.ResourcePoolMemoryUsage"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LCDTextDisallowedReasonSuffixes" separator=".">
   <suffix name="HighDPI"
       label="In web pages where device scale factor is greater than or equal

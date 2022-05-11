@@ -78,7 +78,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool hidden,
       bool never_composited,
-      bool is_for_child_local_root);
+      bool is_embedded,
+      bool is_for_scalable_page);
   ~WidgetBase() override;
 
   // Initialize the compositor. |settings| is typically null. When |settings| is
@@ -93,7 +94,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // destroyed/invalidated.
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      bool for_child_local_root_frame,
       const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -367,6 +367,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
     return local_surface_id_from_parent_;
   }
 
+  bool is_embedded() const { return is_embedded_; }
+
  private:
   bool CanComposeInline();
   void UpdateTextInputStateInternal(bool show_virtual_keyboard,
@@ -417,8 +419,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;
-  // Indicates this is for a child local root.
-  const bool is_for_child_local_root_;
+  // Indicates this is for a child local root or a nested main frame.
+  // TODO(crbug.com/1254770): revisit this for portals.
+  const bool is_embedded_ = false;
+  // Indicates that this widget is for a portal element, top level frame, or a
+  // GuestView.
+  const bool is_for_scalable_page_ = false;
   // Set true by initialize functions, used to check that only one is called.
   bool initialized_ = false;
 

@@ -99,6 +99,12 @@ public final class ProductionSupportedFlagList {
                     "Disable sending HTTP/2 SETTINGS parameters with reserved identifiers."),
             Flag.commandLine(VariationsSwitches.ENABLE_FINCH_SEED_DELTA_COMPRESSION,
                     "Enables delta-compression when requesting a new seed from the server."),
+            Flag.commandLine(AwSwitches.WEBVIEW_MP_ARCH_FENCED_FRAMES,
+                    "Enables MPArch-based fenced frames. Also implies SharedStorageAPI, "
+                            + "and PrivacySandboxAdsAPIsOverride"),
+            Flag.commandLine(AwSwitches.WEBVIEW_SHADOW_DOM_FENCED_FRAMES,
+                    "Enables ShadowDOM-based fenced frames. Also implies SharedStorageAPI, "
+                            + "and PrivacySandboxAdsAPIsOverride"),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),

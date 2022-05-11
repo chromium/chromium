@@ -254,16 +254,20 @@ WebFrameWidgetImpl::WebFrameWidgetImpl(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root,
-    bool is_for_nested_main_frame)
-    : widget_base_(std::make_unique<WidgetBase>(/*widget_base_client=*/this,
-                                                std::move(widget_host),
-                                                std::move(widget),
-                                                task_runner,
-                                                hidden,
-                                                never_composited,
-                                                is_for_child_local_root)),
+    bool is_for_nested_main_frame,
+    bool is_for_scalable_page)
+    : widget_base_(std::make_unique<WidgetBase>(
+          /*widget_base_client=*/this,
+          std::move(widget_host),
+          std::move(widget),
+          task_runner,
+          hidden,
+          never_composited,
+          /*is_embedded=*/is_for_child_local_root || is_for_nested_main_frame,
+          is_for_scalable_page)),
       frame_sink_id_(frame_sink_id),
-      is_for_child_local_root_(is_for_child_local_root) {
+      is_for_child_local_root_(is_for_child_local_root),
+      is_for_scalable_page_(is_for_scalable_page) {
   DCHECK(task_runner);
   if (is_for_nested_main_frame)
     main_data().is_for_nested_main_frame = is_for_nested_main_frame;
@@ -293,7 +297,7 @@ void WebFrameWidgetImpl::SetIsNestedMainFrameWidget(bool is_nested) {
 
 void WebFrameWidgetImpl::Close() {
   LocalFrameView* frame_view;
-  if (is_for_child_local_root_) {
+  if (ForSubframe()) {
     frame_view = LocalRootImpl()->GetFrame()->View();
   } else {
     // Scrolling for the root frame is special we need to pass null indicating
@@ -1989,11 +1993,11 @@ void WebFrameWidgetImpl::InitializeCompositing(
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
-      agent_group_scheduler, is_for_child_local_root_, screen_infos, settings,
+      agent_group_scheduler, screen_infos, settings,
       input_handler_weak_ptr_factory_.GetWeakPtr());
 
   LocalFrameView* frame_view;
-  if (is_for_child_local_root_) {
+  if (ForSubframe()) {
     frame_view = LocalRootImpl()->GetFrame()->View();
   } else {
     // Scrolling for the root frame is special we need to pass null indicating

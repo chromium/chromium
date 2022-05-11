@@ -136,7 +136,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root,
-      bool is_for_nested_main_frame);
+      bool is_for_nested_main_frame,
+      bool is_for_scalable_page);
   ~WebFrameWidgetImpl() override;
 
   virtual void Trace(Visitor*) const;
@@ -1086,7 +1087,15 @@ class CORE_EXPORT WebFrameWidgetImpl
   }
 
   // Whether this widget is for a child local root, or otherwise a main frame.
+  // Prefer using |ForSubframe()| for distinguishing subframes and
+  // |widget_base_.is_embedded()| for subframes and embedded main frames (i.e.,
+  // all embedded scenarios).
   const bool is_for_child_local_root_;
+
+  // Whether this widget is for a portal, guest view, or top level frame.
+  // These may have a page scale node, so it is important to plumb this
+  // information through to avoid breaking assumptions.
+  const bool is_for_scalable_page_;
 
   WaitForPageScaleAnimationForTestingCallback
       page_scale_animation_for_testing_callback_;

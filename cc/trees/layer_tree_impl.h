@@ -438,7 +438,7 @@ class CC_EXPORT LayerTreeImpl {
   float page_scale_factor_for_scroll() const {
     DCHECK(external_page_scale_factor_ == 1.f ||
            current_page_scale_factor() == 1.f ||
-           !settings().is_layer_tree_for_subframe);
+           settings().is_for_scalable_page);
     return external_page_scale_factor_ * current_page_scale_factor();
   }
   const gfx::DisplayColorSpaces& display_color_spaces() const {

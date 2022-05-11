@@ -54934,6 +54934,7 @@ from previous Chrome versions.
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
+  <int value="-1774290918" label="webview-shadow-dom-fenced-frames"/>
   <int value="-1772942854" label="LongPressBackForHistory:enabled"/>
   <int value="-1772905637"
       label="RunVideoCaptureServiceInBrowserProcess:enabled"/>
@@ -57619,6 +57620,7 @@ from previous Chrome versions.
   <int value="1558582" label="ResamplingInputEvents:enabled"/>
   <int value="1618593" label="AutofillUseConsistentPopupSettingsIcons:enabled"/>
   <int value="2070488" label="EnablePasswordsAccountStorageSavingUi:disabled"/>
+  <int value="2814115" label="webview-mparch-fenced-frames"/>
   <int value="3001424" label="FeatureNotificationGuide:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>

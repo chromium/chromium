@@ -248,7 +248,8 @@ using CreateWebFrameWidgetCallback = base::RepeatingCallback<WebFrameWidget*(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root,
-    bool is_for_nested_main_frame)>;
+    bool is_for_nested_main_frame,
+    bool is_for_scalable_page)>;
 // Allows tests to inject their own type of WebFrameWidget in order to
 // override methods of the WebFrameWidgetImpl.
 void BLINK_EXPORT

@@ -46,4 +46,26 @@ TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
             command_line.GetSwitchValueASCII(switches::kDisableFeatures));
 }
 
+TEST(ScopedAddFeatureFlags, FlagWithParameter) {
+  CommandLine command_line(CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kEnableFeatures,
+                                 "ExistingEnabledFoo");
+  const base::Feature kExistingEnabledFoo{"ExistingEnabledFoo",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+  const base::Feature kFeatureWithParameter{"FeatureWithParam",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+  {
+    ScopedAddFeatureFlags scoped_add(&command_line);
+    scoped_add.EnableIfNotSet(kExistingEnabledFoo);
+    scoped_add.EnableIfNotSetWithParameter(kFeatureWithParameter, "name",
+                                           "value");
+    EXPECT_TRUE(scoped_add.IsEnabledWithParameter(kFeatureWithParameter, "name",
+                                                  "value"));
+  }
+
+  EXPECT_EQ(std::string("ExistingEnabledFoo,FeatureWithParam:name/value"),
+            command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+}
+
 }  // namespace android_webview

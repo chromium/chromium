@@ -205,6 +205,20 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       features.DisableIfNotSet(::features::kDefaultANGLEVulkan);
     }
 
+    if (cl->HasSwitch(switches::kWebViewMPArchFencedFrames)) {
+      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
+                                           "implementation_type", "mparch");
+      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
+      features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
+    }
+
+    if (cl->HasSwitch(switches::kWebViewShadowDOMFencedFrames)) {
+      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
+                                           "implementation_type", "shadow_dom");
+      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
+      features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
+    }
+
     // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
     // kVulkan in case it becomes enabled by default.
     features.DisableIfNotSet(::features::kVulkan);

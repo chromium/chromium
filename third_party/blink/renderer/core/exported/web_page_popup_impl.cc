@@ -299,7 +299,8 @@ WebPagePopupImpl::WebPagePopupImpl(
                                        task_runner,
                                        /*hidden=*/false,
                                        /*never_composited=*/false,
-                                       /*is_for_child_local_root=*/false)) {
+                                       /*is_embedded=*/false,
+                                       /*is_for_scalable_page=*/true)) {
   popup_widget_host_.set_disconnect_handler(WTF::Bind(
       &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
 }
@@ -432,9 +433,8 @@ void WebPagePopupImpl::InitializeCompositing(
     const cc::LayerTreeSettings* settings) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
-  widget_base_->InitializeCompositing(agent_group_scheduler,
-                                      /*for_child_local_root_frame=*/false,
-                                      screen_infos, settings,
+  widget_base_->InitializeCompositing(agent_group_scheduler, screen_infos,
+                                      settings,
                                       /*frame_widget_input_handler=*/nullptr);
   cc::LayerTreeDebugState debug_state =
       widget_base_->LayerTreeHost()->GetDebugState();

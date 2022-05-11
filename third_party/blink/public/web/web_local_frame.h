@@ -245,6 +245,7 @@ class WebLocalFrame : public WebFrame {
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame = false,
+      bool is_for_scalable_page = true,
       bool hidden = false);
 
   // Returns the frame identified by the given name.  This method supports
@@ -929,6 +930,7 @@ class WebLocalFrame : public WebFrame {
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
       const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       bool hidden) = 0;
 };
 

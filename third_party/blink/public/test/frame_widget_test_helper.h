@@ -45,6 +45,7 @@ class FrameWidgetTestHelper {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       content::TestRunner* test_runner);
 
   // Reset state for web tests.

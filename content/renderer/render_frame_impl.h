@@ -179,6 +179,7 @@ class CONTENT_EXPORT RenderFrameImpl
       RenderViewImpl* render_view,
       blink::WebFrame* opener,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       blink::mojom::FrameReplicationStatePtr replication_state,
       const base::UnguessableToken& devtools_frame_token,
       mojom::CreateLocalMainFrameParamsPtr params);

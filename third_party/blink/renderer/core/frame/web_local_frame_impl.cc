@@ -611,11 +611,13 @@ WebFrameWidget* WebLocalFrame::InitializeFrameWidget(
         mojo_widget,
     const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     bool hidden) {
   CreateFrameWidgetInternal(
       base::PassKey<WebLocalFrame>(), std::move(mojo_frame_widget_host),
       std::move(mojo_frame_widget), std::move(mojo_widget_host),
-      std::move(mojo_widget), frame_sink_id, is_for_nested_main_frame, hidden);
+      std::move(mojo_widget), frame_sink_id, is_for_nested_main_frame,
+      is_for_scalable_page, hidden);
   return FrameWidget();
 }
 
@@ -2547,6 +2549,7 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
         mojo_widget,
     const viz::FrameSinkId& frame_sink_id,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     bool hidden) {
   DCHECK(!frame_widget_);
   DCHECK(frame_->IsLocalRoot());
@@ -2570,7 +2573,7 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
             std::move(mojo_widget),
             Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
             frame_sink_id, hidden, never_composited, is_for_child_local_root,
-            is_for_nested_main_frame));
+            is_for_nested_main_frame, is_for_scalable_page));
   } else {
     frame_widget_ = MakeGarbageCollected<WebFrameWidgetImpl>(
         std::move(pass_key), std::move(mojo_frame_widget_host),
@@ -2578,7 +2581,7 @@ void WebLocalFrameImpl::CreateFrameWidgetInternal(
         std::move(mojo_widget),
         Scheduler()->GetAgentGroupScheduler()->DefaultTaskRunner(),
         frame_sink_id, hidden, never_composited, is_for_child_local_root,
-        is_for_nested_main_frame);
+        is_for_nested_main_frame, is_for_scalable_page);
   }
   frame_widget_->BindLocalRoot(*this);
 

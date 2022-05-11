@@ -3050,7 +3050,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       layer_debug_info_enabled_);
 
   PaintArtifactCompositor::ViewportProperties viewport_properties;
-  if (GetFrame().IsMainFrame()) {
+  // TODO(crbug.com/1254770): revisit this for embedded portals.
+  if (GetFrame().IsOutermostMainFrame()) {
     const auto& viewport = page->GetVisualViewport();
     viewport_properties.overscroll_elasticity_effect =
         viewport.GetOverscrollElasticityEffectNode();

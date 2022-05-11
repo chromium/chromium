@@ -289,11 +289,12 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
     // InputHander::ScrollThread::SCROLL_ON_MAIN_THREAD
     scroll_status.main_thread_scrolling_reasons =
         MainThreadScrollingReason::kNoScrollingLayer;
-    if (compositor_delegate_.GetSettings().is_layer_tree_for_subframe) {
-      // OOPIFs never have a viewport scroll node so if we can't scroll
-      // we need to be bubble up to the parent frame. This happens by
-      // returning SCROLL_IGNORED.
-      TRACE_EVENT_INSTANT0("cc", "Ignored - No ScrollNode (OOPIF)",
+    if (compositor_delegate_.GetSettings().is_for_embedded_frame) {
+      // OOPIFs or fenced frames never have a viewport scroll node so if we
+      // can't scroll we need to be bubble up to the parent frame. This happens
+      // by returning SCROLL_IGNORED.
+      TRACE_EVENT_INSTANT0("cc",
+                           "Ignored - No ScrollNode (OOPIF or FencedFrame)",
                            TRACE_EVENT_SCOPE_THREAD);
     } else {
       // If we didn't hit a layer above we'd usually fallback to the

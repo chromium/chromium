@@ -320,7 +320,8 @@ using CreateTestWebFrameWidgetCallback =
         bool hidden,
         bool never_composited,
         bool is_for_child_local_root,
-        bool is_for_nested_main_frame)>;
+        bool is_for_nested_main_frame,
+        bool is_for_scalable_page)>;
 
 // Convenience class for handling the lifetime of a WebView and its associated
 // mainframe in tests.
@@ -437,12 +438,14 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root,
-      bool is_for_nested_main_frame) {
+      bool is_for_nested_main_frame,
+      bool is_for_scalable_page) {
     return MakeGarbageCollected<C>(
         std::move(pass_key), std::move(frame_widget_host),
         std::move(frame_widget), std::move(widget_host), std::move(widget),
         std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame);
+        is_for_child_local_root, is_for_nested_main_frame,
+        is_for_scalable_page);
   }
 
   blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() {

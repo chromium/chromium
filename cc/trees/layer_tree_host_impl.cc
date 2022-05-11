@@ -2159,23 +2159,6 @@ void LayerTreeHostImpl::ReclaimResources(
   // In OOM, we now might be able to release more resources that were held
   // because they were exported.
   if (resource_pool_) {
-    if (resource_pool_->memory_usage_bytes()) {
-      const size_t kMegabyte = 1024 * 1024;
-      // This is a good time to log memory usage. A chunk of work has just
-      // completed but none of the memory used for that work has likely been
-      // freed.
-      std::string client_suffix;
-      if (settings_.commit_to_active_tree) {
-        client_suffix = "Browser";
-      } else if (settings_.is_layer_tree_for_subframe) {
-        client_suffix = "OOPIF";
-      } else {
-        client_suffix = "Renderer";
-      }
-      base::UmaHistogramMemoryMB(
-          "Compositing.ResourcePoolMemoryUsage." + client_suffix,
-          static_cast<int>(resource_pool_->memory_usage_bytes() / kMegabyte));
-    }
     resource_pool_->ReduceResourceUsage();
   }
 
@@ -4137,7 +4120,7 @@ LayerTreeHostImpl::ProcessCompositorDeltas() {
   commit_data->is_scroll_active =
       input_delegate_ && GetInputHandler().IsCurrentlyScrolling();
   // We should never process non-unit page_scale_delta for an OOPIF subframe.
-  DCHECK(!settings().is_layer_tree_for_subframe ||
+  DCHECK(settings().is_for_scalable_page ||
          commit_data->page_scale_delta == 1.f);
   commit_data->top_controls_delta =
       active_tree()->top_controls_shown_ratio()->PullDeltaForMainThread();

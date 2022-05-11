@@ -1516,6 +1516,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     RenderViewImpl* render_view,
     blink::WebFrame* opener,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     blink::mojom::FrameReplicationStatePtr replication_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::CreateLocalMainFrameParamsPtr params) {
@@ -1549,7 +1550,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       std::move(params->widget_params->widget),
       viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                        params->widget_params->routing_id),
-      is_for_nested_main_frame,
+      is_for_nested_main_frame, is_for_scalable_page,
       /*hidden=*/true);
   web_frame_widget->InitializeCompositing(
       agent_scheduling_group.agent_group_scheduler(),
@@ -1746,6 +1747,7 @@ void RenderFrameImpl::CreateFrame(
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
         is_for_nested_main_frame,
+        /*is_for_scalable_page=*/!is_for_nested_main_frame,
         /*hidden=*/true);
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),
@@ -1788,6 +1790,7 @@ void RenderFrameImpl::CreateFrame(
         viz::FrameSinkId(RenderThread::Get()->GetClientId(),
                          widget_params->routing_id),
         /*is_for_nested_main_frame=*/false,
+        /*is_for_scalable_page=*/false,
         /*hidden=*/true);
     web_frame_widget->InitializeCompositing(
         agent_scheduling_group.agent_group_scheduler(),

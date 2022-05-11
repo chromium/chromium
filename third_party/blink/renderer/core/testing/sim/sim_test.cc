@@ -170,12 +170,13 @@ SimWebFrameWidget* SimTest::CreateSimWebFrameWidget(
     bool never_composited,
     bool is_for_child_local_root,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     SimCompositor* compositor) {
   return MakeGarbageCollected<SimWebFrameWidget>(
       compositor, std::move(pass_key), std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
-      is_for_child_local_root, is_for_nested_main_frame);
+      is_for_child_local_root, is_for_nested_main_frame, is_for_scalable_page);
 }
 
 frame_test_helpers::TestWebFrameWidget* SimTest::CreateTestWebFrameWidget(
@@ -193,12 +194,14 @@ frame_test_helpers::TestWebFrameWidget* SimTest::CreateTestWebFrameWidget(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root,
-    bool is_for_nested_main_frame) {
+    bool is_for_nested_main_frame,
+    bool is_for_scalable_page) {
   return CreateSimWebFrameWidget(
       std::move(pass_key), std::move(frame_widget_host),
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
-      is_for_child_local_root, is_for_nested_main_frame, compositor_.get());
+      is_for_child_local_root, is_for_nested_main_frame, is_for_scalable_page,
+      compositor_.get());
 }
 
 }  // namespace blink

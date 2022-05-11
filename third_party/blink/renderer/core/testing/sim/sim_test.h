@@ -68,6 +68,7 @@ class SimTest : public testing::Test {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       SimCompositor* compositor);
 
  private:
@@ -86,7 +87,8 @@ class SimTest : public testing::Test {
       bool hidden,
       bool never_composited,
       bool is_for_child_local_root,
-      bool is_for_nested_main_frame);
+      bool is_for_nested_main_frame,
+      bool is_for_scalable_page);
 
   // These are unique_ptrs in order to destroy them in TearDown. Subclasses
   // may override Platform::Current() and these must shutdown before the

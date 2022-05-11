@@ -144,7 +144,10 @@ void RenderViewImpl::Initialize(
   if (local_main_frame) {
     RenderFrameImpl::CreateMainFrame(
         agent_scheduling_group_, this, opener_frame,
-        params->type != mojom::ViewWidgetType::kTopLevel,
+        /*is_for_nested_main_frame=*/params->type !=
+            mojom::ViewWidgetType::kTopLevel,
+        /*is_for_scalable_page=*/params->type !=
+            mojom::ViewWidgetType::kFencedFrame,
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(params->main_frame->get_local_params()));
   } else {

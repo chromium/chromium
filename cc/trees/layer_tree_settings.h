@@ -114,7 +114,11 @@ class CC_EXPORT LayerTreeSettings {
 
   // Indicates the case when a sub-frame gets its own LayerTree because it's
   // rendered in a different process from its ancestor frames.
-  bool is_layer_tree_for_subframe = false;
+  bool is_for_embedded_frame = false;
+
+  // Indicates when the LayerTree is for a portal element, GuestView, or top
+  // level frame. In all these cases we may have a page scale.
+  bool is_for_scalable_page = true;
 
   // Determines whether we disallow non-exact matches when finding resources
   // in ResourcePool. Only used for layout or pixel tests, as non-deterministic

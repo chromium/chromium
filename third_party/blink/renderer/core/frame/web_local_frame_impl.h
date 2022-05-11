@@ -546,6 +546,7 @@ class CORE_EXPORT WebLocalFrameImpl final
           mojo_widget,
       const viz::FrameSinkId& frame_sink_id,
       bool is_for_nested_main_frame,
+      bool is_for_scalable_page,
       bool hidden) override;
 
   HitTestResult HitTestResultForVisualViewportPos(const gfx::Point&);
