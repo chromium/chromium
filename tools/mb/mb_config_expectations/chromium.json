@@ -66,13 +66,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-archive-tagged": {
-    "gn_args": {
-      "is_official_build": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-official": {
     "gn_args": {
       "is_official_build": true,
@@ -98,12 +91,6 @@
       "use_goma": true
     }
   },
-  "mac-archive-tagged": {
-    "gn_args": {
-      "is_official_build": true,
-      "use_goma": true
-    }
-  },
   "mac-arm64-archive-dbg": {
     "gn_args": {
       "is_component_build": true,
@@ -120,13 +107,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "target_cpu": "arm64",
-      "use_goma": true
-    }
-  },
-  "mac-arm64-archive-tagged": {
-    "gn_args": {
-      "is_official_build": true,
       "target_cpu": "arm64",
       "use_goma": true
     }
@@ -157,13 +137,6 @@
       "use_remoteexec": true
     }
   },
-  "win-archive-tagged": {
-    "gn_args": {
-      "is_official_build": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "win-official": {
     "gn_args": {
       "is_official_build": true,
@@ -187,14 +160,6 @@
       "is_debug": false,
       "skip_archive_compression": false,
       "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "win32-archive-tagged": {
-    "gn_args": {
-      "is_official_build": true,
       "target_cpu": "x86",
       "use_rbe": true,
       "use_remoteexec": true

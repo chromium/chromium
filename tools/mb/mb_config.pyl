@@ -58,22 +58,17 @@
       'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-rel': 'release_bot_reclient',
-      'linux-archive-tagged': 'official_optimize_reclient',
       'linux-official': 'official_optimize_reclient',
       'mac-archive-dbg': 'debug_bot',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols',
-      'mac-archive-tagged': 'official_optimize_goma',
       'mac-arm64-archive-dbg': 'debug_bot_arm64',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64',
-      'mac-arm64-archive-tagged': 'arm64_official_optimize_goma',
       'mac-official': 'official_optimize_goma',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
-      'win-archive-tagged': 'official_optimize_reclient',
       'win-official': 'official_optimize_goma',
       'win32-archive-dbg': 'debug_bot_x86_reclient',
       'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression_reclient',
-      'win32-archive-tagged': 'x86_official_optimize_reclient',
       'win32-official': 'x86_official_optimize_goma',
     },
 
@@ -1769,10 +1764,6 @@
       'angle_deqp_tests', 'shared_release_trybot', 'x86',
     ],
 
-    'arm64_official_optimize_goma': [
-      'arm64', 'official_optimize_goma',
-    ],
-
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release': [
       'asan', 'fuzzer', 'static', 'v8_heap', 'minimal_symbols', 'release_bot',
     ],
@@ -3466,10 +3457,6 @@
 
     'x86_official_optimize_goma_trybot': [
       'official_optimize_goma_trybot', 'x86',
-    ],
-
-    'x86_official_optimize_reclient': [
-      'official_optimize_reclient', 'x86',
     ],
   },
 

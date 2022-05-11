@@ -283,68 +283,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-archive-tagged",
-    builderless = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "tag",
-    ),
-    cores = 32,
-    execution_timeout = 7 * time.hour,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "archive_datas": [
-                {
-                    "files": [
-                        "chrome",
-                        "chrome-wrapper",
-                        "chrome_100_percent.pak",
-                        "chrome_200_percent.pak",
-                        "chrome_crashpad_handler",
-                        "chrome_sandbox",
-                        "icudtl.dat",
-                        "libEGL.so",
-                        "libGLESv2.so",
-                        "libvk_swiftshader.so",
-                        "libvulkan.so.1",
-                        "MEIPreload/manifest.json",
-                        "MEIPreload/preloaded_data.pb",
-                        "nacl_helper",
-                        "nacl_helper_bootstrap",
-                        "nacl_irt_x86_64.nexe",
-                        "product_logo_48.png",
-                        "resources.pak",
-                        "v8_context_snapshot.bin",
-                        "vk_swiftshader_icd.json",
-                        "xdg-mime",
-                        "xdg-settings",
-                    ],
-                    "dirs": ["ClearKeyCdm", "locales", "resources"],
-                    "gcs_bucket": "chromium-browser-versioned",
-                    "gcs_path": "experimental/Linux_x64_Tagged/{%chromium_version%}/chrome-linux.zip",
-                    "archive_type": "ARCHIVE_TYPE_ZIP",
-                },
-                {
-                    "files": [
-                        "chromedriver",
-                    ],
-                    "gcs_bucket": "chromium-browser-versioned",
-                    "gcs_path": "experimental/Linux_x64_Tagged/{%chromium_version%}/chromedriver_linux64.zip",
-                    "archive_type": "ARCHIVE_TYPE_ZIP",
-                },
-            ],
-        },
-    },
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = [],
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.builder(
     name = "linux-official",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
@@ -392,31 +330,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-)
-
-ci.builder(
-    name = "mac-archive-tagged",
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "tag",
-    ),
-    cores = 12,
-    execution_timeout = 7 * time.hour,
-    os = os.MAC_DEFAULT,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "source_side_spec_path": [
-                "src",
-                "infra",
-                "archive_config",
-                "mac-tagged.json",
-            ],
-        },
-    },
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = [],
 )
 
 ci.builder(
@@ -479,31 +392,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-)
-
-ci.builder(
-    name = "mac-arm64-archive-tagged",
-    console_view_entry = consoles.console_view_entry(
-        category = "mac|arm",
-        short_name = "tag",
-    ),
-    cores = 12,
-    execution_timeout = 7 * time.hour,
-    os = os.MAC_DEFAULT,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "source_side_spec_path": [
-                "src",
-                "infra",
-                "archive_config",
-                "mac-tagged.json",
-            ],
-        },
-    },
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = [],
 )
 
 ci.builder(
@@ -589,34 +477,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "win-archive-tagged",
-    console_view_entry = consoles.console_view_entry(
-        category = "win|tag",
-        short_name = "64",
-    ),
-    cores = 32,
-    execution_timeout = 7 * time.hour,
-    os = os.WINDOWS_DEFAULT,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "source_side_spec_path": [
-                "src",
-                "infra",
-                "archive_config",
-                "win-tagged.json",
-            ],
-        },
-    },
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = [],
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.builder(
     name = "win-official",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
@@ -692,34 +552,6 @@ ci.builder(
         },
     },
     tree_closing = True,
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
-)
-
-ci.builder(
-    name = "win32-archive-tagged",
-    console_view_entry = consoles.console_view_entry(
-        category = "win|tag",
-        short_name = "32",
-    ),
-    cores = 32,
-    execution_timeout = 7 * time.hour,
-    os = os.WINDOWS_DEFAULT,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "source_side_spec_path": [
-                "src",
-                "infra",
-                "archive_config",
-                "win-tagged.json",
-            ],
-        },
-    },
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = [],
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,

@@ -405,14 +405,6 @@
           'all',
         ],
       },
-      'linux-archive-tagged': {
-        'mixins': [
-          'linux-archive-rel-args',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'linux-official': {
         'additional_compile_targets': [
           'all',
@@ -429,24 +421,12 @@
           'all',
         ],
       },
-      'mac-archive-tagged': {
-        'mixins': ['mac-archive-rel-args'],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'mac-arm64-archive-dbg': {
         'additional_compile_targets': [
           'all',
         ],
       },
       'mac-arm64-archive-rel': {
-        'mixins': ['mac-archive-rel-args'],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-archive-tagged': {
         'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
@@ -470,14 +450,6 @@
           'scripts': 'public_build_scripts',
         },
       },
-      'win-archive-tagged': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
       'win-official': {
         'additional_compile_targets': [
           'all',
@@ -489,14 +461,6 @@
         ],
       },
       'win32-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
-      'win32-archive-tagged': {
         'additional_compile_targets': [
           'all',
         ],
