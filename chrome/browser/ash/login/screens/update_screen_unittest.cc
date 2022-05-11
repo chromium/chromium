@@ -92,7 +92,7 @@ class UpdateScreenUnitTest : public testing::Test {
         .WillRepeatedly(Return(false));
 
     update_screen_ = std::make_unique<UpdateScreen>(
-        &mock_view_, mock_error_screen_.get(),
+        mock_view_.AsWeakPtr(), mock_error_screen_.get(),
         base::BindRepeating(&UpdateScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
   }

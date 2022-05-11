@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -105,11 +106,11 @@ std::string UpdateScreen::GetResultString(Result result) {
   }
 }
 
-UpdateScreen::UpdateScreen(UpdateView* view,
+UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
                            ErrorScreen* error_screen,
                            const ScreenExitCallback& exit_callback)
     : BaseScreen(UpdateView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
       histogram_helper_(
@@ -124,11 +125,6 @@ UpdateScreen::UpdateScreen(UpdateView* view,
 UpdateScreen::~UpdateScreen() {
   if (view_)
     view_->Unbind();
-}
-
-void UpdateScreen::OnViewDestroyed(UpdateView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 bool UpdateScreen::MaybeSkip(WizardContext* context) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -19,7 +20,7 @@ namespace chromeos {
 
 // Interface for dependency injection between WelcomeScreen and its actual
 // representation. Owned by UpdateScreen.
-class UpdateView {
+class UpdateView : public base::SupportsWeakPtr<UpdateView> {
  public:
   // The screen name must never change. It's stored into local state as a
   // pending screen during OOBE update. So the value should be the same between
@@ -90,8 +91,6 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  ash::UpdateScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

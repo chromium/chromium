@@ -46,10 +46,7 @@ UpdateScreenHandler::UpdateScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path_deprecated("login.UpdateScreen.userActed");
 }
 
-UpdateScreenHandler::~UpdateScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+UpdateScreenHandler::~UpdateScreenHandler() = default;
 
 void UpdateScreenHandler::Show(bool is_opt_out_enabled) {
   base::Value::Dict data;
@@ -60,12 +57,10 @@ void UpdateScreenHandler::Show(bool is_opt_out_enabled) {
 void UpdateScreenHandler::Hide() {}
 
 void UpdateScreenHandler::Bind(UpdateScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
+  BaseScreenHandler::SetBaseScreenDeprecated(screen);
 }
 
 void UpdateScreenHandler::Unbind() {
-  screen_ = nullptr;
   BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 

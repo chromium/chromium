@@ -70,7 +70,7 @@ class UpdateScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  UpdateScreen(UpdateView* view,
+  UpdateScreen(base::WeakPtr<UpdateView> view,
                ErrorScreen* error_screen,
                const ScreenExitCallback& exit_callback);
 
@@ -78,10 +78,6 @@ class UpdateScreen : public BaseScreen,
   UpdateScreen& operator=(const UpdateScreen&) = delete;
 
   ~UpdateScreen() override;
-
-  // Called when the being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before it.
-  void OnViewDestroyed(UpdateView* view);
 
   base::OneShotTimer* GetShowTimerForTesting();
   base::OneShotTimer* GetErrorMessageTimerForTesting();
@@ -169,7 +165,7 @@ class UpdateScreen : public BaseScreen,
   // Determines if the device is in EU zone to show info about opt out.
   static bool CheckIfOptOutIsEnabled();
 
-  UpdateView* view_;
+  base::WeakPtr<UpdateView> view_;
   ErrorScreen* error_screen_;
   ScreenExitCallback exit_callback_;
 

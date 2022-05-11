@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_UPDATE_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,7 +14,7 @@ namespace ash {
 
 class MockUpdateScreen : public UpdateScreen {
  public:
-  MockUpdateScreen(UpdateView* view,
+  MockUpdateScreen(base::WeakPtr<UpdateView> view,
                    ErrorScreen* error_screen,
                    const ScreenExitCallback& exit_callback);
   virtual ~MockUpdateScreen();
@@ -52,9 +53,6 @@ class MockUpdateView : public UpdateView {
   MOCK_METHOD(void, SetCancelUpdateShortcutEnabled, (bool value));
   MOCK_METHOD(void, ShowLowBatteryWarningMessage, (bool value));
   MOCK_METHOD(void, SetAutoTransition, (bool value));
-
- private:
-  UpdateScreen* screen_ = nullptr;
 };
 
 }  // namespace ash

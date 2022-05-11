@@ -567,7 +567,8 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnEulaScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateScreen>(
-      oobe_ui->GetView<UpdateScreenHandler>(), oobe_ui->GetErrorScreen(),
+      oobe_ui->GetView<UpdateScreenHandler>()->AsWeakPtr(),
+      oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUpdateScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnrollmentScreen>(
