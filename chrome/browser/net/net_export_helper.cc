@@ -75,37 +75,35 @@ std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
 
   WinsockLayeredServiceProviderList layered_providers;
   GetWinsockLayeredServiceProviders(&layered_providers);
-  auto layered_provider_list = std::make_unique<base::ListValue>();
+  base::Value::List layered_provider_list;
   for (size_t i = 0; i < layered_providers.size(); ++i) {
-    auto service_dict = std::make_unique<base::DictionaryValue>();
-    service_dict->SetString("name",
-                            base::AsString16(layered_providers[i].name));
-    service_dict->SetInteger("version", layered_providers[i].version);
-    service_dict->SetInteger("chain_length", layered_providers[i].chain_length);
-    service_dict->SetInteger("socket_type", layered_providers[i].socket_type);
-    service_dict->SetInteger("socket_protocol",
-                             layered_providers[i].socket_protocol);
-    service_dict->SetString("path",
-                            base::WideToUTF8(layered_providers[i].path));
+    base::Value::Dict service_dict;
+    service_dict.Set("name", base::AsString16(layered_providers[i].name));
+    service_dict.Set("version", layered_providers[i].version);
+    service_dict.Set("chain_length", layered_providers[i].chain_length);
+    service_dict.Set("socket_type", layered_providers[i].socket_type);
+    service_dict.Set("socket_protocol", layered_providers[i].socket_protocol);
+    service_dict.Set("path", base::WideToUTF8(layered_providers[i].path));
 
-    layered_provider_list->Append(std::move(service_dict));
+    layered_provider_list.Append(std::move(service_dict));
   }
-  service_providers->Set("service_providers", std::move(layered_provider_list));
+  service_providers->GetDict().Set("service_providers",
+                                   std::move(layered_provider_list));
 
   WinsockNamespaceProviderList namespace_providers;
   GetWinsockNamespaceProviders(&namespace_providers);
-  auto namespace_list = std::make_unique<base::ListValue>();
+  base::Value::List namespace_list;
   for (size_t i = 0; i < namespace_providers.size(); ++i) {
-    auto namespace_dict = std::make_unique<base::DictionaryValue>();
-    namespace_dict->SetString("name",
-                              base::AsString16(namespace_providers[i].name));
-    namespace_dict->SetBoolean("active", namespace_providers[i].active);
-    namespace_dict->SetInteger("version", namespace_providers[i].version);
-    namespace_dict->SetInteger("type", namespace_providers[i].type);
+    base::Value::Dict namespace_dict;
+    namespace_dict.Set("name", base::AsString16(namespace_providers[i].name));
+    namespace_dict.Set("active", namespace_providers[i].active);
+    namespace_dict.Set("version", namespace_providers[i].version);
+    namespace_dict.Set("type", namespace_providers[i].type);
 
-    namespace_list->Append(std::move(namespace_dict));
+    namespace_list.Append(std::move(namespace_dict));
   }
-  service_providers->Set("namespace_providers", std::move(namespace_list));
+  service_providers->GetDict().Set("namespace_providers",
+                                   std::move(namespace_list));
 
   return service_providers;
 }
