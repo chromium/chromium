@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="ChromeOS.HPS.Image.Invalidity" units="per1000"
-    expires_after="2022-10-16">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.QuickDim.Enabled" enum="BooleanEnabled"
-    expires_after="2022-10-16">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.SnoopingProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2022-10-16">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -55,8 +55,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.HPS.SnoopingProtectionNotificationSuppression.Enabled"
+    enum="BooleanEnabled" expires_after="2023-05-31">
+  <owner>martis@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Records the new setting of kSnoopingProtectionNotificationSuppressionEnabled
+    when users change it on the privacy page.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.HPS.TurnOn.Result" enum="HpsTurnOnResult"
-    expires_after="2022-10-16">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -66,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.TurnOn.{Result}.Duration" units="ms"
-    expires_after="2022-07-01">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>
@@ -81,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.HPS.Update.{Stage}.Duration" units="ms"
-    expires_after="2022-07-01">
+    expires_after="2023-05-31">
   <owner>evanbenn@chromium.org</owner>
   <owner>avg@chromium.org</owner>
   <owner>chromeos-hps-swe@google.com</owner>

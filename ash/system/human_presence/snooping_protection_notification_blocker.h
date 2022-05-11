@@ -84,6 +84,10 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
   // the snooping state and the user's preferences.
   void OnBlockingActiveChanged();
 
+  // Called when prefs::kSnoopingProtectionNotificationSuppressionEnabled
+  // changes its value.
+  void OnBlockingPrefChanged();
+
   // Returns true if we are currently blocking notifications that aren't
   // explicit exceptions.
   bool BlockingActive() const;

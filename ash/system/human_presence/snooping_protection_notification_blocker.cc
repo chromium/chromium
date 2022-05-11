@@ -24,6 +24,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -122,13 +123,25 @@ void SnoopingProtectionNotificationBlocker::OnActiveUserPrefServiceChanged(
   pref_change_registrar_->Add(
       prefs::kSnoopingProtectionNotificationSuppressionEnabled,
       base::BindRepeating(
-          &SnoopingProtectionNotificationBlocker::OnBlockingActiveChanged,
+          &SnoopingProtectionNotificationBlocker::OnBlockingPrefChanged,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SnoopingProtectionNotificationBlocker::OnBlockingActiveChanged() {
   NotifyBlockingStateChanged();
   UpdateInfoNotificationIfNecessary();
+}
+
+void SnoopingProtectionNotificationBlocker::OnBlockingPrefChanged() {
+  DCHECK(pref_change_registrar_);
+  DCHECK(pref_change_registrar_->prefs());
+  const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      prefs::kSnoopingProtectionNotificationSuppressionEnabled);
+  base::UmaHistogramBoolean(
+      "ChromeOS.HPS.SnoopingProtectionNotificationSuppression.Enabled",
+      pref_enabled);
+
+  OnBlockingActiveChanged();
 }
 
 bool SnoopingProtectionNotificationBlocker::ShouldShowNotificationAsPopup(
