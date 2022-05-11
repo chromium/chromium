@@ -119,7 +119,6 @@ public class SigninPromoController {
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
     // TODO(https://crbug.com/1254399): Remove these fields related to impressions.
     private final @Nullable String mImpressionsTilDismissHistogramName;
-    private final @Nullable String mImpressionsTilSigninButtonsHistogramName;
     private final @Nullable String mImpressionsTilXButtonHistogramName;
     private final @StringRes int mTitleStringId;
     private final @StringRes int mDescriptionStringId;
@@ -299,8 +298,6 @@ public class SigninPromoController {
                         ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED;
                 mImpressionsTilDismissHistogramName =
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss";
-                mImpressionsTilSigninButtonsHistogramName =
-                        "MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons";
                 mImpressionsTilXButtonHistogramName =
                         "MobileSignInPromo.BookmarkManager.ImpressionsTilXButton";
                 mTitleStringId = R.string.sync_promo_title_bookmarks;
@@ -333,7 +330,6 @@ public class SigninPromoController {
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
                 mImpressionsTilDismissHistogramName = null;
-                mImpressionsTilSigninButtonsHistogramName = null;
                 mImpressionsTilXButtonHistogramName =
                         "MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton";
                 mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
@@ -364,7 +360,6 @@ public class SigninPromoController {
                         "Signin_SigninNewAccountNoExistingAccount_FromRecentTabs";
                 mSyncPromoDismissedPreferenceTracker = null;
                 mImpressionsTilDismissHistogramName = null;
-                mImpressionsTilSigninButtonsHistogramName = null;
                 mImpressionsTilXButtonHistogramName = null;
                 mTitleStringId = R.string.sync_promo_title_recent_tabs;
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
@@ -392,8 +387,6 @@ public class SigninPromoController {
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 mImpressionsTilDismissHistogramName =
                         "MobileSignInPromo.SettingsManager.ImpressionsTilDismiss";
-                mImpressionsTilSigninButtonsHistogramName =
-                        "MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons";
                 mImpressionsTilXButtonHistogramName =
                         "MobileSignInPromo.SettingsManager.ImpressionsTilXButton";
                 mTitleStringId = R.string.sync_promo_title_settings;
@@ -619,10 +612,6 @@ public class SigninPromoController {
     private void recordSigninButtonUsed() {
         mWasUsed = true;
         recordShowCountHistogram(UserAction.CONTINUED);
-        if (mImpressionsTilSigninButtonsHistogramName != null) {
-            RecordHistogram.recordCount100Histogram(
-                    mImpressionsTilSigninButtonsHistogramName, getNumImpressions());
-        }
     }
 
     private void recordShowCountHistogram(@UserAction String actionType) {
