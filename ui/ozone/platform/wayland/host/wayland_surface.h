@@ -120,14 +120,13 @@ class WaylandSurface {
   // reset to cover the entire wl_surface.
   void SetInputRegion(const gfx::Rect* region_px);
 
-  // Set the crop uv of the attached wl_buffer.
-  // Unlike wp_viewport.set_source, this crops the buffer prior to
-  // |buffer_transform| being applied to the buffer, it will be transformed s.t.
-  // wp_viewport.source is called with correct params.
+  // Set the source rectangle of the associated wl_surface.
   // See:
   // https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml
-  // If |crop| is empty, the source rectangle is unset.
-  void SetBufferCrop(const gfx::RectF& crop);
+  // If |src_rect| is empty, the source rectangle is unset.
+  // Note this method does not send corresponding wayland requests until
+  // attaching the next buffer.
+  void SetViewportSource(const gfx::RectF& src_rect);
 
   // Sets the opacity of the wl_surface using zcr_blending_v1_set_alpha.
   // See: alpha-compositing-unstable-v1.xml
@@ -139,6 +138,8 @@ class WaylandSurface {
 
   // Set the destination size of the associated wl_surface according to
   // |dest_size_px|, which should be in physical pixels.
+  // Note this method sends corresponding wayland requests immediately because
+  // it does not need a new buffer attach to take effect.
   void SetViewportDestination(const gfx::SizeF& dest_size_px);
 
   // Creates a wl_subsurface relating this surface and a parent surface,

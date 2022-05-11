@@ -66,13 +66,6 @@ void SetBufferScale(wl_client* client, wl_resource* resource, int32_t scale) {
   mock_surface->set_buffer_scale(scale);
 }
 
-void SetBufferTransform(struct wl_client* client,
-                        struct wl_resource* resource,
-                        int32_t transform) {
-  auto* mock_surface = GetUserDataAs<MockSurface>(resource);
-  mock_surface->SetBufferTransform(transform);
-}
-
 void DamageBuffer(struct wl_client* client,
                   struct wl_resource* resource,
                   int32_t x,
@@ -101,16 +94,16 @@ void GetRelease(wl_client* client, wl_resource* resource, uint32_t id) {
 }  // namespace
 
 const struct wl_surface_interface kMockSurfaceImpl = {
-    DestroyResource,     // destroy
-    Attach,              // attach
-    Damage,              // damage
-    Frame,               // frame
-    SetOpaqueRegion,     // set_opaque_region
-    SetInputRegion,      // set_input_region
-    Commit,              // commit
-    SetBufferTransform,  // set_buffer_transform
-    SetBufferScale,      // set_buffer_scale
-    DamageBuffer,        // damage_buffer
+    DestroyResource,  // destroy
+    Attach,           // attach
+    Damage,           // damage
+    Frame,            // frame
+    SetOpaqueRegion,  // set_opaque_region
+    SetInputRegion,   // set_input_region
+    Commit,           // commit
+    nullptr,          // set_buffer_transform
+    SetBufferScale,   // set_buffer_scale
+    DamageBuffer,     // damage_buffer
 };
 
 const struct zwp_linux_surface_synchronization_v1_interface
