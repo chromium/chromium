@@ -63,10 +63,11 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // Forwards device change notifications to OutputDeviceMixers.
   void OnDeviceChange();
 
-  // Helper function which merges "default IDs" (as defined by
-  // AudioDeviceDescription::IsDefaultId()) and physical IDs matching
-  // GetCurrentDefaultPhysicalDeviceIdOrEmpty() into the same normalized default
-  // ID. This guarantees we create a single "default ID" OutputDeviceMixer.
+  // Helper function which maps physical and reserved IDs to normalized mixer
+  // device IDs. Physical IDs matching the current "default" or "communications"
+  // physical devices will be converted to reserved IDs
+  // (kNormalizedDefaultDeviceId or kCommunicationsDeviceId), ensuring we only
+  // create one mixer per device.
   std::string ToMixerDeviceId(const std::string& device_id);
 
   // Returns a callback that call OnDeviceChange(), and that can be cancelled
@@ -83,9 +84,6 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
       const std::string& device_id,
       const media::AudioParameters& params);
 
-  void AttachListenersById(const std::string& device_id,
-                           OutputDeviceMixer* mixer);
-
   // Returns a mixer if it exists, or nullptr otherwise.
   OutputDeviceMixer* FindMixer(const std::string& physical_device_id);
 
@@ -95,7 +93,6 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   void StartNewListener(ReferenceOutput::Listener* listener,
                         const std::string& device_id);
 
-  bool IsValidMixerId(const std::string& device_id);
   bool IsNormalizedIfDefault(const std::string& device_id);
 
   SEQUENCE_CHECKER(owning_sequence_);
@@ -104,6 +101,10 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // Physical device ID of the current default device, or kNormalizedDefaultId
   // if not supported by the platform.
   std::string current_default_device_id_;
+
+  // Physical device ID of the current communication device, or an empty string
+  // if not supported by the platform or not configured.
+  std::string current_communication_device_id_;
 
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
