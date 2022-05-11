@@ -930,6 +930,9 @@ ci.builder(
         short_name = "11",
     ),
     tree_closing = True,
+    # TODO(crbug.com/1137474): Add it back to sheriff once the builder is more
+    # stable.
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -939,6 +942,9 @@ ci.builder(
         short_name = "12",
     ),
     execution_timeout = 4 * time.hour,
+    # TODO(crbug.com/1225851): Add it back to sheriff once the builder is more
+    # stable.
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(

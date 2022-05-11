@@ -15,8 +15,6 @@ ci/Marshmallow 64 bit Tester
 ci/Marshmallow Tablet Tester
 ci/Nougat Phone Tester
 ci/android-10-arm64-rel
-ci/android-11-x86-rel
-ci/android-12-x64-rel
 ci/android-androidx-packager
 ci/android-arm64-proguard-rel
 ci/android-bfcache-rel
