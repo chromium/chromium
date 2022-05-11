@@ -1345,6 +1345,7 @@ source_set("unit_tests") {
     "imagebitmap/image_bitmap_test.cc",
     "input/event_handler_test.cc",
     "input/ime_on_focus_test.cc",
+    "input/mouse_event_manager_test.cc",
     "input/overscroll_behavior_test.cc",
     "input/pointer_event_manager_test.cc",
     "input/scroll_snap_test.cc",

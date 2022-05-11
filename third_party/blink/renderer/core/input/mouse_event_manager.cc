@@ -520,6 +520,13 @@ void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
     // TODO(crbug.com/716694): Do not reset mouse_down_element_ for the purpose
     // of gathering data.
   }
+  if (mouse_press_node_ &&
+      node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
+          *mouse_press_node_)) {
+    // If the mouse_press_node_ is removed, we should dispatch future default
+    // keyboard actions (i.e. scrolling) to the still connected parent.
+    mouse_press_node_ = node_to_be_removed.parentNode();
+  }
 }
 
 Element* MouseEventManager::GetElementUnderMouse() {
@@ -721,6 +728,8 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
       frame_->GetEventHandler().GetSelectionController().HandleMousePressEvent(
           event);
 
+  // TODO(crbug.com/1324667): Ensure that autoscroll handles mouse_press_node_
+  // removal correctly, allowing scrolling the still attached ancestor.
   mouse_down_may_start_autoscroll_ =
       frame_->GetEventHandler()
           .GetSelectionController()
