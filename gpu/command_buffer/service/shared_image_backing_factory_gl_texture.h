@@ -23,7 +23,6 @@ class ProgressReporter;
 namespace gpu {
 class SharedImageBacking;
 class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
 struct GpuPreferences;
 struct Mailbox;
 
@@ -34,7 +33,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLTexture
  public:
   SharedImageBackingFactoryGLTexture(const GpuPreferences& gpu_preferences,
                                      const GpuDriverBugWorkarounds& workarounds,
-                                     const GpuFeatureInfo& gpu_feature_info,
+                                     const gles2::FeatureInfo* feature_info,
                                      gl::ProgressReporter* progress_reporter);
   ~SharedImageBackingFactoryGLTexture() override;
 

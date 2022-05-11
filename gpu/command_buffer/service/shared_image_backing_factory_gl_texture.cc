@@ -36,11 +36,11 @@ using InitializeGLTextureParams =
 SharedImageBackingFactoryGLTexture::SharedImageBackingFactoryGLTexture(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info,
+    const gles2::FeatureInfo* feature_info,
     gl::ProgressReporter* progress_reporter)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
-                                        gpu_feature_info,
+                                        feature_info,
                                         progress_reporter) {}
 
 SharedImageBackingFactoryGLTexture::~SharedImageBackingFactoryGLTexture() =

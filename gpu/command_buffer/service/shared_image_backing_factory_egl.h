@@ -25,7 +25,6 @@ namespace gpu {
 class SharedImageBacking;
 class SharedImageBatchAccessManager;
 class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
 struct GpuPreferences;
 struct Mailbox;
 
@@ -37,7 +36,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
   SharedImageBackingFactoryEGL(
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& workarounds,
-      const GpuFeatureInfo& gpu_feature_info,
+      const gles2::FeatureInfo* feature_info,
       SharedImageBatchAccessManager* batch_access_manager);
   ~SharedImageBackingFactoryEGL() override;
 

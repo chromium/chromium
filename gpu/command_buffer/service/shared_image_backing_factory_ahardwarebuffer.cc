@@ -466,13 +466,8 @@ void SharedImageBackingAHB::EndOverlayAccess() {
 }
 
 SharedImageBackingFactoryAHB::SharedImageBackingFactoryAHB(
-    const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info) {
+    const gles2::FeatureInfo* feature_info) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
-  scoped_refptr<gles2::FeatureInfo> feature_info =
-      new gles2::FeatureInfo(workarounds, gpu_feature_info);
-  feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2, false,
-                           gles2::DisallowedFeatures());
   const gles2::Validators* validators = feature_info->validators();
   const bool is_egl_image_supported =
       gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;

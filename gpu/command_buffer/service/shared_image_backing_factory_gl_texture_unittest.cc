@@ -102,7 +102,8 @@ class SharedImageBackingFactoryGLTextureTestBase
     GpuPreferences preferences;
     preferences.use_passthrough_cmd_decoder = use_passthrough();
     backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
-        preferences, workarounds, GpuFeatureInfo(), &progress_reporter_);
+        preferences, workarounds, context_state_->feature_info(),
+        &progress_reporter_);
 
     memory_type_tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     shared_image_representation_factory_ =

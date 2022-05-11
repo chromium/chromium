@@ -239,6 +239,20 @@ SharedImageFactory::SharedImageFactory(
          gr_context_type_ == GrContextType::kVulkan);
 #endif
 
+  scoped_refptr<gles2::FeatureInfo> feature_info;
+  if (shared_context_state_) {
+    feature_info = shared_context_state_->feature_info();
+  }
+
+  if (!feature_info) {
+    // For some unit tests, shared_context_state_ could be nullptr.
+    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
+                           gles2::PassthroughCommandDecoderSupported();
+    feature_info = new gles2::FeatureInfo(workarounds, gpu_feature_info);
+    feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
+                             use_passthrough, gles2::DisallowedFeatures());
+  }
+
   if (!set_dmabuf_supported_metric_) {
     bool pixmap_supported = ShouldUseOzoneFactory();
     bool vulkan_ext_supported = false;
@@ -297,7 +311,7 @@ SharedImageFactory::SharedImageFactory(
   if (use_gl) {
     auto gl_texture_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLTexture>(
-            gpu_preferences, workarounds, gpu_feature_info,
+            gpu_preferences, workarounds, feature_info.get(),
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr);
     factories_.push_back(std::move(gl_texture_backing_factory));
@@ -318,7 +332,7 @@ SharedImageFactory::SharedImageFactory(
   if (use_gl) {
     auto gl_image_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLImage>(
-            gpu_preferences, workarounds, gpu_feature_info, image_factory,
+            gpu_preferences, workarounds, feature_info.get(), image_factory,
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr,
             /*for_shared_memory_gmbs=*/true);
@@ -331,7 +345,7 @@ SharedImageFactory::SharedImageFactory(
   if ((gr_context_type_ == GrContextType::kVulkan) &&
       (base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
     auto factory = std::make_unique<SharedImageBackingFactoryAngleVulkan>(
-        gpu_preferences, workarounds, gpu_feature_info, context_state);
+        gpu_preferences, workarounds, context_state);
     factories_.push_back(std::move(factory));
   }
 #endif
@@ -345,7 +359,7 @@ SharedImageFactory::SharedImageFactory(
 #elif BUILDFLAG(IS_ANDROID)
   if (use_gl) {
     auto egl_backing_factory = std::make_unique<SharedImageBackingFactoryEGL>(
-        gpu_preferences, workarounds, gpu_feature_info,
+        gpu_preferences, workarounds, feature_info.get(),
         shared_image_manager->batch_access_manager());
     factories_.push_back(std::move(egl_backing_factory));
   }
@@ -362,8 +376,8 @@ SharedImageFactory::SharedImageFactory(
             VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
   }
   if (is_ahb_supported) {
-    auto ahb_factory = std::make_unique<SharedImageBackingFactoryAHB>(
-        workarounds, gpu_feature_info);
+    auto ahb_factory =
+        std::make_unique<SharedImageBackingFactoryAHB>(feature_info.get());
     factories_.push_back(std::move(ahb_factory));
   }
   if (gr_context_type_ == GrContextType::kVulkan &&
@@ -409,7 +423,7 @@ SharedImageFactory::SharedImageFactory(
   if (use_gl) {
     auto gl_image_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLImage>(
-            gpu_preferences, workarounds, gpu_feature_info, image_factory,
+            gpu_preferences, workarounds, feature_info.get(), image_factory,
             shared_context_state_ ? shared_context_state_->progress_reporter()
                                   : nullptr,
             /*for_shared_memory_gmbs=*/false);

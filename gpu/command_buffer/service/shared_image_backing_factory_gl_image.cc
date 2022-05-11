@@ -39,20 +39,16 @@ using InitializeGLTextureParams =
 SharedImageBackingFactoryGLImage::SharedImageBackingFactoryGLImage(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info,
+    const gles2::FeatureInfo* feature_info,
     ImageFactory* image_factory,
     gl::ProgressReporter* progress_reporter,
     const bool for_shared_memory_gmbs)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
-                                        gpu_feature_info,
+                                        feature_info,
                                         progress_reporter),
       image_factory_(image_factory),
       for_shared_memory_gmbs_(for_shared_memory_gmbs) {
-  scoped_refptr<gles2::FeatureInfo> feature_info =
-      new gles2::FeatureInfo(workarounds, gpu_feature_info);
-  feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
-                           use_passthrough_, gles2::DisallowedFeatures());
   gpu_memory_buffer_formats_ =
       feature_info->feature_flags().gpu_memory_buffer_formats;
   // Return if scanout images are not supported

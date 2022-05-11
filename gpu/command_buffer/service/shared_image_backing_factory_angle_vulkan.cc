@@ -463,11 +463,10 @@ std::unique_ptr<SharedImageRepresentationSkia> AngleVulkanBacking::ProduceSkia(
 SharedImageBackingFactoryAngleVulkan::SharedImageBackingFactoryAngleVulkan(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info,
     SharedContextState* context_state)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
-                                        gpu_feature_info,
+                                        context_state->feature_info(),
                                         context_state->progress_reporter()),
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());

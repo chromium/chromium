@@ -16,9 +16,12 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+
+namespace gles2 {
+class FeatureInfo;
+}  // namespace gles2
+
 class SharedImageBacking;
-class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
 struct Mailbox;
 
 // Implementation of SharedImageBackingFactory that produces AHardwareBuffer
@@ -26,8 +29,7 @@ struct Mailbox;
 class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
     : public SharedImageBackingFactory {
  public:
-  SharedImageBackingFactoryAHB(const GpuDriverBugWorkarounds& workarounds,
-                               const GpuFeatureInfo& gpu_feature_info);
+  explicit SharedImageBackingFactoryAHB(const gles2::FeatureInfo* feature_info);
 
   SharedImageBackingFactoryAHB(const SharedImageBackingFactoryAHB&) = delete;
   SharedImageBackingFactoryAHB& operator=(const SharedImageBackingFactoryAHB&) =

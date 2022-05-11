@@ -19,8 +19,12 @@ class ProgressReporter;
 }  // namespace gl
 
 namespace gpu {
+
+namespace gles2 {
+class FeatureInfo;
+}  // namespace gles2
+
 class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
 struct GpuPreferences;
 
 // Common constructor and helper functions for
@@ -59,7 +63,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
  protected:
   SharedImageBackingFactoryGLCommon(const GpuPreferences& gpu_preferences,
                                     const GpuDriverBugWorkarounds& workarounds,
-                                    const GpuFeatureInfo& gpu_feature_info,
+                                    const gles2::FeatureInfo* feature_info,
                                     gl::ProgressReporter* progress_reporter);
   ~SharedImageBackingFactoryGLCommon() override;
 

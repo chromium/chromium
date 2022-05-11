@@ -25,7 +25,6 @@ class ProgressReporter;
 namespace gpu {
 class SharedImageBacking;
 class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
 struct GpuPreferences;
 struct Mailbox;
 class ImageFactory;
@@ -42,7 +41,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLImage
   // other parts with OzoneBacking and other backings.
   SharedImageBackingFactoryGLImage(const GpuPreferences& gpu_preferences,
                                    const GpuDriverBugWorkarounds& workarounds,
-                                   const GpuFeatureInfo& gpu_feature_info,
+                                   const gles2::FeatureInfo* feature_info,
                                    ImageFactory* image_factory,
                                    gl::ProgressReporter* progress_reporter,
                                    const bool for_shared_memory_gmbs);

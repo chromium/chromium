@@ -17,7 +17,6 @@ class SharedImageBackingFactoryAngleVulkan
   SharedImageBackingFactoryAngleVulkan(
       const GpuPreferences& gpu_preferences,
       const GpuDriverBugWorkarounds& workarounds,
-      const GpuFeatureInfo& gpu_feature_info,
       SharedContextState* context_state);
   ~SharedImageBackingFactoryAngleVulkan() override;
 
