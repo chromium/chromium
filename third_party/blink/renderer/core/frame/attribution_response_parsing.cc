@@ -156,9 +156,11 @@ bool ParseAttributionAggregatableSource(
       "Bump the version for histogram Conversions.AggregatableKeysPerSource");
 
   const auto* array = JSONArray::Cast(json.get());
-  const wtf_size_t num_keys = array->size();
+  if (!array)
+    return false;
 
-  if (!array || num_keys > kMaxAttributionAggregatableKeysPerSourceOrTrigger)
+  const wtf_size_t num_keys = array->size();
+  if (num_keys > kMaxAttributionAggregatableKeysPerSourceOrTrigger)
     return false;
 
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
@@ -373,12 +375,12 @@ bool ParseAttributionAggregatableTriggerData(
                 "Conversions.AggregatableTriggerDataLength");
 
   const auto* array = JSONArray::Cast(json.get());
-  const wtf_size_t num_trigger_data = array->size();
-
-  if (!array ||
-      array->size() > kMaxAttributionAggregatableTriggerDataPerTrigger) {
+  if (!array)
     return false;
-  }
+
+  const wtf_size_t num_trigger_data = array->size();
+  if (num_trigger_data > kMaxAttributionAggregatableTriggerDataPerTrigger)
+    return false;
 
   base::UmaHistogramCounts100("Conversions.AggregatableTriggerDataLength",
                               num_trigger_data);
