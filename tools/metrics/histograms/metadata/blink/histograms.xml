@@ -2145,7 +2145,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.Sms.BackendAvailability"
     enum="WebOTPBackendAvailability" expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records how often the verification backend is unavailable for the WebOTP API
     and the corresponding reason. This is recorded once per OTP request.
@@ -2153,9 +2153,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.PendingOriginCount" units="origins"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     SmsFetcher subscribes to incoming SMSes with origins from SmsProvider. This
     metric records the number of pending origins that are not unsubscribed when
@@ -2164,9 +2164,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.CrossDeviceFailure"
-    enum="WebOTPCrossDeviceFailure" expires_after="2022-10-09">
+    enum="WebOTPCrossDeviceFailure" expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the reason why using the WebOTP API on desktop failed on the sharing
     path. It records one sample per invocation of the API.
@@ -2174,10 +2174,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.Infobar" enum="WebOTPServiceInfobarAction"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records how many times the infobar was called and how many times the infobar
     replaced a keyboard.
@@ -2188,14 +2188,14 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>Records the result of a call to the WebOTP API.</summary>
 </histogram>
 
 <histogram name="Blink.Sms.Receive.SmsParsingStatus" enum="SmsParsingStatus"
-    expires_after="2022-08-28">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the status of parsing an incoming SMS when using the WebOTP API. It
     records one sample per incoming SMS.
@@ -2205,10 +2205,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancel" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the duration from when the API is called to when the request is
     cancelled by the service due to duplicated requests or lack of delegate.
@@ -2216,10 +2216,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnKeyboardDismissal" units="ms"
-    expires_after="2022-07-17">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the duration from when the keyboard was replaced with an infobar
     until when the user clicked the cancel button.
@@ -2227,10 +2227,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeCancelOnSuccess" units="ms"
-    expires_after="2022-10-16">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when a successful SMS was retrieved to when the user
     presses the Cancel button.
@@ -2238,10 +2238,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeContinueOnSuccess" units="ms"
-    expires_after="2022-10-23">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when a successful SMS was retrieved to when the user
     presses the Continue button.
@@ -2249,10 +2249,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeSmsReceive" units="ms"
-    expires_after="2022-06-19">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the duration from when the API is called to when an SMS has been
     successfully received.
@@ -2263,7 +2263,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the duration from when the API is called to when the user
     successfully receives the SMS and presses continue to pass the incoming SMS
@@ -2272,10 +2272,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.TimeUserCancel" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the duration from when the API is called to when the user
     successfully receives the SMS and presses &quot;Deny&quot; to terminate the
@@ -2286,7 +2286,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.Sms.WebContentsVisibleOnReceive" enum="Boolean"
     expires_after="2022-10-30">
   <owner>yigu@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records whether the web contents that receives the OTP is visible or not for
     the UserConsent backend. Recorded at most once per API call when Chrome sees
