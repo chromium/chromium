@@ -360,8 +360,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kSelectionOnly ||
-      !selection.active_tab_changed()) {
+  if (!selection.active_tab_changed()) {
     return;
   }
   // Handle removing the previous tab's contextual registry if one exists and
