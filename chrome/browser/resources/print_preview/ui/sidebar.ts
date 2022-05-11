@@ -23,7 +23,7 @@ import './pages_settings.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import './pin_settings.js';
 // </if>
-import './print_preview_vars_css.js';
+import './print_preview_vars.css.js';
 import './scaling_settings.js';
 import '../strings.m.js';
 // <if expr="not chromeos_ash and not chromeos_lacros">

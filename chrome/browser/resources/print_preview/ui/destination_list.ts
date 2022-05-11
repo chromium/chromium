@@ -11,9 +11,9 @@ import './destination_list_item.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import './destination_list_item_cros.js';
 // </if>
-import './print_preview_vars_css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
-import './throbber_css.js';
+import './throbber.css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';

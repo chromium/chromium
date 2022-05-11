@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.js';
-import './print_preview_vars_css.js';
+import './icons.html.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

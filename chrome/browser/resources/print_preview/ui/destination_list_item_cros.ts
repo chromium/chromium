@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './destination_list_item_css.js';
-import './icons.js';
+import './destination_list_item_style.css.js';
+import './icons.html.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -16,8 +16,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
-import {DestinationOrigin} from '../data/destination.js';
+import {Destination, DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {getTemplate} from './destination_list_item_cros.html.js';

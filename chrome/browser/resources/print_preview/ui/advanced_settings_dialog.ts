@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import './advanced_settings_item.js';
 import './print_preview_search_box.js';
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';

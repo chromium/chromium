@@ -6,10 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
-import './throbber_css.js';
+import './throbber.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';

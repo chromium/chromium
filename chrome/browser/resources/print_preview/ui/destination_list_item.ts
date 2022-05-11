@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.js';
-import './destination_list_item_css.js';
+import './icons.html.js';
+import './destination_list_item_style.css.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -13,6 +13,7 @@ import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js'
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
+
 import {getTemplate} from './destination_list_item.html.js';
 import {updateHighlights} from './highlight_utils.js';
 

@@ -5,8 +5,8 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import './print_preview_vars_css.js';
-import './throbber_css.js';
+import './print_preview_vars.css.js';
+import './throbber.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

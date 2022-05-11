@@ -17,9 +17,9 @@ import './destination_select.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import './destination_select_cros.js';
 // </if>
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
-import './throbber_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
+import './throbber.css.js';
 import './settings_section.js';
 import '../strings.m.js';
 

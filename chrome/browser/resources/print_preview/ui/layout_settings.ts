@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './layout_settings.html.js';
 
+import {getTemplate} from './layout_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 

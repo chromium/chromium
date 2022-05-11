@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';

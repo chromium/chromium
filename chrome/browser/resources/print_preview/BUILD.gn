@@ -7,7 +7,7 @@ import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -56,12 +56,12 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
+  in_files = html_files + icons_html_files
 }
 
 preprocess_if_expr("preprocess") {

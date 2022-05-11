@@ -9,10 +9,10 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './destination_dropdown_cros.js';
-import './destination_select_css.js';
-import './icons.js';
-import './print_preview_shared_css.js';
-import './throbber_css.js';
+import './destination_select_style.css.js';
+import './icons.html.js';
+import './print_preview_shared.css.js';
+import './throbber.css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';

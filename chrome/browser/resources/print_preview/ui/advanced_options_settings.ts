@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './advanced_settings_dialog.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

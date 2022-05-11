@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './print_preview_vars_css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
 import '../data/document_info.js';
 import './sidebar.js';

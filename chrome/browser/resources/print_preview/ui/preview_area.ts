@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import './print_preview_vars_css.js';
+import './print_preview_vars.css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';

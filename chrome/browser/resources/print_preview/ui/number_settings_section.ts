@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import './print_preview_shared_css.js';
-import './print_preview_vars_css.js';
+import './print_preview_shared.css.js';
+import './print_preview_vars.css.js';
 import './settings_section.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';

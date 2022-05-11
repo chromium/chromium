@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './number_settings_section.js';
-import './print_preview_shared_css.js';
+import './print_preview_shared.css.js';
 import './settings_section.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
