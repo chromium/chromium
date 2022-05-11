@@ -569,6 +569,17 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
+     * @param currentTab  The current {@link Tab}.
+     * @return Whether the Tab is launched with launchType TabLaunchType.FROM_START_SURFACE or it
+     *         has "OpenedFromStart" property.
+     */
+    public static boolean isTabFromStartSurface(Tab currentTab) {
+        final @TabLaunchType int type = currentTab.getLaunchType();
+        return type == TabLaunchType.FROM_START_SURFACE
+                || StartSurfaceUserData.isOpenedFromStart(currentTab);
+    }
+
+    /**
      * Returns whether to show the Start surface at startup based on whether user has done the
      * targeted behaviour.
      */

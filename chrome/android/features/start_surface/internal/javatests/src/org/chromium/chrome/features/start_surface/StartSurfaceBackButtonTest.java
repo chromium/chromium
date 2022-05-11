@@ -590,9 +590,9 @@ public class StartSurfaceBackButtonTest {
 
         // Press back button and Start homepage should show.
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);
         onViewWaiting(
                 allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout), isDisplayed()));
     }
