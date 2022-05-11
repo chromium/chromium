@@ -91,6 +91,13 @@ std::string GetThroughputV2HistogramName(FrameSequenceTrackerType type,
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
+std::string GetThroughputV3HistogramName(FrameSequenceTrackerType type,
+                                         const char* thread_name) {
+  return base::StrCat(
+      {"Graphics.Smoothness.PercentDroppedFrames3.", thread_name, ".",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
 std::string GetMissedDeadlineHistogramName(FrameSequenceTrackerType type,
                                            const char* thread_name) {
   return base::StrCat(
@@ -186,6 +193,9 @@ void FrameSequenceMetrics::Merge(
   v2_.frames_expected += metrics->v2_.frames_expected;
   v2_.frames_dropped += metrics->v2_.frames_dropped;
 
+  v3_.frames_expected += metrics->v3_.frames_expected;
+  v3_.frames_dropped += metrics->v3_.frames_dropped;
+
   if (jank_reporter_)
     jank_reporter_->Merge(std::move(metrics->jank_reporter_));
 
@@ -199,12 +209,13 @@ void FrameSequenceMetrics::Merge(
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
   return impl_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
          main_throughput_.frames_expected >= kMinFramesForThroughputMetric ||
-         v2_.frames_expected >= kMinFramesForThroughputMetric;
+         v2_.frames_expected >= kMinFramesForThroughputMetric ||
+         v3_.frames_expected >= kMinFramesForThroughputMetric;
 }
 
 bool FrameSequenceMetrics::HasDataLeftForReporting() const {
-  return impl_throughput_.frames_expected > 0 ||
-         main_throughput_.frames_expected > 0 || v2_.frames_expected > 0;
+  return impl_throughput_.frames_expected > 0 || v2_.frames_expected > 0 ||
+         main_throughput_.frames_expected > 0 || v3_.frames_expected > 0;
 }
 
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
@@ -264,11 +275,12 @@ void FrameSequenceMetrics::ReportMetrics() {
   const bool compositor_report = ThroughputData::CanReportHistogram(
       this, SmoothEffectDrivingThread::kCompositor, impl_throughput_);
 
+  const auto thread_type = GetEffectiveThread();
+  const bool is_animation = ShouldReportForAnimation(type(), thread_type);
+  const bool is_interaction =
+      ShouldReportForInteraction(type(), thread_type, thread_type);
+
   if (v2_.frames_expected >= kMinFramesForThroughputMetric) {
-    const auto thread_type = GetEffectiveThread();
-    const bool is_animation = ShouldReportForAnimation(type(), thread_type);
-    const bool is_interaction =
-        ShouldReportForInteraction(type(), thread_type, thread_type);
     int percent = v2_.frames_expected == 0
                       ? 0
                       : std::ceil(100. * v2_.frames_dropped /
@@ -301,6 +313,41 @@ void FrameSequenceMetrics::ReportMetrics() {
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
     v2_ = {};
+  }
+
+  if (v3_.frames_expected >= kMinFramesForThroughputMetric) {
+    int percent = v3_.frames_expected == 0
+                      ? 0
+                      : std::ceil(100. * v3_.frames_dropped /
+                                  static_cast<double>(v3_.frames_expected));
+
+    if (is_animation) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames3.AllAnimations", percent);
+    }
+    if (is_interaction) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames3.AllInteractions", percent);
+    }
+    if (is_animation || is_interaction) {
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.PercentDroppedFrames3.AllSequences", percent);
+    }
+
+    const char* thread_name =
+        thread_type == SmoothEffectDrivingThread::kCompositor
+            ? "CompositorThread"
+            : "MainThread";
+
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        GetThroughputV3HistogramName(type(), thread_name),
+        GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
+        Add(percent),
+        base::LinearHistogram::FactoryGet(
+            GetThroughputV3HistogramName(type(), thread_name), 1, 100, 101,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+
+    v3_ = {};
   }
 
   absl::optional<int> impl_throughput_percent_dropped;
@@ -693,10 +740,18 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
     case SmoothEffectDrivingThread::kCompositor:
       if (frame_info.WasSmoothCompositorUpdateDropped()) {
         ++v2_.frames_dropped;
+        ++v3_.frames_dropped;
       }
       ++v2_.frames_expected;
+      ++v3_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kMain:
+      if (frame_info.WasSmoothMainUpdateExpected()) {
+        if (frame_info.WasSmoothMainUpdateDropped()) {
+          ++v3_.frames_dropped;
+        }
+        ++v3_.frames_expected;
+      }
       if (frame_info.WasSmoothMainUpdateDropped()) {
         ++v2_.frames_dropped;
       }

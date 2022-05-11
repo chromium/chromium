@@ -235,6 +235,12 @@ class CC_EXPORT FrameSequenceMetrics {
     uint32_t frames_dropped = 0;
   } v2_;
 
+  // Track state for measuring the PercentDroppedFrames v3 metrics.
+  struct {
+    uint32_t frames_expected = 0;
+    uint32_t frames_dropped = 0;
+  } v3_;
+
   ThroughputData impl_throughput_;
   ThroughputData main_throughput_;
 

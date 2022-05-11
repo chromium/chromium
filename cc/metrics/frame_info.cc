@@ -180,6 +180,10 @@ bool FrameInfo::WasSmoothMainUpdateDropped() const {
   return false;
 }
 
+bool FrameInfo::WasSmoothMainUpdateExpected() const {
+  return final_state != FrameFinalState::kNoUpdateDesired;
+}
+
 bool FrameInfo::IsScrollPrioritizeFrameDropped() const {
   // If any scroll is active the dropped frame for only the scrolling thread is
   // reported. If no scroll is active then reports if dropped frames is

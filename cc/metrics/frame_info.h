@@ -70,6 +70,7 @@ struct CC_EXPORT FrameInfo {
   // whether the update was part of a smooth sequence.
   bool WasSmoothCompositorUpdateDropped() const;
   bool WasSmoothMainUpdateDropped() const;
+  bool WasSmoothMainUpdateExpected() const;
 
   bool IsScrollPrioritizeFrameDropped() const;
 
