@@ -362,8 +362,10 @@ class AssistantValueProp extends AssistantValuePropBase {
         const data = zippy_data[i][j];
         const zippy = document.createElement('setting-zippy');
         // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
-        const background =
-            this.isMinorMode_ ? '#e8f0fe' /* gblue50 */ : 'white';
+        const background = this.isMinorMode_ ?
+            getComputedStyle(document.body)
+                .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
+            getComputedStyle(document.body).getPropertyValue('--cros-bg-color');
         zippy.setAttribute(
             'icon-src',
             'data:text/html;charset=utf-8,' +

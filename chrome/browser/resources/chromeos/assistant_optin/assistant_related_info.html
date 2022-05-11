@@ -92,6 +92,9 @@
         </div>
         <div class="line"></div>
         <setting-zippy id="zippy">
+          <iron-media-query query="(prefers-color-scheme: dark)"
+              query-matches="{{isDarkModeActive_}}">
+          </iron-media-query>
           <div slot="title">
             [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
           </div>

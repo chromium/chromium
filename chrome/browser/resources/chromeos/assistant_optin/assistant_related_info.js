@@ -69,6 +69,15 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Whether the marketing opt-in page is being rendered in dark mode.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -244,13 +253,17 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
   reloadContent(data) {
     this.skipActivityControl_ = !data['activityControlNeeded'];
     this.childName_ = data['childName'];
+    const url = this.isDarkModeActive_ ? 'info_outline_gm_grey500_24dp.png' :
+                                         'info_outline_gm_grey600_24dp.png';
     this.$.zippy.setAttribute(
         'icon-src',
         'data:text/html;charset=utf-8,' +
             encodeURIComponent(this.$.zippy.getWrappedIcon(
                 'https://www.gstatic.com/images/icons/material/system/2x/' +
-                    'info_outline_grey600_24dp.png',
-                this.i18n('assistantScreenContextTitle'))));
+                    url,
+                this.i18n('assistantScreenContextTitle'),
+                getComputedStyle(document.body)
+                    .getPropertyValue('--cros-bg-color'))));
     this.equalWeightButtons_ = data['equalWeightButtons'];
 
     this.consentStringLoaded_ = true;
