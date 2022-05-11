@@ -120,7 +120,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (for_saved_desks) {
     std::string* app_id = window->GetProperty(kAppIDKey);
     window_info->app_title =
-        app_id ? base::ASCIIToUTF16(
+        app_id ? base::UTF8ToUTF16(
                      Shell::Get()->desks_templates_delegate()->GetAppShortName(
                          *app_id))
                : window->GetTitle();

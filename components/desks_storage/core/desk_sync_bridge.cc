@@ -391,7 +391,7 @@ void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
     out_app->set_snap_percentage(window_info->snap_percentage.value());
 
   if (window_info->app_title.has_value())
-    out_app->set_title(base::UTF16ToASCII(window_info->app_title.value()));
+    out_app->set_title(base::UTF16ToUTF8(window_info->app_title.value()));
 
   // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
   // WindowInfo. Therefore, we are not filling |display_id| here.
@@ -598,7 +598,7 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
   }
 
   if (app.has_title())
-    out_window_info->app_title.emplace(base::ASCIIToUTF16(app.title()));
+    out_window_info->app_title.emplace(base::UTF8ToUTF16(app.title()));
 
   if (app.app().app_case() ==
       sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp) {
