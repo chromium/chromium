@@ -35,6 +35,9 @@ try_.builder(
 try_.builder(
     name = "chromeos-amd64-generic-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/chromeos-amd64-generic-dbg",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
