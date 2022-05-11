@@ -24,7 +24,7 @@ import { BidiServerRunner } from './bidiServerRunner';
 import { ITransport } from './utils/transport';
 
 function parseArguments() {
-  var parser = new argparse.ArgumentParser({
+  const parser = new argparse.ArgumentParser({
     add_help: true,
     exit_on_error: false,
   });
@@ -35,8 +35,19 @@ function parseArguments() {
     default: process.env.PORT || 8080,
   });
 
+  parser.add_argument('-c', '--channel', {
+    help:
+      'If set, the given installed Chrome Release Channel will be used ' +
+      'instead of one pointed by Puppeteer version. Can be one of ``, ' +
+      '`chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. The given ' +
+      'Chrome channel should be installed. Default is ``.',
+    default: process.env.CHANNEL || '',
+  });
+
   parser.add_argument('-hl', '--headless', {
-    help: 'Sets if browser should run in headless or headful mode. Default is `--headless=true`.',
+    help:
+      'Sets if browser should run in headless or headful mode. Default is ' +
+      '`--headless=true`.',
     default: true,
   });
 
@@ -52,9 +63,10 @@ function parseArguments() {
     const args = parseArguments();
     const bidiPort = args.port;
     const headless = args.headless !== 'false';
+    const chrome_channel = args.channel;
 
     BidiServerRunner.run(bidiPort, (bidiServer) => {
-      return _onNewBidiConnectionOpen(headless, bidiServer);
+      return _onNewBidiConnectionOpen(headless, chrome_channel, bidiServer);
     });
     console.log('BiDi server launched.');
   } catch (e) {
@@ -73,14 +85,22 @@ function parseArguments() {
  */
 async function _onNewBidiConnectionOpen(
   headless: boolean,
+  chrome_channel: string,
   bidiTransport: ITransport
 ): Promise<() => void> {
+  const browserLaunchOptions: any = {
+    headless,
+  };
+  if (chrome_channel) {
+    browserLaunchOptions.channel = chrome_channel;
+  }
+
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
   // Use Puppeteer's logic of launching browser as well.
-  const browser = await (puppeteer as any as PuppeteerNode).launch({
-    headless,
-  });
+  const browser = await (puppeteer as any as PuppeteerNode).launch(
+    browserLaunchOptions
+  );
 
   // 2. Get `BiDi-CDP` mapper JS binaries using `mapperReader`.
   const bidiMapperScript = await mapperReader();

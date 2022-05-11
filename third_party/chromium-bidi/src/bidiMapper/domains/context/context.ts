@@ -17,167 +17,84 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import {
-  BrowsingContext,
-  CommonDataTypes,
-  Script,
-} from '../../bidiProtocolTypes';
+import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { LogManager } from './logManager';
-import { Serializer } from './serializer';
-import ArgumentValue = Script.ArgumentValue;
+import { ScriptEvaluator } from './scriptEvaluator';
 
 export class Context {
-  _targetInfo?: Protocol.Target.TargetInfo;
+  #targetInfo?: Protocol.Target.TargetInfo;
   _sessionId?: string;
 
-  // As `script.evaluate` wraps call into serialization script, `lineNumber`
-  // should be adjusted.
-  private _evaluateStacktraceLineOffset = 1;
-  private _callFunctionStacktraceLineOffset = 1;
-
-  private _callbackName = '__cdpBindingCallback';
+  readonly #contextId: string;
+  readonly #cdpClient: CdpClient;
+  readonly #bidiServer: IBidiServer;
+  readonly #eventManager: IEventManager;
+  readonly #scriptEvaluator: ScriptEvaluator;
 
   private constructor(
-    private _contextId: string,
-    private _cdpClient: CdpClient,
-    private _bidiServer: IBidiServer,
-    private _eventManager: IEventManager,
-    private EVALUATOR_SCRIPT: string,
-    private _serializer: Serializer
-  ) {}
+    _contextId: string,
+    _cdpClient: CdpClient,
+    _bidiServer: IBidiServer,
+    _eventManager: IEventManager,
+    _serializer: ScriptEvaluator
+  ) {
+    this.#contextId = _contextId;
+    this.#cdpClient = _cdpClient;
+    this.#bidiServer = _bidiServer;
+    this.#eventManager = _eventManager;
+    this.#scriptEvaluator = _serializer;
+  }
 
   public static async create(
     contextId: string,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
-    eventManager: IEventManager,
-    EVALUATOR_SCRIPT: string
+    eventManager: IEventManager
   ) {
     const context = new Context(
       contextId,
       cdpClient,
       bidiServer,
       eventManager,
-      EVALUATOR_SCRIPT,
-      Serializer.create(cdpClient, EVALUATOR_SCRIPT)
+      ScriptEvaluator.create(cdpClient)
     );
 
-    await context._initialize();
+    await context.#initialize();
 
     await LogManager.create(
       contextId,
       cdpClient,
       bidiServer,
-      context.getSerializer()
+      context.#scriptEvaluator
     );
     return context;
   }
 
-  private async _initialize() {
-    // Enabling Runtime doamin needed to have an exception stacktrace in
-    // `evaluateScript`.
-    await this._cdpClient.Runtime.enable();
-    await this._cdpClient.Page.enable();
-    await this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
-    this._initializeEventListeners();
-  }
-
-  private _initializeEventListeners() {
-    this._initializePageLifecycleEventListener();
-    this._initializeCdpEventListeners();
-    this._handleBindingCalledEvent();
-  }
-
-  private _initializeCdpEventListeners() {
-    this._cdpClient.on('event', async (method, params) => {
-      await this._eventManager.sendEvent(
-        {
-          method: 'PROTO.cdp.eventReceived',
-          params: {
-            cdpMethod: method,
-            cdpParams: params,
-            session: this._sessionId,
-          },
-        },
-        null
-      );
-    });
-  }
-
-  private _handleBindingCalledEvent() {
-    this._cdpClient.Runtime.on('bindingCalled', async (params) => {
-      if (params.name === this._callbackName) {
-        const payload = JSON.parse(params.payload);
-        await this._bidiServer.sendMessage({
-          method: 'PROTO.script.called',
-          params: {
-            arguments: payload.arguments,
-            id: payload.id,
-          },
-        });
-      }
-    });
-  }
-
-  private _initializePageLifecycleEventListener() {
-    this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
-
-    this._cdpClient.Page.on('lifecycleEvent', async (params) => {
-      switch (params.name) {
-        case 'DOMContentLoaded':
-          await this._eventManager.sendEvent(
-            {
-              method: 'browsingContext.domContentLoaded',
-              params: {
-                context: this._contextId,
-                navigation: params.loaderId,
-              },
-            },
-            this._contextId
-          );
-          break;
-
-        case 'load':
-          await this._eventManager.sendEvent(
-            {
-              method: 'browsingContext.load',
-              params: {
-                context: this._contextId,
-                navigation: params.loaderId,
-              },
-            },
-            this._contextId
-          );
-          break;
-      }
-    });
-  }
-
-  _setSessionId(sessionId: string): void {
+  public setSessionId(sessionId: string): void {
     this._sessionId = sessionId;
   }
 
-  _updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
-    this._targetInfo = targetInfo;
+  public updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
+    this.#targetInfo = targetInfo;
   }
 
-  _onInfoChangedEvent(targetInfo: Protocol.Target.TargetInfo) {
-    this._updateTargetInfo(targetInfo);
+  public onInfoChangedEvent(targetInfo: Protocol.Target.TargetInfo) {
+    this.updateTargetInfo(targetInfo);
   }
 
   public get id(): string {
-    return this._contextId;
+    return this.#contextId;
   }
 
-  toBidi(): BrowsingContext.BrowsingContextInfo {
+  public serializeToBidiValue(): BrowsingContext.BrowsingContextInfo {
     return {
-      context: this._targetInfo!.targetId,
-      parent: this._targetInfo!.openerId
-        ? this._targetInfo!.openerId
+      context: this.#targetInfo!.targetId,
+      parent: this.#targetInfo!.openerId
+        ? this.#targetInfo!.openerId
         : undefined,
-      url: this._targetInfo!.url,
+      url: this.#targetInfo!.url,
       // TODO sadym: implement.
       children: [],
     };
@@ -189,7 +106,7 @@ export class Context {
   ): Promise<BrowsingContext.NavigateResult> {
     // TODO: handle loading errors.
     // noinspection TypeScriptValidateJSTypes
-    const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
+    const cdpNavigateResult = await this.#cdpClient.Page.navigate({ url });
 
     // Wait for `wait` condition.
     switch (wait) {
@@ -197,14 +114,14 @@ export class Context {
         break;
 
       case 'interactive':
-        await this._waitPageLifeCycleEvent(
+        await this.#waitPageLifeCycleEvent(
           'DOMContentLoaded',
           cdpNavigateResult.loaderId!
         );
         break;
 
       case 'complete':
-        await this._waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
+        await this.#waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
         break;
 
       default:
@@ -219,7 +136,105 @@ export class Context {
     };
   }
 
-  private async _waitPageLifeCycleEvent(eventName: string, loaderId: string) {
+  public async callFunction(
+    functionDeclaration: string,
+    _this: Script.ArgumentValue,
+    args: Script.ArgumentValue[],
+    awaitPromise: boolean
+  ): Promise<Script.CallFunctionResult> {
+    return this.#scriptEvaluator.callFunction(
+      functionDeclaration,
+      _this,
+      args,
+      awaitPromise
+    );
+  }
+
+  public async findElement(
+    selector: string
+  ): Promise<BrowsingContext.PROTO.FindElementResult> {
+    const functionDeclaration = String((resultsSelector: string) =>
+      document.querySelector(resultsSelector)
+    );
+    const args: Script.ArgumentValue[] = [{ type: 'string', value: selector }];
+
+    return (await this.#scriptEvaluator.callFunction(
+      functionDeclaration,
+      {
+        type: 'undefined',
+      },
+      args,
+      true
+    )) as BrowsingContext.PROTO.FindElementResult;
+  }
+
+  async #initialize() {
+    // Enabling Runtime doamin needed to have an exception stacktrace in
+    // `evaluateScript`.
+    await this.#cdpClient.Runtime.enable();
+    await this.#cdpClient.Page.enable();
+    await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    this.#initializeEventListeners();
+  }
+
+  #initializeEventListeners() {
+    this.#initializePageLifecycleEventListener();
+    this.#initializeCdpEventListeners();
+    // TODO(sadym): implement.
+    // this.#handleBindingCalledEvent();
+  }
+
+  #initializeCdpEventListeners() {
+    this.#cdpClient.on('event', async (method, params) => {
+      await this.#eventManager.sendEvent(
+        {
+          method: 'PROTO.cdp.eventReceived',
+          params: {
+            cdpMethod: method,
+            cdpParams: params,
+            session: this._sessionId,
+          },
+        },
+        null
+      );
+    });
+  }
+
+  #initializePageLifecycleEventListener() {
+    this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+
+    this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
+      switch (params.name) {
+        case 'DOMContentLoaded':
+          await this.#eventManager.sendEvent(
+            {
+              method: 'browsingContext.domContentLoaded',
+              params: {
+                context: this.#contextId,
+                navigation: params.loaderId,
+              },
+            },
+            this.#contextId
+          );
+          break;
+
+        case 'load':
+          await this.#eventManager.sendEvent(
+            {
+              method: 'browsingContext.load',
+              params: {
+                context: this.#contextId,
+                navigation: params.loaderId,
+              },
+            },
+            this.#contextId
+          );
+          break;
+      }
+    });
+  }
+
+  async #waitPageLifeCycleEvent(eventName: string, loaderId: string) {
     return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
       const handleLifecycleEvent = async (
         params: Protocol.Page.LifecycleEventEvent
@@ -227,179 +242,21 @@ export class Context {
         if (params.name !== eventName || params.loaderId !== loaderId) {
           return;
         }
-        this._cdpClient.Page.removeListener(
+        this.#cdpClient.Page.removeListener(
           'lifecycleEvent',
           handleLifecycleEvent
         );
         resolve(params);
       };
 
-      this._cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
+      this.#cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
     });
-  }
-
-  private async _serializeCdpExceptionDetails(
-    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
-    lineOffset: number
-  ) {
-    const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
-      (frame) => ({
-        url: frame.url,
-        functionName: frame.functionName,
-        // As `script.evaluate` wraps call into serialization script, so
-        // `lineNumber` should be adjusted.
-        lineNumber: frame.lineNumber - lineOffset,
-        columnNumber: frame.columnNumber,
-      })
-    );
-    const exception = await this._serializer.serializeCdpObject(
-      // Exception should always be there.
-      cdpExceptionDetails.exception!
-    );
-
-    const text = await this._serializer.stringifyCdpException(
-      cdpExceptionDetails.exception!
-    );
-
-    return {
-      exceptionDetails: {
-        exception,
-        columnNumber: cdpExceptionDetails.columnNumber,
-        // As `script.evaluate` wraps call into serialization script, so
-        // `lineNumber` should be adjusted.
-        lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
-        stackTrace: {
-          callFrames: callFrames || [],
-        },
-        text: text || cdpExceptionDetails.text,
-      },
-    };
   }
 
   public async scriptEvaluate(
     expression: string,
     awaitPromise: boolean
   ): Promise<Script.EvaluateResult> {
-    // The call puts the expression first to keep the stacktrace not dependent
-    // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
-    // `awaitPromise`, `_serialize` function will wait for the result, or
-    // serialize promise as-is.
-    // TODO sadym: add error handling for serialization errors.
-    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
-    const evalAndSerializeScript = `_serialize(\n${expression}\n);
-      async function _serialize(value){
-        if(${awaitPromise ? 'true' : 'false'}
-            && value instanceof Promise) {
-          value = await value;
-        }
-        return (${this.EVALUATOR_SCRIPT})
-          .serialize.apply(null, [value])
-      }`;
-
-    const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
-      expression: evalAndSerializeScript,
-      // Always wait for the result of `_serialize`. Wait or not for the user's
-      // expression is handled in the `_serialize` function.
-      awaitPromise: true,
-      returnByValue: true,
-    });
-    if (cdpEvaluateResult.exceptionDetails) {
-      // Serialize exception details.
-      return await this._serializeCdpExceptionDetails(
-        cdpEvaluateResult.exceptionDetails,
-        this._evaluateStacktraceLineOffset
-      );
-    }
-
-    return {
-      result: cdpEvaluateResult.result.value!,
-    };
-  }
-
-  public async _executeCallFunction(
-    functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
-    awaitPromise: boolean
-  ): Promise<Protocol.Runtime.CallFunctionOnResponse> {
-    // TODO sadym: add error handling for serialization/deserialization errors.
-    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
-    const callFunctionAndSerializeScript = `async (serializedThis, serializedArgs)=>{ return _callFunction((\n${functionDeclaration}\n),
-        serializedThis, serializedArgs);
-      async function _callFunction(f, serializedThis, serializedArgs) {
-        const evaluator = (${this.EVALUATOR_SCRIPT});
-        const deserializedThis = evaluator.deserialize(serializedThis);
-        const deserializedArgs = serializedArgs.map(evaluator.deserialize);
-        let resultValue = f.apply(deserializedThis, deserializedArgs);
-        if(${awaitPromise ? 'true' : 'false'}
-            && resultValue instanceof Promise) {
-          resultValue = await resultValue;
-        }
-        return evaluator.serialize(resultValue);
-      }}`;
-    return await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: callFunctionAndSerializeScript,
-      arguments: [{ value: _this }, { value: args }], // this, arguments.
-      awaitPromise: true,
-      returnByValue: true,
-      objectId: await this._serializer.getDummyContextId(),
-    });
-  }
-
-  public async callFunction(
-    functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
-    awaitPromise: boolean
-  ): Promise<Script.CallFunctionResult> {
-    const cdpCallFunctionResult = await this._executeCallFunction(
-      functionDeclaration,
-      _this,
-      args,
-      awaitPromise
-    );
-    if (cdpCallFunctionResult.exceptionDetails) {
-      // Serialize exception details.
-      return await this._serializeCdpExceptionDetails(
-        cdpCallFunctionResult.exceptionDetails,
-        this._callFunctionStacktraceLineOffset
-      );
-    }
-
-    return {
-      result: cdpCallFunctionResult.result.value,
-    };
-  }
-
-  public async findElement(
-    selector: string
-  ): Promise<CommonDataTypes.NodeRemoteValue> {
-    const functionDeclaration =
-      '(resultsSelector) => document.querySelector(resultsSelector)';
-    const args: ArgumentValue[] = [{ type: 'string', value: selector }];
-
-    const findElementCommandResult = await this._executeCallFunction(
-      functionDeclaration,
-      {
-        type: 'undefined',
-      },
-      args,
-      true
-    );
-
-    if (findElementCommandResult.exceptionDetails) {
-      // Serialize exception details.
-      throw await this._serializeCdpExceptionDetails(
-        findElementCommandResult.exceptionDetails,
-        this._callFunctionStacktraceLineOffset
-      );
-    }
-
-    return findElementCommandResult.result
-      .value as CommonDataTypes.NodeRemoteValue;
-  }
-
-  public getSerializer(): Serializer {
-    return this._serializer;
+    return this.#scriptEvaluator.scriptEvaluate(expression, awaitPromise);
   }
 }

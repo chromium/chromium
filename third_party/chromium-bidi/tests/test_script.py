@@ -77,9 +77,8 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
         "columnNumber": 19,
         "lineNumber": 0,
         "exception": {
-            "type": "object",
-            "objectId": "__any_value__",
-            "value": []
+            "type": "error",
+            "objectId": "__any_value__"
         },
         "stackTrace": {
             "callFrames": [{
@@ -127,25 +126,27 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
     }, result, ["objectId"])
 
 
-@pytest.mark.asyncio
-async def test_script_evaluateThenableAndWaitPromise_thenableReturned(
-      websocket, context_id):
-    result = await execute_command(websocket, {
-        "method": "script.evaluate",
-        "params": {
-            "expression": "{then: (r)=>{r('SOME_RESULT');}}",
-            "awaitPromise": True,
-            "target": {"context": context_id}}})
-
-    # Compare ignoring `objectId`.
-    recursiveCompare({
-        "objectId": "6648989764296027.141631980526024.9376085393313653",
-        "type": "object",
-        "value": [[
-            "then", {
-                "objectId": "02303443180265008.08175681580349026.8281562053772789",
-                "type": "function"}]]
-    }, result, ["objectId"])
+# Uncomment after behaviour is clarified:
+# https://github.com/w3c/webdriver-bidi/issues/201
+# @pytest.mark.asyncio
+# async def test_script_evaluateThenableAndWaitPromise_thenableAwaitedAndResultReturned(
+#       websocket, context_id):
+#     result = await execute_command(websocket, {
+#         "method": "script.evaluate",
+#         "params": {
+#             "expression": "{then: (r)=>{r('SOME_RESULT');}}",
+#             "awaitPromise": True,
+#             "target": {"context": context_id}}})
+#
+#     # Compare ignoring `objectId`.
+#     recursiveCompare({
+#         "objectId": "6648989764296027.141631980526024.9376085393313653",
+#         "type": "object",
+#         "value": [[
+#             "then", {
+#                 "objectId": "02303443180265008.08175681580349026.8281562053772789",
+#                 "type": "function"}]]
+#     }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
@@ -239,31 +240,32 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
     }, result, ["objectId"])
 
 
-@pytest.mark.asyncio
-async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
-      websocket, context_id):
-    result = await execute_command(websocket, {
-        "method": "script.callFunction",
-        "params": {
-            "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
-            "args": [{
-                "type": "string",
-                "value": "ARGUMENT_STRING_VALUE"
-            }, {
-                "type": "number",
-                "value": 42
-            }],
-            "awaitPromise": True,
-            "target": {"context": context_id}}})
-
-    recursiveCompare({
-        "objectId": "0017540866018586065.8588900581845549.5556004446288361",
-        "type": "object",
-        "value": [[
-            "then", {
-                "objectId": "27880276111744884.36134691065868907.6435355839204784",
-                "type": "function"}]]
-    }, result, ["objectId"])
+# Uncomment after behaviour is clarified:
+# https://github.com/w3c/webdriver-bidi/issues/201
+# @pytest.mark.asyncio
+# async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
+#       websocket, context_id):
+#     result = await execute_command(websocket, {
+#         "method": "script.callFunction",
+#         "params": {
+#             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
+#             "args": [{
+#                 "type": "string",
+#                 "value": "ARGUMENT_STRING_VALUE"
+#             }, {
+#                 "type": "number",
+#                 "value": 42
+#             }],
+#             "awaitPromise": True,
+#             "target": {"context": context_id}}})
+#
+#     recursiveCompare({
+#         "objectId": "__any_value__",
+#         "type": "object",
+#         "value": [[
+#             "then", {
+#                 "type": "function"}]]
+#     }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
@@ -295,7 +297,7 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
-            "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
+            "expression": "({SOME_PROPERTY:'SOME_VALUE'})",
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
@@ -430,7 +432,8 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateWithNode_resultReceived(websocket, context_id):
+async def test_script_callFunctionWithNode_resultReceived(websocket,
+      context_id):
     # 1. Get element.
     # 2. Evaluate script on it.
     await goto_url(websocket, context_id,
@@ -458,38 +461,38 @@ async def test_script_evaluateWithNode_resultReceived(websocket, context_id):
         "type": "string",
         "value": "!!@@##, test"}
 
-
-@pytest.mark.asyncio
-async def test_script_callFunctionWithBindingAndCallBinding_bindingCalled(
-      websocket, context_id):
-    # Send command.
-    command_id = get_next_command_id()
-
-    await send_JSON_command(websocket, {
-        "id": command_id,
-        "method": "script.callFunction",
-        "params": {
-            "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
-            "args": [{
-                "type": "PROTO.binding",
-                "id": "BINDING_NAME"}],
-            "target": {"context": context_id}
-        }})
-
-    # Assert callback is called.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "PROTO.script.called",
-        "params": {
-            "arguments": [{
-                "type": "string",
-                "value": "CALLBACK_ARGUMENT"}],
-            "id": "BINDING_NAME"}}
-
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": command_id,
-        "result": {
-            "type": "string",
-            "value": "SOME_RESULT"}}
+# TODO(sadym): re-enable after binding is specified and implemented.
+# @pytest.mark.asyncio
+# async def test_script_callFunctionWithBindingAndCallBinding_bindingCalled(
+#       websocket, context_id):
+#     # Send command.
+#     command_id = get_next_command_id()
+#
+#     await send_JSON_command(websocket, {
+#         "id": command_id,
+#         "method": "script.callFunction",
+#         "params": {
+#             "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
+#             "args": [{
+#                 "type": "PROTO.binding",
+#                 "id": "BINDING_NAME"}],
+#             "target": {"context": context_id}
+#         }})
+#
+#     # Assert callback is called.
+#     resp = await read_JSON_message(websocket)
+#     assert resp == {
+#         "method": "PROTO.script.called",
+#         "params": {
+#             "arguments": [{
+#                 "type": "string",
+#                 "value": "CALLBACK_ARGUMENT"}],
+#             "id": "BINDING_NAME"}}
+#
+#     # Assert command done.
+#     resp = await read_JSON_message(websocket)
+#     assert resp == {
+#         "id": command_id,
+#         "result": {
+#             "type": "string",
+#             "value": "SOME_RESULT"}}

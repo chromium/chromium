@@ -16,7 +16,12 @@ export namespace Message {
     | BrowsingContext.CommandResult
     | Script.CommandResult
     | Session.CommandResult
-    | CDP.CommandResult;
+    | CDP.CommandResult
+    | ExceptionResult;
+
+  export type ExceptionResult = {
+    exceptionDetails: CommonDataTypes.ExceptionDetails;
+  };
 
   export type Event =
     | BrowsingContext.Event
@@ -57,7 +62,12 @@ export namespace CommonDataTypes {
     value: string;
   };
 
-  export type SpecialNumber = 'NaN' | '-0' | '+Infinity' | '-Infinity';
+  export type SpecialNumber =
+    | 'NaN'
+    | '-0'
+    | 'Infinity'
+    | '+Infinity'
+    | '-Infinity';
 
   export type NumberValue = {
     type: 'number';
@@ -110,8 +120,10 @@ export namespace CommonDataTypes {
 
   export type RegExpLocalValue = {
     type: 'regexp';
-    pattern: string;
-    flags?: string;
+    value: {
+      pattern: string;
+      flags?: string;
+    };
   };
 
   export type SetLocalValue = {
@@ -269,12 +281,9 @@ export namespace Script {
     target: Target;
   };
 
-  export type EvaluateResult = EvaluateSuccessResult | EvaluateExceptionResult;
+  export type EvaluateResult = EvaluateSuccessResult | Message.ExceptionResult;
   export type EvaluateSuccessResult = {
     result: CommonDataTypes.RemoteValue;
-  };
-  export type EvaluateExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export type CallFunctionCommand = {
@@ -292,12 +301,9 @@ export namespace Script {
 
   export type CallFunctionResult =
     | CallFunctionSuccessResult
-    | CallFunctionExceptionResult;
+    | Message.ExceptionResult;
   export type CallFunctionSuccessResult = {
     result: CommonDataTypes.RemoteValue;
-  };
-  export type CallFunctionExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
   export type ArgumentValue =
@@ -454,7 +460,11 @@ export namespace BrowsingContext {
       context: BrowsingContext;
     };
 
-    export type FindElementResult = {
+    export type FindElementResult =
+      | FindElementSuccessResult
+      | Message.ExceptionResult;
+
+    export type FindElementSuccessResult = {
       result: CommonDataTypes.NodeRemoteValue;
     };
 

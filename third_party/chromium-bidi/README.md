@@ -19,12 +19,14 @@ npm install
 
 # Starting the Server
 
+This will run the server on port 8080:
+
 ```sh
 npm run server
 ```
 
-This will run the server on port 8080. Use the `PORT` environment variable
-or `--port=...` argument to run it on another port:
+Use the `PORT=...` environment variable or `--port=...` argument to run it on
+another port:
 
 ```sh
 PORT=8081 npm run server
@@ -41,6 +43,17 @@ Use the CLI argument `--headless=false` to run browser in headful mode:
 
 ```sh
 npm run server -- --headless=false
+```
+
+Use the `CHANNEL=...` environment variable or `--channel=...` argument with one
+of the following values to run the specific Chrome channel: `chrome`,
+`chrome-beta`, `chrome-canary`, `chrome-dev`.
+
+The requested Chrome version should be installed.
+
+```sh
+CHANNEL=chrome-dev npm run server
+npm run server -- --channel=chrome-dev
 ```
 
 ## Starting on Linux and Mac
@@ -182,6 +195,10 @@ export WPT_BROWSER_PATH="/Applications/Chromium.app/Contents/MacOS/Chromium"
 ```
 
 ### Run WPT tests
+
+#### 1. Make sure you have Chrome Dev instaled
+
+https://www.google.com/chrome/dev/
 
 #### 1. Build ChromeDriver BiDi
 

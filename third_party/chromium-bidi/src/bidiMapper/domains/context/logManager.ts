@@ -19,7 +19,7 @@ import { CdpClient } from '../../../cdp';
 import { IBidiServer } from '../../utils/bidiServer';
 import { Log, Script } from '../../bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
-import { Serializer } from './serializer';
+import { ScriptEvaluator } from './scriptEvaluator';
 import { Protocol } from 'devtools-protocol';
 
 export class LogManager {
@@ -27,14 +27,14 @@ export class LogManager {
     private _contextId: string,
     private _cdpClient: CdpClient,
     private _bidiServer: IBidiServer,
-    private _serializer: Serializer
+    private _serializer: ScriptEvaluator
   ) {}
 
   public static async create(
     contextId: string,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
-    serializer: Serializer
+    serializer: ScriptEvaluator
   ) {
     const logManager = new LogManager(
       contextId,
@@ -82,7 +82,7 @@ export class LogManager {
       let text = params.exceptionDetails.text;
 
       if (params.exceptionDetails.exception) {
-        const exceptionString = await this._serializer.stringifyCdpException(
+        const exceptionString = await this._serializer.stringifyObject(
           params.exceptionDetails.exception
         );
         if (exceptionString) {

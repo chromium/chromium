@@ -202,9 +202,9 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
       context_id):
     await goto_url(websocket, context_id,
                    "data:text/html," +
-                   "<div class='container'>test" +
-                   "<h2 class='child_1'>child 1</h2>" +
-                   "<h2 class='child_2'>child 2</h2>" +
+                   "<div class='container'>container text" +
+                   "<h2 class='child_1'>child 1 text</h2>" +
+                   "<h2 class='child_2'>child 2 text</h2>" +
                    "</div>")
 
     result = await execute_command(websocket, {
@@ -214,21 +214,46 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
             "context": context_id}})
 
     recursiveCompare({
-        "objectId": "__SOME_OBJECT_ID_1__",
         "type": "node",
         "value": {
             "nodeType": 1,
-            "childNodeCount": 3},
-        "children": [{
-            "objectId": "__CHILD_OBJECT_1__",
-            "type": "node"
-        }, {
-            "objectId": "__CHILD_OBJECT_2__",
-            "type": "node"
-        }, {
-            "objectId": "__CHILD_OBJECT_3__",
-            "type": "node"}],
-        "attributes": {"class": "container"}
+            "nodeValue": "",
+            "nodeName": "",
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "childNodeCount": 3,
+            "attributes": {
+                "class": "container"},
+            "children": [{
+                "type": "node",
+                "value": {
+                    "nodeType": 3,
+                    "nodeValue": "container text",
+                    "nodeName": "container text"}
+            }, {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "nodeValue": "",
+                    "nodeName": "",
+                    "localName": "h2",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "childNodeCount": 1,
+                    "attributes": {
+                        "class": "child_1"}}
+            }, {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "nodeValue": "",
+                    "nodeName": "",
+                    "localName": "h2",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "childNodeCount": 1,
+                    "attributes": {
+                        "class": "child_2"}}
+            }]
+        }, "objectId": "__SOME_OBJECT_ID_1__"
     }, result, ["objectId"])
 
 

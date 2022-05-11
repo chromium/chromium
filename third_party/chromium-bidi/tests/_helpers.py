@@ -30,8 +30,8 @@ def get_next_command_id():
 
 @pytest.fixture
 async def websocket():
-    port = os.getenv('PORT', 8080)
-    url = f'ws://localhost:{port}'
+    port = os.getenv("PORT", 8080)
+    url = f"ws://localhost:{port}"
     async with websockets.connect(url) as connection:
         yield connection
 
@@ -99,13 +99,13 @@ async def get_open_context_id(websocket):
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
         "params": {}})
-    return result['contexts'][0]['context']
+    return result["contexts"][0]["context"]
 
 
 async def send_JSON_command(websocket, command):
-    if 'id' not in command:
+    if "id" not in command:
         command_id = get_next_command_id()
-        command['id'] = command_id
+        command["id"] = command_id
     await websocket.send(json.dumps(command))
 
 
@@ -124,24 +124,26 @@ async def goto_url(websocket, context_id, url):
 
 
 # noinspection PySameParameterValue
-async def execute_command(websocket, command, result_field='result'):
+async def execute_command(websocket, command, result_field="result"):
     command_id = get_next_command_id()
-    command['id'] = command_id
+    command["id"] = command_id
 
     await send_JSON_command(websocket, command)
 
     while True:
         # Wait for the command to be finished.
         resp = await read_JSON_message(websocket)
-        if 'id' in resp and resp['id'] == command_id:
+        if "id" in resp and resp["id"] == command_id:
             assert result_field in resp, \
                 f"Field `{result_field}` should be in the result object:" \
                 f"\n {resp}"
             return resp[result_field]
 
+
 # Wait and return a specific event from Bidi server
 async def wait_for_event(websocket, event_method):
-    while True: 
+    while True:
         event_response = await read_JSON_message(websocket)
-        if 'method' in event_response and event_response['method'] == event_method:
+        if "method" in event_response and event_response[
+            "method"] == event_method:
             return event_response

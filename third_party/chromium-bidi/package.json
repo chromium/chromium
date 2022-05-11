@@ -50,7 +50,7 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^7.0.3",
-    "devtools-protocol": "^0.0.900357",
+    "devtools-protocol": "^0.0.999451",
     "mocha": "^9.0.1",
     "prettier": "2.3.0",
     "rimraf": "^3.0.2",

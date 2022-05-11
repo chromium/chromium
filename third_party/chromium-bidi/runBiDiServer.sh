@@ -8,4 +8,5 @@ mkdir -p logs
 
 NODE_OPTIONS="--unhandled-rejections=strict" \
 DEBUG=* \
+CHANNEL=chrome-dev \
 npm run server-no-build -- "$@" 2>&1 | tee -a logs/$$.log

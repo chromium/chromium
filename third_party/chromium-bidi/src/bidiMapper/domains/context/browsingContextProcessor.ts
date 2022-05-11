@@ -36,8 +36,7 @@ export class BrowsingContextProcessor {
     cdpConnection: CdpConnection,
     private _selfTargetId: string,
     private _bidiServer: IBidiServer,
-    private _eventManager: IEventManager,
-    private EVALUATOR_SCRIPT: string
+    private _eventManager: IEventManager
   ) {
     this._cdpConnection = cdpConnection;
 
@@ -48,7 +47,7 @@ export class BrowsingContextProcessor {
     await this._eventManager.sendEvent(
       {
         method: 'browsingContext.contextCreated',
-        params: context.toBidi(),
+        params: context.serializeToBidiValue(),
       },
       context.id
     );
@@ -58,7 +57,7 @@ export class BrowsingContextProcessor {
     await this._eventManager.sendEvent(
       {
         method: 'browsingContext.contextDestroyed',
-        params: context.toBidi(),
+        params: context.serializeToBidiValue(),
       },
       context.id
     );
@@ -91,8 +90,7 @@ export class BrowsingContextProcessor {
         contextId,
         sessionCdpClient,
         this._bidiServer,
-        this._eventManager,
-        this.EVALUATOR_SCRIPT
+        this._eventManager
       );
       this._contexts.set(contextId, contextPromise);
     }
@@ -126,10 +124,10 @@ export class BrowsingContextProcessor {
       targetInfo.targetId,
       sessionId
     );
-    context._updateTargetInfo(targetInfo);
+    context.updateTargetInfo(targetInfo);
     this._sessionToTargets.delete(sessionId);
     this._sessionToTargets.set(sessionId, context);
-    context._setSessionId(sessionId);
+    context.setSessionId(sessionId);
 
     await this._onContextCreated(context);
   }
@@ -144,7 +142,7 @@ export class BrowsingContextProcessor {
 
     const context = await this._tryGetContext(targetInfo.targetId);
     if (context) {
-      context._onInfoChangedEvent(targetInfo);
+      context.onInfoChangedEvent(targetInfo);
     }
   }
 
@@ -214,7 +212,7 @@ export class BrowsingContextProcessor {
 
       if (this._hasKnownContext(contextId)) {
         const existingContext = await this._getKnownContext(contextId);
-        resolve({ result: existingContext.toBidi() });
+        resolve({ result: existingContext.serializeToBidiValue() });
         return;
       }
 
@@ -231,7 +229,7 @@ export class BrowsingContextProcessor {
             contextId,
             attachToTargetEventParams.sessionId
           );
-          resolve({ result: context.toBidi() });
+          resolve({ result: context.serializeToBidiValue() });
         }
       };
 
@@ -287,7 +285,7 @@ export class BrowsingContextProcessor {
     const selector = commandData.params.selector;
     const context = await this._getKnownContext(commandData.params.context);
 
-    return { result: await context.findElement(selector) };
+    return await context.findElement(selector);
   }
 
   async process_PROTO_browsingContext_close(
