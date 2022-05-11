@@ -7,148 +7,163 @@
  * for languages and inputs settings.
  */
 
-/**
- * @type {number} Millisecond delay that can be used when closing an action
- * menu to keep it briefly on-screen so users can see the changes.
- */
-const kMenuCloseDelay = 100;
-
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/js/action_link.js';
 import '//resources/cr_elements/action_link_css.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {sendWithPromise, removeWebUIListener, addWebUIListener, WebUIListener} from '//resources/js/cr.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import './change_device_language_dialog.js';
-import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction, InputsShortcutReminderState} from './languages_metrics_proxy.js';
 import './os_add_languages_dialog.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '../../controls/settings_toggle_button.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {routes} from '../os_route.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import {Router, Route} from '../../router.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
+import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-languages-page-v2',
+/**
+ * @type {number} Millisecond delay that can be used when closing an action
+ * menu to keep it briefly on-screen so users can see the changes.
+ */
+const kMenuCloseDelay = 100;
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const OsSettingsLanguagesPageV2ElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
+    PolymerElement);
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+/** @polymer */
+class OsSettingsLanguagesPageV2Element extends
+    OsSettingsLanguagesPageV2ElementBase {
+  static get is() {
+    return 'os-settings-languages-page-v2';
+  }
 
-    /**
-     * Read-only reference to the languages model provided by the
-     * 'os-settings-languages' instance.
-     * @type {!LanguagesModel|undefined}
-     */
-    languages: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
-
-    /**
-     * The language to display the details for and its index.
-     * @type {{state: !LanguageState, index: number}|undefined}
-     * @private
-     */
-    detailLanguage_: Object,
-
-    /** @private */
-    showAddLanguagesDialog_: Boolean,
-
-    /** @private */
-    showChangeDeviceLanguageDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    isSecondaryUser_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isSecondaryUser');
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'os-settings-languages' instance.
+       * @type {!LanguagesModel|undefined}
+       */
+      languages: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    primaryUserEmail_: {
-      type: String,
-      value() {
-        return loadTimeData.getString('primaryUserEmail');
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+
+      /**
+       * The language to display the details for and its index.
+       * @type {{state: !LanguageState, index: number}|undefined}
+       * @private
+       */
+      detailLanguage_: Object,
+
+      /** @private */
+      showAddLanguagesDialog_: Boolean,
+
+      /** @private */
+      showChangeDeviceLanguageDialog_: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kAddLanguage,
-        chromeos.settings.mojom.Setting.kChangeDeviceLanguage,
-        chromeos.settings.mojom.Setting.kOfferTranslation,
-      ]),
-    },
-
-    /** @private */
-    languageSettingsV2Update2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
       },
-    },
-  },
 
-  /** @private {?LanguagesMetricsProxy} */
-  languagesMetricsProxy_: null,
+      /** @private */
+      isSecondaryUser_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSecondaryUser');
+        },
+      },
+
+      /** @private */
+      primaryUserEmail_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('primaryUserEmail');
+        },
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kAddLanguage,
+          chromeos.settings.mojom.Setting.kChangeDeviceLanguage,
+          chromeos.settings.mojom.Setting.kOfferTranslation,
+        ]),
+      },
+
+      /** @private */
+      languageSettingsV2Update2Enabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!LanguagesMetricsProxy} */
     this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
-  },
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -157,7 +172,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @param {string} language
@@ -166,18 +181,19 @@ Polymer({
    */
   getLanguageDisplayName_(language) {
     return this.languageHelper.getLanguage(language).displayName;
-  },
+  }
 
   /** @private */
   onChangeDeviceLanguageClick_() {
     this.showChangeDeviceLanguageDialog_ = true;
-  },
+  }
 
   /** @private */
   onChangeDeviceLanguageDialogClose_() {
     this.showChangeDeviceLanguageDialog_ = false;
-    focusWithoutInk(assert(this.$$('#changeDeviceLanguage')));
-  },
+    focusWithoutInk(
+        assert(this.shadowRoot.querySelector('#changeDeviceLanguage')));
+  }
 
   /**
    * @param {string} language
@@ -188,7 +204,7 @@ Polymer({
     return this.i18n(
         'changeDeviceLanguageButtonDescription',
         this.getLanguageDisplayName_(language));
-  },
+  }
 
   /**
    * Stamps and opens the Add Languages dialog, registering a listener to
@@ -200,13 +216,13 @@ Polymer({
     e.preventDefault();
     this.languagesMetricsProxy_.recordAddLanguages();
     this.showAddLanguagesDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
     focusWithoutInk(assert(this.$.addLanguages));
-  },
+  }
 
   /**
    * Checks if there are supported languages that are not enabled but can be
@@ -219,7 +235,7 @@ Polymer({
     return languages !== undefined && languages.supported.some(language => {
       return this.languageHelper.canEnableLanguage(language);
     });
-  },
+  }
 
   /**
    * @return {boolean} True if the translate checkbox should be disabled.
@@ -241,7 +257,7 @@ Polymer({
 
     return this.languageHelper.convertLanguageCodeForTranslate(
                languageState.language.code) === this.languages.translateTarget;
-  },
+  }
 
   /**
    * Handler for changes to the translate checkbox.
@@ -260,7 +276,7 @@ Polymer({
         e.target.checked);
     recordSettingChange();
     this.closeMenuSoon_();
-  },
+  }
 
   /**
    * Closes the shared action menu after a short delay, so when a checkbox is
@@ -268,13 +284,14 @@ Polymer({
    * @private
    */
   closeMenuSoon_() {
-    const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
+    const menu = /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('#menu').get());
     setTimeout(() => {
       if (menu.open) {
         menu.close();
       }
     }, kMenuCloseDelay);
-  },
+  }
 
   /**
    * @return {boolean} True if the "Move to top" option for |language| should
@@ -285,7 +302,7 @@ Polymer({
     // "Move To Top" is a no-op for the top language.
     return this.detailLanguage_ !== undefined &&
         this.detailLanguage_.index === 0;
-  },
+  }
 
   /**
    * @return {boolean} True if the "Move up" option for |language| should
@@ -297,7 +314,7 @@ Polymer({
     // "Move to top" for the 2nd language.
     return this.detailLanguage_ !== undefined &&
         this.detailLanguage_.index !== 0 && this.detailLanguage_.index !== 1;
-  },
+  }
 
   /**
    * @return {boolean} True if the "Move down" option for |language| should be
@@ -307,7 +324,7 @@ Polymer({
   showMoveDown_() {
     return this.languages !== undefined && this.detailLanguage_ !== undefined &&
         this.detailLanguage_.index !== this.languages.enabled.length - 1;
-  },
+  }
 
   /**
    * Moves the language to the top of the list.
@@ -318,7 +335,7 @@ Polymer({
     this.languageHelper.moveLanguageToFront(
         this.detailLanguage_.state.language.code);
     recordSettingChange();
-  },
+  }
 
   /**
    * Moves the language up in the list.
@@ -329,7 +346,7 @@ Polymer({
     this.languageHelper.moveLanguage(
         this.detailLanguage_.state.language.code, /*upDirection=*/ true);
     recordSettingChange();
-  },
+  }
 
   /**
    * Moves the language down in the list.
@@ -340,7 +357,7 @@ Polymer({
     this.languageHelper.moveLanguage(
         this.detailLanguage_.state.language.code, /*upDirection=*/ false);
     recordSettingChange();
-  },
+  }
 
   /**
    * Disables the language.
@@ -351,7 +368,7 @@ Polymer({
     this.languageHelper.disableLanguage(
         this.detailLanguage_.state.language.code);
     recordSettingChange();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -368,7 +385,7 @@ Polymer({
 
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
     menu.showAt(/** @type {!HTMLElement} */ (e.target));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -376,7 +393,7 @@ Polymer({
    */
   onTranslateToggleChange_(e) {
     this.languagesMetricsProxy_.recordToggleTranslate(e.target.checked);
-  },
+  }
 
   /**
    * @param {string} languageCode The language code identifying a language.
@@ -389,7 +406,7 @@ Polymer({
             translateTarget ?
         'translate-target' :
         'non-translate-target';
-  },
+  }
 
   /**
    * @param {boolean} update2Enabled
@@ -399,7 +416,7 @@ Polymer({
   getOfferTranslationLabel_(update2Enabled) {
     return this.i18n(
         update2Enabled ? 'offerGoogleTranslateLabel' : 'offerTranslationLabel');
-  },
+  }
 
   /**
    * @param {boolean} update2Enabled
@@ -408,7 +425,7 @@ Polymer({
    */
   getOfferTranslationSublabel_(update2Enabled) {
     return update2Enabled ? '' : this.i18n('offerTranslationSublabel');
-  },
+  }
 
   /**
    * @param {boolean} update2Enabled
@@ -418,7 +435,7 @@ Polymer({
   getLanguagePreferenceTitle_(update2Enabled) {
     return this.i18n(
         update2Enabled ? 'websiteLanguagesTitle' : 'languagesPreferenceTitle');
-  },
+  }
 
   /**
    * @param {boolean} update2Enabled
@@ -429,18 +446,21 @@ Polymer({
     return this.i18nAdvanced(
         update2Enabled ? 'websiteLanguagesDescription' :
                          'languagesPreferenceDescription');
-  },
+  }
 
   /** @private */
   openManageGoogleAccountLanguage_() {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
     window.open(loadTimeData.getString('googleAccountLanguagesURL'));
-  },
+  }
 
   /** @private */
   onLanguagePreferenceDescriptionLinkClick_() {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsLanguagesPageV2Element.is, OsSettingsLanguagesPageV2Element);

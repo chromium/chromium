@@ -2,106 +2,124 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'os-settings-languages-section' is the top-level settings section for
+ * languages.
+ */
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import './input_page.js';
+import './os_languages_page_v2.js';
+import './smart_inputs_page.js';
+import './input_method_options_page.js';
+import './languages.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Router} from '../../router.js';
+import {routes} from '../os_route.js';
+
+import {LanguageHelper, LanguagesModel} from './languages_types.js';
+
+
 // The IME ID for the Accessibility Common extension used by Dictation.
 /** @type {string} */
 const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
 /**
- * @fileoverview
- * 'os-settings-languages-section' is the top-level settings section for
- * languages.
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  */
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+const OsSettingsLanguagesSectionElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import './input_page.js';
-import './os_languages_page_v2.js';
-import './smart_inputs_page.js';
-import './input_method_options_page.js';
-import {loadTimeData} from '../../i18n_setup.js';
-import './languages.js';
-import {routes} from '../os_route.js';
-import {Router, Route} from '../../router.js';
-import '../../settings_page/settings_animated_pages.js';
-import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
-import {LanguageHelper, LanguagesModel} from './languages_types.js';
+/** @polymer */
+class OsSettingsLanguagesSectionElement extends
+    OsSettingsLanguagesSectionElementBase {
+  static get is() {
+    return 'os-settings-languages-section';
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-languages-section',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    I18nBehavior,
-  ],
+  static get properties() {
+    return {
+      prefs: Object,
 
-  properties: {
-    prefs: Object,
-
-    /** @type {!LanguagesModel|undefined} */
-    languages: {
-      type: Object,
-      notify: true,
-    },
-
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
-
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-        if (routes.OS_LANGUAGES_SMART_INPUTS) {
-          map.set(
-              routes.OS_LANGUAGES_SMART_INPUTS.path,
-              '#smartInputsSubpageTrigger');
-        }
-        return map;
+      /** @type {!LanguagesModel|undefined} */
+      languages: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    inputPageTitle_: {
-      type: String,
-      value() {
-        const isUpdate2 =
-            loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
-        return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
-      },
-    },
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
 
-    /**
-     * This is enabled when any of the smart inputs features is allowed.
-     * @private
-     * */
-    smartInputsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
-            loadTimeData.getBoolean('allowEmojiSuggestion');
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          if (routes.OS_LANGUAGES_SMART_INPUTS) {
+            map.set(
+                routes.OS_LANGUAGES_SMART_INPUTS.path,
+                '#smartInputsSubpageTrigger');
+          }
+          return map;
+        },
       },
-    }
-  },
+
+      /** @private */
+      inputPageTitle_: {
+        type: String,
+        value() {
+          const isUpdate2 =
+              loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+          return this.i18n(isUpdate2 ? 'inputPageTitleV2' : 'inputPageTitle');
+        },
+      },
+
+      /**
+       * This is enabled when any of the smart inputs features is allowed.
+       * @private
+       * */
+      smartInputsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
+              loadTimeData.getBoolean('allowEmojiSuggestion');
+        },
+      }
+
+    };
+  }
 
   /** @private */
   onLanguagesV2Click_() {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
-  },
+  }
 
   /** @private */
   onInputClick_() {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
-  },
+  }
 
   /** @private */
   onSmartInputsClick_() {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_SMART_INPUTS);
-  },
+  }
 
   /**
    * @param {string|undefined} code The language code of the language.
@@ -118,7 +136,7 @@ Polymer({
       return '';
     }
     return language.displayName;
-  },
+  }
 
   /**
    * @param {string|undefined} id The input method ID.
@@ -136,5 +154,8 @@ Polymer({
     }
 
     return languageHelper.getInputMethodDisplayName(id);
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsLanguagesSectionElement.is, OsSettingsLanguagesSectionElement);

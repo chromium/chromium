@@ -60,7 +60,7 @@ suite('languages page', () => {
 
     // Sets up test metrics proxy.
     metricsProxy = new TestLanguagesMetricsProxy();
-    LanguagesMetricsProxyImpl.instance_ = metricsProxy;
+    LanguagesMetricsProxyImpl.setInstance(metricsProxy);
 
     // Sets up fake languageSettingsPrivate API.
     const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
@@ -413,7 +413,8 @@ suite('languages page', () => {
 
       flush();
 
-      const deepLinkElement = languagesPage.$$('#addLanguages');
+      const deepLinkElement =
+          languagesPage.shadowRoot.querySelector('#addLanguages');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -448,17 +449,18 @@ suite('languages page', () => {
     }
 
     setup(() => {
-      assertFalse(
-          !!languagesPage.$$('os-settings-change-device-language-dialog'));
-      languagesPage.$$('#changeDeviceLanguage').click();
+      assertFalse(!!languagesPage.shadowRoot.querySelector(
+          'os-settings-change-device-language-dialog'));
+      languagesPage.shadowRoot.querySelector('#changeDeviceLanguage').click();
       flush();
 
-      dialog = languagesPage.$$('os-settings-change-device-language-dialog');
+      dialog = languagesPage.shadowRoot.querySelector(
+          'os-settings-change-device-language-dialog');
       assertTrue(!!dialog);
 
-      actionButton = dialog.$$('.action-button');
+      actionButton = dialog.shadowRoot.querySelector('.action-button');
       assertTrue(!!actionButton);
-      cancelButton = dialog.$$('.cancel-button');
+      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
       assertTrue(!!cancelButton);
 
       // The fixed-height dialog's iron-list should stamp far fewer than
@@ -539,7 +541,7 @@ suite('languages page', () => {
     // Test that searching languages works whether the displayed or native
     // language name is queried.
     test('searches languages', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
 
       // Expecting a few languages to be displayed when no query exists.
       assertGE(getListItems().length, 1);
@@ -562,7 +564,7 @@ suite('languages page', () => {
     });
 
     test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
@@ -603,14 +605,14 @@ suite('languages page', () => {
 
   suite('records metrics', () => {
     test('when adding languages', async () => {
-      languagesPage.$$('#addLanguages').click();
+      languagesPage.shadowRoot.querySelector('#addLanguages').click();
       flush();
       await metricsProxy.whenCalled('recordAddLanguages');
     });
 
     test('when disabling translate.enable toggle', async () => {
       languagesPage.setPrefValue('translate.enabled', true);
-      languagesPage.$$('#offerTranslation').click();
+      languagesPage.shadowRoot.querySelector('#offerTranslation').click();
       flush();
 
       assertFalse(await metricsProxy.whenCalled('recordToggleTranslate'));
@@ -618,7 +620,7 @@ suite('languages page', () => {
 
     test('when enabling translate.enable toggle', async () => {
       languagesPage.setPrefValue('translate.enabled', false);
-      languagesPage.$$('#offerTranslation').click();
+      languagesPage.shadowRoot.querySelector('#offerTranslation').click();
       flush();
 
       assertTrue(await metricsProxy.whenCalled('recordToggleTranslate'));
@@ -634,7 +636,8 @@ suite('languages page', () => {
       // would change the focus from this test to the new window.
       // Prevent this from happening by overriding `window.open`.
       window.open = () => {};
-      languagesPage.$$('#manageGoogleAccountLanguage').click();
+      languagesPage.shadowRoot.querySelector('#manageGoogleAccountLanguage')
+          .click();
       flush();
       assertEquals(
           await metricsProxy.whenCalled('recordInteraction'),
@@ -647,8 +650,9 @@ suite('languages page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: false});
       flush();
 
-      const anchor = languagesPage.$$('#webLanguagesDescription')
-                         .shadowRoot.querySelector('a');
+      const anchor =
+          languagesPage.shadowRoot.querySelector('#webLanguagesDescription')
+              .shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
@@ -666,8 +670,9 @@ suite('languages page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       flush();
 
-      const anchor = languagesPage.$$('#webLanguagesDescription')
-                         .shadowRoot.querySelector('a');
+      const anchor =
+          languagesPage.shadowRoot.querySelector('#webLanguagesDescription')
+              .shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
@@ -694,8 +699,9 @@ suite('change device language button', () => {
     document.body.appendChild(page);
     flush();
 
-    assertFalse(!!page.$$('#changeDeviceLanguage'));
-    assertFalse(!!page.$$('#changeDeviceLanguagePolicyIndicator'));
+    assertFalse(!!page.shadowRoot.querySelector('#changeDeviceLanguage'));
+    assertFalse(!!page.shadowRoot.querySelector(
+        '#changeDeviceLanguagePolicyIndicator'));
   });
 
   test('is disabled for secondary users', () => {
@@ -705,12 +711,13 @@ suite('change device language button', () => {
     document.body.appendChild(page);
     flush();
 
-    const changeDeviceLanguageButton = page.$$('#changeDeviceLanguage');
+    const changeDeviceLanguageButton =
+        page.shadowRoot.querySelector('#changeDeviceLanguage');
     assertTrue(changeDeviceLanguageButton.disabled);
     assertFalse(changeDeviceLanguageButton.hidden);
 
     const changeDeviceLanguagePolicyIndicator =
-        page.$$('#changeDeviceLanguagePolicyIndicator');
+        page.shadowRoot.querySelector('#changeDeviceLanguagePolicyIndicator');
     assertFalse(changeDeviceLanguagePolicyIndicator.hidden);
     assertEquals(
         'test.com', changeDeviceLanguagePolicyIndicator.indicatorSourceName);
@@ -725,10 +732,12 @@ suite('change device language button', () => {
     document.body.appendChild(page);
     flush();
 
-    const changeDeviceLanguageButton = page.$$('#changeDeviceLanguage');
+    const changeDeviceLanguageButton =
+        page.shadowRoot.querySelector('#changeDeviceLanguage');
     assertFalse(changeDeviceLanguageButton.disabled);
     assertFalse(changeDeviceLanguageButton.hidden);
 
-    assertFalse(!!page.$$('#changeDeviceLanguagePolicyIndicator'));
+    assertFalse(!!page.shadowRoot.querySelector(
+        '#changeDeviceLanguagePolicyIndicator'));
   });
 });

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * @fileoverview
  * Handles metrics for ChromeOS's languages OS settings.
  * TODO(crbug/1109431): Remove these metrics when languages settings migration
  * is completed and data analysed.
  */
+
 /**
  * Keeps in sync with SettingsLanguagesPageInteraction
  * in tools/metrics/histograms/enums.xml.
@@ -145,6 +144,17 @@ export class LanguagesMetricsProxyImpl {
         'ChromeOS.Settings.Inputs.ShortcutReminderDismissed', value,
         Object.keys(InputsShortcutReminderState).length);
   }
+
+  /** @return {!LanguagesMetricsProxy} */
+  static getInstance() {
+    return instance || (instance = new LanguagesMetricsProxyImpl());
+  }
+
+  /** @param {!LanguagesMetricsProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(LanguagesMetricsProxyImpl);
+/** @type {?LanguagesMetricsProxy} */
+let instance = null;

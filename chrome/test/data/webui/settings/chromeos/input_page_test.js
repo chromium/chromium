@@ -102,7 +102,7 @@ suite('input page', () => {
 
       // Sets up test metrics proxy.
       metricsProxy = new TestLanguagesMetricsProxy();
-      LanguagesMetricsProxyImpl.instance_ = metricsProxy;
+      LanguagesMetricsProxyImpl.setInstance(metricsProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
@@ -137,7 +137,8 @@ suite('input page', () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
       flush();
 
-      assertTrue(isVisible(inputPage.$$('#languagePacksNotice')));
+      assertTrue(isVisible(
+          inputPage.shadowRoot.querySelector('#languagePacksNotice')));
     });
 
     test('is hidden when needed', () => {
@@ -145,13 +146,15 @@ suite('input page', () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: false});
       flush();
 
-      assertFalse(isVisible(inputPage.$$('#languagePacksNotice')));
+      assertFalse(isVisible(
+          inputPage.shadowRoot.querySelector('#languagePacksNotice')));
     });
   });
 
   suite('input method list', () => {
     test('displays correctly', () => {
-      const inputMethodsList = inputPage.$$('#inputMethodsList');
+      const inputMethodsList =
+          inputPage.shadowRoot.querySelector('#inputMethodsList');
       assertTrue(!!inputMethodsList);
 
       // The test input methods should appear.
@@ -231,14 +234,15 @@ suite('input page', () => {
 
     test('shows managed input methods label', () => {
       const inputMethodsManagedbyPolicy =
-          inputPage.$$('#inputMethodsManagedbyPolicy');
+          inputPage.shadowRoot.querySelector('#inputMethodsManagedbyPolicy');
       assertFalse(!!inputMethodsManagedbyPolicy);
 
       inputPage.setPrefValue(
           'settings.language.allowed_input_methods', ['xkb:us::eng']);
       flush();
 
-      assertTrue(!!inputPage.$$('#inputMethodsManagedbyPolicy'));
+      assertTrue(
+          !!inputPage.shadowRoot.querySelector('#inputMethodsManagedbyPolicy'));
     });
   });
 
@@ -250,8 +254,9 @@ suite('input page', () => {
 
       flush();
 
-      const deepLinkElement = inputPage.$$('#enableSpellcheckingToggle')
-                                  .shadowRoot.querySelector('cr-toggle');
+      const deepLinkElement =
+          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle')
+              .shadowRoot.querySelector('cr-toggle');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -267,23 +272,25 @@ suite('input page', () => {
     let actionButton;
 
     setup(() => {
-      assertFalse(!!inputPage.$$('os-settings-add-input-methods-dialog'));
-      inputPage.$$('#addInputMethod').click();
+      assertFalse(!!inputPage.shadowRoot.querySelector(
+          'os-settings-add-input-methods-dialog'));
+      inputPage.shadowRoot.querySelector('#addInputMethod').click();
       flush();
 
-      dialog = inputPage.$$('os-settings-add-input-methods-dialog')
-                   .$$('os-settings-add-items-dialog');
+      dialog = inputPage.shadowRoot
+                   .querySelector('os-settings-add-input-methods-dialog')
+                   .shadowRoot.querySelector('os-settings-add-items-dialog');
       assertTrue(!!dialog);
 
-      actionButton = dialog.$$('.action-button');
+      actionButton = dialog.shadowRoot.querySelector('.action-button');
       assertTrue(!!actionButton);
-      cancelButton = dialog.$$('.cancel-button');
+      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
       assertTrue(!!cancelButton);
 
-      suggestedList = dialog.$$('#suggested-items-list');
+      suggestedList = dialog.shadowRoot.querySelector('#suggested-items-list');
       assertTrue(!!suggestedList);
 
-      allImesList = dialog.$$('#filtered-items-list');
+      allImesList = dialog.shadowRoot.querySelector('#filtered-items-list');
       assertTrue(!!allImesList);
 
       // No input methods has been selected, so the action button is disabled.
@@ -384,7 +391,7 @@ suite('input page', () => {
       languageHelper.setPrefValue('settings.language.preferred_languages', '');
       flush();
 
-      suggestedList = dialog.$$('#suggestedInputMethods');
+      suggestedList = dialog.shadowRoot.querySelector('#suggestedInputMethods');
       // suggested input methods is rendered previously.
       assertFalse(isVisible(suggestedList));
     });
@@ -400,17 +407,18 @@ suite('input page', () => {
           });
       flush();
 
-      suggestedList = dialog.$$('#suggestedInputMethods');
+      suggestedList = dialog.shadowRoot.querySelector('#suggestedInputMethods');
       assertFalse(isVisible(suggestedList));
     });
 
     test('searches input methods correctly', () => {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       const getItems = function() {
         return allImesList.querySelectorAll('.list-item:not([hidden])');
       };
 
-      assertTrue(isVisible(dialog.$$('#filtered-items-label')));
+      assertTrue(
+          isVisible(dialog.shadowRoot.querySelector('#filtered-items-label')));
       assertTrue(isVisible(suggestedList));
 
       // Expecting a few languages to be displayed when no query exists.
@@ -419,7 +427,8 @@ suite('input page', () => {
       // Search hides the suggested list and the label for all IMEs.
       searchInput.setValue('v');
       flush();
-      assertFalse(isVisible(dialog.$$('#filtered-items-label')));
+      assertFalse(
+          isVisible(dialog.shadowRoot.querySelector('#filtered-items-label')));
       assertFalse(isVisible(suggestedList));
 
       // Search input methods name
@@ -436,7 +445,7 @@ suite('input page', () => {
     });
 
     test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input
@@ -455,7 +464,7 @@ suite('input page', () => {
   suite('records metrics', () => {
     test('when deactivating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', true);
-      inputPage.$$('#showImeMenu').click();
+      inputPage.shadowRoot.querySelector('#showImeMenu').click();
       flush();
 
       assertFalse(
@@ -464,7 +473,7 @@ suite('input page', () => {
 
     test('when activating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', false);
-      inputPage.$$('#showImeMenu').click();
+      inputPage.shadowRoot.querySelector('#showImeMenu').click();
       flush();
 
       assertTrue(
@@ -472,14 +481,15 @@ suite('input page', () => {
     });
 
     test('when adding input methods', async () => {
-      inputPage.$$('#addInputMethod').click();
+      inputPage.shadowRoot.querySelector('#addInputMethod').click();
       flush();
 
       await metricsProxy.whenCalled('recordAddInputMethod');
     });
 
     test('when switch input method', async () => {
-      const inputMethodsList = inputPage.$$('#inputMethodsList');
+      const inputMethodsList =
+          inputPage.shadowRoot.querySelector('#inputMethodsList');
       assertTrue(!!inputMethodsList);
 
       // The test input methods should appear.
@@ -498,7 +508,8 @@ suite('input page', () => {
 
       // Default shortcut reminder with two elements should show "last used IME"
       // reminder.
-      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
+          .$.dismiss.click();
       assertEquals(
           InputsShortcutReminderState.LAST_USED_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
@@ -510,7 +521,8 @@ suite('input page', () => {
       flush();
 
       // Shortcut reminder should show "next IME" shortcut.
-      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
+          .$.dismiss.click();
       assertEquals(
           InputsShortcutReminderState.NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
@@ -524,7 +536,8 @@ suite('input page', () => {
       flush();
 
       // Shortcut reminder should show both shortcuts.
-      inputPage.$$('keyboard-shortcut-banner').$.dismiss.click();
+      inputPage.shadowRoot.querySelector('keyboard-shortcut-banner')
+          .$.dismiss.click();
       assertEquals(
           InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
@@ -535,8 +548,8 @@ suite('input page', () => {
       loadTimeData.overrideValues({languagePacksHandwritingEnabled: true});
       flush();
 
-      const anchor =
-          inputPage.$$('#languagePacksNotice').shadowRoot.querySelector('a');
+      const anchor = inputPage.shadowRoot.querySelector('#languagePacksNotice')
+                         .shadowRoot.querySelector('a');
       // The below would normally create a new window, which would change the
       // focus from this test to the new window.
       // Prevent this from happening by adding an event listener on the anchor
@@ -568,11 +581,13 @@ suite('input page', () => {
 
       flush();
       // spell check is initially on
-      spellCheckToggle = inputPage.$$('#enableSpellcheckingToggle');
+      spellCheckToggle =
+          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
-      spellCheckListContainer = inputPage.$$('#spellCheckLanguagesList');
+      spellCheckListContainer =
+          inputPage.shadowRoot.querySelector('#spellCheckLanguagesList');
       assertTrue(!!spellCheckListContainer);
 
       // two languages are in the list, with en-US on and sw off.
@@ -850,7 +865,7 @@ suite('input page', () => {
 
     test('toggle off disables enhanced spell check', () => {
       const enhancedSpellCheckToggle =
-          inputPage.$$('#enhancedSpellCheckToggle');
+          inputPage.shadowRoot.querySelector('#enhancedSpellCheckToggle');
       assertFalse(enhancedSpellCheckToggle.disabled);
       spellCheckToggle.click();
 
@@ -859,7 +874,7 @@ suite('input page', () => {
 
     test('toggle off disables edit dictionary', () => {
       const editDictionarySubpageTrigger =
-          inputPage.$$('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
       assertFalse(editDictionarySubpageTrigger.disabled);
       spellCheckToggle.click();
 
@@ -868,7 +883,7 @@ suite('input page', () => {
 
     test('opens edit dictionary page', () => {
       const editDictionarySubpageTrigger =
-          inputPage.$$('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
       editDictionarySubpageTrigger.click();
       const router = Router.getInstance();
       assertEquals(
@@ -897,11 +912,13 @@ suite('input page', () => {
       flush();
 
       // Spell check is initially on.
-      spellCheckToggle = inputPage.$$('#enableSpellcheckingToggle');
+      spellCheckToggle =
+          inputPage.shadowRoot.querySelector('#enableSpellcheckingToggle');
       assertTrue(!!spellCheckToggle);
       assertTrue(spellCheckToggle.checked);
 
-      spellCheckListContainer = inputPage.$$('#spellCheckLanguagesListV2');
+      spellCheckListContainer =
+          inputPage.shadowRoot.querySelector('#spellCheckLanguagesListV2');
       assertTrue(!!spellCheckListContainer);
 
       // The spell check list should only have en-US (excluding the "add
@@ -1229,7 +1246,7 @@ suite('input page', () => {
 
     test('toggle off disables edit dictionary', () => {
       const editDictionarySubpageTrigger =
-          inputPage.$$('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
       assertFalse(editDictionarySubpageTrigger.disabled);
       spellCheckToggle.click();
 
@@ -1238,7 +1255,7 @@ suite('input page', () => {
 
     test('opens edit dictionary page', () => {
       const editDictionarySubpageTrigger =
-          inputPage.$$('#editDictionarySubpageTrigger');
+          inputPage.shadowRoot.querySelector('#editDictionarySubpageTrigger');
       editDictionarySubpageTrigger.click();
       const router = Router.getInstance();
       assertEquals(
@@ -1295,24 +1312,25 @@ suite('input page', () => {
       loadTimeData.overrideValues({enableLanguageSettingsV2Update2: true});
       flush();
 
-      assertFalse(
-          !!inputPage.$$('os-settings-add-spellcheck-languages-dialog'));
-      inputPage.$$('#addSpellcheckLanguages').click();
+      assertFalse(!!inputPage.shadowRoot.querySelector(
+          'os-settings-add-spellcheck-languages-dialog'));
+      inputPage.shadowRoot.querySelector('#addSpellcheckLanguages').click();
       flush();
 
-      dialog = inputPage.$$('os-settings-add-spellcheck-languages-dialog')
-                   .$$('os-settings-add-items-dialog');
+      dialog = inputPage.shadowRoot
+                   .querySelector('os-settings-add-spellcheck-languages-dialog')
+                   .shadowRoot.querySelector('os-settings-add-items-dialog');
       assertTrue(!!dialog);
       assertTrue(dialog.$.dialog.open);
 
-      suggestedList = dialog.$$('#suggested-items-list');
+      suggestedList = dialog.shadowRoot.querySelector('#suggested-items-list');
       assertTrue(!!suggestedList);
-      allLangsList = dialog.$$('#filtered-items-list');
+      allLangsList = dialog.shadowRoot.querySelector('#filtered-items-list');
       assertTrue(!!allLangsList);
 
-      actionButton = dialog.$$('.action-button');
+      actionButton = dialog.shadowRoot.querySelector('.action-button');
       assertTrue(!!actionButton);
-      cancelButton = dialog.$$('.cancel-button');
+      cancelButton = dialog.shadowRoot.querySelector('.cancel-button');
       assertTrue(!!cancelButton);
     });
 
@@ -1361,11 +1379,13 @@ suite('input page', () => {
       assertTrue(checkboxes.every(checkbox => !checkbox.checked));
 
       // There should be a label for both sections.
-      const suggestedLabel = dialog.$$('#suggested-items-label');
+      const suggestedLabel =
+          dialog.shadowRoot.querySelector('#suggested-items-label');
       assertTrue(!!suggestedLabel);
       assertTrue(isVisible(suggestedLabel));
 
-      const allLangsLabel = dialog.$$('#filtered-items-label');
+      const allLangsLabel =
+          dialog.shadowRoot.querySelector('#filtered-items-label');
       assertTrue(!!allLangsLabel);
       assertTrue(isVisible(allLangsLabel));
     });
@@ -1467,7 +1487,7 @@ suite('input page', () => {
     });
 
     test('searches languages on display name', () => {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
 
       // Expecting a few languages to be displayed when no query exists.
       assertGE(getAllLanguagesCheckboxWithPolicies().length, 1);
@@ -1488,11 +1508,12 @@ suite('input page', () => {
       searchInput.setValue('egaugnal');
       flush();
       assertEquals(getAllLanguagesCheckboxWithPolicies().length, 0);
-      assertTrue(isVisible(dialog.$$('#no-search-results')));
+      assertTrue(
+          isVisible(dialog.shadowRoot.querySelector('#no-search-results')));
     });
 
     test('has escape key behavior working correctly', function() {
-      const searchInput = dialog.$$('cr-search-field');
+      const searchInput = dialog.shadowRoot.querySelector('cr-search-field');
       searchInput.setValue('dummyquery');
 
       // Test that dialog is not closed if 'Escape' is pressed on the input

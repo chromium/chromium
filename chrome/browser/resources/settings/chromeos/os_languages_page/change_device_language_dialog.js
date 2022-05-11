@@ -17,64 +17,77 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import './languages.js';
 import '../../settings_shared_css.js';
 
-import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
-import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
+import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-change-device-language-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrScrollableBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const OsSettingsChangeDeviceLanguageDialogElementBase =
+    mixinBehaviors([CrScrollableBehavior, I18nBehavior], PolymerElement);
 
-  behaviors: [
-    CrScrollableBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+class OsSettingsChangeDeviceLanguageDialogElement extends
+    OsSettingsChangeDeviceLanguageDialogElementBase {
+  static get is() {
+    return 'os-settings-change-device-language-dialog';
+  }
 
-  properties: {
-    /** @type {!LanguagesModel|undefined} */
-    languages: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!Array<!chrome.languageSettingsPrivate.Language>} */
-    displayedLanguages_: {
-      type: Array,
-      computed: `getPossibleDeviceLanguages_(languages.supported,
-          languages.enabled.*, lowercaseQueryString_)`,
-    },
+  static get properties() {
+    return {
+      /** @type {!LanguagesModel|undefined} */
+      languages: Object,
 
-    /** @private {boolean} */
-    displayedLanguagesEmpty_: {
-      type: Boolean,
-      computed: 'isZero_(displayedLanguages_.length)',
-    },
+      /** @private {!Array<!chrome.languageSettingsPrivate.Language>} */
+      displayedLanguages_: {
+        type: Array,
+        computed: `getPossibleDeviceLanguages_(languages.supported,
+            languages.enabled.*, lowercaseQueryString_)`,
+      },
 
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
+      /** @private {boolean} */
+      displayedLanguagesEmpty_: {
+        type: Boolean,
+        computed: 'isZero_(displayedLanguages_.length)',
+      },
 
-    /** @private {?chrome.languageSettingsPrivate.Language} */
-    selectedLanguage_: {
-      type: Object,
-      value: null,
-    },
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
 
-    /** @private */
-    disableActionButton_: {
-      type: Boolean,
-      computed: 'shouldDisableActionButton_(selectedLanguage_)',
-    },
+      /** @private {?chrome.languageSettingsPrivate.Language} */
+      selectedLanguage_: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private */
-    lowercaseQueryString_: {
-      type: String,
-      value: '',
-    },
-  },
+      /** @private */
+      disableActionButton_: {
+        type: Boolean,
+        computed: 'shouldDisableActionButton_(selectedLanguage_)',
+      },
+
+      /** @private */
+      lowercaseQueryString_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /**
    * @param {!CustomEvent<string>} e
@@ -82,7 +95,7 @@ Polymer({
    */
   onSearchChanged_(e) {
     this.lowercaseQueryString_ = e.detail.toLowerCase();
-  },
+  }
 
   /**
    * @return {!Array<!chrome.languageSettingsPrivate.Language>} A list of
@@ -111,7 +124,7 @@ Polymer({
           // is not manually specified).
           return a.nativeDisplayName.localeCompare(b.nativeDisplayName, 'en');
         });
-  },
+  }
 
   /**
    * @param {boolean} selected
@@ -119,7 +132,7 @@ Polymer({
    */
   getItemClass_(selected) {
     return selected ? 'selected' : '';
-  },
+  }
 
   /**
    * @param {!chrome.languageSettingsPrivate.Language} item
@@ -131,7 +144,7 @@ Polymer({
     const instruction = selected ? 'selectedDeviceLanguageInstruction' :
                                    'notSelectedDeviceLanguageInstruction';
     return this.i18n(instruction, this.getDisplayText_(item));
-  },
+  }
 
   /**
    * @param {!chrome.languageSettingsPrivate.Language} language
@@ -145,17 +158,17 @@ Polymer({
       displayText += ' - ' + language.displayName;
     }
     return displayText;
-  },
+  }
 
   /** @private */
   shouldDisableActionButton_() {
     return this.selectedLanguage_ === null;
-  },
+  }
 
   /** @private */
   onCancelButtonTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /**
    * Sets device language and restarts device.
@@ -175,7 +188,7 @@ Polymer({
     LanguagesMetricsProxyImpl.getInstance().recordInteraction(
         LanguagesPageInteraction.RESTART);
     LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -188,7 +201,7 @@ Polymer({
     } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
       this.$.search.scrollIntoViewIfNeeded();
     }
-  },
+  }
 
   /**
    * @param {number} num
@@ -197,5 +210,9 @@ Polymer({
    */
   isZero_(num) {
     return num === 0;
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsChangeDeviceLanguageDialogElement.is,
+    OsSettingsChangeDeviceLanguageDialogElement);

@@ -11,72 +11,89 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-input-method-options-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsInputMethodOptionsPageElementBase = mixinBehaviors(
+    [I18nBehavior, PrefsBehavior, RouteObserverBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class SettingsInputMethodOptionsPageElement extends
+    SettingsInputMethodOptionsPageElementBase {
+  static get is() {
+    return 'settings-input-method-options-page';
+  }
 
-  properties: {
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
+      /**
+       * Input method ID.
+       * @private
+       */
+      id_: String,
+
+      /**
+       * Input method engine ID.
+       * @private
+       */
+      engineId_: String,
+
+      /**
+       * The content to be displayed in the page, auto generated every time when
+       * the user enters the page.
+       * @private {!Array<!{title: string, options:!Array<!Object<string, *>>}>}
+       */
+      optionSections_: {
+        type: Array,
+        value: [],
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Input method ID.
+     * The root path of input method options in Prefs.
+     * @const {string}
      * @private
      */
-    id_: String,
-
-    /**
-     * Input method engine ID.
-     * @private
-     */
-    engineId_: String,
-
-    /**
-     * The content to be displayed in the page, auto generated every time when
-     * the user enters the page.
-     * @private {!Array<!{title: string, options:!Array<!Object<string, *>>}>}
-     */
-    optionSections_: {
-      type: Array,
-      value: [],
-    },
-  },
-
-  /**
-   * The root path of input method options in Prefs.
-   * @const {string}
-   * @private
-   */
-  PREFS_PATH: 'settings.language.input_method_specific_settings',
+    this.PREFS_PATH = 'settings.language.input_method_specific_settings';
+  }
 
   /**
    * RouteObserverBehavior
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
@@ -96,7 +113,7 @@ Polymer({
         `Input method ID '${this.id_}' is invalid`);
     this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
-  },
+  }
 
   /**
    * Get menu items for an option, and enrich the items with selected status and
@@ -111,7 +128,7 @@ Polymer({
           menuItem['name'] ? this.i18n(menuItem['name']) : menuItem['value'];
       return menuItem;
     });
-  },
+  }
 
   /**
    * Generate the sections of options according to the engine ID and Prefs.
@@ -160,7 +177,7 @@ Polymer({
                 options: section.optionNames.map(makeOption, false),
               };
             });
-  },
+  }
 
   /**
    * @return {string} Prefs prefix for the current engine ID, which is usually
@@ -175,7 +192,7 @@ Polymer({
       return 'zhuyin';
     }
     return this.engineId_;
-  },
+  }
 
   /**
    *
@@ -186,7 +203,7 @@ Polymer({
     // TODO(b/189909728): Sometimes the value comes as a string, other times as
     // an integer, so handle both cases. Try to understand and fix this.
     return value === '0' || value === 0;
-  },
+  }
 
   /**
    * Handler for toggle button and dropdown change. Update the value of the
@@ -204,7 +221,7 @@ Polymer({
     afterNextRender(this, () => {
       this.updatePref_(option.name, option.value);
     });
-  },
+  }
 
   isSettingValueValid_(name, value) {
     const uiType = getOptionUiType(name);
@@ -213,7 +230,7 @@ Polymer({
     }
     const menuItems = getOptionMenuItems(name);
     return menuItems.find((item) => item.value === value);
-  },
+  }
 
   /**
    * Update an input method pref.
@@ -240,7 +257,7 @@ Polymer({
     }
     updatedSettings[prefix][optionName] = newValue;
     this.setPrefValue(this.PREFS_PATH, updatedSettings);
-  },
+  }
 
   /**
    * Opens external link in Chrome.
@@ -249,7 +266,7 @@ Polymer({
    */
   navigateToOtherPageInSettings_(e) {
     Router.getInstance().navigateTo(e.model.option.url);
-  },
+  }
 
   /**
    * @param {string} section the name of the section.
@@ -271,7 +288,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @param {!UiType} item
@@ -280,7 +297,7 @@ Polymer({
    */
   isToggleButton_(item) {
     return item === UiType.TOGGLE_BUTTON;
-  },
+  }
 
   /**
    * @param {!UiType} item
@@ -289,7 +306,7 @@ Polymer({
    */
   isDropdown_(item) {
     return item === UiType.DROPDOWN;
-  },
+  }
 
   /**
    * @param {!UiType} item
@@ -298,5 +315,9 @@ Polymer({
    */
   isLink_(item) {
     return item === UiType.LINK;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsInputMethodOptionsPageElement.is,
+    SettingsInputMethodOptionsPageElement);

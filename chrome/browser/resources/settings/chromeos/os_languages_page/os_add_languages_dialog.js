@@ -6,25 +6,34 @@
  * @fileoverview 'os-settings-add-languages-dialog' is a dialog for enabling
  * languages.
  */
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Item} from './add_items_dialog.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-add-languages-dialog',
+/** @polymer */
+class OsSettingsAddLanguagesDialogElement extends PolymerElement {
+  static get is() {
+    return 'os-settings-add-languages-dialog';
+  }
 
-  properties: {
-    /** @type {!LanguagesModel|undefined} */
-    languages: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
-  },
+  static get properties() {
+    return {
+      /** @type {!LanguagesModel|undefined} */
+      languages: {
+        type: Object,
+        notify: true,
+      },
+
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+    };
+  }
 
   /**
    * @return {!Array<!Item>} A list of languages to be displayed in the dialog.
@@ -39,7 +48,7 @@ Polymer({
                searchTerms: [language.displayName, language.nativeDisplayName],
                disabledByPolicy: false,
              }));
-  },
+  }
 
   /**
    * @param {!chrome.languageSettingsPrivate.Language} language
@@ -53,7 +62,7 @@ Polymer({
       displayText += ' - ' + language.nativeDisplayName;
     }
     return displayText;
-  },
+  }
 
   /**
    * Enables the checked languages.
@@ -64,5 +73,9 @@ Polymer({
     e.detail.forEach(languageCode => {
       this.languageHelper.enableLanguage(languageCode);
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsAddLanguagesDialogElement.is,
+    OsSettingsAddLanguagesDialogElement);

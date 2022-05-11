@@ -7,6 +7,24 @@
  * the "dictionary" of custom words used for spell check.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route} from '../../router.js';
+import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.js';
+import {routes} from '../os_route.js';
+
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+
 // Max valid word size, keep in sync with kMaxCustomDictionaryWordBytes in
 // //components/spellcheck/common/spellcheck_common.h
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
@@ -19,85 +37,86 @@ const NewWordState = {
   WORD_TOO_LONG: 3,
 };
 
-import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {GlobalScrollTargetBehaviorInterface}
+ */
+const OsSettingsEditDictionaryPageElementBase =
+    mixinBehaviors([I18nBehavior, GlobalScrollTargetBehavior], PolymerElement);
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/icons.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import {recordSettingChange} from '../metrics_recorder.js';
-import {routes} from '../os_route.js';
-import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
-import '../../settings_shared_css.js';
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+/** @polymer */
+class OsSettingsEditDictionaryPageElement extends
+    OsSettingsEditDictionaryPageElementBase {
+  static get is() {
+    return 'os-settings-edit-dictionary-page';
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-edit-dictionary-page',
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  behaviors: [
-    I18nBehavior,
-    GlobalScrollTargetBehavior,
-  ],
+  static get properties() {
+    return {
+      /** @private */
+      newWordValue_: {
+        type: String,
+        value: '',
+      },
 
-  properties: {
-    /** @private */
-    newWordValue_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Needed for GlobalScrollTargetBehavior.
+       * @type {!Route}
+       * @override
+       */
+      subpageRoute: {
+        type: Object,
+        value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
+      },
 
-    /**
-     * Needed for GlobalScrollTargetBehavior.
-     * @override
-     */
-    subpageRoute: {
-      type: Object,
-      value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
-    },
+      /** @private {!Array<string>} */
+      words_: {
+        type: Array,
+        value: [],
+      },
 
-    /** @private {!Array<string>} */
-    words_: {
-      type: Array,
-      value: [],
-    },
+      /** @private */
+      hasWords_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeHasWords_(words_.length)',
+      },
 
-    /** @private */
-    hasWords_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeHasWords_(words_.length)',
-    },
+      /** @private */
+      disableAddButton_: {
+        type: Boolean,
+        value: true,
+        computed: 'shouldDisableAddButton_(newWordState_)',
+      },
 
-    /** @private */
-    disableAddButton_: {
-      type: Boolean,
-      value: true,
-      computed: 'shouldDisableAddButton_(newWordState_)',
-    },
-
-    /** @private */
-    newWordState_: {
-      type: Number,
-      value: NewWordState.NO_WORD,
-      computed: 'updateNewWordState_(newWordValue_, words_.*)',
-    }
-  },
-
-  /** @private {?LanguageSettingsPrivate} */
-  languageSettingsPrivate_: null,
+      /** @private */
+      newWordState_: {
+        type: Number,
+        value: NewWordState.NO_WORD,
+        computed: 'updateNewWordState_(newWordValue_, words_.*)',
+      }
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!LanguageSettingsPrivate} */
     this.languageSettingsPrivate_ =
         LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.languageSettingsPrivate_.getSpellcheckWords(words => {
       this.words_ = words;
     });
@@ -107,7 +126,7 @@ Polymer({
 
     // Add a key handler for the new-word input.
     this.$.keys.target = this.$.newWord;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -115,7 +134,7 @@ Polymer({
    */
   computeHasWords_() {
     return this.words_.length > 0;
-  },
+  }
 
   /**
    * Adds the word in the new-word input to the dictionary.
@@ -129,7 +148,7 @@ Polymer({
       this.languageSettingsPrivate_.addSpellcheckWord(word);
       recordSettingChange();
     }
-  },
+  }
 
   /**
    * @return {string}
@@ -137,7 +156,7 @@ Polymer({
    */
   getTrimmedNewWord_() {
     return this.newWordValue_.trim();
-  },
+  }
 
   /**
    * @return {NewWordState}
@@ -155,7 +174,7 @@ Polymer({
       return NewWordState.WORD_TOO_LONG;
     }
     return NewWordState.VALID_WORD;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -163,7 +182,7 @@ Polymer({
    */
   shouldDisableAddButton_() {
     return this.newWordState_ !== NewWordState.VALID_WORD;
-  },
+  }
 
   /**
    * @return {string}
@@ -178,7 +197,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -187,7 +206,7 @@ Polymer({
   isNewWordInvalid_() {
     return this.newWordState_ === NewWordState.WORD_TOO_LONG ||
         this.newWordState_ === NewWordState.WORD_ALREADY_ADDED;
-  },
+  }
 
   /**
    * Handles tapping on the Add Word button.
@@ -196,7 +215,7 @@ Polymer({
   onAddWordTap_() {
     this.addWordFromInput_();
     this.$.newWord.focus();
-  },
+  }
 
   /**
    * Handles updates to the word list. Additions are unshifted to the top
@@ -207,7 +226,10 @@ Polymer({
    */
   onCustomDictionaryChanged_(added, removed) {
     for (const word of removed) {
-      this.arrayDelete('words_', word);
+      const index = this.words_.indexOf(word);
+      if (index !== -1) {
+        this.splice('words_', index, 1);
+      }
     }
 
     for (const word of added) {
@@ -215,7 +237,7 @@ Polymer({
         this.unshift('words_', word);
       }
     }
-  },
+  }
 
   /**
    * Handles Enter and Escape key presses for the new-word input.
@@ -228,7 +250,7 @@ Polymer({
     } else if (e.detail.key === 'esc') {
       e.detail.keyboardEvent.target.value = '';
     }
-  },
+  }
 
   /**
    * Handles tapping on a "Remove word" icon button.
@@ -239,4 +261,8 @@ Polymer({
     this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
     recordSettingChange();
   }
-});
+}
+
+customElements.define(
+    OsSettingsEditDictionaryPageElement.is,
+    OsSettingsEditDictionaryPageElement);

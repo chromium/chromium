@@ -6,6 +6,7 @@
  * @fileoverview 'os-settings-input-page' is the input sub-page
  * for language and input method settings.
  */
+
 import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
@@ -19,159 +20,175 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
 import '../../settings_page/settings_animated_pages.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
+import {hasOptionsPageInSettings} from './input_method_util.js';
 import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-input-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const OsSettingsInputPageElementBase = mixinBehaviors(
+    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
+  static get is() {
+    return 'os-settings-input-page';
+  }
 
-  properties: {
-    /* Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Map<string, (string|Function)>} */
-    focusConfig: {
-      type: Object,
-      observer: 'focusConfigChanged_',
-    },
-
-    /**
-     * Read-only reference to the languages model provided by the
-     * 'os-settings-languages' instance.
-     * @type {!LanguagesModel|undefined}
-     */
-    languages: {
-      type: Object,
-    },
-
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
-
-    /** @private {!Array<!LanguageState|!SpellCheckLanguageState>|undefined} */
-    spellCheckLanguages_: {
-      type: Array,
-      computed: `getSpellCheckLanguages_(languageSettingsV2Update2Enabled_,
-          languages.spellCheckOnLanguages.*, languages.enabled.*)`,
-    },
-
-    /** @private */
-    showAddInputMethodsDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    showAddSpellcheckLanguagesDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kShowInputOptionsInShelf,
-        chromeos.settings.mojom.Setting.kAddInputMethod,
-        chromeos.settings.mojom.Setting.kSpellCheck,
-      ]),
-    },
-
-    /** @private */
-    languageSettingsV2Update2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+  static get properties() {
+    return {
+      /* Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private */
-    shouldShowLanguagePacksNotice_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('languagePacksHandwritingEnabled');
+      /** @type {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
       },
-    },
 
-    /**
-     * Whether the shortcut reminder for the last used IME is currently showing.
-     * @private
-     */
-    showLastUsedIMEShortcutReminder_: {
-      type: Boolean,
-      computed: `shouldShowLastUsedIMEShortcutReminder_(
-          languages.inputMethods.enabled.length,
-          prefs.ash.shortcut_reminders.last_used_ime_dismissed.value)`,
-    },
-
-    /**
-     * Whether the shortcut reminder for the next IME is currently showing.
-     * @private
-     */
-    showNextIMEShortcutReminder_: {
-      type: Boolean,
-      computed: `shouldShowNextIMEShortcutReminder_(
-          languages.inputMethods.enabled.length,
-          prefs.ash.shortcut_reminders.next_ime_dismissed.value)`,
-    },
-
-    /**
-     * The body of the currently showing shortcut reminders.
-     * @private {!Array<string>}
-     */
-    shortcutReminderBody_: {
-      type: Array,
-      computed: `getShortcutReminderBody_(showLastUsedIMEShortcutReminder_,
-          showNextIMEShortcutReminder_)`,
-    },
-
-    /** @private */
-    onDeviceGrammarCheckEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'os-settings-languages' instance.
+       * @type {!LanguagesModel|undefined}
+       */
+      languages: {
+        type: Object,
       },
-    },
-  },
 
-  /** @private {?LanguagesMetricsProxy} */
-  languagesMetricsProxy_: null,
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+
+      /**
+       * @private {!Array<!LanguageState|!SpellCheckLanguageState>|undefined}
+       */
+      spellCheckLanguages_: {
+        type: Array,
+        computed: `getSpellCheckLanguages_(languageSettingsV2Update2Enabled_,
+            languages.spellCheckOnLanguages.*, languages.enabled.*)`,
+      },
+
+      /** @private */
+      showAddInputMethodsDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showAddSpellcheckLanguagesDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kShowInputOptionsInShelf,
+          chromeos.settings.mojom.Setting.kAddInputMethod,
+          chromeos.settings.mojom.Setting.kSpellCheck,
+        ]),
+      },
+
+      /** @private */
+      languageSettingsV2Update2Enabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+        },
+      },
+
+      /** @private */
+      shouldShowLanguagePacksNotice_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('languagePacksHandwritingEnabled');
+        },
+      },
+
+      /**
+       * Whether the shortcut reminder for the last used IME is currently
+       * showing.
+       * @private
+       */
+      showLastUsedIMEShortcutReminder_: {
+        type: Boolean,
+        computed: `shouldShowLastUsedIMEShortcutReminder_(
+            languages.inputMethods.enabled.length,
+            prefs.ash.shortcut_reminders.last_used_ime_dismissed.value)`,
+      },
+
+      /**
+       * Whether the shortcut reminder for the next IME is currently showing.
+       * @private
+       */
+      showNextIMEShortcutReminder_: {
+        type: Boolean,
+        computed: `shouldShowNextIMEShortcutReminder_(
+            languages.inputMethods.enabled.length,
+            prefs.ash.shortcut_reminders.next_ime_dismissed.value)`,
+      },
+
+      /**
+       * The body of the currently showing shortcut reminders.
+       * @private {!Array<string>}
+       */
+      shortcutReminderBody_: {
+        type: Array,
+        computed: `getShortcutReminderBody_(showLastUsedIMEShortcutReminder_,
+            showNextIMEShortcutReminder_)`,
+      },
+
+      /** @private */
+      onDeviceGrammarCheckEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('onDeviceGrammarCheckEnabled');
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!LanguagesMetricsProxy} */
     this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
-  },
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
@@ -180,7 +197,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @param {!Map<string, (string|Function)>} newConfig
@@ -194,7 +211,7 @@ Polymer({
     this.focusConfig.set(
         routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
         () => focusWithoutInk(this.$.editDictionarySubpageTrigger));
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -203,7 +220,7 @@ Polymer({
   onShowImeMenuChange_(e) {
     this.languagesMetricsProxy_.recordToggleShowInputOptionsOnShelf(
         e.target.checked);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -213,7 +230,7 @@ Polymer({
     const allowedInputMethodsPref =
         this.getPref('settings.language.allowed_input_methods');
     return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
-  },
+  }
 
   /**
    * Handler for click events on an input method on the main page,
@@ -232,7 +249,7 @@ Polymer({
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.SWITCH_INPUT_METHOD);
     recordSettingChange();
-  },
+  }
 
   /**
    * Handler for <Enter> events on an input method on the main page,
@@ -248,7 +265,7 @@ Polymer({
     }
 
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
-  },
+  }
 
   /**
    * Opens the input method extension's options page in a new tab (or focuses
@@ -258,7 +275,7 @@ Polymer({
    */
   openExtensionOptionsPage_(e) {
     this.languageHelper.openInputMethodOptions(e.model.item.id);
-  },
+  }
 
 
   /**
@@ -270,7 +287,7 @@ Polymer({
   hasOptionsPageInSettings_(id) {
     return hasOptionsPageInSettings(
         id, loadTimeData.getBoolean('allowPredictiveWriting'));
-  },
+  }
 
   /**
    * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
@@ -281,7 +298,7 @@ Polymer({
     params.append('id', e.model.item.id);
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);
-  },
+  }
 
   /**
    * @param {string} id The input method ID.
@@ -291,7 +308,7 @@ Polymer({
    */
   isCurrentInputMethod_(id, currentId) {
     return id === currentId;
-  },
+  }
 
   /**
    * @param {string} id The input method ID.
@@ -301,7 +318,7 @@ Polymer({
    */
   getInputMethodItemClass_(id, currentId) {
     return this.isCurrentInputMethod_(id, currentId) ? 'selected' : '';
-  },
+  }
 
   /**
    * @param {string} id The selected input method ID.
@@ -313,7 +330,7 @@ Polymer({
    */
   getInputMethodTabIndex_(id, currentId) {
     return id === currentId ? '' : '0';
-  },
+  }
 
   /**
    * @param {string} inputMethodName
@@ -322,24 +339,24 @@ Polymer({
    */
   getOpenOptionsPageLabel_(inputMethodName) {
     return this.i18n('openOptionsPage', inputMethodName);
-  },
+  }
 
   /** @private */
   onAddInputMethodClick_() {
     this.languagesMetricsProxy_.recordAddInputMethod();
     this.showAddInputMethodsDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddInputMethodsDialogClose_() {
     this.showAddInputMethodsDialog_ = false;
     focusWithoutInk(assert(this.$.addInputMethod));
-  },
+  }
 
   /** @private */
   onAddSpellcheckLanguagesClick_() {
     this.showAddSpellcheckLanguagesDialog_ = true;
-  },
+  }
 
   /** @private */
   onAddSpellcheckLanguagesDialogClose_() {
@@ -353,10 +370,11 @@ Polymer({
 
     // Because #addSpellcheckLanguages is not statically created (as it is
     // within a <template is="dom-if">), we need to use
-    // this.$$("#addSpellcheckLanguages") instead of
+    // this.shadowRoot.querySelector("#addSpellcheckLanguages") instead of
     // this.$.addSpellCheckLanguages.
-    focusWithoutInk(assert(this.$$('#addSpellcheckLanguages')));
-  },
+    focusWithoutInk(
+        assert(this.shadowRoot.querySelector('#addSpellcheckLanguages')));
+  }
 
   /**
    * @param {!chrome.languageSettingsPrivate.InputMethod} targetInputMethod
@@ -373,7 +391,7 @@ Polymer({
     return !this.languages.inputMethods.enabled.some(
         inputMethod => inputMethod.id !== targetInputMethod.id &&
             this.languageHelper.isComponentIme(inputMethod));
-  },
+  }
 
   /**
    * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
@@ -381,7 +399,7 @@ Polymer({
    */
   getRemoveInputMethodTooltip_(inputMethod) {
     return this.i18n('removeInputMethodTooltip', inputMethod.displayName);
-  },
+  }
 
   /**
    * @param {!{model: !{item: chrome.languageSettingsPrivate.InputMethod}}} e
@@ -390,7 +408,7 @@ Polymer({
   onRemoveInputMethodClick_(e) {
     this.languageHelper.removeInputMethod(e.model.item.id);
     recordSettingChange();
-  },
+  }
 
   /**
    * @param {!SpellCheckLanguageState} lang
@@ -399,7 +417,7 @@ Polymer({
   getRemoveSpellcheckLanguageTooltip_(lang) {
     return this.i18n(
         'removeSpellCheckLanguageTooltip', lang.language.displayName);
-  },
+  }
 
   /**
    * @param {!{model: !{item: SpellCheckLanguageState}}} e
@@ -408,7 +426,7 @@ Polymer({
   onRemoveSpellcheckLanguageClick_(e) {
     this.languageHelper.toggleSpellCheck(e.model.item.language.code, false);
     recordSettingChange();
-  },
+  }
 
   /**
    * Called whenever the spell check toggle is changed by the user.
@@ -459,7 +477,7 @@ Polymer({
     // Manually commit the pref change as we've set noSetPref on the toggle
     // button.
     toggle.sendPrefChange();
-  },
+  }
 
   /**
    * Returns the value to use as the |pref| attribute for the policy indicator
@@ -470,7 +488,7 @@ Polymer({
   getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
     return isEnabled ? this.getPref('spellcheck.forced_dictionaries') :
                        this.getPref('spellcheck.blocked_dictionaries');
-  },
+  }
 
   /**
    * Returns an array of spell check languages for the UI.
@@ -502,7 +520,7 @@ Polymer({
     });
 
     return supportedSpellcheckLanguages;
-  },
+  }
 
   /**
    * Handler for enabling or disabling spell check for a specific language.
@@ -517,7 +535,7 @@ Polymer({
 
     this.languageHelper.toggleSpellCheck(
         item.language.code, !item.spellCheckEnabled);
-  },
+  }
 
   /**
    * Handler for clicking on the name of the language. The action taken must
@@ -528,7 +546,7 @@ Polymer({
   onSpellCheckNameClick_(e) {
     assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
     this.onSpellCheckLanguageChange_(e);
-  },
+  }
 
   /**
    * Name only supports clicking when language is not managed, supports
@@ -540,7 +558,7 @@ Polymer({
   isSpellCheckNameClickDisabled_(item) {
     return item.isManaged || item.downloadDictionaryFailureCount > 0 ||
         !this.getPref('browser.enable_spellchecking').value;
-  },
+  }
 
   /**
    * Handler to initiate another attempt at downloading the spell check
@@ -551,7 +569,7 @@ Polymer({
   onRetryDictionaryDownloadClick_(e) {
     assert(e.model.item.downloadDictionaryFailureCount > 0);
     this.languageHelper.retryDownloadDictionary(e.model.item.language.code);
-  },
+  }
 
   /**
    * @param {!LanguageState} item
@@ -562,7 +580,7 @@ Polymer({
     return this.i18n(
         'languagesDictionaryDownloadRetryDescription',
         item.language.displayName);
-  },
+  }
 
   /**
    * Opens the Custom Dictionary page.
@@ -572,7 +590,7 @@ Polymer({
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_EDIT_DICTIONARY);
-  },
+  }
 
   /**
    * Gets the appropriate CSS class for the Enhanced spell check toggle
@@ -581,7 +599,7 @@ Polymer({
    */
   getEnhancedSpellCheckClass_() {
     return this.languageSettingsV2Update2Enabled_ ? '' : 'hr';
-  },
+  }
 
   /**
    * @private
@@ -589,7 +607,7 @@ Polymer({
   isEnableSpellcheckingDisabled_() {
     return !this.languageSettingsV2Update2Enabled_ &&
         (this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
-  },
+  }
 
   /**
    * @param {boolean} update2Enabled
@@ -598,13 +616,13 @@ Polymer({
    */
   isCollapseOpened_(update2Enabled, spellCheckOn) {
     return !update2Enabled || spellCheckOn;
-  },
+  }
 
   /** @private */
   onLanguagePackNoticeLinkClick_() {
     this.languagesMetricsProxy_.recordInteraction(
         LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -617,7 +635,7 @@ Polymer({
     }
     // Need at least 2 input methods to be shown the reminder.
     return !!this.languages && this.languages.inputMethods.enabled.length >= 2;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -630,7 +648,7 @@ Polymer({
     }
     // Need at least 3 input methods to be shown the reminder.
     return !!this.languages && this.languages.inputMethods.enabled.length >= 3;
-  },
+  }
 
   /**
    * @return {!Array<string>}
@@ -645,7 +663,7 @@ Polymer({
       reminderBody.push(this.i18nAdvanced('imeShortcutReminderNext'));
     }
     return reminderBody;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -654,7 +672,7 @@ Polymer({
   shouldShowShortcutReminder_() {
     return this.languageSettingsV2Update2Enabled_ &&
         this.shortcutReminderBody_ && this.shortcutReminderBody_.length > 0;
-  },
+  }
 
   /** @private */
   onShortcutReminderDismiss_() {
@@ -677,5 +695,8 @@ Polymer({
     if (this.showNextIMEShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.next_ime_dismissed', true);
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsInputPageElement.is, OsSettingsInputPageElement);
