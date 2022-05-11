@@ -166,18 +166,15 @@ bool History::IsSameAsCurrentState(SerializedScriptValue* state) const {
   return state == StateInternal();
 }
 
-void History::back(ScriptState* script_state, ExceptionState& exception_state) {
-  go(script_state, -1, exception_state);
+void History::back(ExceptionState& exception_state) {
+  go(-1, exception_state);
 }
 
-void History::forward(ScriptState* script_state,
-                      ExceptionState& exception_state) {
-  go(script_state, 1, exception_state);
+void History::forward(ExceptionState& exception_state) {
+  go(1, exception_state);
 }
 
-void History::go(ScriptState* script_state,
-                 int delta,
-                 ExceptionState& exception_state) {
+void History::go(int delta, ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
@@ -185,10 +182,6 @@ void History::go(ScriptState* script_state,
     return;
   }
 
-  LocalDOMWindow* active_window = LocalDOMWindow::From(script_state);
-  // TODO(crbug.com/1309481): Remove this CHECK, and the `script_state`
-  // parameter altogether.
-  CHECK_EQ(DomWindow(), active_window);
   if (!DomWindow()->GetFrame()->IsNavigationAllowed())
     return;
 
