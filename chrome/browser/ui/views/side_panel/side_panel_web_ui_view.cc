@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
-class FeaturePromoController;
 class LocationBarTesting;
 class OmniboxView;
 
@@ -39,6 +38,10 @@ class SendTabToSelfBubbleView;
 namespace sharing_hub {
 class SharingHubBubbleView;
 }  // namespace sharing_hub
+
+namespace user_education {
+class FeaturePromoController;
+}  // namespace user_education
 
 // An implementation of BrowserWindow used for testing. TestBrowserWindow only
 // contains a valid LocationBar, all other getters return NULL.
@@ -233,24 +236,26 @@ class TestBrowserWindow : public BrowserWindow {
   void MaybeRestoreSideSearchStatePerWindow(
       const std::map<std::string, std::string>& extra_data) override;
 
-  FeaturePromoController* GetFeaturePromoController() override;
+  user_education::FeaturePromoController* GetFeaturePromoController() override;
   bool IsFeaturePromoActive(
       const base::Feature& iph_feature,
       bool include_continued_promos = false) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      FeaturePromoController::BubbleCloseCallback close_callback =
-          base::DoNothing()) override;
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) override;
   bool CloseFeaturePromo(const base::Feature& iph_feature) override;
-  FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
-      const base::Feature& iph_feature) override;
+  user_education::FeaturePromoController::PromoHandle
+  CloseFeaturePromoAndContinue(const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.
-  FeaturePromoController* SetFeaturePromoController(
-      std::unique_ptr<FeaturePromoController> feature_promo_controller);
+  user_education::FeaturePromoController* SetFeaturePromoController(
+      std::unique_ptr<user_education::FeaturePromoController>
+          feature_promo_controller);
 
   void set_workspace(std::string workspace) { workspace_ = workspace; }
   void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {
@@ -299,7 +304,8 @@ class TestBrowserWindow : public BrowserWindow {
   bool is_active_ = false;
   bool is_tab_strip_editable_ = true;
 
-  std::unique_ptr<FeaturePromoController> feature_promo_controller_;
+  std::unique_ptr<user_education::FeaturePromoController>
+      feature_promo_controller_;
 
   base::OnceClosure close_callback_;
 };

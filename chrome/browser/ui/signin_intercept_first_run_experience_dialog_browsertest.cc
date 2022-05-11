@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -39,6 +38,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -152,8 +152,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     // Needed for profile switch IPH testing.
     AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
         base::Seconds(0));
-    test_lock_ =
-        FeaturePromoControllerCommon::BlockActiveWindowCheckForTesting();
+    test_lock_ = user_education::FeaturePromoControllerCommon::
+        BlockActiveWindowCheckForTesting();
   }
 
   // Returns true if the profile switch IPH has been shown.
@@ -275,7 +275,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   base::UserActionTester user_action_tester_;
 
   CoreAccountId account_id_;
-  FeaturePromoControllerCommon::TestLock test_lock_;
+  user_education::FeaturePromoControllerCommon::TestLock test_lock_;
 };
 
 // Shows and closes the fre dialog.

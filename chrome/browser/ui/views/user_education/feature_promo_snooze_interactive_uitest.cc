@@ -11,17 +11,17 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/user_education/common/feature_promo_snooze_service.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +69,7 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     if (!promo_controller_->registry()->IsFeatureRegistered(
             kSnoozeTestFeature)) {
       promo_controller_->registry()->RegisterFeature(
-          FeaturePromoSpecification::CreateForSnoozePromo(
+          user_education::FeaturePromoSpecification::CreateForSnoozePromo(
               kSnoozeTestFeature, kAppMenuButtonElementId,
               IDS_TAB_GROUPS_NEW_GROUP_PROMO));
     }
@@ -133,7 +133,7 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
                       absl::optional<base::Time> last_show_time,
                       base::Time last_snooze_time,
                       base::TimeDelta last_snooze_duration) {
-    FeaturePromoSnoozeService::SnoozeData data;
+    user_education::FeaturePromoSnoozeService::SnoozeData data;
     data.is_dismissed = is_dismissed;
     if (show_count)
       data.show_count = *show_count;
@@ -168,9 +168,9 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     }
   }
 
-  HelpBubbleView* GetPromoBubbleView() {
+  user_education::HelpBubbleView* GetPromoBubbleView() {
     return promo_controller_->promo_bubble_for_testing()
-        ->AsA<HelpBubbleViews>()
+        ->AsA<user_education::HelpBubbleViews>()
         ->bubble_view();
   }
 
@@ -184,7 +184,7 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 
   raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
   raw_ptr<BrowserFeaturePromoController> promo_controller_;
-  raw_ptr<FeaturePromoSnoozeService> snooze_service_;
+  raw_ptr<user_education::FeaturePromoSnoozeService> snooze_service_;
 
  private:
   static void RegisterMockTracker(content::BrowserContext* context) {

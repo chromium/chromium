@@ -10,14 +10,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/tutorial.h"
+#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -33,6 +36,12 @@ namespace {
 constexpr char kTestTutorialId[] = "TutorialInteractiveUitest Tutorial";
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 }  // namespace
+
+using user_education::FeaturePromoControllerCommon;
+using user_education::HelpBubbleArrow;
+using user_education::HelpBubbleViews;
+using user_education::TutorialDescription;
+using user_education::TutorialService;
 
 class TutorialInteractiveUitest : public InProcessBrowserTest {
  public:

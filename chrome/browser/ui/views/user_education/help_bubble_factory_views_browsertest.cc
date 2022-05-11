@@ -10,14 +10,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -31,10 +31,10 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    HelpBubbleParams params;
-    params.arrow = HelpBubbleArrow::kTopRight;
+    user_education::HelpBubbleParams params;
+    params.arrow = user_education::HelpBubbleArrow::kTopRight;
     params.body_text = u"Hello world, I am a tutorial";
-    params.tutorial_progress = std::make_pair(3, 5);
+    params.progress = std::make_pair(3, 5);
     params.timeout = base::TimeDelta();
 
     help_bubble_ =
@@ -46,7 +46,7 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
     return browser()->window()->GetElementContext();
   }
 
-  HelpBubbleFactoryRegistry* registry() {
+  user_education::HelpBubbleFactoryRegistry* registry() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->GetFeaturePromoController()
         ->bubble_factory_registry();
@@ -59,7 +59,7 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
             ->app_menu_button());
   }
 
-  std::unique_ptr<HelpBubble> help_bubble_;
+  std::unique_ptr<user_education::HelpBubble> help_bubble_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, InvokeUi_default) {
@@ -67,19 +67,19 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, InvokeUi_default) {
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, ShowAndClose) {
-  HelpBubbleParams params;
+  user_education::HelpBubbleParams params;
   params.body_text = u"Hello world!";
   help_bubble_ =
       registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
   ASSERT_TRUE(help_bubble_);
-  ASSERT_TRUE(help_bubble_->IsA<HelpBubbleViews>());
+  ASSERT_TRUE(help_bubble_->IsA<user_education::HelpBubbleViews>());
   EXPECT_TRUE(help_bubble_->is_open());
   EXPECT_TRUE(help_bubble_->Close());
   EXPECT_FALSE(help_bubble_->is_open());
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetContext) {
-  HelpBubbleParams params;
+  user_education::HelpBubbleParams params;
   params.body_text = u"Hello world!";
   help_bubble_ =
       registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetContext) {
 // adjustments to the logic as necessary (specifically how we adjust the
 // browser size to force the help bubble to move).
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetAndUpdateBounds) {
-  HelpBubbleParams params;
+  user_education::HelpBubbleParams params;
   params.body_text = u"Hello world!";
   help_bubble_ =
       registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));

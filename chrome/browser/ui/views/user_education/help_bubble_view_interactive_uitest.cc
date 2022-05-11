@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
-
 #include "base/test/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "components/user_education/common/help_bubble.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -23,6 +24,10 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
+
+using user_education::HelpBubbleArrow;
+using user_education::HelpBubbleParams;
+using user_education::HelpBubbleView;
 
 class HelpBubbleViewInteractiveTest : public InProcessBrowserTest {
  public:
@@ -57,8 +62,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
   views::View* const initial_focused_view = focus_manager->GetFocusedView();
   EXPECT_NE(nullptr, initial_focused_view);
 
-  auto* const bubble =
-      new HelpBubbleView(GetAnchorElement()->view(), std::move(params));
+  auto* const bubble = new HelpBubbleView(
+      GetHelpBubbleDelegate(), GetAnchorElement()->view(), std::move(params));
   views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
 
   EXPECT_TRUE(browser_view->GetWidget()->IsActive());
@@ -113,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
                         HelpBubbleParams params;
                         params.body_text = u"foo";
                         help_bubble_view =
-                            new HelpBubbleView(anchor_view, std::move(params));
+                            new HelpBubbleView(GetHelpBubbleDelegate(),
+                                               anchor_view, std::move(params));
                       }))
                   .Build())
           .AddStep(

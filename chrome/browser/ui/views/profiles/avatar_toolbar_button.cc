@@ -28,13 +28,13 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
@@ -269,8 +269,9 @@ void AvatarToolbarButton::ButtonPressed() {
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
-  if (key == kHasInProductHelpPromoKey)
-    delegate_->SetHasInProductHelpPromo(GetProperty(kHasInProductHelpPromoKey));
+  if (key == user_education::kHasInProductHelpPromoKey)
+    delegate_->SetHasInProductHelpPromo(
+        GetProperty(user_education::kHasInProductHelpPromoKey));
   ToolbarButton::AfterPropertyChange(key, old_value);
 }
 

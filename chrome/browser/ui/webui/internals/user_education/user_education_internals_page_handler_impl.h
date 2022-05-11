@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
+#include "components/user_education/common/tutorial_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace base {
@@ -19,7 +19,9 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace user_education {
 class FeaturePromoSpecification;
+}
 
 class UserEducationInternalsPageHandlerImpl
     : public mojom::user_education_internals::
@@ -45,9 +47,9 @@ class UserEducationInternalsPageHandlerImpl
  private:
   const std::string GetTitleFromFeaturePromoData(
       const base::Feature* feature,
-      const FeaturePromoSpecification& spec);
+      const user_education::FeaturePromoSpecification& spec);
 
-  raw_ptr<TutorialService> tutorial_service_ = nullptr;
+  raw_ptr<user_education::TutorialService> tutorial_service_ = nullptr;
   raw_ptr<content::WebUI> web_ui_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 };

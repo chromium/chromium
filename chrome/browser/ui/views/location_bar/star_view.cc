@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -32,6 +31,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,9 +66,10 @@ StarView::~StarView() = default;
 
 void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
-  if (key == kHasInProductHelpPromoKey) {
+  if (key == user_education::kHasInProductHelpPromoKey) {
     views::InkDropState next_state;
-    if (GetProperty(kHasInProductHelpPromoKey) || GetVisible()) {
+    if (GetProperty(user_education::kHasInProductHelpPromoKey) ||
+        GetVisible()) {
       next_state = views::InkDropState::ACTIVATED;
     } else {
       next_state = views::InkDropState::DEACTIVATED;

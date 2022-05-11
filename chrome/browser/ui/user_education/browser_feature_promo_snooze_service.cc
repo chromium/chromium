@@ -61,7 +61,7 @@ void BrowserFeaturePromoSnoozeService::Reset(const base::Feature& iph_feature) {
   pref_data->RemovePath(iph_feature.name);
 }
 
-absl::optional<FeaturePromoSnoozeService::SnoozeData>
+absl::optional<user_education::FeaturePromoSnoozeService::SnoozeData>
 BrowserFeaturePromoSnoozeService::ReadSnoozeData(
     const base::Feature& iph_feature) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
@@ -112,7 +112,7 @@ BrowserFeaturePromoSnoozeService::ReadSnoozeData(
 
 void BrowserFeaturePromoSnoozeService::SaveSnoozeData(
     const base::Feature& iph_feature,
-    const FeaturePromoSnoozeService::SnoozeData& snooze_data) {
+    const user_education::FeaturePromoSnoozeService::SnoozeData& snooze_data) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
   DictionaryPrefUpdate update(profile_->GetPrefs(), kIPHSnoozeDataPath);

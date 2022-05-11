@@ -15,7 +15,6 @@
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
@@ -24,10 +23,11 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -96,13 +96,15 @@ void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
 
   // Hover card should always render above help bubbles (see crbug.com/1309238).
   if (browser_view->GetFeaturePromoController()) {
-    HelpBubbleFactoryRegistry* const registry =
+    auto* const registry =
         browser_view->GetFeaturePromoController()->bubble_factory_registry();
     auto* const help_bubble =
         registry->GetHelpBubble(browser_view->GetElementContext());
-    if (help_bubble && help_bubble->IsA<HelpBubbleViews>()) {
+    if (help_bubble && help_bubble->IsA<user_education::HelpBubbleViews>()) {
       widget->StackAboveWidget(
-          help_bubble->AsA<HelpBubbleViews>()->bubble_view()->GetWidget());
+          help_bubble->AsA<user_education::HelpBubbleViews>()
+              ->bubble_view()
+              ->GetWidget());
     }
   }
 

@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/user_education/feature_promo_registry.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
+#include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/tutorial_registry.h"
 
 UserEducationService::UserEducationService()
     : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_) {}

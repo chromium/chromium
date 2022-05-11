@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
-#include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/flags_ui/feature_entry.h"
+#include "components/user_education/views/new_badge_label.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -116,8 +116,8 @@ ChromeLabsItemView::ChromeLabsItemView(
                           DISTANCE_CONTROL_LIST_VERTICAL),
                       0)));
 
-  experiment_name_ =
-      AddChildView(std::make_unique<NewBadgeLabel>(lab.visible_name));
+  experiment_name_ = AddChildView(
+      std::make_unique<user_education::NewBadgeLabel>(lab.visible_name));
   // The NewBadgeLabel’s default visibility is true. However, we only want the
   // new badge to show if PrefService conditions are met. Here we set the
   // default to false. Then, when the bubble is being shown the view controller
@@ -125,7 +125,7 @@ ChromeLabsItemView::ChromeLabsItemView(
   experiment_name_->SetDisplayNewBadge(false);
   experiment_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   experiment_name_->SetBadgePlacement(
-      NewBadgeLabel::BadgePlacement::kImmediatelyAfterText);
+      user_education::NewBadgeLabel::BadgePlacement::kImmediatelyAfterText);
 
   views::Label* experiment_description;
   AddChildView(

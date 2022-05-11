@@ -8,15 +8,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -30,7 +30,7 @@ class HelpBubbleFactoryViewsUiTest : public InProcessBrowserTest {
     return browser()->window()->GetElementContext();
   }
 
-  HelpBubbleFactoryRegistry* registry() {
+  user_education::HelpBubbleFactoryRegistry* registry() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->GetFeaturePromoController()
         ->bubble_factory_registry();
@@ -48,17 +48,17 @@ class HelpBubbleFactoryViewsUiTest : public InProcessBrowserTest {
 // not reliable when running alongside other tests).
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusForAccessibility) {
-  HelpBubbleParams params;
+  user_education::HelpBubbleParams params;
   params.body_text = u"Hello world!";
-  HelpBubbleButtonParams button_params;
+  user_education::HelpBubbleButtonParams button_params;
   button_params.text = u"Button";
   button_params.is_default = true;
   params.buttons.emplace_back(std::move(button_params));
 
-  std::unique_ptr<HelpBubble> help_bubble =
+  std::unique_ptr<user_education::HelpBubble> help_bubble =
       registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
-  HelpBubbleView* const bubble_view =
-      help_bubble->AsA<HelpBubbleViews>()->bubble_view();
+  auto* const bubble_view =
+      help_bubble->AsA<user_education::HelpBubbleViews>()->bubble_view();
 
   // Toggle focus to the help widget and then wait for it to be focused.
   {
@@ -97,13 +97,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
                        ToggleFocusViaAccelerator) {
-  HelpBubbleParams params;
+  user_education::HelpBubbleParams params;
   params.body_text = u"Hello world!";
   auto help_bubble_ptr =
       registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* const bubble_view =
-      help_bubble_ptr->AsA<HelpBubbleViews>()->bubble_view();
+      help_bubble_ptr->AsA<user_education::HelpBubbleViews>()->bubble_view();
 
 #if BUILDFLAG(IS_MAC)
 

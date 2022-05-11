@@ -7,15 +7,21 @@
 
 #include "chrome/browser/ui/user_education/user_education_service.h"
 
+namespace user_education {
 class FeaturePromoRegistry;
 class HelpBubbleFactoryRegistry;
 class TutorialRegistry;
+class HelpBubbleDelegate;
+}  // namespace user_education
 
 extern const char kTabGroupTutorialId[];
 
+extern user_education::HelpBubbleDelegate* GetHelpBubbleDelegate();
 extern void RegisterChromeHelpBubbleFactories(
-    HelpBubbleFactoryRegistry& registry);
-extern void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry);
-extern void MaybeRegisterChromeTutorials(TutorialRegistry& registry);
+    user_education::HelpBubbleFactoryRegistry& registry);
+extern void MaybeRegisterChromeFeaturePromos(
+    user_education::FeaturePromoRegistry& registry);
+extern void MaybeRegisterChromeTutorials(
+    user_education::TutorialRegistry& registry);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_USER_EDUCATION_SERVICE_H_

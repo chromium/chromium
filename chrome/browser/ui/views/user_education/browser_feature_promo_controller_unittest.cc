@@ -14,29 +14,30 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
-#include "chrome/browser/ui/user_education/feature_promo_registry.h"
-#include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_snooze_service.h"
+#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/tutorial.h"
+#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/user_education_class_properties.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -62,6 +63,18 @@ base::Feature kTutorialIPHFeature{"SecondIPHFeature",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 }  // namespace
+
+using user_education::FeaturePromoController;
+using user_education::FeaturePromoRegistry;
+using user_education::FeaturePromoSnoozeService;
+using user_education::FeaturePromoSpecification;
+using user_education::HelpBubble;
+using user_education::HelpBubbleArrow;
+using user_education::HelpBubbleFactoryRegistry;
+using user_education::HelpBubbleParams;
+using user_education::HelpBubbleView;
+using user_education::HelpBubbleViews;
+using user_education::TutorialDescription;
 
 class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
  public:
@@ -506,13 +519,16 @@ TEST_F(BrowserFeaturePromoControllerTest,
       .Times(1)
       .WillOnce(Return(true));
 
-  EXPECT_FALSE(GetAnchorView()->GetProperty(kHasInProductHelpPromoKey));
+  EXPECT_FALSE(
+      GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
   ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
-  EXPECT_TRUE(GetAnchorView()->GetProperty(kHasInProductHelpPromoKey));
+  EXPECT_TRUE(
+      GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 
   controller_->CloseBubble(kTestIPHFeature);
-  EXPECT_FALSE(GetAnchorView()->GetProperty(kHasInProductHelpPromoKey));
+  EXPECT_FALSE(
+      GetAnchorView()->GetProperty(user_education::kHasInProductHelpPromoKey));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, TestCanBlockPromos) {

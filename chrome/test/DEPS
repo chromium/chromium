@@ -69,6 +69,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/unified_consent",
   "+components/update_client",
+  "+components/user_education",
   "+components/user_manager",
   "+components/user_prefs",
   "+components/version_info",

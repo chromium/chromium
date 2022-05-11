@@ -10,19 +10,23 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/user_education/feature_promo_registry.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/views/help_bubble_delegate.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -33,7 +37,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/user_education/help_bubble_factory_mac.h"
+#include "components/user_education/views/help_bubble_factory_mac.h"
 #endif
 
 namespace {
@@ -41,11 +45,10 @@ namespace {
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 
-class BrowserHelpBubbleAcceleratorDelegate
-    : public HelpBubbleAcceleratorDelegate {
+class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
  public:
-  BrowserHelpBubbleAcceleratorDelegate() = default;
-  ~BrowserHelpBubbleAcceleratorDelegate() override = default;
+  BrowserHelpBubbleDelegate() = default;
+  ~BrowserHelpBubbleDelegate() override = default;
 
   std::vector<ui::Accelerator> GetPaneNavigationAccelerators(
       ui::TrackedElement* anchor_element) const override {
@@ -73,21 +76,68 @@ class BrowserHelpBubbleAcceleratorDelegate
     }
     return result;
   }
+
+  int GetTitleTextContext() const override {
+    return ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE;
+  }
+  int GetBodyTextContext() const override {
+    return ChromeTextContext::CONTEXT_IPH_BUBBLE_BODY;
+  }
+  int GetButtonTextContext() const override {
+    return ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON;
+  }
+
+  // These methods return color codes that will be handled by the app's theming
+  // system.
+  int GetHelpBubbleBackgroundColor() const override {
+    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND;
+  }
+  int GetHelpBubbleForegroundColor() const override {
+    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_FOREGROUND;
+  }
+  int GetHelpBubbleDefaultButtonBackgroundColor() const override {
+    return ThemeProperties::
+        COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_BACKGROUND;
+  }
+  int GetHelpBubbleDefaultButtonForegroundColor() const override {
+    return ThemeProperties::
+        COLOR_FEATURE_PROMO_BUBBLE_DEFAULT_BUTTON_FOREGROUND;
+  }
+  int GetHelpBubbleButtonBorderColor() const override {
+    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BUTTON_BORDER;
+  }
+  int GetHelpBubbleCloseButtonInkDropColor() const override {
+    return ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_CLOSE_BUTTON_INK_DROP;
+  }
+  ui::ColorId GetHelpBubbleBackgroundColorId() const override {
+    return kColorFeaturePromoBubbleBackground;
+  }
 };
 
 }  // namespace
 
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
 
-void RegisterChromeHelpBubbleFactories(HelpBubbleFactoryRegistry& registry) {
-  static base::NoDestructor<BrowserHelpBubbleAcceleratorDelegate> delegate;
-  registry.MaybeRegister<HelpBubbleFactoryViews>(delegate.get());
+user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
+  static base::NoDestructor<BrowserHelpBubbleDelegate> delegate;
+  return delegate.get();
+}
+
+void RegisterChromeHelpBubbleFactories(
+    user_education::HelpBubbleFactoryRegistry& registry) {
+  const user_education::HelpBubbleDelegate* const delegate =
+      GetHelpBubbleDelegate();
+  registry.MaybeRegister<user_education::HelpBubbleFactoryViews>(delegate);
 #if BUILDFLAG(IS_MAC)
-  registry.MaybeRegister<HelpBubbleFactoryMac>();
+  registry.MaybeRegister<user_education::HelpBubbleFactoryMac>(delegate);
 #endif
 }
 
-void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
+void MaybeRegisterChromeFeaturePromos(
+    user_education::FeaturePromoRegistry& registry) {
+  using user_education::FeaturePromoSpecification;
+  using user_education::HelpBubbleArrow;
+
   // Verify that we haven't already registered the expected features.
   // TODO(dfried): figure out if we should do something more sophisticated here.
   if (registry.IsFeatureRegistered(
@@ -105,9 +155,10 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)));
 
   // kIPHDesktopPwaInstallFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHDesktopPwaInstallFeature, kInstallPwaElementId,
-      IDS_DESKTOP_PWA_INSTALL_PROMO));
+  registry.RegisterFeature(
+      user_education::FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHDesktopPwaInstallFeature,
+          kInstallPwaElementId, IDS_DESKTOP_PWA_INSTALL_PROMO));
 
   // kIPHDesktopTabGroupsNewGroupFeature:
   registry.RegisterFeature(
@@ -209,7 +260,11 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
                     .SetBubbleArrow(HelpBubbleArrow::kNone)));
 }
 
-void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
+void MaybeRegisterChromeTutorials(
+    user_education::TutorialRegistry& tutorial_registry) {
+  using user_education::HelpBubbleArrow;
+  using user_education::TutorialDescription;
+
   // TODO (dfried): we might want to do something more sophisticated in the
   // future.
   if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId))
@@ -290,7 +345,7 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
     description.steps.emplace_back(std::move(success_step));
 
     description.histograms =
-        MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
+        user_education::MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
             description.steps.size());
     tutorial_registry.AddTutorial(kTabGroupTutorialId, std::move(description));
   }

@@ -571,12 +571,13 @@ class BrowserView : public BrowserWindow,
       bool include_continued_promos = false) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
-      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      FeaturePromoController::BubbleCloseCallback close_callback =
-          base::DoNothing()) override;
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) override;
   bool CloseFeaturePromo(const base::Feature& iph_feature) override;
-  FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
-      const base::Feature& iph_feature) override;
+  user_education::FeaturePromoController::PromoHandle
+  CloseFeaturePromoAndContinue(const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;

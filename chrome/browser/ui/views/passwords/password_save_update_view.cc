@@ -22,8 +22,6 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
-#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -36,6 +34,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/help_bubble_params.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -697,11 +697,11 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
       }
       break;
     case IPHType::kFailedReauth: {
-      FeaturePromoSpecification promo_spec =
-          FeaturePromoSpecification::CreateForLegacyPromo(
+      auto promo_spec =
+          user_education::FeaturePromoSpecification::CreateForLegacyPromo(
               /* feature =*/nullptr, ui::ElementIdentifier(),
               IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
-      promo_spec.SetBubbleArrow(HelpBubbleArrow::kRightCenter);
+      promo_spec.SetBubbleArrow(user_education::HelpBubbleArrow::kRightCenter);
 
       auto* const anchor_element =
           views::ElementTrackerViews::GetInstance()->GetElementForView(

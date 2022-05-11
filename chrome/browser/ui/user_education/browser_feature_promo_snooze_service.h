@@ -7,13 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
+#include "components/user_education/common/feature_promo_snooze_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 class PrefRegistrySimple;
 
-class BrowserFeaturePromoSnoozeService : public FeaturePromoSnoozeService {
+class BrowserFeaturePromoSnoozeService
+    : public user_education::FeaturePromoSnoozeService {
  public:
   explicit BrowserFeaturePromoSnoozeService(Profile* profile);
   ~BrowserFeaturePromoSnoozeService() override;

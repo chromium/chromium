@@ -8,8 +8,8 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,7 +19,8 @@
 namespace {
 
 void OnGetExistingSelectorsComplete(
-    base::WeakPtr<FeaturePromoController> feature_promo_controller,
+    base::WeakPtr<user_education::FeaturePromoController>
+        feature_promo_controller,
     const std::vector<std::string>& selectors) {
   if (feature_promo_controller && selectors.size() > 0) {
     feature_promo_controller->MaybeShowPromo(

@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 // This allows us to test features of InteractionTestUtil that only work in a

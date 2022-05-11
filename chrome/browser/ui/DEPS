@@ -14,6 +14,8 @@ include_rules = [
   "+components/safety_check",
   "+components/soda",
   "+components/translate/content/android",
+  "+components/user_education/common",
+  "+components/user_education/test",
   "+services/content/public",
   "+services/device/public/mojom",
   "+components/user_notes",

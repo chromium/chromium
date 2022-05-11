@@ -1,0 +1,10 @@
+include_rules = [
+  "+base",
+  "+components/feature_engagement/public",
+  "+components/strings",
+  "+components/vector_icons",
+  "+ui/accessibility",
+  "+ui/base",
+  "+ui/color",
+  "+ui/gfx",
+]

@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
@@ -15,10 +14,11 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -36,10 +36,10 @@ class HelpBubbleFactoryRegistryInteractiveUitest : public InProcessBrowserTest {
   ~HelpBubbleFactoryRegistryInteractiveUitest() override = default;
 
  protected:
-  HelpBubbleParams GetBubbleParams() {
-    HelpBubbleParams params;
+  user_education::HelpBubbleParams GetBubbleParams() {
+    user_education::HelpBubbleParams params;
     params.body_text = u"To X, do Y";
-    params.arrow = HelpBubbleArrow::kRightTop;
+    params.arrow = user_education::HelpBubbleArrow::kRightTop;
     return params;
   }
 
@@ -51,7 +51,7 @@ class HelpBubbleFactoryRegistryInteractiveUitest : public InProcessBrowserTest {
     return browser()->window()->GetElementContext();
   }
 
-  HelpBubbleFactoryRegistry* GetRegistry() {
+  user_education::HelpBubbleFactoryRegistry* GetRegistry() {
     return GetBrowserView()
         ->GetFeaturePromoController()
         ->bubble_factory_registry();

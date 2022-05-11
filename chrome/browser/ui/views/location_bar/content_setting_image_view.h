@@ -9,9 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
-#include "chrome/browser/ui/user_education/help_bubble.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/user_education/common/help_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -94,7 +94,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);
   }
-  HelpBubble* critical_promo_bubble_for_testing() {
+  user_education::HelpBubble* critical_promo_bubble_for_testing() {
     return critical_promo_bubble_.get();
   }
 
@@ -118,7 +118,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Has a value that is not is_zero() if a promo is showing, or has an
   // is_zero() value if the promo was considered but it was decided not to show
   // it.
-  std::unique_ptr<HelpBubble> critical_promo_bubble_;
+  std::unique_ptr<user_education::HelpBubble> critical_promo_bubble_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

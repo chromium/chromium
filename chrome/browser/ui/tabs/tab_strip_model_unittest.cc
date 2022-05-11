@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/user_education/mock_feature_promo_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tab_groups/tab_group_color.h"

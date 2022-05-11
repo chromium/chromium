@@ -52,8 +52,8 @@ namespace {
 
 // Returns an appropriate set of string replacements; passing the wrong number
 // of replacements for the body text of the IPH will cause a DCHECK.
-FeaturePromoSpecification::StringReplacements GetReplacementsForFeature(
-    const base::Feature& feature) {
+user_education::FeaturePromoSpecification::StringReplacements
+GetReplacementsForFeature(const base::Feature& feature) {
   if (&feature == &feature_engagement::kIPHDesktopPwaInstallFeature)
     return {u"Placeholder Text"};
   return {};

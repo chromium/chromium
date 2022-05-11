@@ -24,8 +24,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -548,8 +548,9 @@ void ToolbarButton::ShowContextMenuForViewImpl(View* source,
 
 void ToolbarButton::AfterPropertyChange(const void* key, int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
-  if (key == kHasInProductHelpPromoKey)
-    SetHasInProductHelpPromo(GetProperty(kHasInProductHelpPromoKey));
+  if (key == user_education::kHasInProductHelpPromoKey)
+    SetHasInProductHelpPromo(
+        GetProperty(user_education::kHasInProductHelpPromoKey));
 }
 
 void ToolbarButton::SetHasInProductHelpPromo(bool has_in_product_help_promo) {
