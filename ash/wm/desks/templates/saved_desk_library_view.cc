@@ -17,6 +17,7 @@
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
@@ -218,7 +219,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Create grids depending on which features are enabled.
-  if (features::AreDesksTemplatesEnabled()) {
+  if (saved_desk_util::AreDesksTemplatesEnabled()) {
     grid_labels_.push_back(scroll_contents->AddChildView(
         MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     desk_template_grid_view_ =
