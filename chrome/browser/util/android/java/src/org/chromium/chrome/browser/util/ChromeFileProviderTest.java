@@ -13,11 +13,11 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.FileNotFoundException;
 
@@ -27,8 +27,8 @@ import java.io.FileNotFoundException;
  * The openFile should be blocked till notify is called. These tests can timeout if the notify does
  * not work correctly.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class ChromeFileProviderTest {
     private ParcelFileDescriptor openFileFromProvider(Uri uri) {
         ChromeFileProvider provider = new ChromeFileProvider();
