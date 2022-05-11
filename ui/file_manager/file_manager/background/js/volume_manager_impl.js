@@ -160,8 +160,8 @@ export class VolumeManagerImpl extends EventTarget {
 
     try {
       console.warn('Getting volumes');
-      let volumeMetadataList = await new Promise(
-          resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
+      let volumeMetadataList =
+          await promisify(chrome.fileManagerPrivate.getVolumeMetadataList);
       if (!volumeMetadataList) {
         console.warn('Cannot get volumes');
         finishInitialization();
@@ -323,9 +323,8 @@ export class VolumeManagerImpl extends EventTarget {
 
   /** @override */
   async mountArchive(fileUrl, password) {
-    const path = await new Promise(resolve => {
-      chrome.fileManagerPrivate.addMount(fileUrl, password, resolve);
-    });
+    const path =
+        await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
     console.debug(`Mounting '${path}'`);
     const key = this.makeRequestKey_('mount', path);
     return this.startRequest_(key);
@@ -340,22 +339,16 @@ export class VolumeManagerImpl extends EventTarget {
   /** @override */
   async unmount({volumeId}) {
     console.warn(`Unmounting '${volumeId}'`);
-    chrome.fileManagerPrivate.removeMount(volumeId);
     const key = this.makeRequestKey_('unmount', volumeId);
-    await this.startRequest_(key);
+    const request = this.startRequest_(key);
+    await promisify(chrome.fileManagerPrivate.removeMount, volumeId);
+    await request;
   }
 
   /** @override */
   configure(volumeInfo) {
-    return new Promise((fulfill, reject) => {
-      chrome.fileManagerPrivate.configureVolume(volumeInfo.volumeId, () => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message);
-        } else {
-          fulfill();
-        }
-      });
-    });
+    return promisify(
+        chrome.fileManagerPrivate.configureVolume, volumeInfo.volumeId);
   }
 
   /** @override */

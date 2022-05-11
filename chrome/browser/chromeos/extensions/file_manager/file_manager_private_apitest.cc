@@ -395,13 +395,31 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
                       .AppendASCII("mount_path1")
                       .AsUTF8Unsafe(),
                   _))
-      .Times(1);
+      .WillOnce(
+          testing::Invoke([](const std::string&,
+                             DiskMountManager::UnmountPathCallback callback) {
+            std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
+          }))
+      .WillOnce(
+          testing::Invoke([](const std::string&,
+                             DiskMountManager::UnmountPathCallback callback) {
+            std::move(callback).Run(chromeos::MOUNT_ERROR_CANCELLED);
+          }));
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(chromeos::CrosDisksClient::GetArchiveMountPoint()
                               .AppendASCII("archive_mount_path")
                               .AsUTF8Unsafe(),
                           _))
-      .Times(1);
+      .WillOnce(
+          testing::Invoke([](const std::string&,
+                             DiskMountManager::UnmountPathCallback callback) {
+            std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
+          }))
+      .WillOnce(
+          testing::Invoke([](const std::string&,
+                             DiskMountManager::UnmountPathCallback callback) {
+            std::move(callback).Run(chromeos::MOUNT_ERROR_NEED_PASSWORD);
+          }));
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},
                                {.load_as_component = true}))
