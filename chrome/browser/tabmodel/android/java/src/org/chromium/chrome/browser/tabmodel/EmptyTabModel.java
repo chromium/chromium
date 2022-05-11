@@ -133,6 +133,9 @@ public class EmptyTabModel implements TabModel {
     public void cancelTabClosure(int tabId) {}
 
     @Override
+    public void notifyAllTabsClosureUndone() {}
+
+    @Override
     public boolean supportsPendingClosures() {
         return false;
     }

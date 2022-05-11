@@ -1,0 +1,67 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.compositor.overlays.strip;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** Simple mock of TabModel used for tests. */
+public class TestTabModel extends EmptyTabModel {
+    private final List<Tab> mMockTabs = new ArrayList<>();
+    private int mMaxId = -1;
+    private int mIndex;
+
+    public void addTab(final String title) {
+        mMaxId++;
+        final TabImpl mockTab = mock(TabImpl.class);
+        final int tabId = mMaxId;
+        when(mockTab.getId()).thenReturn(tabId);
+        when(mockTab.getTitle()).thenReturn(title);
+        mMockTabs.add(mockTab);
+    }
+
+    @Override
+    public Tab getTabAt(int id) {
+        return mMockTabs.get(id);
+    }
+
+    @Override
+    public int getCount() {
+        return mMockTabs.size();
+    }
+
+    @Override
+    public int index() {
+        return mIndex;
+    }
+
+    @Override
+    public void closeAllTabs() {
+        mMockTabs.clear();
+        mMaxId = -1;
+        mIndex = 0;
+    }
+
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
+    @Override
+    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+        mIndex = i;
+    }
+
+    public List<Tab> getAllTabs() {
+        return mMockTabs;
+    }
+}

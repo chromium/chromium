@@ -106,7 +106,8 @@ public class TabModelImpl extends TabModelJniBridge {
                                 // tab, otherwise just set mIndex but don't kick off everything that
                                 // happens when calling setIndex().
                                 if (activeModel) {
-                                    TabModelUtils.setIndex(TabModelImpl.this, insertIndex, false);
+                                    TabModelUtils.setIndex(TabModelImpl.this, insertIndex, false,
+                                            TabSelectionType.FROM_UNDO);
                                 } else {
                                     mIndex = insertIndex;
                                 }
@@ -118,6 +119,13 @@ public class TabModelImpl extends TabModelJniBridge {
                         @Override
                         public void finalizeClosure(Tab tab) {
                             finalizeTabClosure(tab, true);
+                        }
+
+                        @Override
+                        public void notifyAllTabsClosureUndone() {
+                            for (TabModelObserver obs : mObservers) {
+                                obs.allTabsClosureUndone();
+                            }
                         }
 
                         @Override
@@ -371,7 +379,14 @@ public class TabModelImpl extends TabModelJniBridge {
 
         mPendingTabClosureManager.commitAllTabClosures();
 
-        for (TabModelObserver obs : mObservers) obs.allTabsClosureCommitted();
+        for (TabModelObserver obs : mObservers) obs.allTabsClosureCommitted(isIncognito());
+    }
+
+    @Override
+    public void notifyAllTabsClosureUndone() {
+        if (!supportsPendingClosures()) return;
+
+        mPendingTabClosureManager.notifyAllTabsClosureUndone();
     }
 
     @Override

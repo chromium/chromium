@@ -291,9 +291,9 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void allTabsClosureCommitted() {
+    public void allTabsClosureCommitted(boolean isIncognito) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.allTabsClosureCommitted();
+            observer.allTabsClosureCommitted(isIncognito);
         }
     }
 

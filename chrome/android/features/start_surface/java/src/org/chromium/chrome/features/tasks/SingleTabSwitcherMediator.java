@@ -86,7 +86,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
                 mSelectedTabDidNotChangedAfterShown = false;
                 updateSelectedTab(tab);
-                if (type == TabSelectionType.FROM_CLOSE || mShouldIgnoreNextSelect) {
+                if (type == TabSelectionType.FROM_CLOSE || type == TabSelectionType.FROM_UNDO
+                        || mShouldIgnoreNextSelect) {
                     mShouldIgnoreNextSelect = false;
                     return;
                 }

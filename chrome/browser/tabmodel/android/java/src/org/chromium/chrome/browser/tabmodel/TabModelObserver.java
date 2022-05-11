@@ -105,6 +105,12 @@ public interface TabModelObserver {
     default void tabClosureUndone(Tab tab) {}
 
     /**
+     * Called after all tabs closed from a close all tabs action have been successfully restored by
+     * an undo action.
+     */
+    default void allTabsClosureUndone() {}
+
+    /**
      * Called when a tab closure is committed and can't be undone anymore.
      *
      * @param tab The tab that has been closed.
@@ -119,7 +125,7 @@ public interface TabModelObserver {
     /**
      * Called when an "all tabs" closure has been committed and can't be undone anymore.
      */
-    default void allTabsClosureCommitted() {}
+    default void allTabsClosureCommitted(boolean isIncognito) {}
 
     /**
      * Called after a tab has been removed. At this point, the tab is no longer in the tab model.

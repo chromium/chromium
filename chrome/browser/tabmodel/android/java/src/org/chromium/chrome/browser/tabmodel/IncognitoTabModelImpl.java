@@ -241,6 +241,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
+    public void notifyAllTabsClosureUndone() {
+        mDelegateModel.notifyAllTabsClosureUndone();
+    }
+
+    @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         mCountOfAddingOrClosingTabs++;

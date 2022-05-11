@@ -125,6 +125,8 @@ class TabModel {
     // User-originated switch to existing tab from Omnibox tab switch
     // suggestions.
     FROM_OMNIBOX,
+    // Selection of a previously closed tab when closure is undone.
+    FROM_UNDO,
     // Must be last.
     SIZE
   };

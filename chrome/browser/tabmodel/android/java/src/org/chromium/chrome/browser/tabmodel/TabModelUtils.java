@@ -153,7 +153,20 @@ public class TabModelUtils {
      * @param skipLoadingTab Whether to skip loading the Tab.
      */
     public static void setIndex(TabModel model, int index, boolean skipLoadingTab) {
-        model.setIndex(index, TabSelectionType.FROM_USER, skipLoadingTab);
+        setIndex(model, index, skipLoadingTab, TabSelectionType.FROM_USER);
+    }
+
+    /**
+     * A helper method that allows specifying a {@link TabSelectionType}
+     * type to {@link TabModel#setIndex(int, TabSelectionType)}.
+     * @param model The {@link TabModel} to act on.
+     * @param index The index of the {@link Tab} to select.
+     * @param skipLoadingTab Whether to skip loading the Tab.
+     * @param type {@link TabSelectionType} how the tab selection was initiated.
+     */
+    public static void setIndex(
+            TabModel model, int index, boolean skipLoadingTab, @TabSelectionType int type) {
+        model.setIndex(index, type, skipLoadingTab);
     }
 
     /**

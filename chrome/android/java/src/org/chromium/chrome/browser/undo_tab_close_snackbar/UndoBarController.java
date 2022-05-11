@@ -147,7 +147,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             }
 
             @Override
-            public void allTabsClosureCommitted() {
+            public void allTabsClosureCommitted(boolean isIncognito) {
                 if (disableUndo(false)) return;
                 mSnackbarManagable.getSnackbarManager().dismissSnackbars(UndoBarController.this);
             }
@@ -236,7 +236,13 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             for (Tab tab : (List<Tab>) actionData) {
                 cancelTabClosure(tab.getId());
             }
+            notifyAllTabsClosureUndone();
         }
+    }
+
+    private void notifyAllTabsClosureUndone() {
+        TabModel model = mTabModelSelector.getCurrentModel();
+        if (model != null) model.notifyAllTabsClosureUndone();
     }
 
     private void cancelTabClosure(int tabId) {

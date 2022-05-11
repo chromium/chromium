@@ -19471,7 +19471,10 @@ should be able to be added at any place in this file.
 
 <action name="MobileTabSwitched" not_user_triggered="true">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>
+    User actively switched to a different tab. This does not include tab refocus
+    caused by cancelling a tab closure.
+  </description>
 </action>
 
 <action name="MobileTabSwitched.TabletTabStrip" not_user_triggered="true">

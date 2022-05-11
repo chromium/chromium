@@ -101,6 +101,9 @@ public class PendingTabClosureManagerTest {
         public void finalizeClosure(Tab tab) {}
 
         @Override
+        public void notifyAllTabsClosureUndone() {}
+
+        @Override
         public void notifyDidCloseTabs(List<Tab> tabs) {}
     }
 

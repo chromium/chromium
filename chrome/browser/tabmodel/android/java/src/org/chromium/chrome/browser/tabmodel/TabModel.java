@@ -138,6 +138,12 @@ public interface TabModel extends TabList {
     public void cancelTabClosure(int tabId);
 
     /**
+     * Notifies observers that all tabs closure action has been completed and tabs have been
+     * restored.
+     */
+    public void notifyAllTabsClosureUndone();
+
+    /**
      * Restores the most recent closure, bringing the tab(s) back into their original tab model or
      * this model if the original model no longer exists.
      */

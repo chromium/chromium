@@ -519,6 +519,21 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void doesNotHideWhenSelectedTabChangedDueToUndoTabClosure() {
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        initAndAssertAllProperties();
+        mMediator.showOverview(true);
+        assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
+
+        doReturn(true).when(mTab3).isClosing();
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_UNDO, TAB3_ID);
+        verify(mLayout, never()).onTabSelecting(anyLong(), anyInt());
+
+        mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB3_ID);
+        verify(mLayout).onTabSelecting(anyLong(), eq(TAB1_ID));
+    }
+
+    @Test
     public void doesNotHideWhenSelectedTabChangedDueToModelChange() {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         initAndAssertAllProperties();

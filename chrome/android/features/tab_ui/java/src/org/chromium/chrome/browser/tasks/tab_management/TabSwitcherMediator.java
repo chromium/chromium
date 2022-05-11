@@ -288,7 +288,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 if (!mTabModelSelector.isTabStateInitialized()) {
                     return;
                 }
-                if (type == TabSelectionType.FROM_CLOSE || mShouldIgnoreNextSelect) {
+                if (type == TabSelectionType.FROM_CLOSE || mShouldIgnoreNextSelect
+                        || type == TabSelectionType.FROM_UNDO) {
                     mShouldIgnoreNextSelect = false;
                     return;
                 }
