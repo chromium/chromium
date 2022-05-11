@@ -14,7 +14,7 @@ class PrefetchAgent extends RemoteContext {
   }
 
   getExecutorURL(options = {}) {
-    let {hostname, protocol, executor, ...extra} = options;
+    let {hostname, username, password, protocol, executor, ...extra} = options;
     let params = new URLSearchParams({uuid: this.context_id, ...extra});
     if(executor === undefined) {
       executor = "executor.sub.html";
@@ -22,6 +22,12 @@ class PrefetchAgent extends RemoteContext {
     let url = new URL(`${executor}?${params}`, SR_PREFETCH_UTILS_URL);
     if(hostname !== undefined) {
       url.hostname = hostname;
+    }
+    if(username !== undefined) {
+      url.username = username;
+    }
+    if(password !== undefined) {
+      url.password = password;
     }
     if(protocol !== undefined) {
       url.protocol = protocol;
@@ -48,6 +54,8 @@ class PrefetchAgent extends RemoteContext {
         location.href = url;
       });
     }, [url]);
+    url.username = '';
+    url.password = '';
     assert_equals(
         await this.execute_script(() => location.href),
         url.toString(),
@@ -72,6 +80,10 @@ class PrefetchAgent extends RemoteContext {
 
   async getRequestCookies() {
     return this.execute_script(() => window.requestCookies);
+  }
+
+  async getRequestCredentials() {
+    return this.execute_script(() => window.requestCredentials);
   }
 }
 
@@ -98,9 +110,8 @@ async function isUrlPrefetched(url) {
 
 // Must also include /common/utils.js and /common/dispatcher/dispatcher.js to use this.
 async function spawnWindow(t, options = {}) {
-  let {executor, ...extra} = options;
   let agent = new PrefetchAgent(token(), t);
-  let w = window.open(agent.getExecutorURL({executor}), extra);
+  let w = window.open(agent.getExecutorURL(options), options);
   t.add_cleanup(() => w.close());
   return agent;
 }
