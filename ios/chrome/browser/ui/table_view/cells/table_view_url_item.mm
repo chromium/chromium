@@ -358,7 +358,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
         constraintEqualToAnchor:self.faviconContainerView.centerYAnchor],
   ]];
   [activityView startAnimating];
-  activityView.backgroundColor = [UIColor whiteColor];
+  activityView.backgroundColor = self.faviconContainerView.backgroundColor;
 }
 
 - (void)stopAnimatingActivityIndicator {
