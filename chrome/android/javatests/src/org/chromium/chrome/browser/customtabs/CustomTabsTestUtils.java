@@ -289,8 +289,8 @@ public class CustomTabsTestUtils {
      */
     public static PendingIntent addActionButtonToIntent(
             Intent intent, Bitmap icon, String description, int id) {
-        PendingIntent pi = PendingIntent.getBroadcast(
-                InstrumentationRegistry.getTargetContext(), 0, new Intent(), 0);
+        PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
+                new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
         intent.putExtra(CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
                 makeToolbarItemBundle(icon, description, pi, id));
         return pi;
