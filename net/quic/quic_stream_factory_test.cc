@@ -1958,7 +1958,14 @@ TEST_P(QuicStreamFactoryTest, HttpsPoolingWithMatchingPins) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, NoHttpsPoolingWithDifferentPins) {
+// crbug.com/1325054 Broken on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NoHttpsPoolingWithDifferentPins \
+  DISABLED_NoHttpsPoolingWithDifferentPins
+#else
+#define MAYBE_NoHttpsPoolingWithDifferentPins NoHttpsPoolingWithDifferentPins
+#endif
+TEST_P(QuicStreamFactoryTest, MAYBE_NoHttpsPoolingWithDifferentPins) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);

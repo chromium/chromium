@@ -4095,7 +4095,13 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
                 network_isolation_key, &unused_failure_log));
 }
 
-TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
+// crbug.com/1325054 Broken on Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UpdateKeyPinsListTimestamp DISABLED_UpdateKeyPinsListTimestamp
+#else
+#define MAYBE_UpdateKeyPinsListTimestamp UpdateKeyPinsListTimestamp
+#endif
+TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
