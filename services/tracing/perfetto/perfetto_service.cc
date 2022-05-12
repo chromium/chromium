@@ -69,7 +69,8 @@ PerfettoService::PerfettoService(
                                 ? std::move(task_runner_for_testing)
                                 : base::SequencedTaskRunnerHandle::Get()) {
   service_ = perfetto::TracingService::CreateInstance(
-      std::make_unique<MojoSharedMemory::Factory>(), &perfetto_task_runner_);
+      std::make_unique<ChromeBaseSharedMemory::Factory>(),
+      &perfetto_task_runner_);
   // Chromium uses scraping of the shared memory chunks to ensure that data
   // from threads without a MessageLoop doesn't get lost.
   service_->SetSMBScrapingEnabled(true);
@@ -96,17 +97,14 @@ void PerfettoService::BindReceiver(
 void PerfettoService::ConnectToProducerHost(
     mojo::PendingRemote<mojom::ProducerClient> producer_client,
     mojo::PendingReceiver<mojom::ProducerHost> producer_host_receiver,
-    mojo::ScopedSharedBufferHandle shared_memory,
+    base::UnsafeSharedMemoryRegion shared_memory,
     uint64_t shared_memory_buffer_page_size_bytes) {
-  if (!shared_memory.is_valid()) {
-    // Connection requests should always include an SMB.
-    mojo::ReportBadMessage("Producer connection request without SMB");
-    return;
-  }
+  // `shared_memory` is not marked nullable in the Mojom IDL so the region
+  // should always be valid.
+  DCHECK(shared_memory.IsValid());
 
   auto new_producer = std::make_unique<ProducerHost>(&perfetto_task_runner_);
   uint32_t producer_pid = receivers_.current_context();
-  DCHECK(shared_memory.is_valid());
   ProducerHost::InitializationResult result = new_producer->Initialize(
       std::move(producer_client), service_.get(),
       base::StrCat({mojom::kPerfettoProducerNamePrefix,

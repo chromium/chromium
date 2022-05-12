@@ -32,7 +32,7 @@ class SharedMemoryArbiter;
 
 namespace tracing {
 
-class MojoSharedMemory;
+class ChromeBaseSharedMemory;
 
 // This class is the per-process client side of the Perfetto
 // producer, and is responsible for creating specific kinds
@@ -146,7 +146,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   // TODO(eseckler): Consider accessing |shared_memory_| and
   // |shared_memory_arbiter_| without locks after setup was completed, since we
   // never destroy or unset them.
-  std::unique_ptr<MojoSharedMemory> shared_memory_ GUARDED_BY(lock_);
+  std::unique_ptr<ChromeBaseSharedMemory> shared_memory_ GUARDED_BY(lock_);
   std::unique_ptr<perfetto::SharedMemoryArbiter> shared_memory_arbiter_
       GUARDED_BY(lock_);
 

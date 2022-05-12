@@ -11,40 +11,40 @@
 namespace tracing {
 
 std::unique_ptr<perfetto::SharedMemory>
-MojoSharedMemory::Factory::CreateSharedMemory(size_t size) {
-  return std::make_unique<MojoSharedMemory>(size);
+ChromeBaseSharedMemory::Factory::CreateSharedMemory(size_t size) {
+  return std::make_unique<ChromeBaseSharedMemory>(size);
 }
 
-MojoSharedMemory::MojoSharedMemory(size_t size) {
-  shared_buffer_ = mojo::SharedBufferHandle::Create(size);
+ChromeBaseSharedMemory::ChromeBaseSharedMemory(size_t size)
+    : region_(base::UnsafeSharedMemoryRegion::Create(size)) {
   // DCHECK rather than CHECK as we handle SMB creation failures as
   // DumpWithoutCrashing in ProducerClient on release builds.
-  DCHECK(shared_buffer_.is_valid());
-  mapping_ = shared_buffer_->Map(size);
-  DCHECK(mapping_);
+  DCHECK(region_.IsValid());
+  mapping_ = region_.Map();
+  DCHECK(mapping_.IsValid());
 }
 
-MojoSharedMemory::MojoSharedMemory(mojo::ScopedSharedBufferHandle shared_memory)
-    : shared_buffer_(std::move(shared_memory)) {
-  mapping_ = shared_buffer_->Map(shared_buffer_->GetSize());
+ChromeBaseSharedMemory::ChromeBaseSharedMemory(
+    base::UnsafeSharedMemoryRegion region)
+    : region_(std::move(region)) {
+  mapping_ = region_.Map();
   // DCHECK rather than CHECK as we handle SMB mapping failures in ProducerHost
   // on release builds.
-  DCHECK(mapping_);
+  DCHECK(mapping_.IsValid());
 }
 
-MojoSharedMemory::~MojoSharedMemory() = default;
+ChromeBaseSharedMemory::~ChromeBaseSharedMemory() = default;
 
-mojo::ScopedSharedBufferHandle MojoSharedMemory::Clone() {
-  return shared_buffer_->Clone(
-      mojo::SharedBufferHandle::AccessMode::READ_WRITE);
+base::UnsafeSharedMemoryRegion ChromeBaseSharedMemory::CloneRegion() {
+  return region_.Duplicate();
 }
 
-void* MojoSharedMemory::start() const {
-  return mapping_.get();
+void* ChromeBaseSharedMemory::start() const {
+  return mapping_.memory();
 }
 
-size_t MojoSharedMemory::size() const {
-  return shared_buffer_->GetSize();
+size_t ChromeBaseSharedMemory::size() const {
+  return region_.GetSize();
 }
 
 }  // namespace tracing

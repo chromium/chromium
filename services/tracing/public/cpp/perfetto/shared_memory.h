@@ -8,14 +8,14 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory.h"
 
 namespace tracing {
 
-// This wraps a Mojo SharedBuffer implementation to be
-// able to provide it to Perfetto.
-class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
+// This wraps //base's shmem implementation for Perfetto to consume.
+class COMPONENT_EXPORT(TRACING_CPP) ChromeBaseSharedMemory
     : public perfetto::SharedMemory {
  public:
   class COMPONENT_EXPORT(TRACING_CPP) Factory
@@ -25,21 +25,18 @@ class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
         size_t size) override;
   };
 
-  explicit MojoSharedMemory(size_t size);
-  explicit MojoSharedMemory(mojo::ScopedSharedBufferHandle shared_memory);
+  explicit ChromeBaseSharedMemory(size_t size);
+  explicit ChromeBaseSharedMemory(base::UnsafeSharedMemoryRegion region);
 
-  MojoSharedMemory(const MojoSharedMemory&) = delete;
-  MojoSharedMemory& operator=(const MojoSharedMemory&) = delete;
+  ChromeBaseSharedMemory(const ChromeBaseSharedMemory&) = delete;
+  ChromeBaseSharedMemory& operator=(const ChromeBaseSharedMemory&) = delete;
 
-  ~MojoSharedMemory() override;
+  ~ChromeBaseSharedMemory() override;
 
-  // Create another wrapping instance of the same SharedMemory buffer,
-  // for sending to other processes.
-  mojo::ScopedSharedBufferHandle Clone();
+  // Clone the region, e.g. for sending to other processes over IPC.
+  base::UnsafeSharedMemoryRegion CloneRegion();
 
-  const mojo::ScopedSharedBufferHandle& shared_buffer() const {
-    return shared_buffer_;
-  }
+  const base::UnsafeSharedMemoryRegion& region() const { return region_; }
 
   // perfetto::SharedMemory implementation. Called internally by Perfetto
   // classes.
@@ -47,8 +44,8 @@ class COMPONENT_EXPORT(TRACING_CPP) MojoSharedMemory
   size_t size() const override;
 
  private:
-  mojo::ScopedSharedBufferHandle shared_buffer_;
-  mojo::ScopedSharedBufferMapping mapping_;
+  base::UnsafeSharedMemoryRegion region_;
+  base::WritableSharedMemoryMapping mapping_;
 };
 
 }  // namespace tracing

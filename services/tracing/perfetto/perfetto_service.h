@@ -46,7 +46,7 @@ class PerfettoService : public mojom::PerfettoService {
   void ConnectToProducerHost(
       mojo::PendingRemote<mojom::ProducerClient> producer_client,
       mojo::PendingReceiver<mojom::ProducerHost> producer_host_receiver,
-      mojo::ScopedSharedBufferHandle shared_memory,
+      base::UnsafeSharedMemoryRegion shared_memory,
       uint64_t shared_memory_buffer_page_size_bytes) override;
 
   perfetto::TracingService* GetService() const;

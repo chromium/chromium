@@ -5,6 +5,7 @@
 module tracing.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 
 // Producer processes register with the format
 // "kPerfettoProducerNamePrefix-PID" when connecting to Chrome's internal
@@ -165,7 +166,7 @@ interface PerfettoService {
   // providing the shared memory buffer that will be used to send trace data.
   ConnectToProducerHost(pending_remote<ProducerClient> producer_client,
                         pending_receiver<ProducerHost> producer_host_receiver,
-                        handle<shared_buffer> shared_memory,
+                        mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory,
                         uint64 shared_memory_buffer_page_size_bytes);
 };
 

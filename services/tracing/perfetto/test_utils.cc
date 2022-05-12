@@ -351,9 +351,9 @@ MockProducerHost::MockProducerHost(
   mojo::PendingRemote<mojom::ProducerHost> host_remote;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
   Initialize(std::move(client), service->GetService(), producer_name_,
-             static_cast<MojoSharedMemory*>(
+             static_cast<ChromeBaseSharedMemory*>(
                  producer_client->shared_memory_for_testing())
-                 ->Clone(),
+                 ->CloneRegion(),
              PerfettoProducer::kSMBPageSizeBytes);
   receiver_.Bind(host_remote.InitWithNewPipeAndPassReceiver());
   producer_client->BindClientAndHostPipesForTesting(std::move(client_receiver),

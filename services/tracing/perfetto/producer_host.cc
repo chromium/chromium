@@ -33,21 +33,21 @@ ProducerHost::InitializationResult ProducerHost::Initialize(
     mojo::PendingRemote<mojom::ProducerClient> producer_client,
     perfetto::TracingService* service,
     const std::string& name,
-    mojo::ScopedSharedBufferHandle shared_memory,
+    base::UnsafeSharedMemoryRegion shared_memory,
     uint64_t shared_memory_buffer_page_size_bytes) {
   DCHECK(service);
   DCHECK(!producer_endpoint_);
 
   producer_client_.Bind(std::move(producer_client));
 
-  auto shm = std::make_unique<MojoSharedMemory>(std::move(shared_memory));
+  auto shm = std::make_unique<ChromeBaseSharedMemory>(std::move(shared_memory));
   // We may fail to map the buffer provided by the ProducerClient.
   if (!shm->start()) {
     return InitializationResult::kSmbMappingFailed;
   }
 
   size_t shm_size = shm->size();
-  MojoSharedMemory* shm_raw = shm.get();
+  ChromeBaseSharedMemory* shm_raw = shm.get();
 
   // TODO(oysteine): Figure out a uid once we need it.
   producer_endpoint_ = service->ConnectProducer(
