@@ -322,8 +322,8 @@
                                     }];
         }
         completion:^(BOOL _) {
-          [self animationFinished];
           hideCancel();
+          [self animationFinished];
         }];
   } else {
     contraction();
