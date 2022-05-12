@@ -575,7 +575,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
           {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
           {"setBackgroundColor",
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
-          {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
+          {"setPresentationMode",
+           &PdfViewPluginBase::HandleSetPresentationModeMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
           {"stopScrolling", &PdfViewPluginBase::HandleStopScrollingMessage},
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
@@ -1228,9 +1229,9 @@ void PdfViewPluginBase::HandleSetBackgroundColorMessage(
       base::checked_cast<SkColor>(message.FindDouble("color").value());
 }
 
-void PdfViewPluginBase::HandleSetReadOnlyMessage(
+void PdfViewPluginBase::HandleSetPresentationModeMessage(
     const base::Value::Dict& message) {
-  engine()->SetReadOnly(message.FindBool("enableReadOnly").value());
+  engine()->SetReadOnly(message.FindBool("enablePresentationMode").value());
 }
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(

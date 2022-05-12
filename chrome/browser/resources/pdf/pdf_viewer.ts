@@ -514,14 +514,15 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           // Switch viewport's wheel behavior.
           this.viewport.setPresentationMode(true);
 
-          // Restrict the content to read only (e.g. disable forms and links).
-          this.pluginController_!.setReadOnly(true);
+          // Set presentation mode, which restricts the content to read only
+          // (e.g. disable forms and links).
+          this.pluginController_!.setPresentationMode(true);
 
           // Revert back to the normal state when exiting Presentation mode.
           eventToPromise('fullscreenchange', scroller).then(() => {
             assert(document.fullscreenElement === null);
             this.viewport.setPresentationMode(false);
-            this.pluginController_!.setReadOnly(false);
+            this.pluginController_!.setPresentationMode(false);
 
             // Ensure that directional keys still work after exiting.
             this.shadowRoot!.querySelector('embed')!.focus();

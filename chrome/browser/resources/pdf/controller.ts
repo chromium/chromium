@@ -339,10 +339,10 @@ export class PluginController implements ContentController {
     });
   }
 
-  setReadOnly(enableReadOnly: boolean) {
+  setPresentationMode(enablePresentationMode: boolean) {
     this.postMessage_({
-      type: 'setReadOnly',
-      enableReadOnly: enableReadOnly,
+      type: 'setPresentationMode',
+      enablePresentationMode,
     });
   }
 

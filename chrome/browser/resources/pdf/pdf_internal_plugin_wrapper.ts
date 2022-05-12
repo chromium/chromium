@@ -73,10 +73,8 @@ channel.port1.onmessage = e => {
       plugin.setAttribute('has-edits', '');
       return;
 
-    case 'setReadOnly':
-      // TODO(crbug.com/702993): Rename the incoming message to reflect that
-      // this is only used by Presentation mode.
-      isPresentationMode = e.data.enableReadOnly;
+    case 'setPresentationMode':
+      isPresentationMode = e.data.enablePresentationMode;
 
       gestureDetector.setPresentationMode(isPresentationMode);
       if (isPresentationMode) {

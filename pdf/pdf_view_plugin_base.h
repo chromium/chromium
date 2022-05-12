@@ -423,7 +423,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
   void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
-  void HandleSetReadOnlyMessage(const base::Value::Dict& message);
+  void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
   void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
   void HandleViewportMessage(const base::Value::Dict& message);
