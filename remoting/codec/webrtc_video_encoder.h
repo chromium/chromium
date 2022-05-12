@@ -35,14 +35,14 @@ class WebrtcVideoEncoder {
     // If set to true then the active map passed to the encoder will only
     // contain updated_region() from the current frame. Otherwise the active map
     // is not cleared before adding updated_region(), which means it will
-    // contain union of updated_region() from all frames since this flag was
+    // contain a union of updated_region() from all frames since this flag was
     // last set. This flag is used to top-off video quality with VP8.
     bool clear_active_map = false;
 
     // Indicates that the encoder should encode this frame as a key frame.
     bool key_frame = false;
 
-    // Target FPS. < 0 means unset.
+    // Target FPS. A value less than 0 means unset.
     int fps = -1;
 
     // Quantization parameters for the encoder.
@@ -118,7 +118,7 @@ class WebrtcVideoEncoder {
   // there is no work to do. |frame| may be nullptr, which is equivalent to a
   // frame with an empty updated_region(). |done| callback may be called
   // synchronously. It must not be called if the encoder is destroyed while
-  // request is pending.
+  // the request is pending.
   virtual void Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
                       const FrameParams& param,
                       EncodeCallback done) = 0;

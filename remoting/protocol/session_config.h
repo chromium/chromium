@@ -35,6 +35,7 @@ struct ChannelConfig {
     CODEC_H264,
     CODEC_OPUS,
     CODEC_SPEEX,
+    CODEC_AV1,
   };
 
   // Creates a config with transport field set to TRANSPORT_NONE which indicates

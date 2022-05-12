@@ -88,9 +88,10 @@ std::unique_ptr<SessionConfig> SessionConfig::SelectCommon(
 
   std::list<ChannelConfig> host_video_configs = host_config->video_configs();
   host_video_configs.remove_if([](const ChannelConfig& config) {
-    // Older ICE-based clients do not support VP9 or H.264 so remove them.
+    // Older ICE-based clients do not support VP9, H.264, or AV1 so remove them.
     return config.codec == ChannelConfig::CODEC_H264 ||
-           config.codec == ChannelConfig::CODEC_VP9;
+           config.codec == ChannelConfig::CODEC_VP9 ||
+           config.codec == ChannelConfig::CODEC_AV1;
   });
 
   if (!SelectCommonChannelConfig(host_config->control_configs(),

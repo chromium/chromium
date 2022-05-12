@@ -19,8 +19,7 @@
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 const char ContentDescription::kChromotingContentName[] = "chromoting";
 
@@ -41,20 +40,21 @@ const char kVersionAttr[] = "version";
 const char kCodecAttr[] = "codec";
 
 const NameMapElement<ChannelConfig::TransportType> kTransports[] = {
-  { ChannelConfig::TRANSPORT_STREAM, "stream" },
-  { ChannelConfig::TRANSPORT_MUX_STREAM, "mux-stream" },
-  { ChannelConfig::TRANSPORT_DATAGRAM, "datagram" },
-  { ChannelConfig::TRANSPORT_NONE, "none" },
+    {ChannelConfig::TRANSPORT_STREAM, "stream"},
+    {ChannelConfig::TRANSPORT_MUX_STREAM, "mux-stream"},
+    {ChannelConfig::TRANSPORT_DATAGRAM, "datagram"},
+    {ChannelConfig::TRANSPORT_NONE, "none"},
 };
 
 const NameMapElement<ChannelConfig::Codec> kCodecs[] = {
-  { ChannelConfig::CODEC_VERBATIM, "verbatim" },
-  { ChannelConfig::CODEC_VP8, "vp8" },
-  { ChannelConfig::CODEC_VP9, "vp9" },
-  { ChannelConfig::CODEC_H264, "h264" },
-  { ChannelConfig::CODEC_ZIP, "zip" },
-  { ChannelConfig::CODEC_OPUS, "opus" },
-  { ChannelConfig::CODEC_SPEEX, "speex" },
+    {ChannelConfig::CODEC_VERBATIM, "verbatim"},
+    {ChannelConfig::CODEC_VP8, "vp8"},
+    {ChannelConfig::CODEC_VP9, "vp9"},
+    {ChannelConfig::CODEC_H264, "h264"},
+    {ChannelConfig::CODEC_ZIP, "zip"},
+    {ChannelConfig::CODEC_OPUS, "opus"},
+    {ChannelConfig::CODEC_SPEEX, "speex"},
+    {ChannelConfig::CODEC_AV1, "av1"},
 };
 
 // Format a channel configuration tag for chromotocol session description,
@@ -171,8 +171,8 @@ XmlElement* ContentDescription::ToXml() const {
 }
 
 // static
-// Adds the channel configs corresponding to |tag_name|,
-// found in |element|, to |configs|.
+// Adds the channel configs corresponding to |tag_name|, found in |element|, to
+// |configs|.
 bool ContentDescription::ParseChannelConfigs(
     const XmlElement* const element,
     const char tag_name[],
@@ -232,5 +232,4 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
       std::move(config), std::move(authenticator_message)));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

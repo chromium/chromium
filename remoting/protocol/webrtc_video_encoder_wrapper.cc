@@ -30,8 +30,11 @@
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
 #endif
 
-namespace remoting {
-namespace protocol {
+#if defined(USE_AV1_ENCODER)
+#include "remoting/codec/webrtc_video_encoder_av1.h"
+#endif
+
+namespace remoting::protocol {
 
 namespace {
 
@@ -114,6 +117,14 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
 #if defined(USE_H264_ENCODER)
       VLOG(0) << "Creating H264 encoder.";
       encoder_ = WebrtcVideoEncoderGpu::CreateForH264();
+#else
+      NOTIMPLEMENTED();
+#endif
+      break;
+    case webrtc::kVideoCodecAV1:
+#if defined(USE_AV1_ENCODER)
+      VLOG(0) << "Creating AV1 encoder.";
+      encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
 #else
       NOTIMPLEMENTED();
 #endif
@@ -394,6 +405,12 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
 #else
     NOTREACHED();
 #endif
+  } else if (frame.codec == webrtc::kVideoCodecAV1) {
+#if defined(USE_AV1_ENCODER)
+    // TODO(joedow): Set codec specific params for AV1 here.
+#else
+    NOTREACHED();
+#endif
   } else {
     NOTREACHED();
   }
@@ -502,5 +519,4 @@ bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
   return should_drop_quality;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
