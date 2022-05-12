@@ -88,6 +88,7 @@ PasswordManagerSettingsServiceAndroidImpl::
       weak_ptr_factory_.GetWeakPtr()));
   is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
   sync_service->AddObserver(this);
+  RequestSettingsFromBackend();
 }
 
 // Constructor for tests
@@ -113,6 +114,7 @@ PasswordManagerSettingsServiceAndroidImpl::
       weak_ptr_factory_.GetWeakPtr()));
   is_password_sync_enabled_ = IsPasswordSyncEnabled(sync_service);
   sync_service->AddObserver(this);
+  RequestSettingsFromBackend();
 }
 
 PasswordManagerSettingsServiceAndroidImpl::

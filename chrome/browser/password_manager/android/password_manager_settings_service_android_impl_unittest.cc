@@ -56,7 +56,8 @@ class PasswordManagerSettingsServiceAndroidImplTest : public testing::Test {
   void InitializeSettingsService(bool password_sync_enabled,
                                  bool setting_sync_enabled);
 
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> CreateNewService();
+  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> CreateNewService(
+      std::unique_ptr<MockPasswordSettingsUpdaterBridge> bridge);
 
   std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
   GetServiceWithoutBackend();
@@ -132,9 +133,11 @@ PasswordManagerSettingsServiceAndroidImplTest::GetServiceWithoutBackend() {
 }
 
 std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-PasswordManagerSettingsServiceAndroidImplTest::CreateNewService() {
-  std::unique_ptr<MockPasswordSettingsUpdaterBridge> bridge =
-      std::make_unique<MockPasswordSettingsUpdaterBridge>();
+PasswordManagerSettingsServiceAndroidImplTest::CreateNewService(
+    std::unique_ptr<MockPasswordSettingsUpdaterBridge> bridge = nullptr) {
+  if (!bridge) {
+    bridge = std::make_unique<MockPasswordSettingsUpdaterBridge>();
+  }
   std::unique_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper =
       std::make_unique<FakePasswordManagerLifecycleHelper>();
   return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
@@ -216,6 +219,26 @@ void PasswordManagerSettingsServiceAndroidImplTest::RegisterPrefs() {
       ::prefs::kGoogleServicesLastUsername, kTestAccount);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kSettingsMigratedToUPM, false);
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       RequestsSettingsOnServiceCreation) {
+  std::unique_ptr<MockPasswordSettingsUpdaterBridge> bridge =
+      std::make_unique<MockPasswordSettingsUpdaterBridge>();
+
+  EXPECT_CALL(*bridge,
+              GetPasswordSettingValue(
+                  Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+                      kTestAccount)),
+                  Eq(PasswordManagerSetting::kOfferToSavePasswords)));
+  EXPECT_CALL(*bridge,
+              GetPasswordSettingValue(
+                  Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+                      kTestAccount)),
+                  Eq(PasswordManagerSetting::kAutoSignIn)));
+
+  SetPasswordsSync(true);
+  CreateNewService(std::move(bridge));
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
