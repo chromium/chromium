@@ -26,10 +26,14 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -584,12 +588,33 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     @Override
     public void onAccountsCookieDeletedByUserAction() {
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
-                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null) {
-            // Clearing account cookies should trigger sign-out only when user is signed in
-            // without sync.
-            // If the user consented for sync, then the user should not be signed out,
-            // since account cookies will be rebuilt by the account reconcilor.
+        // Clearing account cookies should trigger sign-out only when user is
+        // signed in without sync. If the user consented for sync, then the user
+        // should not be signed out, since account cookies will be rebuilt by
+        // the account reconcilor.
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
+                || mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
+            return;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)) {
+            // Child users are not allowed to sign out, so we check the child status in order to
+            // skip any signout step.  This is guarded behind a flag for now, in case changing the
+            // timings by adding an async step causes any issues for non-child accounts.
+            //
+            // TODO(crbug.com/1324567): move this logic within signOut() rather than relying on
+            // callers like SigninManager implemting this logic.
+            final AccountManagerFacade accountManagerFacade =
+                    AccountManagerFacadeProvider.getInstance();
+            accountManagerFacade.getAccounts().then(accounts -> {
+                AccountUtils.checkChildAccountStatus(
+                        accountManagerFacade, accounts, (isChild, childAccount) -> {
+                            if (!isChild) {
+                                signOut(SignoutReason.USER_DELETED_ACCOUNT_COOKIES);
+                            }
+                        });
+            });
+        } else {
             signOut(SignoutReason.USER_DELETED_ACCOUNT_COOKIES);
         }
     }
