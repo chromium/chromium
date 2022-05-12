@@ -164,7 +164,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unmount) {
+// TODO(crbug.com/1324887): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_Unmount DISABLED_Unmount
+#else
+#define MAYBE_Unmount Unmount
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, MAYBE_Unmount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unmount",
                                {.launch_as_platform_app = true},
                                {.load_as_component = true}))
