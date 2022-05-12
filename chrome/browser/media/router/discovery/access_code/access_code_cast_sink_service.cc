@@ -48,7 +48,6 @@ using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 constexpr char kLoggerComponent[] = "AccessCodeCastSinkService";
 
 const base::TimeDelta kExpirationDelay = base::Milliseconds(250);
-const base::TimeDelta kExpirationTimerDelay = base::Seconds(20);
 
 }  // namespace
 
@@ -85,7 +84,7 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       network_monitor_(network_monitor),
       prefs_(prefs) {
   DCHECK(profile_) << "The profile does not exist.";
-  DCHECK(prefs)
+  DCHECK(prefs_)
       << "Prefs could not be fetched from the profile for some reason.";
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
@@ -119,9 +118,19 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
     // We don't need to post this task per the DiscoveryNetworkMonitor's
     // promise: "All observers will be notified of network changes on the thread
     // from which they registered."
-    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs);
+    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs_);
     network_monitor_->AddObserver(this);
     InitAllStoredDevices();
+    user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    user_prefs_registrar_->Init(prefs_);
+    user_prefs_registrar_->Add(
+        prefs::kAccessCodeCastDeviceDuration,
+        base::BindRepeating(&AccessCodeCastSinkService::OnDurationPrefChange,
+                            base::Unretained(this)));
+    user_prefs_registrar_->Add(
+        prefs::kAccessCodeCastEnabled,
+        base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
+                            base::Unretained(this)));
   }
 }
 
@@ -424,21 +433,7 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
 }
 
 void AccessCodeCastSinkService::InitAllStoredDevices() {
-  auto sink_ids = FetchStoredDevices();
-  if (sink_ids.empty()) {
-    media_router_->GetLogger()->LogInfo(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        "There are no saved Access Code Cast devices for this profile.", "", "",
-        "");
-    return;
-  }
-  media_router_->GetLogger()->LogInfo(
-      mojom::LogCategory::kDiscovery, kLoggerComponent,
-      "Found Access Code Cast devices for this profile: " +
-          sink_ids.DebugString() +
-          ". Attempting to validate and then add these cast devices.",
-      "", "", "");
-  auto validated_devices = ValidateStoredDevices(sink_ids);
+  auto validated_devices = FetchAndValidateStoredDevices();
   if (validated_devices.empty()) {
     // We don't need anymore logging here since it is already handled in the
     // ValidateStoredDevices function.
@@ -499,7 +494,8 @@ void AccessCodeCastSinkService::SetExpirationTimer(
   // the sink is not removed before the route is created.
   expiration_timer->Start(
       FROM_HERE,
-      CalculateDurationTillExpiration(sink->id()) + kExpirationTimerDelay,
+      CalculateDurationTillExpiration(sink->id()) +
+          AccessCodeCastSinkService::kExpirationTimerDelay,
       base::BindOnce(&AccessCodeCastSinkService::OnExpiration,
                      weak_ptr_factory_.GetWeakPtr(), *sink));
 
@@ -567,6 +563,25 @@ AccessCodeCastSinkService::ValidateStoredDevices(
     cast_sinks.push_back(validation_result.value());
   }
   return cast_sinks;
+}
+
+const std::vector<MediaSinkInternal>
+AccessCodeCastSinkService::FetchAndValidateStoredDevices() {
+  auto sink_ids = FetchStoredDevices();
+  if (sink_ids.empty()) {
+    media_router_->GetLogger()->LogInfo(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        "There are no saved Access Code Cast devices for this profile.", "", "",
+        "");
+    return {};
+  }
+  media_router_->GetLogger()->LogInfo(
+      mojom::LogCategory::kDiscovery, kLoggerComponent,
+      "Found Access Code Cast devices for this profile: " +
+          sink_ids.DebugString() +
+          ". Attempting to validate and then add these cast devices.",
+      "", "", "");
+  return ValidateStoredDevices(sink_ids);
 }
 
 void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
@@ -700,12 +715,30 @@ void AccessCodeCastSinkService::OnNetworksChanged(
   }
 }
 
+void AccessCodeCastSinkService::OnDurationPrefChange() {
+  ResetExpirationTimers();
+  InitExpirationTimers(FetchAndValidateStoredDevices());
+}
+
+void AccessCodeCastSinkService::OnEnabledPrefChange() {
+  if (!GetAccessCodeCastEnabledPref(prefs_)) {
+    RemoveExistingSinksOnNetwork();
+    ResetExpirationTimers();
+    pending_expirations_.clear();
+    pref_updater_->ClearDevicesDict();
+    pref_updater_->ClearDeviceAddedTimeDict();
+  }
+}
+
 void AccessCodeCastSinkService::Shutdown() {
   // There's no guarantee that MediaRouter is still in the
   // MediaRoutesObserver. |media_routes_observer_| accesses MediaRouter in its
   // dtor. Since MediaRouter and |this| are both KeyedServices, we must not
   // access MediaRouter in the dtor of |this|, so we do it here.
   media_routes_observer_.reset();
+  if (user_prefs_registrar_)
+    user_prefs_registrar_->RemoveAll();
+  user_prefs_registrar_.reset();
   ResetExpirationTimers();
 }
 

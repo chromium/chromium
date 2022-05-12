@@ -170,4 +170,32 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetSinkIdsFromDevicesDict) {
   EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
 }
 
+TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDevicesDict) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+
+  pref_updater()->UpdateDevicesDict(cast_sink);
+  pref_updater()->UpdateDevicesDict(cast_sink2);
+
+  EXPECT_FALSE(pref_updater()->GetDevicesDict()->GetDict().empty());
+
+  pref_updater()->ClearDevicesDict();
+
+  EXPECT_TRUE(pref_updater()->GetDevicesDict()->GetDict().empty());
+}
+
+TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {
+  MediaSinkInternal cast_sink = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
+  pref_updater()->UpdateDeviceAddedTimeDict(cast_sink2.id());
+
+  EXPECT_FALSE(pref_updater()->GetDeviceAddedTimeDict()->GetDict().empty());
+
+  pref_updater()->ClearDeviceAddedTimeDict();
+
+  EXPECT_TRUE(pref_updater()->GetDeviceAddedTimeDict()->GetDict().empty());
+}
+
 }  // namespace media_router

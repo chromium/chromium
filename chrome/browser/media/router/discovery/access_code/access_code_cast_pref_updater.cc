@@ -143,6 +143,25 @@ void AccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(
   device_time_pref->Remove(sink_id);
 }
 
+void AccessCodeCastPrefUpdater::ClearDevicesDict() {
+  ScopedDictionaryPrefUpdate update(pref_service_,
+                                    prefs::kAccessCodeCastDevices);
+  std::unique_ptr<DictionaryValueUpdate> devices_pref = update.Get();
+  DCHECK(devices_pref) << "The " << prefs::kAccessCodeCastDevices
+                       << " pref does not exist.";
+  devices_pref->Clear();
+}
+
+void AccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict() {
+  ScopedDictionaryPrefUpdate update(pref_service_,
+                                    prefs::kAccessCodeCastDeviceAdditionTime);
+
+  std::unique_ptr<DictionaryValueUpdate> device_time_pref = update.Get();
+  DCHECK(device_time_pref) << "The " << prefs::kAccessCodeCastDeviceAdditionTime
+                           << " pref does not exist.";
+  device_time_pref->Clear();
+}
+
 base::WeakPtr<AccessCodeCastPrefUpdater>
 AccessCodeCastPrefUpdater::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

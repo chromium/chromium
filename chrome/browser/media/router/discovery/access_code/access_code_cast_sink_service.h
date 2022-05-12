@@ -20,6 +20,7 @@
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
 
 namespace media_router {
@@ -70,6 +71,8 @@ class AccessCodeCastSinkService : public KeyedService,
   void SetExpirationTimerById(const MediaSink::Id sink_id);
 
   void StoreSinkAndSetExpirationTimer(const MediaSink::Id sink_id);
+
+  static constexpr base::TimeDelta kExpirationTimerDelay = base::Seconds(20);
 
  private:
   class AccessCodeMediaRoutesObserver : public MediaRoutesObserver {
@@ -153,6 +156,10 @@ class AccessCodeCastSinkService : public KeyedService,
                            TestResetExpirationTimersNetworkChange);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestResetExpirationTimersShutdown);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           TestChangeEnabledPref);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           TestChangeDurationPref);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -200,6 +207,9 @@ class AccessCodeCastSinkService : public KeyedService,
   // this function could return an empty vector.
   const std::vector<MediaSinkInternal> ValidateStoredDevices(
       const base::Value::List& sink_ids);
+
+  const std::vector<MediaSinkInternal> FetchAndValidateStoredDevices();
+
   void AddStoredDevicesToMediaRouter(
       const std::vector<MediaSinkInternal> cast_sinks);
 
@@ -217,6 +227,9 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;
+
+  void OnDurationPrefChange();
+  void OnEnabledPrefChange();
 
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
@@ -270,6 +283,9 @@ class AccessCodeCastSinkService : public KeyedService,
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   PrefService* prefs_;
+
+  // This registrar monitors for user prefs changes.
+  std::unique_ptr<PrefChangeRegistrar> user_prefs_registrar_;
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };

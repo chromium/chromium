@@ -64,6 +64,9 @@ class AccessCodeCastPrefUpdater {
   // not there in the first place.
   void RemoveSinkIdFromDeviceAddedTimeDict(const MediaSink::Id sink_id);
 
+  void ClearDevicesDict();
+  void ClearDeviceAddedTimeDict();
+
   base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
 
  private:

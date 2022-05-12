@@ -116,10 +116,10 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    profile_manager_->DeleteAllTestingProfiles();
-    profile_manager_.reset();
     access_code_cast_sink_service_->Shutdown();
     access_code_cast_sink_service_.reset();
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
     router_.reset();
     pref_service_.reset();
     mock_time_task_runner()->ClearPendingTasks();
@@ -1001,6 +1001,80 @@ TEST_F(AccessCodeCastSinkServiceTest, TestResetExpirationTimersShutdown) {
                   .empty());
   FastForwardUiAndIoTasks();
   content::RunAllTasksUntilIdle();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, TestChangeEnabledPref) {
+  // Test to ensure that all existing sinks are removed, all timers are reset,
+  // and all prefs related to access code casting are removed.
+  SetDeviceDurationPrefForTest(base::Seconds(10000));
+  FastForwardUiAndIoTasks();
+
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+
+  FastForwardUiAndIoTasks();
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+  EXPECT_FALSE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_FALSE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                   ->GetDict()
+                   .empty());
+
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1));
+
+  pref_service_->SetUserPref(prefs::kAccessCodeCastEnabled, base::Value(false));
+
+  EXPECT_TRUE(access_code_cast_sink_service_->current_session_expiration_timers_
+                  .empty());
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                  ->GetDict()
+                  .empty());
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+  mock_time_task_runner_->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, TestChangeDurationPref) {
+  // Test to ensure timers are reset whenever the duration pref changes.
+  SetDeviceDurationPrefForTest(base::Seconds(10000));
+  FastForwardUiAndIoTasks();
+
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+
+  FastForwardUiAndIoTasks();
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+  EXPECT_EQ(
+      base::Seconds(10000) + AccessCodeCastSinkService::kExpirationTimerDelay,
+      access_code_cast_sink_service_
+          ->current_session_expiration_timers_[cast_sink1.id()]
+          ->GetCurrentDelay());
+
+  pref_service_->SetUserPref(prefs::kAccessCodeCastDeviceDuration,
+                             base::Value(100));
+
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+  EXPECT_EQ(
+      base::Seconds(100) + AccessCodeCastSinkService::kExpirationTimerDelay,
+      access_code_cast_sink_service_
+          ->current_session_expiration_timers_[cast_sink1.id()]
+          ->GetCurrentDelay());
 }
 
 }  // namespace media_router

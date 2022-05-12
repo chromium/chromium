@@ -60,6 +60,7 @@ if (!is_android) {
       "//components/cast_channel:cast_channel",
       "//components/keyed_service/content:content",
       "//components/leveldb_proto:leveldb_proto",
+      "//components/pref_registry",
       "//components/prefs:prefs",
       "//components/signin/public/base:base",
       "//components/signin/public/identity_manager:identity_manager",
