@@ -148,6 +148,18 @@ const char kDiscoverFeedUserActionManageHiddenTapped[] =
 const char kDiscoverFeedUserActionManageFollowingTapped[] =
     "ContentSuggestions.Feed.HeaderAction.ManageFollowing";
 
+// User action names for following operations.
+const char kFollowRequested[] = "ContentSuggestions.Follow.FollowRequested";
+const char kUnfollowRequested[] = "ContentSuggestions.Follow.UnfollowRequested";
+const char kSnackbarGoToFeedButtonTapped[] =
+    "ContentSuggestions.Follow.SnackbarGoToFeedButtonTapped";
+const char kSnackbarUndoButtonTapped[] =
+    "ContentSuggestions.Follow.SnackbarUndoButtonTapped";
+const char kSnackbarRetryFollowButtonTapped[] =
+    "ContentSuggestions.Follow.SnackbarRetryFollowButtonTapped";
+const char kSnackbarRetryUnfollowButtonTapped[] =
+    "ContentSuggestions.Follow.SnackbarRetryUnfollowButtonTapped";
+
 // User action names for management surface.
 const char kDiscoverFeedUserActionManagementTappedUnfollow[] =
     "ContentSuggestions.Feed.Management.TappedUnfollow";
@@ -362,27 +374,6 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
                                                   kTappedManageFollowing];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionManageFollowingTapped));
-}
-
-- (void)recordManagementTappedUnfollow {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowOnManagementSurface];
-  base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionManagementTappedUnfollow));
-}
-
-- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
-  base::RecordAction(base::UserMetricsAction(
-      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar));
-}
-
-- (void)recordManagementTappedUnfollowTryAgainOnSnackbar {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
-  base::RecordAction(base::UserMetricsAction(
-      kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
@@ -606,6 +597,75 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
                                         waaEnabled:waaEnabled
                                    lastRefreshTime:lastRefreshTime];
   base::UmaHistogramEnumeration(kFeedUserSettingsOnStart, settings);
+}
+
+#pragma mark - Follow
+
+- (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
+  // TODO(crbug.com/1324452): Record histogram.
+  switch (followRequestType) {
+    case FollowRequestType::kFollowRequestFollow:
+      base::RecordAction(base::UserMetricsAction(kFollowRequested));
+      break;
+    case FollowRequestType::kFollowRequestUnfollow:
+      base::RecordAction(base::UserMetricsAction(kUnfollowRequested));
+      break;
+  }
+}
+
+- (void)recordFollowConfirmationShownWithType:
+    (FollowConfirmationType)followConfirmationType {
+  // TODO(crbug.com/1324452): Record histogram.
+  switch (followConfirmationType) {
+    case FollowConfirmationType::kFollowSucceedSnackbarShown:
+    case FollowConfirmationType::kFollowErrorSnackbarShown:
+    case FollowConfirmationType::kUnfollowSucceedSnackbarShown:
+    case FollowConfirmationType::kUnfollowErrorSnackbarShown:
+      break;
+  }
+}
+
+- (void)recordFollowSnackbarTappedWithAction:
+    (FollowSnackbarActionType)followSnackbarActionType {
+  // TODO(crbug.com/1324452): Record histogram.
+  switch (followSnackbarActionType) {
+    case FollowSnackbarActionType::kSnackbarActionGoToFeed:
+      base::RecordAction(
+          base::UserMetricsAction(kSnackbarGoToFeedButtonTapped));
+      break;
+    case FollowSnackbarActionType::kSnackbarActionUndo:
+      base::RecordAction(base::UserMetricsAction(kSnackbarUndoButtonTapped));
+      break;
+    case FollowSnackbarActionType::kSnackbarActionRetryFollow:
+      base::RecordAction(
+          base::UserMetricsAction(kSnackbarRetryFollowButtonTapped));
+      break;
+    case FollowSnackbarActionType::kSnackbarActionRetryUnfollow:
+      base::RecordAction(
+          base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
+      break;
+  }
+}
+
+- (void)recordManagementTappedUnfollow {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedUnfollowOnManagementSurface];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManagementTappedUnfollow));
+}
+
+- (void)recordManagementTappedRefollowAfterUnfollowOnSnackbar {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
+  base::RecordAction(base::UserMetricsAction(
+      kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar));
+}
+
+- (void)recordManagementTappedUnfollowTryAgainOnSnackbar {
+  [self recordDiscoverFeedUserActionHistogram:
+            FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
+  base::RecordAction(base::UserMetricsAction(
+      kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar));
 }
 
 #pragma mark - Private

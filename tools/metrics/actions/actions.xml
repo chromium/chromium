@@ -6260,6 +6260,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Follow.SnackbarGoToFeedButtonTapped">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    The user tapped GO TO FEED button on the follow succeed snackbar.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Follow.SnackbarRetryFollowButtonTapped">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    The user tapped RETRY button on the follow failed snackbar.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Follow.SnackbarRetryUnfollowButtonTapped">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    The user tapped RETRY button on the unfollow failed snackbar.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Follow.SnackbarUndoButtonTapped">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>
+    The user tapped UNDO button on the unfollow succeed snackbar.
+  </description>
+</action>
+
 <action name="ContentSuggestions.NotificationsPreferenceOff">
   <owner>dgn@chromium.org</owner>
   <owner>finkm@chromium.org</owner>
