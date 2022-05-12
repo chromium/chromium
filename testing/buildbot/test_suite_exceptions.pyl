@@ -2127,6 +2127,12 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
+      'android_optional_gpu_tests_rel': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
     },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -2166,6 +2172,12 @@
         ],
       },
       'Optional Android Release (Pixel 4)': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+      'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
           '--extra-browser-args=--disable-wcg-for-test',
@@ -2628,6 +2640,12 @@
           'quickrun_shards': 2,
         },
       },
+      'android_optional_gpu_tests_rel': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
     },
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -2667,6 +2685,12 @@
         ],
       },
       'Optional Android Release (Pixel 4)': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+      'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
           '--extra-browser-args=--disable-wcg-for-test',
@@ -2777,6 +2801,12 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
+      'android_optional_gpu_tests_rel': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
     },
   },
   'screenshot_sync_validating_tests': {
@@ -2792,6 +2822,12 @@
         ],
       },
       'Optional Android Release (Pixel 4)': {
+        'args': [
+          # See above.
+          '--extra-browser-args=--disable-wcg-for-test',
+        ],
+      },
+      'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
           '--extra-browser-args=--disable-wcg-for-test',

@@ -6593,6 +6593,21 @@
         },
         'os_type': 'android',
       },
+      'android_optional_gpu_tests_rel': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'android_r',
+          'has_native_resultdb_integration',
+          'flame',
+          'gpu-swarming-pool',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+          'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
+        },
+      },
     },
   },
   {
