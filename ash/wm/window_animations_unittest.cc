@@ -23,13 +23,23 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/wm/core/window_util.h"
 
 using aura::Window;
 using ui::Layer;
 
 namespace ash {
+
+namespace {
+
+void WaitForMilliseconds(int ms) {
+  base::RunLoop loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(ms));
+  loop.Run();
+}
+
+}  // namespace
 
 class WindowAnimationsTest : public AshTestBase {
  public:
@@ -479,28 +489,11 @@ TEST_F(WindowAnimationsTest, ResetAnimationAfterDismissingArcPip) {
             window->layer()->GetTargetBounds());
 }
 
-// A unique test class for testing certain cross fade animations as those rely
-// on observing compositor animations which require a mock time task
-// environment.
-class CrossFadeAnimateNewLayerOnlyTest : public AshTestBase {
- public:
-  CrossFadeAnimateNewLayerOnlyTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  CrossFadeAnimateNewLayerOnlyTest(const CrossFadeAnimateNewLayerOnlyTest&) =
-      delete;
-  CrossFadeAnimateNewLayerOnlyTest& operator=(
-      const CrossFadeAnimateNewLayerOnlyTest&) = delete;
-  ~CrossFadeAnimateNewLayerOnlyTest() override = default;
-};
-
 // Tests a version of the cross fade animation which animates the transform and
 // opacity of the new layer, but only the opacity of the old layer. The old
 // layer transform is updated manually when the animation ticks so that it
 // has the same visible bounds as the new layer.
-//
-// Flaky on Chrome OS. https://crbug.com/1113901
-TEST_F(CrossFadeAnimateNewLayerOnlyTest,
-       DISABLED_CrossFadeAnimateNewLayerOnly) {
+TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -509,16 +502,13 @@ TEST_F(CrossFadeAnimateNewLayerOnlyTest,
   window->Show();
   window->layer()->GetAnimator()->StopAnimating();
 
-  ui::DrawWaiterForTest::WaitForCompositingStarted(
-      window->GetRootWindow()->layer()->GetCompositor());
-
   Layer* old_layer = window->layer();
   EXPECT_EQ(1.f, old_layer->GetTargetOpacity());
 
   const gfx::Rect target_bounds(40, 40, 400, 400);
-  CrossFadeAnimationAnimateNewLayerOnly(window.get(), target_bounds,
-                                        base::Milliseconds(200),
-                                        gfx::Tween::LINEAR, "dummy");
+  CrossFadeAnimationAnimateNewLayerOnly(
+      window.get(), target_bounds, base::Milliseconds(200), gfx::Tween::LINEAR,
+      "test-histogram-name");
 
   // Window's layer has been replaced.
   EXPECT_NE(old_layer, window->layer());
@@ -534,13 +524,13 @@ TEST_F(CrossFadeAnimateNewLayerOnlyTest,
 
   // Start the animations, then set the bounds of the new window during the
   // animation.
-  task_environment()->FastForwardBy(base::Milliseconds(10));
+  WaitForMilliseconds(10);
 
   // Set the bounds halfway through the animation. The bounds of the old layer
   // remain the same, but the transform has updated to match the bounds of the
   // new layer.
   window->SetBounds(gfx::Rect(80, 80, 200, 200));
-  task_environment()->FastForwardBy(base::Milliseconds(50));
+  WaitForMilliseconds(100);
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), old_layer->bounds());
   EXPECT_NE(gfx::Transform(), old_layer->GetTargetTransform());
 
@@ -548,7 +538,7 @@ TEST_F(CrossFadeAnimateNewLayerOnlyTest,
   EXPECT_EQ(1.0f, window->layer()->GetTargetOpacity());
   EXPECT_EQ(gfx::Transform(), window->layer()->GetTargetTransform());
 
-  task_environment()->FastForwardBy(base::Seconds(1));
+  WaitForMilliseconds(300);
   EXPECT_FALSE(window->layer()->GetAnimator()->is_animating());
 }
 
