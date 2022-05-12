@@ -368881,6 +368881,15 @@
        {}
       ]
      ],
+     "table": {
+      "border-spacing.html": [
+       "fc5e87e35dde4b4cb2ed5c457f5cd22ec73d96b0",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "transform-010.html": [
       "8418551cdc8172862d57d8359a732968b3467aba",
       [
@@ -465029,6 +465038,13 @@
          {}
         ]
        ],
+       "sandbox-inherit-to-blank-document-unsandboxed-frame.html": [
+        "7040d07860eb4762976b102287a7b1453695c115",
+        [
+         null,
+         {}
+        ]
+       ],
        "sandbox-inherit-to-blank-document-unsandboxed.html": [
         "f60ab0da30ad82ff9a87d41af60fe68c96d29939",
         [
@@ -480748,6 +480764,13 @@
     ],
     "image-src-change.html": [
      "f35d803025702d2e9ad7e1c94d4e0b5bd925b40c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "image-upscaling.html": [
+     "a4f7d8079d3b9a75f79b896743cbc018cc81c9ce",
      [
       null,
       {}
