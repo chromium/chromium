@@ -48,6 +48,9 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   // The background task runner on which file I/O is performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  // Whether ReadyToCommitNavigation has occurred for the main `app.html`.
+  bool app_navigation_committed_ = false;
+
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };
 

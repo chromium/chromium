@@ -2352,6 +2352,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
+    expires_after="2023-05-11">
+  <owner>tapted@chromium.org</owner>
+  <owner>patricialor@chromium.org</owner>
+  <summary>
+    The number of other media app windows that exist when a new media app window
+    is created. Counts windows open with any supported file type, or in the
+    &quot;zero state&quot; (with no open file).
+  </summary>
+</histogram>
+
 <histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
     enum="AppListLaunchedFrom" expires_after="M107">
   <owner>andrewxu@chromium.org</owner>

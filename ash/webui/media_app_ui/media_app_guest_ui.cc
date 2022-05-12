@@ -9,6 +9,7 @@
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
@@ -28,6 +29,8 @@ namespace {
 constexpr base::FilePath::CharType kFontsRoot[] =
     FILE_PATH_LITERAL("/usr/share/fonts");
 constexpr char kFontRequestPrefix[] = "fonts/";
+
+int g_media_app_window_count = 0;
 
 bool IsFontRequest(const std::string& path) {
   return base::StartsWith(path, kFontRequestPrefix);
@@ -142,7 +145,10 @@ MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
   content::WebUIDataSource::Add(browser_context, untrusted_source);
 }
 
-MediaAppGuestUI::~MediaAppGuestUI() = default;
+MediaAppGuestUI::~MediaAppGuestUI() {
+  if (app_navigation_committed_)
+    --g_media_app_window_count;
+}
 
 void MediaAppGuestUI::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
@@ -150,6 +156,19 @@ void MediaAppGuestUI::ReadyToCommitNavigation(
   const std::string allowed_resource = "app.html";
   if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource))
     return;
+
+  if (!app_navigation_committed_) {
+    // Record the number of other media app windows that currently exist when a
+    // new one is created. Counts windows open with any supported file type, or
+    // in the "zero state" (with no open file). Pick 50 as a sensible maximum
+    // (additional windows will be recorded in the 51 bucket).
+    constexpr int kMaxExpectedWindowCount = 50;
+    UMA_HISTOGRAM_EXACT_LINEAR("Apps.MediaApp.Load.OtherOpenWindowCount",
+                               g_media_app_window_count,
+                               kMaxExpectedWindowCount);
+    app_navigation_committed_ = true;
+    ++g_media_app_window_count;
+  }
 
   mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
   handle->GetRenderFrameHost()->GetRemoteAssociatedInterfaces()->GetInterface(

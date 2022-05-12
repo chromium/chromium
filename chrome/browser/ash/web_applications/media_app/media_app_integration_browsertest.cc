@@ -1051,6 +1051,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 
   // Check the metric is recorded.
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 1);
+  histograms.ExpectBucketCount("Apps.MediaApp.Load.OtherOpenWindowCount", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,
@@ -1122,8 +1123,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(audio_web_ui));
   EXPECT_EQ("640x480", WaitForImageAlt(image_web_ui, kFileJpeg640x480));
 
-  // Check the metrics are recorded.
+  // Check the metrics are recorded: 2 launches from file manager machinery, and
+  // 0 other open windows for the first launch; 1 other open window for the
+  // second launch.
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromFileManager", 2);
+  histograms.ExpectBucketCount("Apps.MediaApp.Load.OtherOpenWindowCount", 0, 1);
+  histograms.ExpectBucketCount("Apps.MediaApp.Load.OtherOpenWindowCount", 1, 1);
 }
 
 // Ensures audio files opened in the media app successfully autoplay.
