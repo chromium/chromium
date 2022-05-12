@@ -219,7 +219,7 @@
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/translate/content/android/translate_message.h"
-#include "components/webapps/browser/android/features.h"
+#include "components/webapps/browser/features.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"

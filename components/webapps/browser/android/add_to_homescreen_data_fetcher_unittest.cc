@@ -22,7 +22,7 @@
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_types.h"
-#include "components/webapps/browser/android/features.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

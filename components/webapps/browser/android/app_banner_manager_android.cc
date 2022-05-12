@@ -26,7 +26,6 @@
 #include "components/webapps/browser/android/add_to_homescreen_coordinator.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
-#include "components/webapps/browser/android/features.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -34,6 +33,7 @@
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -151,18 +151,12 @@ std::string AppBannerManagerAndroid::GetBannerType() {
                                     : "play";
 }
 
-bool AppBannerManagerAndroid::ShouldSkipInstallServiceWorkerCheck() const {
-  return features::SkipInstallServiceWorkerCheck();
-}
-
 InstallableParams
 AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.has_worker = !features::SkipBannerServiceWorkerCheck();
-  params.wait_for_worker = !features::SkipBannerServiceWorkerCheck();
   return params;
 }
 

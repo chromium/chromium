@@ -22,6 +22,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -360,16 +361,12 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   PerformInstallableChecks();
 }
 
-bool AppBannerManager::ShouldSkipInstallServiceWorkerCheck() const {
-  return false;
-}
-
 InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
-  params.has_worker = true;
-  params.wait_for_worker = true;
+  params.has_worker = !features::SkipBannerServiceWorkerCheck();
+  params.wait_for_worker = !features::SkipBannerServiceWorkerCheck();
 
   return params;
 }
@@ -406,7 +403,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   // banner may not appear, the site is still consider installabled if it only
   // failed service worker checks.
   bool worker_errors_ignored_for_installs = false;
-  if (ShouldSkipInstallServiceWorkerCheck() &&
+  if (features::SkipInstallServiceWorkerCheck() &&
       data.HasErrorOnlyServiceWorkerErrors()) {
     DCHECK(error != NO_ERROR_DETECTED);
     worker_errors_ignored_for_installs = true;

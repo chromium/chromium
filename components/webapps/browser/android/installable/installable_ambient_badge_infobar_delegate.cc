@@ -11,8 +11,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/webapps/browser/android/features.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
