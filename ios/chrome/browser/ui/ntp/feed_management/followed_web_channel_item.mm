@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -32,8 +33,8 @@
 }
 
 - (CrURL*)URL {
-  return (_followedWebChannel.rssURL) ? _followedWebChannel.rssURL
-                                      : _followedWebChannel.webPageURL;
+  return (_followedWebChannel.rssURL.nsurl) ? _followedWebChannel.rssURL
+                                            : _followedWebChannel.webPageURL;
 }
 
 - (NSString*)thirdRowText {

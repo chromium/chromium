@@ -73,9 +73,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::mac::ObjCCastStrict<FollowedWebChannelItem>(tableViewItem);
   FollowedWebChannelCell* followedWebChannelCell =
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(cellToReturn);
-  CrURL* faviconURL = followedWebChannelItem.followedWebChannel.faviconURL;
+  CrURL* webPageURL = followedWebChannelItem.followedWebChannel.webPageURL;
 
-  [self.faviconDataSource faviconForURL:faviconURL
+  [self.faviconDataSource faviconForURL:webPageURL
                              completion:^(FaviconAttributes* attributes) {
                                // Only set favicon if the cell hasn't been
                                // reused.

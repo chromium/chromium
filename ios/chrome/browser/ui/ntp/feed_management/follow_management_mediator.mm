@@ -50,11 +50,11 @@
 
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
-  self.faviconLoader->FaviconForIconUrl(URL.gurl, kDesiredSmallFaviconSizePt,
-                                        kMinFaviconSizePt,
-                                        ^(FaviconAttributes* attributes) {
-                                          completion(attributes);
-                                        });
+  self.faviconLoader->FaviconForPageUrl(
+      URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        completion(attributes);
+      });
 }
 
 @end
