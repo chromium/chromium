@@ -303,4 +303,21 @@ TEST_F(InsertListCommandTest, TimeAndMeterInRoot) {
             SelectionSample::GetSelectionText(
                 *root, Selection().GetSelectionInDOMTree()));
 }
+
+// Refer https://crbug.com/1312348
+TEST_F(InsertListCommandTest, PreservedNewline) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<pre><span></span>\nX^<div></div>|</pre>"),
+      SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      document, InsertListCommand::kOrderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("<pre><span></span>\n<ol><li>|X</li></ol><div></div></pre>",
+            GetSelectionTextFromBody());
+}
 }
