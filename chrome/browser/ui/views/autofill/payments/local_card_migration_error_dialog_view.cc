@@ -54,8 +54,12 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
   set_margins(gfx::Insets());
 }
 
-LocalCardMigrationErrorDialogView::~LocalCardMigrationErrorDialogView() =
-    default;
+LocalCardMigrationErrorDialogView::~LocalCardMigrationErrorDialogView() {
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
+}
 
 void LocalCardMigrationErrorDialogView::ShowDialog(
     content::WebContents& web_contents) {
@@ -66,11 +70,7 @@ void LocalCardMigrationErrorDialogView::ShowDialog(
 }
 
 void LocalCardMigrationErrorDialogView::CloseDialog() {
-  controller_ = nullptr;
   GetWidget()->Close();
-}
-
-void LocalCardMigrationErrorDialogView::WindowClosing() {
   if (controller_) {
     controller_->OnDialogClosed();
     controller_ = nullptr;

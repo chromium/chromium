@@ -40,7 +40,6 @@ class LocalCardMigrationErrorDialogView
 
   // views::BubbleDialogDelegateView:
   void Init() override;
-  void WindowClosing() override;
 
  private:
   raw_ptr<LocalCardMigrationDialogController> controller_;

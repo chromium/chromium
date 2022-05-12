@@ -417,8 +417,11 @@ void LocalCardMigrationDialogView::ShowDialog(
 }
 
 void LocalCardMigrationDialogView::CloseDialog() {
-  controller_ = nullptr;
   GetWidget()->Close();
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
 }
 
 void LocalCardMigrationDialogView::OnDialogAccepted() {
