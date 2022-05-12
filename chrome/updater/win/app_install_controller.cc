@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <shldisp.h>
@@ -61,6 +62,8 @@
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
 #pragma clang diagnostic pop
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -453,7 +456,9 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // These functions are called on the main updater thread.
   void DoInstallApp();
-  void DoInstallAppOffline(const base::FilePath& offline_dir);
+  void DoInstallAppOffline(const base::FilePath& installer_path,
+                           const std::string& install_args,
+                           const std::string& install_data);
   void InstallComplete(UpdateService::Result result);
   void HandleInstallResult(const UpdateService::UpdateState& update_state);
 
@@ -577,12 +582,49 @@ void AppInstallControllerImpl::InstallAppOffline(
 
   ui_task_runner_->PostTaskAndReply(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::InitializeUI, this),
-      base::BindOnce(&AppInstallControllerImpl::DoInstallAppOffline, this,
-                     offline_dir));
+      base::BindOnce(
+          [](scoped_refptr<AppInstallControllerImpl> self,
+             const base::FilePath& offline_dir) {
+            base::ThreadPool::PostTaskAndReplyWithResult(
+                FROM_HERE, {base::MayBlock()},
+                base::BindOnce(
+                    [](const base::FilePath& offline_dir,
+                       const std::string& app_id) {
+                      // Parse the offline manifest to get the install command
+                      // and install data.
+                      base::FilePath installer_path;
+                      std::string install_args;
+                      std::string install_data;
+
+                      absl::optional<tagging::AppArgs> app_args =
+                          GetAppArgs(app_id);
+                      ReadInstallCommandFromManifest(
+                          offline_dir, app_id,
+                          app_args ? app_args->install_data_index
+                                   : std::string(),
+                          installer_path, install_args, install_data);
+                      return std::make_tuple(installer_path, install_args,
+                                             install_data);
+                    },
+                    offline_dir, self->app_id_),
+                base::BindOnce(
+                    [](scoped_refptr<AppInstallControllerImpl> self,
+                       const std::tuple<base::FilePath /*installer_path*/,
+                                        std::string /*arguments*/,
+                                        std::string /*install_data*/>& result) {
+                      self->DoInstallAppOffline(std::get<0>(result),
+                                                std::get<1>(result),
+                                                std::get<2>(result));
+                    },
+                    self));
+          },
+          base::WrapRefCounted(this), offline_dir));
 }
 
 void AppInstallControllerImpl::DoInstallAppOffline(
-    const base::FilePath& offline_dir) {
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const std::string& install_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // At this point, the UI has been initialized, which means the UI can be
   // used from now on as an observer of the application install. The task
@@ -594,16 +636,6 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   install_progress_observer_ipc_ =
       std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
 
-  // Parse the offline manifest to get the install command and install data.
-  base::FilePath installer_path;
-  std::string install_args;
-  std::string install_data;
-  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
-  ReadInstallCommandFromManifest(
-      offline_dir, app_id_,
-      app_args ? app_args->install_data_index : std::string(), installer_path,
-      install_args, install_data);
-
   // TODO(crbug.com/1286581, crbug.com/1286582): fine-tune installation
   // behavior by serializing other related command line options, such as
   // "/sessionid <sid>" and "/enterprise" into `install_settings`.
@@ -612,6 +644,8 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
+
+  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args)
     request.ap = app_args->ap;
   if (tag_args)

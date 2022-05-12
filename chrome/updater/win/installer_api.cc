@@ -354,6 +354,11 @@ AppInstallerResult RunApplicationInstaller(
        app_info.scope == UpdaterScope::kSystem ? L"1" : L"0"}};
 
   auto process = base::LaunchProcess(cmdline, options);
+  if (!process.IsValid()) {
+    return AppInstallerResult(
+        update_client::InstallError::LAUNCH_PROCESS_FAILED);
+  }
+
   int exit_code = -1;
   const auto time_begin = base::Time::NowFromSystemTime();
   do {

@@ -418,7 +418,15 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                        ? persisted_data_->GetExistenceCheckerPath(app_id)
                        : base::FilePath());
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  // Create a thread runner that:
+  //   1) has SequencedTaskRunnerHandle set, to run `state_update` callback.
+  //   2) may block, since `RunApplicationInstaller` blocks.
+  //   3) has `base::WithBaseSyncPrimitives()`, since `RunApplicationInstaller`
+  //      waits on process.
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const AppInfo& app_info, const base::FilePath& installer_path,
@@ -436,6 +444,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
                 base::BindRepeating(
                     [](StateChangeCallback state_update,
                        const std::string& app_id, int progress) {
+                      DVLOG(4) << "Install progress: " << progress;
                       UpdateState state;
                       state.app_id = app_id;
                       state.state = UpdateState::State::kInstalling;
@@ -446,7 +455,16 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
           },
           app_info, installer_path, install_args, install_data, state_update),
       base::BindOnce(
-          [](Callback callback, const InstallerResult& result) {
+          [](StateChangeCallback state_update, const std::string& app_id,
+             Callback callback, const InstallerResult& result) {
+            UpdateState state;
+            state.app_id = app_id;
+            state.state = result.error == 0 ? UpdateState::State::kUpdated
+                                            : UpdateState::State::kUpdateError;
+            state_update.Run(state);
+
+            VLOG(1) << app_id << " installation completed: " << result.error;
+
             // TODO(crbug.com/1286574): Perform post-install actions, such as
             // send pings.
 
@@ -455,7 +473,7 @@ void UpdateServiceImpl::RunInstaller(const std::string& app_id,
             std::move(callback).Run(result.error == 0 ? Result::kSuccess
                                                       : Result::kInstallFailed);
           },
-          std::move(callback)));
+          state_update, app_info.app_id, std::move(callback)));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(
