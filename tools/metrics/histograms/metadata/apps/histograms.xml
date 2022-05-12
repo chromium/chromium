@@ -749,6 +749,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.PersonalizationProvider.QueryTime" units="ms"
+    expires_after="2023-02-10">
+  <owner>cowmoo@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The latency of a search in the PersonalizationProvider. Recorded each time a
+    search is completed, even if it returns no results. Not recorded if the
+    query is too short to perform a search at all. Chrome OS only.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
     expires_after="2023-02-14">
   <owner>amandadeacon@chromium.org</owner>
