@@ -455,6 +455,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.AutofillAssistant.ServiceRequestSender.FailureRetryCount"
+    units="count" expires_after="2023-05-11">
+  <owner>sandromaggi@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Reports the number of request retries until a final failure, leading to
+    aborting the retries - either by running out of allowed retry attempts or
+    meeting an error that's not retried. This is only recorded for requests that
+    attempt a retry. Requests are retried if they fail from a network change,
+    host name resolution error or 5xx. Errors like 4xx are not retried.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount"
+    units="count" expires_after="2023-05-11">
+  <owner>sandromaggi@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Reports the number of request retries until a final success. This is only
+    recorded for requests that attempt a retry. Requests are retried if they
+    fail from a network change, host name resolution error or 5xx. Errors like
+    4xx are not retried.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.TextToSpeech.ButtonAction"
     enum="AutofillAssistantTextToSpeechButtonAction" expires_after="2022-06-08">
   <owner>jainshashank@google.com</owner>

@@ -47,6 +47,10 @@ const char kDependenciesInvalidated[] =
     "Android.AutofillAssistant.DependenciesInvalidated";
 const char kOnboardingFetcherResultStatus[] =
     "Android.AutofillAssistant.OnboardingFetcher.ResultStatus";
+const char kServiceRequestSuccessRetryCount[] =
+    "Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount";
+const char kServiceRequestFailureRetryCount[] =
+    "Android.AutofillAssistant.ServiceRequestSender.FailureRetryCount";
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
@@ -559,6 +563,15 @@ void Metrics::RecordOnboardingFetcherResult(
     OnboardingFetcherResultStatus status) {
   DCHECK_LE(status, OnboardingFetcherResultStatus::kMaxValue);
   base::UmaHistogramEnumeration(kOnboardingFetcherResultStatus, status);
+}
+
+// static
+void Metrics::RecordServiceRequestRetryCount(int count, bool success) {
+  DCHECK_GE(count, 0);
+  base::UmaHistogramExactLinear(success ? kServiceRequestSuccessRetryCount
+                                        : kServiceRequestFailureRetryCount,
+                                /* sample= */ count,
+                                /* exclusive_max= */ 11);
 }
 
 std::ostream& operator<<(std::ostream& out,

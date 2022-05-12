@@ -49,6 +49,7 @@ constexpr int kMaxRetriesGetUserData = 2;
 void OnURLLoaderComplete(
     autofill_assistant::ServiceRequestSender::ResponseCallback callback,
     std::unique_ptr<::network::SimpleURLLoader> loader,
+    int max_retries,
     std::unique_ptr<std::string> response_body) {
   std::string response_str;
   if (response_body != nullptr) {
@@ -66,6 +67,10 @@ void OnURLLoaderComplete(
   }
   VLOG(3) << "Received response: status=" << response_code << ", "
           << response_str.length() << " bytes";
+  if (max_retries > 0) {
+    autofill_assistant::Metrics::RecordServiceRequestRetryCount(
+        loader->GetNumRetries(), response_code == net::HTTP_OK);
+  }
   std::move(callback).Run(response_code, response_str, response_info);
 }
 
@@ -103,7 +108,7 @@ void SendRequestImpl(
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       base::BindOnce(&OnURLLoaderComplete, std::move(callback),
-                     std::move(loader)));
+                     std::move(loader), max_retries));
 }
 
 void SendRequestNoAuth(

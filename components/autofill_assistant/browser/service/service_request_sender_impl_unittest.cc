@@ -697,6 +697,80 @@ TEST_F(ServiceRequestSenderImplTest,
       autofill_assistant::RpcType::GET_ACTIONS);
 }
 
+TEST_F(ServiceRequestSenderImplTest, TestRetryLoggingForGetUserData) {
+  base::HistogramTester histogram_tester;
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto* loader_ptr = loader.get();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader_ptr, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader_ptr, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader_ptr, GetNumRetries).WillOnce(Return(1));
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(true, "access_token"));
+  EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
+
+  ServiceRequestSenderImpl request_sender{
+      &context_, &mock_access_token_fetcher_, /* cup_factory= */ nullptr,
+      std::move(loader_factory),
+      /* api_key= */ std::string()};
+  request_sender.SendRequest(GURL("https://www.example.com"),
+                             std::string("request"),
+                             ServiceRequestSender::AuthMode::OAUTH_STRICT,
+                             mock_response_callback_.Get(),
+                             autofill_assistant::RpcType::GET_USER_DATA);
+
+  histogram_tester.ExpectBucketCount(
+      "Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount", 1, 1);
+}
+
+TEST_F(ServiceRequestSenderImplTest, TestNoRetryLoggingForSupportsScripts) {
+  base::HistogramTester histogram_tester;
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto* loader_ptr = loader.get();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader_ptr, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader_ptr, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(*loader_ptr, GetNumRetries).Times(0);
+  EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
+      .WillOnce(RunOnceCallback<0>(true, "access_token"));
+  EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
+
+  ServiceRequestSenderImpl request_sender{
+      &context_, &mock_access_token_fetcher_, /* cup_factory= */ nullptr,
+      std::move(loader_factory),
+      /* api_key= */ std::string()};
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK,
+      mock_response_callback_.Get(),
+      autofill_assistant::RpcType::SUPPORTS_SCRIPT);
+
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.ServiceRequestSender.FailureRetryCount", 0);
+}
+
 // TODO(b/170934170): Add tests for full unit test coverage of
 // service_request_sender.
 

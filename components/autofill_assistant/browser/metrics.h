@@ -793,6 +793,7 @@ class Metrics {
   static void RecordOnboardingFetcherResult(
       OnboardingFetcherResultStatus status);
   static void RecordCupRpcVerificationEvent(CupRpcVerificationEvent event);
+  static void RecordServiceRequestRetryCount(int count, bool success);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
