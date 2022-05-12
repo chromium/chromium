@@ -109,6 +109,10 @@ TEST(WifiNetworkConfigurationHandlerTest, Success) {
   EXPECT_EQ(kTestSsid, fake_cros_network_config.last_properties()
                            ->type_config->get_wifi()
                            ->ssid);
+  EXPECT_EQ(chromeos::network_config::mojom::HiddenSsidMode::kDisabled,
+            fake_cros_network_config.last_properties()
+                ->type_config->get_wifi()
+                ->hidden_ssid);
   EXPECT_EQ(1u, fake_cros_network_config.num_configure_network_calls());
 }
 

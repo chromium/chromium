@@ -4000,6 +4000,12 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
         return false;
       }
 
+      if (credentials_proto.has_hidden_ssid() &&
+          credentials_proto.hidden_ssid()) {
+        NS_LOG(WARNING) << __func__ << ": Network is hidden";
+        return false;
+      }
+
       std::string wifi_password(credentials_proto.password());
       wifi_credentials.set_wifi_password(wifi_password);
 

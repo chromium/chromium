@@ -44,7 +44,7 @@ void WifiNetworkConfigurationHandler::ConfigureWifiNetwork(
       wifi_credentials_attachment.security_type());
   wifi->ssid = wifi_credentials_attachment.ssid();
   wifi->hidden_ssid =
-      chromeos::network_config::mojom::HiddenSsidMode::kAutomatic;
+      chromeos::network_config::mojom::HiddenSsidMode::kDisabled;
 
   auto config = chromeos::network_config::mojom::ConfigProperties::New();
   config->type_config =

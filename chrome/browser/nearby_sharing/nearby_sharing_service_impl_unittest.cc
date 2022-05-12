@@ -3371,6 +3371,21 @@ TEST_P(NearbySharingServiceImplTest,
        AcceptValidShareTarget_WifiProtoPasswordEmpty) {
   sharing::nearby::WifiCredentials credentials_proto;
   credentials_proto.set_password("");
+  credentials_proto.set_hidden_ssid(false);
+  const std::string& proto_string = credentials_proto.SerializeAsString();
+
+  ReceiveBadWifiPayload(location::nearby::connections::mojom::Payload::New(
+      kWifiCredentialsPayloadId,
+      location::nearby::connections::mojom::PayloadContent::NewBytes(
+          location::nearby::connections::mojom::BytesPayload::New(
+              std::vector<uint8_t>(proto_string.begin(),
+                                   proto_string.end())))));
+}
+
+TEST_P(NearbySharingServiceImplTest, AcceptValidShareTarget_HiddenNetwork) {
+  sharing::nearby::WifiCredentials credentials_proto;
+  credentials_proto.set_password(kWifiPassword);
+  credentials_proto.set_hidden_ssid(true);
   const std::string& proto_string = credentials_proto.SerializeAsString();
 
   ReceiveBadWifiPayload(location::nearby::connections::mojom::Payload::New(
