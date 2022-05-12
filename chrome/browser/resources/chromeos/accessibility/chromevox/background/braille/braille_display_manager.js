@@ -239,7 +239,8 @@ export class BrailleDisplayManager {
       processDisplayState(newState);
       localStorage['menuBrailleCommands'] = true;
     } else {
-      BrailleCaptionsBackground.getVirtualDisplayState(processDisplayState);
+      BrailleCaptionsBackground.getVirtualDisplayState().then(
+          processDisplayState);
       localStorage['menuBrailleCommands'] = false;
     }
   }
