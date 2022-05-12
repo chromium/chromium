@@ -341,7 +341,7 @@ suite('WallpaperCollectionsTest', function() {
   });
 
   test(
-      'sends the first three local images that successfully load thumbnails',
+      'sends the first four local images that successfully load thumbnails',
       async () => {
         // Set up store data. Local image list is loaded, but thumbnails are
         // still loading in.
@@ -381,20 +381,22 @@ suite('WallpaperCollectionsTest', function() {
         // loading.
         assertFalse(wallpaperCollectionsElement['didSendLocalImageData_']);
 
-        // Second thumbnail fails loading. Third succeeds.
+        // Second thumbnail fails loading. Third and fourth succeed.
         personalizationStore.data.wallpaper.loading.local.data = {
           ...personalizationStore.data.wallpaper.loading.local.data,
           'LocalImage1.png': false,
           'LocalImage2.png': false,
+          'LocalImage3.png': false,
         };
         personalizationStore.data.wallpaper.local.data = {
           ...personalizationStore.data.wallpaper.local.data,
           'LocalImage1.png': '',
           'LocalImage2.png': 'local_data_2',
+          'LocalImage3.png': 'local_data_3',
         };
         personalizationStore.notifyObservers();
 
-        // 2 thumbnails have now loaded. 1 failed. But there are no more
+        // 3 thumbnails have now loaded. 1 failed. But there are no more
         // remaining to try loading, should send local image data anyway.
         const [_, sentData] =
             await testProxy.whenCalled('sendLocalImageData') as
@@ -406,6 +408,7 @@ suite('WallpaperCollectionsTest', function() {
               'LocalImage0.png': 'local_data_0',
               'LocalImage1.png': '',
               'LocalImage2.png': 'local_data_2',
+              'LocalImage3.png': 'local_data_3',
             },
             sentData);
       });

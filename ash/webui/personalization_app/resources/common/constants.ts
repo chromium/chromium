@@ -21,7 +21,7 @@ export type DisplayableImage =
 
 export const trustedOrigin = 'chrome://personalization';
 
-export const kMaximumLocalImagePreviews = 3;
+export const kMaximumLocalImagePreviews = 4;
 
 export enum EventType {
   SEND_COLLECTIONS = 'send_collections',
