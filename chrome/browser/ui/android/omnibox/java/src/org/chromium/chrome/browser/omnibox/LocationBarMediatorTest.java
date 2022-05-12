@@ -366,8 +366,7 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
     }
 
-    @Test
-    public void testLoadUrl() {
+    public void testLoadUrl_base() {
         mMediator.onFinishNativeInitialization();
 
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
@@ -377,6 +376,18 @@ public class LocationBarMediatorTest {
         assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.POST_TASK_FOCUS_TAB})
+    public void testLoadUrlNoPostTaskFocusTab() {
+        testLoadUrl_base();
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.POST_TASK_FOCUS_TAB})
+    public void testLoadUrlPostTaskFocusTab() {
+        testLoadUrl_base();
     }
 
     @Test
@@ -473,8 +484,7 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).setKeyboardVisibility(true, false);
     }
 
-    @Test
-    public void testPerformSearchQuery() {
+    private void testPerformSearchQuery_base() {
         mMediator.onFinishNativeInitialization();
         String query = "example search";
         List<String> params = Arrays.asList("param 1", "param 2");
@@ -488,6 +498,18 @@ public class LocationBarMediatorTest {
         assertEquals("http://www.search.com", mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(PageTransition.GENERATED | PageTransition.FROM_ADDRESS_BAR,
                 mLoadUrlParamsCaptor.getValue().getTransitionType());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.POST_TASK_FOCUS_TAB})
+    public void testPerformSearchQueryNoPostTaskFocusTab() {
+        testPerformSearchQuery_base();
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.POST_TASK_FOCUS_TAB})
+    public void testPerformSearchQueryPostTaskFocusTab() {
+        testPerformSearchQuery_base();
     }
 
     @Test

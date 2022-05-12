@@ -5934,6 +5934,21 @@
             ]
         }
     ],
+    "PostTaskFocusTab": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PostTaskFocusTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "PotassiumV3": [
         {
             "platforms": [

@@ -41,7 +41,7 @@ CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() =
     default;
 
 SearchPrefetchURLLoader::RequestHandler
-CacheAliasSearchPrefetchURLLoader::ServingResponseHandler(
+CacheAliasSearchPrefetchURLLoader::ServingResponseHandlerImpl(
     std::unique_ptr<SearchPrefetchURLLoader> loader) {
   return base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient,
@@ -235,6 +235,7 @@ void CacheAliasSearchPrefetchURLLoader::OnComplete(
   DCHECK(forwarding_client_);
   can_fallback_ = false;
   forwarding_client_->OnComplete(status);
+  OnForwardingComplete();
   network_url_loader_.reset();
 }
 

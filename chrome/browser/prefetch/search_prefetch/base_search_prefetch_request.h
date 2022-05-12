@@ -125,6 +125,9 @@ class BaseSearchPrefetchRequest {
 
   // Called when there is a network/server error on the prefetch request.
   base::OnceCallback<void(bool)> report_error_callback_;
+
+  // The time at which the prefetched URL was clicked in the Omnibox.
+  base::TimeTicks time_clicked_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_BASE_SEARCH_PREFETCH_REQUEST_H_

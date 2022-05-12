@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -29,8 +30,17 @@ class SearchPrefetchURLLoader {
   // returned |RequestHandler| to allow |this| to be owned by the callback.
   // This allows ownership until the callback is run, which then should have
   // ownership owned via a mojo connection.
-  virtual RequestHandler ServingResponseHandler(
+  RequestHandler ServingResponseHandler(
+      std::unique_ptr<SearchPrefetchURLLoader> loader);
+
+ protected:
+  virtual RequestHandler ServingResponseHandlerImpl(
       std::unique_ptr<SearchPrefetchURLLoader> loader) = 0;
+
+  void OnForwardingComplete();
+
+ private:
+  base::TimeTicks interception_time_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_URL_LOADER_H_

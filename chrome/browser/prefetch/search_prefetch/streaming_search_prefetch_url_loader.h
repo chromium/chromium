@@ -73,7 +73,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   void OnDataComplete() override;
 
   // SearchPrefetchURLLoader:
-  SearchPrefetchURLLoader::RequestHandler ServingResponseHandler(
+  SearchPrefetchURLLoader::RequestHandler ServingResponseHandlerImpl(
       std::unique_ptr<SearchPrefetchURLLoader> loader) override;
 
   // network::mojom::URLLoader:

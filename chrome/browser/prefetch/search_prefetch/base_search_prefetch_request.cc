@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
@@ -315,10 +316,13 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
+  time_clicked_ = base::TimeTicks::Now();
 }
 
 void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
          current_status_ == SearchPrefetchStatus::kComplete);
   current_status_ = SearchPrefetchStatus::kServed;
+  UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.ClickToNavigationIntercepted",
+                      base::TimeTicks::Now() - time_clicked_);
 }

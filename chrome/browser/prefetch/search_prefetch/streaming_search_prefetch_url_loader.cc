@@ -105,7 +105,7 @@ void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
 }
 
 SearchPrefetchURLLoader::RequestHandler
-StreamingSearchPrefetchURLLoader::ServingResponseHandler(
+StreamingSearchPrefetchURLLoader::ServingResponseHandlerImpl(
     std::unique_ptr<SearchPrefetchURLLoader> loader) {
   DCHECK(!streaming_prefetch_request_);
   DCHECK(!forwarding_client_);
@@ -419,6 +419,7 @@ void StreamingSearchPrefetchURLLoader::Finish() {
   producer_handle_.reset();
   if (status_) {
     forwarding_client_->OnComplete(status_.value());
+    OnForwardingComplete();
   }
 }
 
@@ -428,6 +429,7 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
   if (forwarding_client_ && (!serving_from_data_ || is_in_fallback_)) {
     DCHECK(!streaming_prefetch_request_);
     forwarding_client_->OnComplete(status);
+    OnForwardingComplete();
     return;
   }
 

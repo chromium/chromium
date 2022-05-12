@@ -934,6 +934,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchPrefetch.ClickToNavigationIntercepted"
+    units="ms" expires_after="2023-05-02">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. Whether a search prefetch request
+    finished with a success status or a status that could be served. Measures
+    the time between the user clicks the Omnibox suggestion and the moment the
+    navigation is intercepted by the Search Prefetch code.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch"
     enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>ryansturm@chromium.org</owner>
@@ -953,6 +975,32 @@ chromium-metrics-reviews@google.com.
     when prefetch requests receive headers. Recorded for omnibox search
     prefetches that are started when an omnibox suggestion from the suggestion
     server recommends a prefetch of a suggestion results page.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete"
+    units="ms" expires_after="2023-05-02">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Search Prefetch issues results page requests in response to either the
+    suggestion server or the Omnibox client being confident that the user will
+    navigate to a specific search suggestion. These requests are then served
+    instantly to the user when the user navigates to a search suggestion with
+    the same search terms. These requests can have mismatching query params as
+    the Omnibox client updates the search navigation URL as the user types more
+    into the Omnibox. The suggestion server issues prefetch hints along with the
+    suggestion request. Additionally, the Omnibox client decides to prefetch
+    when the user has chosen (or likely chosen) a search suggestion to initiate
+    the search suggestion navigation earlier. Whether a search prefetch request
+    finished with a success status or a status that could be served. Measure the
+    time between the navigation is intercepted by the Search Prefetch code and
+    the moment the Search Prefetch URL loader has finished forwarding the whole
+    response to the navigation URL loader. This time includes finishing fetching
+    the Search response and any queuing delays in the UI thread preventing the
+    Search Prefetch URL loader from forwarding bytes to the navigation code.
   </summary>
 </histogram>
 
