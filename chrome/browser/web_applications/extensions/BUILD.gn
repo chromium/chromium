@@ -46,7 +46,6 @@ source_set("unit_tests") {
 
   sources = [
     "bookmark_app_util_unittest.cc",
-    "externally_installed_web_app_prefs_unittest.cc",
     "externally_managed_app_install_task_unittest.cc",
     "web_app_policy_manager_unittest.cc",
     "web_app_provider_unittest.cc",

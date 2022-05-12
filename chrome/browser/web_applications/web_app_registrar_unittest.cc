@@ -1145,4 +1145,26 @@ TEST_F(WebAppRegistrarTest, IsRegisteredLaunchProtocol) {
   EXPECT_FALSE(registrar().IsRegisteredLaunchProtocol(app_id, "mailto"));
 }
 
+TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
+  controller().Init();
+
+  auto web_app1 =
+      test::CreateWebApp(GURL("https://start.com"), WebAppManagement::kDefault);
+  auto web_app2 = test::CreateWebApp(GURL("https://starter.com"),
+                                     WebAppManagement::kPolicy);
+  const AppId app_id1 = web_app1->app_id();
+  const AppId app_id2 = web_app2->app_id();
+  RegisterApp(std::move(web_app1));
+  RegisterApp(std::move(web_app2));
+
+  // Currently default installed.
+  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id1));
+  // Currently installed by source other than installed.
+  EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id2));
+
+  // Uninstalling the previously default installed app.
+  UnregisterApp(app_id1);
+  EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
+}
+
 }  // namespace web_app

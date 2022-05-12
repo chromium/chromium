@@ -8,7 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -283,6 +286,10 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
   ExternallyInstalledWebAppPrefs::ParsedPrefs pref_to_app_data =
       ParseExternalPrefsToWebAppData(pref_service);
 
+  // First migrate data to UserUninstalledPreinstalledWebAppPrefs.
+  MigrateExternalPrefDataToPreinstalledPrefs(
+      pref_service, &sync_bridge->registrar(), pref_to_app_data);
+
   ScopedRegistryUpdate update(sync_bridge);
   for (auto it : pref_to_app_data) {
     WebApp* web_app = update->UpdateApp(it.first);
@@ -303,6 +310,52 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
       }
     }
   }
+}
+
+// static
+void ExternallyInstalledWebAppPrefs::MigrateExternalPrefDataToPreinstalledPrefs(
+    PrefService* pref_service,
+    const WebAppRegistrar* registrar,
+    const ExternallyInstalledWebAppPrefs::ParsedPrefs& parsed_data) {
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  for (auto pair : parsed_data) {
+    const AppId& app_id = pair.first;
+    const auto& source_to_config_map = pair.second;
+    const auto& it = source_to_config_map.find(WebAppManagement::kDefault);
+    // Migration will happen in the following cases:
+    // 1. If app_id exists in the external prefs that had source as
+    // kDefault but the app is no longer installed in the registry or if it
+    // is no longer preinstalled, that means
+    // it was preinstalled and then uninstalled by user.
+    if (!registrar->IsInstalledByDefaultManagement(app_id) &&
+        it != source_to_config_map.end()) {
+      preinstalled_prefs.Add(app_id, it->second.install_urls);
+    }
+    // 2. If the value corresponding to the app_id in
+    // web_app::kWasExternalAppUninstalledByUser is true, then it was previously
+    // a preinstalled app that was user uninstalled. In this case, we migrate
+    // ALL install URLs for that corresponding app_id, because a preinstalled
+    // app could have been installed as an app with a different source now.
+    if (GetBoolWebAppPref(pref_service, app_id,
+                          kWasExternalAppUninstalledByUser)) {
+      preinstalled_prefs.Add(app_id, MergeAllUrls(source_to_config_map));
+    }
+  }
+}
+
+// static
+base::flat_set<GURL> ExternallyInstalledWebAppPrefs::MergeAllUrls(
+    const base::flat_map<WebAppManagement::Type,
+                         WebApp::ExternalManagementConfig>& source_config_map) {
+  std::vector<GURL> urls;
+  for (auto it : source_config_map) {
+    for (const GURL& url : it.second.install_urls) {
+      DCHECK(url.is_valid());
+      urls.push_back(url);
+    }
+  }
+
+  return urls;
 }
 
 }  // namespace web_app

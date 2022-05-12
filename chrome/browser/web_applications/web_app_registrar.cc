@@ -479,6 +479,16 @@ bool WebAppRegistrar::IsIsolated(const AppId& app_id) const {
   return web_app ? web_app->IsStorageIsolated() : false;
 }
 
+bool WebAppRegistrar::IsInstalledByDefaultManagement(
+    const AppId& app_id) const {
+  if (!IsInstalled(app_id))
+    return false;
+
+  const WebApp* web_app = GetAppById(app_id);
+  DCHECK(web_app);
+  return web_app->GetSources().test(WebAppManagement::kDefault);
+}
+
 bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->HasOnlySource(WebAppManagement::Type::kDefault);

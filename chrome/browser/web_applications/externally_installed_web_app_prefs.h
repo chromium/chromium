@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -86,6 +87,16 @@ class ExternallyInstalledWebAppPrefs {
                                       WebAppSyncBridge* sync_bridge);
 
  private:
+  // Used to migrate information regarding user uninstalled preinstalled apps
+  // to UserUninstalledPreinstalledWebAppPrefs.
+  static void MigrateExternalPrefDataToPreinstalledPrefs(
+      PrefService* pref_service,
+      const WebAppRegistrar* registrar,
+      const ParsedPrefs& parsed_data);
+  static base::flat_set<GURL> MergeAllUrls(
+      const base::flat_map<WebAppManagement::Type,
+                           WebApp::ExternalManagementConfig>&
+          source_config_map);
   const raw_ptr<PrefService> pref_service_;
 };
 

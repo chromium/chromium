@@ -1038,6 +1038,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
       GURL("https://example.com/path"), WebAppManagement::kSync);
   default_and_user_app->AddSource(WebAppManagement::kDefault);
   default_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  default_and_user_app->AddInstallURLToManagementExternalConfigMap(
+      WebAppManagement::kDefault, GURL("https://example.com/path"));
 
   const AppId app_id = default_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/default");
@@ -1077,6 +1079,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       GURL("https://example.com/path"), WebAppManagement::kSync);
   default_and_user_app->AddSource(WebAppManagement::kDefault);
   default_and_user_app->SetUserDisplayMode(UserDisplayMode::kStandalone);
+  default_and_user_app->AddInstallURLToManagementExternalConfigMap(
+      WebAppManagement::kDefault, GURL("https://example.com/path"));
 
   const AppId app_id = default_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/default");

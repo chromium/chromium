@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -275,6 +276,12 @@ void WebAppInstallFinalizer::UninstallWebApp(
   if (app->IsPreinstalledApp()) {
     UpdateBoolWebAppPref(profile_->GetPrefs(), app_id,
                          kWasExternalAppUninstalledByUser, true);
+    // Update the default uninstalled web_app prefs if it is a preinstalled app
+    // but being removed by user.
+    UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
+        .Add(app_id, app->management_to_external_config_map()
+                         .at(WebAppManagement::kDefault)
+                         .install_urls);
   }
 
   // UninstallWebApp can wipe out an app with multiple sources. This

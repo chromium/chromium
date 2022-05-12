@@ -105,4 +105,16 @@ void UserUninstalledPreinstalledWebAppPrefs::AppendExistingInstallUrlsPerAppId(
   }
 }
 
+int UserUninstalledPreinstalledWebAppPrefs::Size() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const base::Value* ids_to_urls = pref_service_->GetDictionary(
+      prefs::kUserUninstalledPreinstalledWebAppPref);
+
+  if (!ids_to_urls)
+    return 0;
+
+  const base::Value::Dict* pref_info = ids_to_urls->GetIfDict();
+  return pref_info->size();
+}
+
 }  // namespace web_app

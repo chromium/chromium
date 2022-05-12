@@ -103,6 +103,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   blink::ParsedPermissionsPolicy GetPermissionsPolicy(
       const AppId& app_id) const;
 
+  // Returns true if there exists a currently installed app that has been
+  // installed by PreinstalledWebAppManager.
+  bool IsInstalledByDefaultManagement(const AppId& app_id) const;
+
   // Returns true if the app was preinstalled and NOT installed via any other
   // mechanism.
   bool WasInstalledByDefaultOnly(const AppId& app_id) const;

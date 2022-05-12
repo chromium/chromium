@@ -56,6 +56,7 @@ class UserUninstalledPreinstalledWebAppPrefs {
   bool DoesAppIdExist(const AppId& app_id);
   void AppendExistingInstallUrlsPerAppId(const AppId& app_id,
                                          base::flat_set<GURL>& urls);
+  int Size();
 
  private:
   const raw_ptr<PrefService> pref_service_;
