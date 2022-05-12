@@ -92,6 +92,11 @@ try_.builder(
 try_.builder(
     name = "dawn-win10-x86-deps-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/Dawn Win10 x86 DEPS Builder",
+        "ci/Dawn Win10 x86 DEPS Release (Intel HD 630)",
+        "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
+    ],
     main_list_view = "try",
     os = os.WINDOWS_ANY,
     tryjob = try_.job(
