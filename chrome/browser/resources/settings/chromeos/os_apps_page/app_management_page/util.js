@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Route, Router} from '../../../router.js';
+import {Router} from '../../../router.js';
 import {routes} from '../../os_route.js';
 
 /**

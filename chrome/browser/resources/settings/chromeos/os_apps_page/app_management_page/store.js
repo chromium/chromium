@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {Store} from 'chrome://resources/js/cr/ui/store.js';
 
 import {reduceAction} from './reducers.js';
@@ -18,6 +17,17 @@ export class AppManagementStore extends Store {
   constructor() {
     super(createEmptyState(), reduceAction);
   }
+
+  /** @return {!AppManagementStore} */
+  static getInstance() {
+    return instance || (instance = new AppManagementStore());
+  }
+
+  /** @param {!AppManagementStore} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(AppManagementStore);
+/** @type {?AppManagementStore} */
+let instance = null;

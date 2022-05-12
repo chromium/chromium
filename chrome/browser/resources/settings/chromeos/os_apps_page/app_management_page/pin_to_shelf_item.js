@@ -4,47 +4,57 @@
 import '//resources/cr_components/app_management/toggle_row.js';
 
 import {AppManagementUserAction, OptionalBool} from '//resources/cr_components/app_management/constants.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.m.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-pin-to-shelf-item',
+/** @polymer */
+class AppManagementPinToShelfItemElement extends PolymerElement {
+  static get is() {
+    return 'app-management-pin-to-shelf-item';
+  }
 
-  properties: {
-    /**
-     * @type {App}
-     */
-    app: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {boolean}
-     */
-    hidden: {
-      type: Boolean,
-      computed: 'isAvailable_(app)',
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {App}
+       */
+      app: Object,
 
-    /**
-     * @type {boolean}
-     */
-    disabled: {
-      type: Boolean,
-      computed: 'isManaged_(app)',
-      reflectToAttribute: true,
-    },
-  },
+      /**
+       * @type {boolean}
+       */
+      hidden: {
+        type: Boolean,
+        computed: 'isAvailable_(app)',
+        reflectToAttribute: true,
+      },
 
-  listeners: {
-    click: 'onClick_',
-    change: 'toggleSetting_',
-  },
+      /**
+       * @type {boolean}
+       */
+      disabled: {
+        type: Boolean,
+        computed: 'isManaged_(app)',
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+    this.addEventListener('change', this.toggleSetting_);
+  }
 
   /**
    * @param {App} app
@@ -57,7 +67,7 @@ Polymer({
     }
     assert(app);
     return app.isPinned === OptionalBool.kTrue;
-  },
+  }
 
   /**
    * @param {App} app
@@ -69,7 +79,7 @@ Polymer({
     }
     assert(app);
     return app.hidePinToShelf;
-  },
+  }
 
   /**
    * @param {App} app
@@ -82,8 +92,9 @@ Polymer({
     }
     assert(app);
     return app.isPolicyPinned === OptionalBool.kTrue;
-  },
+  }
 
+  /** @private */
   toggleSetting_() {
     const newState = assert(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
@@ -100,12 +111,15 @@ Polymer({
         AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
         AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
-  },
+  }
 
   /**
    * @private
    */
   onClick_() {
     this.$['toggle-row'].click();
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementPinToShelfItemElement.is, AppManagementPinToShelfItemElement);

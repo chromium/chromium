@@ -231,6 +231,7 @@ js_library("supported_links_overlapping_apps_dialog") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list = [ "./types.js" ]
 }
 
 js_library("supported_links_dialog") {

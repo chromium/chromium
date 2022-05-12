@@ -9,4 +9,13 @@ export class TestAppManagementStore extends TestStore {
   constructor(data) {
     super(data, AppManagementStore, createEmptyState(), reduceAction);
   }
+
+  /**
+   * Replaces the global store instance with this TestStore. Overrides the
+   * default implementation by using the setInstance() static method
+   * @override
+   */
+  replaceSingleton() {
+    AppManagementStore.setInstance(this);
+  }
 }

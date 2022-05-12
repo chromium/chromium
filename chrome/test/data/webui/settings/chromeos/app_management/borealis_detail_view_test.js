@@ -103,8 +103,9 @@ suite('<app-management-borealis-detail-view>', function() {
   });
 
   test('Permission info links are correct', async function() {
-    assertTrue(!!borealisDetailView.$$('#main-link'));
-    assertFalse(!!borealisDetailView.$$('#borealis-link'));
+    assertTrue(!!borealisDetailView.shadowRoot.querySelector('#main-link'));
+    assertFalse(
+        !!borealisDetailView.shadowRoot.querySelector('#borealis-link'));
 
     // Add borealis (non main) app. Note that any tests after this will
     // have the borealis app selected as default.
@@ -114,11 +115,11 @@ suite('<app-management-borealis-detail-view>', function() {
     const app = await fakeHandler.addApp('foo', options);
     AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
     await fakeHandler.flushPipesForTesting();
-    assertFalse(!!borealisDetailView.$$('#main-link'));
-    assertTrue(!!borealisDetailView.$$('#borealis-link'));
+    assertFalse(!!borealisDetailView.shadowRoot.querySelector('#main-link'));
+    assertTrue(!!borealisDetailView.shadowRoot.querySelector('#borealis-link'));
 
     // Check that link directs to main app page.
-    const link = borealisDetailView.$$('#borealis-link');
+    const link = borealisDetailView.shadowRoot.querySelector('#borealis-link');
     const anchorTag = link.shadowRoot.querySelector('a');
     assertTrue(!!anchorTag);
     const localizedLinkPromise = eventToPromise('link-clicked', link);

@@ -12,79 +12,97 @@ import '../../../settings_shared_css.js';
 
 import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from '//resources/cr_components/app_management/util.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from '//resources/js/assert.m.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.js';
-import {RouteObserverBehavior} from '../../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 
 import {updateSelectedAppId} from './actions.js';
-import {AppManagementStoreClient} from './store_client.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 import {openMainPage} from './util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-app-detail-view',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const AppManagementAppDetailViewElementBase = mixinBehaviors(
+    [AppManagementStoreClient, RouteObserverBehavior], PolymerElement);
 
-  behaviors: [
-    AppManagementStoreClient,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class AppManagementAppDetailViewElement extends
+    AppManagementAppDetailViewElementBase {
+  static get is() {
+    return 'app-management-app-detail-view';
+  }
 
-  properties: {
-    /**
-     * @type {App}
-     * @private
-     */
-    app_: {
-      type: Object,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {AppMap}
-     * @private
-     */
-    apps_: {
-      type: Object,
-      observer: 'appsChanged_',
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {App}
+       * @private
+       */
+      app_: {
+        type: Object,
+      },
 
-    /**
-     * @type {string}
-     * @private
-     */
-    selectedAppId_: {
-      type: String,
-      observer: 'selectedAppIdChanged_',
-    },
-  },
+      /**
+       * @type {AppMap}
+       * @private
+       */
+      apps_: {
+        type: Object,
+        observer: 'appsChanged_',
+      },
 
-  attached() {
+      /**
+       * @type {string}
+       * @private
+       */
+      selectedAppId_: {
+        type: String,
+        observer: 'selectedAppIdChanged_',
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     this.watch('app_', state => getSelectedApp(state));
     this.watch('apps_', state => state.apps);
     this.watch('selectedAppId_', state => state.selectedAppId);
     this.updateFromStore();
-  },
+  }
 
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     this.dispatch(updateSelectedAppId(null));
-  },
+  }
 
   /**
    * Updates selected app ID based on the URL query params.
    *
    * RouteObserverBehavior
    * @param {!Route} currentRoute
+   * @param {!Route=} prevRoute
    * @protected
    */
-  currentRouteChanged(currentRoute) {
+  currentRouteChanged(currentRoute, prevRoute) {
     if (currentRoute !== routes.APP_MANAGEMENT_DETAIL) {
       return;
     }
 
     if (this.selectedAppNotFound_()) {
-      this.async(() => {
+      microTask.run(() => {
         openMainPage();
       });
       return;
@@ -93,7 +111,7 @@ Polymer({
     const appId = Router.getInstance().getQueryParameters().get('id');
 
     this.dispatch(updateSelectedAppId(appId));
-  },
+  }
 
   /**
    * @param {?App} app
@@ -124,27 +142,26 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
+  /** @private */
   selectedAppIdChanged_(appId) {
     if (appId && this.app_) {
       recordAppManagementUserAction(
           this.app_.type, AppManagementUserAction.VIEW_OPENED);
     }
-  },
+  }
 
-  /**
-   * @private
-   */
+  /** @private */
   appsChanged_() {
     if (Router.getInstance().getCurrentRoute() ===
             routes.APP_MANAGEMENT_DETAIL &&
         this.selectedAppNotFound_()) {
-      this.async(() => {
+      microTask.run(() => {
         openMainPage();
       });
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -154,5 +171,8 @@ Polymer({
     const appId = /** @type {string} */ (
         Router.getInstance().getQueryParameters().get('id'));
     return this.apps_ && !this.apps_[appId];
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementAppDetailViewElement.is, AppManagementAppDetailViewElement);

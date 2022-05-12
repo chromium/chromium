@@ -23,7 +23,8 @@ suite('<app-management-main-view>', function() {
   }
 
   function getAppItems() {
-    return mainView.$$('#app-list').querySelectorAll('app-management-app-item');
+    return mainView.shadowRoot.querySelector('#app-list')
+        .querySelectorAll('app-management-app-item');
   }
 
   setup(function() {

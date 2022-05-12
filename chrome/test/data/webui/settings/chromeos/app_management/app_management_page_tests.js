@@ -15,7 +15,9 @@ suite('AppManagementPageTests', () => {
 
   /** @return {Element} */
   function getAppList() {
-    return appManagementPage.$$('app-management-main-view').$['app-list'];
+    return appManagementPage.shadowRoot
+        .querySelector('app-management-main-view')
+        .$['app-list'];
   }
 
   /** @return {number} */
@@ -26,8 +28,9 @@ suite('AppManagementPageTests', () => {
 
   /** @return {Element} */
   function getNoAppsFoundLabel() {
-    return appManagementPage.$$('app-management-main-view')
-        .$$('#no-apps-label');
+    return appManagementPage.shadowRoot
+        .querySelector('app-management-main-view')
+        .shadowRoot.querySelector('#no-apps-label');
   }
 
   setup(async () => {

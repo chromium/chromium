@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-
 /**
  * @fileoverview Module of functions which produce a new page state in response
  * to an action. Reducers (in the same sense as Array.prototype.reduce) must be
  * pure functions: they must not modify existing state objects, or make any API
  * calls.
  */
+
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 export const AppState = {};
 

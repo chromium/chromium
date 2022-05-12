@@ -34,8 +34,10 @@ suite('<app-management-app-detail-view>', () => {
         AppManagementStore.getInstance().data.selectedAppId,
         appDetailView.app_.id);
     assertEquals(arcApp.id, appDetailView.app_.id);
-    assertTrue(!!appDetailView.$$('app-management-arc-detail-view'));
-    assertFalse(!!appDetailView.$$('app-management-pwa-detail-view'));
+    assertTrue(!!appDetailView.shadowRoot.querySelector(
+        'app-management-arc-detail-view'));
+    assertFalse(!!appDetailView.shadowRoot.querySelector(
+        'app-management-pwa-detail-view'));
     const pwaOptions = {type: appManagement.mojom.AppType.kWeb};
     // Add an second pwa app, and make it the currently selected app.
     const pwaApp = await fakeHandler.addApp('app2_id', pwaOptions);
@@ -46,7 +48,9 @@ suite('<app-management-app-detail-view>', () => {
         AppManagementStore.getInstance().data.selectedAppId,
         appDetailView.app_.id);
     assertEquals(pwaApp.id, appDetailView.app_.id);
-    assertFalse(!!appDetailView.$$('app-management-arc-detail-view'));
-    assertTrue(!!appDetailView.$$('app-management-pwa-detail-view'));
+    assertFalse(!!appDetailView.shadowRoot.querySelector(
+        'app-management-arc-detail-view'));
+    assertTrue(!!appDetailView.shadowRoot.querySelector(
+        'app-management-pwa-detail-view'));
   });
 });

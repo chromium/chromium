@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @fileoverview A helper object used by the Plugin VM section
@@ -33,8 +33,17 @@ export class PluginVmBrowserProxyImpl {
   relaunchPluginVm() {
     chrome.send('relaunchPluginVm');
   }
+
+  /** @return {!PluginVmBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new PluginVmBrowserProxyImpl());
+  }
+
+  /** @param {!PluginVmBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-  // The singleton instance_ can be replaced with a test version of this wrapper
-  // during testing.
-addSingletonGetter(PluginVmBrowserProxyImpl);
+/** @type {?PluginVmBrowserProxy} */
+let instance = null;

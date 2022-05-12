@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../../assert.m.js';
-import {Action, DeferredAction} from './store.js';
+
+import {Action, DeferredAction, Store} from './store.js';
 
 /**
  * StoreClient is a Polymer behavior which ties front-end elements to
@@ -133,6 +134,7 @@ export const StoreClient = {
   },
 };
 
+/** @interface */
 export class StoreClientInterface {
   /**
    * Helper to dispatch an action to the store, which will update the store
@@ -155,7 +157,9 @@ export class StoreClientInterface {
 
   watch(localProperty, valueGetter) {}
 
+  /** @return {!Object} */
   getState() {}
 
+  /** @return {!Store} */
   getStore() {}
 }

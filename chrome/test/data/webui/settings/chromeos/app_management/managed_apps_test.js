@@ -41,8 +41,9 @@ suite('<app-management-managed-apps>', () => {
   // TODO(crbug.com/999412): rewrite test.
   test.skip('Uninstall button affected by policy', () => {
     const uninstallWrapper =
-        appDetailView.$$('app-management-detail-view-header')
-            .$$('#uninstall-wrapper');
+        appDetailView.shadowRoot
+            .querySelector('app-management-detail-view-header')
+            .shadowRoot.querySelector('#uninstall-wrapper');
     assertTrue(!!uninstallWrapper.querySelector('#policy-indicator'));
   });
 
@@ -64,8 +65,9 @@ suite('<app-management-managed-apps>', () => {
   });
 
   test('Pin to shelf toggle effected by policy', () => {
-    const pinToShelfSetting = appDetailView.$$('#pin-to-shelf-setting')
-                                  .$$('app-management-toggle-row');
+    const pinToShelfSetting =
+        appDetailView.shadowRoot.querySelector('#pin-to-shelf-setting')
+            .shadowRoot.querySelector('app-management-toggle-row');
     assertTrue(!!pinToShelfSetting.root.querySelector('#policyIndicator'));
     assertTrue(
         pinToShelfSetting.shadowRoot.querySelector('cr-toggle').disabled);

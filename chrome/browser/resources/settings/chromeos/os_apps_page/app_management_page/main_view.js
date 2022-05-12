@@ -7,61 +7,75 @@ import './shared_style.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
 
-import {Route, Router} from '../../../router.js';
+import {Route} from '../../../router.js';
 import {routes} from '../../os_route.js';
-import {RouteObserverBehavior} from '../../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../../route_observer_behavior.js';
 
 import {AppManagementStore} from './store.js';
-import {AppManagementStoreClient} from './store_client.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-main-view',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const AppManagementMainViewElementBase = mixinBehaviors(
+    [AppManagementStoreClient, RouteObserverBehavior], PolymerElement);
 
-  behaviors: [
-    AppManagementStoreClient,
-    RouteObserverBehavior,
-  ],
+/** @polymer */
+class AppManagementMainViewElement extends AppManagementMainViewElementBase {
+  static get is() {
+    return 'app-management-main-view';
+  }
 
-  properties: {
-    /**
-     * @type {string}
-     */
-    searchTerm: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @private {AppMap}
-     */
-    apps_: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {string}
+       */
+      searchTerm: {
+        type: String,
+      },
 
-    /**
-     * List of apps displayed.
-     * @private {Array<App>}
-     */
-    appList_: {
-      type: Array,
-      value: () => [],
-      computed: 'computeAppList_(apps_, searchTerm)'
-    },
-  },
+      /**
+       * @private {AppMap}
+       */
+      apps_: {
+        type: Object,
+      },
 
-  attached() {
+      /**
+       * List of apps displayed.
+       * @private {Array<App>}
+       */
+      appList_: {
+        type: Array,
+        value: () => [],
+        computed: 'computeAppList_(apps_, searchTerm)'
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
-  },
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     if (route === routes.APP_MANAGEMENT) {
@@ -70,13 +84,14 @@ Polymer({
       // Expect this to be false the first time the "Manage your apps" page
       // is requested as no app has been selected yet.
       if (appId) {
-        const button = this.$$(`#app-subpage-button-${appId}`);
+        const button =
+            this.shadowRoot.querySelector(`#app-subpage-button-${appId}`);
         if (button) {
           focusWithoutInk(button);
         }
       }
     }
-  },
+  }
 
   /**
    * @private
@@ -85,7 +100,7 @@ Polymer({
    */
   isAppListEmpty_(appList) {
     return appList.length === 0;
-  },
+  }
 
   /**
    * @private
@@ -118,5 +133,8 @@ Polymer({
             /** @type {string} */ (a.title), /** @type {string} */ (b.title)));
 
     return filteredApps;
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementMainViewElement.is, AppManagementMainViewElement);

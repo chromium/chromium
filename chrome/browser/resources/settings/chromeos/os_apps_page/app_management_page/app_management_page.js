@@ -8,22 +8,27 @@ import './api_listener.js';
 import './main_view.js';
 import '../../../settings_shared_css.js';
 
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {updateSelectedAppId} from './actions.js';
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementStore} from './store.js';
-import {AppManagementStoreClient} from './store_client.js';
+/** @polymer */
+class SettingsAppManagementPageElement extends PolymerElement {
+  static get is() {
+    return 'settings-app-management-page';
+  }
 
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-app-management-page',
+  static get properties() {
+    return {
+      /**
+       * @type {string}
+       */
+      searchTerm: String,
+    };
+  }
+}
 
-  properties: {
-    /**
-     * @type {string}
-     */
-    searchTerm: String,
-  },
-});
+customElements.define(
+    SettingsAppManagementPageElement.is, SettingsAppManagementPageElement);

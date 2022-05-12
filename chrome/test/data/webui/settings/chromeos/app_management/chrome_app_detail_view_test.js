@@ -39,7 +39,9 @@ suite('<app-management-chrome-app-detail-view>', () => {
     assertEquals(
         AppManagementStore.getInstance().data.selectedAppId,
         chromeAppDetailView.app_.id);
-    assertTrue(!!chromeAppDetailView.$$('app-management-pin-to-shelf-item'));
-    assertTrue(!!chromeAppDetailView.$$('#more-settings'));
+    assertTrue(!!chromeAppDetailView.shadowRoot.querySelector(
+        'app-management-pin-to-shelf-item'));
+    assertTrue(
+        !!chromeAppDetailView.shadowRoot.querySelector('#more-settings'));
   });
 });

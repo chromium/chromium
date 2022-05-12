@@ -287,5 +287,6 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
     return app.publisherId.replace(/\?.*$/g, '');
   }
 }
+
 customElements.define(
     AppManagementAppDetailsItem.is, AppManagementAppDetailsItem);

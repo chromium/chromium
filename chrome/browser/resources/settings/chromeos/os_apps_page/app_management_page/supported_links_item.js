@@ -11,105 +11,120 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {AppManagementUserAction, AppType, WindowMode} from '//resources/cr_components/app_management/constants.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementStoreClient} from './store_client.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
 const PREFERRED_APP_PREF = 'preferred';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-supported-links-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const AppManagementSupportedLinksItemElementBase =
+    mixinBehaviors([AppManagementStoreClient, I18nBehavior], PolymerElement);
 
-  behaviors: [
-    AppManagementStoreClient,
-    I18nBehavior,
-  ],
+/** @polymer */
+class AppManagementSupportedLinksItemElement extends
+    AppManagementSupportedLinksItemElementBase {
+  static get is() {
+    return 'app-management-supported-links-item';
+  }
 
-  properties: {
-    /** @type {!App} */
-    app: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {boolean}
-     */
-    hidden: {
-      type: Boolean,
-      computed: 'isHidden_(app)',
-      reflectToAttribute: true,
-    },
+  static get properties() {
+    return {
+      /** @type {!App} */
+      app: Object,
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    disabled_: {
-      type: Boolean,
-      computed: 'isDisabled_(app)',
-    },
+      /**
+       * @type {boolean}
+       */
+      hidden: {
+        type: Boolean,
+        computed: 'isHidden_(app)',
+        reflectToAttribute: true,
+      },
 
-    /**
-     * @private {boolean}
-     */
-    showSupportedLinksDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * @type {boolean}
+       * @private
+       */
+      disabled_: {
+        type: Boolean,
+        computed: 'isDisabled_(app)',
+      },
 
-    /**
-     * @private {boolean}
-     */
-    showOverlappingAppsDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * @private {boolean}
+       */
+      showSupportedLinksDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * @private {string}
-     */
-    overlappingAppsWarning_: {
-      type: String,
-    },
+      /**
+       * @private {boolean}
+       */
+      showOverlappingAppsDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * @private {boolean}
-     */
-    showOverlappingAppsWarning_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * @private {string}
+       */
+      overlappingAppsWarning_: {
+        type: String,
+      },
 
-    /**
-     * @type {AppMap}
-     * @private
-     */
-    apps_: {
-      type: Object,
-    },
+      /**
+       * @private {boolean}
+       */
+      showOverlappingAppsWarning_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * @private {Array<string>}
-     */
-    overlappingAppIds_: {
-      type: Array,
-    },
+      /**
+       * @type {AppMap}
+       * @private
+       */
+      apps_: {
+        type: Object,
+      },
 
-  },
+      /**
+       * @private {Array<string>}
+       */
+      overlappingAppIds_: {
+        type: Array,
+      },
+    };
+  }
 
-  attached() {
+  static get observers() {
+    return [
+      'getOverlappingAppsWarning_(apps_, app)',
+    ];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
-  },
-
-  observers: [
-    'getOverlappingAppsWarning_(apps_, app)',
-  ],
+  }
 
   /**
    * The supported links item is not available when an app has no supported
@@ -121,7 +136,7 @@ Polymer({
    */
   isHidden_(app) {
     return !app.supportedLinks.length;
-  },
+  }
 
   /**
    * Disable the radio button options if the app is a PWA and is set to open
@@ -133,7 +148,7 @@ Polymer({
    */
   isDisabled_(app) {
     return app.type === AppType.kWeb && app.windowMode === WindowMode.kBrowser;
-  },
+  }
 
   /**
    * @param {!App} app
@@ -142,7 +157,7 @@ Polymer({
    */
   getCurrentPref_(app) {
     return app.isPreferredApp ? 'preferred' : 'browser';
-  },
+  }
 
   /**
    * @param {!App} app
@@ -152,7 +167,7 @@ Polymer({
   getPreferredLabel_(app) {
     return this.i18n(
         'appManagementIntentSharingOpenAppLabel', String(app.title));
-  },
+  }
 
   /**
    * @param {!App} app
@@ -163,7 +178,7 @@ Polymer({
     return this.i18nAdvanced(
         'appManagementIntentSharingTabExplanation',
         {substitutions: [String(app.title)]});
-  },
+  }
 
   /**
    * @param {!AppMap} apps
@@ -227,7 +242,7 @@ Polymer({
     }
 
     this.showOverlappingAppsWarning_ = true;
-  },
+  }
 
   /* Supported links list dialog functions ************************************/
   /**
@@ -245,7 +260,7 @@ Polymer({
     recordSettingChange();
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.SUPPORTED_LINKS_LIST_SHOWN);
-  },
+  }
 
   /**
    * @private
@@ -253,7 +268,7 @@ Polymer({
   onDialogClose_() {
     this.showSupportedLinksDialog_ = false;
     focusWithoutInk(assert(this.$.heading));
-  },
+  }
 
   /* Preferred app state change dialog and related functions ******************/
 
@@ -287,8 +302,9 @@ Polymer({
     }
 
     this.setAppAsPreferredApp_(preference);
-  },
+  }
 
+  /** @private */
   onOverlappingDialogClosed_() {
     this.showOverlappingAppsDialog_ = false;
 
@@ -303,7 +319,7 @@ Polymer({
       // Return keyboard focus to the browser radio button.
       focusWithoutInk(this.$.browser);
     }
-  },
+  }
 
   /**
    * Sets this.app as a preferred app or not depending on the value of
@@ -321,5 +337,9 @@ Polymer({
         AppManagementUserAction.PREFERRED_APP_TURNED_ON :
         AppManagementUserAction.PREFERRED_APP_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementSupportedLinksItemElement.is,
+    AppManagementSupportedLinksItemElement);

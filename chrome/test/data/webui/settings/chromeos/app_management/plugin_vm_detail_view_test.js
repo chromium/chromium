@@ -72,22 +72,31 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   async function checkAndAcceptDialog(textId) {
     assertEquals(
-        pluginVmDetailView.$$('cr-dialog div[slot="body"]').textContent,
+        pluginVmDetailView.shadowRoot
+            .querySelector('cr-dialog div[slot="body"]')
+            .textContent,
         loadTimeData.getString(textId));
-    pluginVmDetailView.$$('cr-dialog cr-button.action-button').click();
+    pluginVmDetailView.shadowRoot
+        .querySelector('cr-dialog cr-button.action-button')
+        .click();
     await fakeHandler.flushPipesForTesting();
   }
 
   async function checkAndCancelDialog(textId, cancelByEsc) {
     assertEquals(
-        pluginVmDetailView.$$('cr-dialog div[slot="body"]').textContent,
+        pluginVmDetailView.shadowRoot
+            .querySelector('cr-dialog div[slot="body"]')
+            .textContent,
         loadTimeData.getString(textId));
     if (cancelByEsc) {
       // When <esc> is used to cancel the button, <cr-dialog> will fire a
       // "cancel" event.
-      pluginVmDetailView.$$(`cr-dialog`).dispatchEvent(new Event('cancel'));
+      pluginVmDetailView.shadowRoot.querySelector(`cr-dialog`)
+          .dispatchEvent(new Event('cancel'));
     } else {
-      pluginVmDetailView.$$(`cr-dialog cr-button.cancel-button`).click();
+      pluginVmDetailView.shadowRoot
+          .querySelector(`cr-dialog cr-button.cancel-button`)
+          .click();
     }
     await fakeHandler.flushPipesForTesting();
   }
@@ -102,7 +111,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   setup(async function() {
     pluginVmBrowserProxy = new TestPluginVmBrowserProxy();
-    PluginVmBrowserProxyImpl.instance_ = pluginVmBrowserProxy;
+    PluginVmBrowserProxyImpl.setInstance(pluginVmBrowserProxy);
     fakeHandler = setupFakeHandler();
     replaceStore();
 
@@ -156,13 +165,15 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
             // Toggle off.
             await clickToggle(permissionType);
-            assertFalse(!!pluginVmDetailView.$$('cr-dialog'));
+            assertFalse(
+                !!pluginVmDetailView.shadowRoot.querySelector('cr-dialog'));
             assertFalse(getPermissionBoolByType(permissionType));
             assertFalse(isCrToggleChecked(permissionType));
 
             // Toggle on.
             await clickToggle(permissionType);
-            assertFalse(!!pluginVmDetailView.$$('cr-dialog'));
+            assertFalse(
+                !!pluginVmDetailView.shadowRoot.querySelector('cr-dialog'));
             assertTrue(getPermissionBoolByType(permissionType));
             assertTrue(isCrToggleChecked(permissionType));
           }));

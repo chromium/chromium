@@ -2,46 +2,61 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppManagementStoreClient} from './store_client.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-supported-links-overlapping-apps-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
+    mixinBehaviors([AppManagementStoreClient, I18nBehavior], PolymerElement);
 
-  behaviors: [
-    AppManagementStoreClient,
-    I18nBehavior,
-  ],
+/** @polymer */
+class AppManagementSupportedLinksOverlappingAppsDialogElement extends
+    AppManagementSupportedLinksOverlappingAppsDialogElementBase {
+  static get is() {
+    return 'app-management-supported-links-overlapping-apps-dialog';
+  }
 
-  properties: {
-    /** @type {!App} */
-    app: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @private {AppMap}
-     */
-    apps_: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /** @type {!App} */
+      app: Object,
 
-    /**
-     * @private {Array<string>}
-     */
-    overlappingAppIds: {
-      type: Array,
-    },
-  },
+      /**
+       * @private {AppMap}
+       */
+      apps_: {
+        type: Object,
+      },
 
-  attached() {
+      /**
+       * @private {Array<string>}
+       */
+      overlappingAppIds: {
+        type: Array,
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
-  },
+  }
 
   getBodyText_(apps) {
     const appNames = this.overlappingAppIds.map(app_id => {
@@ -71,18 +86,23 @@ Polymer({
             'appManagementIntentOverlapDialogText5OrMoreApps', appTitle,
             ...appNames.slice(0, 3), appNames.length - 3);
     }
-  },
+  }
 
   wasConfirmed() {
     return this.$.dialog.getNative().returnValue === 'success';
-  },
+  }
 
+  /** @private */
   onChangeClick_() {
     this.$.dialog.close();
-  },
+  }
 
+  /** @private */
   onCancelClick_() {
     this.$.dialog.cancel();
-  },
+  }
+}
 
-});
+customElements.define(
+    AppManagementSupportedLinksOverlappingAppsDialogElement.is,
+    AppManagementSupportedLinksOverlappingAppsDialogElement);

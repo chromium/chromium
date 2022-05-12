@@ -37,7 +37,7 @@ suite('<app-management-app-item>', () => {
   });
 
   test('Icon renders', async () => {
-    const icon = appItem.$$('#app-icon');
+    const icon = appItem.shadowRoot.querySelector('#app-icon');
 
     assertTrue(!!icon);
     assertEquals(appItem.iconUrlFromId_(arcApp), icon.getAttribute('src'));
