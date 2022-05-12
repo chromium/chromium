@@ -4,7 +4,6 @@
 
 #include "sandbox/mac/sandbox_logging.h"
 
-#include <asl.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,6 +15,18 @@
 #include <string>
 
 #include "build/build_config.h"
+
+#include <AvailabilityMacros.h>
+#if !defined(MAC_OS_X_VERSION_10_12) || \
+    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
+#define USE_ASL
+#endif
+
+#if defined(USE_ASL)
+#include <asl.h>
+#else
+#include <os/log.h>
+#endif
 
 #if defined(ARCH_CPU_X86_64)
 #define ABORT()                                                                \
@@ -36,13 +47,13 @@ extern "C" {
 void abort_report_np(const char*, ...);
 }
 
-namespace sandbox {
-
-namespace logging {
+namespace sandbox::logging {
 
 namespace {
 
 enum class Level { FATAL, ERR, WARN, INFO };
+
+#if defined(USE_ASL)
 
 void SendAslLog(Level level, const char* message) {
   class ASLClient {
@@ -109,6 +120,44 @@ void SendAslLog(Level level, const char* message) {
   }
 }
 
+#else
+
+void SendOsLog(Level level, const char* message) {
+  const class OSLog {
+   public:
+    explicit OSLog()
+        : os_log_(os_log_create("org.chromium.sandbox", "chromium_logging")) {}
+    OSLog(const OSLog&) = delete;
+    OSLog& operator=(const OSLog&) = delete;
+    ~OSLog() { os_release(os_log_); }
+    os_log_t get() const { return os_log_; }
+
+   private:
+    os_log_t os_log_;
+  } log;
+
+  const os_log_type_t os_log_type = [](Level level) {
+    switch (level) {
+      case Level::FATAL:
+        return OS_LOG_TYPE_FAULT;
+      case Level::ERR:
+        return OS_LOG_TYPE_ERROR;
+      case Level::WARN:
+        return OS_LOG_TYPE_DEFAULT;
+      case Level::INFO:
+        return OS_LOG_TYPE_INFO;
+    }
+  }(level);
+
+  os_log_with_type(log.get(), os_log_type, "%{public}s", message);
+
+  if (level == Level::FATAL) {
+    abort_report_np(message);
+  }
+}
+
+#endif  // defined(USE_ASL)
+
 // |error| is strerror(errno) when a P* logging function is called. Pass
 // |nullptr| if no errno is set.
 void DoLogging(Level level,
@@ -119,7 +168,11 @@ void DoLogging(Level level,
   int ret = vsnprintf(message, sizeof(message), fmt, args);
 
   if (ret < 0) {
+#if defined(USE_ASL)
     SendAslLog(level, "warning: log message could not be formatted");
+#else
+    SendOsLog(level, "warning: log message could not be formatted");
+#endif  // defined(USE_ASL)
     return;
   }
 
@@ -130,10 +183,19 @@ void DoLogging(Level level,
   if (error)
     final_message += ": " + *error;
 
+#if defined(USE_ASL)
   SendAslLog(level, final_message.c_str());
+#else
+  SendOsLog(level, final_message.c_str());
+#endif  // defined(USE_ASL)
 
-  if (truncated)
+  if (truncated) {
+#if defined(USE_ASL)
     SendAslLog(level, "warning: previous log message truncated");
+#else
+    SendOsLog(level, "warning: previous log message truncated");
+#endif  // defined(USE_ASL)
+  }
 }
 
 }  // namespace
@@ -186,6 +248,4 @@ void PFatal(const char* fmt, ...) {
   ABORT();
 }
 
-}  // namespace logging
-
-}  // namespace sandbox
+}  // namespace sandbox::logging

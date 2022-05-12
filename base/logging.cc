@@ -787,8 +787,10 @@ LogMessage::~LogMessage() {
             return OS_LOG_TYPE_ERROR;
           case LOGGING_FATAL:
             return OS_LOG_TYPE_FAULT;
+          case LOGGING_VERBOSE:
+            return OS_LOG_TYPE_DEBUG;
           default:
-            return severity < 0 ? OS_LOG_TYPE_DEBUG : OS_LOG_TYPE_DEFAULT;
+            return OS_LOG_TYPE_DEFAULT;
         }
       }(severity_);
       os_log_with_type(log.get(), os_log_type, "%{public}s",
