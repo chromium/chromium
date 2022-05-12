@@ -148,6 +148,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final int mTabStripAndToolbarHeight;
 
     private final Supplier<Toolbar> mToolbarSupplier;
+    private final TabModelSelector mTabModelSelector;
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
@@ -340,6 +341,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mToolbarSupplier = toolbarSupplier;
         mMostVisitedTileClickObservers = new ObserverList<>();
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mTabModelSelector = tabModelSelector;
 
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
@@ -483,7 +485,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs,
                 FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                 /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
-                HelpAndFeedbackLauncherImpl.getInstance());
+                HelpAndFeedbackLauncherImpl.getInstance(), mTabModelSelector);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
 
         // Record the timestamp at which the new tab page's construction started.

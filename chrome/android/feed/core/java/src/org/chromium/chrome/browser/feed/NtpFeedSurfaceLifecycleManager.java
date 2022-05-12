@@ -77,6 +77,10 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
                 saveInstanceState();
+                FeedReliabilityLogger logger = coordinator.getReliabilityLogger();
+                if (logger != null) {
+                    logger.onPageLoadStarted();
+                }
             }
         };
         mTab.addObserver(mTabObserver);

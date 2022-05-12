@@ -105,4 +105,30 @@ public class FeedReliabilityLoggerTest {
         mFeedReliabilityLogger.onUrlFocusChange(/*hasFocus=*/false);
         verify(mLaunchLogger, never()).cancelPendingFinished();
     }
+
+    @Test
+    public void testOnPageLoadStarted() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onPageLoadStarted();
+        verify(mLaunchLogger)
+                .logLaunchFinished(
+                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_AWAY_IN_APP.getNumber()));
+    }
+
+    @Test
+    public void testOnNavigateBack() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onNavigateBack();
+        verify(mLaunchLogger)
+                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.NAVIGATED_BACK.getNumber()));
+    }
+
+    @Test
+    public void testOnSwitchTabs() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onSwitchTabs();
+        verify(mLaunchLogger)
+                .logLaunchFinished(
+                        anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
+    }
 }

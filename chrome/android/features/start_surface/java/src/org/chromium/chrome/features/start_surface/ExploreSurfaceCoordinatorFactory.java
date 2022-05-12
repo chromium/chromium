@@ -99,6 +99,6 @@ class ExploreSurfaceCoordinatorFactory {
                 mBottomSheetController, mScrollableContainerDelegate, launchOrigin,
                 mToolbarSupplier, mEmbeddingSurfaceConstructedTimeNs, mSwipeRefreshLayout,
                 mParentView, mParentTabSupplier, mSnackbarManager, mShareDelegateSupplier,
-                mWindowAndroid);
+                mWindowAndroid, mTabModelSelector);
     }
 }

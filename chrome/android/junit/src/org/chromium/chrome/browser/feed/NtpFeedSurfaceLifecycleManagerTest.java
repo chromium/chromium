@@ -56,6 +56,8 @@ public class NtpFeedSurfaceLifecycleManagerTest {
     private PrefService mPrefService;
     @Mock
     private FeedSurfaceCoordinator mCoordinator;
+    @Mock
+    private FeedReliabilityLogger mFeedReliabilityLogger;
 
     private NtpFeedSurfaceLifecycleManager mNtpStreamLifecycleManager;
 
@@ -67,6 +69,7 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         when(mPrefService.getBoolean(anyString())).thenReturn(true);
         doNothing().when(mPrefService).setBoolean(anyString(), anyBoolean());
         NtpFeedSurfaceLifecycleManager.setPrefServiceForTesting(mPrefService);
+        when(mCoordinator.getFeedReliabilityLogger()).thenReturn(mFeedReliabilityLogger);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         mNtpStreamLifecycleManager =
@@ -299,5 +302,12 @@ public class NtpFeedSurfaceLifecycleManagerTest {
     public void testPaused() {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         verify(mCoordinator).onActivityPaused();
+    }
+
+    @Test
+    @SmallTest
+    public void testLogPageLoadStarted() {
+        mNtpStreamLifecycleManager.getTabObserverForTesting().onPageLoadStarted(null, null);
+        verify(mFeedReliabilityLogger, times(1)).onPageLoadStarted();
     }
 }

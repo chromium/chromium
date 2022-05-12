@@ -50,6 +50,29 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
                 DiscoverLaunchResult.VOICE_SEARCH_TAPPED, /*userMightComeBack=*/true);
     }
 
+    /**
+     * Call this when the user has navigated to a webpage. If it was a card tap, instead use
+     * CARD_TAPPED.
+     */
+    public void onPageLoadStarted() {
+        logLaunchFinishedIfInProgress(
+                DiscoverLaunchResult.NAVIGATED_AWAY_IN_APP, /*userMightComeBack=*/false);
+    }
+
+    /**
+     * Call this when the user has pressed the back button and it will cause the feed to disappear.
+     */
+    public void onNavigateBack() {
+        logLaunchFinishedIfInProgress(
+                DiscoverLaunchResult.NAVIGATED_BACK, /*userMightComeBack=*/false);
+    }
+
+    /** Call this when the user selects a tab. */
+    public void onSwitchTabs() {
+        logLaunchFinishedIfInProgress(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB,
+                /*userMightComeBack=*/false);
+    }
+
     // UrlFocusChangeListener
 
     @Override
