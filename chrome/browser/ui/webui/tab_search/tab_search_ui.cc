@@ -65,6 +65,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   // Add the configuration parameters for fuzzy search.
   source->AddBoolean("useFuzzySearch", base::FeatureList::IsEnabled(
                                            features::kTabSearchFuzzySearch));
+
+  source->AddBoolean(
+      "useMetricsReporter",
+      base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter));
+
   source->AddBoolean(
       "alsoShowMediaTabsinOpenTabsSection",
       GetFieldTrialParamByFeatureAsBool(
@@ -124,6 +129,11 @@ void TabSearchUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void TabSearchUI::BindInterface(
+    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
+  metrics_reporter_.BindInterface(std::move(receiver));
+}
+
 void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
@@ -144,5 +154,5 @@ void TabSearchUI::CreatePageHandler(
   // TODO(tluk): Investigate whether we can avoid recreating this multiple times
   // per instance of the TabSearchUI.
   page_handler_ = std::make_unique<TabSearchPageHandler>(
-      std::move(receiver), std::move(page), web_ui(), this);
+      std::move(receiver), std::move(page), web_ui(), this, &metrics_reporter_);
 }

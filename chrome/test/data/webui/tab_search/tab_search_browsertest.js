@@ -5,8 +5,8 @@
 /** @fileoverview Test suite for the WebUI tab search. */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "services/network/public/cpp/features.h"');
 
 /* eslint-disable no-var */
 
@@ -21,6 +21,10 @@ var TabSearchAppTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_app_test.js&host=webui-test';
+  }
+
+  get featureList() {
+    return {enabled: ['features::kTabSearchUseMetricsReporter']};
   }
 };
 

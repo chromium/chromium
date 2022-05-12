@@ -25,6 +25,10 @@ ts_library("build_ts") {
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
+    "chrome://webui-test/metrics_reporter/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
+            target_gen_dir),
   ]
   in_files = [
     "bimap_test.ts",
@@ -37,6 +41,9 @@ ts_library("build_ts") {
     "tab_search_test_helper.ts",
     "test_tab_search_api_proxy.ts",
   ]
-  deps = [ "//chrome/browser/resources/tab_search:build_ts" ]
+  deps = [
+    "../metrics_reporter:build_ts",
+    "//chrome/browser/resources/tab_search:build_ts",
+  ]
   extra_deps = [ "..:generate_definitions" ]
 }

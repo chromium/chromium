@@ -74,6 +74,7 @@ class DesktopUIStorySet(story.StorySet):
       self.AddStory(
           cls(self, [
               '--top-chrome-touch-ui=disabled',
+              '--enable-features=TabSearchUseMetricsReporter',
           ]))
 
     for cls in self.DOWNLOAD_SHELF_STORIES:

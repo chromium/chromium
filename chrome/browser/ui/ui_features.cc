@@ -219,6 +219,9 @@ const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
 const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
     &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
 
+const base::Feature kTabSearchUseMetricsReporter{
+    "TabSearchUseMetricsReporter", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 

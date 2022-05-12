@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -108,7 +110,8 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
             mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
             std::move(page),
             web_ui,
-            webui_controller) {
+            webui_controller,
+            &metrics_reporter_) {
     mock_debounce_timer_ = new base::MockRetainingOneShotTimer();
     SetTimerForTesting(base::WrapUnique(mock_debounce_timer_.get()));
   }
@@ -118,6 +121,7 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
 
  private:
   raw_ptr<base::MockRetainingOneShotTimer> mock_debounce_timer_;
+  testing::NiceMock<MockMetricsReporter> metrics_reporter_;
 };
 
 class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {

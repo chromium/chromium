@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class MetricsReporter;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -48,7 +49,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       content::WebUI* web_ui,
-      ui::MojoBubbleWebUIController* webui_controller);
+      ui::MojoBubbleWebUIController* webui_controller,
+      MetricsReporter* metrics_reporter);
   TabSearchPageHandler(const TabSearchPageHandler&) = delete;
   TabSearchPageHandler& operator=(const TabSearchPageHandler&) = delete;
   ~TabSearchPageHandler() override;
@@ -142,6 +144,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   mojo::Remote<tab_search::mojom::Page> page_;
   const raw_ptr<content::WebUI> web_ui_;
   const raw_ptr<ui::MojoBubbleWebUIController> webui_controller_;
+  const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
 

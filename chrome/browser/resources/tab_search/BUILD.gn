@@ -29,6 +29,7 @@ if (optimize_webui) {
 
     excludes = [
       "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/metrics_reporter/metrics_reporter.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js",
@@ -169,6 +170,7 @@ ts_library("build_ts") {
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/js/metrics_reporter:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [

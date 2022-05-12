@@ -165,6 +165,8 @@ extern const base::FeatureParam<int>
 // count have been met.
 extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 
+extern const base::Feature kTabSearchUseMetricsReporter;
+
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.
 extern const base::Feature kToolbarUseHardwareBitmapDraw;

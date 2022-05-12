@@ -2429,6 +2429,59 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.TabSearch.Mojo.SwitchToTab" units="ms"
+    expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The time taken to switch tab. This is measured as the time from when the
+    user clicks a tab in Tab Search to when the browser finishes switching tab.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap" enum="Boolean"
+    expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.Mojo.SwitchToTab
+    measurement when a new measurement is requested.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.TabUpdated" units="ms"
+    expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The time taken for Tab Search to update its tab list when the browser's tab
+    strip model changes. This is measured as the time from when the browser
+    emits a notification to when the WebUI updates its state.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.TabUpdated.IsOverlap" enum="Boolean"
+    expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.Mojo.TabUpdated measurement
+    when a new measurement is requested.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.NumMediaTabsOnOpen" units="tabs"
     expires_after="2022-10-26">
   <owner>elainechien@chromium.org</owner>
@@ -2674,6 +2727,36 @@ chromium-metrics-reviews@google.com.
     tabs for the current user profile. This is measured as the time from when
     the data was first requested by the WebUI to when the data was received by
     the WebUI.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabListDataReceived2" units="ms"
+    expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <summary>
+    The time taken for the WebUI in the renderer to receive the full list of
+    tabs for the current user profile. This is measured as the time from when
+    the data was first requested by the WebUI to when the data was received by
+    the WebUI.
+
+    This metric is recorded by MetricsReporter.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap"
+    enum="Boolean" expires_after="2022-10-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.WebUI.TabListDataReceived2
+    measurement when a new measurement is requested.
   </summary>
 </histogram>
 

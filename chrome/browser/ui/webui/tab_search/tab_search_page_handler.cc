@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -84,11 +85,13 @@ TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
     content::WebUI* web_ui,
-    ui::MojoBubbleWebUIController* webui_controller)
+    ui::MojoBubbleWebUIController* webui_controller,
+    MetricsReporter* metrics_reporter)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_ui_(web_ui),
       webui_controller_(webui_controller),
+      metrics_reporter_(metrics_reporter),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
           kTabsChangeDelay,
@@ -190,6 +193,17 @@ void TabSearchPageHandler::SwitchToTab(
   const TabDetails& details = optional_details.value();
   details.tab_strip_model->ActivateTabAt(details.index);
   details.browser->window()->Activate();
+  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
+    metrics_reporter_->Measure(
+        "SwitchToTab",
+        base::BindOnce(
+            [](MetricsReporter* metrics_reporter, base::TimeDelta duration) {
+              base::UmaHistogramTimes("Tabs.TabSearch.Mojo.SwitchToTab",
+                                      duration);
+              metrics_reporter->ClearMark("SwitchToTab");
+            },
+            metrics_reporter_));
+  }
 }
 
 void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
@@ -555,6 +569,14 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
     return;
   Browser* active_browser = chrome::FindLastActive();
   TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
+
+  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
+    bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
+    base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
+                              is_mark_overlap);
+    if (!is_mark_overlap)
+      metrics_reporter_->Mark("TabUpdated");
+  }
 
   auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();
   tab_update_info->in_active_window = (browser == active_browser);

@@ -17,6 +17,10 @@ from page_sets.desktop_ui import story_tags
 
 TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.CloseAction',
+    'Tabs.TabSearch.Mojo.SwitchToTab',
+    'Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap',
+    'Tabs.TabSearch.Mojo.TabUpdated',
+    'Tabs.TabSearch.Mojo.TabUpdated.IsOverlap',
     'Tabs.TabSearch.NumTabsClosedPerInstance',
     'Tabs.TabSearch.NumTabsOnOpen',
     'Tabs.TabSearch.NumWindowsOnOpen',
@@ -27,6 +31,8 @@ TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.WebUI.LoadDocumentTime',
     'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
     'Tabs.TabSearch.WebUI.TabListDataReceived',
+    'Tabs.TabSearch.WebUI.TabListDataReceived2',
+    'Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap',
     'Tabs.TabSearch.WebUI.TabSwitchAction',
     'Tabs.TabSearch.WindowDisplayedDuration2',
     'Tabs.TabSearch.WindowTimeToShowCachedWebView',

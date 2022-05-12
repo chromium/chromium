@@ -179,6 +179,7 @@
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
+#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -918,6 +919,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
                                          TabSearchUI>(map);
+  if (base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter)) {
+    RegisterWebUIControllerInterfaceBinder<
+        metrics_reporter::mojom::PageMetricsHost, TabSearchUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       download_shelf::mojom::PageHandlerFactory, DownloadShelfUI>(map);
