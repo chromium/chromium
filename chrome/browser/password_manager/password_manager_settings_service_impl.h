@@ -28,6 +28,7 @@ class PasswordManagerSettingsServiceImpl
 
   bool IsSettingEnabled(
       password_manager::PasswordManagerSetting setting) override;
+  void TurnOffAutoSignIn() override;
 
   void RequestSettingsFromBackend() override;
 

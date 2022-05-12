@@ -27,9 +27,6 @@ bool ShouldShowAutoSignInPromptFirstRunExperience(PrefService* prefs);
 // first run experience for the auto sign-in prompt.
 void RecordAutoSignInPromptFirstRunExperienceWasShown(PrefService* prefs);
 
-// Turns off the auto signin experience setting.
-void TurnOffAutoSignin(PrefService* prefs);
-
 }  // namespace password_bubble_experiment
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_BUBBLE_EXPERIMENT_H_

@@ -20,6 +20,8 @@ class MockPasswordManagerSettingsService
               (password_manager::PasswordManagerSetting),
               (override));
   MOCK_METHOD(void, RequestSettingsFromBackend, (), (override));
+
+  MOCK_METHOD(void, TurnOffAutoSignIn, (), (override));
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_SETTINGS_SERVICE_H_

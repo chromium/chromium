@@ -51,6 +51,7 @@ class PasswordManagerSettingsServiceAndroidImpl
   bool IsSettingEnabled(
       password_manager::PasswordManagerSetting setting) override;
   void RequestSettingsFromBackend() override;
+  void TurnOffAutoSignIn() override;
 
  private:
   void OnChromeForegrounded();

@@ -18,6 +18,10 @@ class PasswordManagerSettingsService : public KeyedService {
   // Asynchronously fetch password settings from backend.
   virtual void RequestSettingsFromBackend() = 0;
 
+  // Sets the auto sign in setting to off. Used by the auto sign in first run
+  // dialog.
+  virtual void TurnOffAutoSignIn() = 0;
+
  protected:
   ~PasswordManagerSettingsService() override = default;
 };

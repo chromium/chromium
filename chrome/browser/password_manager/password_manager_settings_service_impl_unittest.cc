@@ -57,3 +57,12 @@ TEST_F(PasswordManagerSettingsServiceImplTest, AutoSignInEnabledDependsOnPref) {
   EXPECT_FALSE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn));
 }
+
+TEST_F(PasswordManagerSettingsServiceImplTest, TurnOffAutoSignIn) {
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+
+  settings_service()->TurnOffAutoSignIn();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+}

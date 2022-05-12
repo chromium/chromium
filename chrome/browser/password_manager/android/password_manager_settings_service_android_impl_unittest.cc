@@ -88,8 +88,8 @@ class PasswordManagerSettingsServiceAndroidImplTest : public testing::Test {
   std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> settings_service_;
   TestingPrefServiceSimple test_pref_service_;
   syncer::TestSyncService test_sync_service_;
-  raw_ptr<MockPasswordSettingsUpdaterBridge> mock_bridge_;
-  raw_ptr<FakePasswordManagerLifecycleHelper> fake_lifecycle_helper_;
+  raw_ptr<MockPasswordSettingsUpdaterBridge> mock_bridge_ = nullptr;
+  raw_ptr<FakePasswordManagerLifecycleHelper> fake_lifecycle_helper_ = nullptr;
   base::HistogramTester histogram_tester_;
 };
 
@@ -839,4 +839,83 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
                             /*setting_sync_enabled=*/true);
   ExpectSettingsRetrievalFromBackend(/*times=*/0);
   settings_service()->RequestSettingsFromBackend();
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TurnOffAutoSignInNoBackend) {
+  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
+      no_backend_service = GetServiceWithoutBackend();
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  no_backend_service->TurnOffAutoSignIn();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TurnOffAutoSignInNotSyncingPasswords) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/true);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  EXPECT_CALL(*bridge(), SetPasswordSettingValue(
+                             _, Eq(PasswordManagerSetting::kAutoSignIn), _))
+      .Times(0);
+  settings_service()->TurnOffAutoSignIn();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TurnOffAutoSignInSyncingPasswordsNotPrefs) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/false);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  EXPECT_CALL(*bridge(),
+              SetPasswordSettingValue(
+                  Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+                      kTestAccount)),
+                  Eq(PasswordManagerSetting::kAutoSignIn), false))
+      .Times(1);
+  settings_service()->TurnOffAutoSignIn();
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       TurnOffAutoSignInSyncingPasswordsAndPrefs) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  ASSERT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
+
+  EXPECT_CALL(*bridge(),
+              SetPasswordSettingValue(
+                  Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+                      kTestAccount)),
+                  Eq(PasswordManagerSetting::kAutoSignIn), false))
+      .Times(1);
+  settings_service()->TurnOffAutoSignIn();
+  EXPECT_TRUE(pref_service()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin));
+  EXPECT_FALSE(pref_service()->GetBoolean(
+      password_manager::prefs::kAutoSignInEnabledGMS));
 }

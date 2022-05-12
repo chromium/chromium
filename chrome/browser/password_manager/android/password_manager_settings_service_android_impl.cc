@@ -153,6 +153,25 @@ void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
     FetchSettings();
 }
 
+void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
+  if (!bridge_ || !IsPasswordSyncEnabled(sync_service_)) {
+    pref_service_->SetBoolean(
+        password_manager::prefs::kCredentialsEnableAutosignin, false);
+    return;
+  }
+  if (!HasChosenToSyncPreferences(sync_service_)) {
+    pref_service_->SetBoolean(
+        password_manager::prefs::kCredentialsEnableAutosignin, false);
+  }
+
+  pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
+                            false);
+  bridge_->SetPasswordSettingValue(
+      PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+          sync_service_->GetAccountInfo().email),
+      PasswordManagerSetting::kAutoSignIn, false);
+}
+
 void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
   RequestSettingsFromBackend();
 }
