@@ -1260,7 +1260,7 @@ const base::Feature kScalableStatusArea{"ScalableStatusArea",
 
 // Controls whether to enable kSecondaryGoogleAccountUsage policy.
 const base::Feature kSecondaryGoogleAccountUsage{
-    "SecondaryGoogleAccountUsage", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SecondaryGoogleAccountUsage", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Overrides semantic colors in ChromeOS for easier debugging.
 const base::Feature kSemanticColorsDebugOverride{
