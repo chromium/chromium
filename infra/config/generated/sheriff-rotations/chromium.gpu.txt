@@ -68,13 +68,10 @@ ci/gpu-fyi-chromeos-jacuzzi-exp
 ci/gpu-fyi-chromeos-octopus-exp
 ci/gpu-fyi-chromeos-zork-exp
 ci/linux-swangle-chromium-x64
-ci/linux-swangle-tot-angle-x64
 ci/linux-swangle-tot-swiftshader-x64
 ci/linux-swangle-x64
 ci/mac-swangle-chromium-x64
 ci/win-swangle-chromium-x86
-ci/win-swangle-tot-angle-x64
-ci/win-swangle-tot-angle-x86
 ci/win-swangle-tot-swiftshader-x64
 ci/win-swangle-tot-swiftshader-x86
 ci/win-swangle-x64
