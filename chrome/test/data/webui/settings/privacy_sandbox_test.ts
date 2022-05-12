@@ -714,4 +714,30 @@ suite('PrivacySandboxSettings3', function() {
     await flushTasks();
     assertMainViewVisible();
   });
+
+  test('directDialogClose', async function() {
+    // Confirm that closing the dialog directly (as done through the escape key)
+    // correctly navigates back.
+    assertMainViewVisible();
+
+    // Open a sub page.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#adPersonalizationRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationDialogVisible();
+
+    // Close the subpage by closing the modal dialog directly.
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    dialogWrapper.close();
+    await flushTasks();
+    assertMainViewVisible();
+
+    // Closing the dialog should have reset the view state, such that another
+    // dialog can be opened.
+    page.shadowRoot!.querySelector<HTMLElement>('#adMeasurementRow')!.click();
+    await flushTasks();
+    assertAdMeasurementDialogVisible();
+  });
 });
