@@ -335,14 +335,7 @@ void SavedDeskItemView::UpdateTemplate(const DeskTemplate& updated_template) {
 }
 
 void SavedDeskItemView::Layout() {
-  const int previous_name_view_width = name_view_->width();
-
   views::View::Layout();
-
-  // A change in the `name_view_`'s width might mean the need to elide the text
-  // differently.
-  if (previous_name_view_width != name_view_->width())
-    OnTemplateNameChanged(desk_template_->template_name());
 
   if (delete_button_) {
     const gfx::Size delete_button_size = delete_button_->GetPreferredSize();
