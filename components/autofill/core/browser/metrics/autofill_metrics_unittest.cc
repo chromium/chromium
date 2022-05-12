@@ -83,13 +83,14 @@
 using ::autofill::metrics::kTestGuid;
 using ::base::ASCIIToUTF16;
 using ::base::Bucket;
+using ::base::BucketsAre;
+using ::base::BucketsInclude;
 using ::base::TimeTicks;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::IsSupersetOf;
 using ::testing::Matcher;
 using ::testing::NiceMock;
-using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedPointwise;
 
 namespace autofill {
@@ -326,144 +327,6 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   std::string response_string;
   base::Base64Encode(unencoded_response_string, &response_string);
   return response_string;
-}
-
-// BucketsAre() and BucketsAreArray() match a container that contains exactly
-// the non-empty `buckets`.
-//
-// For example,
-//   EXPECT_THAT(histogram_tester.GetAllSamples("HistogramName"),
-//               BucketsAre(Bucket(Enum::A, 0),
-//                          Bucket(Enum::B, 1),
-//                          Bucket(Enum::C, 2)));
-// matches `{Bucket(B, 1), Bucket(C, 2)}`, and
-// does not match `{Bucket(A, n), Bucket(B, 1), Bucket(C, 2)}` for any `n`
-// (including `n == 0`).
-template <typename BucketArray>
-auto BucketsAreArray(BucketArray buckets) {
-  auto non_empty_buckets = buckets;
-  base::EraseIf(non_empty_buckets, [](Bucket b) { return b.count == 0; });
-  return ::testing::UnorderedElementsAreArray(non_empty_buckets);
-}
-
-template <typename... BucketTypes>
-auto BucketsAre(BucketTypes... buckets) {
-  return BucketsAreArray(std::vector<Bucket>{buckets...});
-}
-
-// BucketsInclude() and BucketsIncludeArray() match a container that
-// contains all non-empty `buckets` and none of the empty `buckets`.
-//
-// For example,
-//   EXPECT_THAT(histogram_tester.GetAllSamples("HistogramName"),
-//               BucketsInclude(Bucket(Enum::A, 0),
-//                               Bucket(Enum::B, 1),
-//                               Bucket(Enum::C, 2)));
-// matches `{Bucket(B, 1), Bucket(C, 2), Bucket(D, 3)}`, and
-// does not match `{Bucket(A, n), Bucket(B, 1), Bucket(C, 2), Bucket(D, 3)}` for
-// any `n` (including `n == 0`).
-template <typename BucketArray>
-auto BucketsIncludeArray(const BucketArray& buckets) {
-  std::vector<Bucket> non_empty_buckets;
-  std::vector<base::HistogramBase::Sample> empty_buckets;
-  for (const Bucket& b : buckets) {
-    if (b.count > 0) {
-      non_empty_buckets.push_back(b);
-    } else {
-      empty_buckets.push_back(b.min);
-    }
-  }
-  using ::testing::AllOf;
-  using ::testing::AnyOfArray;
-  using ::testing::Each;
-  using ::testing::Field;
-  using ::testing::Not;
-  return AllOf(
-      IsSupersetOf(non_empty_buckets),
-      Each(Field("Bucket::min", &Bucket::min, Not(AnyOfArray(empty_buckets)))));
-}
-
-template <typename... BucketTypes>
-auto BucketsInclude(BucketTypes... buckets) {
-  return BucketsIncludeArray(std::vector<Bucket>{buckets...});
-}
-
-TEST(BucketsAre, Matches) {
-  // Auxiliary functions for keeping the lines short.
-  auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
-    return Bucket(min, count);
-  };
-  using ::testing::Not;
-
-  EXPECT_THAT(a({}), BucketsAre());
-  EXPECT_THAT(a({}), BucketsAre(b(0, 0)));
-  EXPECT_THAT(a({}), BucketsAre(b(1, 0)));
-  EXPECT_THAT(a({}), BucketsAre(b(0, 0), b(1, 0)));
-  EXPECT_THAT(a({}), Not(BucketsAre(b(1, 1))));
-
-  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(1, 1)));
-  EXPECT_THAT(a({b(1, 1)}), BucketsAre(b(0, 0), b(1, 1)));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre()));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(1, 0))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 1))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(2, 2))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 1), b(2, 2))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
-
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(1, 1), b(2, 2)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsAre(b(0, 0), b(1, 1), b(2, 2)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre()));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 1))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 2))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 1))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(1, 0))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(2, 1))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsAre(b(0, 0), b(1, 0))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
-              Not(BucketsAre(b(0, 0), b(1, 0), b(2, 0))));
-}
-
-TEST(BucketsInclude, Matches) {
-  // Auxiliary function for the "actual" values to shorten lines.
-  auto a = [](std::vector<Bucket> b) { return b; };
-  auto b = [](base::Histogram::Sample min, base::Histogram::Count count) {
-    return Bucket(min, count);
-  };
-  using ::testing::Not;
-
-  EXPECT_THAT(a({}), BucketsInclude());
-  EXPECT_THAT(a({}), BucketsInclude(b(0, 0)));
-  EXPECT_THAT(a({}), BucketsInclude(b(1, 0)));
-  EXPECT_THAT(a({}), BucketsInclude(b(0, 0), b(1, 0)));
-  EXPECT_THAT(a({}), Not(BucketsInclude(b(1, 1))));
-
-  EXPECT_THAT(a({b(1, 1)}), BucketsInclude());
-  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0)));
-  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(1, 1)));
-  EXPECT_THAT(a({b(1, 1)}), BucketsInclude(b(0, 0), b(1, 1)));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(1, 0))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 1))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(2, 2))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 1), b(2, 2))));
-  EXPECT_THAT(a({b(1, 1)}), Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
-
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude());
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(2, 2)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(1, 1), b(2, 2)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), BucketsInclude(b(0, 0), b(1, 1), b(2, 2)));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(1, 0))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(2, 1))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}), Not(BucketsInclude(b(0, 0), b(1, 0))));
-  EXPECT_THAT(a({b(1, 1), b(2, 2)}),
-              Not(BucketsInclude(b(0, 0), b(1, 0), b(2, 0))));
 }
 
 }  // namespace
