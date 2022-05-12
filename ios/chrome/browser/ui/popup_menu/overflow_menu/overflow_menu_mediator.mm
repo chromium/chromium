@@ -25,6 +25,9 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
+#import "ios/chrome/browser/follow/follow_menu_updater.h"
+#import "ios/chrome/browser/follow/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
@@ -193,6 +196,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
                                     CRWWebStateObserver,
+                                    FollowMenuUpdater,
                                     IOSLanguageDetectionTabHelperObserving,
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
@@ -218,9 +222,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
-
-// URLs for the current webpage, which are used to match it to a web channel.
-@property(nonatomic, strong) FollowWebPageURLs* webPageURLs;
 
 // Whether an overlay is currently presented over the web content area.
 @property(nonatomic, assign) BOOL webContentAreaShowingOverlay;
@@ -249,7 +250,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 @property(nonatomic, strong) OverflowMenuAction* clearBrowsingDataAction;
 @property(nonatomic, strong) OverflowMenuAction* followAction;
-@property(nonatomic, strong) OverflowMenuAction* unfollowAction;
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
@@ -296,9 +296,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     _engagementTracker = nullptr;
   }
 
+  if (self.webState && self.followAction) {
+    FollowTabHelper::FromWebState(self.webState)->remove_follow_menu_updater();
+  }
   self.webState = nullptr;
   self.webStateList = nullptr;
-  self.webPageURLs = nil;
 
   self.bookmarkModel = nullptr;
   self.prefService = nullptr;
@@ -348,6 +350,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   _webStateList = webStateList;
 
   self.webState = (_webStateList) ? _webStateList->GetActiveWebState() : nil;
+
+  if (self.webState && !self.isIncognito && IsWebChannelsEnabled()) {
+    FollowTabHelper::FromWebState(self.webState)->set_follow_menu_updater(self);
+  }
 
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
@@ -539,15 +545,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf openNewWindow];
         });
 
-    self.followAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_FOLLOW, kPlusSymbol, YES, kToolsMenuFollow, ^{
-          [weakSelf updateFollowStatus:YES];
-        });
+    if (!self.isIncognito && IsWebChannelsEnabled() &&
+        GetFollowActionState(self.webState) != FollowActionStateHidden) {
+      DCHECK(UseSymbols());
+      UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kOverflowSymbolPointSize
+                              weight:UIImageSymbolWeightLight
+                               scale:UIImageSymbolScaleMedium];
+      NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
+                                               base::SysNSStringToUTF16(@""));
+      UIImage* symbolImage =
+          [DefaultSymbolWithConfiguration(kPlusSymbol, configuration)
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-    self.unfollowAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_UNFOLLOW, kXMarkSymbol, YES, kToolsMenuUnfollow, ^{
-          [weakSelf updateFollowStatus:NO];
-        });
+      OverflowMenuAction* action =
+          [[OverflowMenuAction alloc] initWithName:name
+                                           uiImage:symbolImage
+                           accessibilityIdentifier:kToolsMenuFollow
+                                enterpriseDisabled:NO
+                                           handler:^{
+                                           }];
+      action.enabled = NO;
+      self.followAction = action;
+    }
 
     self.addBookmarkAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, kAddBookmarkActionSymbol, YES,
@@ -645,17 +665,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf openNewWindow];
         });
 
-    self.followAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_FOLLOW, @"overflow_menu_action_follow",
-        kToolsMenuFollow, ^{
-          [weakSelf updateFollowStatus:YES];
-        });
+    if (!self.isIncognito && IsWebChannelsEnabled() &&
+        GetFollowActionState(self.webState) != FollowActionStateHidden) {
+      NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
+                                               base::SysNSStringToUTF16(@""));
 
-    self.unfollowAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_UNFOLLOW, @"overflow_menu_action_unfollow",
-        kToolsMenuUnfollow, ^{
-          [weakSelf updateFollowStatus:NO];
-        });
+      OverflowMenuAction* action = [[OverflowMenuAction alloc]
+                     initWithName:name
+                          uiImage:[UIImage
+                                      imageNamed:@"overflow_menu_action_follow"]
+          accessibilityIdentifier:kToolsMenuFollow
+               enterpriseDisabled:NO
+                          handler:^{
+                          }];
+      action.enabled = NO;
+      self.followAction = action;
+    }
 
     self.addBookmarkAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
@@ -813,58 +838,36 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   BOOL pageIsBookmarked =
       self.webState && self.bookmarkModel &&
       self.bookmarkModel->IsBookmarked(self.webState->GetVisibleURL());
-  NSArray<OverflowMenuAction*>* basePageActions = @[
-    (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
-    self.readLaterAction, self.translateAction,
-    ([self userAgentType] != web::UserAgentType::DESKTOP)
-        ? self.requestDesktopAction
-        : self.requestMobileAction,
-    self.findInPageAction, self.textZoomAction
-  ];
+
+  NSArray<OverflowMenuAction*>* basePageActions;
+  if (self.followAction &&
+      GetFollowActionState(self.webState) != FollowActionStateHidden) {
+    DCHECK(IsWebChannelsEnabled());
+    basePageActions = @[
+      self.followAction,
+      (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
+      self.readLaterAction, self.translateAction,
+      ([self userAgentType] != web::UserAgentType::DESKTOP)
+          ? self.requestDesktopAction
+          : self.requestMobileAction,
+      self.findInPageAction, self.textZoomAction
+    ];
+  } else {
+    basePageActions = @[
+      (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
+      self.readLaterAction, self.translateAction,
+      ([self userAgentType] != web::UserAgentType::DESKTOP)
+          ? self.requestDesktopAction
+          : self.requestMobileAction,
+      self.findInPageAction, self.textZoomAction
+    ];
+  }
 
   if (IsNewOverflowMenuCBDActionEnabled()) {
     self.pageActionsGroup.actions = [@[ self.clearBrowsingDataAction ]
         arrayByAddingObjectsFromArray:basePageActions];
   } else {
     self.pageActionsGroup.actions = basePageActions;
-  }
-
-  // Add the follow/unfollow action.
-  if (self.followActionState != FollowActionStateHidden) {
-    DCHECK(IsWebChannelsEnabled());
-    __weak __typeof(self) weakSelf = self;
-    FollowJavaScriptFeature::GetInstance()->GetFollowWebPageURLs(
-        self.webState, base::BindOnce(^(FollowWebPageURLs* webPageURLs) {
-          if (webPageURLs) {
-            OverflowMenuMediator* strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
-
-            strongSelf.webPageURLs = webPageURLs;
-            BOOL webChannelFollowed = ios::GetChromeBrowserProvider()
-                                          .GetFollowProvider()
-                                          ->GetFollowStatus(webPageURLs);
-
-            std::string domainName =
-                web::GetMainFrame(self.webState)->GetSecurityOrigin().host();
-            if (!webChannelFollowed) {
-              strongSelf.followAction.name = l10n_util::GetNSStringF(
-                  IDS_IOS_TOOLS_MENU_FOLLOW, base::UTF8ToUTF16(domainName));
-              strongSelf.pageActionsGroup.actions =
-                  [@[ strongSelf.followAction ]
-                      arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
-                                                        .actions];
-            } else {
-              strongSelf.unfollowAction.name = l10n_util::GetNSStringF(
-                  IDS_IOS_TOOLS_MENU_UNFOLLOW, base::UTF8ToUTF16(domainName));
-              strongSelf.pageActionsGroup.actions =
-                  [@[ strongSelf.unfollowAction ]
-                      arrayByAddingObjectsFromArray:strongSelf.pageActionsGroup
-                                                        .actions];
-            }
-          }
-        }));
   }
 
   NSMutableArray<OverflowMenuAction*>* helpActions =
@@ -904,9 +907,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.readLaterAction.enabled =
       !self.webContentAreaShowingOverlay && [self isCurrentURLWebURL];
 
-  BOOL followEnabled = self.followActionState == FollowActionStateEnabled;
-  self.followAction.enabled = followEnabled;
-  self.unfollowAction.enabled = followEnabled;
   BOOL bookmarkEnabled =
       [self isCurrentURLWebURL] && [self isEditBookmarksEnabled];
   self.addBookmarkAction.enabled = bookmarkEnabled;
@@ -1107,6 +1107,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
   self.webState = newWebState;
+  if (self.webState && self.followAction) {
+    FollowTabHelper::FromWebState(self.webState)->set_follow_menu_updater(self);
+  }
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -1140,6 +1143,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)bookmarkNodeDeleted:(const bookmarks::BookmarkNode*)node
                  fromFolder:(const bookmarks::BookmarkNode*)folder {
   [self updateModel];
+}
+
+#pragma mark - FollowMenuUpdater
+
+- (void)updateFollowMenuItemWithFollowWebPageURLs:
+            (FollowWebPageURLs*)webPageURLs
+                                           status:(BOOL)status
+                                            title:(NSString*)title
+                                          enabled:(BOOL)enable {
+  DCHECK(IsWebChannelsEnabled());
+  self.followAction.enabled = enable;
+  self.followAction.name = title;
+  self.followAction.uiImage = [UIImage
+      imageNamed:status ? @"popup_menu_unfollow" : @"popup_menu_follow"];
+  __weak __typeof(self) weakSelf = self;
+  self.followAction.handler = ^{
+    [weakSelf updateFollowStatus:!status withFollowWebPageURLs:webPageURLs];
+  };
 }
 
 #pragma mark - BrowserContainerConsumer
@@ -1238,13 +1259,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher showClearBrowsingDataSettings];
 }
 
-// Updates the follow status of the web channel corresponding to |webPageURLs|
-// to |followStatus|, and dismisses the menu.
-- (void)updateFollowStatus:(BOOL)followStatus {
+// Updates the follow status of the website corresponding to |webPageURLs|
+// with |followStatus|, and dismisses the menu.
+- (void)updateFollowStatus:(BOOL)followStatus
+     withFollowWebPageURLs:(FollowWebPageURLs*)webPageURLs {
   ios::GetChromeBrowserProvider().GetFollowProvider()->UpdateFollowStatus(
-      self.webPageURLs, followStatus);
-  // TODO(crbug.com/1323764): This will need to be called on the
-  // PopupMenuCommands handler.
+      webPageURLs, followStatus);
   [self.dispatcher dismissPopupMenuAnimated:YES];
 }
 

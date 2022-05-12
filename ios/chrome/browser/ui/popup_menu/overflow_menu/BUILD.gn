@@ -55,6 +55,8 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow",
     "//ios/chrome/browser/follow:enums",
+    "//ios/chrome/browser/follow:tab_helper",
+    "//ios/chrome/browser/follow:utils",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/policy",

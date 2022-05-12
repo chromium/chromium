@@ -82,10 +82,6 @@ class WebStateList;
 // The current browser policy connector.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
 
-// The follow action state. e.g. If the property value is FollowActionStateHide,
-// "Follow" action should be hidden in the overflow menu.
-@property(nonatomic, assign) FollowActionState followActionState;
-
 // Disconnect the mediator.
 - (void)disconnect;
 
