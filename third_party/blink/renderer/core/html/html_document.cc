@@ -110,53 +110,85 @@ void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   }
 }
 
-static HashSet<StringImpl*>* CreateHtmlCaseInsensitiveAttributesSet() {
-  // This is the list of attributes in HTML 4.01 with values marked as "[CI]" or
-  // case-insensitive.  Mozilla treats all other values as case-sensitive, thus
-  // so do we.
-  HashSet<StringImpl*>* attr_set = new HashSet<StringImpl*>;
-
-  const QualifiedName* case_insensitive_attributes[] = {
-      &html_names::kAcceptCharsetAttr, &html_names::kAcceptAttr,
-      &html_names::kAlignAttr,         &html_names::kAlinkAttr,
-      &html_names::kAxisAttr,          &html_names::kBgcolorAttr,
-      &html_names::kCharsetAttr,       &html_names::kCheckedAttr,
-      &html_names::kClearAttr,         &html_names::kCodetypeAttr,
-      &html_names::kColorAttr,         &html_names::kCompactAttr,
-      &html_names::kDeclareAttr,       &html_names::kDeferAttr,
-      &html_names::kDirAttr,           &html_names::kDirectionAttr,
-      &html_names::kDisabledAttr,      &html_names::kEnctypeAttr,
-      &html_names::kFaceAttr,          &html_names::kFrameAttr,
-      &html_names::kHreflangAttr,      &html_names::kHttpEquivAttr,
-      &html_names::kLangAttr,          &html_names::kLanguageAttr,
-      &html_names::kLinkAttr,          &html_names::kMediaAttr,
-      &html_names::kMethodAttr,        &html_names::kMultipleAttr,
-      &html_names::kNohrefAttr,        &html_names::kNoresizeAttr,
-      &html_names::kNoshadeAttr,       &html_names::kNowrapAttr,
-      &html_names::kReadonlyAttr,      &html_names::kRelAttr,
-      &html_names::kRevAttr,           &html_names::kRulesAttr,
-      &html_names::kScopeAttr,         &html_names::kScrollingAttr,
-      &html_names::kSelectedAttr,      &html_names::kShapeAttr,
-      &html_names::kTargetAttr,        &html_names::kTextAttr,
-      &html_names::kTypeAttr,          &html_names::kValignAttr,
-      &html_names::kValuetypeAttr,     &html_names::kVlinkAttr};
-
-  attr_set->ReserveCapacityForSize(std::size(case_insensitive_attributes));
-  for (const QualifiedName* attr : case_insensitive_attributes)
-    attr_set->insert(attr->LocalName().Impl());
-
-  return attr_set;
-}
-
 bool HTMLDocument::IsCaseSensitiveAttribute(
     const QualifiedName& attribute_name) {
-  static HashSet<StringImpl*>* html_case_insensitive_attributes_set =
-      CreateHtmlCaseInsensitiveAttributesSet();
-  bool is_possible_html_attr = !attribute_name.HasPrefix() &&
-                               (attribute_name.NamespaceURI() == g_null_atom);
-  return !is_possible_html_attr ||
-         !html_case_insensitive_attributes_set->Contains(
-             attribute_name.LocalName().Impl());
+  if (attribute_name.HasPrefix() ||
+      attribute_name.NamespaceURI() != g_null_atom) {
+    // Not an HTML attribute.
+    return true;
+  }
+  AtomicString local_name = attribute_name.LocalName();
+  if (local_name.length() < 3) {
+    return true;
+  }
+
+  // This is the list of attributes in HTML 4.01 with values marked as "[CI]"
+  // or case-insensitive. Mozilla treats all other values as case-sensitive,
+  // thus so do we.
+  switch (local_name[0]) {
+    case 'a':
+      return local_name != html_names::kAcceptCharsetAttr.LocalName() &&
+             local_name != html_names::kAcceptAttr.LocalName() &&
+             local_name != html_names::kAlignAttr.LocalName() &&
+             local_name != html_names::kAlinkAttr.LocalName() &&
+             local_name != html_names::kAxisAttr.LocalName();
+    case 'b':
+      return local_name != html_names::kBgcolorAttr;
+    case 'c':
+      return local_name != html_names::kCharsetAttr &&
+             local_name != html_names::kCheckedAttr &&
+             local_name != html_names::kClearAttr &&
+             local_name != html_names::kCodetypeAttr &&
+             local_name != html_names::kColorAttr &&
+             local_name != html_names::kCompactAttr;
+    case 'd':
+      return local_name != html_names::kDeclareAttr &&
+             local_name != html_names::kDeferAttr &&
+             local_name != html_names::kDirAttr &&
+             local_name != html_names::kDirectionAttr &&
+             local_name != html_names::kDisabledAttr;
+    case 'e':
+      return local_name != html_names::kEnctypeAttr;
+    case 'f':
+      return local_name != html_names::kFaceAttr &&
+             local_name != html_names::kFrameAttr;
+    case 'h':
+      return local_name != html_names::kHreflangAttr &&
+             local_name != html_names::kHttpEquivAttr;
+    case 'l':
+      return local_name != html_names::kLangAttr &&
+             local_name != html_names::kLanguageAttr &&
+             local_name != html_names::kLinkAttr;
+    case 'm':
+      return local_name != html_names::kMediaAttr &&
+             local_name != html_names::kMethodAttr &&
+             local_name != html_names::kMultipleAttr;
+    case 'n':
+      return local_name != html_names::kNohrefAttr &&
+             local_name != html_names::kNoresizeAttr &&
+             local_name != html_names::kNoshadeAttr &&
+             local_name != html_names::kNowrapAttr;
+    case 'r':
+      return local_name != html_names::kReadonlyAttr &&
+             local_name != html_names::kRelAttr &&
+             local_name != html_names::kRevAttr &&
+             local_name != html_names::kRulesAttr;
+    case 's':
+      return local_name != html_names::kScopeAttr.LocalName() &&
+             local_name != html_names::kScrollingAttr &&
+             local_name != html_names::kSelectedAttr &&
+             local_name != html_names::kShapeAttr;
+    case 't':
+      return local_name != html_names::kTargetAttr &&
+             local_name != html_names::kTextAttr &&
+             local_name != html_names::kTypeAttr;
+    case 'v':
+      return local_name != html_names::kValignAttr &&
+             local_name != html_names::kValuetypeAttr &&
+             local_name != html_names::kVlinkAttr;
+    default:
+      return true;
+  }
 }
 
 }  // namespace blink
