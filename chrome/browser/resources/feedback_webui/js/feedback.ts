@@ -68,9 +68,6 @@ class FeedbackHelper {
                 'Feedback: Report for request with ID ' + ID +
                 ' will be sent later.');
           }
-          if (FLOW === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-            chrome.feedbackPrivate.loginFeedbackComplete();
-          }
           scheduleWindowClose();
         });
   }
@@ -482,9 +479,6 @@ function sendReport(): boolean {
 function cancel(e: Event) {
   e.preventDefault();
   scheduleWindowClose();
-  if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-    chrome.feedbackPrivate.loginFeedbackComplete();
-  }
 }
 
 // <if expr="chromeos_ash">

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,15 +148,6 @@ chrome.feedbackPrivate.getSystemInformation = function(callback) {};
 chrome.feedbackPrivate.sendFeedback = function(feedback, loadSystemInfo, formOpenTime, callback) {};
 
 /**
- * Gets localized translated strings for feedback. It returns the strings as a
- * dictionary mapping from string identifier to the translated string to use in
- * the feedback app UI.
- * @param {!chrome.feedbackPrivate.FeedbackFlow} flow
- * @param {function(Object): void} callback
- */
-chrome.feedbackPrivate.getStrings = function(flow, callback) {};
-
-/**
  * Reads from a log source indicated by <code>source</code>. <p>If
  * <code>incremental</code> is false: <ul>   <li>Returns the entire contents of
  * the log file.</li>   <li>Returns <code>readerId</code> value of 0 to
@@ -174,13 +165,6 @@ chrome.feedbackPrivate.getStrings = function(flow, callback) {};
  * @param {function(!chrome.feedbackPrivate.ReadLogSourceResult): void} callback
  */
 chrome.feedbackPrivate.readLogSource = function(params, callback) {};
-
-/**
- * Invoked when the extension is complete during sending feedback from the login
- * page. This is then used to know we can unload the feedback extension from the
- * login profile.
- */
-chrome.feedbackPrivate.loginFeedbackComplete = function() {};
 
 /**
  * Fired when the a user requests the launch of the feedback UI. We're using an

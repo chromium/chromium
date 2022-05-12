@@ -51,11 +51,6 @@ void ShellFeedbackPrivateDelegate::FetchExtraLogs(
   std::move(callback).Run(feedback_data);
 }
 
-void ShellFeedbackPrivateDelegate::UnloadFeedbackExtension(
-    content::BrowserContext* context) const {
-  NOTIMPLEMENTED();
-}
-
 api::feedback_private::LandingPageType
 ShellFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {

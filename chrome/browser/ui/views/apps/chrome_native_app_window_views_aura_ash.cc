@@ -57,22 +57,6 @@
 
 using extensions::AppWindow;
 
-namespace {
-
-// The feedback dialog is modal during OOBE and login because it must stay above
-// the views login UI and the webui GAIA login dialog.
-bool IsLoginFeedbackModalDialog(const AppWindow* app_window) {
-  if (app_window->extension_id() != extension_misc::kFeedbackExtensionId)
-    return false;
-
-  using session_manager::SessionState;
-  SessionState state = session_manager::SessionManager::Get()->session_state();
-  return state == SessionState::OOBE || state == SessionState::LOGIN_PRIMARY ||
-         state == SessionState::LOGIN_SECONDARY;
-}
-
-}  // namespace
-
 ChromeNativeAppWindowViewsAuraAsh::ChromeNativeAppWindowViewsAuraAsh()
     : exclusive_access_manager_(
           std::make_unique<ExclusiveAccessManager>(this)) {
@@ -98,10 +82,6 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, false);
   // TODO(https://crbug.com/997480): Determine if all non-resizable windows
   // should have this behavior, or just the feedback app.
-  if (app_window->extension_id() == extension_misc::kFeedbackExtensionId) {
-    ash::WindowBackdrop::Get(window)->SetBackdropType(
-        ash::WindowBackdrop::BackdropType::kSemiOpaque);
-  }
   window_observation_.Observe(window);
 }
 
@@ -116,9 +96,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   // Some windows need to be placed in special containers, for example to make
   // them visible at the login or lock screen.
   absl::optional<int> container_id;
-  if (IsLoginFeedbackModalDialog(app_window()))
-    container_id = ash::kShellWindowId_LockSystemModalContainer;
-  else if (create_params.is_ime_window)
+  if (create_params.is_ime_window)
     container_id = ash::kShellWindowId_ImeWindowParentContainer;
   else if (create_params.show_on_lock_screen)
     container_id = ash::kShellWindowId_LockActionHandlerContainer;
@@ -168,12 +146,6 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
                         chromeos::kResizeOutsideBoundsSize,
                         chromeos::kResizeAreaCornerSize);
   return frame;
-}
-
-ui::ModalType ChromeNativeAppWindowViewsAuraAsh::GetModalType() const {
-  if (IsLoginFeedbackModalDialog(app_window()))
-    return ui::MODAL_TYPE_SYSTEM;
-  return ChromeNativeAppWindowViewsAura::GetModalType();
 }
 
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {

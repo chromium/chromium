@@ -190,7 +190,6 @@ namespace feedbackPrivate {
   callback GetSystemInformationCallback =
       void(SystemInformation[] systemInformation);
   callback SendFeedbackCallback = void(Status status, LandingPageType type);
-  callback GetStringsCallback = void(object result);
   callback ReadLogSourceCallback = void (ReadLogSourceResult result);
 
   interface Functions {
@@ -211,11 +210,6 @@ namespace feedbackPrivate {
                              optional boolean loadSystemInfo,
                              optional double formOpenTime,
                              SendFeedbackCallback callback);
-
-    // Gets localized translated strings for feedback. It returns the
-    // strings as a dictionary mapping from string identifier to the
-    // translated string to use in the feedback app UI.
-    static void getStrings(FeedbackFlow flow, GetStringsCallback callback);
 
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:
@@ -245,10 +239,6 @@ namespace feedbackPrivate {
     static void readLogSource(ReadLogSourceParams params,
                               ReadLogSourceCallback callback);
 
-    // Invoked when the extension is complete during sending feedback from the
-    // login page. This is then used to know we can unload the feedback
-    // extension from the login profile.
-    static void loginFeedbackComplete();
   };
 
   interface Events {

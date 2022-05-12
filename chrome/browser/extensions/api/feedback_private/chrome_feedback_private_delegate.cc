@@ -221,14 +221,6 @@ void ChromeFeedbackPrivateDelegate::FetchExtraLogs(
   }
 }
 
-void ChromeFeedbackPrivateDelegate::UnloadFeedbackExtension(
-    content::BrowserContext* context) const {
-  extensions::ExtensionSystem::Get(context)
-      ->extension_service()
-      ->component_loader()
-      ->Remove(extension_misc::kFeedbackExtensionId);
-}
-
 api::feedback_private::LandingPageType
 ChromeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {

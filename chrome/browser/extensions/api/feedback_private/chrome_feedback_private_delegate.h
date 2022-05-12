@@ -34,7 +34,6 @@ class ChromeFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
       api::feedback_private::LogSource source_type) const override;
   void FetchExtraLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
                       FetchExtraLogsCallback callback) const override;
-  void UnloadFeedbackExtension(content::BrowserContext* context) const override;
   api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const override;
   void GetLacrosHistograms(GetHistogramsCallback callback) override;

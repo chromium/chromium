@@ -130,7 +130,6 @@ const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
 // The extension id for the web store extension.
 const char kChromeVoxExtensionId[] = "kgejglhpjiefppelpmljglcjbhoiplfn";
 #endif
-const char kFeedbackExtensionId[] = "gfdkimpbcpahaombhbimeihdjnejgicl";
 const char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 const char kQuickOfficeComponentExtensionId[] =
     "bpmcpldpdmajfigpchkicefoigmkfalc";
@@ -178,7 +177,6 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
   static const char* const kApps[] = {
       // clang-format off
       kChromeVoxExtensionId,
-      kFeedbackExtensionId,
       kFilesManagerAppId,
       kHighlightsAtlasAppId,
       kHighlightsAppId,

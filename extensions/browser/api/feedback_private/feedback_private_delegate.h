@@ -66,11 +66,6 @@ class FeedbackPrivateDelegate {
       scoped_refptr<feedback::FeedbackData> feedback_data,
       FetchExtraLogsCallback callback) const = 0;
 
-  // Unloads the feedback extension from the current profile, should only be
-  // called when feedback is complete for the login profile.
-  virtual void UnloadFeedbackExtension(
-      content::BrowserContext* context) const = 0;
-
   // Returns the type of the landing page which is shown to the user when the
   // report is successfully sent.
   virtual api::feedback_private::LandingPageType GetLandingPageType(

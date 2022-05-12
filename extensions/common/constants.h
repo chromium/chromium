@@ -239,9 +239,6 @@ constexpr ExtensionIcons EXTENSION_ICON_INVALID = 0;
 // The extension id of the ChromeVox extension.
 EXTENSIONS_EXPORT extern const char kChromeVoxExtensionId[];
 
-// The extension id of the feedback component extension.
-EXTENSIONS_EXPORT extern const char kFeedbackExtensionId[];
-
 // The extension id of the PDF extension.
 EXTENSIONS_EXPORT extern const char kPdfExtensionId[];
 

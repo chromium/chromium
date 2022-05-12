@@ -107,7 +107,6 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // item that does nothing.
   const char* kNoPinAppIds[] = {
       file_manager::kAudioPlayerAppId,
-      extension_misc::kFeedbackExtensionId,
       ash::eche_app::kEcheAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))

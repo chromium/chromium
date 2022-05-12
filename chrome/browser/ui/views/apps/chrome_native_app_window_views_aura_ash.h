@@ -88,7 +88,6 @@ class ChromeNativeAppWindowViewsAuraAsh
   // WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
-  ui::ModalType GetModalType() const override;
   ui::ImageModel GetWindowIcon() override;
 
   // NativeAppWindow:

@@ -262,62 +262,6 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   return info;
 }
 
-void FeedbackPrivateAPI::RequestFeedbackForFlow(
-    const std::string& description_template,
-    const std::string& description_placeholder_text,
-    const std::string& category_tag,
-    const std::string& extra_diagnostics,
-    const GURL& page_url,
-    api::feedback_private::FeedbackFlow flow,
-    bool from_assistant,
-    bool include_bluetooth_logs,
-    bool show_questionnaire,
-    bool from_chrome_labs_or_kaleidoscope) {
-  if (browser_context_ && EventRouter::Get(browser_context_)) {
-    auto info = CreateFeedbackInfo(
-        description_template, description_placeholder_text, category_tag,
-        extra_diagnostics, page_url, flow, from_assistant,
-        include_bluetooth_logs, show_questionnaire,
-        from_chrome_labs_or_kaleidoscope);
-
-    auto args = feedback_private::OnFeedbackRequested::Create(*info);
-
-    auto event = std::make_unique<Event>(
-        events::FEEDBACK_PRIVATE_ON_FEEDBACK_REQUESTED,
-        feedback_private::OnFeedbackRequested::kEventName, std::move(args),
-        browser_context_);
-
-    // TODO(weidongg/754329): Using DispatchEventWithLazyListener() is a
-    // temporary fix to the bug. Investigate a better solution that applies to
-    // all scenarios.
-    EventRouter::Get(browser_context_)
-        ->DispatchEventWithLazyListener(extension_misc::kFeedbackExtensionId,
-                                        std::move(event));
-  }
-}
-
-// static
-base::OnceClosure* FeedbackPrivateGetStringsFunction::test_callback_ = nullptr;
-
-ExtensionFunction::ResponseAction FeedbackPrivateGetStringsFunction::Run() {
-  auto params = feedback_private::GetStrings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  FeedbackPrivateDelegate* feedback_private_delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  DCHECK(feedback_private_delegate);
-  std::unique_ptr<base::DictionaryValue> dict =
-      feedback_private_delegate->GetStrings(
-          browser_context(),
-          params->flow == FeedbackFlow::FEEDBACK_FLOW_SADTABCRASH);
-
-  if (test_callback_ && !test_callback_->is_null())
-    std::move(*test_callback_).Run();
-
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
-}
-
 ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {
   FeedbackPrivateDelegate* feedback_private_delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
@@ -430,16 +374,6 @@ void FeedbackPrivateSendFeedbackFunction::OnCompleted(
         ->GetFeedbackPrivateDelegate()
         ->NotifyFeedbackDelayed();
   }
-}
-
-ExtensionFunction::ResponseAction
-FeedbackPrivateLoginFeedbackCompleteFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  FeedbackPrivateDelegate* feedback_private_delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  feedback_private_delegate->UnloadFeedbackExtension(browser_context());
-#endif
-  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

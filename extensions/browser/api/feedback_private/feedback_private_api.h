@@ -51,17 +51,6 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
       bool show_questionnaire,
       bool from_chrome_labs_or_kaleidoscope);
 
-  void RequestFeedbackForFlow(const std::string& description_template,
-                              const std::string& description_placeholder_text,
-                              const std::string& category_tag,
-                              const std::string& extra_diagnostics,
-                              const GURL& page_url,
-                              api::feedback_private::FeedbackFlow flow,
-                              bool from_assistant = false,
-                              bool include_bluetooth_logs = false,
-                              bool show_questionnaire = false,
-                              bool from_chrome_labs_or_kaleidoscope = false);
-
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>*
   GetFactoryInstance();
@@ -85,27 +74,6 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<LogSourceAccessManager> log_source_access_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
-
-// Feedback strings.
-class FeedbackPrivateGetStringsFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("feedbackPrivate.getStrings",
-                             FEEDBACKPRIVATE_GETSTRINGS)
-
-  // Invoke this callback when this function is called - used for testing.
-  static void set_test_callback(base::OnceClosure* callback) {
-    test_callback_ = callback;
-  }
-
- protected:
-  ~FeedbackPrivateGetStringsFunction() override {}
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  static base::OnceClosure* test_callback_;
 };
 
 class FeedbackPrivateGetUserEmailFunction : public ExtensionFunction {
@@ -160,16 +128,6 @@ class FeedbackPrivateSendFeedbackFunction : public ExtensionFunction {
   ~FeedbackPrivateSendFeedbackFunction() override {}
   ResponseAction Run() override;
   void OnCompleted(api::feedback_private::LandingPageType type, bool success);
-};
-
-class FeedbackPrivateLoginFeedbackCompleteFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("feedbackPrivate.loginFeedbackComplete",
-                             FEEDBACKPRIVATE_LOGINFEEDBACKCOMPLETE)
-
- protected:
-  ~FeedbackPrivateLoginFeedbackCompleteFunction() override {}
-  ResponseAction Run() override;
 };
 
 }  // namespace extensions

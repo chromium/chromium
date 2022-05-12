@@ -44,9 +44,9 @@ bool ExtensionRunsInAsh(const std::string& extension_id) {
 
 bool ExtensionAppRunsInAsh(const std::string& app_id) {
   static base::NoDestructor<std::set<base::StringPiece>> keep_list(
-      {file_manager::kAudioPlayerAppId, extension_misc::kFeedbackExtensionId,
-       extension_misc::kFilesManagerAppId, extension_misc::kGoogleKeepAppId,
-       extension_misc::kCalculatorAppId, extension_misc::kTextEditorAppId,
+      {file_manager::kAudioPlayerAppId, extension_misc::kFilesManagerAppId,
+       extension_misc::kGoogleKeepAppId, extension_misc::kCalculatorAppId,
+       extension_misc::kTextEditorAppId,
        extension_misc::kInAppPaymentsSupportAppId,
        extension_misc::kWallpaperManagerId, arc::kPlayStoreAppId,
        extension_misc::kIdentityApiUiAppId, extension_misc::kGnubbyAppId});

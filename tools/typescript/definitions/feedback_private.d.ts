@@ -95,7 +95,5 @@ declare namespace chrome {
 
     export function getSystemInformation(
         callback: (info: SystemInformation[]) => void): void;
-
-    export function loginFeedbackComplete(): void;
   }
 }
