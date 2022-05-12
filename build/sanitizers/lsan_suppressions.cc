@@ -54,6 +54,9 @@ char kLSanDefaultSuppressions[] =
     // Leak in libnssutil. crbug.com/1290634
     "leak:libnssutil3\n"
 
+    // Suppress leaks from unknown third party modules. http://anglebug.com/6937
+    "leak:<unknown module>\n"
+
     // ================ Leaks in Chromium code ================
     // PLEASE DO NOT ADD SUPPRESSIONS FOR NEW LEAKS.
     // Instead, commits that introduce memory leaks should be reverted.
