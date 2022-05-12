@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -200,6 +201,16 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // thus it's safe for a `NavigationRequest` to store a pointer to this.
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
       const GURL& urn_uuid);
+
+  // Modifies the true URL from a URN by replacing substrings specified in the
+  // replacements map. The true URLs for any component ads associated with this
+  // URN will also have substrings substituted. This function will be removed
+  // once all FLEDGE auctions switch to using fenced frames.
+  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // showing FLEDGE ads in iframes.
+  void SubstituteMappedURL(
+      const GURL& urn_uuid,
+      const std::vector<std::pair<std::string, std::string>>& substitutions);
 
   bool HasObserverForTesting(const GURL& urn_uuid,
                              MappingResultObserver* observer);

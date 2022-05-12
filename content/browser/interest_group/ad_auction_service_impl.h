@@ -56,6 +56,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void DeprecatedGetURLFromURN(
       const GURL& urn_url,
       DeprecatedGetURLFromURNCallback callback) override;
+  void DeprecatedReplaceInURN(
+      const GURL& urn_url,
+      std::vector<blink::mojom::ReplacementPtr> replacements,
+      DeprecatedReplaceInURNCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
   void FinalizeAd(const std::string& ads_guid,

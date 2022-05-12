@@ -101,6 +101,19 @@ class MODULES_EXPORT NavigatorAuction final
                                           const String& uuid_url_string,
                                           ExceptionState& exception_state);
 
+  ScriptPromise deprecatedReplaceInURN(
+      ScriptState* script_state,
+      const String& uuid_url_string,
+      const Vector<std::pair<String, String>>& replacement,
+      ExceptionState& exception_state);
+
+  static ScriptPromise deprecatedReplaceInURN(
+      ScriptState* script_state,
+      Navigator& navigator,
+      const String& uuid_url_string,
+      const Vector<std::pair<String, String>>& replacement,
+      ExceptionState& exception_state);
+
   ScriptPromise createAdRequest(ScriptState*,
                                 const AdRequestConfig*,
                                 ExceptionState&);
@@ -167,6 +180,8 @@ class MODULES_EXPORT NavigatorAuction final
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
                              const absl::optional<KURL>&);
+  // Completion callback for Mojo call made by deprecatedReplaceInURNComplete().
+  void ReplaceInURNComplete(ScriptPromiseResolver* resolver);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

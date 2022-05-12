@@ -311,7 +311,7 @@ void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
     const GURL& urn_url,
     DeprecatedGetURLFromURNCallback callback) {
   if (!blink::IsValidUrnUuidURL(urn_url)) {
-    std::move(callback).Run(absl::nullopt);
+    ReportBadMessageAndDeleteThis("Unexpected request: invalid URN");
     return;
   }
   FencedFrameURLMappingObserver obs;
@@ -325,6 +325,34 @@ void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
   if (!obs.called_)
     mapping.RemoveObserverForURN(urn_url, &obs);
   std::move(callback).Run(std::move(obs.mapped_url_));
+}
+
+void AdAuctionServiceImpl::DeprecatedReplaceInURN(
+    const GURL& urn_url,
+    std::vector<blink::mojom::ReplacementPtr> replacements,
+    DeprecatedReplaceInURNCallback callback) {
+  if (!blink::IsValidUrnUuidURL(urn_url)) {
+    ReportBadMessageAndDeleteThis("Unexpected request: invalid URN");
+    return;
+  }
+  std::vector<std::pair<std::string, std::string>> local_replacements;
+  for (const auto& replacement : replacements) {
+    if (!(base::StartsWith(replacement->match, "${") &&
+          base::EndsWith(replacement->match, "}")) &&
+        !(base::StartsWith(replacement->match, "%%") &&
+          base::EndsWith(replacement->match, "%%"))) {
+      ReportBadMessageAndDeleteThis("Unexpected request: bad replacement");
+      return;
+    }
+    local_replacements.emplace_back(std::move(replacement->match),
+                                    std::move(replacement->replacement));
+  }
+  content::FencedFrameURLMapping& mapping =
+      static_cast<RenderFrameHostImpl*>(render_frame_host())
+          ->GetPage()
+          .fenced_frame_urls_map();
+  mapping.SubstituteMappedURL(urn_url, local_replacements);
+  std::move(callback).Run();
 }
 
 void AdAuctionServiceImpl::CreateAdRequest(

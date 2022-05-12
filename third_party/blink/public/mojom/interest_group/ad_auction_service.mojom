@@ -9,6 +9,11 @@ import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+struct Replacement {
+  string match;
+  string replacement;
+};
+
 // Per-frame API to initiate on-device ad auction and add interest groups.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 interface AdAuctionService {
@@ -101,4 +106,17 @@ interface AdAuctionService {
   // TODO(crbug.com/1253118): Remove this function when we remove support for
   // showing FLEDGE ads in iframes.
   DeprecatedGetURLFromURN(url.mojom.Url uuid_url) => (url.mojom.Url? decoded_url);
+
+  // Modifies the true URL from a URN returned from RunAdAuction by replacing
+  // substrings specified as pairs the replacements list. The true URLs for any
+  // component ads associated with this URN will also have substrings
+  // substituted. This function will be removed once all FLEDGE auctions switch
+  // to using fenced frames. `uuid_url` should have the format format
+  // "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122. The
+  // replacement strings must start and end with either "${" and "}" or "%%"
+  // and "%%".
+  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // showing FLEDGE ads in iframes.
+  DeprecatedReplaceInURN(url.mojom.Url uuid_url,
+                         array<Replacement> replacements) => ();
 };

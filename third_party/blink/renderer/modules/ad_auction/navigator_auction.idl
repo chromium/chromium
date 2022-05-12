@@ -32,6 +32,9 @@
   [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
   Promise<USVString> deprecatedURNToURL(USVString uuid_url);
 
+  [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
+  Promise<void> deprecatedReplaceInURN(USVString uuid_url, record<USVString, USVString> replacements);
+
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<Ads> createAdRequest(AdRequestConfig config);
 

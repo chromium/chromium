@@ -40116,6 +40116,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4224" label="FedCmRevoke"/>
   <int value="4225" label="FedCmLogout"/>
   <int value="4226" label="FedCmLogoutRps"/>
+  <int value="4227" label="V8Navigator_DeprecatedReplaceInURN_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

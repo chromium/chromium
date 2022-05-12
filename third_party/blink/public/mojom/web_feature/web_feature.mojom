@@ -3545,6 +3545,7 @@ enum WebFeature {
   kFedCmRevoke = 4224,
   kFedCmLogout = 4225,
   kFedCmLogoutRps = 4226,
+  kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/guid.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -26,6 +27,38 @@ const char kURNUUIDprefix[] = "urn:uuid:";
 GURL GenerateURN() {
   return GURL(kURNUUIDprefix +
               base::GUID::GenerateRandomV4().AsLowercaseString());
+}
+
+// Returns a new string based on input where the matching substrings have been
+// replaced with the corresponding substitutions. This function avoids repeated
+// string operations by building the output based on all substitutions, one
+// substitution at a time. This effectively performs all substitutions
+// simultaneously, with the earliest match in the input taking precedence.
+std::string SubstituteMappedStrings(
+    const std::string& input,
+    const std::vector<std::pair<std::string, std::string>>& substitutions) {
+  std::vector<std::string> output_vec;
+  size_t input_idx = 0;
+  while (input_idx < input.size()) {
+    size_t replace_idx = input.size();
+    size_t replace_end_idx = input.size();
+    std::pair<std::string, std::string> const* next_replacement = nullptr;
+    for (const auto& substitution : substitutions) {
+      size_t found_idx = input.find(substitution.first, input_idx);
+      if (found_idx < replace_idx) {
+        replace_idx = found_idx;
+        replace_end_idx = found_idx + substitution.first.size();
+        next_replacement = &substitution;
+      }
+    }
+    output_vec.push_back(input.substr(input_idx, replace_idx - input_idx));
+    if (replace_idx < input.size()) {
+      output_vec.push_back(next_replacement->second);
+    }
+    // move input index to after what we replaced (or end of string).
+    input_idx = replace_end_idx;
+  }
+  return base::StrCat(output_vec);
 }
 
 }  // namespace
@@ -230,6 +263,31 @@ FencedFrameURLMapping::GetSharedStorageBudgetMetadata(const GURL& urn_uuid) {
     return nullptr;
 
   return &it->second.shared_storage_budget_metadata.value();
+}
+
+void FencedFrameURLMapping::SubstituteMappedURL(
+    const GURL& urn_uuid,
+    const std::vector<std::pair<std::string, std::string>>& substitutions) {
+  auto it = urn_uuid_to_url_map_.find(urn_uuid);
+  if (it == urn_uuid_to_url_map_.end()) {
+    return;
+  }
+  MapInfo info = it->second;
+  info.mapped_url = GURL(
+      SubstituteMappedStrings(it->second.mapped_url.spec(), substitutions));
+  if (!info.mapped_url.is_valid()) {
+    return;
+  }
+  if (info.ad_component_urls) {
+    for (auto& ad_component_url : info.ad_component_urls.value()) {
+      ad_component_url =
+          GURL(SubstituteMappedStrings(ad_component_url.spec(), substitutions));
+      if (!ad_component_url.is_valid()) {
+        return;
+      }
+    }
+  }
+  it->second = std::move(info);
 }
 
 bool FencedFrameURLMapping::HasObserverForTesting(

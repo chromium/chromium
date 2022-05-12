@@ -896,6 +896,26 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return GURL(result.ExtractString());
   }
 
+  bool ReplaceInURNInJS(
+      const GURL& urn_url,
+      const base::flat_map<std::string, std::string> replacements,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    base::Value::Dict replacement_value;
+    for (const auto& replacement : replacements)
+      replacement_value.Set(replacement.first, replacement.second);
+    EvalJsResult result =
+        EvalJs(execution_target ? *execution_target : shell(),
+               JsReplace(R"(
+    (async function() {
+      await navigator.deprecatedReplaceInURN($1, $2);
+      return 'done';
+    })())",
+                         urn_url, base::Value(std::move(replacement_value))));
+    EXPECT_EQ("", result.error);
+    return "done" == result;
+  }
+
   void AttachInterestGroupObserver() {
     manager_->AddInterestGroupObserver(observer_.get());
   }
@@ -2995,6 +3015,58 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 ->trusted_params->isolation_info.network_isolation_key());
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithWinnerReplacedURN) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      GURL(https_server_->GetURL("c.test", "/%%echo%%?${INTEREST_GROUP_NAME}")
+               .spec());
+  GURL expected_ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          /*owner=*/test_origin,
+                          /*name=*/"cars",
+                          /*priority=*/0.0,
+                          /*bidding_url=*/
+                          https_server_->GetURL(
+                              "a.test", "/interest_group/bidding_logic.js"),
+                          /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  auto result = RunAuctionAndWait(auction_config,
+                                  /*execution_target=*/absl::nullopt);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+    EXPECT_EQ(ad_url, observer.mapped_url());
+  }
+
+  EXPECT_TRUE(ReplaceInURNInJS(
+      urn_url,
+      {{"${INTEREST_GROUP_NAME}", "render_cars"}, {"%%echo%%", "echo"}}));
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_EQ(expected_ad_url, observer.mapped_url());
+  }
+  NavigateIframeAndCheckURL(web_contents(), urn_url, expected_ad_url);
+}
+
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionPerBuyerSignalsAndPerBuyerTimeoutsOriginNotInBuyers) {
@@ -3437,6 +3509,64 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                 ->trusted_params->isolation_info.network_isolation_key(),
             url_loader_monitor.GetRequestInfo(kExpectedReportUrls[1])
                 ->trusted_params->isolation_info.network_isolation_key());
+}
+
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithWinnerReplacedURN) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url =
+      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/set-header?Supports-Loading-Mode: %%LOADING_MODE%%");
+  GURL expected_ad_url = https_server_->GetURL(
+      "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+          {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+          /*ad_components=*/absl::nullopt)));
+
+  content::EvalJsResult urn_url_string = RunAuctionAndWait(
+      JsReplace(
+          R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1],
+auctionSignals: {x: 1},
+sellerSignals: {yet: 'more', info: 1},
+perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+                  })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      shell());
+  ASSERT_TRUE(urn_url_string.value.is_string())
+      << "Expected string, but got " << urn_url_string.value;
+
+  GURL urn_url(urn_url_string.ExtractString());
+  ASSERT_TRUE(urn_url.is_valid())
+      << "URL is not valid: " << urn_url_string.ExtractString();
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  ReplaceInURNInJS(urn_url, {{"%%LOADING_MODE%%", "fenced-frame"}});
+
+  NavigateFencedFrameAndWait(urn_url, expected_ad_url, shell());
 }
 
 // Runs two ad auctions with fenced frames enabled. Both auctions should
