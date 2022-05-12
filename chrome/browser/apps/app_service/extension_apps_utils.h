@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
 
@@ -45,6 +46,11 @@ std::string GetStandaloneBrowserExtensionAppId(const std::string& app_id);
 // in the muxed app id of standalone browser extension apps.
 extern const char kExtensionAppMuxedIdDelimiter[];
 #endif  // IS_CHROMEOS
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns the escaped app_id to be passed to chrome::ShowAppManagementPage().
+std::string GetEscapedAppId(const std::string& app_id, AppType app_type);
+#endif
 
 }  // namespace apps
 

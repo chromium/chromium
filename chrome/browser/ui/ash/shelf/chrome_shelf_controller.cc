@@ -28,7 +28,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/escape.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +37,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -851,13 +851,8 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
         profile, app_id,
         ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
   } else {
-    // Normally app ids would only contain alphanumerics, but standalone
-    // browser extension app uses '#' as a delimiter.
-    std::string escaped_id =
-        app_type == apps::AppType::kStandaloneBrowserChromeApp
-            ? base::EscapeAllExceptUnreserved(app_id)
-            : app_id;
-    chrome::ShowAppManagementPage(profile, escaped_id,
+    chrome::ShowAppManagementPage(profile,
+                                  apps::GetEscapedAppId(app_id, app_type),
                                   ash::settings::AppManagementEntryPoint::
                                       kShelfContextMenuAppInfoChromeApp);
   }
