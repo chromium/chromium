@@ -28,6 +28,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/keyword_search_term.h"
+#include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -682,24 +683,52 @@ void SearchProvider::DoHistoryQuery(bool minimal_changes) {
   // now, this seems OK compared with the complexity of a real fix, which would
   // require multiple searches and tracking of "single- vs. multi-word" in the
   // database.
-  int num_matches = provider_max_matches_ * 5;
+  size_t num_matches = provider_max_matches_ * 5;
   const TemplateURL* default_url = providers_.GetDefaultProviderURL();
   if (default_url) {
     const base::TimeTicks db_query_time = base::TimeTicks::Now();
-    url_db->GetMostRecentKeywordSearchTerms(default_url->id(),
-                                            input_.text(),
-                                            num_matches,
-                                            &raw_default_history_results_);
+    if (base::FeatureList::IsEnabled(omnibox::kLocalHistorySuggestRevamp)) {
+      auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
+          default_url->id(), input_.text());
+      if (enumerator) {
+        history::GetAutocompleteSearchTermsFromEnumerator(
+            *enumerator,
+            OmniboxFieldTrial::kPrefixSuggestIgnoreDuplicateVisits.Get(),
+            history::SearchTermRankingPolicy::kRecency,
+            &raw_default_history_results_);
+      }
+    } else {
+      url_db->GetMostRecentKeywordSearchTerms(default_url->id(), input_.text(),
+                                              num_matches,
+                                              &raw_default_history_results_);
+    }
     RecordDBMetrics(db_query_time, raw_default_history_results_.size());
+    if (raw_default_history_results_.size() > num_matches) {
+      raw_default_history_results_.resize(num_matches);
+    }
   }
   const TemplateURL* keyword_url = providers_.GetKeywordProviderURL();
   if (keyword_url) {
     const base::TimeTicks db_query_time = base::TimeTicks::Now();
-    url_db->GetMostRecentKeywordSearchTerms(keyword_url->id(),
-                                            keyword_input_.text(),
-                                            num_matches,
-                                            &raw_keyword_history_results_);
+    if (base::FeatureList::IsEnabled(omnibox::kLocalHistorySuggestRevamp)) {
+      auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
+          keyword_url->id(), keyword_input_.text());
+      if (enumerator) {
+        history::GetAutocompleteSearchTermsFromEnumerator(
+            *enumerator,
+            OmniboxFieldTrial::kPrefixSuggestIgnoreDuplicateVisits.Get(),
+            history::SearchTermRankingPolicy::kRecency,
+            &raw_keyword_history_results_);
+      }
+    } else {
+      url_db->GetMostRecentKeywordSearchTerms(
+          keyword_url->id(), keyword_input_.text(), num_matches,
+          &raw_keyword_history_results_);
+    }
     RecordDBMetrics(db_query_time, raw_keyword_history_results_.size());
+    if (raw_keyword_history_results_.size() > num_matches) {
+      raw_keyword_history_results_.resize(num_matches);
+    }
   }
 }
 

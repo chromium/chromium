@@ -970,7 +970,7 @@ const base::FeatureParam<int>
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
         3);
 
-// Zero Suggest
+// Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual(
     &omnibox::kZeroSuggestPrefetching,
     "ZeroSuggestCacheCounterfactual",
@@ -982,6 +982,15 @@ const base::FeatureParam<int> kZeroSuggestCacheDurationSec(
 const base::FeatureParam<bool> kZeroSuggestPrefetchBypassCache(
     &omnibox::kZeroSuggestPrefetching,
     "ZeroSuggestPrefetchBypassCache",
+    false);
+
+const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
+    &omnibox::kLocalHistorySuggestRevamp,
+    "ZeroSuggestIgnoreDuplicateVisits",
+    true);
+const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
+    &omnibox::kLocalHistorySuggestRevamp,
+    "PrefixSuggestIgnoreDuplicateVisits",
     false);
 
 }  // namespace OmniboxFieldTrial

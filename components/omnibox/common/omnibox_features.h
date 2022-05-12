@@ -36,15 +36,16 @@ extern const base::Feature kOmniboxMaxURLMatches;
 extern const base::Feature kDynamicMaxAutocomplete;
 extern const base::Feature kRetainSuggestionsWithHeaders;
 
-// On-Focus Suggestions a.k.a. ZeroSuggest.
+// Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kClobberTriggersSRPZeroSuggest;
+extern const base::Feature kLocalHistorySuggestRevamp;
+extern const base::Feature kLocalHistoryZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;
 extern const base::Feature kOnFocusSuggestionsContextualWebAllowSRP;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
-extern const base::Feature kLocalHistoryZeroSuggest;
 extern const base::Feature kZeroSuggestPrefetching;
 // Related, kMaxZeroSuggestMatches.
 

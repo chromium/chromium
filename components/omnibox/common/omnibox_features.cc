@@ -145,6 +145,11 @@ const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
     enabled_by_default_android_only};
 
+// Revamps how local search history is extracted and processed for generating
+// zero-prefix and prefix suggestions.
+extern const base::Feature kLocalHistorySuggestRevamp{
+    "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows the LocalHistoryZeroSuggestProvider to use local search history.
 const base::Feature kLocalHistoryZeroSuggest{
     "LocalHistoryZeroSuggest", enabled_by_default_desktop_android};
