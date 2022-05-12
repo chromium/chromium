@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -580,8 +581,12 @@ namespace {
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
   DCHECK(IsWebChannelsEnabled());
-  [self.feedHeaderViewController
-      updateFollowingSegmentDotForUnseenContent:hasUnseenContent];
+  if (ios::GetChromeBrowserProvider()
+          .GetFollowProvider()
+          ->DoesFollowingFeedHaveContent()) {
+    [self.feedHeaderViewController
+        updateFollowingSegmentDotForUnseenContent:hasUnseenContent];
+  }
 }
 
 - (void)ntpDidChangeVisibility:(BOOL)visible {
@@ -1160,12 +1165,17 @@ namespace {
 - (FeedHeaderViewController*)feedHeaderViewController {
   DCHECK(!self.browser->GetBrowserState()->IsOffTheRecord());
   if (!_feedHeaderViewController) {
+    // Only show the dot if the user follows available publishers.
+    BOOL followingSegmentDotVisible =
+        ios::GetChromeBrowserProvider()
+            .GetFollowProvider()
+            ->DoesFollowingFeedHaveContent() &&
+        self.discoverFeedService->GetFollowingFeedHasUnseenContent();
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
         initWithFollowingFeedSortType:(FollowingFeedSortType)
                                           self.prefService->GetInteger(
                                               prefs::kNTPFollowingFeedSortType)
-           followingSegmentDotVisible:self.discoverFeedService
-                                          ->GetFollowingFeedHasUnseenContent()];
+           followingSegmentDotVisible:followingSegmentDotVisible];
     _feedHeaderViewController.feedControlDelegate = self;
     _feedHeaderViewController.ntpDelegate = self;
     [_feedHeaderViewController.menuButton

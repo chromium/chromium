@@ -53,6 +53,9 @@ class FollowProvider {
   // management UI.
   virtual void RemoveFollowManagementUIUpdater(
       id<FollowManagementUIUpdater> follow_management_ui_updater);
+
+  // Whether the user follows any publishers that have available content.
+  virtual bool DoesFollowingFeedHaveContent();
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_FOLLOW_FOLLOW_PROVIDER_H_

@@ -31,3 +31,7 @@ void FollowProvider::AddFollowManagementUIUpdater(
 
 void FollowProvider::RemoveFollowManagementUIUpdater(
     id<FollowManagementUIUpdater> follow_management_ui_updater) {}
+
+bool FollowProvider::DoesFollowingFeedHaveContent() {
+  return false;
+}
