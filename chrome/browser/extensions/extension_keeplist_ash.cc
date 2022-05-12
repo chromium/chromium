@@ -28,7 +28,6 @@ bool ExtensionRunsInAsh(const std::string& extension_id) {
        extension_misc::kChromeVoxExtensionId,
        extension_misc::kSwitchAccessExtensionId,
        extension_misc::kSigninProfileTestExtensionId,
-       extension_misc::kAssessmentAssistantExtensionId,
        extension_misc::kQuickOfficeComponentExtensionId,
        extension_misc::kQuickOfficeInternalExtensionId,
        extension_misc::kQuickOfficeExtensionId,
