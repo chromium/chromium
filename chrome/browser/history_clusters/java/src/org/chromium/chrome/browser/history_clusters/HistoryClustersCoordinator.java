@@ -17,6 +17,7 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Function;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
@@ -30,6 +31,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
@@ -56,9 +58,12 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      *         We can't directly set the class ourselves without creating a circular dependency.
      * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
      *         tab, e.g. when we're operating in a dedicated history activity.
+     * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
+     *         correct main browsing activity.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
-            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier) {
+            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
+            Function<GURL, Intent> openUrlIntentCreator) {
         mContext = context;
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel.Builder(HistoryClustersToolbarProperties.ALL_KEYS)
@@ -67,11 +72,15 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                                 .build();
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
-                mToolbarModel, historyActivityIntentFactory, tabSupplier);
+                mToolbarModel, historyActivityIntentFactory, tabSupplier, tabSupplier == null,
+                openUrlIntentCreator);
     }
 
     public void destroy() {
         mMediator.destroy();
+        if (mActivityViewInflated) {
+            mSelectableListLayout.onDestroyed();
+        }
     }
 
     public void setQuery(String query) {

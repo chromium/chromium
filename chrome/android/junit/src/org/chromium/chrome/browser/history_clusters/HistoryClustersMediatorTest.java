@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
@@ -45,6 +47,8 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoryClustersMediatorTest {
+    private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -64,6 +68,10 @@ public class HistoryClustersMediatorTest {
     private GURL mGurl3;
     @Mock
     private Tab mTab;
+    @Mock
+    private GURL mMockGurl;
+    @Mock
+    private Function<GURL, Intent> mUrlIntentCreator;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -80,11 +88,15 @@ public class HistoryClustersMediatorTest {
 
     @Before
     public void setUp() {
+        ContextUtils.initApplicationContextForTests(mContext);
         doReturn(mResources).when(mContext).getResources();
+        doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
+        doReturn(mIntent).when(mUrlIntentCreator).apply(mMockGurl);
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
-                mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier);
+                mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier, false,
+                mUrlIntentCreator);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");
@@ -115,8 +127,9 @@ public class HistoryClustersMediatorTest {
         ListItem item = mModelList.get(0);
         assertEquals(item.type, ItemType.VISIT);
         PropertyModel model = item.model;
-        assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(
-                HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.URL)));
+        assertTrue(model.getAllSetProperties().containsAll(
+                Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
+                        HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.URL)));
     }
 
     @Test
@@ -162,6 +175,24 @@ public class HistoryClustersMediatorTest {
         mMediator.startSearch("pandas");
         assertEquals(mToolbarModel.get(HistoryClustersToolbarProperties.QUERY_STATE).getQuery(),
                 "pandas");
+    }
+
+    @Test
+    public void testNavigate() {
+        mMediator.navigateToItemUrl(mMockGurl);
+
+        verify(mTab).loadUrl(argThat(hasSameUrl(ITEM_URL_SPEC)));
+    }
+
+    @Test
+    public void testNavigateSeparateActivity() {
+        HistoryClustersMediator standaloneMediator = new HistoryClustersMediator(mBridge,
+                mLargeIconBridge, mContext, mResources, mModelList, mToolbarModel,
+                mHistoryActivityIntentFactory, mTabSupplier, true, mUrlIntentCreator);
+        standaloneMediator.navigateToItemUrl(mMockGurl);
+
+        verify(mUrlIntentCreator).apply(mMockGurl);
+        verify(mContext).startActivity(mIntent);
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

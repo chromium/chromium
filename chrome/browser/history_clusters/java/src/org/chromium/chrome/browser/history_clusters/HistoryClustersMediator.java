@@ -13,7 +13,11 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
@@ -29,6 +33,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 class HistoryClustersMediator implements SearchDelegate {
     private final HistoryClustersBridge mHistoryClustersBridge;
@@ -42,6 +47,9 @@ class HistoryClustersMediator implements SearchDelegate {
     private final Supplier<Tab> mTabSupplier;
     private Promise<HistoryClustersResult> mPromise;
     private Supplier<Intent> mHistoryActivityIntentFactory;
+    private final boolean mIsSeparateActivity;
+    private Function<GURL, Intent> mOpenUrlIntentCreator;
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * Create a new HistoryClustersMediator.
@@ -55,11 +63,17 @@ class HistoryClustersMediator implements SearchDelegate {
      * @param historyActivityIntentFactory Supplier of an intent that targets the History activity.
      * @param tabSupplier Supplier of the currently active tab. Null in cases where there isn't a
      *         tab, e.g. when we're operating in a dedicated history activity.
+     * @param isSeparateActivity Whether the Journeys UI this mediator supports is running in a
+     *         separate activity (as opposed to in a tab). This informs, e.g. whether viewing a url
+     *         should launch an intent or directly navigate a tab.
+     * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
+     *         correct main browsing activity.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
-            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier) {
+            Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
+            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -70,6 +84,8 @@ class HistoryClustersMediator implements SearchDelegate {
         mTabSupplier = tabSupplier;
         mFaviconSize = mResources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
+        mIsSeparateActivity = isSeparateActivity;
+        mOpenUrlIntentCreator = openUrlIntentCreator;
     }
 
     // SearchDelegate implementation.
@@ -87,6 +103,7 @@ class HistoryClustersMediator implements SearchDelegate {
 
     void destroy() {
         mLargeIconBridge.destroy();
+        mCallbackController.destroy();
     }
 
     void startSearch(String query) {
@@ -95,7 +112,7 @@ class HistoryClustersMediator implements SearchDelegate {
 
     void query(String query) {
         mPromise = mHistoryClustersBridge.queryClusters(query);
-        mPromise.then(this::queryComplete);
+        mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
     }
 
     void openHistoryClustersUi(String query) {
@@ -130,6 +147,8 @@ class HistoryClustersMediator implements SearchDelegate {
                         new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
                 visitModel.set(HistoryClustersItemProperties.TITLE, visit.getTitle());
                 visitModel.set(HistoryClustersItemProperties.URL, visit.getGURL().getHost());
+                visitModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                        (v) -> navigateToItemUrl(visit.getGURL()));
                 if (mLargeIconBridge != null) {
                     mLargeIconBridge.getLargeIconForUrl(visit.getGURL(), mFaviconSize,
                             (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
@@ -146,5 +165,20 @@ class HistoryClustersMediator implements SearchDelegate {
                 mModelList.add(visitItem);
             }
         }
+    }
+
+    @VisibleForTesting
+    void navigateToItemUrl(GURL gurl) {
+        Context appContext = ContextUtils.getApplicationContext();
+        if (mIsSeparateActivity) {
+            appContext.startActivity(mOpenUrlIntentCreator.apply(gurl));
+            return;
+        }
+
+        Tab currentTab = mTabSupplier.get();
+        if (currentTab == null) return;
+
+        LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
+        currentTab.loadUrl(loadUrlParams);
     }
 }

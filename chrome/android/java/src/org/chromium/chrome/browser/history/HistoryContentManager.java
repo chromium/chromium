@@ -86,7 +86,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
     // PageTransition value to use for all URL requests triggered by the history page.
-    private static final int PAGE_TRANSITION_TYPE = PageTransition.AUTO_BOOKMARK;
+    static final int PAGE_TRANSITION_TYPE = PageTransition.AUTO_BOOKMARK;
 
     private static HistoryProvider sProviderForTests;
     private static Boolean sIsScrollToLoadDisabledForTests;
@@ -363,24 +363,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     @VisibleForTesting
     Intent getOpenUrlIntent(GURL url, Boolean isIncognito, boolean createNewTab) {
         // Construct basic intent.
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
-        viewIntent.putExtra(
-                Browser.EXTRA_APPLICATION_ID, mActivity.getApplicationContext().getPackageName());
-        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Determine component or class name.
-        ComponentName component;
-        if (mActivity instanceof HistoryActivity) { // phone
-            component = IntentUtils.safeGetParcelableExtra(
-                    mActivity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
-        } else { // tablet
-            component = mActivity.getComponentName();
-        }
-        if (component != null) {
-            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(viewIntent, component);
-        } else {
-            viewIntent.setClass(mActivity, ChromeLauncherActivity.class);
-        }
+        Intent viewIntent = createOpenUrlIntent(url, mActivity);
 
         // Set other intent extras.
         if (isIncognito != null) {
@@ -388,7 +371,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         }
         if (createNewTab) viewIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
 
-        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PAGE_TRANSITION_TYPE);
         return viewIntent;
     }
 
@@ -487,6 +469,35 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     public void onPreferenceChange() {
         mObserver.onUserAccountStateChanged();
         mHistoryAdapter.onSignInStateChange();
+    }
+
+    /**
+     * Creates a view intent for opening the given url that is trusted and targets the correct main
+     * browsing activity.
+     */
+    static Intent createOpenUrlIntent(GURL url, Activity activity) {
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
+        viewIntent.putExtra(
+                Browser.EXTRA_APPLICATION_ID, activity.getApplicationContext().getPackageName());
+        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
+        // Determine component or class name.
+        ComponentName component;
+        if (activity instanceof HistoryActivity) { // phone
+            component = IntentUtils.safeGetParcelableExtra(
+                    activity.getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
+        } else { // tablet
+            component = activity.getComponentName();
+        }
+        if (component != null) {
+            ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(viewIntent, component);
+        } else {
+            viewIntent.setClass(activity, ChromeLauncherActivity.class);
+        }
+        IntentUtils.addTrustedIntentExtras(viewIntent);
+        viewIntent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE,
+                HistoryContentManager.PAGE_TRANSITION_TYPE);
+        return viewIntent;
     }
 
     /** @param provider The {@link HistoryProvider} that is used in place of a real one. */

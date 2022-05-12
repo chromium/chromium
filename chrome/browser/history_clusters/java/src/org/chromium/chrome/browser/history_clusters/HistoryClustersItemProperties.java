@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.graphics.drawable.Drawable;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
@@ -15,12 +16,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 class HistoryClustersItemProperties {
+    static final WritableObjectPropertyKey<OnClickListener> CLICK_HANDLER =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {ICON_DRAWABLE, TITLE, URL};
+    static final PropertyKey[] ALL_KEYS = {CLICK_HANDLER, ICON_DRAWABLE, TITLE, URL};
 
     @IntDef({HistoryClustersItemProperties.ItemType.VISIT})
     @Retention(RetentionPolicy.SOURCE)

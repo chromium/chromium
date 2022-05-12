@@ -112,7 +112,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS);
         if (historyClustersEnabled) {
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    Profile.getLastUsedRegularProfile(), activity, null, tabSupplier);
+                    Profile.getLastUsedRegularProfile(), activity, null, tabSupplier,
+                    (url) -> HistoryContentManager.createOpenUrlIntent(url, mActivity));
             if (!TextUtils.isEmpty(historyClustersQuery)) {
                 mHistoryClustersCoordinator.setQuery(historyClustersQuery);
             }
@@ -302,7 +303,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @return True if manager handles this event, false if it decides to ignore.
      */
     public boolean onBackPressed() {
-        if (shouldShowIncognitoPlaceholder()) {
+        if (shouldShowIncognitoPlaceholder() || mSelectableListLayout == null) {
             // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
             return false;
         }

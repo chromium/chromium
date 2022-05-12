@@ -37,6 +37,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.ChromePowerModeVoter;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -754,8 +755,11 @@ public class RootUiCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
                     ()
-                            -> new Intent().setClass(mActivity, HistoryActivity.class),
-                    mActivityTabProvider);
+                            -> new Intent()
+                                       .setClass(mActivity, HistoryActivity.class)
+                                       .putExtra(IntentHandler.EXTRA_PARENT_COMPONENT,
+                                               mActivity.getComponentName()),
+                    mActivityTabProvider, (url) -> new Intent());
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }
