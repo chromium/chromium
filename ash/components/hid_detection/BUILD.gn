@@ -28,6 +28,20 @@ static_library("hid_detection") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bluetooth_hid_detector.cc",
+    "fake_bluetooth_hid_detector.h",
+  ]
+
+  deps = [
+    ":hid_detection",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
