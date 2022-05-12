@@ -1,7 +1,5 @@
 The PDF component contains code necessary for using the PDF plugin in
-content-based clients. It provides an implementation for the PPB\_PDF PPAPI
-interface, and the necessary browser and renderer-side code for processing the
-relevant IPC messages. The PDF plugin code lives in `//pdf`.
-
-TODO(crbug.com/702993): Update description when the PDF plugin no longer uses
-PPAPI and is also no longer a plugin process.
+content-based clients. The PDF plugin code that lives in `//pdf` cannot depend
+on `//content` directly, so it uses a variety of delegate interfaces which are
+implement here. This component also contains code shared among content-based
+clients that should not live in `//chrome`.
