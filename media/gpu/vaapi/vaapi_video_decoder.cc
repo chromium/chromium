@@ -881,11 +881,8 @@ CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
   if (!pixmap_and_info)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  // Increase this one every time this method is called.
-  static int gmb_id = 0;
-  CHECK_LT(gmb_id, std::numeric_limits<int>::max());
   gfx::GpuMemoryBufferHandle gmb_handle;
-  auto handle_id = gfx::GpuMemoryBufferId(gmb_id++);
+  auto handle_id = GetNextGpuMemoryBufferId();
   gmb_handle.id = handle_id;
   gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
   gmb_handle.native_pixmap_handle = pixmap_and_info->pixmap->ExportHandle();
