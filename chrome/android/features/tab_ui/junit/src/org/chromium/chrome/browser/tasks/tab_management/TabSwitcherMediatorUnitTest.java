@@ -42,6 +42,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -203,6 +204,14 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true)
                 .when(mMultiWindowModeStateDispatcher)
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
+        TabSelectionEditorCoordinator.TabSelectionEditorController controller =
+                mock(TabSelectionEditorCoordinator.TabSelectionEditorController.class);
+        doReturn(new ObservableSupplierImpl<Boolean>())
+                .when(controller)
+                .getHandleBackPressChangedSupplier();
+        doReturn(new ObservableSupplierImpl<Boolean>())
+                .when(mTabGridDialogController)
+                .getHandleBackPressChangedSupplier();
 
         mModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
@@ -210,7 +219,8 @@ public class TabSwitcherMediatorUnitTest {
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
                 TabListCoordinator.TabListMode.GRID);
-        mMediator.initWithNative(null);
+
+        mMediator.initWithNative(controller);
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
     }

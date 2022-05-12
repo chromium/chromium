@@ -174,7 +174,7 @@ public class TabSwitcherCoordinator
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull ViewGroup container, @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator, @TabListCoordinator.TabListMode int mode,
+            @NonNull ScrimCoordinator scrimCoordinator, @TabListMode int mode,
             @NonNull ViewGroup rootView) {
         mMode = mode;
         mTabModelSelector = tabModelSelector;

@@ -14,12 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -85,7 +87,7 @@ public interface TabSwitcher {
     /**
      * Interface to control the TabSwitcher.
      */
-    interface Controller {
+    interface Controller extends BackPressHandler {
         /**
          * @return Whether or not the overview {@link Layout} is visible.
          */
@@ -138,6 +140,11 @@ public interface TabSwitcher {
         boolean isDialogVisible();
 
         /**
+         * @return An {@link ObservableSupplier<Boolean>} which yields true if any dialog is opened.
+         */
+        ObservableSupplier<Boolean> isDialogVisibleSupplier();
+
+        /**
          * Shows the TabSelectionEditor.
          */
         @VisibleForTesting
@@ -148,6 +155,12 @@ public interface TabSwitcher {
          */
         @TabSwitcherType
         int getTabSwitcherType();
+
+        /**
+         * Called when start surface is showing or hiding.
+         * @param isOnHomepage Whether the Start surface is showing.
+         */
+        void onHomepageChanged(boolean isOnHomepage);
     }
 
     /**

@@ -19,6 +19,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,6 +55,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final TabModelObserver mNormalTabModelObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
     private TabSwitcher.OnTabSelectingListener mTabSelectingListener;
     private boolean mShouldIgnoreNextSelect;
     private boolean mSelectedTabDidNotChangedAfterShown;
@@ -60,6 +64,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     private Long mTabTitleAvailableTime;
     private boolean mFaviconInitialized;
     private Context mContext;
+    private boolean mIsOnHomepage;
 
     SingleTabSwitcherMediator(Context context, PropertyModel propertyModel,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider) {
@@ -76,10 +81,16 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 StartSurfaceUserData.setOpenedFromStart(mTabModelSelector.getCurrentTab());
             }
         });
+        mPropertyModel.addObserver((source, key) -> {
+            if (key == IS_VISIBLE) {
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
+            }
+        });
 
         mNormalTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, int type, int lastId) {
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
                 if (mTabModelSelector.isIncognitoSelected()) return;
 
                 assert overviewVisible();
@@ -98,6 +109,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 if (!newModel.isIncognito()) mShouldIgnoreNextSelect = true;
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
             }
 
             @Override
@@ -246,6 +258,16 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
+    public void handleBackPress() {
+        selectTheCurrentTab();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressChangedSupplier;
+    }
+
+    @Override
     public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {}
 
     @Override
@@ -264,8 +286,24 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
+    public ObservableSupplier<Boolean> isDialogVisibleSupplier() {
+        return new ObservableSupplierImpl<>();
+    }
+
+    @Override
     public @TabSwitcherType int getTabSwitcherType() {
         return TabSwitcherType.SINGLE;
+    }
+
+    @Override
+    public void onHomepageChanged(boolean isOnHomepage) {
+        mIsOnHomepage = isOnHomepage;
+        mBackPressChangedSupplier.set(shouldInterceptBackPress());
+    }
+
+    private boolean shouldInterceptBackPress() {
+        return !mIsOnHomepage && overviewVisible() && !mTabModelSelector.isIncognitoSelected()
+                && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX;
     }
 
     private void updateSelectedTab(Tab tab) {

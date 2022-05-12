@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -41,6 +43,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
     private final ViewGroup mRootView;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private TabGridDialogView mDialogView;
 
@@ -94,6 +98,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
                 new TabGridPanelViewBinder.ViewHolder(toolbarView, recyclerView, mDialogView),
                 TabGridPanelViewBinder::bind);
+        mBackPressChangedSupplier.set(isVisible());
+        mModel.addObserver((source, key) -> mBackPressChangedSupplier.set(isVisible()));
     }
 
     public void initWithNative(Context context, TabModelSelector tabModelSelector,
@@ -159,8 +165,18 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public boolean handleBackPressed() {
         if (!isVisible()) return false;
+        handleBackPress();
+        return true;
+    }
+
+    @Override
+    public void handleBackPress() {
         mMediator.hideDialog(true);
         RecordUserAction.record("TabGridDialog.Exit");
-        return true;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressChangedSupplier;
     }
 }

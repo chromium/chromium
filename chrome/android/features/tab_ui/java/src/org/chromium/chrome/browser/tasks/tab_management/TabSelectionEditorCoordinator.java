@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,7 +41,7 @@ class TabSelectionEditorCoordinator {
     /**
      * An interface to control the TabSelectionEditor.
      */
-    interface TabSelectionEditorController {
+    interface TabSelectionEditorController extends BackPressHandler {
         /**
          * Shows the TabSelectionEditor with the given {@link Tab}s.
          * @param tabs List of {@link Tab}s to show.

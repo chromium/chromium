@@ -61,6 +61,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.jank_tracker.DummyJankTracker;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -175,9 +176,18 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mNormalTabModel).isIncognito();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
         doReturn(TabSwitcherType.CAROUSEL).when(mMainTabGridController).getTabSwitcherType();
+        doReturn(new ObservableSupplierImpl<Boolean>())
+                .when(mMainTabGridController)
+                .getHandleBackPressChangedSupplier();
         doReturn(mSecondaryTasksSurfaceController)
                 .when(mSecondaryTasksSurfaceInitializer)
                 .initialize();
+        doReturn(new ObservableSupplierImpl<Boolean>())
+                .when(mSecondaryTasksSurfaceController)
+                .getHandleBackPressChangedSupplier();
+        doReturn(new ObservableSupplierImpl<Boolean>())
+                .when(mSecondaryTasksSurfaceController)
+                .isDialogVisibleSupplier();
         doReturn(false).when(mActivityStateChecker).isFinishingOrDestroyed();
         doReturn(mTab).when(mTabModelSelector).getCurrentTab();
     }
@@ -1308,7 +1318,7 @@ public class StartSurfaceMediatorUnitTest {
                         isStartSurfaceEnabled, ContextUtils.getApplicationContext(),
                         mBrowserControlsStateProvider, mActivityStateChecker, excludeMVTiles,
                         true /* excludeQueryTiles */, mStartSurfaceSupplier, hadWarmStart,
-                        new DummyJankTracker(), mInitializeMVTilesRunnable);
+                        new DummyJankTracker(), mInitializeMVTilesRunnable, null);
         return mediator;
     }
 

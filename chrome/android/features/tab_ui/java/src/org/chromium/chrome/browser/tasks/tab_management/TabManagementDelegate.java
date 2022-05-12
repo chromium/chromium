@@ -60,7 +60,7 @@ public interface TabManagementDelegate {
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param tabContentManager Gives access to the tab content.
      * @param browserControlsStateProvider Gives access to the state of the browser controls.
-     * @param tabCreatorManger Manages creation of tabs.
+     * @param tabCreatorManager Manages creation of tabs.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param containerView The {@link ViewGroup} to add the switcher to.
      * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
@@ -84,11 +84,11 @@ public interface TabManagementDelegate {
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.
      * @param activity The current Android {@link Activity}.
-     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param lifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param tabContentManager Gives access to the tab content.
      * @param browserControls Allows observation of the browser controls state.
-     * @param tabCreatorManger Manages creation of tabs.
+     * @param tabCreatorManager Manages creation of tabs.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param containerView The {@link ViewGroup} to add the switcher to.
      * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.

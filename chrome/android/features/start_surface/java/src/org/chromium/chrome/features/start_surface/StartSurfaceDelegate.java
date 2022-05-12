@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -84,6 +85,7 @@ public class StartSurfaceDelegate {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while tab switcher is visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
+     * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(@NonNull Activity activity,
@@ -105,13 +107,14 @@ public class StartSurfaceDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier) {
+            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
+            BackPressManager backPressManager) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
                 browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
-                multiWindowModeStateDispatcher, jankTracker, toolbarSupplier);
+                multiWindowModeStateDispatcher, jankTracker, toolbarSupplier, backPressManager);
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.features.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -257,9 +258,12 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
+        mMediator.onHomepageChanged(false);
+        assertNotEquals(Boolean.TRUE, mMediator.getHandleBackPressChangedSupplier().get());
         assertFalse(mMediator.onBackPressed(false));
 
         mMediator.showOverview(true);
+        assertEquals(Boolean.TRUE, mMediator.getHandleBackPressChangedSupplier().get());
         assertTrue(mMediator.onBackPressed(false));
         verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
 

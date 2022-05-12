@@ -11,6 +11,8 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -57,6 +59,8 @@ class TabSelectionEditorMediator
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private TabSelectionEditorActionProvider mActionProvider;
     private TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider mNavigationProvider;
+    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     private final View.OnClickListener mNavigationClickListener = new View.OnClickListener() {
         @Override
@@ -129,6 +133,12 @@ class TabSelectionEditorMediator
 
         mNavigationProvider =
                 new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(this);
+        mBackPressChangedSupplier.set(isEditorVisible());
+        mModel.addObserver((source, key) -> {
+            if (key == TabSelectionEditorProperties.IS_VISIBLE) {
+                mBackPressChangedSupplier.set(isEditorVisible());
+            }
+        });
     }
 
     private boolean isEditorVisible() {
@@ -209,6 +219,16 @@ class TabSelectionEditorMediator
         if (!isEditorVisible()) return false;
         mNavigationProvider.goBack();
         return true;
+    }
+
+    @Override
+    public void handleBackPress() {
+        mNavigationProvider.goBack();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressChangedSupplier;
     }
 
     @Override

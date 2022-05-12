@@ -719,7 +719,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getModalDialogManager(),
                 /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
-                getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar);
+                getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
+                mBackPressManager);
     }
 
     private void setupCompositorContentPostNative() {
