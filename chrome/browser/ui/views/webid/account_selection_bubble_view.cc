@@ -133,7 +133,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       std::make_unique<ImageDecoderImpl>(), url_loader_factory);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(kBubbleWidth);
-  set_margins(gfx::Insets::VH(kTopBottomPadding, 0));
+  set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
   // TODO(crbug.com/1323298): we are currently using a custom header because the
   // icon, title, and close buttons from a bubble are not customizable enough to
   // satisfy the UI requirements. However, this adds complexity to the code and
@@ -163,8 +163,10 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
     gfx::ImageSkia icon,
     const std::u16string& title) {
   auto header = std::make_unique<views::View>();
+  // Do not use a top margin as it has already been set in the bubble.
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(gfx::Insets::VH(kVerticalSpacing, kLeftRightPadding));
+      ->SetInteriorMargin(gfx::Insets::TLBR(
+          0, kLeftRightPadding, kVerticalSpacing, kLeftRightPadding));
 
   // Add the icon.
   auto image_view = std::make_unique<views::ImageView>();
@@ -218,9 +220,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(0, kLeftRightPadding, kTopBottomPadding,
-                        kLeftRightPadding),
-      kVerticalSpacing));
+      gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
   row->AddChildView(CreateAccountRow(account, /*should_hover=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
@@ -255,10 +255,10 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       base::i18n::IsRTL() ? gfx::HorizontalAlignment::ALIGN_RIGHT
                           : gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  // Set custom top and bottom margins for `disclosure_label` in order to take
+  // Set custom top margin for `disclosure_label` in order to take
   // (line_height - font_height) into account.
   disclosure_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 3, 0)));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
   std::vector<size_t> offsets;
