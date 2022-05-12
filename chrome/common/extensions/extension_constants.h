@@ -233,10 +233,6 @@ extern const char kWallpaperManagerId[];
 // The extension id of official HelpApp extension.
 extern const char kHelpAppExtensionId[];
 #endif
-#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-// The extension id of the Hangout Service extnsion.
-extern const char kHangoutServiceExtensionId[];
-#endif
 
 // What causes an extension to be installed? Used in histograms, so don't
 // change existing values.

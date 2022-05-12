@@ -122,10 +122,6 @@ const char kGoogleSpeechSynthesisExtensionId[] =
 const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
 const char kHelpAppExtensionId[] = "honijodknafkokifofgiaalefdiedpko";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-// The extension id of the Hangout Service extnsion.
-const char kHangoutServiceExtensionId[] = "nkeimhogjdpnpccoofpliimaahmaaome";
-#endif
 
 const char kAppStateNotInstalled[] = "not_installed";
 const char kAppStateInstalled[] = "installed";
