@@ -32,6 +32,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/metrics/average_lag_tracking_manager.h"
 #include "cc/metrics/dropped_frame_counter.h"
+#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -182,6 +183,9 @@ class LayerTreeHostImplClient {
 
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 
+  virtual void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
+
  protected:
   virtual ~LayerTreeHostImplClient() = default;
 };
@@ -195,7 +199,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public VideoFrameControllerClient,
                                     public MutatorHostClient,
                                     public ImageAnimationController::Client,
-                                    public CompositorDelegateForInput {
+                                    public CompositorDelegateForInput,
+                                    public EventLatencyTracker {
  public:
   // This structure is used to build all the state required for producing a
   // single CompositorFrame. The |render_passes| list becomes the set of
@@ -567,6 +572,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
               bool skip_draw) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override;
+
+  // EventLatencyTracker implementation.
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // Called from LayerTreeImpl.
   void OnCanDrawStateChangedForTree();

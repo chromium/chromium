@@ -1104,6 +1104,11 @@ void LayerTreeHost::NotifyThroughputTrackerResults(
   client_->NotifyThroughputTrackerResults(std::move(results));
 }
 
+void LayerTreeHost::ReportEventLatency(
+    std::vector<EventLatencyTracker::LatencyData> latencies) {
+  client_->ReportEventLatency(std::move(latencies));
+}
+
 const base::WeakPtr<CompositorDelegateForInput>&
 LayerTreeHost::GetDelegateForInput() const {
   DCHECK(IsMainThread());

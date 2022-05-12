@@ -21,6 +21,7 @@
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
+#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/latency_ukm_reporter.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -654,7 +655,8 @@ void CompositorFrameReporter::TerminateReporter() {
 
   // Only report compositor latency metrics if the frame was produced.
   if (report_types_.any() &&
-      (should_report_histograms_ || global_trackers_.latency_ukm_reporter)) {
+      (should_report_histograms_ || global_trackers_.latency_ukm_reporter ||
+       global_trackers_.event_latency_tracker)) {
     DCHECK(stage_history_.size());
     DCHECK_EQ(SumOfStageHistory(), stage_history_.back().end_time -
                                        stage_history_.front().start_time);
@@ -663,6 +665,7 @@ void CompositorFrameReporter::TerminateReporter() {
                                 stage_history_.back().end_time);
 
     ReportCompositorLatencyMetrics();
+
     // Only report event latency metrics if the frame was presented.
     if (TestReportType(FrameReportType::kNonDroppedFrame))
       ReportEventLatencyMetrics();
@@ -900,55 +903,70 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
         *processed_viz_breakdown_);
   }
 
-  if (!should_report_histograms_)
-    return;
-
-  const std::string total_latency_stage_name =
-      GetStageName(StageType::kTotalLatency);
-  const std::string total_latency_histogram_name =
-      "EventLatency." + total_latency_stage_name;
+  std::vector<EventLatencyTracker::LatencyData> latencies;
 
   for (const auto& event_metrics : events_metrics_) {
     DCHECK(event_metrics);
-    const std::string histogram_base_name =
-        GetEventLatencyHistogramBaseName(*event_metrics);
-    const int event_type_index = static_cast<int>(event_metrics->type());
     auto* scroll_metrics = event_metrics->AsScroll();
     auto* pinch_metrics = event_metrics->AsPinch();
-    const int gesture_type_index =
-        scroll_metrics
-            ? static_cast<int>(scroll_metrics->scroll_type())
-            : pinch_metrics ? static_cast<int>(pinch_metrics->pinch_type()) : 0;
-    const int event_histogram_index =
-        event_type_index * kEventLatencyGestureTypeCount + gesture_type_index;
 
     const base::TimeTicks generated_timestamp =
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
     DCHECK_LT(generated_timestamp, total_latency_stage.end_time);
-
-    // Report total latency up to presentation for the event.
     const base::TimeDelta total_latency =
         total_latency_stage.end_time - generated_timestamp;
-    const std::string event_total_latency_histogram_name =
-        base::StrCat({histogram_base_name, ".", total_latency_stage_name});
-    // Note: There's a 1:1 mapping between `event_histogram_index` and
-    // `event_total_latency_histogram_name` which allows the use of
-    // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        event_total_latency_histogram_name, event_histogram_index,
-        kMaxEventLatencyHistogramIndex,
-        AddTimeMicrosecondsGranularity(total_latency),
-        base::Histogram::FactoryMicrosecondsTimeGet(
-            event_total_latency_histogram_name, kEventLatencyHistogramMin,
-            kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
 
-    // Also, report total latency up to presentation for all event types in an
-    // aggregate histogram.
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        total_latency_histogram_name, total_latency, kEventLatencyHistogramMin,
-        kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount);
+    if (should_report_histograms_) {
+      const std::string histogram_base_name =
+          GetEventLatencyHistogramBaseName(*event_metrics);
+      const int event_type_index = static_cast<int>(event_metrics->type());
+      const int gesture_type_index =
+          scroll_metrics  ? static_cast<int>(scroll_metrics->scroll_type())
+          : pinch_metrics ? static_cast<int>(pinch_metrics->pinch_type())
+                          : 0;
+      const int event_histogram_index =
+          event_type_index * kEventLatencyGestureTypeCount + gesture_type_index;
+
+      const std::string total_latency_stage_name =
+          GetStageName(StageType::kTotalLatency);
+      const std::string event_total_latency_histogram_name =
+          base::StrCat({histogram_base_name, ".", total_latency_stage_name});
+      // Note: There's a 1:1 mapping between `event_histogram_index` and
+      // `event_total_latency_histogram_name` which allows the use of
+      // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
+      STATIC_HISTOGRAM_POINTER_GROUP(
+          event_total_latency_histogram_name, event_histogram_index,
+          kMaxEventLatencyHistogramIndex,
+          AddTimeMicrosecondsGranularity(total_latency),
+          base::Histogram::FactoryMicrosecondsTimeGet(
+              event_total_latency_histogram_name, kEventLatencyHistogramMin,
+              kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
+              base::HistogramBase::kUmaTargetedHistogramFlag));
+
+      // Also, report total latency up to presentation for all event types in an
+      // aggregate histogram.
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "EventLatency." + total_latency_stage_name, total_latency,
+          kEventLatencyHistogramMin, kEventLatencyHistogramMax,
+          kEventLatencyHistogramBucketCount);
+    }
+
+    if (global_trackers_.event_latency_tracker) {
+      EventLatencyTracker::LatencyData& latency_data =
+          latencies.emplace_back(event_metrics->type(), total_latency);
+
+      if (scroll_metrics)
+        latency_data.input_type = scroll_metrics->scroll_type();
+      else if (pinch_metrics)
+        latency_data.input_type = pinch_metrics->pinch_type();
+    }
+  }
+
+  if (!latencies.empty()) {
+    DCHECK(global_trackers_.event_latency_tracker);
+    global_trackers_.event_latency_tracker->ReportEventLatency(
+        std::move(latencies));
   }
 }
 

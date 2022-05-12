@@ -474,19 +474,22 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // this test to fail. This observer will let us know if this is happening.
   SpuriousMouseMoveEventObserver mouse_observer(GetRenderWidgetHost());
 
-  base::TimeTicks timestamp = ui::EventTimeForNow();
+  // TODO(crbug.com/1322921): Use a mock timer to generate timestamps for
+  // events. This would need injecting the mock timer into
+  // `cc::CompositorFrameReportingController`.
   ui::TouchEvent press(
       ui::ET_TOUCH_PRESSED,
-      gfx::Point(bounds.x() + bounds.width() / 2, bounds.y() + 5), timestamp,
+      gfx::Point(bounds.x() + bounds.width() / 2, bounds.y() + 5),
+      ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   ui::EventDispatchDetails details = sink->OnEventFromSource(&press);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, GetCurrentIndex());
 
-  timestamp += base::Milliseconds(10);
-  ui::TouchEvent move1(
-      ui::ET_TOUCH_MOVED, gfx::Point(bounds.right() - 10, bounds.y() + 5),
-      timestamp, ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  ui::TouchEvent move1(ui::ET_TOUCH_MOVED,
+                       gfx::Point(bounds.right() - 10, bounds.y() + 5),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   details = sink->OnEventFromSource(&move1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, GetCurrentIndex());
@@ -494,30 +497,27 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // Swipe back from the right edge, back to the left edge, back to the right
   // edge.
 
-  for (int x = bounds.right() - 10; x >= bounds.x() + 10; x-= 10) {
-    timestamp += base::Milliseconds(10);
+  for (int x = bounds.right() - 10; x >= bounds.x() + 10; x -= 10) {
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       timestamp,
+                       ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(1, GetCurrentIndex());
   }
 
-  for (int x = bounds.x() + 10; x <= bounds.width() - 10; x+= 10) {
-    timestamp += base::Milliseconds(10);
+  for (int x = bounds.x() + 10; x <= bounds.width() - 10; x += 10) {
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       timestamp,
+                       ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(1, GetCurrentIndex());
   }
 
-  for (int x = bounds.width() - 10; x >= bounds.x() + 10; x-= 10) {
-    timestamp += base::Milliseconds(10);
+  for (int x = bounds.width() - 10; x >= bounds.x() + 10; x -= 10) {
     ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       timestamp,
+                       ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);

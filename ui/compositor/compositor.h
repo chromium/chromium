@@ -384,6 +384,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
+  void ReportEventLatency(
+      std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
