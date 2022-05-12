@@ -117,6 +117,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
   const bool viz_frame_submission_;
+  const bool use_new_invalidate_heuristic_;
   bool expect_context_loss_ = false;
 
   // Initialized in ctor and never changes, so it's safe to access from both
@@ -131,7 +132,9 @@ HardwareRendererViz::OnViz::OnViz(
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
-      viz_frame_submission_(features::IsUsingVizFrameSubmissionForWebView()) {
+      viz_frame_submission_(features::IsUsingVizFrameSubmissionForWebView()),
+      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
+          features::kWebViewNewInvalidateHeuristic)) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -252,6 +255,49 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
   const auto& local_surface_id =
       without_gpu_->SubmitRootCompositorFrame(std::move(frame));
 
+  if (use_new_invalidate_heuristic_) {
+    auto root_surface_id =
+        viz::SurfaceId(without_gpu_->root_frame_sink_id(), local_surface_id);
+
+    auto commit_predicate = base::BindRepeating(
+        [](const viz::BeginFrameId& current_frame_id,
+           const viz::FrameSinkId& root_frame_sink_id,
+           const viz::FrameSinkId& child_frame_sink_id,
+           const viz::SurfaceId& surface_id,
+           const viz::BeginFrameId& frame_id) {
+          // Always commit frame from different begin frame sources, because we
+          // can't order with them.
+          if (frame_id.source_id != current_frame_id.source_id) {
+            // We always should have single source_id except for the manual
+            // acks.
+            DCHECK_EQ(frame_id.source_id, viz::BeginFrameArgs::kManualSourceId);
+            return true;
+          }
+
+          // Commit all frames that are older than current one.
+          if (frame_id.sequence_number < current_frame_id.sequence_number)
+            return true;
+
+          // All clients except root renderer and root surface are frame behind.
+          const bool is_frame_behind =
+              surface_id.frame_sink_id() != root_frame_sink_id &&
+              surface_id.frame_sink_id() != child_frame_sink_id;
+
+          // If this surface is not frame behind, commit it for current frame
+          // too.
+          if (!is_frame_behind &&
+              frame_id.sequence_number == current_frame_id.sequence_number)
+            return true;
+
+          return false;
+        },
+        child_frame->begin_frame_args.frame_id, root_surface_id.frame_sink_id(),
+        child_surface_id_.frame_sink_id());
+
+    GetFrameSinkManager()->surface_manager()->CommitFramesInRangeRecursively(
+        viz::SurfaceRange(root_surface_id), commit_predicate);
+  }
+
   if (root_local_surface_id_ != local_surface_id) {
     root_local_surface_id_ = local_surface_id;
     display_->SetLocalSurfaceId(local_surface_id, device_scale_factor);
@@ -260,6 +306,8 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
   display_->Resize(viewport);
   auto now = base::TimeTicks::Now();
   display_->DrawAndSwap({now, now});
+
+  without_gpu_->SetContainedSurfaces(display_->GetContainedSurfaceIds());
 }
 
 void HardwareRendererViz::OnViz::PostDrawOnViz(

@@ -33,6 +33,8 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
     return overlay_processor_webview_;
   }
 
+  std::vector<viz::SurfaceId> GetContainedSurfaceIds();
+
   // viz::FrameSinkObserver implenentation:
   void OnRegisteredFrameSinkId(const viz::FrameSinkId& frame_sink_id) override {
   }
@@ -67,8 +69,11 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
       viz::FrameSinkManagerImpl* frame_sink_manager);
 
   const raw_ptr<OverlayProcessorWebView> overlay_processor_webview_;
+  const raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   base::ScopedObservation<viz::FrameSinkManagerImpl, viz::FrameSinkObserver>
       frame_sink_manager_observation_{this};
+
+  const bool use_new_invalidate_heuristic_;
 };
 
 }  // namespace android_webview

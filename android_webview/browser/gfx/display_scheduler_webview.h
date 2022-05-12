@@ -8,9 +8,12 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_scheduler.h"
+#include "components/viz/service/surfaces/surface_manager.h"
+#include "components/viz/service/surfaces/surface_observer.h"
 
 namespace android_webview {
 class RootFrameSink;
@@ -20,7 +23,8 @@ class OverlaysInfoProvider {
   virtual bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id) = 0;
 };
 
-class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
+class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
+                                public viz::SurfaceObserver {
  public:
   DisplaySchedulerWebView(RootFrameSink* root_frame_sink,
                           OverlaysInfoProvider* overlays_info_provider);
@@ -42,6 +46,10 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
   void OnRootFrameMissing(bool missing) override {}
   void OnPendingSurfacesChanged() override {}
 
+  // SurfaceObserver implementation.
+  void OnSurfaceHasNewUncommittedFrame(
+      const viz::SurfaceId& surface_id) override;
+
  private:
   bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id);
 
@@ -54,6 +62,11 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
   // Due to destruction order in viz::Display this might be not safe to use in
   // destructor of this class.
   const raw_ptr<OverlaysInfoProvider> overlays_info_provider_;
+
+  base::ScopedObservation<viz::SurfaceManager, viz::SurfaceObserver>
+      surface_manager_observation_{this};
+
+  const bool use_new_invalidate_heuristic_;
 
   THREAD_CHECKER(thread_checker_);
 };

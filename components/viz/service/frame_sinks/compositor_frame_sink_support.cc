@@ -192,6 +192,14 @@ void CompositorFrameSinkSupport::ThrottleBeginFrame(base::TimeDelta interval) {
   begin_frame_interval_ = interval;
 }
 
+void CompositorFrameSinkSupport::OnSurfaceCommitted(Surface* surface) {
+  if (surface->HasPendingFrame()) {
+    // Make sure we periodically check if the frame should activate.
+    pending_surfaces_.insert(surface);
+    UpdateNeedsBeginFramesInternal();
+  }
+}
+
 void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   DCHECK(surface);
   DCHECK(surface->HasActiveFrame());
@@ -281,7 +289,7 @@ void CompositorFrameSinkSupport::OnFrameTokenChanged(uint32_t frame_token) {
   frame_sink_manager_->OnFrameTokenChanged(frame_sink_id_, frame_token);
 }
 
-void CompositorFrameSinkSupport::OnSurfaceProcessed(Surface* surface) {
+void CompositorFrameSinkSupport::SendCompositorFrameAck() {
   DidReceiveCompositorFrameAck();
 }
 
@@ -676,9 +684,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                            TRACE_EVENT_SCOPE_THREAD);
       return SubmitResult::SIZE_MISMATCH;
     case Surface::QueueFrameResult::ACCEPTED_PENDING:
-      // Make sure we periodically check if the frame should activate.
-      pending_surfaces_.insert(current_surface);
-      UpdateNeedsBeginFramesInternal();
+      // Pending frames are processed in OnSurfaceCommitted.
       break;
     case Surface::QueueFrameResult::ACCEPTED_ACTIVE:
       // Nothing to do here.

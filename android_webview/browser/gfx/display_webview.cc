@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/gfx/overlay_processor_webview.h"
 #include "base/memory/ptr_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -65,7 +66,10 @@ DisplayWebView::DisplayWebView(
                    std::move(overlay_processor),
                    std::move(scheduler),
                    /*current_task_runner=*/nullptr),
-      overlay_processor_webview_(overlay_processor_webview) {
+      overlay_processor_webview_(overlay_processor_webview),
+      frame_sink_manager_(frame_sink_manager),
+      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
+          features::kWebViewNewInvalidateHeuristic)) {
   if (overlay_processor_webview_) {
     frame_sink_manager_observation_.Observe(frame_sink_manager);
   }
@@ -80,6 +84,18 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
   auto surface_id =
       overlay_processor_webview_->GetOverlaySurfaceId(frame_sink_id);
   if (surface_id.is_valid()) {
+    auto* surface =
+        frame_sink_manager_->surface_manager()->GetSurfaceForId(surface_id);
+    DCHECK(surface);
+
+    if (use_new_invalidate_heuristic_) {
+      // For overlays we are going to display this frame immediately, so commit
+      // it.
+      surface->CommitFramesRecursively(
+          base::BindRepeating([](const viz::SurfaceId&,
+                                 const viz::BeginFrameId&) { return true; }));
+    }
+
     // TODO(vasilyt): We don't need full aggregation here as we don't need
     // aggregated frame.
     aggregator_->Aggregate(current_surface_id_, base::TimeTicks::Now(),
@@ -91,6 +107,13 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
                                                         resolved_data);
     }
   }
+}
+
+std::vector<viz::SurfaceId> DisplayWebView::GetContainedSurfaceIds() {
+  std::vector<viz::SurfaceId> surfaces;
+  for (auto& surface : aggregator_->previous_contained_surfaces())
+    surfaces.push_back(surface.first);
+  return surfaces;
 }
 
 }  // namespace android_webview

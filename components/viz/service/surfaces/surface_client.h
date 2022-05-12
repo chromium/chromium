@@ -40,6 +40,10 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
 
   virtual ~SurfaceClient() = default;
 
+  // Called when |surface| has committed a new CompositorFrame that become
+  // pending or active.
+  virtual void OnSurfaceCommitted(Surface* surface) = 0;
+
   // Called when |surface| has a new CompositorFrame available for display.
   virtual void OnSurfaceActivated(Surface* surface) = 0;
 
@@ -73,9 +77,9 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
   // Notifies the client that a frame with |token| has been activated.
   virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;
 
-  // Notifies the client that the submitted CompositorFrame has been processed
-  // (where processed may mean the frame has been displayed, or discarded).
-  virtual void OnSurfaceProcessed(Surface* surface) = 0;
+  // Sends a compositor frame ack to the client. Usually happens when viz is
+  // ready to receive another frame without dropping previous one.
+  virtual void SendCompositorFrameAck() = 0;
 
   // Notifies the client that a frame with |token| has been presented.
   virtual void OnSurfacePresented(

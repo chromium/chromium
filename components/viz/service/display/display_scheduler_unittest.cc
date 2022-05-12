@@ -181,7 +181,9 @@ class DisplaySchedulerTest : public testing::Test {
       : wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
         fake_begin_frame_source_(0.f, false),
         task_runner_(new base::NullTaskRunner),
-        surface_manager_(nullptr, 4u),
+        surface_manager_(nullptr,
+                         /*activation_deadline_in_frames=*/4u,
+                         /*max_uncommitted_frames=*/0),
         resource_provider_(&shared_bitmap_manager_),
         aggregator_(&surface_manager_, &resource_provider_, false, false),
         damage_tracker_(

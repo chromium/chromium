@@ -127,6 +127,8 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
     return surfaces_.empty() ? nullptr : surfaces_.back();
   }
 
+  const std::vector<Surface*>& surfaces() const { return surfaces_; }
+
  private:
   // Returns an iterator to the latest surface in |surfaces_| whose SurfaceId is
   // older than or equal to |surface_id|. The returned surface may not be active

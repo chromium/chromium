@@ -23,6 +23,9 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
   // time.
   virtual void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) {}
 
+  // Called when there is new frame in uncommitted queue of the surface.
+  virtual void OnSurfaceHasNewUncommittedFrame(const SurfaceId& surface_id) {}
+
   // Called when a CompositorFrame within a surface corresponding to
   // |surface_id| activates.
   virtual void OnSurfaceActivated(const SurfaceId& surface_id) {}

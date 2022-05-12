@@ -70,7 +70,9 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
     : shared_bitmap_manager_(params.shared_bitmap_manager),
       output_surface_provider_(params.output_surface_provider),
       gmb_context_provider_(params.gmb_context_provider),
-      surface_manager_(this, params.activation_deadline_in_frames),
+      surface_manager_(this,
+                       params.activation_deadline_in_frames,
+                       params.max_uncommitted_frames),
       hit_test_manager_(surface_manager()),
       restart_id_(params.restart_id),
       run_all_compositor_stages_before_draw_(

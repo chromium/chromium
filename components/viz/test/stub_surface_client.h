@@ -18,6 +18,7 @@ class StubSurfaceClient : public SurfaceClient {
   StubSurfaceClient();
   ~StubSurfaceClient() override;
 
+  void OnSurfaceCommitted(Surface* surface) override {}
   void OnSurfaceActivated(Surface* surface) override {}
   void OnSurfaceDestroyed(Surface* surface) override {}
   void OnSurfaceWillDraw(Surface* surface) override {}
@@ -30,7 +31,7 @@ class StubSurfaceClient : public SurfaceClient {
   std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
       const LocalSurfaceId& latest_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override {}
-  void OnSurfaceProcessed(Surface* surface) override {}
+  void SendCompositorFrameAck() override {}
   void OnSurfaceAggregatedDamage(
       Surface* surface,
       const LocalSurfaceId& local_surface_id,

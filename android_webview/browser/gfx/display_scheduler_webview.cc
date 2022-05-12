@@ -5,14 +5,25 @@
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
+#include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
+#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 
 namespace android_webview {
 DisplaySchedulerWebView::DisplaySchedulerWebView(
     RootFrameSink* root_frame_sink,
     OverlaysInfoProvider* overlays_info_provider)
     : root_frame_sink_(root_frame_sink),
-      overlays_info_provider_(overlays_info_provider) {}
+      overlays_info_provider_(overlays_info_provider),
+      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
+          features::kWebViewNewInvalidateHeuristic)) {
+  surface_manager_observation_.Observe(
+      VizCompositorThreadRunnerWebView::GetInstance()
+          ->GetFrameSinkManager()
+          ->surface_manager());
+}
+
 DisplaySchedulerWebView::~DisplaySchedulerWebView() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
@@ -27,6 +38,10 @@ void DisplaySchedulerWebView::SetNeedsOneBeginFrame(bool needs_draw) {
 }
 void DisplaySchedulerWebView::DidSwapBuffers() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Code below is part of old invalidation heuristic.
+  if (use_new_invalidate_heuristic_)
+    return;
 
   bool needs_draw = false;
   for (auto it = damaged_frames_.begin(); it != damaged_frames_.end();) {
@@ -59,6 +74,11 @@ bool DisplaySchedulerWebView::IsFrameSinkOverlayed(
 
 void DisplaySchedulerWebView::OnDisplayDamaged(viz::SurfaceId surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Code below is part of old invalidation heuristic.
+  if (use_new_invalidate_heuristic_)
+    return;
+
   // We don't need to track damage of root frame sink as we submit frame to it
   // at DrawAndSwap and Root Renderer sink because Android View.Invalidation is
   // handled by SynchronousCompositorHost.
@@ -81,4 +101,19 @@ void DisplaySchedulerWebView::OnDisplayDamaged(viz::SurfaceId surface_id) {
     root_frame_sink_->SetNeedsDraw(true);
   }
 }
+
+void DisplaySchedulerWebView::OnSurfaceHasNewUncommittedFrame(
+    const viz::SurfaceId& surface_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // We don't need to track damage of root frame sink as we submit frame to it
+  // at DrawAndSwap and Root Renderer sink because Android View.Invalidation is
+  // handled by SynchronousCompositorHost.
+  if (surface_id.frame_sink_id() != root_frame_sink_->root_frame_sink_id() &&
+      !root_frame_sink_->IsChildSurface(surface_id.frame_sink_id()) &&
+      !IsFrameSinkOverlayed(surface_id.frame_sink_id())) {
+    root_frame_sink_->OnNewUncommittedFrame(surface_id);
+  }
+}
+
 }  // namespace android_webview

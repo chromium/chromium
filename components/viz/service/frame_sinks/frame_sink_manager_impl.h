@@ -87,6 +87,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     DebugRendererSettings debug_renderer_settings;
     base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
+    size_t max_uncommitted_frames = 0;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 

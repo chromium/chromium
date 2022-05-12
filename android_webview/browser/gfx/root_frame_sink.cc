@@ -9,9 +9,11 @@
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/surface.h"
 
 namespace android_webview {
 
@@ -85,7 +87,10 @@ class RootFrameSink::ChildCompositorFrameSink
 };
 
 RootFrameSink::RootFrameSink(RootFrameSinkClient* client)
-    : root_frame_sink_id_(AllocateParentSinkId()), client_(client) {
+    : root_frame_sink_id_(AllocateParentSinkId()),
+      client_(client),
+      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
+          features::kWebViewNewInvalidateHeuristic)) {
   constexpr bool is_root = true;
   GetFrameSinkManager()->RegisterFrameSinkId(root_frame_sink_id_,
                                              false /* report_activationa */);
@@ -94,6 +99,14 @@ RootFrameSink::RootFrameSink(RootFrameSinkClient* client)
   begin_frame_source_ = std::make_unique<viz::ExternalBeginFrameSource>(this);
   GetFrameSinkManager()->RegisterBeginFrameSource(begin_frame_source_.get(),
                                                   root_frame_sink_id_);
+
+  // Note, that this technically not part of the new heuristic. Without this
+  // line root CF will "request" BeginFrames for delivery of presentation
+  // feedback that we don't care about which leads to more begin frame requested
+  // than necessary. But to avoid any side effects on invalidation, fixing this
+  // is gates under same feature flag.
+  if (use_new_invalidate_heuristic_)
+    support_->SetBeginFrameSource(nullptr);
 }
 
 RootFrameSink::~RootFrameSink() {
@@ -162,9 +175,21 @@ void RootFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   TRACE_EVENT_INSTANT1("android_webview", "RootFrameSink::OnNeedsBeginFrames",
                        TRACE_EVENT_SCOPE_THREAD, "needs_begin_frames",
                        needs_begin_frames);
-  needs_begin_frames_ = needs_begin_frames;
-  if (client_)
-    client_->SetNeedsBeginFrames(needs_begin_frames);
+  clients_need_begin_frames_ = needs_begin_frames;
+
+  // Old heuristic doesn't need extra begin frames, so just forward client
+  // needs.
+  if (!use_new_invalidate_heuristic_) {
+    UpdateNeedsBeginFrames(clients_need_begin_frames_);
+    return;
+  }
+
+  // Make sure that we subscribed to BF if client needs them. We don't
+  // unsubscribe from BF here to make sure that we invalidated for the latest
+  // frames in necessary. We will stop observing them later in BeginFrame()
+  // once we are done.
+  if (clients_need_begin_frames_)
+    UpdateNeedsBeginFrames(true);
 }
 
 void RootFrameSink::AddChildFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
@@ -182,20 +207,123 @@ void RootFrameSink::RemoveChildFrameSinkId(
                                                       frame_sink_id);
 }
 
+void RootFrameSink::SetContainedSurfaces(
+    const std::vector<viz::SurfaceId>& ids) {
+  contained_surfaces_ = base::flat_set<viz::SurfaceId>(ids.begin(), ids.end());
+  for (auto it = last_invalidated_frame_id_.begin();
+       it != last_invalidated_frame_id_.end();) {
+    if (!contained_surfaces_.contains(it->first))
+      it = last_invalidated_frame_id_.erase(it);
+    else
+      ++it;
+  }
+}
+
+void RootFrameSink::UpdateNeedsBeginFrames(bool needs_begin_frames) {
+  if (needs_begin_frames_ != needs_begin_frames) {
+    needs_begin_frames_ = needs_begin_frames;
+    if (client_)
+      client_->SetNeedsBeginFrames(needs_begin_frames_);
+  }
+}
+
+bool RootFrameSink::HasPendingDependency(const viz::SurfaceId& surface_id) {
+  auto* surface =
+      GetFrameSinkManager()->surface_manager()->GetSurfaceForId(surface_id);
+
+  if (!surface || !surface->HasActiveFrame())
+    return true;
+
+  for (auto& range : surface->GetActiveFrame().metadata.referenced_surfaces) {
+    if (HasPendingDependency(range.end()))
+      return true;
+  }
+  return false;
+}
+
+bool RootFrameSink::ProcessVisibleSurfacesInvalidation() {
+  if (!use_new_invalidate_heuristic_) {
+    // This handles only invalidation of sub clients, root client invalidation
+    // is handled by Invalidate() from cc to |SynchronousLayerTreeFrameSink|. So
+    // we return false unless we already have damage.
+    return needs_draw_;
+  }
+
+  bool invalidate = false;
+
+  // There are few possible cases:
+  // * viz::Surface is visible (i.e was embedded last frame and any scheduled
+  // draws don't change that). In this case surface is in `contained_surfaces`
+  // and we need to invalidate for any CompositorFrame that we haven't
+  // invalidated yet. This is a steady state.
+  // * viz::Surface is visible, but there are scheduled draws that remove it. In
+  // this case surface is in `contained_surfaces`, but technically there is no
+  // need to invalidate it. We can't know that it will disappear, so we
+  // invalidate anyway.
+  // * viz::Surface is visible, but has pending dependencies (embedded surfaces
+  // without active frame). In this case surface is in `contained_surfaces`, but
+  // the dependents aren't. Invalidate in this case pessimistically assuming
+  // there are uncommitted frames that can be activated on commit in dependent
+  // frames.
+  // * viz::Surface is not visible yet, but there is a pending draw that will
+  // embed it. In this case the surface is not in `contained_surfaces` yet, so
+  // we can't process it here. After the draw will happen it's possible that
+  // there are uncommitted frames that are already scheduled to draw, but have
+  // not been processed here. This can cause extra invalidation.
+  // * viz::Surface is not visible and there is no pending draw. This shouldn't
+  // be possible because the only way to embed a child surface is for the root
+  // renderer to submit a compositor frame and invalidation of it is handled
+  // separately.
+
+  // If there is pending dependency, invalidate.
+  if (root_local_surface_id_allocator_.HasValidLocalSurfaceId()) {
+    auto surface_id = viz::SurfaceId(
+        root_frame_sink_id(),
+        root_local_surface_id_allocator_.GetCurrentLocalSurfaceId());
+    invalidate = invalidate || HasPendingDependency(surface_id);
+  }
+
+  for (auto& surface_id : contained_surfaces_) {
+    auto* surface =
+        GetFrameSinkManager()->surface_manager()->GetSurfaceForId(surface_id);
+    if (surface) {
+      // Track last frame_id that we invalidated for. Note, that this doesn't
+      // take into account what current frame is or what display compositor will
+      // draw. The intent here is to invalidate once for each surface we see.
+      auto& last_invalidated_id = last_invalidated_frame_id_[surface_id];
+      auto uncommited_frame_id =
+          last_invalidated_id.IsSequenceValid()
+              ? surface->GetUncommitedFrameIdNewerThan(last_invalidated_id)
+              : surface->GetFirstUncommitedFrameId();
+      if (uncommited_frame_id.has_value()) {
+        invalidate = true;
+        last_invalidated_id = uncommited_frame_id.value();
+      }
+    }
+  }
+
+  return invalidate;
+}
+
 bool RootFrameSink::BeginFrame(const viz::BeginFrameArgs& args,
                                bool had_input_event) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // This handles only invalidation of sub clients, root client invalidation is
-  // handled by Invalidate() from cc to |SynchronousLayerTreeFrameSink|. So we
-  // return false unless we already have damage.
-  bool invalidate = had_input_event || needs_draw_;
+  // We call ProcessVisibleSurfacesInvalidation() to make sure heuristic updated
+  // it's state (e.g last invalidated begin frame args).
+  bool invalidate = ProcessVisibleSurfacesInvalidation() || had_input_event;
 
   TRACE_EVENT_INSTANT1("android_webview", "RootFrameSink::BeginFrame",
                        TRACE_EVENT_SCOPE_THREAD, "invalidate", invalidate);
 
-  if (needs_begin_frames_) {
+  if (clients_need_begin_frames_) {
     begin_frame_source_->OnBeginFrame(args);
+  } else if (!invalidate) {
+    if (use_new_invalidate_heuristic_) {
+      // Client don't need begin frames and we didn't invalidate, so we don't
+      // need them either.
+      UpdateNeedsBeginFrames(false);
+    }
   }
 
   return invalidate;
@@ -207,6 +335,9 @@ void RootFrameSink::SetBeginFrameSourcePaused(bool paused) {
 }
 
 void RootFrameSink::SetNeedsDraw(bool needs_draw) {
+  // Only old heuristic needs this.
+  DCHECK(!use_new_invalidate_heuristic_);
+
   needs_draw_ = needs_draw;
 
   // It's possible that client submitted last frame and unsubscribed from
@@ -215,6 +346,17 @@ void RootFrameSink::SetNeedsDraw(bool needs_draw) {
     if (client_)
       client_->Invalidate();
   }
+}
+
+void RootFrameSink::OnNewUncommittedFrame(const viz::SurfaceId& surface_id) {
+  // Only new heurstic needs this.
+  if (!use_new_invalidate_heuristic_)
+    return;
+
+  // If there is new uncommitted frame in visible surface, make sure we request
+  // a begin frame to check if we need to invalidate next frame.
+  if (contained_surfaces_.contains(surface_id))
+    UpdateNeedsBeginFrames(true);
 }
 
 bool RootFrameSink::IsChildSurface(const viz::FrameSinkId& frame_sink_id) {
@@ -255,6 +397,10 @@ void RootFrameSink::SubmitChildCompositorFrame(ChildFrame* child_frame) {
 }
 
 viz::FrameTimingDetailsMap RootFrameSink::TakeChildFrameTimingDetailsMap() {
+  // Take timing for root CompositorFrameSinkSupport to avoid them accumulating.
+  // We don't use them anyhow.
+  std::ignore = support_->TakeFrameTimingDetailsMap();
+
   if (child_sink_support_)
     return child_sink_support_->support()->TakeFrameTimingDetailsMap();
   return viz::FrameTimingDetailsMap();

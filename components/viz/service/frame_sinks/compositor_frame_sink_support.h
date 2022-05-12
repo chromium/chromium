@@ -141,6 +141,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void ThrottleBeginFrame(base::TimeDelta interval);
 
   // SurfaceClient implementation.
+  void OnSurfaceCommitted(Surface* surface) override;
   void OnSurfaceActivated(Surface* surface) override;
   void OnSurfaceDestroyed(Surface* surface) override;
   void OnSurfaceWillDraw(Surface* surface) override;
@@ -155,7 +156,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
       const LocalSurfaceId& local_surface_id) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
-  void OnSurfaceProcessed(Surface* surface) override;
+  void SendCompositorFrameAck() override;
   void OnSurfaceAggregatedDamage(
       Surface* surface,
       const LocalSurfaceId& local_surface_id,
