@@ -293,5 +293,15 @@ const base::Feature kClampCookieExpiryTo400Days(
     "ClampCookieExpiryTo400Days",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kStaticKeyPinningEnforcement(
+    "StaticKeyPinningEnforcement",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+const base::Feature kStaticKeyPinningEnforcement(
+    "StaticKeyPinningEnforcement",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
 }  // namespace net

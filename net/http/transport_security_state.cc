@@ -413,8 +413,7 @@ TransportSecurityState::TransportSecurityState(
           features::kPartitionExpectCTStateByNetworkIsolationKey)) {
 // Static pinning is only enabled for official builds to make sure that
 // others don't end up with pins that cannot be easily updated.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_IOS)
   enable_static_pins_ = false;
   enable_static_expect_ct_ = false;
 #endif
@@ -1179,8 +1178,10 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
                                                PKPState* pkp_result) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!enable_static_pins_ || !IsStaticPKPListTimely())
+  if (!enable_static_pins_ || !IsStaticPKPListTimely() ||
+      !base::FeatureList::IsEnabled(features::kStaticKeyPinningEnforcement)) {
     return false;
+  }
 
   PreloadResult result;
   if (host_pins_.has_value()) {
@@ -1641,10 +1642,18 @@ bool TransportSecurityState::IsCTLogListTimely() const {
 }
 
 bool TransportSecurityState::IsStaticPKPListTimely() const {
+  if (pins_list_always_timely_for_testing_) {
+    return true;
+  }
+
   // If the list has not been updated via component updater, freshness depends
-  // on build freshness.
+  // on the compiled-in list freshness.
   if (!host_pins_.has_value()) {
-    return IsBuildTimely();
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+    return (base::Time::Now() - kPinsListTimestamp).InDays() < 70;
+#else
+    return false;
+#endif
   }
   DCHECK(!key_pins_list_last_update_time_.is_null());
   // Else, we use the last update time.

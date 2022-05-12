@@ -381,6 +381,7 @@ class TransportSecurityStateTest : public ::testing::Test,
 
   static void EnableStaticPins(TransportSecurityState* state) {
     state->enable_static_pins_ = true;
+    state->SetPinningListAlwaysTimelyForTesting(true);
   }
 
   static void EnableStaticExpectCT(TransportSecurityState* state) {
@@ -884,6 +885,7 @@ TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
 
 TEST_F(TransportSecurityStateTest, LongNames) {
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   const char kLongName[] =
       "lookupByWaveIdHashAndWaveIdIdAndWaveIdDomainAndWaveletIdIdAnd"
       "WaveletIdDomainAndBlipBlipid";
@@ -906,6 +908,9 @@ static bool AddHash(const std::string& type_and_base64, HashValueVector* out) {
 }
 
 TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HashValueVector good_hashes, bad_hashes;
 
   for (size_t i = 0; kGoodPath[i]; i++) {
@@ -916,6 +921,7 @@ TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
   }
 
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   EnableStaticPins(&state);
 
   TransportSecurityState::PKPState pkp_state;
@@ -931,12 +937,16 @@ TEST_F(TransportSecurityStateTest, PinValidationWithoutRejectedCerts) {
 // Tests that pinning violations on preloaded pins trigger reports when
 // the preloaded pin contains a report URI.
 TEST_F(TransportSecurityStateTest, PreloadedPKPReportUri) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   const char kPreloadedPinDomain[] = "with-report-uri-pkp.preloaded.test";
   HostPortPair host_port_pair(kPreloadedPinDomain, kPort);
   net::NetworkIsolationKey network_isolation_key =
       NetworkIsolationKey::CreateTransient();
 
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   MockCertificateReportSender mock_report_sender;
   state.SetReportSender(&mock_report_sender);
 
@@ -1372,6 +1382,9 @@ TEST_F(TransportSecurityStateTest, RepeatedExpectCTReportsForStaticExpectCT) {
 // the lookup methods can find the entry and correctly decode the different
 // preloaded states (HSTS, HPKP, and Expect-CT).
 TEST_F(TransportSecurityStateTest, DecodePreloadedSingle) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test1::kHSTSSource);
 
   TransportSecurityState state;
@@ -1402,6 +1415,9 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedSingle) {
 // entries and correctly decode the different preloaded states (HSTS, HPKP,
 // and Expect-CT) for each entry.
 TEST_F(TransportSecurityStateTest, DecodePreloadedMultiplePrefix) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test2::kHSTSSource);
 
   TransportSecurityState state;
@@ -1471,6 +1487,9 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultiplePrefix) {
 // all entries and correctly decode the different preloaded states (HSTS, HPKP,
 // and Expect-CT) for each entry.
 TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test3::kHSTSSource);
 
   TransportSecurityState state;
@@ -2703,6 +2722,7 @@ static bool StaticShouldRedirect(const char* hostname) {
 
 static bool HasStaticState(const char* hostname) {
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
   return state.GetStaticSTSState(hostname, &sts_state) ||
@@ -2711,6 +2731,7 @@ static bool HasStaticState(const char* hostname) {
 
 static bool HasStaticPublicKeyPins(const char* hostname) {
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   TransportSecurityStateTest::EnableStaticPins(&state);
   TransportSecurityState::PKPState pkp_state;
   if (!state.GetStaticPKPState(hostname, &pkp_state))
@@ -2728,7 +2749,11 @@ static bool OnlyPinningInStaticState(const char* hostname) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, EnableStaticPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   TransportSecurityState::PKPState pkp_state;
 
   EnableStaticPins(&state);
@@ -2739,6 +2764,7 @@ TEST_F(TransportSecurityStateStaticTest, EnableStaticPins) {
 
 TEST_F(TransportSecurityStateStaticTest, DisableStaticPins) {
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   TransportSecurityState::PKPState pkp_state;
 
   DisableStaticPins(&state);
@@ -2783,6 +2809,9 @@ TEST_F(TransportSecurityStateStaticTest, IsPreloaded) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, PreloadedDomainSet) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
   EnableStaticPins(&state);
   TransportSecurityState::STSState sts_state;
@@ -2801,6 +2830,9 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedDomainSet) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, Preloaded) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
   EnableStaticPins(&state);
   TransportSecurityState::STSState sts_state;
@@ -3017,6 +3049,9 @@ TEST_F(TransportSecurityStateStaticTest, Preloaded) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
   EnableStaticPins(&state);
   TransportSecurityState::STSState sts_state;
@@ -3083,6 +3118,9 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, BuiltinCertPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
   EnableStaticPins(&state);
   TransportSecurityState::PKPState pkp_state;
@@ -3139,6 +3177,9 @@ TEST_F(TransportSecurityStateStaticTest, BuiltinCertPins) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, OptionalHSTSCertPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
   EnableStaticPins(&state);
 
@@ -3162,11 +3203,16 @@ TEST_F(TransportSecurityStateStaticTest, OptionalHSTSCertPins) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, OverrideBuiltins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   EXPECT_TRUE(HasStaticPublicKeyPins("google.com"));
   EXPECT_FALSE(StaticShouldRedirect("google.com"));
   EXPECT_FALSE(StaticShouldRedirect("www.google.com"));
 
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
+
   const base::Time current_time(base::Time::Now());
   const base::Time expiry = current_time + base::Seconds(1000);
   state.AddHSTS("www.google.com", expiry, true);
@@ -3176,6 +3222,9 @@ TEST_F(TransportSecurityStateStaticTest, OverrideBuiltins) {
 
 // Tests that redundant reports are rate-limited.
 TEST_F(TransportSecurityStateStaticTest, HPKPReportRateLimiting) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   HostPortPair subdomain_host_port_pair(kSubdomain, kPort);
   GURL report_uri(kReportUri);
@@ -3238,6 +3287,9 @@ TEST_F(TransportSecurityStateStaticTest, HPKPReportRateLimiting) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, HPKPReporting) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   HostPortPair subdomain_host_port_pair(kSubdomain, kPort);
   GURL report_uri(kReportUri);
@@ -3882,6 +3934,9 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTNetworkIsolationKeyLimit) {
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   GURL report_uri(kReportUri);
   NetworkIsolationKey network_isolation_key =
@@ -3938,6 +3993,9 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   GURL report_uri(kReportUri);
   NetworkIsolationKey network_isolation_key =
@@ -3994,6 +4052,9 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   GURL report_uri(kReportUri);
   NetworkIsolationKey network_isolation_key =
@@ -4035,6 +4096,9 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
 }
 
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   HostPortPair host_port_pair(kHost, kPort);
   GURL report_uri(kReportUri);
   NetworkIsolationKey network_isolation_key =
@@ -4055,6 +4119,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 
   TransportSecurityState state;
   EnableStaticPins(&state);
+  state.SetPinningListAlwaysTimelyForTesting(false);
   std::string unused_failure_log;
 
   // Prior to updating the list, bad_hashes should be rejected.
@@ -4096,6 +4161,50 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
 
   // Hashes should now be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
+            state.CheckPublicKeyPins(
+                host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
+                TransportSecurityState::ENABLE_PIN_REPORTS,
+                network_isolation_key, &unused_failure_log));
+}
+
+class TransportSecurityStatePinningKillswitchTest
+    : public TransportSecurityStateTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kStaticKeyPinningEnforcement);
+    TransportSecurityStateTest::SetUp();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(TransportSecurityStatePinningKillswitchTest, PinningKillswitchSet) {
+  HostPortPair host_port_pair(kHost, kPort);
+  GURL report_uri(kReportUri);
+  NetworkIsolationKey network_isolation_key =
+      NetworkIsolationKey::CreateTransient();
+  // Two dummy certs to use as the server-sent and validated chains. The
+  // contents don't matter.
+  scoped_refptr<X509Certificate> cert1 =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(cert1);
+  scoped_refptr<X509Certificate> cert2 =
+      ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
+  ASSERT_TRUE(cert2);
+
+  HashValueVector bad_hashes;
+
+  for (size_t i = 0; kBadPath[i]; i++)
+    EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
+
+  TransportSecurityState state;
+  EnableStaticPins(&state);
+  std::string unused_failure_log;
+
+  // Hashes should be accepted since pinning enforcement is disabled.
+  EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
             state.CheckPublicKeyPins(
                 host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
                 TransportSecurityState::ENABLE_PIN_REPORTS,

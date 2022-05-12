@@ -5,6 +5,12 @@
 # For use with transport_security_state_static_unittest_default.json.
 # The format of this file is identical to transport_security_state_static.pins.
 
+# Having a timestamp is required by the parser, but this timestamp is not
+# otherwise used by tests (since they override the behavior by setting
+# pins_list_always_timely_for_testing_
+PinsListTimestamp
+0
+
 TestSPKI1
 sha256/w3y7Yg3RzkAyhCeBoLHm71YRnuuUW87AAR/DVpLMTw4=
 

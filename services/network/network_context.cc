@@ -1951,6 +1951,7 @@ void NetworkContext::EnableStaticKeyPinningForTesting(
   net::TransportSecurityState* state =
       url_request_context_->transport_security_state();
   state->EnableStaticPinsForTesting();
+  state->SetPinningListAlwaysTimelyForTesting(true);
   std::move(callback).Run();
 }
 

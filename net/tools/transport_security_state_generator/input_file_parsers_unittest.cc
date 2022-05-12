@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
 #include "net/tools/transport_security_state_generator/pinsets.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
@@ -247,6 +248,8 @@ TEST(InputFileParsersTest, ParseJSONUnkownPolicy) {
 TEST(InputFileParsersTest, ParseCertificatesFile) {
   std::string valid =
       "# This line should ignored. The rest should result in 3 pins.\n"
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "TestPublicKey1\n"
       "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n"
       "\n"
@@ -286,8 +289,17 @@ TEST(InputFileParsersTest, ParseCertificatesFile) {
       "-----END CERTIFICATE-----";
 
   Pinsets pinsets;
-  EXPECT_TRUE(ParseCertificatesFile(valid, &pinsets));
+  base::Time timestamp;
+
+  base::Time expected_timestamp;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2022-04-14T00:00:00Z", &expected_timestamp));
+
+  EXPECT_TRUE(ParseCertificatesFile(valid, &pinsets, &timestamp));
+
   EXPECT_EQ(3U, pinsets.spki_size());
+
+  EXPECT_EQ(timestamp, expected_timestamp);
 
   const SPKIHashMap& hashes = pinsets.spki_hashes();
   EXPECT_NE(hashes.cend(), hashes.find("TestPublicKey1"));
@@ -297,43 +309,60 @@ TEST(InputFileParsersTest, ParseCertificatesFile) {
 
 TEST(InputFileParsersTest, ParseCertificatesFileInvalid) {
   Pinsets pinsets;
+  base::Time unused;
 
   std::string invalid =
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "TestName\n"
       "unexpected";
-  EXPECT_FALSE(ParseCertificatesFile(invalid, &pinsets));
+  EXPECT_FALSE(ParseCertificatesFile(invalid, &pinsets, &unused));
 }
 
 // Test that parsing invalid certificate names fails.
 TEST(InputFileParsersTest, ParseCertificatesFileInvalidName) {
   Pinsets pinsets;
+  base::Time unused;
 
   std::string invalid_name_small_character =
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "startsWithSmallLetter\n"
       "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n";
-  EXPECT_FALSE(ParseCertificatesFile(invalid_name_small_character, &pinsets));
+  EXPECT_FALSE(
+      ParseCertificatesFile(invalid_name_small_character, &pinsets, &unused));
 
   std::string invalid_name_invalid_characters =
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "Invalid-Characters-In-Name\n"
       "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n";
-  EXPECT_FALSE(
-      ParseCertificatesFile(invalid_name_invalid_characters, &pinsets));
+  EXPECT_FALSE(ParseCertificatesFile(invalid_name_invalid_characters, &pinsets,
+                                     &unused));
 
   std::string invalid_name_number =
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "1InvalidName\n"
       "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n";
-  EXPECT_FALSE(ParseCertificatesFile(invalid_name_number, &pinsets));
+  EXPECT_FALSE(ParseCertificatesFile(invalid_name_number, &pinsets, &unused));
 
   std::string invalid_name_space =
+      "PinsListTimestamp\n"
+      "1649894400\n"
       "Invalid Name\n"
       "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\n";
-  EXPECT_FALSE(ParseCertificatesFile(invalid_name_space, &pinsets));
+  EXPECT_FALSE(ParseCertificatesFile(invalid_name_space, &pinsets, &unused));
 }
 
 // Test that parsing of a certificate with an incomplete or incorrect name
 // fails.
 TEST(InputFileParsersTest, ParseCertificatesFileInvalidCertificateName) {
   Pinsets pinsets;
+  base::Time unused;
+  std::string timestamp_prefix =
+      "PinsListTimestamp\n"
+      "1649894400\n";
   std::string certificate =
       "-----BEGIN CERTIFICATE-----\n"
       "MIIDIzCCAgugAwIBAgIJALs84KlxWh4GMA0GCSqGSIb3DQEBCwUAMCgxGTAXBgNV\n"
@@ -355,17 +384,67 @@ TEST(InputFileParsersTest, ParseCertificatesFileInvalidCertificateName) {
       "E2j3m+jTVIv3CZ+ivGxggZQ8ZYN8FJ/iTW3pXGojogHh0NRJJ8dM\n"
       "-----END CERTIFICATE-----";
 
-  std::string missing_prefix = "Class3_G1_Test\n" + certificate;
-  EXPECT_FALSE(ParseCertificatesFile(missing_prefix, &pinsets));
+  std::string missing_prefix =
+      timestamp_prefix + "Class3_G1_Test\n" + certificate;
+  EXPECT_FALSE(ParseCertificatesFile(missing_prefix, &pinsets, &unused));
 
-  std::string missing_class = "Chromium_G1_Test\n" + certificate;
-  EXPECT_FALSE(ParseCertificatesFile(missing_class, &pinsets));
+  std::string missing_class =
+      timestamp_prefix + "Chromium_G1_Test\n" + certificate;
+  EXPECT_FALSE(ParseCertificatesFile(missing_class, &pinsets, &unused));
 
-  std::string missing_number = "Chromium_Class3_Test\n" + certificate;
-  EXPECT_FALSE(ParseCertificatesFile(missing_number, &pinsets));
+  std::string missing_number =
+      timestamp_prefix + "Chromium_Class3_Test\n" + certificate;
+  EXPECT_FALSE(ParseCertificatesFile(missing_number, &pinsets, &unused));
 
-  std::string valid = "Chromium_Class3_G1_Test\n" + certificate;
-  EXPECT_TRUE(ParseCertificatesFile(valid, &pinsets));
+  std::string valid =
+      timestamp_prefix + "Chromium_Class3_G1_Test\n" + certificate;
+  EXPECT_TRUE(ParseCertificatesFile(valid, &pinsets, &unused));
+}
+
+// Tests that parsing a certificate with a missing or incorrect timestamp fails.
+TEST(InputFileParsersTest, ParseCertificatesFileInvalidTimestamp) {
+  Pinsets pinsets;
+  base::Time unused;
+  std::string timestamp_prefix =
+      "PinsListTimestamp\n"
+      "1649894400\n";
+  std::string bad_timestamp_prefix =
+      "PinsListTimestamp\n"
+      "NotReallyTimestamp\n";
+  std::string certificate =
+      "Chromium_Class3_G1_Test\n"
+      "-----BEGIN CERTIFICATE-----\n"
+      "MIIDIzCCAgugAwIBAgIJALs84KlxWh4GMA0GCSqGSIb3DQEBCwUAMCgxGTAXBgNV\n"
+      "BAoMEENocm9taXVtIENsYXNzIDMxCzAJBgNVBAsMAkcxMB4XDTE3MDIwMTE5NTUw\n"
+      "NVoXDTE4MDIwMTE5NTUwNVowKDEZMBcGA1UECgwQQ2hyb21pdW0gQ2xhc3MgMzEL\n"
+      "MAkGA1UECwwCRzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDkolrR\n"
+      "7gCPm22Cc9psS2Jh1mksVneee5ntEezZ2gEU20y9Z9URBReo8SFvaZcgKkAkca1v\n"
+      "552YIG+FBO/u8njxzlHXvuVJ5x2geciqqR4TRhA4jO1ndrNW6nlJfOoYueWbdym3\n"
+      "8zwugoULoCtyLyzdiMI5g8iVBQHDh8+K3TZIHar3HS49TjX5u5nv4igO4RfDcFUa\n"
+      "h8g+6x5nWoFF8oa3FG0YTN+q6iI1i2JHmj/q03fVPv3WLPGJ3JADau9gO1Lw1/qf\n"
+      "R/N3l4MVtjDFFGYzclfqW2UmL6zRirEV0GF2gwSBAGVX3WWhpOcM8rFIWYkZCsI5\n"
+      "iUdtwFNBfcKS9sNpAgMBAAGjUDBOMB0GA1UdDgQWBBTm4VJfibducqwb9h4XELn3\n"
+      "p6zLVzAfBgNVHSMEGDAWgBTm4VJfibducqwb9h4XELn3p6zLVzAMBgNVHRMEBTAD\n"
+      "AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQApTm40RfsZG20IIgWJ62pZ2end/lvaneTh\n"
+      "MZSgFnoTRjKkd/5dh22YyKPw9PnpIuiyi85L36COreqZUvbxqRQnpL1oSCRlLBJQ\n"
+      "2LcGlF0j0Opa+SY2VWup4XjnYF8CvwMl4obNpSuywTFmkXCRxzN23tn8whNHvWHM\n"
+      "BQ7abw8X1KY02uPbHucrpou6KXkKkhyhfML8OD8IRkSM56K6YyedqV97cmEdW0Ie\n"
+      "LlpFJQVX13bmojtSNI1zaiCiEenn5xLa/dAlyFT18Mq6y8plioBinVWFYd0qcRoA\n"
+      "E2j3m+jTVIv3CZ+ivGxggZQ8ZYN8FJ/iTW3pXGojogHh0NRJJ8dM\n"
+      "-----END CERTIFICATE-----";
+
+  std::string missing_timestamp = certificate;
+  EXPECT_FALSE(ParseCertificatesFile(certificate, &pinsets, &unused));
+
+  std::string incorrect_timestamp = bad_timestamp_prefix + certificate;
+  EXPECT_FALSE(ParseCertificatesFile(incorrect_timestamp, &pinsets, &unused));
+
+  std::string multiple_timestamp =
+      timestamp_prefix + timestamp_prefix + certificate;
+  EXPECT_FALSE(ParseCertificatesFile(multiple_timestamp, &pinsets, &unused));
+
+  std::string valid = timestamp_prefix + certificate;
+  EXPECT_TRUE(ParseCertificatesFile(valid, &pinsets, &unused));
 }
 
 }  // namespace

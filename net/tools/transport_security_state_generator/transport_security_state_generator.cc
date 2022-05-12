@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
@@ -251,8 +252,9 @@ int main(int argc, char* argv[]) {
 
   TransportSecurityStateEntries entries;
   Pinsets pinsets;
+  base::Time timestamp;
 
-  if (!ParseCertificatesFile(certs_input, &pinsets) ||
+  if (!ParseCertificatesFile(certs_input, &pinsets, &timestamp) ||
       !ParseJSON(json_input, &entries, &pinsets)) {
     LOG(ERROR) << "Error while parsing the input files.";
     return 1;
@@ -280,7 +282,7 @@ int main(int argc, char* argv[]) {
 
   std::string output;
   PreloadedStateGenerator generator;
-  output = generator.Generate(preload_template, entries, pinsets);
+  output = generator.Generate(preload_template, entries, pinsets, timestamp);
   if (output.empty()) {
     LOG(ERROR) << "Trie generation failed.";
     return 1;

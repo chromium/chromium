@@ -131,7 +131,8 @@ PreloadedStateGenerator::~PreloadedStateGenerator() = default;
 std::string PreloadedStateGenerator::Generate(
     const std::string& preload_template,
     const TransportSecurityStateEntries& entries,
-    const Pinsets& pinsets) {
+    const Pinsets& pinsets,
+    const base::Time& timestamp) {
   std::string output = preload_template;
 
   ProcessSPKIHashes(pinsets, &output);
@@ -182,6 +183,9 @@ std::string PreloadedStateGenerator::Generate(
 
   ReplaceTag("HSTS_TRIE_BITS", base::NumberToString(new_length), &output);
   ReplaceTag("HSTS_TRIE_ROOT", base::NumberToString(root_position), &output);
+
+  ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
+             &output);
 
   return output;
 }

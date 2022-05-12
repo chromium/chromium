@@ -430,6 +430,9 @@ NET_EXPORT extern const base::Feature kSandboxHttpCache;
 // future.
 NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
 
+// Controls whether static key pinning is enforced.
+NET_EXPORT extern const base::Feature kStaticKeyPinningEnforcement;
+
 }  // namespace features
 }  // namespace net
 

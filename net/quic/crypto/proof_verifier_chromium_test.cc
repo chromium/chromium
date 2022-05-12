@@ -11,7 +11,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_and_ct_verifier.h"
@@ -578,6 +580,9 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorSetForFatalError) {
 
 // Test that PKP is enforced for certificates that chain up to known roots.
 TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   dummy_result_.is_issued_by_known_root = true;
   dummy_result_.public_key_hashes = MakeHashValueVector(0x01);
 
@@ -585,6 +590,7 @@ TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
   transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
@@ -625,6 +631,9 @@ TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
 // Test |pkp_bypassed| is set when PKP is bypassed due to a local
 // trust anchor
 TEST_F(ProofVerifierChromiumTest, PKPBypassFlagSet) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   dummy_result_.is_issued_by_known_root = false;
   dummy_result_.public_key_hashes = MakeHashValueVector(0x01);
 
@@ -632,6 +641,7 @@ TEST_F(ProofVerifierChromiumTest, PKPBypassFlagSet) {
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
   transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
@@ -782,6 +792,9 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequired) {
 
 // Test that CT is considered even when PKP fails.
 TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   dummy_result_.is_issued_by_known_root = true;
   dummy_result_.public_key_hashes = MakeHashValueVector(0x01);
 
@@ -790,6 +803,7 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
 
   // Set up PKP.
   transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   // Set up CT.

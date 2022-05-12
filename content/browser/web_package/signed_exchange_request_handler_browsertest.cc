@@ -1839,6 +1839,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 class SignedExchangePKPBrowserTest
     : public SignedExchangeRequestHandlerBrowserTest {
  public:
+  SignedExchangePKPBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kStaticKeyPinningEnforcement);
+  }
   void SetUpOnMainThread() override {
     SignedExchangeRequestHandlerBrowserTest::SetUpOnMainThread();
 
@@ -1918,6 +1922,8 @@ class SignedExchangePKPBrowserTest
   // Only used when NetworkService is disabled. Accessed on IO thread.
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangePKPBrowserTest, PKPViolation) {

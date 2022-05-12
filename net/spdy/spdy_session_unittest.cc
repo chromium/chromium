@@ -7296,8 +7296,12 @@ TEST(CanPoolTest, CanNotPoolWithClientCerts) {
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   TransportSecurityState tss;
   tss.EnableStaticPinsForTesting();
+  tss.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   TestSSLConfigService ssl_config_service;
@@ -7403,6 +7407,7 @@ TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
 TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   TransportSecurityState tss;
   tss.EnableStaticPinsForTesting();
+  tss.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   TestSSLConfigService ssl_config_service;

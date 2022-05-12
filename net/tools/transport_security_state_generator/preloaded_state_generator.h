@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "net/tools/huffman_trie/trie/trie_writer.h"
 #include "net/tools/transport_security_state_generator/pinset.h"
 #include "net/tools/transport_security_state_generator/pinsets.h"
@@ -31,7 +32,8 @@ class PreloadedStateGenerator {
   // Returns the generated C++ code on success and the empty string on failure.
   std::string Generate(const std::string& preload_template,
                        const TransportSecurityStateEntries& entries,
-                       const Pinsets& pinsets);
+                       const Pinsets& pinsets,
+                       const base::Time& timestamp);
 
  private:
   void ProcessSPKIHashes(const Pinsets& pinset, std::string* tpl);

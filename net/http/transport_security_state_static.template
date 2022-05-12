@@ -11,7 +11,11 @@
 
 #include <iterator>
 
+#include "base/time/time.h"
 #include "net/http/transport_security_state_source.h"
+
+// This is the time at which the key pins list was last updated.
+const base::Time kPinsListTimestamp = base::Time::FromTimeT([[PINS_LIST_TIMESTAMP]]);
 
 // These are SubjectPublicKeyInfo hashes for public key pinning. The
 // hashes are SHA256 digests.

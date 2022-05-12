@@ -642,6 +642,12 @@ class NET_EXPORT TransportSecurityState {
   // The number of cached ExpectCTState entries.
   size_t num_expect_ct_entries_for_testing() const;
 
+  // Sets whether pinning list timestamp freshness should be ignored for
+  // testing.
+  void SetPinningListAlwaysTimelyForTesting(bool always_timely) {
+    pins_list_always_timely_for_testing_ = always_timely;
+  }
+
   // The number of cached STSState entries.
   size_t num_sts_entries() const;
 
@@ -812,6 +818,8 @@ class NET_EXPORT TransportSecurityState {
       host_pins_;
   base::Time key_pins_list_last_update_time_;
   std::vector<PinSet> pinsets_;
+
+  bool pins_list_always_timely_for_testing_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };

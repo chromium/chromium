@@ -8,6 +8,10 @@
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 
+namespace base {
+class Time;
+}
+
 namespace net {
 
 namespace transport_security_state {
@@ -19,7 +23,9 @@ class Pinsets;
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.pins
-bool ParseCertificatesFile(base::StringPiece certs_input, Pinsets* pinsets);
+bool ParseCertificatesFile(base::StringPiece certs_input,
+                           Pinsets* pinsets,
+                           base::Time* timestamp);
 
 // Parses the |json| string; copies the items under the "entries" key to
 // |entries| and the pinsets under the "pinsets" key to |pinsets|.

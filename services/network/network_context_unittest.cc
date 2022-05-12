@@ -1329,6 +1329,10 @@ TEST_F(NetworkContextTest, CertReporting) {
   const char kReportHost[] = "report-uri.preloaded.test";
   const char kReportPath[] = "/pkp";
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
+
   for (bool reporting_enabled : {false, true}) {
     // Server that PKP reports are sent to.
     net::test_server::EmbeddedTestServer report_test_server;

@@ -1944,6 +1944,9 @@ TEST_P(QuicStreamFactoryTest, HttpsPoolingWithMatchingPins) {
 }
 
 TEST_P(QuicStreamFactoryTest, NoHttpsPoolingWithDifferentPins) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   Initialize();
 
   MockQuicData socket_data1(version_);
