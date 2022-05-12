@@ -726,6 +726,14 @@ void CloudPolicyClient::UploadEncryptedReport(
   if (context.has_value()) {
     config->UpdateContext(std::move(context.value()));
   }
+  const auto delay = config->WhenIsAllowedToProceed();
+  if (delay.is_positive()) {
+    // Reject upload.
+    config->CancelNotAllowedJob();  // Invokes callback to response back.
+    return;
+  }
+  // Accept upload.
+  config->AccountForAllowedJob();
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 

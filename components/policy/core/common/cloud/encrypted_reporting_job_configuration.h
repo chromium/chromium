@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -92,6 +93,17 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   // profile dictionary, but does overwrite a few of the device and browser
   // fields (check reporting::GetContext for specifics).
   void UpdateContext(base::Value::Dict context);
+
+  // Checks the new job against the history, determines how soon the upload will
+  // be allowed. Returns positive value if not allowed, and 0 or negative
+  // otherwise.
+  base::TimeDelta WhenIsAllowedToProceed() const;
+
+  // Account for the job, that was allowed to proceed.
+  void AccountForAllowedJob();
+
+  // Cancels the job, that was not allowed to proceed.
+  void CancelNotAllowedJob();
 
  protected:
   void UpdatePayloadBeforeGetInternal() override;

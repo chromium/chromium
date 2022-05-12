@@ -67,6 +67,23 @@ void EncryptedReportingJobConfiguration::UpdateContext(
   context_ = std::move(context);
 }
 
+base::TimeDelta EncryptedReportingJobConfiguration::WhenIsAllowedToProceed()
+    const {
+  return base::TimeDelta();  // 0 - allowed right away. TODO(b/214044545):
+                             // implement.
+}
+
+void EncryptedReportingJobConfiguration::CancelNotAllowedJob() {
+  std::move(callback_).Run(
+      /*job=*/nullptr, DeviceManagementStatus::DM_STATUS_REQUEST_FAILED,
+      /*response_code=*/DeviceManagementService::kTooManyRequests,
+      /*response_body=*/absl::nullopt);
+}
+
+void EncryptedReportingJobConfiguration::AccountForAllowedJob() {
+  // TODO(b/214044545): implement.
+}
+
 DeviceManagementService::Job::RetryMethod
 EncryptedReportingJobConfiguration::ShouldRetry(
     int response_code,
