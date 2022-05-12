@@ -4,6 +4,7 @@
 
 #include "chromeos/components/quick_answers/understanding/intent_generator.h"
 
+#include <cctype>
 #include <map>
 
 #include "base/i18n/break_iterator.h"
@@ -125,6 +126,14 @@ bool IsPreferredLanguage(const std::string& detected_language) {
   return false;
 }
 
+bool HasDigits(const std::string& word) {
+  for (const auto& character : word) {
+    if (std::isdigit(character))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 IntentGenerator::IntentGenerator(base::WeakPtr<SpellChecker> spell_checker,
@@ -191,7 +200,11 @@ void IntentGenerator::MaybeLoadTextClassifier(
 void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
                                             bool correctness) {
   // Generate dictionary intent if the selected word passed spell check.
-  if (correctness) {
+  // The dictionaries treat digits as valid words, while we will not be able to
+  // grab any useful information from the Search server for words like that.
+  // Thus we filter out the words containing digits. We still fallback to the
+  // text classifier for unit conversion intent.
+  if (correctness && !HasDigits(request.selected_text)) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
                         QuickAnswersState::Get()->application_locale()));
