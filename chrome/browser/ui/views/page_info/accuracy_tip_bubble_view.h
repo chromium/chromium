@@ -60,10 +60,6 @@ class AccuracyTipBubbleView
   // permissions::PermissionRequestManager::Observer:
   void OnBubbleAdded() override;
 
- protected:
-  // WebContentsObserver:
-  void WebContentsDestroyed() override;
-
  private:
   void OpenHelpCenter();
   void OnSecondaryButtonClicked(AccuracyTipInteraction action);
@@ -73,9 +69,6 @@ class AccuracyTipBubbleView
 
   base::OnceCallback<void(AccuracyTipInteraction)> close_callback_;
   AccuracyTipInteraction action_taken_ = AccuracyTipInteraction::kNoAction;
-  // We hold a raw pointer to the WebContents passed in during construction, but
-  // we make sure to set it back to nullptr when the WebContents is destroyed.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ACCURACY_TIP_BUBBLE_VIEW_H_
