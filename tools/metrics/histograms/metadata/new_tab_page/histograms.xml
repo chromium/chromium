@@ -1105,8 +1105,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="NewTabPage.Modules.FreImpression"
-    enum="BooleanEnabled" expires_after="2022-09-15">
+<histogram name="NewTabPage.Modules.FreImpression" enum="BooleanEnabled"
+    expires_after="2022-09-15">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1118,8 +1118,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="NewTabPage.Modules.FreLoaded"
-    enum="BooleanEnabled" expires_after="2022-09-15">
+<histogram name="NewTabPage.Modules.FreLoaded" enum="BooleanEnabled"
+    expires_after="2022-09-15">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
