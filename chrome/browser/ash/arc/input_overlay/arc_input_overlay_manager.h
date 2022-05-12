@@ -119,11 +119,13 @@ class ArcInputOverlayManager : public KeyedService,
   void NotifyTextInputState();
   void AddObserverToInputMethod();
   void RemoveObserverFromInputMethod();
-  // Only top level window will be registered successfully.
+  // Only top level window will be registered/unregistered successfully.
   void RegisterWindow(aura::Window* window);
   void UnRegisterWindow(aura::Window* window);
   void RegisterWindowIfFocused(aura::Window* window);
-  void AddDisplayOverlayController();
+  // Add display overlay controller related to |touch_injector|.
+  void AddDisplayOverlayController(
+      input_overlay::TouchInjector* touch_injector);
   void RemoveDisplayOverlayController();
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};

@@ -229,6 +229,7 @@ void InputMenuView::Init() {
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_CUSTOMIZE_BUTTON),
             ash::PillButton::Type::kIconless,
             /*icon=*/nullptr));
+    customize_button_->SetEnabled(game_control_toggle_->GetIsOn());
     key_mapping_label->SetBorder(views::CreateEmptyBorder(
         CalculateInsets(customize_view.get(), /*left=*/kSideInset,
                         /*right=*/kSideInset, /*other_spacing=*/0)));
@@ -255,7 +256,9 @@ void InputMenuView::Init() {
             &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));
     show_hint_toggle_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY));
+    show_hint_toggle_->SetEnabled(game_control_toggle_->GetIsOn());
     show_hint_toggle_->SetIsOn(
+        game_control_toggle_->GetIsOn() &&
         display_overlay_controller_->GetInputMappingViewVisible());
     hint_label->SetBorder(views::CreateEmptyBorder(
         CalculateInsets(hint_view.get(), /*left=*/kSideInset,

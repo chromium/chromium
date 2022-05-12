@@ -55,18 +55,30 @@ class TouchInjector : public ui::EventRewriter {
     return actions_;
   }
   bool is_mouse_locked() const { return is_mouse_locked_; }
+
   bool touch_injector_enable() const { return touch_injector_enable_; }
+  void store_touch_injector_enable(bool enable) {
+    touch_injector_enable_ = enable;
+  }
+
   bool input_mapping_visible() const { return input_mapping_visible_; }
+  void store_input_mapping_visible(bool enable) {
+    input_mapping_visible_ = enable;
+  }
+
+  bool first_launch() const { return first_launch_; }
+  void set_first_launch(bool first_launch) { first_launch_ = first_launch; }
+
+  bool data_reading_finished() const { return data_reading_finished_; }
+  void set_data_reading_finished(bool finished) {
+    data_reading_finished_ = finished;
+  }
+
   void set_display_mode(DisplayMode mode) { display_mode_ = mode; }
   void set_display_overlay_controller(DisplayOverlayController* controller) {
     display_overlay_controller_ = controller;
   }
-  void store_touch_injector_enable(bool enable) {
-    touch_injector_enable_ = enable;
-  }
-  void store_input_mapping_visible(bool enable) {
-    input_mapping_visible_ = enable;
-  }
+
   bool enable_mouse_lock() { return enable_mouse_lock_; }
   void set_enable_mouse_lock(bool enable) { enable_mouse_lock_ = true; }
 
@@ -89,11 +101,16 @@ class TouchInjector : public ui::EventRewriter {
   void RegisterEventRewriter();
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
-  // Change bindings.
+  // Change bindings. This could be from user editing from display overlay
+  // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
+  // DisplayMode::kView).
   void OnBindingChange(Action* target_action,
                        std::unique_ptr<InputElement> input_element,
                        DisplayMode mode = DisplayMode::kEdit);
-  // Save customized input binding and go back from edit mode to view mode.
+  // Apply pending binding as current binding, but don't save into the storage.
+  void OnApplyPendingBinding();
+  // Save customized input binding/pending binding as current binding and go
+  // back from edit mode to view mode.
   void OnBindingSave();
   // Set input binding back to previous status before entering to the edit mode
   // and go back from edit mode to view mode.
@@ -101,7 +118,9 @@ class TouchInjector : public ui::EventRewriter {
   // Set input binding back to original binding.
   void OnBindingRestore();
   const std::string* GetPackageName() const;
-  void OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto);
+  void OnProtoDataAvailable(AppDataProto& proto);
+  // Save the input menu state when the menu is closed.
+  void OnInputMenuViewRemoved();
 
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
@@ -159,6 +178,11 @@ class TouchInjector : public ui::EventRewriter {
   // Save proto file.
   void OnSaveProtoFile();
 
+  // Add the menu state to |proto|.
+  void AddMenuStateToProto(AppDataProto& proto);
+  // Load menu state from |proto|. The default state is on for the toggles.
+  void LoadMenuStateFromProto(AppDataProto& proto);
+
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
@@ -186,6 +210,11 @@ class TouchInjector : public ui::EventRewriter {
   // Linked to input mapping toggle in the menu. Set it enabled by default. This
   // is to save status if display overlay is destroyed during window operations.
   bool input_mapping_visible_ = true;
+  // The game app is launched for the first time when input overlay is enabled
+  // if the value is true.
+  bool first_launch_ = false;
+  // Data reading is finished after launching if the value is true.
+  bool data_reading_finished_ = false;
 
   // TODO(cuicuiruan): It can be removed after the mouse lock is enabled for
   // post MVP.

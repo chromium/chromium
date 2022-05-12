@@ -68,7 +68,8 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
     base::JSONReader::ValueWithError json_value =
         base::JSONReader::ReadAndReturnValueWithError(kValidJson);
     injector_->ParseActions(json_value.value.value());
-    controller_ = std::make_unique<DisplayOverlayController>(injector_.get());
+    controller_ =
+        std::make_unique<DisplayOverlayController>(injector_.get(), false);
   }
 
   void TearDown() override {

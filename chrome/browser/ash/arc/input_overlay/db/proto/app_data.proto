@@ -50,4 +50,10 @@ message ActionProto {
 message AppDataProto {
   // Actions. A list of actions for one game.
   repeated ActionProto actions = 1;
+  // Input control is on or off. This is associated with the toggle of game
+  // control/assist on the menu.
+  optional bool input_control = 2;
+  // Input mapping hint is on or off. This is associated with the toggle of
+  // show hint overlay on the menu.
+  optional bool input_mapping_hint = 3;
 }

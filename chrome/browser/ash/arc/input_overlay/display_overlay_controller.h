@@ -38,7 +38,7 @@ class EducationalView;
 // |ActionEditMenu| and |ErrorView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler {
  public:
-  explicit DisplayOverlayController(TouchInjector* touch_injector);
+  DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
   DisplayOverlayController& operator=(const DisplayOverlayController&) = delete;
   ~DisplayOverlayController() override;
@@ -65,6 +65,10 @@ class DisplayOverlayController : public ui::EventHandler {
   // button after editing.
   void OnCustomizeRestore();
   const std::string* GetPackageName() const;
+  // Once the menu state is loaded from protobuf data, it should be applied on
+  // the view. For example, |InputMappingView| may not be visible if it is
+  // hidden or input overlay is disabled.
+  void OnApplyMenuState();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -77,19 +81,25 @@ class DisplayOverlayController : public ui::EventHandler {
   friend class InputMenuView;
   friend class InputMappingView;
 
-  void AddOverlay();
+  // Display overlay is added for starting |display_mode|.
+  void AddOverlay(DisplayMode display_mode);
   void RemoveOverlayIfAny();
 
-  void AddInputMappingView(views::Widget* overlay_widget);
   void AddMenuEntryView(views::Widget* overlay_widget);
-  void AddEditModeExitView(views::Widget* overlay_widget);
-  void OnMenuEntryPressed();
-
-  void RemoveInputMenuView();
-  void RemoveInputMappingView();
   void RemoveMenuEntryView();
+  void OnMenuEntryPressed();
+  void RemoveInputMenuView();
+
+  void AddInputMappingView(views::Widget* overlay_widget);
+  void RemoveInputMappingView();
+
+  void AddEditModeExitView(views::Widget* overlay_widget);
   void RemoveEditModeExitView();
 
+  // Add |EducationalView|.
+  void AddEducationalView();
+  // Remove |EducationalView| and its references.
+  void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
   views::Widget* GetOverlayWidget();
@@ -106,14 +116,6 @@ class DisplayOverlayController : public ui::EventHandler {
   // Close |ActionEditMenu| Or |ErrorView| if |LocatedEvent| happens outside of
   // their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
-
-  // Decide whether or not to show ed. dialog based on user profile's data.
-  bool MaybeShowEducationalView();
-  // Remove |EducationalView| and its references.
-  void RemoveEducationalView();
-  // Checks user's profile data to see if the related game/app has been run
-  // before.
-  bool FirstRun() const;
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();

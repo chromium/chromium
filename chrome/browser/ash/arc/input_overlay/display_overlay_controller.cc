@@ -39,11 +39,11 @@ constexpr int kCornerRadius = 8;
 }  // namespace
 
 DisplayOverlayController::DisplayOverlayController(
-    TouchInjector* touch_injector)
+    TouchInjector* touch_injector,
+    bool first_launch)
     : touch_injector_(touch_injector) {
-  AddOverlay();
+  AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   touch_injector_->set_display_overlay_controller(this);
-  SetDisplayMode(DisplayMode::kEducation);
   ash::Shell::Get()->AddPreTargetHandler(this);
 }
 
@@ -68,7 +68,7 @@ gfx::Rect DisplayOverlayController::GetInputMappingViewBoundsForTesting() {
   return input_mapping_view_ ? input_mapping_view_->bounds() : gfx::Rect();
 }
 
-void DisplayOverlayController::AddOverlay() {
+void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
   RemoveOverlayIfAny();
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
@@ -82,7 +82,7 @@ void DisplayOverlayController::AddOverlay() {
   params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
 
-  SetDisplayMode(DisplayMode::kEducation);
+  SetDisplayMode(display_mode);
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
@@ -90,22 +90,6 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
   if (shell_surface_base && shell_surface_base->HasOverlay())
     shell_surface_base->RemoveOverlay();
-}
-
-void DisplayOverlayController::AddInputMappingView(
-    views::Widget* overlay_widget) {
-  if (input_mapping_view_)
-    return;
-  DCHECK(overlay_widget);
-  auto input_mapping_view = std::make_unique<InputMappingView>(this);
-  input_mapping_view->SetPosition(gfx::Point());
-  input_mapping_view_ = overlay_widget->GetContentsView()->AddChildView(
-      std::move(input_mapping_view));
-
-  // Set input mapping view visibility according to the saved status.
-  DCHECK(touch_injector_);
-  if (touch_injector_)
-    SetInputMappingVisible(touch_injector_->input_mapping_visible());
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
@@ -137,16 +121,11 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   menu_entry_ = parent_view->AddChildView(std::move(menu_entry));
 }
 
-void DisplayOverlayController::AddEditModeExitView(
-    views::Widget* overlay_widget) {
-  DCHECK(overlay_widget);
-  auto* parent_view = overlay_widget->GetContentsView();
-  DCHECK(parent_view);
-
-  // TODO(djacobo): Undefined vertical position, reusing whatever |entry_menu_|
-  // uses for now.
-  edit_mode_view_ = parent_view->AddChildView(
-      EditModeExitView::BuildView(this, CalculateEditModeExitPosition()));
+void DisplayOverlayController::RemoveMenuEntryView() {
+  if (!menu_entry_)
+    return;
+  menu_entry_->parent()->RemoveChildViewT(menu_entry_);
+  menu_entry_ = nullptr;
 }
 
 void DisplayOverlayController::OnMenuEntryPressed() {
@@ -166,6 +145,23 @@ void DisplayOverlayController::RemoveInputMenuView() {
     return;
   input_menu_view_->parent()->RemoveChildViewT(input_menu_view_);
   input_menu_view_ = nullptr;
+  touch_injector_->OnInputMenuViewRemoved();
+}
+
+void DisplayOverlayController::AddInputMappingView(
+    views::Widget* overlay_widget) {
+  if (input_mapping_view_)
+    return;
+  DCHECK(overlay_widget);
+  auto input_mapping_view = std::make_unique<InputMappingView>(this);
+  input_mapping_view->SetPosition(gfx::Point());
+  input_mapping_view_ = overlay_widget->GetContentsView()->AddChildView(
+      std::move(input_mapping_view));
+
+  // Set input mapping view visibility according to the saved status.
+  DCHECK(touch_injector_);
+  if (touch_injector_)
+    SetInputMappingVisible(touch_injector_->input_mapping_visible());
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
@@ -175,11 +171,16 @@ void DisplayOverlayController::RemoveInputMappingView() {
   input_mapping_view_ = nullptr;
 }
 
-void DisplayOverlayController::RemoveMenuEntryView() {
-  if (!menu_entry_)
-    return;
-  menu_entry_->parent()->RemoveChildViewT(menu_entry_);
-  menu_entry_ = nullptr;
+void DisplayOverlayController::AddEditModeExitView(
+    views::Widget* overlay_widget) {
+  DCHECK(overlay_widget);
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+
+  // TODO(djacobo): Undefined vertical position, reusing whatever |entry_menu_|
+  // uses for now.
+  edit_mode_view_ = parent_view->AddChildView(
+      EditModeExitView::BuildView(this, CalculateEditModeExitPosition()));
 }
 
 void DisplayOverlayController::RemoveEditModeExitView() {
@@ -189,9 +190,27 @@ void DisplayOverlayController::RemoveEditModeExitView() {
   edit_mode_view_ = nullptr;
 }
 
+void DisplayOverlayController::AddEducationalView() {
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
+  if (educational_view_)
+    return;
+
+  educational_view_ = parent_view->AddChildView(
+      EducationalView::BuildMenu(this, GetParentView()));
+}
+
+void DisplayOverlayController::RemoveEducationalView() {
+  if (!educational_view_)
+    return;
+  educational_view_->parent()->RemoveChildViewT(educational_view_);
+  educational_view_ = nullptr;
+}
+
 void DisplayOverlayController::OnEducationalViewDismissed() {
-  // TODO(djacobo|cuicuiruan): Save this pref on user's profile so the
-  // educational dialog is not seen ever again for this app.
+  touch_injector_->set_first_launch(false);
   SetDisplayMode(DisplayMode::kView);
 }
 
@@ -254,11 +273,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEditModeExitView();
       break;
     case DisplayMode::kEducation:
-      // If the dialog doesn't needs to be shown just abort the rest of the
-      // function and call again on |kView| mode.
-      RemoveEducationalView();
-      if (!MaybeShowEducationalView())
-        return;
+      AddEducationalView();
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;
@@ -372,6 +387,14 @@ const std::string* DisplayOverlayController::GetPackageName() const {
   return touch_injector_->GetPackageName();
 }
 
+void DisplayOverlayController::OnApplyMenuState() {
+  if (display_mode_ != DisplayMode::kView)
+    return;
+
+  SetInputMappingVisible(GetTouchInjectorEnable() &&
+                         GetInputMappingViewVisible());
+}
+
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED)
     ProcessPressedEvent(*event);
@@ -397,9 +420,10 @@ void DisplayOverlayController::SetInputMappingVisible(bool visible) {
 }
 
 bool DisplayOverlayController::GetInputMappingViewVisible() const {
-  if (!input_mapping_view_)
+  DCHECK(touch_injector_);
+  if (!touch_injector_)
     return false;
-  return input_mapping_view_->GetVisible();
+  return touch_injector_->input_mapping_visible();
 }
 
 void DisplayOverlayController::SetTouchInjectorEnable(bool enable) {
@@ -434,35 +458,6 @@ void DisplayOverlayController::ProcessPressedEvent(
     if (!bounds.Contains(root_location))
       RemoveEditErrorMsg();
   }
-}
-
-bool DisplayOverlayController::MaybeShowEducationalView() {
-  bool first_run = FirstRun();
-  if (first_run) {
-    auto* overlay_widget = GetOverlayWidget();
-    DCHECK(overlay_widget);
-    auto* parent_view = overlay_widget->GetContentsView();
-    DCHECK(parent_view);
-
-    educational_view_ = parent_view->AddChildView(
-        EducationalView::BuildMenu(this, GetParentView()));
-  } else {
-    SetDisplayMode(DisplayMode::kView);
-  }
-
-  return first_run;
-}
-
-void DisplayOverlayController::RemoveEducationalView() {
-  if (!educational_view_)
-    return;
-  educational_view_->parent()->RemoveChildViewT(educational_view_);
-  educational_view_ = nullptr;
-}
-
-bool DisplayOverlayController::FirstRun() const {
-  // TODO(djacobo|cuicuiruan): Add logic to retrieve user's pref.
-  return false;
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {

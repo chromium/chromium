@@ -197,9 +197,13 @@ void TouchInjector::OnBindingChange(Action* target_action,
   target_action->PrepareToBind(std::move(input_element), mode);
 }
 
-void TouchInjector::OnBindingSave() {
+void TouchInjector::OnApplyPendingBinding() {
   for (auto& action : actions_)
     action->BindPending();
+}
+
+void TouchInjector::OnBindingSave() {
+  OnApplyPendingBinding();
   OnSaveProtoFile();
 }
 
@@ -220,10 +224,9 @@ const std::string* TouchInjector::GetPackageName() const {
   return target_window_->GetProperty(ash::kArcPackageNameKey);
 }
 
-void TouchInjector::OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto) {
-  if (proto->actions().empty())
-    return;
-  for (const ActionProto& action_proto : proto->actions()) {
+void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
+  LoadMenuStateFromProto(proto);
+  for (const ActionProto& action_proto : proto.actions()) {
     auto* action = GetActionById(action_proto.id());
     DCHECK(action);
     if (!action)
@@ -233,7 +236,11 @@ void TouchInjector::OnProtoDataAvailable(std::unique_ptr<AppDataProto> proto) {
     DCHECK(input_element);
     OnBindingChange(action, std::move(input_element), DisplayMode::kView);
   }
-  OnBindingSave();
+  OnApplyPendingBinding();
+}
+
+void TouchInjector::OnInputMenuViewRemoved() {
+  OnSaveProtoFile();
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {
@@ -547,9 +554,24 @@ void TouchInjector::OnSaveProtoFile() {
     if (customized_proto)
       *app_data_proto->add_actions() = *customized_proto;
   }
-
+  AddMenuStateToProto(*app_data_proto);
   std::string package_name(*GetPackageName());
   save_file_callback_.Run(std::move(app_data_proto), package_name);
+}
+
+void TouchInjector::AddMenuStateToProto(AppDataProto& proto) {
+  proto.set_input_control(touch_injector_enable_);
+  proto.set_input_mapping_hint(input_mapping_visible_);
+}
+
+void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
+  touch_injector_enable_ =
+      proto.has_input_control() ? proto.input_control() : true;
+  input_mapping_visible_ =
+      proto.has_input_mapping_hint() ? proto.input_mapping_hint() : true;
+
+  if (display_overlay_controller_)
+    display_overlay_controller_->OnApplyMenuState();
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
