@@ -70,8 +70,8 @@ class LayoutGuideCenter: NSObject {
 
     for layoutGuide in layoutGuidesForName.allObjects {
       // Skip if there is no owning window.
-      guard let owningView = layoutGuide.owningView else { break }
-      guard let owningWindow = owningView.window else { break }
+      guard let owningView = layoutGuide.owningView else { continue }
+      guard let owningWindow = owningView.window else { continue }
 
       let frameInReferenceWindow = referenceView.convert(referenceView.bounds, to: nil)
       let frameInOwningWindow = referenceWindow.convert(frameInReferenceWindow, to: owningWindow)
