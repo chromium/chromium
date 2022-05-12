@@ -180,6 +180,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DIPS.BounceCategory{DIPSCookieMode}"
+    enum="DIPSRedirectCategory" expires_after="2022-11-01">
+  <owner>bcl@chromium.org</owner>
+  <owner>rtarpine@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    Whether a redirect accessed cookies and whether its origin previously had
+    user engagement. Recorded when redirecting between different sites,
+    {DIPSCookieMode}.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
     units="ms" expires_after="2022-07-01">
   <owner>bcl@chromium.org</owner>

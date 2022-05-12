@@ -25295,6 +25295,18 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Primary accounts present but different"/>
 </enum>
 
+<enum name="DIPSRedirectCategory">
+  <int value="0" label="No cookies accessed; no previous site engagement"/>
+  <int value="1" label="Cookies only read; no previous site engagement"/>
+  <int value="2" label="Cookies only written; no previous site engagement"/>
+  <int value="3" label="Cookies read and written; no previous site engagement"/>
+  <int value="4" label="No cookies accessed; site has previous engagement"/>
+  <int value="5" label="Cookies only read; site has previous engagement"/>
+  <int value="6" label="Cookies only written; site has previous engagement"/>
+  <int value="7"
+      label="Cookies read and written; site has previous engagement"/>
+</enum>
+
 <enum name="DircryptoMigrationEndStatus">
   <int value="1" label="New migration failed (generic failure)"/>
   <int value="2" label="New migration succeeded"/>

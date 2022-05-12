@@ -430,3 +430,48 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                    "b.test/cross-site/c.test/cross-site/d.test/404 -> "
                    "d.test/404")));
 }
+
+using base::Bucket;
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       Histograms_BounceCategory) {
+  GURL initial_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/cross-site-with-cookie/b.test/cross-site/c.test/cross-site/d.test/"
+      "title1.html");
+  GURL final_url = embedded_test_server()->GetURL("d.test", "/title1.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Set cookies on a.test and b.test. Note that browser-initiated navigations
+  // like these are treated as a sign of user engagement.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("a.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("b.test", "/set-cookie?name=value")));
+  // Navigate to starting page.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, initial_url));
+
+  // Visit the redirect and monitor the histograms.
+  base::HistogramTester histograms;
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, redirect_url,
+                                                 final_url));
+
+  // Verify the correct histogram was used for all samples.
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Privacy.DIPS.BounceCategory.Standard"] = 2;
+  EXPECT_THAT(
+      histograms.GetTotalCountsForPrefix("Privacy.DIPS.BounceCategory."),
+      testing::ContainerEq(expected_counts));
+  // Verify the proper values were recorded. Note that the a.test redirect was
+  // not reported because the previously committed page was also on a.test.
+  EXPECT_THAT(
+      histograms.GetAllSamples("Privacy.DIPS.BounceCategory.Standard"),
+      testing::ElementsAre(
+          // c.test
+          Bucket((int)RedirectCategory::kNoCookies_NoEngagement, 1),
+          // b.test
+          Bucket((int)RedirectCategory::kReadCookies_HasEngagement, 1)));
+}

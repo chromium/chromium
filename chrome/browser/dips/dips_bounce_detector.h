@@ -8,12 +8,15 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/dips/cookie_access_type.h"
+#include "chrome/browser/dips/cookie_mode.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace site_engagement {
 class SiteEngagementService;
 }
+
+class DIPSService;
 
 class DIPSBounceDetector
     : public content::WebContentsObserver,
@@ -43,6 +46,8 @@ class DIPSBounceDetector
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class content::WebContentsUserData<DIPSBounceDetector>;
 
+  DIPSCookieMode GetCookieMode() const;
+
   // Called when any stateful redirect is detected.
   //
   // `prev_url` is the page previously committed before starting the chain of
@@ -65,6 +70,11 @@ class DIPSBounceDetector
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // raw_ptr<> is safe here DIPSService is a KeyedService, associated with the
+  // BrowserContext/Profile which will outlive the WebContents that
+  // DIPSBounceDetector is observing.
+  raw_ptr<DIPSService> dips_service_;
+  // raw_ptr<> is safe here for the same reasons as above.
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   // By default, this just calls this->HandleStatefulServerRedirect(), but it
   // can be overridden for tests.
@@ -74,6 +84,23 @@ class DIPSBounceDetector
   RedirectHandler stateful_redirect_handler_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+// RedirectCategory is basically the cross-product of CookieAccessType and a
+// boolean value indicating site engagement. It's used in UMA enum histograms.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RedirectCategory {
+  kNoCookies_NoEngagement = 0,
+  kReadCookies_NoEngagement = 1,
+  kWriteCookies_NoEngagement = 2,
+  kReadWriteCookies_NoEngagement = 3,
+  kNoCookies_HasEngagement = 4,
+  kReadCookies_HasEngagement = 5,
+  kWriteCookies_HasEngagement = 6,
+  kReadWriteCookies_HasEngagement = 7,
+  kMaxValue = kReadWriteCookies_HasEngagement,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_

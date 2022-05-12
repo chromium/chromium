@@ -6,10 +6,16 @@
 
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
+#include "chrome/browser/dips/cookie_mode.h"
+#include "chrome/browser/dips/dips_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 using content::NavigationHandle;
 
@@ -28,11 +34,42 @@ class BounceDetectionState : public base::SupportsUserData::Data {
 
 const char kBounceDetectionStateKey[] = "BounceDetectionState";
 
+std::string GetSite(const GURL& url) {
+  const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return domain.empty() ? url.host() : domain;
+}
+
+RedirectCategory ClassifyRedirect(CookieAccessType access, double engagement) {
+  switch (access) {
+    case CookieAccessType::kNone:
+      return engagement > 0 ? RedirectCategory::kNoCookies_HasEngagement
+                            : RedirectCategory::kNoCookies_NoEngagement;
+    case CookieAccessType::kRead:
+      return engagement > 0 ? RedirectCategory::kReadCookies_HasEngagement
+                            : RedirectCategory::kReadCookies_NoEngagement;
+    case CookieAccessType::kWrite:
+      return engagement > 0 ? RedirectCategory::kWriteCookies_HasEngagement
+                            : RedirectCategory::kWriteCookies_NoEngagement;
+    case CookieAccessType::kReadWrite:
+      return engagement > 0 ? RedirectCategory::kReadWriteCookies_HasEngagement
+                            : RedirectCategory::kReadWriteCookies_NoEngagement;
+  }
+}
+
+inline void UmaHistogramBounceCategory(RedirectCategory category,
+                                       DIPSCookieMode mode) {
+  const std::string histogram_name =
+      base::StrCat({"Privacy.DIPS.BounceCategory", GetHistogramSuffix(mode)});
+  base::UmaHistogramEnumeration(histogram_name, category);
+}
+
 }  // namespace
 
 DIPSBounceDetector::DIPSBounceDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSBounceDetector>(*web_contents),
+      dips_service_(DIPSService::Get(web_contents->GetBrowserContext())),
       site_engagement_service_(site_engagement::SiteEngagementService::Get(
           web_contents->GetBrowserContext())),
       // It's safe to use unretained because the callback is owned by this.
@@ -46,13 +83,27 @@ DIPSBounceDetector::DIPSBounceDetector(content::WebContents* web_contents)
 
 DIPSBounceDetector::~DIPSBounceDetector() = default;
 
+DIPSCookieMode DIPSBounceDetector::GetCookieMode() const {
+  return GetDIPSCookieMode(
+      web_contents()->GetBrowserContext()->IsOffTheRecord(),
+      dips_service_->ShouldBlockThirdPartyCookies());
+}
+
 void DIPSBounceDetector::HandleStatefulRedirect(const GURL& prev_url,
                                                 const GURL& url,
                                                 const GURL& next_url,
                                                 CookieAccessType access) {
+  const std::string site = GetSite(url);
+  // TODO(rtarpine): all the calls to HandleStatefulRedirect() for a redirect
+  // chain call GetSite() on the same prev_url and next_url. Be more efficient.
+  if (site == GetSite(prev_url) || site == GetSite(next_url)) {
+    // Ignore same-site redirects.
+    return;
+  }
+
   double score = site_engagement_service_->GetScore(url);
-  (void)score;
-  // TODO: fire UKM metric
+  RedirectCategory category = ClassifyRedirect(access, score);
+  UmaHistogramBounceCategory(category, GetCookieMode());
 }
 
 void DIPSBounceDetector::HandleStatefulServerRedirect(

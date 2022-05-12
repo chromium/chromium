@@ -393,6 +393,8 @@ static_library("browser") {
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
     "dips/cookie_access_type.h",
+    "dips/cookie_mode.cc",
+    "dips/cookie_mode.h",
     "dips/dips_bounce_detector.cc",
     "dips/dips_bounce_detector.h",
     "dips/dips_helper.cc",

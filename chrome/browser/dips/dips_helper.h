@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 #define CHROME_BROWSER_DIPS_DIPS_HELPER_H_
 
-#include <ostream>
-
+#include "chrome/browser/dips/cookie_mode.h"
 #include "chrome/browser/dips/dips_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -16,17 +15,6 @@ class Clock;
 }
 
 class DIPSService;
-
-enum class DIPSCookieMode {
-  kStandard,
-  kOffTheRecord,
-  kBlock3PC,  // block third-party cookies
-  kOffTheRecord_Block3PC
-};
-
-const char* DIPSCookieModeToString(DIPSCookieMode mode);
-
-std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
 // A WebContentsObserver subclass that listens for storage and user interaction
 // events that DIPSService is interested in.

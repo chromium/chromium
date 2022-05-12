@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -19,26 +20,8 @@ namespace {
 
 inline void UmaHistogramTimeToInteraction(base::TimeDelta sample,
                                           DIPSCookieMode mode) {
-  // Any changes here need to be reflected in DIPSCookieMode in
-  // tools/metrics/histograms/metadata/others/histograms.xml
-  const char* name;
-  switch (mode) {
-    case DIPSCookieMode::kStandard:
-      name = "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
-      break;
-    case DIPSCookieMode::kOffTheRecord:
-      name = "Privacy.DIPS.TimeFromStorageToInteraction.OffTheRecord";
-      break;
-    case DIPSCookieMode::kBlock3PC:
-      name = "Privacy.DIPS.TimeFromStorageToInteraction.Block3PC";
-      break;
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
-      name = "Privacy.DIPS.TimeFromStorageToInteraction.OffTheRecord_Block3PC";
-      break;
-    default:
-      NOTREACHED() << "Invalid DIPSCookieMode: " << mode;
-      return;
-  }
+  const std::string name = base::StrCat(
+      {"Privacy.DIPS.TimeFromStorageToInteraction", GetHistogramSuffix(mode)});
 
   base::UmaHistogramCustomTimes(name, sample,
                                 /*min=*/base::TimeDelta(),
@@ -47,26 +30,8 @@ inline void UmaHistogramTimeToInteraction(base::TimeDelta sample,
 
 inline void UmaHistogramTimeToStorage(base::TimeDelta sample,
                                       DIPSCookieMode mode) {
-  // Any changes here need to be reflected in DIPSCookieMode in
-  // tools/metrics/histograms/metadata/others/histograms.xml
-  const char* name;
-  switch (mode) {
-    case DIPSCookieMode::kStandard:
-      name = "Privacy.DIPS.TimeFromInteractionToStorage.Standard";
-      break;
-    case DIPSCookieMode::kOffTheRecord:
-      name = "Privacy.DIPS.TimeFromInteractionToStorage.OffTheRecord";
-      break;
-    case DIPSCookieMode::kBlock3PC:
-      name = "Privacy.DIPS.TimeFromInteractionToStorage.Block3PC";
-      break;
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
-      name = "Privacy.DIPS.TimeFromInteractionToStorage.OffTheRecord_Block3PC";
-      break;
-    default:
-      NOTREACHED() << "Invalid DIPSCookieMode: " << mode;
-      return;
-  }
+  const std::string name = base::StrCat(
+      {"Privacy.DIPS.TimeFromInteractionToStorage", GetHistogramSuffix(mode)});
 
   base::UmaHistogramCustomTimes(name, sample,
                                 /*min=*/base::TimeDelta(),
@@ -80,23 +45,6 @@ base::Clock* g_clock = nullptr;
 
 }  // namespace
 
-const char* DIPSCookieModeToString(DIPSCookieMode mode) {
-  switch (mode) {
-    case DIPSCookieMode::kStandard:
-      return "Standard";
-    case DIPSCookieMode::kOffTheRecord:
-      return "OffTheRecord";
-    case DIPSCookieMode::kBlock3PC:
-      return "Block3PC";
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
-      return "OffTheRecord_Block3PC";
-  }
-}
-
-std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode) {
-  return os << DIPSCookieModeToString(mode);
-}
-
 DIPSTabHelper::DIPSTabHelper(content::WebContents* web_contents,
                              DIPSService* service)
     : content::WebContentsObserver(web_contents),
@@ -107,17 +55,9 @@ DIPSTabHelper::DIPSTabHelper(content::WebContents* web_contents,
 }
 
 DIPSCookieMode DIPSTabHelper::GetCookieMode() const {
-  bool isOTR = web_contents()->GetBrowserContext()->IsOffTheRecord();
-  bool block3PC = service_->ShouldBlockThirdPartyCookies();
-  if (isOTR) {
-    if (block3PC) {
-      return DIPSCookieMode::kOffTheRecord_Block3PC;
-    }
-    return DIPSCookieMode::kOffTheRecord;
-  } else if (block3PC) {
-    return DIPSCookieMode::kBlock3PC;
-  }
-  return DIPSCookieMode::kStandard;
+  return GetDIPSCookieMode(
+      web_contents()->GetBrowserContext()->IsOffTheRecord(),
+      service_->ShouldBlockThirdPartyCookies());
 }
 
 DIPSState DIPSTabHelper::StateForURL(const GURL& url) {
