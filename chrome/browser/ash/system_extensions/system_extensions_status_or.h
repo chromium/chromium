@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "base/types/expected.h"
 
 // SystemExtensionsStatusOr is a union of an status enum class and an object.
 // This class either holds an object in a usable state, or a status code
@@ -25,41 +25,42 @@ class SystemExtensionsStatusOr {
   // This constructor is marked 'explicit' to prevent usages in return values
   // such as 'return {};'.
   explicit SystemExtensionsStatusOr()  // NOLINT
-      : status_or_value_(S::kUnknown) {}
+      : value_or_status_(base::unexpect, S::kUnknown) {}
 
   // All of these are implicit, so that one may just return `S` or `T`.
-  SystemExtensionsStatusOr(S status) : status_or_value_(status) {}  // NOLINT
-  SystemExtensionsStatusOr(T value)                                 // NOLINT
-      : status_or_value_(std::move(value)) {}
+  SystemExtensionsStatusOr(S status)  // NOLINT
+      : value_or_status_(base::unexpect, status) {}
+  SystemExtensionsStatusOr(T value)  // NOLINT
+      : value_or_status_(std::move(value)) {}
 
   SystemExtensionsStatusOr(SystemExtensionsStatusOr&&) = default;
   SystemExtensionsStatusOr& operator=(SystemExtensionsStatusOr&&) = default;
 
   ~SystemExtensionsStatusOr() = default;
 
-  bool ok() const { return absl::holds_alternative<T>(status_or_value_); }
+  bool ok() const { return value_or_status_.has_value(); }
 
   // Returns the status code when the status is not kOk. Crashes if the
   // status is kOk.
   S status() {
     CHECK(!ok());
-    return absl::get<S>(status_or_value_);
+    return value_or_status_.error();
   }
 
   // Returns `T` if ok() is true. CHECKs otherwise.
   const T& value() const& {
     CHECK(ok());
-    return absl::get<T>(status_or_value_);
+    return value_or_status_.value();
   }
 
   // Returns the `T` if ok() is true. CHECKs otherwise.
   T&& value() && {
     CHECK(ok());
-    return std::move(absl::get<T>(status_or_value_));
+    return std::move(value_or_status_.value());
   }
 
  private:
-  absl::variant<S, T> status_or_value_;
+  base::expected<T, S> value_or_status_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_STATUS_OR_H_
