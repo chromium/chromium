@@ -1351,8 +1351,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ZramCompressedSize" units="MB"
-    expires_after="2021-11-07">
-  <owner>sonnyrao@chromium.org</owner>
+    expires_after="2022-11-10">
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     Compressed swap size in megabytes. This is the actual amount of RAM used by
@@ -1361,8 +1361,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ZramCompressionRatioPercent" units="%"
-    expires_after="2022-04-17">
-  <owner>sonnyrao@chromium.org</owner>
+    expires_after="2022-11-10">
+  <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
     The ratio of compressed memory (zram) before and after compression when the
