@@ -796,6 +796,7 @@ class VideoTextureBacking : public cc::TextureBacking {
         sk_image_info_(sk_image_->imageInfo()),
         mailbox_(mailbox),
         wraps_video_frame_texture_(wraps_video_frame_texture) {
+    DCHECK(sk_image_->isTextureBacked());
     raster_context_provider_ = std::move(raster_context_provider);
   }
 
@@ -832,23 +833,19 @@ class VideoTextureBacking : public cc::TextureBacking {
   // Used only for recycling this TextureBacking - where we need to keep the
   // texture/mailbox alive, but replace the SkImage.
   void ReplaceAcceleratedSkImage(sk_sp<SkImage> sk_image) {
+    DCHECK(sk_image->isTextureBacked());
     sk_image_ = sk_image;
     sk_image_info_ = sk_image->imageInfo();
   }
 
   sk_sp<SkImage> GetSkImageViaReadback() override {
-    if (sk_image_)
-      return sk_image_->makeNonTextureImage();
-
     sk_sp<SkData> image_pixels =
         SkData::MakeUninitialized(sk_image_info_.computeMinByteSize());
-    uint8_t* writable_pixels =
-        static_cast<uint8_t*>(image_pixels->writable_data());
-    gpu::raster::RasterInterface* ri =
-        raster_context_provider_->RasterInterface();
-    ri->ReadbackImagePixels(mailbox_, sk_image_info_,
-                            sk_image_info_.minRowBytes(), 0, 0,
-                            writable_pixels);
+    if (!readPixels(sk_image_info_, image_pixels->writable_data(),
+                    sk_image_info_.minRowBytes(), 0, 0)) {
+      DLOG(ERROR) << "VideoTextureBacking::GetSkImageViaReadback failed.";
+      return nullptr;
+    }
     return SkImage::MakeRasterData(sk_image_info_, std::move(image_pixels),
                                    sk_image_info_.minRowBytes());
   }
@@ -858,12 +855,19 @@ class VideoTextureBacking : public cc::TextureBacking {
                   size_t dst_row_bytes,
                   int src_x,
                   int src_y) override {
+    gpu::raster::RasterInterface* ri =
+        raster_context_provider_->RasterInterface();
     if (sk_image_) {
+      GrGLTextureInfo texture_info;
+      if (!sk_image_->getBackendTexture(/*flushPendingGrContextIO=*/true)
+               .getGLTextureInfo(&texture_info)) {
+        DLOG(ERROR) << "Failed to getGLTextureInfo for VideoTextureBacking.";
+        return false;
+      }
+      ScopedSharedImageAccess scoped_access(ri, texture_info.fID, mailbox_);
       return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
                                    src_y);
     }
-    gpu::raster::RasterInterface* ri =
-        raster_context_provider_->RasterInterface();
     ri->ReadbackImagePixels(mailbox_, dst_info, dst_info.minRowBytes(), src_x,
                             src_y, dst_pixels);
     return true;
