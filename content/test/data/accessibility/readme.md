@@ -275,6 +275,16 @@ will trigger `AXPress` action on a button and will wait for
 and provide the event target. For example:
 `wait for AXFocusedUIElementChanged on AXButton`
 
+You can use `press` instruction to simulate key events.
+The instruction accepts a single parameter which could be a character or
+a key name (as specified in http://www.w3.org/TR/DOM-Level-3-Events-key/).
+For example,
+```
+@SCRIPT:
+  press Enter
+  wait for AXValueChanged
+```
+
 You can use `print tree` to print a snapshot of an accessible tree. For example,
 ```
 @SCRIPT:

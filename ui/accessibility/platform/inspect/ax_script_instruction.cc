@@ -13,9 +13,11 @@
 
 namespace ui {
 
-const char kPrintTree[] = "print tree";
-const char kWaitFor[] = "wait for ";
-const size_t kWaitForLength = sizeof(kWaitFor) / sizeof(kWaitFor[0]) - 1;
+constexpr char kPrintTree[] = "print tree";
+constexpr char kWaitFor[] = "wait for ";
+constexpr size_t kWaitForLength = sizeof(kWaitFor) / sizeof(kWaitFor[0]) - 1;
+constexpr char kPress[] = "press ";
+constexpr size_t kPressLength = sizeof(kPress) / sizeof(kPress[0]) - 1;
 
 AXScriptInstruction::AXScriptInstruction(const std::string& instruction)
     : instruction_(instruction) {}
@@ -23,8 +25,11 @@ AXScriptInstruction::AXScriptInstruction(const std::string& instruction)
 bool AXScriptInstruction::IsEvent() const {
   return !IsComment() && EventNameStartIndex() != std::string::npos;
 }
+bool AXScriptInstruction::IsKeyEvent() const {
+  return base::StartsWith(instruction_, kPress);
+}
 bool AXScriptInstruction::IsScript() const {
-  return !IsComment() && !IsEvent() && !IsPrintTree();
+  return !IsComment() && !IsEvent() && !IsKeyEvent() && !IsPrintTree();
 }
 bool AXScriptInstruction::IsComment() const {
   return base::StartsWith(instruction_, "//");
@@ -41,6 +46,11 @@ AXPropertyNode AXScriptInstruction::AsScript() const {
 std::string AXScriptInstruction::AsEvent() const {
   DCHECK(IsEvent());
   return instruction_.substr(kWaitForLength);
+}
+
+std::string AXScriptInstruction::AsDomKeyString() const {
+  DCHECK(IsKeyEvent());
+  return instruction_.substr(kPressLength);
 }
 
 std::string AXScriptInstruction::AsComment() const {

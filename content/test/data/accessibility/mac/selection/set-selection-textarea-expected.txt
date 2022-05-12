@@ -28,3 +28,12 @@ textarea.AXSelectedText='brown'
 textarea.AXSelectedTextRange={loc: 20, len: 5}
 AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
 textarea.AXSelectedText='jumps'
+// Put cursor after the 2nd word.
+textarea.AXSelectedTextRange={loc: 10, len: 0}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+// Force line break.
+press Enter
+// Select text on the 2nd line (fox).
+textarea.AXSelectedTextRange={loc: 17, len: 3}
+AXSelectedTextChanged on AXTextArea AXValue='The quick <newline>brown fox jumps over the lazy dog<newline>' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+textarea.AXSelectedText='fox'

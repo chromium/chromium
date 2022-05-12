@@ -21,11 +21,16 @@ class AX_EXPORT AXScriptInstruction final {
   explicit AXScriptInstruction(const std::string& instruction);
 
   bool IsEvent() const;
+  bool IsKeyEvent() const;
   bool IsScript() const;
   bool IsComment() const;
   bool IsPrintTree() const;
 
   AXPropertyNode AsScript() const;
+  // Returns a character string containing either
+  // - a key name from http://www.w3.org/TR/DOM-Level-3-Events-key/, or
+  // - a single Unicode character (represented in UTF-8).
+  std::string AsDomKeyString() const;
   std::string AsEvent() const;
   std::string AsComment() const;
 

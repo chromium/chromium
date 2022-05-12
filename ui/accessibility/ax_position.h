@@ -1644,14 +1644,8 @@ class AXPosition {
   // When blink is asked to set selection, it expects a text position to be
   // anchored to the text node (otherwise a generic tree position is assumed
   // and the offset is interpreted as a child index).
-  //
-  // Using just AsLeafTextPosition() for sanitizing does not work on plain
-  // text-fields: an attempt to select the text beyond the first line results
-  // in a wrong selection which looks as if the text offset was counted through
-  // the first line only.
-  // TODO(nektar): Make this work in plain text fields too.
   AXPositionInstance AsDomSelectionPosition() const {
-    if (IsNullPosition())
+    if (IsNullPosition() || GetAnchor()->data().IsAtomicTextField())
       return Clone();
 
     AXPositionInstance text_position = AsLeafTextPosition();

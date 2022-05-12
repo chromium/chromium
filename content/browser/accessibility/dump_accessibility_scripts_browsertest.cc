@@ -9,10 +9,13 @@
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace content {
 
@@ -51,29 +54,27 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     // from scenario directives.
     test_helper_.OverrideExpectationType("content");
   }
+  ~DumpAccessibilityScriptTest() = default;
+  DumpAccessibilityScriptTest(const DumpAccessibilityScriptTest&) = delete;
+  DumpAccessibilityScriptTest& operator=(const DumpAccessibilityScriptTest&) =
+      delete;
 
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable MathMLCore for some MathML tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "MathMLCore");
   }
 
-  std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
+  std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
+    return {};
+  }
+
   void AddPropertyFilter(
       std::vector<AXPropertyFilter>* property_filters,
       const std::string& filter,
       AXPropertyFilter::Type type = AXPropertyFilter::ALLOW) {
     property_filters->push_back(AXPropertyFilter(filter, type));
-  }
-
-  base::Value EvaluateScript(
-      AXTreeFormatter* formatter,
-      BrowserAccessibility* root,
-      const std::vector<AXScriptInstruction>& instructions,
-      size_t start_index,
-      size_t end_index) {
-    return base::Value(
-        formatter->EvaluateScript(root, instructions, start_index, end_index));
   }
 
   std::vector<std::string> Dump() override {
@@ -85,14 +86,21 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     size_t length = scenario_.script_instructions.size();
     while (start_index < length) {
       std::string wait_for;
+      std::string dom_key_string;
       bool printTree = false;
       size_t index = start_index;
       for (; index < length; index++) {
-        if (scenario_.script_instructions[index].IsEvent()) {
-          wait_for = scenario_.script_instructions[index].AsEvent();
+        const AXScriptInstruction& instruction =
+            scenario_.script_instructions[index];
+        if (instruction.IsEvent()) {
+          wait_for = instruction.AsEvent();
           break;
         }
-        if (scenario_.script_instructions[index].IsPrintTree()) {
+        if (instruction.IsKeyEvent()) {
+          dom_key_string = instruction.AsDomKeyString();
+          break;
+        }
+        if (instruction.IsPrintTree()) {
           printTree = true;
           break;
         }
@@ -115,6 +123,20 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
         }
       }
 
+      if (!dom_key_string.empty()) {
+        ui::DomKey dom_key =
+            ui::KeycodeConverter::KeyStringToDomKey(dom_key_string);
+        if (dom_key != ui::DomKey::NONE) {
+          ui::DomCode dom_code =
+              ui::KeycodeConverter::CodeStringToDomCode(dom_key_string);
+          SimulateKeyPress(GetWebContents(), dom_key, dom_code,
+                           ui::DomCodeToUsLayoutKeyboardCode(dom_code),
+                           /* control */ false, /* shift */ false,
+                           /* alt */ false, /* command */ false);
+        }
+        actual_contents += "press " + dom_key_string + '\n';
+        RunUntilInputProcessed(GetWidgetHost());
+      }
       if (printTree) {
         actual_contents += DumpTreeAsString() + '\n';
       }
@@ -128,12 +150,21 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     }
     return dump;
   }
-};
 
-std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
-    const {
-  return {};
-}
+  base::Value EvaluateScript(
+      AXTreeFormatter* formatter,
+      BrowserAccessibility* root,
+      const std::vector<AXScriptInstruction>& instructions,
+      size_t start_index,
+      size_t end_index) {
+    return base::Value(
+        formatter->EvaluateScript(root, instructions, start_index, end_index));
+  }
+
+  RenderWidgetHost* GetWidgetHost() {
+    return GetWebContents()->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  }
+};
 
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
