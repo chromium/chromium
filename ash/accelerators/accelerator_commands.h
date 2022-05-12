@@ -14,6 +14,9 @@
 namespace ash {
 namespace accelerators {
 
+// Logs a dump of CalendarModel internal data.
+ASH_EXPORT void DumpCalendarModel();
+
 // Cycle backwards in the MRU window list. Usually Alt-Shift-Tab.
 ASH_EXPORT void CycleBackwardMru();
 

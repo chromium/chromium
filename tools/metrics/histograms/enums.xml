@@ -54767,6 +54767,7 @@ from previous Chrome versions.
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
   <int value="-1903365454" label="SyncPseudoUSSPreferences:disabled"/>
+  <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1899715534" label="GamepadPollingInterval:enabled"/>
   <int value="-1899652563" label="ReportFeedUserActions:enabled"/>
   <int value="-1899409297"
@@ -55696,6 +55697,7 @@ from previous Chrome versions.
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:disabled"/>
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
+  <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294944922" label="Canvas2dStaysGPUOnReadback:disabled"/>

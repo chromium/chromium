@@ -690,6 +690,11 @@
     "expiry_milestone" : 103
   },
   {
+    "name": "calendar-view-debug-mode",
+    "owners": [ "rtinkoff" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "canvas-2d-layers",
     "owners": [ "alisalin", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100

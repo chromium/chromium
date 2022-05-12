@@ -252,6 +252,10 @@ const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
 const base::Feature kCalendarView{"CalendarView",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable debug mode for CalendarModel.
+const base::Feature kCalendarModelDebugMode{"CalendarModelDebugMode",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{
@@ -1643,6 +1647,10 @@ bool IsBluetoothRevampEnabled() {
 
 bool IsCalendarViewEnabled() {
   return base::FeatureList::IsEnabled(kCalendarView);
+}
+
+bool IsCalendarModelDebugModeEnabled() {
+  return base::FeatureList::IsEnabled(kCalendarModelDebugMode);
 }
 
 bool IsCaptureModeSelfieCameraEnabled() {

@@ -2425,6 +2425,9 @@ extern const char kBluetoothUseFlossDescription[];
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 
+extern const char kCalendarModelDebugModeName[];
+extern const char kCalendarModelDebugModeDescription[];
+
 extern const char kCaptureSelfieCamName[];
 extern const char kCaptureSelfieCamDescription[];
 

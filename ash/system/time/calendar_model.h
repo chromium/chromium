@@ -107,6 +107,9 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Checks the `FetchingStatus` of a given start time.
   FetchingStatus FindFetchingStatus(base::Time start_time) const;
 
+  // Dumps our internal state to logs.
+  void DebugDump();
+
   // Redistributes all the fetched events to the date map with the
   // `time_difference_minutes_`. This only happens once per calendar view's life
   // cycle.
@@ -129,6 +132,17 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarMonthViewTest;
   friend class CalendarModelFunctionTest;
 
+  // Methods for dumping various event containers/representations to logs.
+  void DebugDumpEventLarge(const char* prefix,
+                           const google_apis::calendar::CalendarEvent* event);
+  void DebugDumpEventSmall(std::ostringstream* out,
+                           const char* prefix,
+                           const google_apis::calendar::CalendarEvent* event);
+  void DebugDumpEvents(std::ostringstream* out, const char* prefix);
+  void DebugDumpMruMonths(std::ostringstream* out, const char* prefix);
+  void DebugDumpNonPrunableMonths(std::ostringstream* out, const char* prefix);
+  void DebugDumpMonthsFetched(std::ostringstream* out, const char* prefix);
+
   // Checks if the event has allowed statuses and is eligible for insertion.
   bool ShouldInsertEvent(
       const google_apis::calendar::CalendarEvent* event) const;
@@ -141,9 +155,18 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void InsertEventInMonth(SingleMonthEventMap& month,
                           const google_apis::calendar::CalendarEvent* event);
 
-  // Returns the event's `start_time` midnight adjusted by the
-  // `time_difference_minutes_`. So the each event will be mapped to the date
-  // map by the local device/set time.
+  // Returns the `start_time` of `event` adjusted by
+  // `time_difference_minutes_`, to ensure that each event is stored by its
+  // local time, e.g. an event that starts at 2022-05-31 22:00:00.000 PST
+  // (2022-06-01 05:00:00.000 UTC) is stored in the map for 05-2022.
+  base::Time GetStartTimeAdjusted(
+      const google_apis::calendar::CalendarEvent* event) const;
+
+  // Returns the `end_time` of `event` adjusted by `time_difference_minutes_`.
+  base::Time GetEndTimeAdjusted(
+      const google_apis::calendar::CalendarEvent* event) const;
+
+  // Returns midnight on the day of the state time of `event`.
   base::Time GetStartTimeMidnightAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 

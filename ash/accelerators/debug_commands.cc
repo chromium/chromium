@@ -102,6 +102,10 @@ void HandleToggleWallpaperMode() {
   }
 }
 
+void HandleDumpCalendarModel() {
+  accelerators::DumpCalendarModel();
+}
+
 void HandleToggleKeyboardBacklight() {
   if (ash::features::IsKeyboardBacklightToggleEnabled()) {
     base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
@@ -166,6 +170,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     return;
 
   switch (action) {
+    case DEBUG_DUMP_CALENDAR_MODEL:
+      HandleDumpCalendarModel();
+      break;
     case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
       HandleToggleKeyboardBacklight();
       break;

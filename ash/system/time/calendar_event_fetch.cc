@@ -14,6 +14,9 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 
 CalendarEventFetch::CalendarEventFetch(
@@ -31,6 +34,10 @@ CalendarEventFetch::CalendarEventFetch(
 
   const base::Time start_of_next_month =
       calendar_utils::GetStartOfNextMonthUTC(start_of_month);
+
+  if (ash::features::IsCalendarModelDebugModeEnabled())
+    VLOG(1) << "Fetching: " << start_of_month << " => " << start_of_next_month;
+
   client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
                                       weak_factory_.GetWeakPtr()),
                        start_of_month, start_of_next_month);

@@ -1891,6 +1891,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DESKS_ACTIVATE_7:
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       return true;
+    case DEBUG_DUMP_CALENDAR_MODEL:
     case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
     case DEBUG_PRINT_LAYER_HIERARCHY:
@@ -2132,6 +2133,7 @@ void AcceleratorControllerImpl::PerformAction(
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       HandleToggleAssignToAllDesks();
       break;
+    case DEBUG_DUMP_CALENDAR_MODEL:
     case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
     case DEBUG_PRINT_LAYER_HIERARCHY:

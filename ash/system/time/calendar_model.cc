@@ -10,6 +10,7 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_event_fetch.h"
 #include "ash/system/time/calendar_utils.h"
@@ -22,6 +23,9 @@
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
+
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace {
 
@@ -255,6 +259,37 @@ void CalendarModel::OnEventsFetched(
     return;
   }
 
+  if (ash::features::IsCalendarModelDebugModeEnabled() && events) {
+    VLOG(1) << __FUNCTION__ << " month " << start_of_month << " num events "
+            << events->items().size();
+
+    // It is possible for incoming events to have a start date (adjusted for
+    // timezone differences) that's not in `start_of_month`. The code below
+    // outputs a breakdown of the events by month.
+    if (events->items().size() > 0) {
+      std::map<base::Time, int> included_months;
+      for (auto& event : events->items()) {
+        base::Time adjusted_start = GetStartTimeAdjusted(event.get());
+        base::Time adjusted_start_of_month =
+            calendar_utils::GetStartOfMonthUTC(adjusted_start);
+        if (included_months.find(adjusted_start_of_month) ==
+            included_months.end()) {
+          included_months[adjusted_start_of_month] = 1;
+        } else {
+          included_months[adjusted_start_of_month]++;
+        }
+      }
+
+      if (included_months.size() > 1) {
+        VLOG(1) << __FUNCTION__ << " breakdown:";
+        for (auto& included_month : included_months) {
+          VLOG(1) << __FUNCTION__ << "   " << included_month.first << " ("
+                  << included_month.second << ")";
+        }
+      }
+    }
+  }
+
   // Keep us within storage limits.
   PruneEventCache();
 
@@ -326,6 +361,11 @@ void CalendarModel::InsertEvent(
   base::Time start_of_month =
       calendar_utils::GetStartOfMonthUTC(GetStartTimeMidnightAdjusted(event));
 
+  if (ash::features::IsCalendarModelDebugModeEnabled()) {
+    VLOG(1) << __FUNCTION__ << " start_of_month " << start_of_month;
+    DebugDumpEventLarge(__FUNCTION__, event);
+  }
+
   auto it = event_months_.find(start_of_month);
   if (it == event_months_.end()) {
     // No events for this month, so add a map for it and insert.
@@ -364,14 +404,27 @@ void CalendarModel::InsertEventInMonth(
   }
 }
 
-base::Time CalendarModel::GetStartTimeMidnightAdjusted(
+base::Time CalendarModel::GetStartTimeAdjusted(
     const google_apis::calendar::CalendarEvent* event) const {
   if (time_difference_minutes_.has_value()) {
-    return (event->start_time().date_time() +
-            base::Minutes(time_difference_minutes_.value()))
-        .UTCMidnight();
+    return event->start_time().date_time() +
+           base::Minutes(time_difference_minutes_.value());
   }
-  return event->start_time().date_time().UTCMidnight();
+  return event->start_time().date_time();
+}
+
+base::Time CalendarModel::GetEndTimeAdjusted(
+    const google_apis::calendar::CalendarEvent* event) const {
+  if (time_difference_minutes_.has_value()) {
+    return event->end_time().date_time() +
+           base::Minutes(time_difference_minutes_.value());
+  }
+  return event->start_time().date_time();
+}
+
+base::Time CalendarModel::GetStartTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event) const {
+  return GetStartTimeAdjusted(event).UTCMidnight();
 }
 
 void CalendarModel::InsertEvents(
@@ -429,6 +482,102 @@ CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     return kSuccess;
 
   return kNever;
+}
+
+void CalendarModel::DebugDumpEventSmall(
+    std::ostringstream* out,
+    const char* prefix,
+    const google_apis::calendar::CalendarEvent* event) {
+  if (!event)
+    return;
+
+  *out << prefix << "      "
+       << calendar_utils::GetTwelveHourClockTime(
+              event->start_time().date_time())
+       << " -> "
+       << calendar_utils::GetTwelveHourClockTime(event->end_time().date_time())
+       << " (" << event->summary().substr(0, 6) << "...)"
+       << "\n";
+}
+
+void CalendarModel::DebugDumpEventLarge(
+    const char* prefix,
+    const google_apis::calendar::CalendarEvent* event) {
+  if (!event)
+    return;
+
+  VLOG(1) << prefix << " ID: " << event->id();
+  VLOG(1) << prefix << "  summary: \"" << event->summary().substr(0, 6)
+          << "...\"";
+  VLOG(1) << prefix << "  st/et: " << event->start_time().date_time() << " => "
+          << event->end_time().date_time();
+  VLOG(1) << prefix << "  (adj): " << GetStartTimeAdjusted(event) << " => "
+          << GetEndTimeAdjusted(event);
+}
+
+void CalendarModel::DebugDumpEvents(std::ostringstream* out,
+                                    const char* prefix) {
+  *out << prefix << " event_months_ START size: " << event_months_.size()
+       << "\n";
+  for (auto& month : event_months_) {
+    *out << prefix << " month: " << month.first << "\n";
+    for (auto& day : month.second) {
+      *out << prefix << "   day: " << day.first << "\n";
+      for (auto it = day.second.begin(); it != day.second.end(); ++it) {
+        google_apis::calendar::CalendarEvent event = *it;
+        DebugDumpEventSmall(out, prefix, &event);
+      }
+    }
+  }
+  *out << prefix << " event_months_ END"
+       << "\n";
+}
+
+void CalendarModel::DebugDumpMruMonths(std::ostringstream* out,
+                                       const char* prefix) {
+  *out << prefix << " mru_months_ START size: " << mru_months_.size() << "\n";
+  for (auto& month : mru_months_) {
+    *out << prefix << "   " << month << "\n";
+  }
+  *out << prefix << " mru_months_ END"
+       << "\n";
+}
+
+void CalendarModel::DebugDumpNonPrunableMonths(std::ostringstream* out,
+                                               const char* prefix) {
+  *out << prefix
+       << " non_prunable_months_ START size: " << non_prunable_months_.size()
+       << "\n";
+  for (auto& month : non_prunable_months_) {
+    *out << prefix << "   " << month << "\n";
+  }
+  *out << prefix << " non_prunable_months_ END"
+       << "\n";
+}
+
+void CalendarModel::DebugDumpMonthsFetched(std::ostringstream* out,
+                                           const char* prefix) {
+  *out << prefix << " months_fetched_ START size: " << months_fetched_.size()
+       << "\n";
+  for (auto& month : months_fetched_) {
+    *out << prefix << "   " << month << "\n";
+  }
+  *out << prefix << " months_fetched_ END"
+       << "\n";
+}
+
+void CalendarModel::DebugDump() {
+  std::ostringstream out;
+  const char* kDebugDumpPrefix = "CalendarModelDump: ";
+  out << __FUNCTION__ << " START"
+      << "\n";
+  DebugDumpEvents(&out, kDebugDumpPrefix);
+  DebugDumpMruMonths(&out, kDebugDumpPrefix);
+  DebugDumpNonPrunableMonths(&out, kDebugDumpPrefix);
+  DebugDumpMonthsFetched(&out, kDebugDumpPrefix);
+  out << __FUNCTION__ << " END"
+      << "\n";
+  VLOG(1) << out.str();
 }
 
 void CalendarModel::RedistributeEvents(int time_difference_minutes) {

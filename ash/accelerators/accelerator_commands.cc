@@ -17,8 +17,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/float/float_controller.h"
@@ -54,6 +56,10 @@ views::Widget* FindPipWidget() {
 }
 
 }  // namespace
+
+void DumpCalendarModel() {
+  Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
+}
 
 void CycleBackwardMru() {
   Shell::Get()->window_cycle_controller()->HandleCycleWindow(

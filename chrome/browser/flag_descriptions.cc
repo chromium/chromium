@@ -4242,6 +4242,15 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kCalendarModelDebugModeName[] = "Monthly Calendar Model Debug Mode";
+const char kCalendarModelDebugModeDescription[] =
+    "Debug mode for Monthly Calendar Model. This helps a lot in diagnosing any "
+    "bugs in the calendar's event fetching/caching functionality. WARNING: DO "
+    "NOT enable this flag unless you're OK with information about your "
+    "calendar events, such as start/end times and summaries, being dumped to "
+    "the system logs, where they are potentially visible to all users of the "
+    "device.";
+
 const char kCaptureSelfieCamName[] = "Enable selfie camera in screen capture";
 const char kCaptureSelfieCamDescription[] =
     "Enables the ability to record the selected camera feed along with screen "

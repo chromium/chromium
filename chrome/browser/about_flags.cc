@@ -3454,6 +3454,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"calendar-view", flag_descriptions::kCalendarViewName,
      flag_descriptions::kCalendarViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCalendarView)},
+    {"calendar-view-debug-mode", flag_descriptions::kCalendarModelDebugModeName,
+     flag_descriptions::kCalendarModelDebugModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCalendarModelDebugMode)},
     {"cellular-bypass-esim-installation-connectivity-check",
      flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
      flag_descriptions::
