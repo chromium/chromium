@@ -37,6 +37,9 @@ class QueryClustersState::PostProcessor
     // search query re-scores matching visits to promote them above non-matching
     // visits.
     HideAndCullLowScoringVisits(clusters);
+    // Do this AFTER we cull the low scoring visits, so those visits don't get
+    // their related searches coalesced onto the cluster level.
+    CoalesceRelatedSearches(clusters);
     return clusters;
   }
 

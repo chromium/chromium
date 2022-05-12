@@ -303,5 +303,34 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   }
 }
 
+TEST(HistoryClustersUtilTest, CoalesceRelatedSearches) {
+  // canonical_visit has the same URL as Visit1.
+  history::ClusterVisit visit1 = GetHardcodedClusterVisit(1);
+  visit1.annotated_visit.content_annotations.related_searches.push_back(
+      "search1");
+  visit1.annotated_visit.content_annotations.related_searches.push_back(
+      "search2");
+  visit1.annotated_visit.content_annotations.related_searches.push_back(
+      "search3");
+
+  history::ClusterVisit visit2 = GetHardcodedClusterVisit(2);
+  visit2.annotated_visit.content_annotations.related_searches.push_back(
+      "search4");
+  visit2.annotated_visit.content_annotations.related_searches.push_back(
+      "search5");
+  visit2.annotated_visit.content_annotations.related_searches.push_back(
+      "search6");
+
+  history::Cluster cluster;
+  cluster.visits = {visit1, visit2};
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(cluster);
+
+  CoalesceRelatedSearches(clusters);
+  EXPECT_THAT(clusters[0].related_searches,
+              testing::ElementsAre("search1", "search2", "search3", "search4",
+                                   "search5"));
+}
+
 }  // namespace
 }  // namespace history_clusters

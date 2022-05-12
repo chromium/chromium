@@ -60,6 +60,10 @@ void CullNonProminentOrDuplicateClusters(
 // Marks low scoring visits as hidden, and drops them if necessary.
 void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters);
 
+// Coalesces the related searches off of individual visits and places them at
+// the cluster level with numerical limits defined by flags.
+void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_UTIL_H_

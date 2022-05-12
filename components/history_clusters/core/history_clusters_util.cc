@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
@@ -283,6 +284,27 @@ void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters) {
           base::ranges::remove_if(
               cluster.visits, [](const auto& visit) { return visit.hidden; }),
           cluster.visits.end());
+    }
+  }
+}
+
+void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
+  constexpr size_t kMaxRelatedSearches = 5;
+
+  for (auto& cluster : clusters) {
+    for (const auto& visit : cluster.visits) {
+      // Coalesce the unique related searches of this visit into the cluster
+      // until the cap is reached.
+      for (const auto& search_query :
+           visit.annotated_visit.content_annotations.related_searches) {
+        if (cluster.related_searches.size() >= kMaxRelatedSearches) {
+          return;
+        }
+
+        if (!base::Contains(cluster.related_searches, search_query)) {
+          cluster.related_searches.push_back(search_query);
+        }
+      }
     }
   }
 }

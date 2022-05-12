@@ -59,6 +59,7 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Integration) {
   // Low scoring visits should be above the fold only if they're one of top 4.
   history::Cluster cluster;
   cluster.cluster_id = 4;
+  cluster.related_searches = {"one", "two", "three", "four", "five"};
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
   cluster.visits[0].hidden = false;
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
@@ -74,50 +75,22 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Integration) {
   EXPECT_EQ(mojom_result->is_continuation, false);
 
   ASSERT_EQ(mojom_result->clusters.size(), 1u);
+  const auto& cluster_mojom = mojom_result->clusters[0];
 
   {
-    EXPECT_EQ(mojom_result->clusters[0]->id, 4);
-    const auto& visits = mojom_result->clusters[0]->visits;
+    EXPECT_EQ(cluster_mojom->id, 4);
+    const auto& visits = cluster_mojom->visits;
     ASSERT_EQ(visits.size(), 2u);
     // Test that the hidden attribute is passed through to mojom.
     EXPECT_EQ(visits[0]->hidden, false);
     EXPECT_EQ(visits[1]->hidden, true);
+    ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
+    EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
+    EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
+    EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
+    EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
+    EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
   }
-}
-
-TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_RelatedSearches) {
-  std::vector<history::Cluster> clusters;
-
-  history::Cluster cluster;
-  cluster.cluster_id = 4;
-  // Should include the top visit's related searches.
-  cluster.visits.push_back(
-      CreateVisit("https://high-score-1", 0, {"one", "two"}));
-  // Should exclude duplicates (i.e. "one").
-  cluster.visits.push_back(CreateVisit(
-      "https://high-score-2", 0, {"one", "three", "four", "five", "six"}));
-  // Visits without related searches shouldn't interrupt the coalescing.
-  cluster.visits.push_back(CreateVisit("https://high-score-3", 0));
-  // Should not include more related searches once the max related searches has
-  // been met (5).
-  cluster.visits.push_back(
-      CreateVisit("https://high-score-4", 0, {"seven", "eight", "nine"}));
-  cluster.visits.push_back(CreateVisit("https://high-score-5", 0, {"ten"}));
-
-  clusters.push_back(cluster);
-
-  mojom::QueryResultPtr mojom_result =
-      QueryClustersResultToMojom(&profile_, "query", clusters, false, false);
-
-  ASSERT_EQ(mojom_result->clusters.size(), 1u);
-  EXPECT_EQ(mojom_result->clusters[0]->id, 4);
-  const auto& cluster_mojom = mojom_result->clusters[0];
-  ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
-  EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
-  EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
-  EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
-  EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
-  EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
 }
 
 // TODO(manukh) Add a test case for `VisitToMojom`.
