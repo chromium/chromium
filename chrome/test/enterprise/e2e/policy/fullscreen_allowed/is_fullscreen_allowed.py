@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import test_util
+import time
 from absl import app
 from pywinauto.application import Application
+import test_util
 
 
 def main(argv):
@@ -24,6 +25,7 @@ def main(argv):
     print("press F11 to enter full screen mode.")
     w.type_keys('{F11}')
 
+    time.sleep(5)
     window_rect = w.rectangle()
     window_width = window_rect.width()
     window_height = window_rect.height()
