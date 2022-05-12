@@ -39,8 +39,14 @@ _SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/ar
 
 # When androidx roller is breaking, and a fix is not immenent, use this to pin a
 # broken library to an old known-working version.
+# * The first element of each tuple is the path to the artifact of the latest
+#   version of the library. It could change if the version is rev'ed in a new
+#   snapshot.
+# * The second element is a URL to replace the file with. Find the URL for older
+#   versions of libraries by looking in the BUILD_INFO for the older version
+#   (e.g.: https://androidx.dev/snapshots/builds/8545498/artifacts/BUILD_INFO)
 _OVERRIDES = [
-    # Example (find URL by looking in BUILD_INFO):
+    # Example:
     #('androidx_core_core/core-1.9.0-SNAPSHOT.aar',
     # 'https://androidx.dev/snapshots/builds/8545498/artifacts/repository/'
     # 'androidx/core/core/1.8.0-SNAPSHOT/core-1.8.0-20220505.122105-1.aar'),
