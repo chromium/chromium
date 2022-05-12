@@ -168,7 +168,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertTrue(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
-                mPartnerBrowserCustomizations.getHomePageUrl());
+                mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
         Assert.assertNull(HomepageManager.getHomepageUri());
     }
@@ -200,7 +200,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertTrue(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
-                mPartnerBrowserCustomizations.getHomePageUrl());
+                mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_URI, HomepageManager.getHomepageUri());
     }
@@ -284,7 +284,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertTrue(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsDelayedProvider.HOMEPAGE_URI,
-                mPartnerBrowserCustomizations.getHomePageUrl());
+                mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsDelayedProvider.HOMEPAGE_URI,
                 HomepageManager.getHomepageUri());
@@ -317,7 +317,7 @@ public class PartnerHomepageUnitTest {
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertTrue(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
-                mPartnerBrowserCustomizations.getHomePageUrl());
+                mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertEquals(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 HomepageManager.getHomepageUri());

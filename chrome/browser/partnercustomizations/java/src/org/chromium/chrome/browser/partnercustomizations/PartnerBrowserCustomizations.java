@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -18,12 +17,17 @@ import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Reads and caches partner browser customizations information if it exists.
@@ -49,7 +53,7 @@ public class PartnerBrowserCustomizations {
 
     private static volatile PartnerBrowserCustomizations sInstance;
 
-    private volatile String mHomepage;
+    private volatile GURL mHomepage;
     private volatile boolean mIncognitoModeDisabled;
     private volatile boolean mBookmarksEditingDisabled;
     private boolean mIsInitialized;
@@ -118,7 +122,8 @@ public class PartnerBrowserCustomizations {
      * been completed.
      */
     public boolean isHomepageProviderAvailableAndEnabled() {
-        return !TextUtils.isEmpty(getHomePageUrl());
+        GURL homepageUrl = getHomePageUrl();
+        return homepageUrl != null && !homepageUrl.isEmpty();
     }
 
     /**
@@ -248,16 +253,31 @@ public class PartnerBrowserCustomizations {
     boolean refreshHomepage(CustomizationProviderDelegate delegate) {
         boolean retVal = false;
         try {
-            String homepage = delegate.getHomepage();
-            if (!isValidHomepage(homepage)) {
-                homepage = null;
+            String homepageUrl = delegate.getHomepage();
+            GURL homepageGurl;
+
+            // Loosely check the scheme. We call fixupUrl to handle about: schemes correctly, and
+            // also to keep consistent with previous behavior, where chrome: urls were fixed up when
+            // checking for NTP in isValidHomepage.
+            if (homepageUrl != null
+                    && (homepageUrl.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
+                            || homepageUrl.startsWith(UrlConstants.CHROME_URL_SHORT_PREFIX))) {
+                homepageGurl = UrlFormatter.fixupUrl(homepageUrl);
+            } else {
+                homepageGurl = new GURL(homepageUrl);
             }
-            if (!TextUtils.equals(mHomepage, homepage)) {
+
+            if (!isValidHomepage(homepageGurl)) {
+                homepageGurl = null;
+            }
+            if (!Objects.equals(mHomepage, homepageGurl)) {
                 retVal = true;
             }
-            mHomepage = homepage;
+            mHomepage = homepageGurl;
+            String valueToWrite =
+                    mHomepage == null ? GURL.emptyGURL().serialize() : mHomepage.serialize();
             SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, mHomepage);
+                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, valueToWrite);
         } catch (Exception e) {
             Log.w(TAG, "Partner homepage delegate URL read failed : ", e);
         }
@@ -330,28 +350,30 @@ public class PartnerBrowserCustomizations {
      * @return Home page URL from Android provider. If null, that means either there is no homepage
      * provider or provider set it to null to disable homepage.
      */
-    public String getHomePageUrl() {
+    public GURL getHomePageUrl() {
         CommandLine commandLine = CommandLine.getInstance();
         if (commandLine.hasSwitch(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING)) {
-            return commandLine.getSwitchValue(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING);
+            return new GURL(
+                    commandLine.getSwitchValue(ChromeSwitches.PARTNER_HOMEPAGE_FOR_TESTING));
         }
         return mHomepage;
     }
 
     @VisibleForTesting
-    static boolean isValidHomepage(String url) {
+    static boolean isValidHomepage(GURL url) {
         if (url == null) {
             return false;
         }
-        if (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url)) {
+
+        if (!url.isValid() || (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url))) {
             Log.w(TAG,
                     "Partner homepage must be HTTP(S) or NewTabPage. "
                             + "Got invalid URL \"%s\"",
                     url);
             return false;
         }
-        if (url.length() > HOMEPAGE_URL_MAX_LENGTH) {
-            Log.w(TAG, "The homepage URL \"%s\" is too long.", url);
+        if (url.getSpec().length() > HOMEPAGE_URL_MAX_LENGTH) {
+            Log.w(TAG, "The homepage URL \"%s\" is too long.", url.getSpec());
             return false;
         }
         return true;
@@ -359,6 +381,6 @@ public class PartnerBrowserCustomizations {
 
     @VisibleForTesting
     public void setHomepageForTests(String homepage) {
-        mHomepage = homepage;
+        mHomepage = new GURL(homepage);
     }
 }

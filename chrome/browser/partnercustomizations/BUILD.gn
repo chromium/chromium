@@ -39,9 +39,11 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
 }
 
@@ -74,10 +76,15 @@ android_library("javatests") {
     ":test_support_java",
     "//base:base_java_test_support",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//url:gurl_java",
   ]
 }
