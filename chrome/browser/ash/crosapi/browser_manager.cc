@@ -231,7 +231,6 @@ bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
 // The returns struct is used by the main thread as parameters to launch Lacros.
 LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     base::FilePath lacros_dir,
-    bool cleared_user_data_dir,
     bool clear_shared_resource_file) {
   LaunchParamsFromBackground params;
 
@@ -924,14 +923,10 @@ void BrowserManager::Start(
   // the data wipe check logic from `BrowserDataMigrator` to browser_util.
   const std::string user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
       ProfileManager::GetPrimaryUserProfile());
-  // Check if user data directory needs to be wiped for a backward incompatible
-  // update.
-  bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(user_id_hash);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
-                     cleared_user_data_dir,
                      is_initial_lacros_launch_after_reboot_),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr(),
