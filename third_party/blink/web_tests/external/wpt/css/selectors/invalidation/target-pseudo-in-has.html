@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Selectors Invalidation: target pseudo in :has() argument</title>
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #parent1 { color: green; }
+  #parent1:has(:target) { color: yellowgreen; }
+</style>
+<div id="parent1">
+  <div id="fragment">parent color must be yellow green when containing :target</div>
+  <a href="#fragment">link to #fragment</a>
+  <a href="#">link to #</a>
+</div>
+<script>
+  test((t) => {
+    const fragment = document.querySelector("#fragment");
+    const toFragment = document.querySelector(`a[href="#fragment"]`);
+    const toTop = document.querySelector(`a[href="#"]`);
+
+    location.hash = "";
+
+    assert_equals(getComputedStyle(parent1).color, "rgb(0, 128, 0)", "parent should be green");
+
+    toFragment.click();
+
+    assert_true(fragment.matches(":target"));
+    assert_equals(getComputedStyle(parent1).color, "rgb(154, 205, 50)", "parent should be yellowgreen on fragment click");
+
+    toTop.click();
+
+    assert_equals(location.hash, "");
+    assert_equals(getComputedStyle(parent1).color, "rgb(0, 128, 0)", "parent should be green without :target");
+  });
+</script>

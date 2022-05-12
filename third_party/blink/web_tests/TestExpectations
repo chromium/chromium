@@ -250,7 +250,7 @@ crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-path
 
 # Offscreen canvas tests that are flaky because sometimes the image is not rendered in time
 # See crbug.com/1315650
-crbug.com/1322089 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Pass Failure ]
+crbug.com/1322089 virtual/gpu/fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
 
 # These tests require shared-storage and fenced-frames
 # Keep this in sync with VirtualTestSuites.
