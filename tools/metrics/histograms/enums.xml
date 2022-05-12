@@ -55343,6 +55343,7 @@ from previous Chrome versions.
   <int value="-1517518406" label="force-update-menu-type"/>
   <int value="-1516955483" label="AutoDisableAccessibility:enabled"/>
   <int value="-1515415104" label="top-document-isolation:disabled"/>
+  <int value="-1515198913" label="AllowPolyDevicePairing:disabled"/>
   <int value="-1514943439" label="ash-enable-swipe-to-close-in-overview-mode"/>
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
@@ -59320,6 +59321,7 @@ from previous Chrome versions.
   <int value="1132521402" label="ConnectivityDiagnosticsWebUi:enabled"/>
   <int value="1132737110" label="WebAssemblyCodeProtectionPku:disabled"/>
   <int value="1133207726" label="MediaInspectorLogging:enabled"/>
+  <int value="1133581555" label="AllowPolyDevicePairing:enabled"/>
   <int value="1133635187" label="force-gpu-rasterization"/>
   <int value="1134969852" label="NtpPhotosModuleCustomizedOptInTitle:enabled"/>
   <int value="1135728116" label="PluginVmShowCameraPermissions:enabled"/>

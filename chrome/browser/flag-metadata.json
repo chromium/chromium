@@ -109,6 +109,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "allow-poly-device-pairing",
+    "owners": [ "cros-connectivity@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "allow-repeated-updates",
     "owners": [ "vyshu", "chromeos-core-services@google.com" ],
     "expiry_milestone": 92

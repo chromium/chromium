@@ -39,6 +39,10 @@ const base::Feature kAdjustSplitViewForVK{"AdjustSplitViewForVK",
 const base::Feature kAllowAmbientEQ{"AllowAmbientEQ",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows pairing to Bluetooth devices created by Poly. See b/228118615.
+const base::Feature kAllowPolyDevicePairing{"AllowPolyDevicePairing",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether devices are updated before reboot after the first update.
 const base::Feature kAllowRepeatedUpdates{"AllowRepeatedUpdates",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2065,6 +2069,10 @@ bool IsPinAutosubmitFeatureEnabled() {
 
 bool IsPipRoundedCornersEnabled() {
   return base::FeatureList::IsEnabled(kPipRoundedCorners);
+}
+
+bool IsPolyDevicePairingAllowed() {
+  return base::FeatureList::IsEnabled(kAllowPolyDevicePairing);
 }
 
 bool IsProductivityLauncherEnabled() {
