@@ -167,6 +167,19 @@ gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
   }
   return gfx::Rect();
 }
+Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  if (launch_and_navigate_system_web_apps_) {
+    return launch_and_navigate_system_web_apps_.Run(profile, provider, url,
+                                                    params);
+  }
+  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
+                                                             url, params);
+}
+
 bool UnittestingSystemAppDelegate::IsAppEnabled() const {
   return is_app_enabled;
 }
@@ -244,6 +257,10 @@ void UnittestingSystemAppDelegate::SetTimerInfo(
 void UnittestingSystemAppDelegate::SetDefaultBounds(
     base::RepeatingCallback<gfx::Rect(Browser*)> lambda) {
   get_default_bounds_ = std::move(lambda);
+}
+void UnittestingSystemAppDelegate::SetLaunchAndNavigateSystemWebApp(
+    LaunchAndNavigateSystemWebAppCallback lambda) {
+  launch_and_navigate_system_web_apps_ = std::move(lambda);
 }
 void UnittestingSystemAppDelegate::SetIsAppEnabled(bool value) {
   is_app_enabled = value;
@@ -619,6 +636,22 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
             }
             return info;
           }));
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemAppType::OS_FEEDBACK, "Test",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
+  delegate->SetLaunchAndNavigateSystemWebApp(base::BindRepeating(
+      [](Profile*, WebAppProvider*, const GURL&,
+         const apps::AppLaunchParams&) -> Browser* { return nullptr; }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

@@ -29,6 +29,12 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
       delete;
   ~UnittestingSystemAppDelegate() override;
 
+  using LaunchAndNavigateSystemWebAppCallback =
+      base::RepeatingCallback<Browser*(Profile*,
+                                       WebAppProvider*,
+                                       const GURL&,
+                                       const apps::AppLaunchParams&)>;
+
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
   std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
@@ -49,6 +55,11 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool ShouldAllowScriptsToCloseWindows() const override;
   absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool PreferManifestBackgroundColor() const override;
@@ -74,6 +85,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
+  void SetLaunchAndNavigateSystemWebApp(LaunchAndNavigateSystemWebAppCallback);
   void SetIsAppEnabled(bool);
   void SetUrlInSystemAppScope(const GURL& url);
   void SetPreferManifestBackgroundColor(bool);
@@ -107,6 +119,9 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
+      base::NullCallback();
+
+  LaunchAndNavigateSystemWebAppCallback launch_and_navigate_system_web_apps_ =
       base::NullCallback();
 
   absl::optional<SystemAppBackgroundTaskInfo> timer_info_;
@@ -178,6 +193,9 @@ class TestSystemWebAppInstallation {
   SetUpAppWithNewWindowMenuItem();
 
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithShortcuts();
+
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppThatAbortsLaunch();
 
   // This creates 4 system web app types for testing context menu with
   // different windowing options:

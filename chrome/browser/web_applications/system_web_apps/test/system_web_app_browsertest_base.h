@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -87,6 +88,9 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // it will store the Browser* that hosts the launched application.
   content::WebContents* LaunchAppWithoutWaiting(SystemAppType type,
                                                 Browser** browser = nullptr);
+
+  // Returns number of system web app browser windows matching |type|.
+  size_t GetSystemWebAppBrowserCount(SystemAppType type);
 
  protected:
   std::unique_ptr<TestSystemWebAppInstallation> maybe_installation_;

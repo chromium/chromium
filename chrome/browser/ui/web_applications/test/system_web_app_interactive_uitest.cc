@@ -1089,14 +1089,6 @@ class SystemWebAppNewWindowMenuItemTest
     return menu;
   }
 
-  size_t GetSystemWebAppBrowserCount(SystemAppType type) {
-    auto* browser_list = BrowserList::GetInstance();
-    return std::count_if(
-        browser_list->begin(), browser_list->end(), [&](Browser* browser) {
-          return web_app::IsBrowserForSystemWebApp(browser, type);
-        });
-  }
-
   void ExpectMenuCommandLaunchesSystemWebApp(
       std::unique_ptr<ui::MenuModel> menu,
       int command_id,

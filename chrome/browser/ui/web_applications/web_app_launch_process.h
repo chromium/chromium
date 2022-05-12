@@ -46,7 +46,6 @@ class WebAppLaunchProcess {
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
       const apps::ShareTarget* share_target) const;
   WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
-  content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
   std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
   LaunchHandler::RouteTo GetLaunchRouteTo() const;
   bool RouteToExistingClient() const;

@@ -101,8 +101,11 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
     DCHECK(navigation_observer.last_navigation_succeeded());
   }
 
-  if (out_browser)
-    *out_browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (out_browser) {
+    *out_browser = web_contents
+                       ? chrome::FindBrowserWithWebContents(web_contents)
+                       : nullptr;
+  }
 
   return web_contents;
 }
@@ -146,6 +149,15 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(SystemAppType type) {
 
 GURL SystemWebAppBrowserTestBase::GetStartUrl() {
   return GetStartUrl(LaunchParamsForApp(GetMockAppType()));
+}
+
+size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
+    SystemAppType type) {
+  auto* browser_list = BrowserList::GetInstance();
+  return std::count_if(
+      browser_list->begin(), browser_list->end(), [&](Browser* browser) {
+        return web_app::IsBrowserForSystemWebApp(browser, type);
+      });
 }
 
 SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(

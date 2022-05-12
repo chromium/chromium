@@ -91,6 +91,9 @@ void SetLaunchFiles(bool should_include_launch_directory,
 
 // Implementation of LaunchSystemWebApp. Do not use this before discussing your
 // use case with the System Web Apps team.
+//
+// This method returns `nullptr` if the app aborts the launch (e.g. delaying the
+// launch after some async operation).
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType type,
                                 const GURL& url,

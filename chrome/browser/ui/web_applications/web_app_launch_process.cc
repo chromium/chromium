@@ -98,18 +98,21 @@ content::WebContents* WebAppLaunchProcess::Run() {
 #endif
 
   // System Web Apps have their own launch code path.
-  // TODO(crbug.com/1231886): Don't use a separate code path so that SWAs can
-  // maintain feature parity with regular web apps (e.g. launch_handler
-  // behaviours).
-  content::WebContents* web_contents = MaybeLaunchSystemWebApp(launch_url);
-  if (web_contents)
-    return web_contents;
+  absl::optional<SystemAppType> system_app_type =
+      GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
+  if (system_app_type) {
+    Browser* browser = LaunchSystemWebAppImpl(&profile_, *system_app_type,
+                                              launch_url, params_);
+
+    return browser ? browser->tab_strip_model()->GetActiveWebContents()
+                   : nullptr;
+  }
 
   auto [browser, is_new_browser] = EnsureBrowser();
 
   NavigateResult navigate_result =
       MaybeNavigateBrowser(browser, is_new_browser, launch_url, share_target);
-  web_contents = navigate_result.web_contents;
+  content::WebContents* web_contents = navigate_result.web_contents;
   if (!web_contents)
     return nullptr;
 
@@ -227,18 +230,6 @@ bool WebAppLaunchProcess::NeverNavigateExistingClients() const {
     case LaunchHandler::RouteTo::kExistingClientRetain:
       return true;
   }
-}
-
-content::WebContents* WebAppLaunchProcess::MaybeLaunchSystemWebApp(
-    const GURL& launch_url) {
-  absl::optional<SystemAppType> system_app_type =
-      GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
-  if (!system_app_type)
-    return nullptr;
-
-  Browser* browser =
-      LaunchSystemWebAppImpl(&profile_, *system_app_type, launch_url, params_);
-  return browser->tab_strip_model()->GetActiveWebContents();
 }
 
 std::tuple<Browser*, bool /*is_new_browser*/>

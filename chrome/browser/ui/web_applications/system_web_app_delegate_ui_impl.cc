@@ -21,6 +21,9 @@
 
 namespace web_app {
 
+// TODO(crbug.com/1231886): Reduce code duplication between SWA launch code and
+// web app launch code, so SWAs can easily maintain feature parity with regular
+// web apps (e.g. launch_handler behaviours).
 Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     WebAppProvider* provider,
