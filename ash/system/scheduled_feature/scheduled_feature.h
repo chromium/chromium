@@ -64,6 +64,9 @@ class ASH_EXPORT ScheduledFeature
   ScheduledFeature& operator=(const ScheduledFeature&) = delete;
   ~ScheduledFeature() override;
 
+  PrefService* active_user_pref_service() const {
+    return active_user_pref_service_;
+  }
   base::OneShotTimer* timer() { return &timer_; }
 
   bool GetEnabled() const;

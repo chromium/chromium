@@ -476,6 +476,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE_AUTO_SCHEDULED" desc="Button label for the Dark theme feature when auto scheduling is enabled." meaning="Dark mode is automatically scheduled to be off until sunset. [CHAR_LIMIT=16]">
         Off until sunset
       </message>
+      <message name="IDS_ASH_DARK_LIGHT_MODE_EDUCATIONAL_NUDGE_IN_CLAMSHELL_MODE" desc="The label used for the dark light mode educational nudge in clamshell mode.">
+        Switch between dark and light theme. Right-click on the desktop and select Wallpaper &#0038; style.
+      </message>
+      <message name="IDS_ASH_DARK_LIGHT_MODE_EDUCATIONAL_NUDGE_IN_TABLET_MODE" desc="The label used for the dark light mode educational nudge in tablet mode.">
+        Switch between dark and light theme. Touch and hold on the desktop, then select Wallpaper &#0038; style.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a cast to the desktop.">
         Stop casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>

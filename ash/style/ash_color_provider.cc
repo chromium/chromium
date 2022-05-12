@@ -15,6 +15,7 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/dark_mode_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -176,6 +177,9 @@ SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
       std::round(SkColorGetA(color_of_first_tone) * kSecondToneOpacity));
 }
 
+// TODO(minch): Moving prefs related logic to DarkModeController instead. To
+// keep AshColorProvider only a provider of colors. This will benefit its
+// migration to ui/color/color_provider as well (crbug/1292244).
 // static
 void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDarkModeEnabled,
@@ -378,6 +382,8 @@ void AshColorProvider::ToggleColorMode() {
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
   NotifyDarkModeEnabledPrefChange();
+
+  DarkModeController::Get()->ToggledByUser();
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {

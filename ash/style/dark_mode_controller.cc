@@ -4,7 +4,10 @@
 
 #include "ash/style/dark_mode_controller.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/style/dark_light_mode_nudge_controller.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -19,7 +22,8 @@ DarkModeController::DarkModeController()
     : ScheduledFeature(prefs::kDarkModeEnabled,
                        prefs::kDarkModeScheduleType,
                        std::string(),
-                       std::string()) {
+                       std::string()),
+      nudge_controller_(std::make_unique<DarkLightModeNudgeController>()) {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -40,6 +44,9 @@ void DarkModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDarkModeScheduleType,
       static_cast<int>(ScheduledFeature::ScheduleType::kSunsetToSunrise));
+
+  registry->RegisterIntegerPref(prefs::kDarkLightModeNudge,
+                                kDarkLightModeNudgeMaxShownCount);
 }
 
 void DarkModeController::SetAutoScheduleEnabled(bool enabled) {
@@ -54,7 +61,17 @@ bool DarkModeController::GetAutoScheduleEnabled() const {
   return type == ScheduledFeature::ScheduleType::kSunsetToSunrise;
 }
 
+void DarkModeController::ToggledByUser() {
+  nudge_controller_->ToggledByUser();
+}
+
 void DarkModeController::RefreshFeatureState() {}
+
+void DarkModeController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (state == session_manager::SessionState::ACTIVE)
+    nudge_controller_->MaybeShowNudge();
+}
 
 const char* DarkModeController::GetFeatureName() const {
   return "DarkModeController";

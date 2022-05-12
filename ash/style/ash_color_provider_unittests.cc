@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/login_test_base.h"
-#include "ash/public/cpp/login_types.h"
 #include "ash/style/ash_color_provider.h"
 
+#include "ash/login/ui/login_test_base.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
