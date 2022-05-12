@@ -50,8 +50,8 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   virtual const FetchClientSettingsObject& GetFetchClientSettingsObject()
       const = 0;
 
-  // Returns whether this global context is a top-level frame.
-  virtual bool IsMainFrame() const = 0;
+  // Returns whether this global context is the outermost main frame.
+  virtual bool IsOutermostMainFrame() const = 0;
 
   // Returns whether a controller service worker exists and if it has a fetch
   // handler.
@@ -119,8 +119,9 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
     return properties_ ? properties_->GetFetchClientSettingsObject()
                        : *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override {
-    return properties_ ? properties_->IsMainFrame() : is_main_frame_;
+  bool IsOutermostMainFrame() const override {
+    return properties_ ? properties_->IsOutermostMainFrame()
+                       : is_outermost_main_frame_;
   }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override {
     return properties_ ? properties_->GetControllerServiceWorkerMode()
@@ -173,7 +174,7 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
 
   // The following members are used when detached.
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
-  bool is_main_frame_ = false;
+  bool is_outermost_main_frame_ = false;
   bool paused_ = false;
   LoaderFreezeMode freeze_mode_;
   bool load_complete_ = false;

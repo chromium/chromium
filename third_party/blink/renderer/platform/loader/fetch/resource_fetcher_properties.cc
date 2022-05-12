@@ -19,7 +19,7 @@ void DetachableResourceFetcherProperties::Detach() {
   fetch_client_settings_object_ =
       MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
           properties_->GetFetchClientSettingsObject());
-  is_main_frame_ = properties_->IsMainFrame();
+  is_outermost_main_frame_ = properties_->IsOutermostMainFrame();
   paused_ = properties_->IsPaused();
   freeze_mode_ = properties_->FreezeMode();
   load_complete_ = properties_->IsLoadComplete();

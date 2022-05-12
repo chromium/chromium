@@ -29,7 +29,7 @@ class PLATFORM_EXPORT NullResourceFetcherProperties final
       const override {
     return *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override { return false; }
+  bool IsOutermostMainFrame() const override { return false; }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override {
     return ControllerServiceWorkerMode::kNoController;
   }

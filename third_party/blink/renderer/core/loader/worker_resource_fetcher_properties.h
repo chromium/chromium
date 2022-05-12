@@ -30,7 +30,7 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
       const override {
     return *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override { return false; }
+  bool IsOutermostMainFrame() const override { return false; }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override;
   int64_t ServiceWorkerId() const override {
     DCHECK_NE(GetControllerServiceWorkerMode(),

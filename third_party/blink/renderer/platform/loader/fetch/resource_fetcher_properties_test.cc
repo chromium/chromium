@@ -40,7 +40,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
   const auto& client_settings_object =
       properties.GetFetchClientSettingsObject();
   EXPECT_EQ(&original_client_settings_object, &client_settings_object);
-  EXPECT_FALSE(properties.IsMainFrame());
+  EXPECT_FALSE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.
@@ -57,7 +57,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithDefaultValues) {
             &properties.GetFetchClientSettingsObject());
   EXPECT_EQ(properties.GetFetchClientSettingsObject().BaseUrl(),
             KURL("https://example.com/foo.html"));
-  EXPECT_FALSE(properties.IsMainFrame());
+  EXPECT_FALSE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.
@@ -78,7 +78,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
   auto& properties = *MakeGarbageCollected<DetachableResourceFetcherProperties>(
       original_properties);
 
-  original_properties.SetIsMainFrame(true);
+  original_properties.SetIsOutermostMainFrame(true);
   original_properties.SetControllerServiceWorkerMode(
       mojom::ControllerServiceWorkerMode::kControlled);
   original_properties.SetServiceWorkerId(133);
@@ -91,7 +91,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
   const auto& client_settings_object =
       properties.GetFetchClientSettingsObject();
   EXPECT_EQ(&original_client_settings_object, &client_settings_object);
-  EXPECT_TRUE(properties.IsMainFrame());
+  EXPECT_TRUE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kControlled);
   EXPECT_EQ(properties.ServiceWorkerId(), 133);
@@ -109,7 +109,7 @@ TEST_F(DetachableResourceFetcherPropertiesTest, DetachWithNonDefaultValues) {
             &properties.GetFetchClientSettingsObject());
   EXPECT_EQ(properties.GetFetchClientSettingsObject().BaseUrl(),
             KURL("https://example.com/foo.html"));
-  EXPECT_TRUE(properties.IsMainFrame());
+  EXPECT_TRUE(properties.IsOutermostMainFrame());
   EXPECT_EQ(properties.GetControllerServiceWorkerMode(),
             mojom::ControllerServiceWorkerMode::kNoController);
   // We cannot call ServiceWorkerId as the service worker mode is kNoController.
