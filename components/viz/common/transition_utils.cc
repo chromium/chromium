@@ -20,6 +20,10 @@
 namespace viz {
 
 namespace {
+
+constexpr int kMaxListToProcess = 32;
+constexpr int kMaxQuadsPerFrame = 8;
+
 struct StackFrame {
   StackFrame(int list_index,
              SharedQuadStateList::ConstIterator sqs_iter,
@@ -78,6 +82,7 @@ std::unordered_set<uint64_t> ProcessStack(
         str << "(" << quad << ") CompositorRenderPassDrawQuad\n";
       };
   std::unordered_set<uint64_t> seen_render_pass_ids;
+  int quads_per_frame_logged = 0;
   while (!stack.empty()) {
     auto& frame = stack.back();
     auto& pass = list[frame.list_index];
@@ -100,6 +105,14 @@ std::unordered_set<uint64_t> ProcessStack(
       frame.indent += 2;
     } else {
       if (++frame.quad_iter == pass->quad_list.end()) {
+        quads_per_frame_logged = 0;
+        stack.pop_back();
+        continue;
+      }
+      if (++quads_per_frame_logged > kMaxQuadsPerFrame) {
+        write_indent(frame.indent);
+        str << "(more quads - orphaned list may not be correct)\n";
+        quads_per_frame_logged = 0;
         stack.pop_back();
         continue;
       }
@@ -156,6 +169,12 @@ std::unordered_set<uint64_t> ProcessStack(
 std::string TransitionUtils::RenderPassListToString(
     const CompositorRenderPassList& list) {
   std::ostringstream str;
+
+  if (list.size() > kMaxListToProcess) {
+    str << "RenderPassList too large (" << list.size()
+        << "), max supported list length " << kMaxListToProcess;
+    return str.str();
+  }
 
   std::vector<StackFrame> stack;
   stack.emplace_back(list.size() - 1,
