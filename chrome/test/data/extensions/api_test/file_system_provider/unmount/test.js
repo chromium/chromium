@@ -93,9 +93,7 @@ function runTests() {
 
       test_util.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
         chrome.test.assertTrue(!!volumeInfo);
-        chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId, () => {
-          chrome.test.assertNoLastError();
-        });
+        chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId);
       });
     },
 
@@ -127,9 +125,7 @@ function runTests() {
         chrome.test.assertTrue(unmountRequested);
 
         // Remove the handlers and mark the test as succeeded.
-        chrome.fileManagerPrivate.removeMount(SECOND_FILE_SYSTEM_ID, () => {
-          chrome.test.assertNoLastError();
-        });
+        chrome.fileManagerPrivate.removeMount(SECOND_FILE_SYSTEM_ID);
         chrome.fileManagerPrivate.onMountCompleted.removeListener(
             onMountCompleted);
       });
@@ -140,9 +136,7 @@ function runTests() {
 
       test_util.getVolumeInfo(SECOND_FILE_SYSTEM_ID, function(volumeInfo) {
         chrome.test.assertTrue(!!volumeInfo);
-        chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId, () => {
-          chrome.test.assertNoLastError();
-        });
+        chrome.fileManagerPrivate.removeMount(volumeInfo.volumeId);
       });
     }
   ]);

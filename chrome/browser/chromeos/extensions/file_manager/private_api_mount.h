@@ -14,7 +14,6 @@
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/drive/file_errors.h"
 #include "third_party/ced/src/util/encodings/encodings.h"
-#include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
 
 namespace extensions {
 
@@ -80,10 +79,6 @@ class FileManagerPrivateRemoveMountFunction : public LoggedExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
-  void OnDiskUnmounted(chromeos::MountError error);
-
-  void OnSshFsUnmounted(bool ok);
 };
 
 // Implements chrome.fileManagerPrivate.getVolumeMetadataList method.

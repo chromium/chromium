@@ -53,14 +53,13 @@ export function setUp() {
         callback(
             chrome.fileManagerPrivate.fileSystemMap_[options.volumeId].root);
       },
-      removeMount: function(volumeId, callback) {
+      removeMount: function(volumeId) {
         const event = {
           eventType: 'unmount',
           status: 'success',
           volumeMetadata: {volumeId: volumeId}
         };
         mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent(event);
-        callback();
       },
       onDriveConnectionStatusChanged: {
         addListener: function(listener) {

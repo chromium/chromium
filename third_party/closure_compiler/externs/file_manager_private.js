@@ -894,9 +894,8 @@ chrome.fileManagerPrivate.cancelMounting = function(fileUrl, callback) {};
 /**
  * Unmounts a mounted resource. |volumeId| An ID of the volume.
  * @param {string} volumeId
- * @param {function()} callback
  */
-chrome.fileManagerPrivate.removeMount = function(volumeId, callback) {};
+chrome.fileManagerPrivate.removeMount = function(volumeId) {};
 
 /**
  * Get the list of mounted volumes. |callback|

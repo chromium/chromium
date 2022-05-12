@@ -25,7 +25,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/drive/event_logger.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
@@ -196,9 +195,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
     case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE: {
       DiskMountManager::GetInstance()->UnmountPath(
           volume->mount_path().value(),
-          base::BindOnce(
-              &FileManagerPrivateRemoveMountFunction::OnDiskUnmounted, this));
-      return RespondLater();
+          DiskMountManager::UnmountPathCallback());
+      break;
     }
     case file_manager::VOLUME_TYPE_PROVIDED: {
       auto* service =
@@ -209,44 +207,27 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
                                    volume->file_system_id())) {
         return RespondNow(Error("Unmount failed"));
       }
-      return RespondNow(NoArguments());
+      break;
     }
     case file_manager::VOLUME_TYPE_CROSTINI:
       file_manager::VolumeManager::Get(profile)->RemoveSshfsCrostiniVolume(
-          volume->mount_path(),
-          base::BindOnce(
-              &FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted, this));
-      return RespondLater();
+          volume->mount_path(), base::DoNothing());
+      break;
     case file_manager::VOLUME_TYPE_SMB:
       ash::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
           volume->mount_path());
-      return RespondNow(NoArguments());
+      break;
     case file_manager::VOLUME_TYPE_GUEST_OS:
       // TODO(crbug/1293229): Figure out if we need to support unmounting. I'm
       // not actually sure if it's possible to reach here.
       NOTREACHED();
-      [[fallthrough]];
+      break;
     default:
       // Requested unmounting a device which is not unmountable.
       return RespondNow(Error("Invalid volume type"));
   }
-}
 
-void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
-  if (ok) {
-    return Respond(NoArguments());
-  }
-  return Respond(Error(file_manager_private::ToString(
-      api::file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN)));
-}
-
-void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
-    chromeos::MountError error) {
-  if (error == chromeos::MOUNT_ERROR_NONE) {
-    return Respond(NoArguments());
-  }
-  return Respond(Error(file_manager_private::ToString(
-      file_manager::MountErrorToMountCompletedStatus(error))));
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
