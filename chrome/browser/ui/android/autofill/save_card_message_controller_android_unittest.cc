@@ -97,9 +97,9 @@ class SaveCardMessageControllerAndroidTest
     controller_.DialogDismissed(env);
   }
 
-  void OnLegalMessageLinkClicked() {
+  void OnLinkClicked() {
     JNIEnv* env = base::android::AttachCurrentThread();
-    controller_.OnLegalMessageLinkClicked(
+    controller_.OnLinkClicked(
         env, base::android::JavaParamRef<jstring>(
                  env, base::android::ConvertUTF16ToJavaString(env, u"").obj()));
   }
@@ -147,7 +147,7 @@ void SaveCardMessageControllerAndroidTest::EnqueueMessage(
     AutofillClient::SaveCreditCardOptions options) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   EXPECT_EQ(nullptr, GetMessageWrapper());
-  controller_.Show(web_contents(), options, CreditCard(), {}, u"",
+  controller_.Show(web_contents(), options, CreditCard(), {}, u"", u"",
                    std::move(upload_save_card_prompt_callback),
                    std::move(local_save_card_prompt_callback));
 }
@@ -160,7 +160,7 @@ void SaveCardMessageControllerAndroidTest::EnqueueAnotherMessage(
   EXPECT_NE(nullptr, GetMessageWrapper());
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   controller_.Show(web_contents(), AutofillClient::SaveCreditCardOptions(),
-                   CreditCard(), {}, u"",
+                   CreditCard(), {}, u"", u"",
                    std::move(upload_save_card_prompt_callback),
                    std::move(local_save_card_prompt_callback));
 }
@@ -548,7 +548,7 @@ TEST_F(SaveCardMessageControllerAndroidTest, DialogRestoredOnTabSwitching) {
 
   // Triggering dialog will dismiss the message.
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
-  OnLegalMessageLinkClicked();
+  OnLinkClicked();
   EXPECT_TRUE(IsRestoreRequired());
   OnWebContentsFocused();
   OnDateConfirmed();

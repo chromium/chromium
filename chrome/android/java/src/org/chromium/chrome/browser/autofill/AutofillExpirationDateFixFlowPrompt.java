@@ -53,7 +53,7 @@ public class AutofillExpirationDateFixFlowPrompt
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
             String cardLabel, String confirmButtonLabel) {
         return new AutofillExpirationDateFixFlowPrompt(
-                context, delegate, title, drawableId, cardLabel, confirmButtonLabel, false);
+                context, delegate, title, drawableId, cardLabel, null, confirmButtonLabel, false);
     }
 
     /**
@@ -63,14 +63,15 @@ public class AutofillExpirationDateFixFlowPrompt
      * @param delegate A {@link AutofillExpirationDateFixFlowPromptDelegate} to handle events.
      * @param title Title of the dialog prompt.
      * @param cardLabel Label representing a card which will be saved.
+     * @param cardholderAccount The Google account where a card will be saved.
      * @param confirmButtonLabel Label for the confirm button.
      * @return The prompt to confirm expiration data.
      */
     public static AutofillExpirationDateFixFlowPrompt createAsMessageFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
+            String cardholderAccount, String confirmButtonLabel) {
         return new AutofillExpirationDateFixFlowPrompt(
-                context, delegate, title, cardLabel, confirmButtonLabel);
+                context, delegate, title, cardLabel, cardholderAccount, confirmButtonLabel);
     }
 
     private final AutofillExpirationDateFixFlowPromptDelegate mDelegate;
@@ -87,9 +88,10 @@ public class AutofillExpirationDateFixFlowPrompt
      */
     private AutofillExpirationDateFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
-            String cardLabel, String confirmButtonLabel, boolean filledConfirmButton) {
+            String cardLabel, String cardholderAccount, String confirmButtonLabel,
+            boolean filledConfirmButton) {
         super(context, delegate, R.layout.autofill_expiration_date_fix_flow, title, drawableId,
-                confirmButtonLabel, filledConfirmButton);
+                cardholderAccount, confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
         TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
@@ -112,9 +114,10 @@ public class AutofillExpirationDateFixFlowPrompt
 
     private AutofillExpirationDateFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
+            String cardholderAccount, String confirmButtonLabel) {
         // Set drawable id as 0 to remove the icon on the title.
-        this(context, delegate, title, /*drawableId=*/0, cardLabel, confirmButtonLabel, true);
+        this(context, delegate, title, /*drawableId=*/0, cardLabel, cardholderAccount,
+                confirmButtonLabel, true);
         mDialogView.findViewById(R.id.message_divider).setVisibility(View.VISIBLE);
         mDialogView.findViewById(R.id.google_pay_logo).setVisibility(View.VISIBLE);
     }

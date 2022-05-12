@@ -233,6 +233,7 @@ class ChromeAutofillClient
   Profile* GetProfile() const;
   bool IsMultipleAccountUser();
   std::u16string GetAccountHolderName();
+  std::u16string GetAccountHolderEmail();
 
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;

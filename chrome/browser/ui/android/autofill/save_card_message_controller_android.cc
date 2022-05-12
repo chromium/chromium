@@ -44,6 +44,7 @@ void SaveCardMessageControllerAndroid::Show(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     std::u16string inferred_name,
+    std::u16string cardholder_account,
     AutofillClient::UploadSaveCardPromptCallback
         upload_save_card_prompt_callback,
     AutofillClient::LocalSaveCardPromptCallback
@@ -56,6 +57,7 @@ void SaveCardMessageControllerAndroid::Show(
   web_contents_ = web_contents;
   options_ = options;
   inferred_name_ = inferred_name;
+  cardholder_account_ = cardholder_account;
 
   upload_save_card_prompt_callback_ =
       std::move(upload_save_card_prompt_callback);
@@ -198,18 +200,20 @@ void SaveCardMessageControllerAndroid::MaybeShowDialog() {
 
 void SaveCardMessageControllerAndroid::FixName(
     const std::u16string& inferred_cardholder_name) {
-  save_card_message_confirm_controller_->FixName(inferred_cardholder_name,
-                                                 card_label_);
+  save_card_message_confirm_controller_->FixName(
+      inferred_cardholder_name, card_label_, cardholder_account_);
   is_name_confirmed_for_testing_ = true;
 }
 
 void SaveCardMessageControllerAndroid::FixDate() {
-  save_card_message_confirm_controller_->FixDate(card_label_);
+  save_card_message_confirm_controller_->FixDate(card_label_,
+                                                 cardholder_account_);
   is_date_confirmed_for_testing_ = true;
 }
 
 void SaveCardMessageControllerAndroid::ConfirmSaveCard() {
-  save_card_message_confirm_controller_->ConfirmSaveCard(card_label_);
+  save_card_message_confirm_controller_->ConfirmSaveCard(card_label_,
+                                                         cardholder_account_);
   is_save_card_confirmed_for_testing_ = true;
 }
 
@@ -250,7 +254,7 @@ void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
   ResetInternal();
 }
 
-void SaveCardMessageControllerAndroid::OnLegalMessageLinkClicked(
+void SaveCardMessageControllerAndroid::OnLinkClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& url) {
   reprompt_required_ = true;

@@ -75,6 +75,8 @@ public class UrlConstants {
     public static final String GPU_URL = "chrome://gpu/";
     public static final String VERSION_URL = "chrome://version/";
 
+    public static final String GOOGLE_ACCOUNT_HOME_URL = "https://myaccount.google.com/";
+
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL =
             "https://myaccount.google.com/activitycontrols/search";
 

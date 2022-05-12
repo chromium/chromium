@@ -105,6 +105,9 @@
     <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments." formatter_data="android_java">
       Save your card and billing info to your Google Account for secure and faster checkouts
     </message>
+    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_EXPLANATION_WITH_ACCOUNT_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments. Includes Google account reference." formatter_data="android_java">
+      Save your card and billing info to your Google Account <ph name="USER_EMAIL">^1<ex>user@gmail.com</ex></ph> for secure and faster checkouts
+    </message>
   </if>
   <if expr="is_ios">
     <then>

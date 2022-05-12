@@ -42,7 +42,8 @@ SaveCardMessageConfirmController::~SaveCardMessageConfirmController() {
 }
 
 void SaveCardMessageConfirmController::ConfirmSaveCard(
-    const std::u16string& card_label) {
+    const std::u16string& card_label,
+    const std::u16string& cardholder_account) {
   if (!GetOrCreateJavaObject())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -51,6 +52,7 @@ void SaveCardMessageConfirmController::ConfirmSaveCard(
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, card_label),
+      base::android::ConvertUTF16ToJavaString(env, cardholder_account),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
                    IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));
@@ -58,7 +60,8 @@ void SaveCardMessageConfirmController::ConfirmSaveCard(
 
 void SaveCardMessageConfirmController::FixName(
     const std::u16string& inferred_cardholder_name,
-    const std::u16string& card_label) {
+    const std::u16string& card_label,
+    const std::u16string& cardholder_account) {
   if (!GetOrCreateJavaObject())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -69,13 +72,15 @@ void SaveCardMessageConfirmController::FixName(
           env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, inferred_cardholder_name),
       base::android::ConvertUTF16ToJavaString(env, card_label),
+      base::android::ConvertUTF16ToJavaString(env, cardholder_account),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
                    IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));
 }
 
 void SaveCardMessageConfirmController::FixDate(
-    const std::u16string& card_label) {
+    const std::u16string& card_label,
+    const std::u16string& cardholder_account) {
   if (!GetOrCreateJavaObject())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -84,6 +89,7 @@ void SaveCardMessageConfirmController::FixDate(
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(GetSaveCardDialogTitleId())),
       base::android::ConvertUTF16ToJavaString(env, card_label),
+      base::android::ConvertUTF16ToJavaString(env, cardholder_account),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
                    IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));

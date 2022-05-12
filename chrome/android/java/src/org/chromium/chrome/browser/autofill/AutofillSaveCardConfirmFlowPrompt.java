@@ -35,14 +35,15 @@ public class AutofillSaveCardConfirmFlowPrompt extends AutofillSaveCardPromptBas
      * @param delegate A {@link AutofillSaveCardConfirmFlowPromptDelegate} to handle events.
      * @param title Title of the dialog prompt.
      * @param cardLabel Label representing a card which will be saved.
+     * @param cardholderAccount The Google account where a card will be saved.
      * @param confirmButtonLabel Label for the confirm button.
      * @return A {@link AutofillSaveCardConfirmFlowPrompt} to confirm saving card.
      */
     public static AutofillSaveCardConfirmFlowPrompt createPrompt(Context context,
             AutofillSaveCardConfirmFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
+            String cardholderAccount, String confirmButtonLabel) {
         return new AutofillSaveCardConfirmFlowPrompt(
-                context, delegate, title, cardLabel, confirmButtonLabel);
+                context, delegate, title, cardLabel, cardholderAccount, confirmButtonLabel);
     }
 
     private final AutofillSaveCardConfirmFlowPromptDelegate mDelegate;
@@ -52,8 +53,8 @@ public class AutofillSaveCardConfirmFlowPrompt extends AutofillSaveCardPromptBas
      */
     private AutofillSaveCardConfirmFlowPrompt(Context context,
             AutofillSaveCardConfirmFlowPromptDelegate delegate, String title, String cardLabel,
-            String confirmButtonLabel) {
-        super(context, delegate, 0, title, 0, confirmButtonLabel, true);
+            String cardholderAccount, String confirmButtonLabel) {
+        super(context, delegate, 0, title, 0, cardholderAccount, confirmButtonLabel, true);
         mDelegate = delegate;
         TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
         cardDetailsMasked.setText(cardLabel);
