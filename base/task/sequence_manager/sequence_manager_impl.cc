@@ -710,6 +710,10 @@ SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
         *main_thread_only().task_execution_stack.rbegin();
     NotifyWillProcessTask(&executing_task, &lazy_now);
 
+    // Maybe invalidate the delayed task handle. |pending_task| is guaranteed to
+    // be valid here (not canceled).
+    executing_task.pending_task.WillRunTask();
+
     return SelectedTask(
         executing_task.pending_task,
         executing_task.task_queue->task_execution_trace_logger());
@@ -879,10 +883,6 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
       ShouldRecordTaskTiming(executing_task->task_queue);
   if (recording_policy == TimeRecordingPolicy::DoRecord)
     executing_task->task_timing.RecordTaskStart(time_before_task);
-
-  // Maybe invalidate the delayed task handle. |pending_task| is guaranteed to
-  // be valid here (not canceled).
-  executing_task->pending_task.WillRunTask();
 
   if (!executing_task->task_queue->GetShouldNotifyObservers())
     return;

@@ -37,41 +37,13 @@ bool g_is_always_abandon_scheduled_task_enabled =
 
 }  // namespace
 
-// TaskDestructionDetector's role is to detect when the scheduled task is
-// deleted without being executed. It can be disabled when the timer no longer
-// wants to be notified.
-class TaskDestructionDetector {
- public:
-  explicit TaskDestructionDetector(TimerBase* timer) : timer_(timer) {}
-
-  TaskDestructionDetector(const TaskDestructionDetector&) = delete;
-  TaskDestructionDetector& operator=(const TaskDestructionDetector&) = delete;
-
-  ~TaskDestructionDetector() {
-    // If this instance is getting destroyed before it was disabled, notify the
-    // timer.
-    if (timer_)
-      timer_->OnTaskDestroyed();
-  }
-
-  // Disables this instance so that the timer is no longer notified in the
-  // destructor.
-  void Disable() { timer_ = nullptr; }
-
- private:
-  // `timer_` is not a raw_ptr<...> for performance reasons (based on analysis
-  // of sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION TimerBase* timer_;
-};
-
 // static
 void TimerBase::InitializeFeatures() {
   g_is_always_abandon_scheduled_task_enabled =
       FeatureList::IsEnabled(kAlwaysAbandonScheduledTask);
 }
 
-TimerBase::TimerBase(const Location& posted_from)
-    : posted_from_(posted_from), task_destruction_detector_(nullptr) {
+TimerBase::TimerBase(const Location& posted_from) : posted_from_(posted_from) {
   // It is safe for the timer to be created on a different thread/sequence than
   // the one from which the timer APIs are called. The first call to the
   // checker's CalledOnValidSequence() method will re-bind the checker, and
@@ -86,7 +58,20 @@ TimerBase::~TimerBase() {
 
 bool TimerBase::IsRunning() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_running_;
+
+  // When the `kAlwaysAbandonScheduledTask` feature is enabled, checking
+  // `delayed_task_handle_.IsValid()` is sufficient to determine if the
+  // timer is running. When the feature is disabled, the delayed task
+  // is not abandoned when the timer is stopped and the handle remains
+  // valid, so it's necessary to also check `is_running_` (set to false
+  // from `Stop()`).
+  //
+  // TODO(crbug.com/1262205): Remove the `is_running_` check once the
+  // "AlwaysAbandonScheduledTask" feature is launched.
+  if (!is_running_)
+    return false;
+
+  return delayed_task_handle_.IsValid();
 }
 
 void TimerBase::SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner) {
@@ -98,23 +83,6 @@ void TimerBase::SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner) {
 
 scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
   return task_runner_ ? task_runner_ : SequencedTaskRunnerHandle::Get();
-}
-
-void TimerBase::OnTaskDestroyed() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(task_destruction_detector_);
-  task_destruction_detector_ = nullptr;
-
-  delayed_task_handle_.CancelTask();
-  is_running_ = false;
-
-  // It's safe to destroy or restart Timer on another sequence after it has been
-  // stopped.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  OnStop();
-  // No more member accesses here: |this| could be deleted after OnStop() call.
 }
 
 void TimerBase::Stop() {
@@ -130,13 +98,8 @@ void TimerBase::Stop() {
 void TimerBase::AbandonScheduledTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (task_destruction_detector_) {
-    task_destruction_detector_->Disable();
-    task_destruction_detector_ = nullptr;
-
-    DCHECK(delayed_task_handle_.IsValid());
+  if (delayed_task_handle_.IsValid())
     delayed_task_handle_.CancelTask();
-  }
 
   // It's safe to destroy or restart Timer on another sequence after the task is
   // abandoned.
@@ -189,7 +152,7 @@ void DelayTimerBase::Reset() {
 
   if (!g_is_always_abandon_scheduled_task_enabled) {
     // If there's no pending task, start one up and return.
-    if (!task_destruction_detector_) {
+    if (!delayed_task_handle_.IsValid()) {
       ScheduleNewTask(delay_);
       return;
     }
@@ -228,11 +191,8 @@ void DelayTimerBase::Stop() {
 
 void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!task_destruction_detector_);
+  DCHECK(!delayed_task_handle_.IsValid());
   is_running_ = true;
-  auto task_destruction_detector =
-      std::make_unique<TaskDestructionDetector>(this);
-  task_destruction_detector_ = task_destruction_detector.get();
 
   // Ignore negative deltas.
   // TODO(pmonette): Fix callers providing negative deltas and ban passing them.
@@ -241,8 +201,7 @@ void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
 
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTask(
       base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DelayTimerBase::OnScheduledTaskInvoked, Unretained(this),
-               std::move(task_destruction_detector)),
+      BindOnce(&DelayTimerBase::OnScheduledTaskInvoked, Unretained(this)),
       delay);
   scheduled_run_time_ = desired_run_time_ = Now() + delay;
 }
@@ -252,16 +211,9 @@ TimeTicks DelayTimerBase::Now() const {
   return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
 }
 
-void DelayTimerBase::OnScheduledTaskInvoked(
-    std::unique_ptr<TaskDestructionDetector> task_destruction_detector) {
+void DelayTimerBase::OnScheduledTaskInvoked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!delayed_task_handle_.IsValid());
-
-  // The scheduled task is currently running so its destruction detector is no
-  // longer needed.
-  task_destruction_detector->Disable();
-  task_destruction_detector_ = nullptr;
-  task_destruction_detector.reset();
+  DCHECK(!delayed_task_handle_.IsValid()) << posted_from_.ToString();
 
   // The timer may have been stopped.
   if (!is_running_)
@@ -411,6 +363,7 @@ void DeadlineTimer::Start(const Location& posted_from,
                           OnceClosure user_task,
                           ExactDeadline exact) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!delayed_task_handle_.IsValid());
   user_task_ = std::move(user_task);
   posted_from_ = posted_from;
   subtle::DelayPolicy delay_policy =
@@ -426,44 +379,26 @@ void DeadlineTimer::OnStop() {
   // |user_task_|.
 }
 
-void DeadlineTimer::RunUserTask() {
+void DeadlineTimer::ScheduleNewTask(TimeTicks deadline,
+                                    subtle::DelayPolicy delay_policy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_running_ = true;
+
+  delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), posted_from_,
+      BindOnce(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this)),
+      deadline, delay_policy);
+}
+
+void DeadlineTimer::OnScheduledTaskInvoked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!delayed_task_handle_.IsValid());
+
   // Make a local copy of the task to run. The Stop method will reset the
   // |user_task_| member.
   OnceClosure task = std::move(user_task_);
   Stop();
   std::move(task).Run();
-  // No more member accesses here: |this| could be deleted at this point.
-}
-
-void DeadlineTimer::ScheduleNewTask(TimeTicks deadline,
-                                    subtle::DelayPolicy delay_policy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!task_destruction_detector_);
-  is_running_ = true;
-  auto task_destruction_detector =
-      std::make_unique<internal::TaskDestructionDetector>(this);
-  task_destruction_detector_ = task_destruction_detector.get();
-
-  delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), posted_from_,
-      BindOnce(&DeadlineTimer::OnScheduledTaskInvoked, Unretained(this),
-               std::move(task_destruction_detector)),
-      deadline, delay_policy);
-}
-
-void DeadlineTimer::OnScheduledTaskInvoked(
-    std::unique_ptr<internal::TaskDestructionDetector>
-        task_destruction_detector) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!delayed_task_handle_.IsValid());
-
-  // The scheduled task is currently running so its destruction detector is no
-  // longer needed.
-  task_destruction_detector->Disable();
-  task_destruction_detector_ = nullptr;
-  task_destruction_detector.reset();
-
-  RunUserTask();
   // No more member accesses here: |this| could be deleted at this point.
 }
 

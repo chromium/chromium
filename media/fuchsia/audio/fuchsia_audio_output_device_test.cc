@@ -75,7 +75,14 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
         std::move(audio_consumer), base::ThreadTaskRunnerHandle::Get());
   }
 
-  ~FuchsiaAudioOutputDeviceTest() override { output_device_->Stop(); }
+  ~FuchsiaAudioOutputDeviceTest() override {
+    // Stop() must be called before destruction to release resources.
+    output_device_->Stop();
+    // FuchsiaAudioOutputDevice::Stop() posts a task to run StopOnAudioThread()
+    // on `task_runner_`. RunUntilIdle() ensures the request to stop is
+    // fulfilled.
+    task_environment_.RunUntilIdle();
+  }
 
  protected:
   void Initialize() {
