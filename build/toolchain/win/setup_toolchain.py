@@ -63,7 +63,7 @@ def _ExtractImportantEnvironment(output_of_set):
           # exist. This ensures a (relatively) clear error message if the
           # required SDK is not installed.
           for part in setting.split(';'):
-            if not os.path.exists(part):
+            if not os.path.exists(part) and len(part) != 0:
               raise Exception(
                   'Path "%s" from environment variable "%s" does not exist. '
                   'Make sure the necessary SDK is installed.' % (part, envvar))
