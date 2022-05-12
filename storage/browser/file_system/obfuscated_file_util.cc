@@ -1013,7 +1013,8 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!url.bucket().has_value() || url.storage_key().IsFirstPartyContext()) {
+  if (!url.bucket().has_value() ||
+      (url.storage_key().IsFirstPartyContext() && url.bucket()->is_default)) {
     // Access the SandboxDirectoryDatabase to construct the file path.
     // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKey and
     // its related functions to return a base::FileErrorOr<base::FilePath>.
@@ -1024,7 +1025,7 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
       return error;
     return path;
   }
-  // Construct the file path using non-default bucket information.
+  // Construct the file path using the provided bucket information.
   base::FilePath path =
       sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
           url.bucket().value(), QuotaClientType::kFileSystem);
