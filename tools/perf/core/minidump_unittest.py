@@ -6,7 +6,6 @@ from __future__ import print_function
 
 import logging
 import os
-import platform
 import sys
 import time
 
@@ -65,16 +64,10 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
+      'mac',  # https://crbug.com/1271097
       'win7'  # https://crbug.com/1084931
   )
   def testSymbolizeMinidump(self):
-    # This test currently does not work properly on ARM-based Macs, and there
-    # isn't currently a way to distinguish between architectures in the Disabled
-    # decorator.
-    if sys.platform == 'darwin' and platform.machine() == 'aarch64':
-      logging.warning('Short-circuiting test due to running on ARM-based Mac')
-      return
-
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var sam = "car";', 'sam')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
@@ -117,16 +110,10 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
+      'mac',  # https://crbug.com/1271097
       'win7'  # https://crbug.com/1084931
   )
   def testMultipleCrashMinidumps(self):
-    # This test currently does not work properly on ARM-based Macs, and there
-    # isn't currently a way to distinguish between architectures in the Disabled
-    # decorator.
-    if sys.platform == 'darwin' and platform.machine() == 'aarch64':
-      logging.warning('Short-circuiting test due to running on ARM-based Mac')
-      return
-
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var cat = "dog";', 'cat')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
@@ -217,6 +204,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
       'chromeos-local',
+      'mac',  # https://crbug.com/1271097
       'win7'  # https://crbug.com/1084931
   )
   def testMinidumpFromRendererHang(self):
@@ -226,13 +214,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     and GPU processes in such cases so we can get minidumps for diagnosing the
     root cause.
     """
-    # This test currently does not work properly on ARM-based Macs, and there
-    # isn't currently a way to distinguish between architectures in the Disabled
-    # decorator.
-    if sys.platform == 'darwin' and platform.machine() == 'aarch64':
-      logging.warning('Short-circuiting test due to running on ARM-based Mac')
-      return
-
     self._LoadPageThenWait('var cat = "dog";', 'cat')
     try:
       self._browser.tabs[-1].Navigate('chrome://hang', timeout=10)
