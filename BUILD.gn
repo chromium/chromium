@@ -1387,6 +1387,7 @@ if (!is_ios) {
     if (is_win || is_linux || is_fuchsia) {
       data += [
         "//third_party/blink/web_tests/platform/win/",
+        "//third_party/blink/web_tests/platform/win10/",
         "//third_party/blink/web_tests/platform/win7/",
       ]
       if (is_linux || is_fuchsia) {
