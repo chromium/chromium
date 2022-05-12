@@ -143,6 +143,7 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case SHOWING_APP_INSTALLATION_DIALOG:
     case DATA_TIMED_OUT:
     case WEBAPK_INSTALL_FAILED:
+    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -257,6 +258,7 @@ content::InstallabilityError GetInstallabilityError(
     case SHOWING_APP_INSTALLATION_DIALOG:
     case DATA_TIMED_OUT:
     case WEBAPK_INSTALL_FAILED:
+    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:

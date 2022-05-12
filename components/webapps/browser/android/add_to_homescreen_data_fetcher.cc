@@ -23,6 +23,7 @@
 #include "components/favicon/content/large_favicon_provider_getter.h"
 #include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/webapps/browser/android/features.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -57,7 +58,7 @@ InstallableParams ParamsToPerformManifestAndIconFetch() {
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.wait_for_worker = true;
+  params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
   return params;
 }
 
@@ -65,11 +66,11 @@ InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
   params.valid_manifest = true;
-  params.has_worker = true;
+  params.has_worker = !features::SkipInstallServiceWorkerCheck();
+  params.wait_for_worker = !features::SkipInstallServiceWorkerCheck();
   params.valid_primary_icon = true;
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.wait_for_worker = true;
   return params;
 }
 
@@ -274,7 +275,8 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
     return;
 
   bool webapk_compatible =
-      (data.NoBlockingErrors() && data.valid_manifest && data.has_worker &&
+      (data.NoBlockingErrors() && data.valid_manifest &&
+       data.worker_check_passed &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(data.manifest));
   if (!webapk_compatible && !data.errors.empty()) {
     installable_status_code_ = data.errors[0];

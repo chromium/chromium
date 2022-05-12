@@ -151,12 +151,18 @@ std::string AppBannerManagerAndroid::GetBannerType() {
                                     : "play";
 }
 
+bool AppBannerManagerAndroid::ShouldSkipInstallServiceWorkerCheck() const {
+  return features::SkipInstallServiceWorkerCheck();
+}
+
 InstallableParams
 AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.has_worker = !features::SkipBannerServiceWorkerCheck();
+  params.wait_for_worker = !features::SkipBannerServiceWorkerCheck();
   return params;
 }
 

@@ -15,6 +15,11 @@ namespace features {
 extern const base::Feature kAddToHomescreenMessaging;
 extern const base::Feature kInstallableAmbientBadgeInfoBar;
 extern const base::Feature kInstallableAmbientBadgeMessage;
+extern const base::Feature kSkipServiceWorkerCheckAll;
+extern const base::Feature kSkipServiceWorkerCheckInstallOnly;
+
+bool SkipBannerServiceWorkerCheck();
+bool SkipInstallServiceWorkerCheck();
 
 }  // namespace features
 }  // namespace webapps

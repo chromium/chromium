@@ -108,6 +108,7 @@ class AppBannerManagerAndroid : public AppBannerManager,
   std::string GetAppIdentifier() override;
   std::string GetBannerType() override;
   void PerformInstallableChecks() override;
+  bool ShouldSkipInstallServiceWorkerCheck() const override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
   void ResetCurrentPageData() override;

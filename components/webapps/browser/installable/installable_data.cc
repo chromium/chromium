@@ -5,6 +5,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 
 #include <utility>
+#include "installable_logging.h"
 
 namespace webapps {
 
@@ -19,7 +20,7 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
                                  bool has_maskable_splash_icon,
                                  const std::vector<SkBitmap>& screenshots,
                                  bool valid_manifest,
-                                 bool has_worker)
+                                 bool worker_check_passed)
     : errors(std::move(errors)),
       manifest_url(manifest_url),
       manifest(manifest),
@@ -31,13 +32,25 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
       has_maskable_splash_icon(has_maskable_splash_icon),
       screenshots(screenshots),
       valid_manifest(valid_manifest),
-      has_worker(has_worker) {}
+      worker_check_passed(worker_check_passed) {}
 
 InstallableData::~InstallableData() = default;
 
 bool InstallableData::NoBlockingErrors() const {
   return errors.empty() ||
          (errors.size() == 1 && errors[0] == WARN_NOT_OFFLINE_CAPABLE);
+}
+
+bool InstallableData::HasErrorOnlyServiceWorkerErrors() const {
+  if (errors.empty() || errors[0] == NO_ERROR_DETECTED)
+    return false;
+
+  for (auto error : errors) {
+    if (error != NO_MATCHING_SERVICE_WORKER && error != NOT_OFFLINE_CAPABLE) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace webapps

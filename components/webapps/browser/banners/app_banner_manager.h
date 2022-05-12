@@ -268,6 +268,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // manifest.
   virtual void OnDidGetManifest(const InstallableData& data);
 
+  virtual bool ShouldSkipInstallServiceWorkerCheck() const;
   // Returns an InstallableParams object that requests all checks
   // necessary for a web app banner.
   virtual InstallableParams ParamsToPerformInstallableWebAppCheck();

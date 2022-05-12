@@ -33,7 +33,7 @@ struct InstallableData {
                   bool has_maskable_splash_icon,
                   const std::vector<SkBitmap>& screenshots,
                   bool valid_manifest,
-                  bool has_worker);
+                  bool worker_check_passed);
 
   InstallableData(const InstallableData&) = delete;
   InstallableData& operator=(const InstallableData&) = delete;
@@ -47,6 +47,10 @@ struct InstallableData {
   // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
   // M93.
   bool NoBlockingErrors() const;
+
+  // Returns true if there is any |errors| and all errors are service worker
+  // errors, i.e.|NO_MATCHING_SERVICE_WORKER| or |NOT_OFFLINE_CAPABLE|.
+  bool HasErrorOnlyServiceWorkerErrors() const;
 
   // Contains all errors encountered during the InstallableManager::GetData
   // call. Empty if no errors were encountered.
@@ -90,12 +94,13 @@ struct InstallableData {
   const std::vector<SkBitmap>& screenshots;
 
   // true if the site has a valid, installable web app manifest. If
-  // |valid_manifest| or |has_worker| was true and the site isn't installable,
-  // the reason will be in |errors|.
+  // |valid_manifest| or |worker_check_passed| was true and the site isn't
+  // installable, the reason will be in |errors|.
   const bool valid_manifest = false;
 
-  // true if the site has a service worker with a fetch handler.
-  const bool has_worker = false;
+  // true if the site has a service worker with a fetch handler or
+  // the service worker check was not requested when fetching this data.
+  const bool worker_check_passed = false;
 };
 
 using InstallableCallback = base::OnceCallback<void(const InstallableData&)>;
