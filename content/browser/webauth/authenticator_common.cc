@@ -28,7 +28,7 @@
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/is_uvpaa.h"
-#include "content/browser/webauth/virtual_authenticator_request_delegate.h"
+#include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/browser_context.h"
@@ -386,13 +386,23 @@ std::unique_ptr<AuthenticatorRequestClientDelegate>
 AuthenticatorCommon::MaybeCreateRequestDelegate() {
   RenderFrameHostImpl* const render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(GetRenderFrameHost());
-  if (AuthenticatorEnvironmentImpl::GetInstance()
-          ->IsVirtualAuthenticatorEnabledFor(
-              render_frame_host_impl->frame_tree_node())) {
-    return std::make_unique<VirtualAuthenticatorRequestDelegate>();
+  std::unique_ptr<AuthenticatorRequestClientDelegate> delegate =
+      GetContentClient()->browser()->GetWebAuthenticationRequestDelegate(
+          render_frame_host_impl);
+  if (!delegate) {
+    return nullptr;
   }
-  return GetContentClient()->browser()->GetWebAuthenticationRequestDelegate(
-      render_frame_host_impl);
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironmentImpl::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(
+              render_frame_host_impl->frame_tree_node());
+  if (virtual_authenticator_manager) {
+    delegate->SetVirtualEnvironment(true);
+    if (!virtual_authenticator_manager->is_ui_enabled()) {
+      delegate->DisableUI();
+    }
+  }
+  return delegate;
 }
 
 void AuthenticatorCommon::StartMakeCredentialRequest(

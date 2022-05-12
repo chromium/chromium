@@ -54,6 +54,10 @@ class VirtualAuthenticatorManagerImpl
   VirtualAuthenticator* AddAuthenticatorAndReturnNonOwningPointer(
       const blink::test::mojom::VirtualAuthenticatorOptions& options);
 
+  // Sets whether the UI is enabled or not. Defaults to false.
+  void enable_ui(bool enable_ui) { enable_ui_ = enable_ui; }
+  bool is_ui_enabled() const { return enable_ui_; }
+
   // Returns the authenticator with the given |id|. Returns nullptr if no
   // authenticator matches the ID.
   VirtualAuthenticator* GetAuthenticator(const std::string& id);
@@ -82,6 +86,8 @@ class VirtualAuthenticatorManagerImpl
       std::unique_ptr<VirtualAuthenticator> authenticator);
 
   base::ObserverList<Observer> observers_;
+
+  bool enable_ui_ = false;
 
   // The key is the unique_id of the corresponding value (the authenticator).
   std::map<std::string, std::unique_ptr<VirtualAuthenticator>> authenticators_;

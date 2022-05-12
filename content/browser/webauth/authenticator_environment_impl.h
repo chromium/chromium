@@ -46,7 +46,7 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   // descendants.
   // Does not have any effect if the |node| already has the virtual environment
   // enabled.
-  void EnableVirtualAuthenticatorFor(FrameTreeNode* node);
+  void EnableVirtualAuthenticatorFor(FrameTreeNode* node, bool enable_ui);
 
   // Disables the scoped virtual authenticator environment for this |node|,
   // resetting the state. If the environment is set on one of the |node|'s

@@ -87,12 +87,14 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
   void WaitForAndExpectAvailableTransportsAre(
       base::flat_set<FidoTransportProtocol> expected_transports,
-      absl::optional<bool> has_platform_credential = absl::nullopt) {
+      FidoRequestHandlerBase::RecognizedCredential
+          has_platform_authenticator_credential =
+              FidoRequestHandlerBase::RecognizedCredential::kUnknown) {
     auto result = WaitForTransportAvailabilityInfo();
     EXPECT_THAT(result.available_transports,
                 ::testing::UnorderedElementsAreArray(expected_transports));
-    EXPECT_EQ(result.has_recognized_platform_authenticator_credential,
-              has_platform_credential);
+    EXPECT_EQ(result.has_platform_authenticator_credential,
+              has_platform_authenticator_credential);
   }
 
  protected:
@@ -203,7 +205,8 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
   }
   ~FakeFidoRequestHandler() override = default;
 
-  void set_has_platform_credential(bool has_platform_credential) {
+  void set_has_platform_credential(
+      RecognizedCredential has_platform_credential) {
     has_platform_credential_ = has_platform_credential;
   }
 
@@ -227,8 +230,7 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
                           FidoAuthenticator* authenticator) override {
     if (authenticator->AuthenticatorTransport() ==
         FidoTransportProtocol::kInternal) {
-      transport_availability_info()
-          .has_recognized_platform_authenticator_credential =
+      transport_availability_info().has_platform_authenticator_credential =
           has_platform_credential_;
     }
 
@@ -260,7 +262,8 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
   }
 
   CompletionCallback completion_callback_;
-  bool has_platform_credential_ = false;
+  RecognizedCredential has_platform_credential_ =
+      RecognizedCredential::kNoRecognizedCredential;
 
   base::WeakPtrFactory<FakeFidoRequestHandler> weak_factory_{this};
 };
@@ -583,13 +586,14 @@ TEST_F(FidoRequestHandlerTest, TestWithPlatformAuthenticator) {
       &fake_discovery_factory_,
       base::flat_set<FidoTransportProtocol>({FidoTransportProtocol::kInternal}),
       callback().callback());
-  request_handler->set_has_platform_credential(true);
+  request_handler->set_has_platform_credential(
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   request_handler->set_observer(&observer);
   fake_discovery->AddDevice(std::move(device));
 
   observer.WaitForAndExpectAvailableTransportsAre(
       {FidoTransportProtocol::kInternal},
-      /*has_platform_credential=*/true);
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
 
   callback().WaitForCallback();
   EXPECT_TRUE(callback().status());

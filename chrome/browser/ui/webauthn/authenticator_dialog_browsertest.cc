@@ -70,8 +70,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           /*paired_phones=*/{phone},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
     }
-    transport_availability.has_recognized_platform_authenticator_credential =
-        false;
+    transport_availability.has_platform_authenticator_credential = device::
+        FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     transport_availability.request_type =
         device::FidoRequestType::kGetAssertion;
     model->StartFlow(std::move(transport_availability),

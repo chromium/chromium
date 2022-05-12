@@ -48,6 +48,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   using AuthenticatorMap =
       std::map<std::string, FidoAuthenticator*, std::less<>>;
 
+  enum class RecognizedCredential {
+    kUnknown,
+    kHasRecognizedCredential,
+    kNoRecognizedCredential
+  };
+
   // Encapsulates data required to initiate WebAuthN UX dialog. Once all
   // components of TransportAvailabilityInfo is set,
   // AuthenticatorRequestClientDelegate should be notified.
@@ -69,15 +75,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     base::flat_set<FidoTransportProtocol> available_transports;
 
     // Whether the platform authenticator has a matching credential for the
-    // request. This is only set for a GetAssertion request and if a platform
-    // authenticator has been added to the request handler. (The Windows
-    // WebAuthn API does NOT count as a platform authenticator in this case.)
-    absl::optional<bool> has_recognized_platform_authenticator_credential;
+    // request. This is only set for a GetAssertion request.
+    RecognizedCredential has_platform_authenticator_credential =
+        RecognizedCredential::kUnknown;
 
     // The set of recognized platform credential user entities that can fulfill
     // a GetAssertion request. Not all platform authenticators report this, so
     // the set might be empty even if
-    // |has_recognized_platform_authenticator_credential| is true.
+    // |has_platform_authenticator_credential| is |kHasRecognizedCredential|.
     std::vector<DiscoverableCredentialMetadata>
         recognized_platform_authenticator_credentials;
 

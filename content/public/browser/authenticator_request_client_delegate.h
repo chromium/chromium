@@ -297,6 +297,13 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   virtual bool IsWebAuthnUIEnabled();
 
+  // Configures whether a virtual authenticator environment is enabled. The
+  // embedder might choose to e.g. automate account selection under a virtual
+  // environment.
+  void SetVirtualEnvironment(bool virtual_environment);
+
+  bool IsVirtualEnvironmentEnabled();
+
   // Set to true to enable a mode where a prominent UI is only show for
   // discoverable platform credentials.
   virtual void SetConditionalRequest(bool is_conditional);
@@ -327,6 +334,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
+
+ private:
+  bool virtual_environment_ = false;
 };
 
 }  // namespace content

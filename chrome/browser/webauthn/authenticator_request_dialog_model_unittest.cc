@@ -23,6 +23,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -258,9 +259,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     transports_info.request_type = test.request_type;
     transports_info.available_transports = test.transports;
 
-    transports_info.has_recognized_platform_authenticator_credential =
+    transports_info.has_platform_authenticator_credential =
         base::Contains(test.params,
-                       TransportAvailabilityParam::kHasPlatformCredential);
+                       TransportAvailabilityParam::kHasPlatformCredential)
+            ? device::FidoRequestHandlerBase::RecognizedCredential::
+                  kHasRecognizedCredential
+            : device::FidoRequestHandlerBase::RecognizedCredential::
+                  kNoRecognizedCredential;
 
     if (base::Contains(
             test.params,
@@ -718,7 +723,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
   TransportAvailabilityInfo transports_info;
   transports_info.available_transports = kAllTransports;
-  transports_info.has_recognized_platform_authenticator_credential = true;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   model.StartFlow(std::move(transports_info),
                   /*use_location_bar_bubble=*/true,
                   /*prefer_native_api=*/false);
@@ -744,7 +750,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
 
   TransportAvailabilityInfo transports_info;
   transports_info.available_transports = kAllTransports;
-  transports_info.has_recognized_platform_authenticator_credential = true;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   device::DiscoverableCredentialMetadata cred_1(
       {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
   device::DiscoverableCredentialMetadata cred_2(

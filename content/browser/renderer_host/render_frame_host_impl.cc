@@ -10338,7 +10338,8 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWebAuthDeprecatedMojoTestingApi)) {
     auto* environment_singleton = AuthenticatorEnvironmentImpl::GetInstance();
-    environment_singleton->EnableVirtualAuthenticatorFor(frame_tree_node_);
+    environment_singleton->EnableVirtualAuthenticatorFor(frame_tree_node_,
+                                                         /*enable_ui=*/false);
     environment_singleton->AddVirtualAuthenticatorReceiver(frame_tree_node_,
                                                            std::move(receiver));
   }

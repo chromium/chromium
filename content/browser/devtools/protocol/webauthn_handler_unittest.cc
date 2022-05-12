@@ -24,7 +24,7 @@ class WebAuthnHandlerTest : public testing::Test {
 };
 
 TEST_F(WebAuthnHandlerTest, EnableFailsGracefullyIfNoFrameHostSet) {
-  Response response = webauthn_handler()->Enable();
+  Response response = webauthn_handler()->Enable(/*enable_ui=*/false);
   EXPECT_EQ(crdtp::DispatchCode::SERVER_ERROR, response.Code());
   EXPECT_EQ("The DevTools session is not attached to a frame",
             response.Message());

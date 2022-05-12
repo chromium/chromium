@@ -155,12 +155,13 @@ void WebAuthnHandler::Wire(UberDispatcher* dispatcher) {
   WebAuthn::Dispatcher::wire(dispatcher, this);
 }
 
-Response WebAuthnHandler::Enable() {
+Response WebAuthnHandler::Enable(Maybe<bool> enable_ui) {
   if (!frame_host_)
     return Response::ServerError(kDevToolsNotAttached);
 
   AuthenticatorEnvironmentImpl::GetInstance()->EnableVirtualAuthenticatorFor(
-      frame_host_->frame_tree_node());
+      frame_host_->frame_tree_node(),
+      enable_ui.fromMaybe(/*default_value=*/false));
   return Response::Success();
 }
 

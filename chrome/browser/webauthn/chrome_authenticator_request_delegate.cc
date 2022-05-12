@@ -792,8 +792,13 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
         callback) {
   if (disable_ui_) {
     // Cryptotoken requests should never reach account selection.
-    NOTREACHED();
-    std::move(cancel_callback_).Run();
+    DCHECK(IsVirtualEnvironmentEnabled());
+
+    // The browser is being automated. Select the first credential to support
+    // automation of discoverable credentials.
+    // TODO(crbug.com/991666): Provide a way to determine which account gets
+    // picked.
+    std::move(callback).Run(std::move(responses.at(0)));
     return;
   }
 

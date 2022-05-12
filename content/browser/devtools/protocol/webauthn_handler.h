@@ -28,7 +28,7 @@ class WebAuthnHandler : public DevToolsDomainHandler, public WebAuthn::Backend {
   void Wire(UberDispatcher* dispatcher) override;
 
   // WebAuthn::Backend
-  CONTENT_EXPORT Response Enable() override;
+  CONTENT_EXPORT Response Enable(Maybe<bool> enable_ui) override;
   CONTENT_EXPORT Response Disable() override;
   Response AddVirtualAuthenticator(
       std::unique_ptr<WebAuthn::VirtualAuthenticatorOptions> options,

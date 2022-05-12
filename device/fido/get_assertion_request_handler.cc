@@ -419,13 +419,15 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-#if BUILDFLAG(IS_MAC)
-  // In tests the platform authenticator may be a virtual device.
-  if (platform_authenticator->GetType() != FidoAuthenticator::Type::kTouchID) {
-    FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
+  // The platform authenticator may be a virtual device.
+  if (platform_authenticator->GetType() == FidoAuthenticator::Type::kOther) {
+    // TODO(nsatragno): query the virtual authenticator for credential status.
+    OnHavePlatformCredentialStatus(/*user_entities=*/{},
+                                   /*have_credential=*/false);
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
   fido::mac::TouchIdAuthenticator* touch_id_authenticator =
       static_cast<fido::mac::TouchIdAuthenticator*>(platform_authenticator);
   bool has_credential =

@@ -38,15 +38,19 @@ AuthenticatorEnvironmentImpl::AuthenticatorEnvironmentImpl() = default;
 AuthenticatorEnvironmentImpl::~AuthenticatorEnvironmentImpl() = default;
 
 void AuthenticatorEnvironmentImpl::EnableVirtualAuthenticatorFor(
-    FrameTreeNode* node) {
+    FrameTreeNode* node,
+    bool enable_ui) {
   // Do not create a new virtual authenticator if there is one already defined
   // for the |node|.
   if (base::Contains(virtual_authenticator_managers_, node))
     return;
 
   node->AddObserver(this);
-  virtual_authenticator_managers_[node] =
+  auto virtual_authenticator_manager =
       std::make_unique<VirtualAuthenticatorManagerImpl>();
+  virtual_authenticator_manager->enable_ui(enable_ui);
+  virtual_authenticator_managers_[node] =
+      std::move(virtual_authenticator_manager);
 }
 
 void AuthenticatorEnvironmentImpl::DisableVirtualAuthenticatorFor(

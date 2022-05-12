@@ -312,10 +312,11 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
   // fail. Proceed to a special error screen instead.
   if (transport_availability_.request_type ==
       device::FidoRequestType::kGetAssertion) {
-    DCHECK(transport_availability_
-               .has_recognized_platform_authenticator_credential);
-    if (!*transport_availability_
-              .has_recognized_platform_authenticator_credential) {
+    DCHECK_NE(transport_availability_.has_platform_authenticator_credential,
+              device::FidoRequestHandlerBase::RecognizedCredential::kUnknown);
+    if (transport_availability_.has_platform_authenticator_credential ==
+        device::FidoRequestHandlerBase::RecognizedCredential::
+            kNoRecognizedCredential) {
       SetCurrentStep(Step::kErrorInternalUnrecognized);
       return;
     }
@@ -955,8 +956,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   if (base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal) &&
       is_get_assertion &&
-      *transport_availability_
-           .has_recognized_platform_authenticator_credential) {
+      transport_availability_.has_platform_authenticator_credential ==
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential) {
     priority_transport = AuthenticatorTransport::kInternal;
   }
 
