@@ -1,0 +1,188 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
+
+#include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
+#include "base/base_export.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
+#include "build/build_config.h"
+
+namespace partition_alloc::internal::base {
+namespace subtle {
+
+class BASE_EXPORT RefCountedThreadSafeBase {
+ public:
+  RefCountedThreadSafeBase(const RefCountedThreadSafeBase&) = delete;
+  RefCountedThreadSafeBase& operator=(const RefCountedThreadSafeBase&) = delete;
+
+  bool HasOneRef() const;
+  bool HasAtLeastOneRef() const;
+
+ protected:
+  explicit constexpr RefCountedThreadSafeBase(StartRefCountFromZeroTag) {}
+  explicit constexpr RefCountedThreadSafeBase(StartRefCountFromOneTag)
+      : ref_count_(1) {
+#if DCHECK_IS_ON()
+    needs_adopt_ref_ = true;
+#endif
+  }
+
+#if DCHECK_IS_ON()
+  ~RefCountedThreadSafeBase();
+#else
+  ~RefCountedThreadSafeBase() = default;
+#endif
+
+// Release and AddRef are suitable for inlining on X86 because they generate
+// very small code sequences. On other platforms (ARM), it causes a size
+// regression and is probably not worth it.
+#if defined(ARCH_CPU_X86_FAMILY)
+  // Returns true if the object should self-delete.
+  bool Release() const { return ReleaseImpl(); }
+  void AddRef() const { AddRefImpl(); }
+  void AddRefWithCheck() const { AddRefWithCheckImpl(); }
+#else
+  // Returns true if the object should self-delete.
+  bool Release() const;
+  void AddRef() const;
+  void AddRefWithCheck() const;
+#endif
+
+ private:
+  template <typename U>
+  friend scoped_refptr<U> AdoptRef(U*);
+
+  void Adopted() const {
+#if DCHECK_IS_ON()
+    DCHECK(needs_adopt_ref_);
+    needs_adopt_ref_ = false;
+#endif
+  }
+
+  ALWAYS_INLINE void AddRefImpl() const {
+#if DCHECK_IS_ON()
+    DCHECK(!in_dtor_);
+    // This RefCounted object is created with non-zero reference count.
+    // The first reference to such a object has to be made by AdoptRef or
+    // MakeRefCounted.
+    DCHECK(!needs_adopt_ref_);
+#endif
+    ref_count_.Increment();
+  }
+
+  ALWAYS_INLINE void AddRefWithCheckImpl() const {
+#if DCHECK_IS_ON()
+    DCHECK(!in_dtor_);
+    // This RefCounted object is created with non-zero reference count.
+    // The first reference to such a object has to be made by AdoptRef or
+    // MakeRefCounted.
+    DCHECK(!needs_adopt_ref_);
+#endif
+    CHECK_GT(ref_count_.Increment(), 0);
+  }
+
+  ALWAYS_INLINE bool ReleaseImpl() const {
+#if DCHECK_IS_ON()
+    DCHECK(!in_dtor_);
+    DCHECK(!ref_count_.IsZero());
+#endif
+    if (!ref_count_.Decrement()) {
+#if DCHECK_IS_ON()
+      in_dtor_ = true;
+#endif
+      return true;
+    }
+    return false;
+  }
+
+  mutable AtomicRefCount ref_count_{0};
+#if DCHECK_IS_ON()
+  mutable bool needs_adopt_ref_ = false;
+  mutable bool in_dtor_ = false;
+#endif
+};
+
+}  // namespace subtle
+
+// Forward declaration.
+template <class T, typename Traits>
+class RefCountedThreadSafe;
+
+// Default traits for RefCountedThreadSafe<T>.  Deletes the object when its ref
+// count reaches 0.  Overload to delete it on a different thread etc.
+template <typename T>
+struct DefaultRefCountedThreadSafeTraits {
+  static void Destruct(const T* x) {
+    // Delete through RefCountedThreadSafe to make child classes only need to be
+    // friend with RefCountedThreadSafe instead of this struct, which is an
+    // implementation detail.
+    RefCountedThreadSafe<T, DefaultRefCountedThreadSafeTraits>::DeleteInternal(
+        x);
+  }
+};
+
+//
+// A thread-safe variant of RefCounted<T>
+//
+//   class MyFoo : public base::RefCountedThreadSafe<MyFoo> {
+//    ...
+//   };
+//
+// If you're using the default trait, then you should add compile time
+// asserts that no one else is deleting your object.  i.e.
+//    private:
+//     friend class base::RefCountedThreadSafe<MyFoo>;
+//     ~MyFoo();
+//
+// We can use REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE() with RefCountedThreadSafe
+// too. See the comment above the RefCounted definition for details.
+template <class T, typename Traits = DefaultRefCountedThreadSafeTraits<T>>
+class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
+ public:
+  static constexpr subtle::StartRefCountFromZeroTag kRefCountPreference =
+      subtle::kStartRefCountFromZeroTag;
+
+  explicit RefCountedThreadSafe()
+      : subtle::RefCountedThreadSafeBase(T::kRefCountPreference) {}
+
+  RefCountedThreadSafe(const RefCountedThreadSafe&) = delete;
+  RefCountedThreadSafe& operator=(const RefCountedThreadSafe&) = delete;
+
+  void AddRef() const { AddRefImpl(T::kRefCountPreference); }
+
+  void Release() const {
+    if (subtle::RefCountedThreadSafeBase::Release()) {
+      ANALYZER_SKIP_THIS_PATH();
+      Traits::Destruct(static_cast<const T*>(this));
+    }
+  }
+
+ protected:
+  ~RefCountedThreadSafe() = default;
+
+ private:
+  friend struct DefaultRefCountedThreadSafeTraits<T>;
+  template <typename U>
+  static void DeleteInternal(const U* x) {
+    delete x;
+  }
+
+  void AddRefImpl(subtle::StartRefCountFromZeroTag) const {
+    subtle::RefCountedThreadSafeBase::AddRef();
+  }
+
+  void AddRefImpl(subtle::StartRefCountFromOneTag) const {
+    subtle::RefCountedThreadSafeBase::AddRefWithCheck();
+  }
+};
+
+}  // namespace partition_alloc::internal::base
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_

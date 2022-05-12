@@ -27,6 +27,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/memory/ref_counted.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -45,8 +47,6 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/immediate_crash.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -62,11 +62,6 @@
 #endif
 
 namespace partition_alloc::internal {
-
-namespace base {
-using ::base::MakeRefCounted;
-using ::base::RefCountedThreadSafe;
-}  // namespace base
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
   PA_NO_CODE_FOLDING();
