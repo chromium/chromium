@@ -24,3 +24,8 @@ bool PasswordManagerSettingsServiceImpl::IsSettingEnabled(
           password_manager::prefs::kCredentialsEnableAutosignin);
   }
 }
+
+void PasswordManagerSettingsServiceImpl::RequestSettingsFromBackend() {
+  // This method is invoked only on android when UPM is enabled.
+  NOTREACHED();
+}

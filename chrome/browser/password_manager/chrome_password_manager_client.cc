@@ -1031,6 +1031,18 @@ version_info::Channel ChromePasswordManagerClient::GetChannel() const {
   return chrome::GetChannel();
 }
 
+void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
+    const {
+#if BUILDFLAG(IS_ANDROID)
+  // Settings need to be requested for android clients enrolled into the unified
+  // password manager experiment.
+  if (!password_manager::features::UsesUnifiedPasswordManagerUi())
+    return;
+  PasswordManagerSettingsServiceFactory::GetForProfile(profile_)
+      ->RequestSettingsFromBackend();
+#endif
+}
+
 void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
   content::RenderFrameHost* rfh =

@@ -65,6 +65,7 @@ class PasswordManagerSettingsServiceAndroidImplTest : public testing::Test {
   void SetSettingsSync(bool enabled);
 
   void AssertInitialMigrationDidntChangePrefs();
+  void ExpectSettingsRetrievalFromBackend(size_t times);
 
   void ExpectSettingsRetrievalFromBackend();
 
@@ -187,17 +188,19 @@ void PasswordManagerSettingsServiceAndroidImplTest::
 }
 
 void PasswordManagerSettingsServiceAndroidImplTest::
-    ExpectSettingsRetrievalFromBackend() {
+    ExpectSettingsRetrievalFromBackend(size_t times) {
   EXPECT_CALL(*bridge(),
               GetPasswordSettingValue(
                   Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
                       kTestAccount)),
-                  Eq(PasswordManagerSetting::kOfferToSavePasswords)));
+                  Eq(PasswordManagerSetting::kOfferToSavePasswords)))
+      .Times(times);
   EXPECT_CALL(*bridge(),
               GetPasswordSettingValue(
                   Eq(PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
                       kTestAccount)),
-                  Eq(PasswordManagerSetting::kAutoSignIn)));
+                  Eq(PasswordManagerSetting::kAutoSignIn)))
+      .Times(times);
 }
 
 void PasswordManagerSettingsServiceAndroidImplTest::RegisterPrefs() {
@@ -561,7 +564,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend();
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
   SetPasswordsSync(/*enabled=*/true);
   sync_service()->FireStateChanged();
 
@@ -587,7 +590,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend();
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
   SetPasswordsSync(/*enabled=*/true);
   sync_service()->FireStateChanged();
 
@@ -617,7 +620,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend();
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
   SetPasswordsSync(/*enabled=*/true);
   sync_service()->FireStateChanged();
 
@@ -646,7 +649,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kAutoSignInEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend();
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
   SetPasswordsSync(/*enabled=*/false);
   sync_service()->FireStateChanged();
 
@@ -673,7 +676,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend();
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
   SetPasswordsSync(/*enabled=*/false);
   sync_service()->FireStateChanged();
 
@@ -797,4 +800,20 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
                               base::Value(false));
   EXPECT_FALSE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       SettingsAreRequestedFromBackendWhenPasswordSyncEnabled) {
+  InitializeSettingsService(/*password_sync_enabled=*/true,
+                            /*setting_sync_enabled=*/true);
+  ExpectSettingsRetrievalFromBackend(/*times=*/1);
+  settings_service()->RequestSettingsFromBackend();
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
+       SettingsAreNotRequestedFromBackendWhenPasswordSyncDisabled) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/true);
+  ExpectSettingsRetrievalFromBackend(/*times=*/0);
+  settings_service()->RequestSettingsFromBackend();
 }

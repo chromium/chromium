@@ -477,6 +477,9 @@ class PasswordManagerClient {
 
   // Returns the Chrome channel for the installation.
   virtual version_info::Channel GetChannel() const;
+
+  // Refreshes password manager settings stored in prefs.
+  virtual void RefreshPasswordManagerSettingsIfNeeded() const;
 };
 
 }  // namespace password_manager

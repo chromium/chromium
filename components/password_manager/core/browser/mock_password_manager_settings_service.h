@@ -19,6 +19,7 @@ class MockPasswordManagerSettingsService
               IsSettingEnabled,
               (password_manager::PasswordManagerSetting),
               (override));
+  MOCK_METHOD(void, RequestSettingsFromBackend, (), (override));
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_MANAGER_SETTINGS_SERVICE_H_

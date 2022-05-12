@@ -328,6 +328,11 @@ class PasswordManager : public PasswordManagerInterface {
   void ShowManualFallbackForSaving(PasswordFormManager* form_manager,
                                    const autofill::FormData& form_data);
 
+  // Returns true if |form_data| contains forms that are parsed for the first
+  // time and have no dedicated PasswordFormsManagers yet.
+  bool NewFormsParsed(PasswordManagerDriver* driver,
+                      const std::vector<autofill::FormData>& form_data);
+
   // Returns the timeout for the disabling Password Manager's prompts.
   base::TimeDelta GetTimeoutForDisablingPrompts();
 

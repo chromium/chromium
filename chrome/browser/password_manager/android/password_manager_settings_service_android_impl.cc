@@ -145,10 +145,13 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
   return android_pref->GetValue()->GetBool();
 }
 
-void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
-  if (!IsPasswordSyncEnabled(sync_service_))
-    return;
+void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
+  // Backend has settings data only if passwords are synced.
+  if (bridge_ && IsPasswordSyncEnabled(sync_service_))
+    FetchSettings();
+}
 
+void PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded() {
   RequestSettingsFromBackend();
 }
 
@@ -233,16 +236,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   fetch_after_sync_status_change_in_progress_ = true;
   for (PasswordManagerSetting setting : kAllPasswordSettings)
     awaited_settings_.insert(setting);
-  RequestSettingsFromBackend();
-}
-
-void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
-  for (PasswordManagerSetting setting : kAllPasswordSettings) {
-    bridge_->GetPasswordSettingValue(
-        PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
-            pref_service_->GetString(::prefs::kGoogleServicesLastUsername)),
-        setting);
-  }
+  FetchSettings();
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
@@ -253,6 +247,16 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
   awaited_settings_.erase(received_setting);
   if (awaited_settings_.empty())
     fetch_after_sync_status_change_in_progress_ = false;
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
+  DCHECK(bridge_);
+  for (PasswordManagerSetting setting : kAllPasswordSettings) {
+    bridge_->GetPasswordSettingValue(
+        PasswordSettingsUpdaterAndroidBridge::SyncingAccount(
+            pref_service_->GetString(::prefs::kGoogleServicesLastUsername)),
+        setting);
+  }
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::DumpChromePrefsIntoGMSPrefs() {

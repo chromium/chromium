@@ -564,6 +564,8 @@ void PasswordManager::HideManualFallbackForSaving() {
 void PasswordManager::OnPasswordFormsParsed(
     PasswordManagerDriver* driver,
     const std::vector<FormData>& form_data) {
+  if (NewFormsParsed(driver, form_data))
+    client_->RefreshPasswordManagerSettingsIfNeeded();
   CreatePendingLoginManagers(driver, form_data);
 
   PasswordGenerationFrameHelper* password_generation_manager =
@@ -1357,6 +1359,13 @@ void PasswordManager::ShowManualFallbackForSaving(
   } else {
     HideManualFallbackForSaving();
   }
+}
+
+bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
+                                     const std::vector<FormData>& form_data) {
+  return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
+    return !GetMatchedManager(driver, form.unique_renderer_id);
+  });
 }
 
 void PasswordManager::ResetPendingCredentials() {

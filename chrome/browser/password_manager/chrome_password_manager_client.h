@@ -264,6 +264,7 @@ class ChromePasswordManagerClient
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegate() override;
   version_info::Channel GetChannel() const override;
+  void RefreshPasswordManagerSettingsIfNeeded() const override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(

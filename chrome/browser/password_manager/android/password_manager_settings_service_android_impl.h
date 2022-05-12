@@ -47,8 +47,10 @@ class PasswordManagerSettingsServiceAndroidImpl
 
   ~PasswordManagerSettingsServiceAndroidImpl() override;
 
+  // PasswordManagerSettingsService implementation
   bool IsSettingEnabled(
       password_manager::PasswordManagerSetting setting) override;
+  void RequestSettingsFromBackend() override;
 
  private:
   void OnChromeForegrounded();
@@ -71,13 +73,13 @@ class PasswordManagerSettingsServiceAndroidImpl
   // syncer::SyncServiceObserver implementation
   void OnStateChanged(syncer::SyncService* sync) override;
 
-  // Asynchronously fetch password settings.
-  void RequestSettingsFromBackend();
-
   // Updates information about the current setting fetch after receiving
   // a reply from the backend.
   void UpdateSettingFetchState(
       password_manager::PasswordManagerSetting received_setting);
+
+  // Asynchronously fetches settings from backend regardless of sync status.
+  void FetchSettings();
 
   // Copies the values of chrome prefs that have user-set values into the
   // GMS prefs.

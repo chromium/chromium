@@ -221,6 +221,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+  MOCK_METHOD(void,
+              RefreshPasswordManagerSettingsIfNeeded,
+              (),
+              (const, override));
   MOCK_METHOD(WebAuthnCredentialsDelegate*,
               GetWebAuthnCredentialsDelegate,
               (),
@@ -4454,6 +4458,21 @@ TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
   observed.clear();
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
+}
+
+TEST_P(PasswordManagerTest, ParsingNewFormsTriggersSettingFetch) {
+  // Check that seeing the form for the first time triggers fetching settings.
+  std::vector<FormData> observed;
+  observed.emplace_back(MakeSignUpFormData());
+  EXPECT_CALL(client_, RefreshPasswordManagerSettingsIfNeeded);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+
+  // Check that settings are not refetched if the already seen form dynamically
+  // changes and is parsed again.
+  FormFieldData new_field;
+  observed[0].fields.push_back(new_field);
+  EXPECT_CALL(client_, RefreshPasswordManagerSettingsIfNeeded).Times(0);
+  manager()->OnPasswordFormsParsed(&driver_, observed);
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());

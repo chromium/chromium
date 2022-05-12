@@ -29,6 +29,8 @@ class PasswordManagerSettingsServiceImpl
   bool IsSettingEnabled(
       password_manager::PasswordManagerSetting setting) override;
 
+  void RequestSettingsFromBackend() override;
+
  private:
   raw_ptr<PrefService> pref_service_ = nullptr;
 };

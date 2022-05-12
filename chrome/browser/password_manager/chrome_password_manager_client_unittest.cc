@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/common/password_manager_feature_variations_android.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/safe_browsing/buildflags.h"
@@ -890,6 +891,21 @@ TEST_F(ChromePasswordManagerClientTest, MissingUIDelegate) {
   client->HideManualFallbackForSaving();
 }
 
+TEST_F(ChromePasswordManagerClientTest,
+       RefreshPasswordManagerSettingsIfNeededUPMDisabled) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kUnifiedPasswordManagerAndroid);
+#endif
+
+  MockPasswordManagerSettingsService* settings_service =
+      static_cast<MockPasswordManagerSettingsService*>(
+          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*settings_service, RequestSettingsFromBackend).Times(0);
+  GetClient()->RefreshPasswordManagerSettingsIfNeeded();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest
     : public ChromePasswordManagerClientTest {
@@ -1117,5 +1133,22 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       RefreshPasswordManagerSettingsIfNeededUPMFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  const std::map<std::string, std::string> params = {
+      {"stage", base::NumberToString(static_cast<int>(
+                    password_manager::features::UpmExperimentVariation::
+                        kEnableForSyncingUsers))}};
+  feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kUnifiedPasswordManagerAndroid, params);
+
+  MockPasswordManagerSettingsService* settings_service =
+      static_cast<MockPasswordManagerSettingsService*>(
+          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*settings_service, RequestSettingsFromBackend);
+  GetClient()->RefreshPasswordManagerSettingsIfNeeded();
 }
 #endif  //  BUILDFLAG(IS_ANDROID)

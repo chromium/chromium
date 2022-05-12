@@ -15,6 +15,9 @@ class PasswordManagerSettingsService : public KeyedService {
   virtual bool IsSettingEnabled(
       password_manager::PasswordManagerSetting setting) = 0;
 
+  // Asynchronously fetch password settings from backend.
+  virtual void RequestSettingsFromBackend() = 0;
+
  protected:
   ~PasswordManagerSettingsService() override = default;
 };

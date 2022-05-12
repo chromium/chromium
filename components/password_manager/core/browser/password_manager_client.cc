@@ -167,4 +167,8 @@ version_info::Channel PasswordManagerClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
+void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
+  // For most implementations settings do not need to be refreshed.
+}
+
 }  // namespace password_manager
