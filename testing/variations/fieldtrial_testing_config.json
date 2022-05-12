@@ -6343,7 +6343,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "build_version": "9999"
+                        "build_version": "0"
                     },
                     "enable_features": [
                         "ReduceUserAgentMinorVersion"
