@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,10 +24,12 @@ import org.chromium.url.GURL;
  * Controls when the the Share Experiment IPH is shown.
  */
 public class CrowIphController {
-    // TODO(crbug/1314455): Adjust these numbers.
-    private static final int MIN_DAYS = 1;
-    private static final int MIN_VISITS = 1;
-    private static final int NUM_HISTORY_DAYS = 7;
+    private static final int DEFAULT_MIN_DAYS_VISITED = 3;
+    private static final int DEFAULT_MIN_TOTAL_VISITS = 3;
+    private static final int DEFAULT_NUM_HISTORY_LOOKBACK_DAYS = 5;
+    private static final String MIN_DAYS_VISITED_PARAM = "min-days-visited";
+    private static final String MIN_TOTAL_VISITS_PARAM = "min-total-visits";
+    private static final String NUM_HISTORY_LOOKBACK_DAYS_PARAM = "num-history-lookback-days";
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
@@ -34,6 +37,10 @@ public class CrowIphController {
     private final CurrentTabObserver mPageLoadObserver;
     private final UserEducationHelper mUserEducationHelper;
     private final View mMenuButtonAnchorView;
+
+    private final int mMinDaysVisited;
+    private final int mMinTotalVisits;
+    private final int mNumHistoryLookbackDays;
 
     /**
      * Constructs a {@link CrowIphController}.
@@ -53,6 +60,16 @@ public class CrowIphController {
         mMenuButtonAnchorView = menuButtonAnchorView;
         mUserEducationHelper = new UserEducationHelper(activity, new Handler());
 
+        mMinDaysVisited = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.SHARE_CROW_BUTTON, MIN_DAYS_VISITED_PARAM,
+                DEFAULT_MIN_DAYS_VISITED);
+        mMinTotalVisits = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.SHARE_CROW_BUTTON, MIN_TOTAL_VISITS_PARAM,
+                DEFAULT_MIN_TOTAL_VISITS);
+        mNumHistoryLookbackDays = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.SHARE_CROW_BUTTON, NUM_HISTORY_LOOKBACK_DAYS_PARAM,
+                DEFAULT_NUM_HISTORY_LOOKBACK_DAYS);
+
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
@@ -69,8 +86,8 @@ public class CrowIphController {
     }
 
     private void maybeShowCrowIph(GURL url) {
-        CrowBridge.getVisitCountsToHost(url, NUM_HISTORY_DAYS, result -> {
-            if (result.dailyVisits >= MIN_DAYS && result.visits >= MIN_VISITS) {
+        CrowBridge.getVisitCountsToHost(url, mNumHistoryLookbackDays, result -> {
+            if (result.dailyVisits >= mMinDaysVisited && result.visits >= mMinTotalVisits) {
                 requestShowCrowIph();
             }
         });
