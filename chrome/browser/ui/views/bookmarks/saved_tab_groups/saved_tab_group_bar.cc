@@ -102,10 +102,10 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   // for the button.
   AddChildViewAt(
       std::make_unique<SavedTabGroupButton>(
+          group, page_navigator(),
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.group_id),
-          group.title, /*is_group_in_tabstrip*/ false, group.color,
-          animations_enabled_),
+          /*is_group_in_tabstrip*/ false, animations_enabled_),
       index);
 }
 
