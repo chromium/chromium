@@ -159,7 +159,7 @@ android_library("hooks_public_impl_java") {
 
 android_resources("feed_java_resources") {
   sources = [
-    "java/res/color/chip_hairline_color.xml",
+    "java/res/color/chip_hairline_color_list.xml",
     "java/res/color/header_title_text_color_list.xml",
     "java/res/color/menu_footer_chip_background_baseline.xml",
     "java/res/color/menu_footer_chip_background_list.xml",

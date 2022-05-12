@@ -21,7 +21,7 @@
 
     <style name="MenuFooterChipInverse" parent="MenuFooterChip">
         <item name="chipColor">@android:color/transparent</item>
-        <item name="chipStrokeColor">@color/chip_hairline_color</item>
+        <item name="chipStrokeColor">@color/chip_hairline_color_list</item>
         <item name="solidColorChip">false</item>
     </style>
 
