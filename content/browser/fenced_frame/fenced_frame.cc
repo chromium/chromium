@@ -135,7 +135,7 @@ void FencedFrame::Navigate(const GURL& url,
 
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), url, /*initiator_frame_token=*/nullptr,
-      owner_render_frame_host_->GetProcess()->GetID(), initiator_origin,
+      content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",
