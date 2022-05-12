@@ -79,6 +79,12 @@ base::flat_set<ParsingResult> ParseDomainSpecificParamaters(
       warnings.insert(ParsingResult::kInvalidUrl);
       continue;
     }
+
+    if (url.SchemeIs(url::kHttpScheme)) {
+      // Http schemes are not supported.
+      continue;
+    }
+
     supported_domains.insert(std::make_pair(url::Origin::Create(url), version));
   }
 

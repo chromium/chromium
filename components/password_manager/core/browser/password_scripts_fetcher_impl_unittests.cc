@@ -113,6 +113,10 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
     RequestSingleScriptAvailability(GetOriginWithoutScript());
   }
 
+  void RequestSingleScriptAvailability(const url::Origin& origin) {
+    fetcher_->FetchScriptAvailability(origin, GenerateResponseCallback(origin));
+  }
+
   int GetNumberOfPendingRequests() {
     return test_url_loader_factory_->NumPending();
   }
@@ -124,10 +128,6 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
   PasswordScriptsFetcherImpl* fetcher() { return fetcher_.get(); }
 
  private:
-  void RequestSingleScriptAvailability(const url::Origin& origin) {
-    fetcher_->FetchScriptAvailability(origin, GenerateResponseCallback(origin));
-  }
-
   void RecordResponse(url::Origin origin, bool has_script) {
     const auto& it = recorded_responses_.find(origin);
     if (it != recorded_responses_.end()) {
@@ -217,6 +217,32 @@ TEST_F(PasswordScriptsFetcherImplTest, SlowResponse) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordScriptsFetcher.CacheState",
       PasswordScriptsFetcher::CacheState::kWaiting, 1u);
+}
+
+TEST_F(PasswordScriptsFetcherImplTest, NoHttpSupport) {
+  fetcher()->PrewarmCache();
+  EXPECT_EQ(1, GetNumberOfPendingRequests());
+  SimulateResponseWithContent(
+      R"({
+        "test.com":
+          {
+            "domains": ["https://test.com", "http://wrong.scheme.test.com"],
+            "min_version": "86"
+          }
+        })");
+  base::RunLoop().RunUntilIdle();
+
+  const url::Origin kOriginWithHttpScheme =
+      url::Origin::Create(GURL("http://wrong.scheme.test.com"));
+  const url::Origin kOriginWithHttpsScheme =
+      url::Origin::Create(GURL("https://test.com"));
+
+  RequestSingleScriptAvailability(kOriginWithHttpsScheme);
+  RequestSingleScriptAvailability(kOriginWithHttpScheme);
+  EXPECT_THAT(recorded_responses(),
+              UnorderedElementsAre(Pair(kOriginWithHttpsScheme, true),
+                                   Pair(kOriginWithHttpScheme, false)));
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
 }
 
 TEST_F(PasswordScriptsFetcherImplTest, NoPrewarmCache) {

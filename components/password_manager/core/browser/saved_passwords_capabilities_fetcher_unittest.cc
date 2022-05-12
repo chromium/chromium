@@ -36,6 +36,7 @@ constexpr char kOriginWithScript2[] = "https://mobile.example.com";
 constexpr char kOriginWithScript3[] = "https://test.com";
 constexpr char kOriginWithoutScript[] = "https://no-script.com";
 constexpr char kExampleApp[] = "android://hash@com.example.app";
+constexpr char kHttpOriginWithScript[] = "http://scheme-example.com";
 
 constexpr char16_t kUsername1[] = u"alice";
 constexpr char16_t kUsername2[] = u"bob";
@@ -132,6 +133,10 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
     store_->AddLogin(MakeSavedAndroidPassword(kExampleApp, kUsername2,
                                               "Example App", kOriginWithScript1,
                                               kPassword1));
+    // Set http url. Should not be made part of the cache.
+    store_->AddLogin(
+        MakeSavedPassword(kHttpOriginWithScript, kUsername2, kPassword3));
+
     RunUntilIdle();
   }
 
@@ -162,6 +167,7 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
   }
 
   void ExpectCacheRefresh() {
+    // Also checks the http credential is not part of the cache.
     EXPECT_CALL(*mock_capabilities_service_,
                 QueryPasswordChangeScriptAvailability(
                     UnorderedElementsAre(

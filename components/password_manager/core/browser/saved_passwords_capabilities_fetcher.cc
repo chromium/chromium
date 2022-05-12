@@ -243,6 +243,11 @@ std::vector<url::Origin>
 SavedPasswordsCapabilitiesFetcher::GetOriginsOfStoredPasswords() const {
   std::vector<url::Origin> origins;
   for (const auto& form : saved_passwords_presenter_.GetSavedPasswords()) {
+    if (form.url.SchemeIs(url::kHttpScheme)) {
+      // Http schemes are not supported.
+      continue;
+    }
+
     url::Origin origin = url::Origin::Create(form.url);
     if (!origin.opaque()) {
       origins.push_back(origin);
