@@ -178,7 +178,6 @@ PrivacySandboxNoticeBubbleView::PrivacySandboxNoticeBubbleView(
   auto* description_label =
       container->AddChildView(std::make_unique<views::StyledLabel>());
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_label->SetID(kNoticeLearnMoreLinkId);
   // The description contains a link that opens settings page. Find the position
   // of the link by inserting text into the placeholder.
   auto intesets_settings_link = l10n_util::GetStringUTF16(
