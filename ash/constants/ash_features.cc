@@ -292,7 +292,7 @@ const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
 // If enabled, Multiple scraped passwords should be checked against password in
 // cryptohome.
 const base::Feature kCheckPasswordsAgainstCryptohomeHelper{
-    "CheckPasswordsAgainstCryptohomeHelper", base::FEATURE_ENABLED_BY_DEFAULT};
+    "CheckPasswordsAgainstCryptohomeHelper", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables pasting a few recently copied items in a menu when pressing search +
 // v.
