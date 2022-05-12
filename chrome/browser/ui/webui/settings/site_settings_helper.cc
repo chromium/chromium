@@ -462,9 +462,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
     if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps))
       base_types->push_back(ContentSettingsType::PAYMENT_HANDLER);
 
-    if (GetFieldTrialParamByFeatureAsBool(
-            features::kFedCm,
-            features::kFedCmDesktopSettingsFieldTrialParamName, false)) {
+    if (base::FeatureList::IsEnabled(features::kFedCm)) {
       base_types->push_back(ContentSettingsType::FEDERATED_IDENTITY_API);
     }
 

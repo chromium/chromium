@@ -2845,11 +2845,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "enablePaymentHandlerContentSetting",
       base::FeatureList::IsEnabled(features::kServiceWorkerPaymentApps));
 
-  html_source->AddBoolean(
-      "enableFederatedIdentityApiContentSetting",
-      GetFieldTrialParamByFeatureAsBool(
-          features::kFedCm, features::kFedCmDesktopSettingsFieldTrialParamName,
-          false));
+  html_source->AddBoolean("enableFederatedIdentityApiContentSetting",
+                          base::FeatureList::IsEnabled(features::kFedCm));
 
   base::CommandLine& cmd = *base::CommandLine::ForCurrentProcess();
   html_source->AddBoolean(

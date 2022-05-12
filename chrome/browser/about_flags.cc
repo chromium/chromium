@@ -2459,19 +2459,11 @@ const FeatureEntry::FeatureParam kFedCmVariationAutoSignin[] = {
     {features::kFedCmAutoSigninFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureParam kFedCmVariationIdpSignout[] = {
     {features::kFedCmIdpSignoutFieldTrialParamName, "true"}};
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kFedCmVariationDesktopSettings[] = {
-    {features::kFedCmDesktopSettingsFieldTrialParamName, "true"}};
-#endif  // BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
     {"- with FedCM auto sign-in", kFedCmVariationAutoSignin,
      std::size(kFedCmVariationAutoSignin), nullptr},
     {"- with FedCM IDP sign-out", kFedCmVariationIdpSignout,
      std::size(kFedCmVariationIdpSignout), nullptr},
-#if !BUILDFLAG(IS_ANDROID)
-    {"- with desktop settings", kFedCmVariationDesktopSettings,
-     std::size(kFedCmVariationDesktopSettings), nullptr}
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
