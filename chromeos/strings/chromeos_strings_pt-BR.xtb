@@ -195,6 +195,7 @@
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="291142119251986300">Componentes não qualificados</translation>
 <translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
+<translation id="2928420929544864228">Instalação concluída.</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="3017079585324758401">Plano de fundo</translation>
@@ -747,6 +748,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8352772353338965963">Adicione uma conta de login múltiplo. Todas as contas conectadas podem ser acessadas sem uma senha; portanto esse recurso só deve ser usado com contas confiáveis.</translation>
 <translation id="8364946094152050673">Servidores de nomes vazios</translation>
 <translation id="8372477600026034341">Hosts extras</translation>
+<translation id="8378855320830505539">Região</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerenciado por uma empresa</translation>
 <translation id="8398927464629426868">A velocidade em que o dispositivo carrega ou descarrega atualmente</translation>
 <translation id="8422748173858722634">IMEI</translation>

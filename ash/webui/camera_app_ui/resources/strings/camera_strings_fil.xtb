@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Mga setting ng video</translation>
 <translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="2175927920773552910">QR Code</translation>
+<translation id="2244252133441425811">I-enable ang tagapili ng FPS ng video</translation>
 <translation id="2271433936731426666">I-enable ang full-sized na snapshot ng video</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">Naka-off ang timer</translation>
 <translation id="3448774564454087943">Hindi na-save ang video dahil masyado itong maikli</translation>
 <translation id="346539236881580388">Kunan ulit</translation>
-<translation id="3511295087439225876">Naka-on ang mute button</translation>
 <translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
 <translation id="3566302376254083266">Gumagalaw pakaliwa at pataas</translation>
 <translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
@@ -153,7 +153,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8167081290930651932">I-save bilang Larawan</translation>
-<translation id="8236532224592646488">Naka-off ang mute button</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>

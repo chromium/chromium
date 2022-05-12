@@ -83,6 +83,7 @@
 <translation id="632825460376924298">Chromium へのログインを許可する</translation>
 <translation id="6337530241089703714">このデバイスから Chromium データを削除するかどうかを選択してください</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
+<translation id="6625409903340039086">Chromium で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>
 <translation id="6752854822223394465">組織で Chromium を設定しています...</translation>
 <translation id="6820823224820483452">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="7006920032187763988">他のアプリや iPad でパスワード マネージャに保存したパスワードを使用できます。</translation>
@@ -104,6 +105,7 @@
 <translation id="7674213385180944843">[設定] &gt; [プライバシー] &gt; [カメラ] &gt; [Chromium] の順に選択し、カメラをオンにします。</translation>
 <translation id="7746854981345936341">Chromium の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="7763454117143368771">Chromium を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
+<translation id="7812317783196516890">ログインしてデータを同期している、<ph name="DOMAIN" /> 管理のアカウントに対して、管理者が専用のユーザー ポリシーを設定して Chromimum の動作を変更できるようになりました。</translation>
 <translation id="786327964234957808">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> に切り替えようとしています。既存の Chromium データは <ph name="DOMAIN" /> で管理されています。この操作を行うと、データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> には残ります。</translation>
 <translation id="7890287942691234100">Chromium のスキャナの使用開始</translation>
 <translation id="7928628054454574139">他のアプリでタップしたリンクを Chromium で開くことができます</translation>

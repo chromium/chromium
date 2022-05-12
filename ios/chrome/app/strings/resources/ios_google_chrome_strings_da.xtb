@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome kan tjekke dine adgangskoder, når du er logget ind med din Google-konto.</translation>
 <translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="1504372625950710826">Chrome kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
+<translation id="1511320244449497906">Du er logget ind og synkroniserer dine data med en konto, der administreres af <ph name="DOMAIN" />, hvor kontoens administrator nu kan konfigurere brugerpolitikker, der er specifikke for den pågældende konto, og som kan ændre Chromes adfærd.</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Hjælp med at forbedre Chrome ved at sende brugsstatistik og nedbrudsrapporter til Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
+<translation id="81358522153858150">Chrome understøtter nu brugerpolitikker for din administrerede konto</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
 <translation id="8263079278049777200">Log ind på dette website, din Google-konto og i Chrome. Du kan aktivere synkronisering senere.</translation>
 <translation id="8357607116237445042">Vælg, om du vil rydde dine Chrome-data fra denne enhed eller beholde dem</translation>

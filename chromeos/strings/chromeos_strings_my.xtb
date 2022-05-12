@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">စကင်လုပ်မည့်နေရာနှင့် ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
+<translation id="1380220803921738821">အမှားများကြုံတွေ့နေရသည်။ USB စတစ်ကိုသုံး၍ ဖာမ်းဝဲကို ပြန်လည်စတင်ရန် (သို့) ပြန်လည်ရယူရန် လုပ်ဆောင်ကြည့်ပါ။</translation>
 <translation id="1387854245479784695">၎င်းသည် core အားလုံး၏ ပေါင်းစည်းဆောင်ရွက်မှု ဖြစ်သည်</translation>
 <translation id="1394661041439318933">ဘူးတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="28232023175184696">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ရန် နှိပ်ပါ။</translation>
+<translation id="2827359915699915567">RSU ကုဒ် ရရှိရန် ဤ URL ကို ကိုယ်တိုင်ရိုက်ထည့်ပါ</translation>
 <translation id="2859243502336719778">အရေးကြီးသည့် အပ်ဒိတ်</translation>
 <translation id="2860473693272905224">စကင်နာပေါ် နောက်စာမျက်နှာတစ်ရွက်တင်ပါ</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
@@ -193,6 +195,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="291142119251986300">သတ်မှတ်ချက်မပြည့်မီသော ပစ္စည်းများ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
+<translation id="2928420929544864228">ထည့်သွင်းပြီးပါပြီ။</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
@@ -224,6 +227,7 @@
 <translation id="3291996639387199448">ကီးလမ်းညွှန်ချက်</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
+<translation id="3333527094307156612">ဤ QR ကုဒ်ကို သုံး၍ အက္ခရာ ၈ လုံးပါ လော့ခ်ဖွင့်သည့်ကုဒ်ကို သုံးပါ။ <ph name="LINK_BEGIN" />ဤ URL<ph name="LINK_END" /> ကို သင်ကိုယ်တိုင်လည်း ထည့်သွင်းနိုင်သည်။</translation>
 <translation id="3336855445806447827">မသေချာပါ</translation>
 <translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
@@ -257,6 +261,7 @@
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
+<translation id="3643810137582748570">ချိန်ညှိမှုကို ကျော်ရန်</translation>
 <translation id="3678765385266369662">Write Protect ကို ပိတ်လိုသည့်ပုံစံကို ရွေးချယ်ပါ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
@@ -407,6 +412,7 @@
 <translation id="5049856988445523908">ဆင်းမ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">အုပ်စု အမည်</translation>
 <translation id="5051044138948155788">ဤသည်မှာ တစ်ခုတည်းသော စာမျက်နှာဖြစ်ပါသည်။ ဤသည်အားဖြင့် စကင်စဖတ်မည့် ဖန်သားပြင်သို့ ရောက်ပါမည်။</translation>
+<translation id="506768878203270635">အက္ခရာ ၈ လုံး ထည့်ပါ</translation>
 <translation id="5088172560898466307">ဆာဗာပင်ရင်းအမည်−</translation>
 <translation id="5089810972385038852">ပြည်နယ်</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -467,6 +473,7 @@
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
+<translation id="5661196929408385351">Powerwash ပြီး အပြီးပိတ်ရန်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">မိသားစု</translation>
@@ -478,6 +485,7 @@
 <translation id="576835345334454681">ဖန်သားပြင်တောက်ပမှု တိုးရန်</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
 <translation id="5784136236926853061">HTTP တုံ့ပြန်ချိန် ကြာနေသည်</translation>
+<translation id="578753362485952307">အခြားစက်တွင် ပင်မဘုတ်ပြားကို ပြန်လည်သုံးစွဲလိုပါက <ph name="LINK_BEGIN" />ပြန်လည်သုံးစွဲခြင်း လုပ်ငန်းစဉ်<ph name="LINK_END" /> သို့ သွားပါ။</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5843706793424741864">ဖာရင်ဟိုက်</translation>
@@ -534,6 +542,7 @@
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">မှောင်သည့် အပြင်အဆင် ဖွင့်ရန်</translation>
+<translation id="6295178529664209245">ပြင်၍မရဘူးလား။</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="6321407676395378991">ဖန်သားပြင်နားချိန် ဖွင့်ရန်</translation>
@@ -569,6 +578,7 @@
 <translation id="6575134580692778371">စီစဉ်မဖွဲ့စည်းရသေး</translation>
 <translation id="6579509898032828423">ဤပုံသုံးရန်</translation>
 <translation id="6596816719288285829">IP လိပ်စာ</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> ပြုပြင်ခြင်းမှ ထွက်ရန်</translation>
 <translation id="6618744767048954150">လုပ်ဆောင်နေသည်</translation>
 <translation id="6620487321149975369">ပရင့်ထုတ်ရန်ဖိုင်များကို ကိုယ်တိုင်မဖယ်ရှားပါက မှတ်တမ်းတွင် ပြပါမည်</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
@@ -581,6 +591,7 @@
 <translation id="6723839937902243910">ပါဝါ</translation>
 <translation id="6723847290197874913">ကီးဘုတ်နောက်ခံအလင်းရောင်</translation>
 <translation id="672609503628871915">အသစ် ဘာတွေလဲ ကြည့်ရအောင်</translation>
+<translation id="6746847322826305075">ပင်မဘုတ်ပြားကို ပြန်ရရှိရန် စက်ကို အလုံးစုံပြင်ဆင်ခြင်း (သို့) Powerwash (စက်ရုံထုတ်အတိုင်း ပြင်ဆင်သတ်မှတ်ခြင်း) ဆက်လုပ်နိုင်သည်။</translation>
 <translation id="6747215703636344499">ရပ်ထားသည် - အထွက်ပြည့်နေသည်</translation>
 <translation id="6749473226660745022">ဓာတ်ပုံများ</translation>
 <translation id="6753452347192452143">ကိရိယာသည် ကွန်ပျူတာဖြစ်သည်။</translation>
@@ -628,6 +639,7 @@
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">အစိတ်အပိုင်း ၁ ခုနှင့်အထက် ရွေးချယ်ပြီး ထပ်စမ်းကြည့်ပါ (သို့) ချိန်ညှိခြင်းကို ကျော်ပါ</translation>
 <translation id="7281657306185710294">လေညှင်း ခံစားရန်</translation>
 <translation id="7287310195820267359">နောက်ခံပုံ စုစည်းမှုများ</translation>
 <translation id="7297226631177386107">HTTPS ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
@@ -658,11 +670,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB တို့ထိမျက်နှာပြင်</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ကျန်သည်</translation>
+<translation id="760845693386726841">ဤအစိတ်အပိုင်းကို ရှာမတွေ့ပါ။</translation>
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="7626501172915339021">RMA ဆာဗာ လော့ခ်ဖွင့်ပါ (RSU)</translation>
 <translation id="763165478673169849">နောက်ဆုံး ပြင်ဆင်သတ်မှတ်ထားချိန်</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> ပြုပြင်မှုအမှား</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
@@ -704,6 +718,7 @@
 <translation id="8083281199617904460">ဤပြင်ဆင်ရေးလုပ်ငန်းသည် တက်ကျွမ်းသော နည်းပညာရှင်အတွက်ဖြစ်သည်။ ပျက်နေသည့် ဆက်စပ်ပစ္စည်းများကို လဲလှယ်ပြီးမှသာ စတင်ပါ။</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
 <translation id="8104083085214006426">သင်သည် အများသုံးဖြစ်ပြီး မလုံခြုံသောကွန်ရက်ကို သုံးနေသည်</translation>
+<translation id="8109786307828817014">အောင်မြင်မှုမရှိသော ချိန်ညှိမှုများဖြင့် ရှေ့ဆက်မလား။</translation>
 <translation id="811820734797650957">(Android) ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်နိုင်သည်</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8132480444149501833">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ တောင်းဆိုရန်</translation>
@@ -726,11 +741,13 @@
 <translation id="8302368968391049045">HTTPS Firewall</translation>
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8327249300223641918">ရှေ့မဆက်မီ သင့်စက်တစ်ခုလုံး(အောက်ခံနှင့် အဖုံး) ကို ညီညာသည့် မျက်နှာပြင်ပေါ်တွင် ထားပါ။</translation>
+<translation id="8330949592403310082">ဘယ်အစိတ်အပိုင်းများကို လဲလှယ်ခဲ့သလဲ ရွေးချယ်ပါ</translation>
 <translation id="8336739000755212683">စက်ပစ္စည်း၏ အကောင့်ပုံ ပြောင်းရန်</translation>
 <translation id="8347227221149377169">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="8352772353338965963">အရာ အများအပြားထဲသို့ လက်မှတ်ထိုး ဝင်နိုင်ရန် အတွက် အကောင့် တစ်ခုကို ထည့်ပါ။ လက်မှတ်ထိုး ဝင်ထားသည့် အကောင့်များ အားလုံးကို စကားဝှက် မသုံးရဘဲ သုံးနိုင်မည် ဖြစ်ရာ၊ ဒီအင်္ဂါရပ်ကို ယုံကြည်ရသည့် အကောင့်များ အတွက်သာ အသုံးပြသင့်သည်။</translation>
 <translation id="8364946094152050673">အမည်ဆာဗာအလွတ်များ</translation>
 <translation id="8372477600026034341">အပို ဆာဗာပင်ရင်းများ</translation>
+<translation id="8378855320830505539">ဒေသ</translation>
 <translation id="8395584934117017006">ဤ <ph name="DEVICE_TYPE" /> ကို လုပ်ငန်းက စီမံပါသည်</translation>
 <translation id="8398927464629426868">စက်ပစ္စည်း၏ လက်ရှိအားသွင်းနှုန်း (သို့) အားလျော့နှုန်း</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -749,6 +766,7 @@
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">ချိန်ညှိခြင်းမပြုပါက အစိတ်အပိုင်းများသည် ကောင်းမွန်စွာ လုပ်ဆောင်နိုင်မည် မဟုတ်ပါ</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
 <translation id="8620617069779373398">ကွန်ရက်ပြင်ပဒေတာသုံးခြင်း အခြေအနေ</translation>
@@ -803,6 +821,7 @@
 <translation id="9025198690966128418">ပုဂ္ဂိုလ်ရေးသီးသန့်စက်အဖြစ် သုံးစွဲရန်</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ဖြေရှင်းမှုသည် တုံ့ပြန်ချိန်မြင့်သည်</translation>
+<translation id="9063121522582193837">အစိတ်အပိုင်းအချို့ကို ချိန်ညှိ၍ မရပါ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9082718469794970195">ဤဗီဒီယိုသုံးရန်</translation>

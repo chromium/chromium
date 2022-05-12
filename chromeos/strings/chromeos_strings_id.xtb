@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sesuaikan dengan area pindai</translation>
 <translation id="1367951781824006909">Pilih file</translation>
+<translation id="1380220803921738821">Kami mengalami error. Coba mulai ulang atau pulihkan firmware menggunakan thumbdrive USB.</translation>
 <translation id="1387854245479784695">Ini merupakan gabungan dari semua core</translation>
 <translation id="1394661041439318933">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai casing.</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="28232023175184696">Tidak dapat terhubung ke internet. Klik untuk mencoba lagi.</translation>
+<translation id="2827359915699915567">Ketik URL ini secara manual untuk mendapatkan kode RSU</translation>
 <translation id="2859243502336719778">Update penting</translation>
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
 <translation id="2872961005593481000">Matikan</translation>
@@ -193,6 +195,7 @@
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="291142119251986300">Komponen yang tidak memenuhi syarat</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
+<translation id="2928420929544864228">Penginstalan selesai.</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -224,6 +227,7 @@
 <translation id="3291996639387199448">Arah kunci</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
+<translation id="3333527094307156612">Gunakan kode QR ini untuk mendapatkan kode buka kunci 8 karakter. Anda juga dapat mengetik <ph name="LINK_BEGIN" />URL ini<ph name="LINK_END" /> secara manual.</translation>
 <translation id="3336855445806447827">Tidak yakin</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
@@ -257,6 +261,7 @@
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="3621202678540785336">Masukan</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
+<translation id="3643810137582748570">Lewati kalibrasi</translation>
 <translation id="3678765385266369662">Pilih cara Anda ingin menonaktifkan Write Protect</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -407,6 +412,7 @@
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama grup</translation>
 <translation id="5051044138948155788">Ini adalah satu-satunya halaman. Anda akan diarahkan ke layar awal pemindaian.</translation>
+<translation id="506768878203270635">Masukkan kode 8 karakter</translation>
 <translation id="5088172560898466307">Hostname server</translation>
 <translation id="5089810972385038852">Negara Bagian</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -468,6 +474,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5649768706273821470">Dengar</translation>
 <translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
+<translation id="5661196929408385351">Powerwash &amp; Matikan</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Keluarga</translation>
@@ -479,6 +486,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
+<translation id="578753362485952307">Jika Anda sedang mengerjakan ulang mainboard untuk digunakan di perangkat lain, buka <ph name="LINK_BEGIN" />alur pengerjaan ulang<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -535,6 +543,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktifkan tema gelap</translation>
+<translation id="6295178529664209245">Lanjutkan perbaikan?</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="6319207335391420837">Update firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
@@ -570,6 +579,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
 <translation id="6579509898032828423">Gunakan foto ini</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
+<translation id="6611280807952151149">Keluar dari perbaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
 <translation id="6643016212128521049">Hapus</translation>
@@ -582,6 +592,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6723847290197874913">Lampu latar keyboard</translation>
 <translation id="672609503628871915">Lihat apa saja yang baru</translation>
+<translation id="6746847322826305075">Anda dapat melanjutkan perbaikan hingga selesai atau melakukan powerwash perangkat (reset perangkat ke setelan pabrik) untuk menyimpan mainboard.</translation>
 <translation id="6747215703636344499">Dihentikan - Baki hasil cetak penuh</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Perangkat adalah komputer.</translation>
@@ -629,6 +640,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Pilih 1 atau beberapa komponen lalu coba lagi, atau lewati kalibrasi</translation>
 <translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
@@ -659,11 +671,13 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Layar sentuh USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
+<translation id="760845693386726841">Komponen ini tidak dapat dideteksi.</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="7626501172915339021">Jalankan RMA Server Unlock (RSU)</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="7656388927906093505">Perangkat adalah mouse.</translation>
+<translation id="7657530360897961171">Terjadi error saat perbaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Ubah avatar</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
@@ -705,6 +719,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8083281199617904460">Proses perbaikan ini ditujukan untuk teknisi perbaikan terlatih. Hanya mulai perbaikan setelah mengganti komponen yang rusak.</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
+<translation id="8109786307828817014">Lanjutkan dengan kalibrasi yang gagal?</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
@@ -727,11 +742,13 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Tidak Ada Gambar</translation>
 <translation id="8327249300223641918">Sebelum melanjutkan, tempatkan seluruh bagian perangkat (termasuk dudukan dan penutup) pada permukaan yang rata.</translation>
+<translation id="8330949592403310082">Pilih komponen yang telah diganti</translation>
 <translation id="8336739000755212683">Ubah gambar akun perangkat</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
+<translation id="8378855320830505539">Kawasan</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -750,6 +767,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Komponen mungkin tidak berfungsi dengan benar kecuali jika dikalibrasi</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
 <translation id="8620617069779373398">Status roaming</translation>
@@ -804,6 +822,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9025198690966128418">Gunakan sebagai perangkat pribadi</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
+<translation id="9063121522582193837">Tidak dapat melakukan kalibrasi beberapa komponen</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Gunakan video ini</translation>

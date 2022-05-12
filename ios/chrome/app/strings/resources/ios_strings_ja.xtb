@@ -190,6 +190,7 @@
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="2691653761409724435">オフラインで使用不可</translation>
 <translation id="2695507686909505111">ページが翻訳されました</translation>
+<translation id="2697526135132990015">ログアウトしてデータを削除</translation>
 <translation id="2700241355396984822">権限設定のオプション</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
 <translation id="2704491540504985681">ダウンロード</translation>
@@ -364,6 +365,7 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4133265950310064865">保護強化機能</translation>
+<translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
@@ -692,6 +694,7 @@
 <translation id="6760509555861141183">最近使用したタブに戻る</translation>
 <translation id="6762812039470893796">選択をすべて解除</translation>
 <translation id="6780034285637185932">郵便番号</translation>
+<translation id="6781260999953472352">同期をオンにしますか？</translation>
 <translation id="6785453220513215166">クラッシュレポートを送信しています...</translation>
 <translation id="6797885426782475225">音声検索</translation>
 <translation id="6801927553864092214">シークレット モードで閲覧するにはシークレット タブを開きます</translation>
@@ -804,6 +807,7 @@
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7839985698273989086">オフライン ページ</translation>
 <translation id="7840771868269352570">選択したアイテムが削除されます。</translation>
+<translation id="784551991304901159">コンテンツを表示するには、メニューから [オンにする] を選択します</translation>
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7856733331829174190">ダウンロードできませんでした</translation>
 <translation id="7859704718976024901">閲覧履歴</translation>

@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Video-instellingen</translation>
 <translation id="2144806332417375165">Aangepaste videoparameters</translation>
 <translation id="2175927920773552910">QR-code</translation>
+<translation id="2244252133441425811">FPS-kiezer voor video aanzetten</translation>
 <translation id="2271433936731426666">Videomomentopname op volledig formaat aanzetten</translation>
 <translation id="229579744168541441">Exporteren naar schijf</translation>
 <translation id="2320741269052147773">Naar links schuiven</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">Timer uit</translation>
 <translation id="3448774564454087943">De video is niet opgeslagen omdat deze te kort is</translation>
 <translation id="346539236881580388">Opnieuw maken</translation>
-<translation id="3511295087439225876">Knop Geluid uit staat aan</translation>
 <translation id="3517926952904427380">Kan geen portretfoto maken</translation>
 <translation id="3566302376254083266">Beweegt naar linksboven</translation>
 <translation id="3569311554794739032">Weet je zeker dat je <ph name="FILE" /> wilt verwijderen?</translation>
@@ -153,7 +153,6 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8145038249676204903">Naar foto maken</translation>
 <translation id="8167081290930651932">Opslaan als foto</translation>
-<translation id="8236532224592646488">Knop Geluid uit staat uit</translation>
 <translation id="8239780215768881278">Videomomentopname maken</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8425673304802773841">Naar beneden kantelen</translation>

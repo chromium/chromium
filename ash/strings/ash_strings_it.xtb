@@ -140,6 +140,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1749109475624620922">Finestra <ph name="WINDOW_TITLE" /> assegnata a tutte le scrivanie</translation>
 <translation id="1750088060796401187">Sono consentite al massimo <ph name="MAX_DESK_LIMIT" /> scrivanie. Rimuovi una scrivania per aprirne una nuova.</translation>
 <translation id="1756833229520115364">Impossibile salvare il modello. Troppe finestre o schede.</translation>
+<translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
 <translation id="1761222317188459878">Attiva/disattiva connessione di rete. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1770726142253415363">Spostata alla riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
@@ -506,6 +507,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
+<translation id="401993194061514265">Indicatore non disponibile. Riapri Registra schermo.</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
 <translation id="4028481283645788203">Password obbligatoria per maggiore sicurezza</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -520,6 +522,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="412298498316631026">finestra</translation>
 <translation id="4123259114412175274">Per sbloccare Chromebook, assicurati che il Bluetooth del telefono sia attivo</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
+<translation id="4136724716305260864">Funzionalità attiva fino all'alba</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
@@ -572,6 +575,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4435022394553622295">Visualizza le notifiche e le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}other{# notifiche importanti}}</translation>
@@ -699,6 +703,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
+<translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
@@ -748,6 +753,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
+<translation id="5560420195677022218">Visualizza le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="557563299383177668">Paragrafo successivo</translation>
@@ -966,6 +972,7 @@ Nuova installazione</translation>
 <translation id="6884665277231944629">Torna a oggi</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Premi il tasto Freccia giù per cambiare finestra</translation>
+<translation id="6891721121089053234">Visualizza le foto, i contenuti multimediali e le app recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
@@ -1094,6 +1101,7 @@ Nuova installazione</translation>
 <translation id="7684531502177797067">Dati fotocamera impostati su <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Aggiungi una nuova rete mobile</translation>
+<translation id="7720400844887872976">Funzionalità attiva fino alle ore <ph name="TIME" /></translation>
 <translation id="7720410380936703141">RIPROVA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
@@ -1175,6 +1183,7 @@ Nuova installazione</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Questa impostazione è gestita dall'amministratore.</translation>
 <translation id="8155628902202578800">Apri la finestra di dialogo delle informazioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">In uso: <ph name="LOCALE_NAME" /></translation>
+<translation id="8183592608247778598">Visualizza le foto, i contenuti multimediali, le notifiche e le app recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Le notifiche sono nascoste.</translation>
 <translation id="8196787716797768628">Usa i gesti per spostarti rapidamente tra le app e per interagire con il Chromebook in modalità tablet.</translation>
 <translation id="8200772114523450471">Riprendi</translation>

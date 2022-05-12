@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">ভিডিঅ’ ছেটিং</translation>
 <translation id="2144806332417375165">কাষ্টম ভিডিঅ’ পেৰামিটাৰ</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
+<translation id="2244252133441425811">ভিডিঅ’ৰ FPS বাছনিকৰ্তাক সক্ষম কৰক</translation>
 <translation id="2271433936731426666">পূৰ্ণ-আকাৰৰ ভিডিঅ’ স্নেপশ্বট সক্ষম কৰক</translation>
 <translation id="229579744168541441">ডিস্কলৈ ৰপ্তানি কৰক</translation>
 <translation id="2320741269052147773">বাওঁফালে পেন কৰক</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">টাইমাৰ অফ</translation>
 <translation id="3448774564454087943">ভিডিঅ’টো অতি চুটি হোৱাৰ কাৰণে সেইটো ছেভ নহ’ল</translation>
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
-<translation id="3511295087439225876">মিউট কৰাৰ বুটাম অন আছে</translation>
 <translation id="3517926952904427380">প’ৰ্ট্ৰেইট ফট’ ল’ব নোৱাৰিলে</translation>
 <translation id="3566302376254083266">একেবাৰে ওপৰৰ বাওঁফাললৈ গতি কৰি আছে</translation>
 <translation id="3569311554794739032">আপুনি সঁচাকৈয়ে <ph name="FILE" /> আঁতৰাবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
@@ -153,7 +153,6 @@
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8145038249676204903">ফট' উঠাবলৈ সলনি কৰক</translation>
 <translation id="8167081290930651932">ফট' ছেভ কৰক</translation>
-<translation id="8236532224592646488">মিউট কৰাৰ বুটাম অফ আছে</translation>
 <translation id="8239780215768881278">ভিডিঅ’ৰ স্নেপশ্বট লওক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8425673304802773841">তললৈ হেলনীয়া কৰক</translation>

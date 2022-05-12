@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome puede comprobar tus contraseñas cuando inicias sesión con tu cuenta de Google.</translation>
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
+<translation id="1511320244449497906">Has iniciado sesión y se están sincronizando tus datos con una cuenta gestionada por <ph name="DOMAIN" />, cuyo administrador ahora puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Ayuda a mejorar Chrome enviando estadísticas de uso e informes sobre fallos a Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Para sacarle el máximo partido a Chrome, inicia sesión en Chrome con tu cuenta de Google.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
+<translation id="81358522153858150">Chrome ahora admite políticas de usuarios para tu cuenta gestionada</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
 <translation id="8263079278049777200">Inicia sesión en este sitio, en tu cuenta de Google y en Chrome. Puedes activar la sincronización más tarde.</translation>
 <translation id="8357607116237445042">Elige si quieres borrar o conservar tus datos de Chrome en este dispositivo</translation>

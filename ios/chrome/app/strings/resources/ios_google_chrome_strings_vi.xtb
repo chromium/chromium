@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
 <translation id="1493827051843127077">Hãy đặt Chrome làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="1504372625950710826">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
+<translation id="1511320244449497906">Bạn đang đăng nhập và đồng bộ hoá dữ liệu bằng một tài khoản do <ph name="DOMAIN" /> quản lý; theo đó, quản trị viên nay có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>
 <translation id="1682483655351012182">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Giúp chúng tôi cải thiện Chrome bằng cách gửi số liệu thống kê về việc sử dụng và báo cáo sự cố cho Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Để khai thác tối đa Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn.</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
+<translation id="81358522153858150">Chrome giờ đây hỗ trợ chính sách người dùng cho tài khoản được quản lý</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
 <translation id="8263079278049777200">Đăng nhập vào trang web này, Tài khoản Google của bạn và Chrome. Bạn có thể bật tính năng đồng bộ hóa sau.</translation>
 <translation id="8357607116237445042">Chọn xem bạn muốn xóa dữ liệu của mình trên Chrome khỏi thiết bị này hay giữ lại dữ liệu đó</translation>

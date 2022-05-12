@@ -143,6 +143,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> pəncərəsi bütün masalara təyin edilib</translation>
 <translation id="1750088060796401187">Yalnız <ph name="MAX_DESK_LIMIT" /> masaya icazə verilir. Yenisini açmaq üçün masanı silin.</translation>
 <translation id="1756833229520115364">Şablonu yadda saxlamaq mümkün olmadı. Həddindən çox pəncərə və ya tab.</translation>
+<translation id="1757857692711134412">Gün batanadək deaktiv olacaq</translation>
 <translation id="1761222317188459878">Şəbəkə bağlantısını aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nöqtə klaviatura qısayolu dəyişib. "Daxil et" düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Shift + Geri düyməsini basın.</translation>
 <translation id="1770726142253415363">Bura köçürülüb: sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
@@ -508,6 +509,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3995138139523574647">USB-C cihazı (arxa sağ port)</translation>
 <translation id="40062176907008878">Əlyazma</translation>
 <translation id="4017989525502048489">Lazer göstəricisi</translation>
+<translation id="401993194061514265">Marker əlçatan deyil. Ekran yayımını yenidən açın.</translation>
 <translation id="4021716437419160885">Aşağı sürüşdürün</translation>
 <translation id="4028481283645788203">Əlavə təhlükəsizlik üçün parol tələb olunur</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +524,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="412298498316631026">pəncərə</translation>
 <translation id="4123259114412175274">Chromebook'u kiliddən çıxarmaq üçün telefonunuzda Bluetooth'un aktiv olduğuna əmin olun</translation>
 <translation id="4129129681837227511">Bildirişlərin kilid ekranında görünməsini istəyirsinizsə, ayarı dəyişmək üçün cihazı kiliddən çıxarın</translation>
+<translation id="4136724716305260864">Gün çıxanadək aktiv olacaq</translation>
 <translation id="4146833061457621061">Musiqini oxudun</translation>
 <translation id="4165275524535002941">Kabel displeyləri dəstəkləməyə bilər</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün ərzində güncəlləyin}other{Cihazı # gün ərzində güncəlləyin}}</translation>
@@ -574,6 +577,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4421231901400348175">Uzaqdan Yardım vasitəsilə <ph name="HELPER_NAME" /> ilə ekranın kontrolunu paylaşın</translation>
 <translation id="4424159417645388645">Masa 5</translation>
 <translation id="4430019312045809116">Həcm</translation>
+<translation id="4435022394553622295"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun bildirişlərinə və tətbiqlərinə baxın</translation>
 <translation id="4441283832827406317">Tətbiqlər ada görə sıralanıb</translation>
 <translation id="4445159312344259901">Kiliddən çıxarmaq üçün daxil olun</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 əhəmiyyətli bildiriş}other{# əhəmiyyətli bildiriş}}</translation>
@@ -701,6 +705,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Digər 1 bildiriş}other{Digər # bildiriş}}</translation>
 <translation id="5207949376430453814">Mətn karetini vurğulayın</translation>
 <translation id="5208059991603368177">Aktiv</translation>
+<translation id="5216991270656129561">Bu vaxtadək deaktiv olacaq: <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="523505283826916779">Əlçatımlılıq ayarları</translation>
@@ -750,6 +755,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="554893713779400387">İmlanı aktiv edin</translation>
+<translation id="5560420195677022218"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun tətbiqlərinə baxın</translation>
 <translation id="556042886152191864">Düymə</translation>
 <translation id="5571066253365925590">Bluetooth aktivdir</translation>
 <translation id="557563299383177668">Növbəti paraqraf</translation>
@@ -968,6 +974,7 @@ Yeni quraşdırma</translation>
 <translation id="6884665277231944629">Bugünə qayıdın</translation>
 <translation id="6886172995547742638">Sizin <ph name="DEVICE_TYPE" /> aşağı performans göstərə bilər. Sertifikatlı <ph name="PREFERRED_MINIMUM_POWER" />W və ya daha yüksək USB-C cərəyan yuvasından istifadə edin.</translation>
 <translation id="688631446150864480">Pəncərələri dəyişdirmək üçün Aşağı ox düyməsini basın</translation>
+<translation id="6891721121089053234"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotolarına, media və tətbiqlərinə baxın</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6901883536534621389">Naviqasiya etmək üçün jestləri sınayın</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
@@ -1096,6 +1103,7 @@ Yeni quraşdırma</translation>
 <translation id="7684531502177797067">Kamera daxiletməsi <ph name="CAMERA_NAME" /> olaraq ayarlanıb.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Yeni mobil şəbəkə əlavə edin</translation>
+<translation id="7720400844887872976">Bu vaxtadək aktiv olacaq: <ph name="TIME" /></translation>
 <translation id="7720410380936703141">YENİDƏN SINAYIN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 bildiriş}other{# bildiriş}}</translation>
 <translation id="7724603315864178912">Kəsin</translation>
@@ -1178,6 +1186,7 @@ Yeni quraşdırma</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Bu ayar inzibatçınız tərəfindən idarə olunur.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> üçün məlumat dialoqunu açın</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> istifadə edilir</translation>
+<translation id="8183592608247778598"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotoları, mediası, bildirişləri və tətbiqlərinə baxın</translation>
 <translation id="8192202700944119416">Bildirişlər gizlədildi.</translation>
 <translation id="8196787716797768628">Jestlərdən istifadə edərək tətbiqlər arasında sürətli keçid edin və planşet rejimində Chromebook ilə əlaqə yaradın.</translation>
 <translation id="8200772114523450471">Davam edin</translation>

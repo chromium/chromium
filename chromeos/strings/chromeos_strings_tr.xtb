@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1367951781824006909">Dosya seç</translation>
+<translation id="1380220803921738821">Hatalarla karşılaşıyoruz. USB flaş sürücü kullanarak yeniden başlatmayı veya donanım yazılımını kurtarmayı deneyin.</translation>
 <translation id="1387854245479784695">Bu değer tüm çekirdeklerin toplamıdır</translation>
 <translation id="1394661041439318933">Cihazın kılıf pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="1397738625398125236">Ağ geçidi için Ping Testi çalıştırılabilir</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
+<translation id="2827359915699915567">RSU kodunu almak için bu URL'yi manuel olarak yazın</translation>
 <translation id="2859243502336719778">Kritik güncelleme</translation>
 <translation id="2860473693272905224">Tarayıcıya başka bir sayfa yerleştirin</translation>
 <translation id="2872961005593481000">Kapat</translation>
@@ -193,6 +195,7 @@
 <translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
 <translation id="291142119251986300">Uygun olmayan bileşenler</translation>
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
+<translation id="2928420929544864228">Yükleme tamamlandı.</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3017079585324758401">Arka plan</translation>
@@ -224,6 +227,7 @@
 <translation id="3291996639387199448">Anahtar yönü</translation>
 <translation id="3310640316857623290">DNS gecikmesi, izin verilen eşiğin çok üzerinde</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
+<translation id="3333527094307156612">8 karakterden oluşan kilit açma kodunu almak için bu QR kodunu kullanın. <ph name="LINK_BEGIN" />Bu URL'yi<ph name="LINK_END" /> manuel olarak da yazabilirsiniz.</translation>
 <translation id="3336855445806447827">Emin değilim</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
@@ -257,6 +261,7 @@
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
 <translation id="3621202678540785336">Giriş</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
+<translation id="3643810137582748570">Kalibrasyonu atla</translation>
 <translation id="3678765385266369662">Yazma korumayı nasıl devre dışı bırakmak istediğinizi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
@@ -407,6 +412,7 @@
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
 <translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
+<translation id="506768878203270635">8 karakterden oluşan kodu girin</translation>
 <translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -468,6 +474,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5649768706273821470">Dinle</translation>
 <translation id="5655283760733841251">Klavye parlaklığını artır</translation>
+<translation id="5661196929408385351">Powerwash Gerçekleştir ve Kapat</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
@@ -479,6 +486,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="576835345334454681">Ekran parlaklığını artır</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
+<translation id="578753362485952307">Başka cihazda kullanacağınız bir anakartla ilgili yeniden çalışma yapıyorsanız <ph name="LINK_BEGIN" />yeniden çalışma akışına<ph name="LINK_END" /> gidin.</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
 <translation id="5843706793424741864">Fahrenhayt</translation>
@@ -535,6 +543,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Koyu temayı aç</translation>
+<translation id="6295178529664209245">Onarıma devam edilsin mi?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
 <translation id="6321407676395378991">Ekran koruyucuyu aç</translation>
@@ -570,6 +579,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6575134580692778371">Yapılandırılmadı</translation>
 <translation id="6579509898032828423">Bu fotoğrafı kullan</translation>
 <translation id="6596816719288285829">IP Adresi</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> onarımından çık</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
 <translation id="6643016212128521049">Temizle</translation>
@@ -582,6 +592,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6723847290197874913">Klavye arka ışığı</translation>
 <translation id="672609503628871915">Yenilikleri görüntüle</translation>
+<translation id="6746847322826305075">Anakartı kurtarmak için tam onarım yapabilir veya cihazda powerwash (fabrika ayarlarına sıfırlama) işlemi gerçekleştirebilirsiniz.</translation>
 <translation id="6747215703636344499">Durduruldu - Çıkış tepsisi dolu</translation>
 <translation id="6749473226660745022">Fotoğraflar</translation>
 <translation id="6753452347192452143">Cihazın türü bilgisayar.</translation>
@@ -629,6 +640,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">En az 1 bileşen seçerek tekrar deneyin ya da kalibrasyonu atlayın</translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
 <translation id="7297226631177386107">HTTPS web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
@@ -659,11 +671,13 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dokunmatik ekran</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> kaldı</translation>
+<translation id="760845693386726841">Bu bileşen algılanamadı.</translation>
 <translation id="7620771111601174153">Yardım Merkezi'nde daha fazla bilgi edinin</translation>
 <translation id="7626501172915339021">RMA Sunucu Kilidini Açma (RSU) işlemi yapın</translation>
 <translation id="763165478673169849">Son Sıfırlanma Zamanı</translation>
 <translation id="7648838807254605802">Yüksek HTTPS gecikmesi</translation>
 <translation id="7656388927906093505">Cihazın türü fare.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> onarım hatası</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7665800271478495366">Avatarı değiştir</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
@@ -705,6 +719,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8083281199617904460">Bu onarım işlemini eğitimli bir onarım teknisyeninin yapması gerekir. Sadece arızalı bileşenleri değiştirdikten sonra başlayın.</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
+<translation id="8109786307828817014">Başarısız kalibrasyonlarla devam edilsin mi?</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
@@ -727,11 +742,13 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8302368968391049045">HTTPS Güvenlik Duvarı</translation>
 <translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8327249300223641918">Devam etmeden önce cihazınızın tamamını (alt kısım ve kapak) düz bir yüzeye yerleştirin.</translation>
+<translation id="8330949592403310082">Değiştirilen bileşenleri seçme</translation>
 <translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
 <translation id="8372477600026034341">Ekstra ana makineler</translation>
+<translation id="8378855320830505539">Bölge</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -750,6 +767,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Kalibre edilmeyen bileşenler düzgün çalışmayabilir</translation>
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
@@ -804,6 +822,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="9025198690966128418">Kişisel cihaz olarak kullan</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS çözümleme, yüksek gecikme süresine sahip</translation>
+<translation id="9063121522582193837">Bazı bileşenler kalibre edilemedi</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Bu videoyu kullan</translation>

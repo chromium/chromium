@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Další</translation>
 <translation id="1204296502688602597">Latence DNS</translation>
 <translation id="123124571410524056">Podezření na portál</translation>
+<translation id="1236400083787698183">Před restartováním obnovte zařízení pomocí funkce Powerwash. Pokud má zařízení víko, zavřete ho až po dokončení procesu Powerwash. Dokončení může trvat až jednu minutu.</translation>
 <translation id="1238612778414822719">Latence HTTPS</translation>
+<translation id="1240699967155581440">Je vyžadováno obnovení pomocí funkce Powerwash (resetování do továrního nastavení)</translation>
 <translation id="1264116747675686718">Aktualizace verze operačního systému</translation>
 <translation id="1264369926465113395">Prohlédněte si nový digitální časopis Chromebooku pro autory</translation>
 <translation id="1270369111467284986">Podezření na captive portál</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">Byly zjištěny <ph name="LINK_BEGIN" />nekvalifikované komponenty<ph name="LINK_END" />. Pokud chcete potvrdit jejich instalaci, udělejte to teď.</translation>
 <translation id="2363636958541445404">Pokud chcete vybrat možnosti spořiče obrazovky, zapněte tuto funkci</translation>
 <translation id="2364498172489649528">V pořádku</translation>
+<translation id="236594517359128026">Než budete pokračovat, položte notebook na rovný povrch</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
 <translation id="2407209115954268704">Stav uzamčení SIM karty</translation>
@@ -190,6 +193,7 @@
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="291142119251986300">Nekvalifikované komponenty</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
+<translation id="2928420929544864228">Instalace byla dokončena.</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
@@ -267,6 +271,7 @@
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
 <translation id="3838338534323494292">Nové heslo</translation>
 <translation id="385051799172605136">Zpět</translation>
+<translation id="385832974417157471">Před vypnutím obnovte zařízení pomocí funkce Powerwash. Pokud má zařízení víko, zavřete ho až po dokončení procesu Powerwash. Dokončení může trvat až jednu minutu.</translation>
 <translation id="3858860766373142691">Název</translation>
 <translation id="3865414814144988605">Rozlišení</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
@@ -456,6 +461,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5507300744274596613">Ujistěte se, zda je systém Chrome OS aktuální</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Kalibrace komponent</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Naskenovat znovu</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -709,6 +715,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8217675307824400706">Připojte se</translation>
+<translation id="8221728673725659466">Kalibrace dokončena</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
 <translation id="8246209727385807362">Neznámý operátor</translation>
@@ -720,11 +727,13 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8297006494302853456">Slabý</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Žádné obrázky</translation>
+<translation id="8327249300223641918">Než budete pokračovat, položte celé zařízení (základnu i víko) na rovný povrch.</translation>
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
 <translation id="8352772353338965963">Přidat účet do vícenásobného přihlášení. Ke všem přihlášeným účtům lze přistupovat bez zadání hesla, proto byste tuto funkci měli používat pouze s důvěryhodnými účty.</translation>
 <translation id="8364946094152050673">Prázdné názvové servery</translation>
 <translation id="8372477600026034341">Extra hostitelské servery</translation>
+<translation id="8378855320830505539">Region</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -734,6 +743,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="844521431886043384">Není nastaven server DNS</translation>
 <translation id="8456761643544401578">Automatický tmavý režim</translation>
 <translation id="8461329675984532579">Název domácího poskytovatele</translation>
+<translation id="8467104829907989997">Kalibrace komponent…</translation>
 <translation id="8475690821716466388">Síť Wi-Fi je zabezpečena slabým protokolem WEP PSK</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
 <translation id="8483248364096924578">IP adresa</translation>
@@ -793,6 +803,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}many{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="8997710128084572139">Stav baterie zařízení je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
+<translation id="9025198690966128418">Použít jako osobní zařízení</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Překlad záznamů DNS má vysokou latenci</translation>
 <translation id="9073281213608662541">PAP</translation>

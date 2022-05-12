@@ -306,6 +306,7 @@
 <translation id="1717218214683051432">Сензори за движење</translation>
 <translation id="1717494416764505390">Поштенско сандаче 3</translation>
 <translation id="1718029547804390981">Документот е премногу голем за да се стави прибелешка</translation>
+<translation id="1720941539803966190">Затвори го упатството</translation>
 <translation id="1721424275792716183">* Полето е задолжително</translation>
 <translation id="1727613060316725209">Сертификатот е важечки</translation>
 <translation id="1727741090716970331">Додајте важечки број на картичка</translation>
@@ -482,6 +483,7 @@
 <translation id="2215727959747642672">Изменување датотеки</translation>
 <translation id="2215963164070968490">Кучиња</translation>
 <translation id="2218879909401188352">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> може да инсталираат опасни апликации што го оштетуваат вашиот уред, да додаваат скриени трошоци на сметката за мобилниот телефон или да крадат лични информации. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">Рестартирај го упатството</translation>
 <translation id="2224337661447660594">Нема интернет</translation>
 <translation id="2230458221926704099">Поправете ја врската со користење на <ph name="BEGIN_LINK" />апликацијата за дијагностицирање<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Испрати сега</translation>
@@ -1065,10 +1067,10 @@
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов документ на Google</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851515670389017037">Патувањата се затворени</translation>
 <translation id="3858027520442213535">Ажурирај датум и време</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3872834068356954457">Наука</translation>
+<translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3881478300875776315">Прикажи помалку редови</translation>
 <translation id="3884278016824448484">Идентификувач на конфликтен уред</translation>
 <translation id="3885155851504623709">Парохија</translation>
@@ -1368,7 +1370,6 @@
 <translation id="470284880436071933">Криминал и правда</translation>
 <translation id="4704732901923281920">Биолошки науки</translation>
 <translation id="4708268264240856090">Врската беше прекината</translation>
-<translation id="4709819737903924300">Патувањата се отворени на цел екран</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата на Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
@@ -1482,6 +1483,7 @@
 <translation id="5011561501798487822">Откриен јазик</translation>
 <translation id="5015510746216210676">Име на уредот:</translation>
 <translation id="5017554619425969104">Текстот што го копиравте</translation>
+<translation id="5017828934289857214">Потсети ме подоцна</translation>
 <translation id="5018422839182700155">Не може да се отвори страницава</translation>
 <translation id="5019198164206649151">Продавницата за резервни копии е во лоша состојба</translation>
 <translation id="5020776957610079374">Светска музика</translation>
@@ -1715,6 +1717,7 @@
 <translation id="5624120631404540903">Управувај со лозинки</translation>
 <translation id="5629630648637658800">Не успеаја да се вчитаат поставките за политика</translation>
 <translation id="5631439013527180824">Невалиден токен за управување со уреди</translation>
+<translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5633066919399395251">Напаѓачите што се моментално на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> можеби ќе се обидат да инсталираат опасни програми на вашиот компјутер што ги крадат или бришат вашите информации (на пример, фотографии, лозинки, пораки и кредитни картички). <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Лажните содржини се блокирани.</translation>
 <translation id="5633259641094592098">Култни и инди филмови</translation>
@@ -2612,7 +2615,6 @@
 <translation id="8163866351304776260">Четири дупки лево</translation>
 <translation id="8175796834047840627">Chrome нуди да ви ги зачува картичките во вашата сметка на Google бидејќи сте најавени. Ваквото однесување може да го смените во поставки.</translation>
 <translation id="8176440868214972690">Администраторот на уредов испратил одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
-<translation id="8179003511148538426">Патувањата се отворени на половина екран</translation>
 <translation id="8184538546369750125">Користи глобална стандардна поставка (Дозволи)</translation>
 <translation id="8186706823560132848">Софтвер</translation>
 <translation id="8190193880870196235">Управувано од екстензија</translation>
@@ -2704,6 +2706,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Поставки</translation>
+<translation id="8428634594422941299">Сфатив</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со поставките за колачиња во поставките на Chrome</translation>
 <translation id="8433057134996913067">Ова ќе ве одјави од повеќето веб-сајтови.</translation>
 <translation id="8434840396568290395">Миленици</translation>
@@ -2808,6 +2811,7 @@
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8763986294015493060">Затворете ги сите прозорци „Инкогнито“ што се отворени во моментов</translation>
 <translation id="8766943070169463815">Листот за проверка на акредитиви за безбедно плаќање е отворен</translation>
+<translation id="8767765348545497220">Затворете го балончето за помош</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Мотори</translation>
 <translation id="8790007591277257123">&amp;Повтори бришење</translation>
@@ -2820,6 +2824,7 @@
 <translation id="8806285662264631610">Производи за бања и тело</translation>
 <translation id="8807160976559152894">Кратење по секоја страница</translation>
 <translation id="8808828119384186784">Поставки за Chrome</translation>
+<translation id="8813277370772331957">Потсети ме подоцна</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="882338992931677877">Отвор за рачно полнење</translation>

@@ -304,6 +304,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2834813915651407382">Obert fa poc</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
+<translation id="2848120746144143659">Prem Retorn per fer una captura de pantalla completa</translation>
 <translation id="2849936225196189499">Crítica</translation>
 <translation id="2860184359326882502">Millor coincidència</translation>
 <translation id="2865888419503095837">Informació de la xarxa</translation>
@@ -482,6 +483,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
+<translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
@@ -813,6 +815,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5977415296283489383">Auricular</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
@@ -1199,6 +1202,7 @@ Instal·lació nova</translation>
 <translation id="8364673525741149932">Commutador Grup de prestatges.<ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>
 <translation id="8371991222807690464">El rendiment perifèric pot estar limitat en el mode de convidat</translation>
+<translation id="8374601332003098278">Prem Retorn per gravar una part de la pantalla</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> i el teu telèfon es connectaran automàticament</translation>
 <translation id="8380784334203145311">Bona nit,</translation>
 <translation id="8382715499079447151">Protecció de visualització</translation>
@@ -1251,6 +1255,7 @@ Instal·lació nova</translation>
 <translation id="8653151467777939995">Mostra la configuració de notificacions. Les notificacions estan activades.</translation>
 <translation id="8660331759611631213">Arrel quadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
+<translation id="8664282223139913403">Prem Retorn per fer una captura de pantalla parcial</translation>
 <translation id="8664753092453405566">Mostra la llista de xarxes. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Obre <ph name="NAME" /> per configurar el dispositiu</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
@@ -1292,6 +1297,7 @@ Instal·lació nova</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
+<translation id="8924458948354692166">Prem Retorn per fer una captura de pantalla de la finestra</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>

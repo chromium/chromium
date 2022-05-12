@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
 <translation id="123124571410524056">Aizdomas par portālu</translation>
+<translation id="1236400083787698183">Pirms ierīces restartēšanas izmantojiet tajā funkciju Powerwash. Ja jūsu ierīcei ir vāks, neaizveriet to, līdz funkcija Powerwash ir veikusi vajadzīgās darbības. Funkcijas Powerwash darbību izpilde var ilgt līdz pat vienai minūtei.</translation>
 <translation id="1238612778414822719">HTTPS latentums</translation>
+<translation id="1240699967155581440">Nepieciešams izmantot funkciju Powerwash (rūpnīcas iestatījumu atiestatīšana)</translation>
 <translation id="1264116747675686718">Notiek operētājsistēmas versijas atjaunināšana</translation>
 <translation id="1264369926465113395">Skatiet Chromebook jauno digitālo žurnālu satura veidotājiem.</translation>
 <translation id="1270369111467284986">Aizdomas par caurlaides lapu</translation>
@@ -149,6 +151,7 @@
 <translation id="2360257214555822463">Konstatēti <ph name="LINK_BEGIN" />prasībām neatbilstoši komponenti<ph name="LINK_END" />. Ja zināt, ka tādi ir instalēti, aplieciniet to tagad.</translation>
 <translation id="2363636958541445404">Ieslēdziet funkciju, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
+<translation id="236594517359128026">Pirms turpināt, novietojiet klēpjdatoru uz līdzenas virsmas</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
 <translation id="2407209115954268704">SIM kartes bloķēšanas statuss</translation>
@@ -190,6 +193,7 @@
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
 <translation id="291142119251986300">Neatbilstoši komponenti</translation>
 <translation id="2926057806159140518">Ievadiet savu lietotājvārdu un paroli vai skenējiet kvadrātkodu</translation>
+<translation id="2928420929544864228">Instalēšana pabeigta.</translation>
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -267,6 +271,7 @@
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
+<translation id="385832974417157471">Pirms ierīces izslēgšanas izmantojiet tajā funkciju Powerwash. Ja jūsu ierīcei ir vāks, neaizveriet to, līdz funkcija Powerwash ir veikusi vajadzīgās darbības. Funkcijas Powerwash darbību izpilde var ilgt līdz pat vienai minūtei.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
@@ -456,6 +461,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5507300744274596613">Gādājiet, lai operētājsistēma Chrome OS būtu atjaunināta</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">Komponentu kalibrēšana</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Atkārtoti skenēt</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
@@ -709,6 +715,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8217675307824400706">Savienojuma izveide</translation>
+<translation id="8221728673725659466">Kalibrēšana pabeigta</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
@@ -720,11 +727,13 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8297006494302853456">Vājš</translation>
 <translation id="8302368968391049045">HTTPS ugunsmūris</translation>
 <translation id="8318753676953949627">Nav attēlu</translation>
+<translation id="8327249300223641918">Pirms turpināt, novietojiet ierīci (gan tās pamatu, gan vāku) uz līdzenas virsmas.</translation>
 <translation id="8336739000755212683">Mainīt ierīces konta attēlu</translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8364946094152050673">Tukši nosaukumu serveri</translation>
 <translation id="8372477600026034341">Citi mitinātāji</translation>
+<translation id="8378855320830505539">Reģions</translation>
 <translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
 <translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -734,6 +743,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="844521431886043384">DNS nav iestatīts</translation>
 <translation id="8456761643544401578">Automātisks tumšais režīms</translation>
 <translation id="8461329675984532579">Mājas pakalpojumu sniedzēja nosaukums</translation>
+<translation id="8467104829907989997">Notiek komponentu kalibrēšana...</translation>
 <translation id="8475690821716466388">Wi-Fi tīkls aizsargā nedrošs protokols WEP PSK</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
 <translation id="8483248364096924578">IP adrese</translation>
@@ -793,6 +803,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenēt}=1{Skenēt {NUMBER_OF_PAGES}. lapu}zero{Skenēt {NUMBER_OF_PAGES}. lapu}one{Skenēt {NUMBER_OF_PAGES}. lapu}other{Skenēt {NUMBER_OF_PAGES}. lapu}}</translation>
 <translation id="8997710128084572139">Ierīces akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="9003704114456258138">Frekvence</translation>
+<translation id="9025198690966128418">Izmantot kā personīgo ierīci</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS atrisei ir augsts latentums</translation>
 <translation id="9073281213608662541">PAP</translation>

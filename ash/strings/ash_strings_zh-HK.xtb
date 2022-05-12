@@ -304,6 +304,7 @@
 <translation id="2834813915651407382">最近開啟過</translation>
 <translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
+<translation id="2848120746144143659">㩒 Enter 掣就可以擷取全螢幕截圖</translation>
 <translation id="2849936225196189499">重要</translation>
 <translation id="2860184359326882502">最符合的項目</translation>
 <translation id="2865888419503095837">網絡資訊</translation>
@@ -482,6 +483,7 @@
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
+<translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -812,6 +814,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受管使用者</translation>
+<translation id="5976112937189445008">㩒 Enter 掣就可以錄視窗畫面</translation>
 <translation id="5977415296283489383">耳機</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -1197,6 +1200,7 @@
 <translation id="8364673525741149932">切換「捷徑列群組」。<ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">往前一個字母</translation>
 <translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
+<translation id="8374601332003098278">㩒 Enter 掣就可以錄部分螢幕畫面</translation>
 <translation id="8375916635258623388">此 <ph name="DEVICE_NAME" /> 和手機將會自動連接</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8382715499079447151">檢視保護</translation>
@@ -1249,6 +1253,7 @@
 <translation id="8653151467777939995">顯示通知設定。通知已開啟</translation>
 <translation id="8660331759611631213">71 嘅平方根</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">㩒 Enter 掣就可以擷取部分螢幕截圖</translation>
 <translation id="8664753092453405566">顯示網絡清單。<ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">開啟 <ph name="NAME" /> 以設定裝置</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
@@ -1290,6 +1295,7 @@
 <translation id="8909138438987180327">電量剩番 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支援這種語言。</translation>
+<translation id="8924458948354692166">㩒 Enter 掣就可以擷取視窗螢幕截圖</translation>
 <translation id="8926951137623668982">一律隱藏捷徑列</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>

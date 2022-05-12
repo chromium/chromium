@@ -306,6 +306,7 @@
 <translation id="1717218214683051432">ചലന സെൻസറുകൾ</translation>
 <translation id="1717494416764505390">മെയിൽബോക്സ് 3</translation>
 <translation id="1718029547804390981">അനോട്ടേറ്റ് ചെയ്യാനാവുന്നതിലും വളരെ വലുതാണ് ഈ ഡോക്യുമെൻ്റ്</translation>
+<translation id="1720941539803966190">ട്യൂട്ടോറിയൽ അടയ്‌ക്കുക</translation>
 <translation id="1721424275792716183">* ഫീൽഡ് ആവശ്യമാണ്</translation>
 <translation id="1727613060316725209">സാധുതയുള്ള സർട്ടിഫിക്കറ്റാണ്</translation>
 <translation id="1727741090716970331">സാധുവായ കാർഡ് നമ്പർ ചേർക്കുക</translation>
@@ -481,6 +482,7 @@
 <translation id="2215727959747642672">ഫയൽ എഡിറ്റ് ചെയ്യൽ</translation>
 <translation id="2215963164070968490">നായകൾ</translation>
 <translation id="2218879909401188352">നിലവിൽ {<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്നതിലുള്ള അക്രമികൾക്ക് നിങ്ങളുടെ ഉപകരണം കേടുവരുത്തുന്ന ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനോ മൊബൈൽ ബില്ലിലേക്ക് നിങ്ങളറിയാതെ നിരക്കുകൾ ചേർക്കാനോ നിങ്ങളുടെ വ്യക്തിപരമായ വിവരങ്ങൾ മോഷ്‌ടിക്കാനോ കഴിയും. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">ട്യൂട്ടോറിയൽ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2224337661447660594">ഇന്റർനെറ്റ് ഇല്ല</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />ഡയഗണോസ്‌റ്റിക്‌സ് ആപ്പ്<ph name="END_LINK" /> ഉപയോഗിച്ച് കണകഷൻ പ്രശ്‌നം പരിഹരിക്കുക</translation>
 <translation id="2239100178324503013">ഇപ്പോൾ അയയ്‌ക്കുക</translation>
@@ -1063,10 +1065,10 @@
 <translation id="3835233591525155343">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോഗം</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google ഡോക് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
-<translation id="3851515670389017037">യാത്രകൾ അടച്ചൂ</translation>
 <translation id="3858027520442213535">തീയതിയും സമയവും അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
+<translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3881478300875776315">കുറച്ച് വരികൾ മാത്രം കാണിക്കുക</translation>
 <translation id="3884278016824448484">വിരുദ്ധ ഉപകരണ ഐഡന്റിഫയർ</translation>
 <translation id="3885155851504623709">പാരിഷ്</translation>
@@ -1364,7 +1366,6 @@
 <translation id="470284880436071933">കുറ്റവും നീതിയും</translation>
 <translation id="4704732901923281920">ജീവ ശാസ്‌ത്രം</translation>
 <translation id="4708268264240856090">നിങ്ങളുടെ കണക്ഷൻ തടസ്സപ്പെട്ടു</translation>
-<translation id="4709819737903924300">യാത്രകൾ പൂർണ്ണ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> എന്നതിനുള്ള പാസ്‌വേഡ്</translation>
@@ -1478,6 +1479,7 @@
 <translation id="5011561501798487822">ഭാഷ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="5015510746216210676">മെഷീനിന്‍റെ പേര്‌:</translation>
 <translation id="5017554619425969104">നിങ്ങൾ പകർത്തിയ ടെക്‌സ്‌റ്റ്</translation>
+<translation id="5017828934289857214">പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="5018422839182700155">ഈ പേജ് തുറക്കാനായില്ല</translation>
 <translation id="5019198164206649151">ബാക്കിംഗ് സംഭരണം മോശം അവസ്ഥയിലാണ്</translation>
 <translation id="5020776957610079374">ആഗോള സംഗീതം</translation>
@@ -1711,6 +1713,7 @@
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="5629630648637658800">നയ ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5631439013527180824">ഉപകരണ മാനേജുമെന്റ് ടോക്കൺ അസാധുവാണ്</translation>
+<translation id="5632485077360054581">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="5633066919399395251"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റിലെ നിലവിലുള്ള അറ്റാക്കർമാർ നിങ്ങളുടെ വിവരങ്ങൾ മോഷ്‌ടിക്കാനോ ഇല്ലാതാക്കാനോ ഇടയുള്ള (ഉദാഹരണത്തിന്, ഫോട്ടോകൾ, പാസ്‌വേഡുകൾ, സന്ദേശങ്ങൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നിവ) അപകടകരമായ പ്രോഗ്രാമുകൾ കമ്പ്യൂട്ടറിൽ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">തെറ്റിദ്ധരിപ്പിക്കുന്ന ഉള്ളടക്കം ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="5633259641094592098">കൾട്ട്, ഇൻഡി സിനിമകൾ</translation>
@@ -1947,6 +1950,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" />-യിൽ കുറഞ്ഞ ഡാറ്റ ലാഭിക്കുന്നു.അടുത്തതവണ നിങ്ങൾ സന്ദർശിക്കുമ്പോൾ ചില സൈറ്റുകൾ ഇതിനേക്കാൾ പതുക്കെ ലോഡാകാം.</translation>
 <translation id="6337534724793800597">പേരിന്‍റെ ക്രമത്തിൽ നയങ്ങൾ ഫിൽട്ടർ ചെയ്യുക</translation>
 <translation id="6340739886198108203">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ സ്ക്രീൻഷോട്ടുകൾ എടുക്കുന്നതോ റെക്കോർഡ് ചെയ്യുന്നതോ അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല:</translation>
+<translation id="6348220984832452017">സജീവമായ വ്യതിയാനങ്ങൾ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ് (സമന്വയിപ്പിച്ചത്)}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള# പാസ്‌വേഡുകൾ (സമന്വയിപ്പിച്ചത്)}}</translation>
 <translation id="6355392890578844978">കമ്പനിയോ മറ്റേതെങ്കിലും സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ബ്രൗസർ. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്ത് മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -2606,7 +2610,6 @@
 <translation id="8163866351304776260">ഇടതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="8175796834047840627">സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നതിനാൽ നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്ക് കാർഡുകൾ സംരക്ഷിക്കാമെന്ന് Chrome വാഗ്‌ദാനം ചെയ്യുന്നു. ക്രമീകരണത്തിൽ ഈ രീതി മാറ്റാനാകും.</translation>
 <translation id="8176440868214972690">ഈ ഉപകരണത്തിന്റെ അഡ്മിൻ, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
-<translation id="8179003511148538426">യാത്രകൾ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="8184538546369750125">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (അനുവദിക്കുക)</translation>
 <translation id="8186706823560132848">സോഫ്റ്റ്‍വെയര്‍</translation>
 <translation id="8190193880870196235">ഒരു വിപുലീകരണം വഴി മാനേജ് ചെയ്യുന്നത്</translation>
@@ -2698,6 +2701,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
+<translation id="8428634594422941299">മനസ്സിലായി</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="8433057134996913067">ഇത് നിങ്ങളെ മിക്ക വെബ്‌സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യിക്കും.</translation>
 <translation id="8434840396568290395">വളർത്തുമൃഗങ്ങൾ</translation>
@@ -2802,6 +2806,7 @@
 <translation id="8763927697961133303">USB ഉപകരണം</translation>
 <translation id="8763986294015493060">നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="8766943070169463815">സുരക്ഷിതമായ പേയ്‌മെന്റ് ക്രെഡൻഷ്യൽ പരിശോധിച്ചുറപ്പിക്കൽ ഷീറ്റ് തുറന്നു</translation>
+<translation id="8767765348545497220">സഹായ ബബിൾ അടയ്ക്കുക</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">മോട്ടോർസൈക്കിളുകൾ</translation>
 <translation id="8790007591277257123">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
@@ -2814,6 +2819,7 @@
 <translation id="8806285662264631610">കുളിക്കാനും ശരീര സംരക്ഷണത്തിനുമുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="8808828119384186784">Chrome ക്രമീകരണം</translation>
+<translation id="8813277370772331957">എന്നെ പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">മാനുവൽ സ്ലോട്ട്</translation>

@@ -306,6 +306,7 @@
 <translation id="1717218214683051432">Датчики руху</translation>
 <translation id="1717494416764505390">Поштова скринька 3</translation>
 <translation id="1718029547804390981">Документ завеликий для створення приміток</translation>
+<translation id="1720941539803966190">Закрити навчальний посібник</translation>
 <translation id="1721424275792716183">* Обов’язкове поле</translation>
 <translation id="1727613060316725209">Сертифікат дійсний</translation>
 <translation id="1727741090716970331">Додайте дійсний номер картки</translation>
@@ -482,6 +483,7 @@
 <translation id="2215727959747642672">Редагування файлу</translation>
 <translation id="2215963164070968490">Собаки</translation>
 <translation id="2218879909401188352">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити небезпечні додатки, які шкодять пристроям, наприклад, додають приховані платежі за мобільний зв’язок або викрадають особисту інформацію. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">Переглянути навчальний посібник знову</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2230458221926704099">Відновіть з’єднання за допомогою <ph name="BEGIN_LINK" />додатка для діагностики<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Надіслати</translation>
@@ -1065,10 +1067,10 @@
 <translation id="3835233591525155343">Дані про активний стан пристрою</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити новий документ Google</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851515670389017037">Сеанси закрито</translation>
 <translation id="3858027520442213535">Оновити дату й час</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3872834068356954457">Наука</translation>
+<translation id="3875783148670536197">Докладніше</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
 <translation id="3884278016824448484">Конфліктуючий ідентифікатор пристрою</translation>
 <translation id="3885155851504623709">Цивільний округ</translation>
@@ -1368,7 +1370,6 @@
 <translation id="470284880436071933">Злочин і правосуддя</translation>
 <translation id="4704732901923281920">Біологічні науки</translation>
 <translation id="4708268264240856090">З’єднання розірвано</translation>
-<translation id="4709819737903924300">Сеанси відкрито на всю висоту</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />провести діагностику мережі Windows<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Пароль користувача <ph name="USERNAME" /></translation>
@@ -1482,6 +1483,7 @@
 <translation id="5011561501798487822">Визначена мова</translation>
 <translation id="5015510746216210676">Назва пристрою:</translation>
 <translation id="5017554619425969104">Скопійований текст</translation>
+<translation id="5017828934289857214">Нагадати пізніше</translation>
 <translation id="5018422839182700155">Не вдається відкрити цю сторінку</translation>
 <translation id="5019198164206649151">Резервний носій пошкоджено</translation>
 <translation id="5020776957610079374">Музика народів світу</translation>
@@ -1715,6 +1717,7 @@
 <translation id="5624120631404540903">Керувати паролями</translation>
 <translation id="5629630648637658800">Помилка завантаження налаштувань правила</translation>
 <translation id="5631439013527180824">Недійсний маркер керування пристрою</translation>
+<translation id="5632485077360054581">Докладніше</translation>
 <translation id="5633066919399395251">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити на ваш комп’ютер небезпечні програми, що викрадають або видаляють інформацію (фотографії, паролі, повідомленняб дані кредитних карток тощо). <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Заблоковано оманливий вміст.</translation>
 <translation id="5633259641094592098">Культові й альтернативні фільми</translation>
@@ -1951,6 +1954,7 @@
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
 <translation id="6337534724793800597">Фільтрувати правила за назвою</translation>
 <translation id="6340739886198108203">Згідно з правилом адміністратора не рекомендовано здійснювати запис екрана, коли на ньому видно конфіденційний контент:</translation>
+<translation id="6348220984832452017">Активні варіанти</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}=2{2 паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронізовано)}few{# паролі (для <ph name="DOMAIN_LIST" />, синхронізовано)}many{# паролів (для <ph name="DOMAIN_LIST" />, синхронізовано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронізовано)}}</translation>
 <translation id="6355392890578844978">Цим веб-переглядачем не керує адміністратор компанії чи іншої організації. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -2612,7 +2616,6 @@
 <translation id="8163866351304776260">Пробити чотири отвори ліворуч</translation>
 <translation id="8175796834047840627">Chrome пропонує вам зберегти картки в обліковому записі Google, оскільки ви ввійшли в нього. Це можна змінити в налаштуваннях.</translation>
 <translation id="8176440868214972690">Адміністратор пристрою надіслав указаним веб-сайтам деяку інформацію, таку як налаштування й правила.</translation>
-<translation id="8179003511148538426">Сеанси відкрито на половину висоти</translation>
 <translation id="8184538546369750125">Використовувати глобальне налаштування за умовчанням (Дозволяти)</translation>
 <translation id="8186706823560132848">Програмне забезпечення</translation>
 <translation id="8190193880870196235">Дозволом керує розширення</translation>
@@ -2704,6 +2707,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Налаштування</translation>
+<translation id="8428634594422941299">Зрозуміло</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="8433057134996913067">Ви вийдете з облікового запису на більшості веб-сайтів.</translation>
 <translation id="8434840396568290395">Домашні тварини</translation>
@@ -2809,6 +2813,7 @@
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8763986294015493060">Закрийте всі відкриті вікна в режимі анонімного перегляду</translation>
 <translation id="8766943070169463815">Екран автентифікації облікових даних для безпечних платежів відкрито</translation>
+<translation id="8767765348545497220">Закрити спливаючу підказку</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Мотоцикли</translation>
 <translation id="8790007591277257123">&amp;Повторити видалення</translation>
@@ -2821,6 +2826,7 @@
 <translation id="8806285662264631610">Косметика для ванної та догляду за тілом</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
 <translation id="8808828119384186784">Налаштування Chrome</translation>
+<translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Лоток для ручного введення</translation>

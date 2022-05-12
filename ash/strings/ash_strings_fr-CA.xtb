@@ -304,6 +304,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2834813915651407382">Ouvert récemment</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
+<translation id="2848120746144143659">Appuyez sur Entrée pour effectuer une capture plein écran</translation>
 <translation id="2849936225196189499">Essentielle</translation>
 <translation id="2860184359326882502">Meilleures correspondances</translation>
 <translation id="2865888419503095837">Information réseau</translation>
@@ -482,6 +483,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3846575436967432996">Aucune information concernant le réseau</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
+<translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer en plein écran</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -813,6 +815,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
+<translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5977415296283489383">Casque d'écoute</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
@@ -1199,6 +1202,7 @@ Nouvelle installation</translation>
 <translation id="8364673525741149932">Basculer le mode Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Déplacer une lettre vers l'avant</translation>
 <translation id="8371991222807690464">Les performances du périphérique peuvent être limitées en mode Invité</translation>
+<translation id="8374601332003098278">Appuyez sur Entrée pour enregistrer une partie de l'écran</translation>
 <translation id="8375916635258623388">Cet appareil <ph name="DEVICE_NAME" /> et votre téléphone se connecteront automatiquement</translation>
 <translation id="8380784334203145311">Bonne nuit,</translation>
 <translation id="8382715499079447151">Protection de l'affichage</translation>
@@ -1251,6 +1255,7 @@ Nouvelle installation</translation>
 <translation id="8653151467777939995">Afficher les paramètres de notification. Les notifications sont activées</translation>
 <translation id="8660331759611631213">Racine carrée de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">Appuyez sur Entrée pour effectuer une capture d'écran partielle</translation>
 <translation id="8664753092453405566">Afficher la liste de réseaux. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">Ouvrez <ph name="NAME" /> pour configurer votre appareil</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
@@ -1292,6 +1297,7 @@ Nouvelle installation</translation>
 <translation id="8909138438987180327">Pile chargée à <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
+<translation id="8924458948354692166">Appuyez sur Entrée pour effectuer une capture d'écran de la fenêtre</translation>
 <translation id="8926951137623668982">L'étagère est toujours masquée</translation>
 <translation id="8936501819958976551">désactivée</translation>
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>

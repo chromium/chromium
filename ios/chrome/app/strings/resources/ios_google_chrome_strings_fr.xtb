@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="1493827051843127077">Définissez Chrome par défaut pour synchroniser vos onglets, mots de passe et infos de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'est pas parvenu à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
+<translation id="1511320244449497906">Vous êtes connecté et synchronisez vos données avec un compte géré par <ph name="DOMAIN" /> sur lequel l'administrateur peut maintenant définir des règles relatives aux utilisateurs propres à ce compte et pouvant modifier le comportement de Chrome.</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Contribuez à améliorer Chrome en envoyant des statistiques d'utilisation et des rapports d'erreurs à Google</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Pour profiter pleinement de Chrome, connectez-vous avec votre compte Google.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
+<translation id="81358522153858150">Chrome est désormais compatible avec les règles relatives aux utilisateurs de votre compte géré</translation>
 <translation id="8160472928944011082">Impossible mettre à jour Chrome</translation>
 <translation id="8263079278049777200">Connectez-vous à ce site, à votre compte Google et à Chrome. Vous pourrez activer la synchronisation plus tard.</translation>
 <translation id="8357607116237445042">Indiquez si vous voulez effacer ou garder les données Chrome de cet appareil</translation>

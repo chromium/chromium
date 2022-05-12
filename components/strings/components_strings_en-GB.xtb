@@ -306,6 +306,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1718029547804390981">Document is too large to be annotated</translation>
+<translation id="1720941539803966190">Close tutorial</translation>
 <translation id="1721424275792716183">* Field is required</translation>
 <translation id="1727613060316725209">Certificate is valid</translation>
 <translation id="1727741090716970331">Add Valid Card Number</translation>
@@ -481,6 +482,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2215963164070968490">Dogs</translation>
 <translation id="2218879909401188352">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install dangerous apps that damage your device, add hidden charges to your mobile bill or steal your personal information. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">Restart tutorial</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2230458221926704099">Fix your connection using the <ph name="BEGIN_LINK" />diagnostics app<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Send now</translation>
@@ -1064,10 +1066,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Doc quickly</translation>
 <translation id="385051799172605136">Back</translation>
-<translation id="3851515670389017037">Journeys closed</translation>
 <translation id="3858027520442213535">Update date and time</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3872834068356954457">Science</translation>
+<translation id="3875783148670536197">Show me how</translation>
 <translation id="3881478300875776315">Show fewer lines</translation>
 <translation id="3884278016824448484">Conflicting device identifier</translation>
 <translation id="3885155851504623709">Parish</translation>
@@ -1367,7 +1369,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="470284880436071933">Crime and justice</translation>
 <translation id="4704732901923281920">Biological sciences</translation>
 <translation id="4708268264240856090">Your connection was interrupted</translation>
-<translation id="4709819737903924300">Journeys opened at full height</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Running Windows Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
@@ -1481,6 +1482,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5017554619425969104">Text that you copied</translation>
+<translation id="5017828934289857214">Remind me later</translation>
 <translation id="5018422839182700155">Can't open this page</translation>
 <translation id="5019198164206649151">Backing store in bad state</translation>
 <translation id="5020776957610079374">World music</translation>
@@ -1714,6 +1716,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5624120631404540903">Manage passwords</translation>
 <translation id="5629630648637658800">Failed to load policy settings</translation>
 <translation id="5631439013527180824">Invalid device management token</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5633066919399395251">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Deceptive content blocked.</translation>
 <translation id="5633259641094592098">Cult and indie movies</translation>
@@ -2612,7 +2615,6 @@ Additional details:
 <translation id="8163866351304776260">Quad punch left</translation>
 <translation id="8175796834047840627">Chrome is offering to save your cards in your Google Account because you are signed in. You can change this behaviour in settings.</translation>
 <translation id="8176440868214972690">The administrator of this device has sent some info to the following websites, like settings or policies.</translation>
-<translation id="8179003511148538426">Journeys opened at half height</translation>
 <translation id="8184538546369750125">Use global default (Allow)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8190193880870196235">Managed by an extension</translation>
@@ -2704,6 +2706,7 @@ Additional details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8428634594422941299">Got it</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage your cookie preferences in Chrome settings</translation>
 <translation id="8433057134996913067">This will sign you out of most websites.</translation>
 <translation id="8434840396568290395">Pets</translation>
@@ -2808,6 +2811,7 @@ Additional details:
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8763986294015493060">Close all incognito windows that are currently open</translation>
 <translation id="8766943070169463815">Secure payment credential authentication sheet is opened</translation>
+<translation id="8767765348545497220">Close help bubble</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorcycles</translation>
 <translation id="8790007591277257123">&amp;Redo delete</translation>
@@ -2820,6 +2824,7 @@ Additional details:
 <translation id="8806285662264631610">Bath and body products</translation>
 <translation id="8807160976559152894">Trim after each page</translation>
 <translation id="8808828119384186784">Chrome settings</translation>
+<translation id="8813277370772331957">Remind me later</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">Manual slot</translation>

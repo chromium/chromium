@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Video-instellings</translation>
 <translation id="2144806332417375165">Gepasmaakte videoparameters</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2244252133441425811">Aktiveer video-FPS-kieser</translation>
 <translation id="2271433936731426666">Aktiveer video-oorsig in volle grootte</translation>
 <translation id="229579744168541441">Voer uit na skyf</translation>
 <translation id="2320741269052147773">Swenk links</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">Afteller af</translation>
 <translation id="3448774564454087943">Video is nie gestoor nie want dis te kort</translation>
 <translation id="346539236881580388">Neem weer</translation>
-<translation id="3511295087439225876">Dempknoppie is aan</translation>
 <translation id="3517926952904427380">Kan nie portretfoto neem nie</translation>
 <translation id="3566302376254083266">Beweeg tans na links bo</translation>
 <translation id="3569311554794739032">Wil jy regtig <ph name="FILE" /> verwyder?</translation>
@@ -153,7 +153,6 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8145038249676204903">Skakel oor na neem van foto</translation>
 <translation id="8167081290930651932">Stoor as foto</translation>
-<translation id="8236532224592646488">Dempknoppie is af</translation>
 <translation id="8239780215768881278">Neem 'n videofoto</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8425673304802773841">Kantel af</translation>

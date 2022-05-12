@@ -190,6 +190,7 @@
 <translation id="2690858294534178585">카메라 사용 중</translation>
 <translation id="2691653761409724435">오프라인에서 사용할 수 없음</translation>
 <translation id="2695507686909505111">페이지 번역됨</translation>
+<translation id="2697526135132990015">로그아웃 후 데이터 지우기</translation>
 <translation id="2700241355396984822">권한 설정 옵션</translation>
 <translation id="2702801445560668637">읽기 목록</translation>
 <translation id="2704491540504985681">다운로드</translation>
@@ -364,6 +365,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4121993058175073134">순 내보내기 데이터를 전송하려면 설정 앱에서 이메일 계정을 설정하시기 바랍니다.</translation>
 <translation id="4124987746317609294">기간</translation>
 <translation id="4133265950310064865">향상된 보호 모드</translation>
+<translation id="4148023517926189160">웹사이트에서 파일을 다운로드하여 내 캘린더에 추가하려고 합니다.</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4172051516777682613">항상 표시</translation>
 <translation id="418156467088430727">새 탭에서 오프라인 버전 보기</translation>
@@ -692,6 +694,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6760509555861141183">최근 탭으로 돌아가기</translation>
 <translation id="6762812039470893796">모두 선택 해제</translation>
 <translation id="6780034285637185932">우편번호</translation>
+<translation id="6781260999953472352">동기화를 사용하시겠습니까?</translation>
 <translation id="6785453220513215166">비정상 종료 보고서 보내는 중...</translation>
 <translation id="6797885426782475225">음성검색</translation>
 <translation id="6801927553864092214">비공개로 탐색하려면 시크릿 탭을 여세요.</translation>
@@ -804,6 +807,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7807060072011926525">Google 제공</translation>
 <translation id="7839985698273989086">오프라인 페이지</translation>
 <translation id="7840771868269352570">선택한 항목 삭제</translation>
+<translation id="784551991304901159">콘텐츠를 보려면 메뉴에서 사용을 선택하세요</translation>
 <translation id="7853202427316060426">활동</translation>
 <translation id="7856733331829174190">다운로드할 수 없음</translation>
 <translation id="7859704718976024901">인터넷 사용 기록</translation>

@@ -301,6 +301,7 @@
 <translation id="2834813915651407382">最近打开过</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
+<translation id="2848120746144143659">按 Enter 键即可截取整个屏幕</translation>
 <translation id="2849936225196189499">关键</translation>
 <translation id="2860184359326882502">最匹配</translation>
 <translation id="2865888419503095837">网络信息</translation>
@@ -479,6 +480,7 @@
 <translation id="3846575436967432996">没有可用的网络信息</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
+<translation id="3861651314799684201">按 Enter 键即可录制整个屏幕</translation>
 <translation id="3886872229787704059">今天打开过</translation>
 <translation id="3891340733213178823">连按两次Ctrl+Shift+Q即可退出。</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -810,6 +812,7 @@
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
+<translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5977415296283489383">耳机</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
@@ -1195,6 +1198,7 @@
 <translation id="8364673525741149932">开启/关闭 Shelf Party 模式。<ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">前进一个字母</translation>
 <translation id="8371991222807690464">在访客模式下，外围设备的性能可能会受到限制</translation>
+<translation id="8374601332003098278">按 Enter 键即可录制局部屏幕</translation>
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8382715499079447151">窥探保护功能</translation>
@@ -1247,6 +1251,7 @@
 <translation id="8653151467777939995">显示通知设置。通知已开启</translation>
 <translation id="8660331759611631213">71 的平方根</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">按 Enter 键即可截取局部屏幕</translation>
 <translation id="8664753092453405566">显示网络列表。<ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727">请打开“<ph name="NAME" />”以设置您的设备</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
@@ -1288,6 +1293,7 @@
 <translation id="8909138438987180327">剩余的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
+<translation id="8924458948354692166">按 Enter 键即可截取窗口</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>

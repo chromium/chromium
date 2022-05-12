@@ -3864,18 +3864,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="5276965766805212470">
-      Wenn diese Richtlinie auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen.
-      Ist sie auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> gesetzt, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten.
-
-      Wenn die Richtlinie auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen. In diesem Profil sind keine sekundären Konten zugelassen.
-      Wenn diese Richtlinie auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" /> gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten. In diesem Profil sind keine sekundären Konten zugelassen.
-
-      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_NONE" />“ gesetzt oder nicht konfiguriert ist, gelten für verwaltete Konten keine Einschränkungen. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Hierdurch gelten für das Konto keine Richtlinien, die durch den Administrator für das Konto festgelegt werden.
-
-      Wenn diese Richtlinie auf Geräteebene konfiguriert ist, unterliegen ihr alle Konten im Browser.
-      Ist sie auf Kontoebene konfiguriert, unterliegt ihr nur dieses Konto.
-    </translation>
 <translation id="5279539586558702228">Zeitpunkt, an dem das Gerät in den Netzbetrieb wechselt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="5283457834853986457">Plug-in-Suchfunktion deaktivieren (eingestellt)</translation>
 <translation id="5288772341821359899">Wenn die Richtlinie konfiguriert ist, wird der von WebRTC verwendete UDP-Port-Bereich auf den festgelegten Portintervall, einschließlich der Endpunkte, beschränkt.

@@ -203,6 +203,7 @@
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="291142119251986300">Unqualified components</translation>
 <translation id="2926057806159140518">Enter your username and password or scan your QR code</translation>
+<translation id="2928420929544864228">Installation complete.</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -761,6 +762,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
+<translation id="8378855320830505539">Region</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8422748173858722634">IMEI</translation>

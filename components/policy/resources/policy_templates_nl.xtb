@@ -3841,18 +3841,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als je dit beleid niet instelt, staat cursormarkering in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="5276965766805212470">
-      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken nadat hij of zij is ingelogd op een beheerd account waarvoor dit beleid geldt.
-      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken, met de optie om bestaande browsegegevens te behouden, nadat hij of zij is ingelogd op een beheerd account waarvoor dit beleid geldt.
-
-      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken nadat hij of zij is ingelogd op een beheerd account waarvoor dit beleid geldt. Dit profiel mag geen secundaire accounts hebben.
-      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken, met de optie om bestaande browsegegevens te behouden, nadat hij of zij is ingelogd op een beheerd account waarvoor dit beleid geldt. Dit profiel mag geen secundaire accounts hebben.
-
-      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_NONE" /> of niet is ingesteld, gelden er voor beheerde accounts geen beperkingen. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het niet mogelijk is om beleid te krijgen dat door de beheerder voor het account is ingesteld.
-
-      Als dit beleid op apparaatniveau is ingesteld, geldt het voor alle accounts in de browser.
-      Als dit beleid op accountniveau is ingesteld, geldt het alleen voor dat account in de browser.
-    </translation>
 <translation id="5279539586558702228">Tijd wanneer het apparaat netvoeding gaat gebruiken, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="5283457834853986457">Plug-inzoeker uitzetten (beëindigd)</translation>
 <translation id="5288772341821359899">Als het beleid is ingesteld, wordt het door WebRTC gebruikte UDP-poortbereik beperkt tot het opgegeven poortinterval (inclusief eindpunten).

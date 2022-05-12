@@ -143,6 +143,7 @@
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> 창이 모든 데스크에 할당됨</translation>
 <translation id="1750088060796401187">데스크는 최대 <ph name="MAX_DESK_LIMIT" />개만 허용됩니다. 새로운 데스크를 열려면 기존 데스크를 1개 삭제하세요.</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
+<translation id="1757857692711134412">일몰까지 끄기</translation>
 <translation id="1761222317188459878">네트워크 연결을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
@@ -304,6 +305,7 @@
 <translation id="2834813915651407382">최근에 열림</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
+<translation id="2848120746144143659">전체 화면 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="2849936225196189499">중요</translation>
 <translation id="2860184359326882502">가장 일치하는 결과</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
@@ -482,6 +484,7 @@
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="385300504083504382">시작</translation>
+<translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -506,6 +509,7 @@
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
 <translation id="40062176907008878">필기 입력</translation>
 <translation id="4017989525502048489">레이저 포인터</translation>
+<translation id="401993194061514265">마커를 사용할 수 없습니다. 스크린캐스트를 다시 여세요.</translation>
 <translation id="4021716437419160885">아래로 스크롤</translation>
 <translation id="4028481283645788203">보안 강화를 위해 비밀번호가 필요합니다.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -520,6 +524,7 @@
 <translation id="412298498316631026">창</translation>
 <translation id="4123259114412175274">Chromebook을 잠금 해제하려면 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="4129129681837227511">잠금 화면에 알림이 표시되도록 하려면 잠금을 해제하여 설정을 변경하세요.</translation>
+<translation id="4136724716305260864">일출까지 켜기</translation>
 <translation id="4146833061457621061">음악을 틀어 줘</translation>
 <translation id="4165275524535002941">디스플레이를 지원하지 않는 케이블일 수 있습니다</translation>
 <translation id="4177913004758410636">{0,plural, =1{1일 이내에 기기 업데이트}other{#일 이내에 기기 업데이트}}</translation>
@@ -572,6 +577,7 @@
 <translation id="4421231901400348175">원격 지원을 통해 <ph name="HELPER_NAME" />와(과) 화면 제어 공유</translation>
 <translation id="4424159417645388645">데스크 5</translation>
 <translation id="4430019312045809116">볼륨</translation>
+<translation id="4435022394553622295">휴대전화의 알림과 앱을 <ph name="DEVICE_TYPE" />에서 봅니다</translation>
 <translation id="4441283832827406317">앱이 이름별로 정렬됩니다.</translation>
 <translation id="4445159312344259901">잠금 해제하려면 로그인</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{중요 알림 1개}other{중요 알림 #개}}</translation>
@@ -699,6 +705,7 @@
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{기타 알림 1개}other{기타 알림 #개}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="5208059991603368177">켜짐</translation>
+<translation id="5216991270656129561"><ph name="TIME" />까지 끄기</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="523505283826916779">접근성 설정</translation>
@@ -748,6 +755,7 @@
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
+<translation id="5560420195677022218">휴대전화의 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="557563299383177668">다음 단락</translation>
@@ -813,6 +821,7 @@
 <translation id="595202126637698455">성능 추적 사용 중</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">관리 대상 사용자</translation>
+<translation id="5976112937189445008">창을 녹화하려면 Enter를 누르세요</translation>
 <translation id="5977415296283489383">헤드폰</translation>
 <translation id="5978382165065462689">원격 지원을 통해 화면 제어 공유</translation>
 <translation id="5980301590375426705">게스트 세션 종료</translation>
@@ -965,6 +974,7 @@
 <translation id="6884665277231944629">오늘로 돌아가기</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
+<translation id="6891721121089053234">휴대전화의 최근 사진, 미디어, 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6901883536534621389">동작으로 이동해 보기</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
@@ -1093,6 +1103,7 @@
 <translation id="7684531502177797067">카메라 입력이 <ph name="CAMERA_NAME" /> 카메라로 설정되었습니다.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">새 셀룰러 네트워크 추가</translation>
+<translation id="7720400844887872976"><ph name="TIME" />까지 켜기</translation>
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
@@ -1175,6 +1186,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> 관리자가 관리하는 설정입니다.</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> 정보 대화상자 열기</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> 사용 중</translation>
+<translation id="8183592608247778598">휴대전화의 최근 사진, 미디어, 알림, 앱을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="8192202700944119416">알림이 숨겨져 있음</translation>
 <translation id="8196787716797768628">태블릿 모드에서 동작을 사용하여 앱 간에 빠르게 전환하고 Chromebook과 상호작용하세요.</translation>
 <translation id="8200772114523450471">다시 시작</translation>
@@ -1199,6 +1211,7 @@
 <translation id="8364673525741149932">Shelf Party를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8371991222807690464">게스트 모드에서 주변기기 성능이 제한될 수 있습니다.</translation>
+<translation id="8374601332003098278">화면의 일부만 녹화하려면 Enter를 누르세요</translation>
 <translation id="8375916635258623388">이 <ph name="DEVICE_NAME" />과(와) 휴대전화가 자동으로 연결됩니다.</translation>
 <translation id="8380784334203145311">편안한 밤 보내세요</translation>
 <translation id="8382715499079447151">사생활 보호</translation>
@@ -1251,6 +1264,7 @@
 <translation id="8653151467777939995">알림 설정을 표시합니다. 알림이 사용 설정되어 있습니다.</translation>
 <translation id="8660331759611631213">71의 제곱근</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="8664282223139913403">부분 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="8664753092453405566">네트워크 목록을 표시합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8666856788528804727"><ph name="NAME" /> 앱을 열어 기기를 설정하세요</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
@@ -1292,6 +1306,7 @@
 <translation id="8909138438987180327">남은 배터리는 <ph name="PERCENTAGE" />%입니다.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 어시스턴트가 이 언어를 지원하지 않음</translation>
+<translation id="8924458948354692166">창 스크린샷을 캡처하려면 Enter를 누르세요</translation>
 <translation id="8926951137623668982">실행기 항상 숨김</translation>
 <translation id="8936501819958976551">비활성화됨</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>

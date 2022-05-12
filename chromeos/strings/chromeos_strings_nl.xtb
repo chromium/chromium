@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
+<translation id="1328223165223065150">Achtergrondkleur</translation>
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1367951781824006909">Een bestand selecteren</translation>
+<translation id="1380220803921738821">Er treden fouten op. Start opnieuw op of herstel de firmware via een USB-thumbdrive.</translation>
 <translation id="1387854245479784695">Dit is het totaal voor alle kernen</translation>
 <translation id="1394661041439318933">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in de case.</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1459693405370120464">Weer</translation>
+<translation id="1459784442280469416">Opslaan naar USB</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
 <translation id="150962533380566081">Ongeldige pukcode.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1512982610995527443">Apparaat wordt over 5 seconden uitgezet</translation>
+<translation id="1522984060396982789">De reparatie is geslaagd. Je kunt het apparaat uitzetten of bepaalde aanvullende acties uitvoeren.</translation>
 <translation id="152892567002884378">Volume omhoog</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
+<translation id="1932611479324127242">Batterijafkoppeling</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1977994649430373166">Google-profielfoto</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">Voorbijzweven</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
+<translation id="2154739667870063220">Opnieuw opstarten</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
 <translation id="2161394479394250669">Afdruktaak annuleren</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">Indelingsschakelaar</translation>
 <translation id="225692081236532131">Activeringsstatus</translation>
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
+<translation id="2275586345903859204">Reparatie is klaar</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
 <translation id="2320295602967756579">Licht thema aanzetten</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
+<translation id="2756652381241102009">Diagnose uitvoeren</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
+<translation id="2827359915699915567">Typ deze URL handmatig om de RSU-code te krijgen</translation>
 <translation id="2859243502336719778">Kritieke update</translation>
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
@@ -193,6 +203,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="291142119251986300">Niet-gekwalificeerde componenten</translation>
 <translation id="2926057806159140518">Geef je gebruikersnaam en wachtwoord op of scan je QR-code</translation>
+<translation id="2928420929544864228">Installatie afgerond.</translation>
 <translation id="3008341117444806826">VERNIEUWEN</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="3017079585324758401">Achtergrond</translation>
@@ -224,6 +235,7 @@
 <translation id="3291996639387199448">Sleutelrichting</translation>
 <translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
+<translation id="3333527094307156612">Gebruik deze QR-code om de ontgrendelingscode van 8 tekens te krijgen. Je kunt ook handmatig <ph name="LINK_BEGIN" />deze URL<ph name="LINK_END" /> typen.</translation>
 <translation id="3336855445806447827">Weet niet</translation>
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
@@ -257,6 +269,7 @@
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
+<translation id="3643810137582748570">Kalibratie overslaan</translation>
 <translation id="3678765385266369662">Selecteer hoe je Write Protect wilt uitzetten</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
@@ -327,6 +340,7 @@
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> wordt opnieuw opgestart</translation>
+<translation id="4415951057168511744">Huidige avatar</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> staat uit</translation>
 <translation id="4429881212383817840">Kerberos-ticket verloopt binnenkort</translation>
@@ -363,6 +377,7 @@
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
+<translation id="4751272708893364980">RMA-logboeken bekijken</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4774530504324923332">Je hebt een beveiligingssleutel waarvoor RSU aanstaat, een QR-codescanner en een tweede apparaat met een internetverbinding nodig</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
@@ -407,6 +422,7 @@
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
 <translation id="5051044138948155788">Dit is de enige pagina. Hierna kom je op het startscherm voor scannen.</translation>
+<translation id="506768878203270635">Typ de 8 tekens</translation>
 <translation id="5088172560898466307">Hostnaam van server</translation>
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -445,9 +461,11 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
 <translation id="537872351913703572">Het apparaat gaat naar een andere gebruiker of organisatie</translation>
+<translation id="5389224261615877010">Regenboog</translation>
 <translation id="5395600419410242651">Alle gegevens wissen</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
 <translation id="5401938042319910061">Alle routines uitvoeren</translation>
+<translation id="5406131354638931058">Voer de batterijafkoppeling uit voor apparaten die worden verstuurd of opgeborgen</translation>
 <translation id="5423849171846380976">Geactiveerd</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
@@ -468,6 +486,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5655283760733841251">Helderheid van toetsenbord verhogen</translation>
+<translation id="5661196929408385351">Powerwash en uitzetten</translation>
 <translation id="5669267381087807207">Activeren</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Gezin</translation>
@@ -479,6 +498,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
+<translation id="578753362485952307">Als je een moederbord wilt hergebruiken voor een ander apparaat, ga je naar het <ph name="LINK_BEGIN" />proces voor hergebruik<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -498,6 +518,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5931523347251946569">Bestand niet gevonden</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
+<translation id="5951259522948394825">Bevestigen of alles zich op de juiste plaats bevindt en het diagnostische rapport bekijken</translation>
 <translation id="5972388717451707488">Engine updaten</translation>
 <translation id="5984145644188835034">Standaardachtergrond</translation>
 <translation id="6017514345406065928">Groen</translation>
@@ -535,6 +556,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Donker thema aanzetten</translation>
+<translation id="6295178529664209245">Doorgaan met reparatie?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Screensaver altijd aanzetten</translation>
@@ -570,6 +592,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6575134580692778371">Niet geconfigureerd</translation>
 <translation id="6579509898032828423">Deze foto gebruiken</translation>
 <translation id="6596816719288285829">IP-adres</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" />-reparatie afsluiten</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6620487321149975369">Afdruktaken zie je in de geschiedenis, tenzij ze handmatig worden verwijderd</translation>
 <translation id="6643016212128521049">Wissen</translation>
@@ -582,6 +605,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723847290197874913">Achtergrondverlichting toetsenbord</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
+<translation id="6746847322826305075">Je kunt doorgaan met de volledige reparatie of een Powerwash uitvoeren (fabrieksinstellingen terugzetten) op het apparaat om het moederbord opnieuw te vullen.</translation>
 <translation id="6747215703636344499">Gestopt: uitvoer is vol</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6753452347192452143">Apparaat is een computer.</translation>
@@ -629,6 +653,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Selecteer 1 of meer componenten en probeer het opnieuw of sla de kalibratie over</translation>
 <translation id="7281657306185710294">Een koel briesje</translation>
 <translation id="7287310195820267359">Achtergrondcollecties</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
@@ -659,11 +684,13 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchscreen</translation>
 <translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Deze component kan niet worden gevonden.</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="7626501172915339021">RSU (RMA Server Unlock) uitvoeren</translation>
 <translation id="763165478673169849">Laatste resettijd</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7656388927906093505">Apparaat is een muis.</translation>
+<translation id="7657530360897961171">Fout met <ph name="DEVICE_TYPE" />-reparatie</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665800271478495366">Avatar wijzigen</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
@@ -705,12 +732,14 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8083281199617904460">Dit reparatieproces is bedoeld voor een getrainde reparateur. Start pas nadat de componenten die niet goed werken zijn vervangen.</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
+<translation id="8109786307828817014">Doorgaan met mislukte kalibraties?</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> selecteren</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">RMA-logboeken</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8217675307824400706">Verbinding maken</translation>
@@ -727,11 +756,13 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
 <translation id="8327249300223641918">Voordat je doorgaat, plaats je het hele apparaat (basis en klep) op een vlakke ondergrond.</translation>
+<translation id="8330949592403310082">Selecteer welke componenten zijn vervangen</translation>
 <translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
+<translation id="8378855320830505539">Regio</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -742,6 +773,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8456761643544401578">Automatisch donkere modus</translation>
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8467104829907989997">Componenten kalibreren...</translation>
+<translation id="8474030592808010086">Haal de stekker van het apparaat uit het stopcontact om de batterijafkoppeling uit te voeren</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
@@ -750,6 +782,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Componenten werken niet correct, tenzij ze zijn gekalibreerd</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
@@ -786,6 +819,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> van <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">Bekijken wat er is verholpen</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8923267550422472772">Dag van de maand voor resetten</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
@@ -804,6 +838,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9025198690966128418">Gebruiken als persoonlijk apparaat</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>
+<translation id="9063121522582193837">Kan bepaalde componenten niet kalibreren</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Deze video gebruiken</translation>

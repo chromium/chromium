@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
 <translation id="1493827051843127077">Chrome を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
 <translation id="1504372625950710826">Chrome でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
+<translation id="1511320244449497906">ログインしてデータを同期している、<ph name="DOMAIN" /> 管理のアカウントに対して、管理者が専用のユーザー ポリシーを設定して Chrome の動作を変更できるようになりました。</translation>
 <translation id="1682483655351012182">Chrome のデータを同期する</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">使用統計情報と障害レポートを Google に送信して Chrome の機能向上に役立てる</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">Chrome を最大限に活用するには、Google アカウントで Chrome にログインしてください。</translation>
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>
+<translation id="81358522153858150">Chrome で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>
 <translation id="8160472928944011082">Chrome を更新できません</translation>
 <translation id="8263079278049777200">このサイト、Google アカウント、Chrome にログインします。同期は後でオンにできます。</translation>
 <translation id="8357607116237445042">このデバイスから Chrome データを削除するかどうかを選択してください</translation>

@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ହୋମ୍ ନେଟ୍‌ୱର୍କ, ରୋମିଂ ନୁହେଁ</translation>
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
+<translation id="1328223165223065150">ୱାଲପେପର ରଙ୍ଗ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
@@ -54,6 +55,7 @@
 <translation id="1442433966118452622">ଇମେଜ ସୋର୍ସ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
 <translation id="1459693405370120464">ପାଣିପାଗ</translation>
+<translation id="1459784442280469416">USBରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
 <translation id="1478594628797167447">ସ୍କାନର୍</translation>
@@ -62,6 +64,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ୍ ଭାବେ ସେଟିଂସକୁ ପରିଚାଳନା ଏବଂ ଉପଯୋଗକର୍ତ୍ତା କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
+<translation id="1512982610995527443">ଡିଭାଇସଟି 5 ସେକେଣ୍ଡରେ ବନ୍ଦ ହୋଇଯିବ</translation>
+<translation id="1522984060396982789">ଆପଣଙ୍କ ମରାମତି ସଫଳ ହୋଇଛି। ଆପଣ ଡିଭାଇସକୁ ବନ୍ଦ କରିପାରିବେ କିମ୍ବା କିଛି ଅତିରିକ୍ତ ପଦକ୍ଷେପ ନେଇପାରିବେ।</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
@@ -104,6 +108,7 @@
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
+<translation id="1932611479324127242">ବ୍ୟାଟେରୀ କଟଅଫ</translation>
 <translation id="1947737735496445907">ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1977994649430373166">Google ପ୍ରୋଫାଇଲ ଫଟୋ</translation>
@@ -122,6 +127,7 @@
 <translation id="2138109643290557664">ଆନିମେସନ ମାଧ୍ୟମରେ ଦେଖନ୍ତୁ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
+<translation id="2154739667870063220">ରିବୁଟ କରନ୍ତୁ</translation>
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
@@ -139,6 +145,7 @@
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
 <translation id="2271469253353559191">ଡାର୍କ ମୋଡ୍ ସିଡୁଲ୍</translation>
+<translation id="2275586345903859204">ମରାମତି ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2320295602967756579">ହାଲୁକା ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -182,6 +189,7 @@
 <translation id="2717139507051041123">ଡାର୍କ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2740531572673183784">ଠିକ୍ ଅଛି</translation>
 <translation id="2751739896257479635">EAP ଫେଜ୍‍ 2 ପ୍ରମାଣିକରଣ</translation>
+<translation id="2756652381241102009">ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାନ୍ତୁ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
@@ -193,6 +201,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଡିସଚାର୍ଜ ହୋଇଛି।</translation>
 <translation id="291142119251986300">ଅଯୋଗ୍ୟ କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="2926057806159140518">ଆପଣଙ୍କ ଉପଯୋଗକର୍ତ୍ତା ନାମ ଏବଂ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର QR କୋଡ ସ୍କାନ କରନ୍ତୁ</translation>
+<translation id="2928420929544864228">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3008341117444806826">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="3009958530611748826">ଏଥିରେ ସେଭ୍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3017079585324758401">ପୃଷ୍ଠପଟ</translation>
@@ -327,6 +336,7 @@
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ରିଷ୍ଟାର୍ଟ କରାଯାଉଛି</translation>
+<translation id="4415951057168511744">ବର୍ତ୍ତମାନର ଅବତାର</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ବନ୍ଦ ଅଛି</translation>
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
@@ -363,6 +373,7 @@
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4744944742468440486">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା</translation>
+<translation id="4751272708893364980">RMA ଲଗଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="4773299976671772492">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="4774530504324923332">ଆପଣ ଏକ RSU-ସକ୍ଷମ କରାଯାଇଥିବା ସୁରକ୍ଷା କୀ, ଏକ QR କୋଡ ସ୍କାନର ଏବଂ ଏକ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ଥିବା ଦ୍ୱିତୀୟ ଡିଭାଇସ ଆବଶ୍ୟକ କରିବେ</translation>
 <translation id="4782311465517282004">ଯେତେବେଳେ ଆପଣ ଟେକ୍ସଟରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଏହାକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତି, ସଂଜ୍ଞା, ଅନୁବାଦ କିମ୍ବା ୟୁନିଟ୍ ରୂପାନ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
@@ -445,9 +456,11 @@
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="5376354385557966694">ସ୍ଵଚାଳିତ ଲାଇଟ୍ ମୋଡ୍</translation>
 <translation id="537872351913703572">ଡିଭାଇସଟି ଏକ ଭିନ୍ନ ଉପଯୋଗକର୍ତ୍ତା କିମ୍ବା ସଂସ୍ଥା ପାଖରେ ରହିବ</translation>
+<translation id="5389224261615877010">ଇନ୍ଦ୍ରଧନୁ</translation>
 <translation id="5395600419410242651">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="5400907029458559844">ଡିଭାଇସ ସଂଯୋଗ କରାଯାଉଛି।</translation>
 <translation id="5401938042319910061">ସମସ୍ତ ରୁଟିନ୍ ଚଲାନ୍ତୁ</translation>
+<translation id="5406131354638931058">ସିପ କିମ୍ବା ଷ୍ଟୋର କରାଯାଉଥିବା ଡିଭାଇସଗୁଡ଼ିକରେ ବ୍ୟାଟେରୀ କଟଅଫ କରନ୍ତୁ</translation>
 <translation id="5423849171846380976">ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="5430931332414098647">ଇନ୍‌ଷ୍ଟାଣ୍ଟ ଟିଥରିଂ</translation>
 <translation id="5431318178759467895">ରଙ୍ଗ</translation>
@@ -498,6 +511,7 @@
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
 <translation id="594552776027197022">ରେଣ୍ଡମ କୀପେୟାର ସୃଷ୍ଟି କରନ୍ତୁ</translation>
+<translation id="5951259522948394825">ସବୁକିଛି ସଠିକ୍ ସ୍ଥାନରେ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରି ଡାଏଗ୍ନୋଷ୍ଟିକ ରିପୋର୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="5972388717451707488">ଇଞ୍ଜିନ୍ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5984145644188835034">ଡିଫଲ୍ଟ ୱାଲପେପର</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
@@ -711,6 +725,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
+<translation id="819552138404104974">RMA ଲଗଗୁଡ଼ିକ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8217675307824400706">ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -732,6 +747,7 @@
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
 <translation id="8364946094152050673">ନେମ୍ ସର୍ଭର୍ ଖାଲି ଅଛି</translation>
 <translation id="8372477600026034341">ଅତିରିକ୍ତ ହୋଷ୍ଟଗୁଡ଼ିକ</translation>
+<translation id="8378855320830505539">ଅଞ୍ଚଳ</translation>
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -742,6 +758,7 @@
 <translation id="8456761643544401578">ସ୍ୱଚାଳିତ ଡାର୍କ ମୋଡ୍</translation>
 <translation id="8461329675984532579">ମୂଳ ପ୍ରଦାତା ନାମ</translation>
 <translation id="8467104829907989997">କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକୁ କାଲିବ୍ରେଟ କରାଯାଉଛି...</translation>
+<translation id="8474030592808010086">ବ୍ୟାଟେରୀ କଟଅଫ କରିବାକୁ ଡିଭାଇସ ଅନପ୍ଲଗ କରନ୍ତୁ</translation>
 <translation id="8475690821716466388">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP PSK ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="8477551185774834963">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଅଳ୍ପ ଉପରେ ଅଛି</translation>
 <translation id="8483248364096924578">IP ଠିକଣା</translation>
@@ -786,6 +803,7 @@
 <translation id="8898840733695078011">ସିଗନାଲ୍‌ ଦକ୍ଷତା</translation>
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ଙ୍କ <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">କଣ ସମାଧାନ କରାଯାଇଛି ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
 <translation id="8923267550422472772">ରିସେଟ କରିବା ପାଇଁ ମାସର ଦିନ</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>

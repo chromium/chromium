@@ -24,7 +24,9 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1204296502688602597">DNS レイテンシ</translation>
 <translation id="123124571410524056">ポータルの可能性があります</translation>
+<translation id="1236400083787698183">再起動する前に、デバイスで Powerwash を実行してください。折りたたみ式のデバイスの場合は、Powerwash が完了するまで待ってからカバーを閉じてください。Powerwash が完了するまでに 1 分ほどかかることがあります。</translation>
 <translation id="1238612778414822719">HTTPS レイテンシ</translation>
+<translation id="1240699967155581440">Powerwash（初期状態へのリセット）が必要です</translation>
 <translation id="1264116747675686718">OS のバージョンを更新しています</translation>
 <translation id="1264369926465113395">Chromebook のクリエイター向けの新しい電子雑誌をお試しください</translation>
 <translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
@@ -39,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">スキャン領域に合わせる</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
+<translation id="1380220803921738821">エラーが発生しました。USB ドライブを使用して、ファームウェアを再起動または修復してみてください。</translation>
 <translation id="1387854245479784695">すべてのコアの合計値です</translation>
 <translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
@@ -149,6 +152,7 @@
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />不適格なコンポーネント<ph name="LINK_END" />が検出されました。これらをインストールしたことを確認する場合は、ここで行ってください。</translation>
 <translation id="2363636958541445404">この機能をオンにするとスクリーンセーバー オプションを選択できます</translation>
 <translation id="2364498172489649528">成功</translation>
+<translation id="236594517359128026">続行する前に、ノートパソコンを平らな場所に置いてください</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2407209115954268704">SIM ロック ステータス</translation>
@@ -183,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="28232023175184696">インターネットに接続できません。クリックしてもう一度お試しください。</translation>
+<translation id="2827359915699915567">この URL を手動で入力して、RSU コードを取得してください</translation>
 <translation id="2859243502336719778">重要なアップデート</translation>
 <translation id="2860473693272905224">スキャナに次のページを置いてください</translation>
 <translation id="2872961005593481000">終了</translation>
@@ -190,6 +195,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
 <translation id="291142119251986300">資格を満たしていないコンポーネント</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
+<translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -221,6 +227,7 @@
 <translation id="3291996639387199448">鍵の方向</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
+<translation id="3333527094307156612">この QR コードを使用して、8 文字のロック解除コードを取得してください。<ph name="LINK_BEGIN" />こちらの URL<ph name="LINK_END" /> を手動で入力して取得することもできます。</translation>
 <translation id="3336855445806447827">わからない</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3368922792935385530">接続済み</translation>
@@ -254,6 +261,7 @@
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
 <translation id="3621202678540785336">入力</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
+<translation id="3643810137582748570">キャリブレーションをスキップ</translation>
 <translation id="3678765385266369662">書き込み保護を無効にする方法を選択してください</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
@@ -267,6 +275,7 @@
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="385051799172605136">戻る</translation>
+<translation id="385832974417157471">シャットダウンする前に、デバイスで Powerwash を実行してください。折りたたみ式のデバイスの場合は、Powerwash が完了するまで待ってからカバーを閉じてください。Powerwash が完了するまでに 1 分ほどかかることがあります。</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
@@ -403,6 +412,7 @@
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
+<translation id="506768878203270635">8-文字のコードを入力してください</translation>
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5090362543162270857">IPsec（IKEv2）</translation>
@@ -456,6 +466,7 @@
 <translation id="5507300744274596613">Chrome OS が最新バージョンかどうかご確認ください</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5548284010950733518">コンポーネントのキャリブレーション</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">再スキャン</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -463,6 +474,7 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
+<translation id="5661196929408385351">Powerwash してシャットダウン</translation>
 <translation id="5669267381087807207">有効化中</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ファミリー</translation>
@@ -474,6 +486,7 @@
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
+<translation id="578753362485952307">メインボードを別のデバイスで使用する場合は、<ph name="LINK_BEGIN" />再利用フロー<ph name="LINK_END" />を行ってください。</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5843706793424741864">華氏</translation>
@@ -530,6 +543,7 @@
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
+<translation id="6295178529664209245">修復を続行しますか？</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
@@ -565,6 +579,7 @@
 <translation id="6575134580692778371">設定されていません</translation>
 <translation id="6579509898032828423">この写真を使う</translation>
 <translation id="6596816719288285829">IP アドレス</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> の修復を終了</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -577,6 +592,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">キーボード バックライト</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
+<translation id="6746847322826305075">メインボードを再利用するデバイスを完全修復または Powerwash（初期状態にリセット）して続行できます。</translation>
 <translation id="6747215703636344499">停止 - 排紙トレイがいっぱいです</translation>
 <translation id="6749473226660745022">写真</translation>
 <translation id="6753452347192452143">デバイスの種類はパソコンです。</translation>
@@ -624,6 +640,7 @@
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7271040990581020067">スキャナは現在使用中です。しばらくしてからもう一度お試しください。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">1 つ以上のコンポーネントを選択してもう一度試すか、キャリブレーションをスキップします</translation>
 <translation id="7281657306185710294">そよ風を感じる</translation>
 <translation id="7287310195820267359">壁紙のコレクション</translation>
 <translation id="7297226631177386107">ファイアウォールを介して HTTPS ウェブサイトに接続できません</translation>
@@ -654,11 +671,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB タッチスクリーン</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">このコンポーネントは検出されませんでした。</translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="7626501172915339021">RMA サーバーのロック解除（RSU）を行う</translation>
 <translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> 修復エラー</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665800271478495366">アバターを変更</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
@@ -700,6 +719,7 @@
 <translation id="8083281199617904460">この修復プロセスは、訓練を受けた修復技術者が行うことを想定しています。不具合のあるコンポーネントを交換した後で開始してください。</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>
+<translation id="8109786307828817014">キャリブレーションに失敗しましたが続行しますか？</translation>
 <translation id="811820734797650957">（Android）ゲートウェイへの ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8132480444149501833">トラフィック カウンタをリクエスト</translation>
@@ -709,6 +729,7 @@
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8217675307824400706">接続</translation>
+<translation id="8221728673725659466">キャリブレーション完了</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8246209727385807362">不明な携帯通信会社</translation>
@@ -720,11 +741,14 @@
 <translation id="8297006494302853456">弱い</translation>
 <translation id="8302368968391049045">HTTPS ファイアウォール</translation>
 <translation id="8318753676953949627">0 件の画像</translation>
+<translation id="8327249300223641918">続行する前に、デバイス全体（本体とカバー部）を平らな場所に置いてください。</translation>
+<translation id="8330949592403310082">置き換えたコンポーネントを選択してください</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
 <translation id="8372477600026034341">その他のホスト</translation>
+<translation id="8378855320830505539">地域</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -734,6 +758,7 @@
 <translation id="844521431886043384">DNS が設定されていません</translation>
 <translation id="8456761643544401578">ダークモードを自動的に設定する</translation>
 <translation id="8461329675984532579">ホーム プロバイダ名</translation>
+<translation id="8467104829907989997">コンポーネントのキャリブレーションを実行しています...</translation>
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
@@ -742,6 +767,7 @@
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">キャリブレーションを行わないと、コンポーネントが正しく動作しない可能性があります</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
@@ -793,8 +819,10 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページをスキャン}other{{NUMBER_OF_PAGES} ページをスキャン}}</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="9003704114456258138">周波数</translation>
+<translation id="9025198690966128418">個人用デバイスとして使用</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS の解決のレイテンシが高くなっています</translation>
+<translation id="9063121522582193837">一部のコンポーネントをキャリブレーションできませんでした</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">この動画を使う</translation>

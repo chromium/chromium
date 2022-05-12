@@ -306,6 +306,7 @@
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
 <translation id="1718029547804390981">Sənəd annotasiya üçün çox böyükdür</translation>
+<translation id="1720941539803966190">Dərsliyi bağlayın</translation>
 <translation id="1721424275792716183">* Sahə tələb olunur</translation>
 <translation id="1727613060316725209">Sertifikat etibarlıdır</translation>
 <translation id="1727741090716970331">Düzgün Kart Nömrəsi Əlavə edin</translation>
@@ -482,6 +483,7 @@
 <translation id="2215727959747642672">Fayl redaktəsi</translation>
 <translation id="2215963164070968490">İtlər</translation>
 <translation id="2218879909401188352">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular cihazı zədələyən təhlükəli tətbiqlər quraşdıra, mobil fakturaya gizli ödəniş əlavə edə və ya şəxsi məlumatı oğurlaya bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">Dərsliyi yenidən başladın</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />Diaqnostika tətbiqini<ph name="END_LINK" /> istifadə edərək bağlantınızı həll edin</translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
@@ -1061,10 +1063,10 @@
 <translation id="3835233591525155343">Cihazdan istifadəniz</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Sənəd yaradın</translation>
 <translation id="385051799172605136">Geri</translation>
-<translation id="3851515670389017037">Səyahətlər bağlanıb</translation>
 <translation id="3858027520442213535">Tarix və saatı güncəlləşdirin</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3872834068356954457">Elm</translation>
+<translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3881478300875776315">Daha az sətir göstərin</translation>
 <translation id="3884278016824448484">Ziddiyyətli cihaz identifikatoru</translation>
 <translation id="3885155851504623709">Kilsə</translation>
@@ -1363,7 +1365,6 @@
 <translation id="470284880436071933">Cinayət və ədliyyə</translation>
 <translation id="4704732901923281920">Bioloji elmlər</translation>
 <translation id="4708268264240856090">Bağlantınız kəsildi</translation>
-<translation id="4709819737903924300">Səyahətlər tam hündürlükdə açılıb</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> üçün parol</translation>
@@ -1477,6 +1478,7 @@
 <translation id="5011561501798487822">Aşkarlanmış Dil</translation>
 <translation id="5015510746216210676">Cihaz Adı:</translation>
 <translation id="5017554619425969104">Kopyalanmış mətn</translation>
+<translation id="5017828934289857214">Sonra xatırladın</translation>
 <translation id="5018422839182700155">Bu səhifəni açmaq olmur</translation>
 <translation id="5019198164206649151">Yedəkləmə yaddaşı it günündədir</translation>
 <translation id="5020776957610079374">Dünya musiqisi</translation>
@@ -1710,6 +1712,7 @@
 <translation id="5624120631404540903">Parolları idarə edin</translation>
 <translation id="5629630648637658800">Siyasət ayarlarını yükləmək uğursuz oldu</translation>
 <translation id="5631439013527180824">Yanlış cihaz idarəetmə markeri</translation>
+<translation id="5632485077360054581">İstifadə qaydasını göstərin</translation>
 <translation id="5633066919399395251">Hazırda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytındakı hücumçular kompüterdəki məlumatları (məsələn, foto, parol, mesaj və kredit kartları) oğurlayan və ya silən zərərli proqramlar quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">Aldadıcı kontent blok edildi.</translation>
 <translation id="5633259641094592098">Kult və müstəqil filmlər</translation>
@@ -2607,7 +2610,6 @@
 <translation id="8163866351304776260">Soldan dördlü deşik açın</translation>
 <translation id="8175796834047840627">Daxil olduğunuza görə Chrome kartları Google Hesabında yadda saxlamağı təklif edir. Bunu ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="8176440868214972690">Bu cihazın administratoru aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>
-<translation id="8179003511148538426">Səyahətlər yarı hündürlükdə açılıb</translation>
 <translation id="8184538546369750125">Qlobal defoltdan istifadə edin (İcazə verin)</translation>
 <translation id="8186706823560132848">Proqram</translation>
 <translation id="8190193880870196235">Artırma tərəfindən idarə edilir</translation>
@@ -2699,6 +2701,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8428634594422941299">Anladım</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında kuki tərcihlərinizi idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
 <translation id="8433057134996913067">Bu Sizi bir çox veb saytdan çıxaracaq.</translation>
 <translation id="8434840396568290395">Ev heyvanları</translation>
@@ -2803,6 +2806,7 @@
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8763986294015493060">Hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="8766943070169463815">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi açılıb</translation>
+<translation id="8767765348545497220">Yardım balonunu bağlayın</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motosikllar</translation>
 <translation id="8790007591277257123">Silinməni yenidən edin</translation>
@@ -2815,6 +2819,7 @@
 <translation id="8806285662264631610">Hamam və bədənə qulluq məhsulları</translation>
 <translation id="8807160976559152894">Hər səhifədən sonra kəsin</translation>
 <translation id="8808828119384186784">Chrome Ayarları</translation>
+<translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Chrome'u güncəlləyin</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
 <translation id="882338992931677877">Manual Yuva</translation>

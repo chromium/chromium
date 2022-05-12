@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">ဗီဒီယို ဆက်တင်များ</translation>
 <translation id="2144806332417375165">စိတ်ကြိုက် ဗီဒီယို သတ်မှတ်ချက်များ</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
+<translation id="2244252133441425811">ဗီဒီယို တစ်စက္ကန့်တွင် ဖရိမ်နှုန်း ရွေးချယ်ရေးစနစ် ဖွင့်ရန်</translation>
 <translation id="2271433936731426666">အရွယ်အစားအပြည့် ဗီဒီယိုလျှပ်တစ်ပြက်ရိုက်ချက် ဖွင့်ရန်</translation>
 <translation id="229579744168541441">ဒစ်ခ်သို့ ထုတ်ယူရန်</translation>
 <translation id="2320741269052147773">ဘယ်ဘက်ရွှေ့ကြည့်ရန်</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">အချိန်တိုင်းကိရိယာ ပိတ်ရန်</translation>
 <translation id="3448774564454087943">ဗီဒီယိုအလွန်တိုသဖြင့် သိမ်းမထားပါ</translation>
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
-<translation id="3511295087439225876">အသံပိတ်ခလုတ် ဖွင့်</translation>
 <translation id="3517926952904427380">ထောင်လိုက်ဓာတ်ပုံ ရိုက်၍မရပါ</translation>
 <translation id="3566302376254083266">ဘယ်ဘက်အပေါ် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
 <translation id="3569311554794739032">"<ph name="FILE" />" ကို သင် တကယ် ဖယ်ရှားလိုသလား။</translation>
@@ -153,7 +153,6 @@
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8145038249676204903">ဓာတ်ပုံရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="8167081290930651932">ဓာတ်ပုံအဖြစ် သိမ်းရန်</translation>
-<translation id="8236532224592646488">အသံပိတ်ခလုတ် ပိတ်</translation>
 <translation id="8239780215768881278">ဗီဒီယို လျှပ်တစ်ပြက် ရိုက်ရန်</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8425673304802773841">အောက်သို့ စောင်းရန်</translation>

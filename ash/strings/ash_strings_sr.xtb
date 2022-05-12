@@ -143,6 +143,7 @@
 <translation id="1749109475624620922">Прозор <ph name="WINDOW_TITLE" /> је додељен свим радним површинама</translation>
 <translation id="1750088060796401187">Максимални број радних површина је <ph name="MAX_DESK_LIMIT" />. Уклоните радну површину да бисте отворили нову.</translation>
 <translation id="1756833229520115364">Чување шаблона није успело. Има превише прозора или картица.</translation>
+<translation id="1757857692711134412">Искључено до сумрака</translation>
 <translation id="1761222317188459878">Укључите/искључите мрежну везу. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + тачка је промењена. Да бисте користили тастер за уметање, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Премештено је у <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
@@ -508,6 +509,7 @@
 <translation id="3995138139523574647">Уређај са USB прикључком типа C (десни задњи порт)</translation>
 <translation id="40062176907008878">Писање руком</translation>
 <translation id="4017989525502048489">Ласерски показивач</translation>
+<translation id="401993194061514265">Маркер није доступан. Поново отворите Снимање екрана.</translation>
 <translation id="4021716437419160885">Помери надоле</translation>
 <translation id="4028481283645788203">Треба да унесете лозинку ради додатне безбедности</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +524,7 @@
 <translation id="412298498316631026">прозор</translation>
 <translation id="4123259114412175274">Да бисте откључали Chromebook, уверите се да је Bluetooth на телефону укључен</translation>
 <translation id="4129129681837227511">Да бисте видели обавештења на закључаном екрану, откључајте га како бисте променили подешавање</translation>
+<translation id="4136724716305260864">Укључено до свитања</translation>
 <translation id="4146833061457621061">Пусти музику</translation>
 <translation id="4165275524535002941">Кабл не подржава екране</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте уређај у року од једног дана}one{Ажурирајте уређај у року од # дана}few{Ажурирајте уређај у року од # дана}other{Ажурирајте уређај у року од # дана}}</translation>
@@ -574,6 +577,7 @@
 <translation id="4421231901400348175">Делите контролу над екраном са особом <ph name="HELPER_NAME" /> преко Даљинске помоћи.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
+<translation id="4435022394553622295">Прегледајте обавештења и апликације на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Апликације су сортиране према називу</translation>
 <translation id="4445159312344259901">Пријавите се да откључате</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно обавештење}one{# важно обавештење}few{# важна обавештења}other{# важних обавештења}}</translation>
@@ -701,6 +705,7 @@
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Још 1 обавештење}one{Још # обавештење}few{Још # обавештења}other{Још # обавештења}}</translation>
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
 <translation id="5208059991603368177">Укључено</translation>
+<translation id="5216991270656129561">Искључено до <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="523505283826916779">Подешавања приступачности</translation>
@@ -750,6 +755,7 @@
 <translation id="553675580533261935">Напуштање сесије</translation>
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="554893713779400387">Укључи/искључи диктирање</translation>
+<translation id="5560420195677022218">Прегледајте апликације са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5571066253365925590">Bluetooth је омогућен</translation>
 <translation id="557563299383177668">Следећи пасус</translation>
@@ -968,6 +974,7 @@
 <translation id="6884665277231944629">Вратите се на данас</translation>
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>
+<translation id="6891721121089053234">Прегледајте недавне слике, медијски садржај и апликације на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901883536534621389">Испробајте покрете за кретање</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
@@ -1096,6 +1103,7 @@
 <translation id="7684531502177797067">Унос помоћу камере је подешен на <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Додајте нову мобилну мрежу</translation>
+<translation id="7720400844887872976">Укључено до <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ПРОБАЈ ПОНОВО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 обавештење}one{# обавештење}few{# обавештења}other{# обавештења}}</translation>
 <translation id="7724603315864178912">Исеци</translation>
@@ -1178,6 +1186,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Овим подешавањем управља администратор.</translation>
 <translation id="8155628902202578800">Отвара дијалог са информацијама за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Користи се <ph name="LOCALE_NAME" /></translation>
+<translation id="8183592608247778598">Прегледајте недавне слике, медије, обавештења и апликације на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Обавештења су сакривена.</translation>
 <translation id="8196787716797768628">Користите покрете да бисте брзо прелазили са једне апликације на другу и имали иинтеракцију са Chromebook-ом у режиму таблета.</translation>
 <translation id="8200772114523450471">Настави</translation>

@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Setelan Video</translation>
 <translation id="2144806332417375165">Parameter video kustom</translation>
 <translation id="2175927920773552910">Kode QR</translation>
+<translation id="2244252133441425811">Aktifkan pemilih FPS video</translation>
 <translation id="2271433936731426666">Aktifkan ringkasan video ukuran penuh</translation>
 <translation id="229579744168541441">Ekspor ke disk</translation>
 <translation id="2320741269052147773">Geser ke kiri</translation>
@@ -61,7 +62,6 @@
 <translation id="3411958449466169012">Timer nonaktif</translation>
 <translation id="3448774564454087943">Video tidak disimpan karena terlalu pendek</translation>
 <translation id="346539236881580388">Ambil ulang</translation>
-<translation id="3511295087439225876">Tombol bisukan aktif</translation>
 <translation id="3517926952904427380">Tidak dapat mengambil foto potret</translation>
 <translation id="3566302376254083266">Berpindah ke arah kiri atas</translation>
 <translation id="3569311554794739032">Yakin ingin menghapus <ph name="FILE" />?</translation>
@@ -153,7 +153,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
 <translation id="8167081290930651932">Simpan sebagai Foto</translation>
-<translation id="8236532224592646488">Tombol bisukan nonaktif</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8425673304802773841">Miringkan ke bawah</translation>

@@ -754,7 +754,6 @@
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1719312230114180055">टिपोट: तपाईंको फिंगरप्रिन्ट भरपर्दो पासवर्ड वा PIN भन्दा कम सुरक्षित हुन सक्छ।</translation>
 <translation id="1720318856472900922">TLS WWW सर्भर प्रमाणीकरण</translation>
-<translation id="1720941539803966190">ट्युटोरियल बन्द गर्नुहोस्</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटोहरू खोज्नुहोस्</translation>
 <translation id="1721312023322545264">यो साइटमा जान तपाईंलाई <ph name="NAME" /> को अनुमति आवश्यक छ</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
@@ -831,7 +830,6 @@
 <translation id="1784849162047402014">यन्त्रको डिस्कमा खाली ठाउँ कम छ</translation>
 <translation id="1787350673646245458">प्रयोगकर्ताको छवि</translation>
 <translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> मार्फत Chrome ब्राउजरमा भएका आफ्ना कुराहरू हेर्नुहोस् र प्रयोग गर्नुहोस्</translation>
-<translation id="1790664457414575790">तपाईं <ph name="GOOGLE_PASSWORD_MANAGER" /> मा गई सेभ गरिएका पासवर्ड हेर्न तथा व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="1790976235243700817">पहुँच हटाउनुहोस्</translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792619191750875668">विस्तारित प्रदर्शन</translation>
@@ -874,6 +872,7 @@
 <translation id="18245044880483936">डेटा ब्याकअप गर्दा तपाईंका बच्चाको ड्राइभको भण्डारण कोटा प्रयोग हुने छैन।</translation>
 <translation id="1825565032302550710">पोर्ट अनिवार्य रूपमा १०२४ र ६५५३५ का बिचमा हुनु पर्छ</translation>
 <translation id="182577151972096764">हालसालै हेरिएका पाकविधिहरू</translation>
+<translation id="18260074040409954">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिएका छन्।</translation>
 <translation id="1826192255355608658">आफ्नो Chrome ब्राउजरमा भएका बुकमार्क, पासवर्ड, इतिहास र अन्य कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="1826516787628120939">जाँच गर्दै</translation>
 <translation id="1827738518074806965">आर्ट ग्यालेरी</translation>
@@ -907,7 +906,6 @@
     <ph name="BEGIN_PARAGRAPH2" />तपाईं डिभाइसमा भएको TPM नै अफ गर्न पनि सक्नुहुन्छ। तपाईंले TPM अफ गरे पनि तपाईंको डेटा सफ्टवेयरमार्फत इन्क्रिप्सन गरी सुरक्षित रूपमा भण्डारण गरिने छ। तर हार्डवेयरमा आधारित प्रमाणपत्रलगायतका सुरक्षासम्बन्धी केही निश्चित सुविधाहरू भने अफ गरिने छन्।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />तपाईं यो डिभाइस रिबुट गरी सिस्टमको BIOS/UEFI सेटिङमा गएर TPM सम्बन्धी सेटिङ परिवर्तन गर्न सक्नुहुन्छ। तपाईंले पूरा गर्नु पर्ने चरणहरू डिभाइसको मोडेलका आधारमा फरक हुन्छन्। तपाईं थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने यो डिभाइस रिबुट गर्नुअघि कुनै अर्को डिभाइसमा <ph name="DEVICE_OS" /> सम्बन्धी निम्न डकुमेन्ट खोलेर पढ्नुहोस्: g.co/flex/TPMHelp<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1852141627593563189">हानिकारक सफ्टवेयर फेला पार्नुहोस्</translation>
-<translation id="1852322248807969514">पासवर्डहरू <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छन्</translation>
 <translation id="1852799913675865625">यो फाइल पढ्न प्रयास गर्दा त्यहाँ एउटा त्रुटि भयोः <ph name="ERROR_TEXT" /> ।</translation>
 <translation id="1854049213067042715">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्। तपाईं ब्राउजर खुल्दा एपहरू सधैँ रिस्टोर हुने बनाउन सक्नुहुन्छ वा सेटिङमा गएर एपहरू रिस्टोर गर्ने सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
@@ -1279,7 +1277,6 @@
 <translation id="2218019600945559112">माउस र टचप्याड</translation>
 <translation id="2218320521449013367">Chrome ले हानिकारक सफ्टवेयर हटाउँदै गर्दा कुनै त्रुटि भयो</translation>
 <translation id="2218515861914035131">सादा पाठको रूपमा टाँस्नुहोस्</translation>
-<translation id="2219658597883514593">ट्यूटोरियल रिस्टार्ट गर्नुहोस्</translation>
 <translation id="2220409419896228519">Google का आफ्ना मन पर्ने एपहरूमा पुस्तक चिन्ह थप्नुहोस्</translation>
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
@@ -2240,7 +2237,6 @@
 <translation id="3108931485517391283">प्राप्त गर्न सकिएन</translation>
 <translation id="3109206895301430738">सेभ गरिएका ट्याब समूहहरू</translation>
 <translation id="3109724472072898302">ध्वस्त भएको</translation>
-<translation id="311214366526552035">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="3112292765614504292">एपको आकार: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">साइटहरूलाई मेरो यन्त्रमा भएका फाइल वा फोल्डरहरू परिवर्तन गर्ने अनुमति नदिइयोस्</translation>
 <translation id="3115147772012638511">क्यासको प्रतीक्षामा ...</translation>
@@ -2458,7 +2454,6 @@
 <translation id="3348038390189153836">हटाउन सकिने यन्त्र पत्ता लगाइयो</translation>
 <translation id="3348131053948466246">सुझाव गरिएको इमोजी। नेभिगेट गर्न माथि फर्केको वा तल फर्केको तीर कुञ्जी थिच्नुहोस् अनि इमोजी इन्सर्ट गर्न Enter थिच्नुहोस्।</translation>
 <translation id="3349933790966648062">मेमोरीको इतिहास</translation>
-<translation id="335153035108712532">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिभाइसमा कनेक्ट गर्न सकिएन। तपाईं फेरि कनेक्ट गरी हेर्न चाहनुहुन्छ भने उक्त डिभाइस चयन गर्नुहोस्</translation>
 <translation id="3355936511340229503">जडान त्रुटि</translation>
 <translation id="3356469410714175391">(भर्चुअल कार्ड सक्रिय गरिएको छ)</translation>
@@ -2533,7 +2528,6 @@
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
 <translation id="3429271624041785769">वेब सामग्रीका भाषाहरू</translation>
 <translation id="3429275422858276529">यो पृष्ठलाई पछि सजिलैसँग फेला पार्नका लागि यसमा पुस्तक चिन्ह लगाउनुहोस्</translation>
-<translation id="343115368966109153"><ph name="FILE_NAME" /> डाउनलोड गर्ने हो? यो डिभाइस प्रयोग गर्ने जोकोही व्यक्ति यो फाइल देख्न सक्छन्।</translation>
 <translation id="3432227430032737297">देखाइएका सबै कुराहरू हटाउनुहोस्</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lock-on-leave</translation>
@@ -2898,7 +2892,6 @@
 <translation id="3777806571986431400">विस्तार सक्षम गरियो</translation>
 <translation id="3778152852029592020">डाउनलोड रद्द गरिएको थियो ।</translation>
 <translation id="3778208826288864398">अत्यन्तै धेरै पटक गलत PIN प्रविष्टि गरिएका कारण सुरक्षा साँचो लक गरिएको छ। तपाईंले उक्त सुरक्षा साँचो रिसेट गर्नु पर्ने हुन्छ</translation>
-<translation id="3778369586810509692">यो फाइल यो डिभाइसमा भण्डारण गरिने छ र सबै जना यो फाइल देख्न सक्ने छन्।</translation>
 <translation id="3778740492972734840">&amp;विकासकर्ता उपकरणहरू</translation>
 <translation id="3778868487658107119">यसलाई प्रश्नहरू सोध्नुहोस्। यसलाई कार्यहरू गर्न अह्राउनुहोस्। यो मद्दतका लागि सधैँ तत्पर तपाईंको व्यक्तिगत Google हो।</translation>
 <translation id="3781742599892759500">Linux लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
@@ -3005,7 +2998,6 @@
 <translation id="3873423927483480833">PIN हरू देखाउनुहोस्</translation>
 <translation id="3873915545594852654">ARC++ सम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="3874164307099183178">Google सहायक अन गर्नुहोस्</translation>
-<translation id="3875783148670536197">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ब्राउजरको नयाँ ट्याबमा खुल्ने बनाइएको छ। खोल्न मिल्ने लिंकहरू पनि ब्राउजरमा नै खुल्ने छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> को यन्त्रमा <ph name="USER_EMAIL" /> खाता प्रयोग गरी नजिकैका डिभाइससँग सेयर गर्ने सुविधाका सेटिङ।</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
@@ -3844,7 +3836,6 @@
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
-<translation id="4701540735981103145">तपाईंका एड्मिनले साइन इन गर्ने सुविधा ब्लक गर्नुभएको छ</translation>
 <translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708794300267213770">शयन अवस्थाबाट सक्रिय पार्दा लक स्क्रिन देखाउनुहोस्</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
@@ -4133,7 +4124,6 @@
 <translation id="5015344424288992913">प्रोक्सी समाधान गर्दै...</translation>
 <translation id="5016491575926936899">तपाईं आफ्नो फोन प्रयोग गरी कम्प्युटरबाट टेक्स्ट म्यासेज पठाउन, इन्टरनेट कनेक्सन सेयर गर्न, वार्तालापका सूचनाबाटै जवाफ फर्काउन र आफ्नो <ph name="DEVICE_TYPE" /> अनलक गर्न सक्नुहुन्छ।<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">तपाईं टेक्स्ट कर्सर प्रयोग गरी पृष्ठहरूमा नेभिगेट गर्न सक्नुहुन्छ। अफ गर्न Ctrl+Search+7 थिच्नुहोस्।</translation>
-<translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5018207570537526145">विस्तारको वेबसाइट खोल्नुहोस्</translation>
 <translation id="5018526990965779848">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाएर आफ्नो Android सम्बन्धी अनुभवमा सुधार ल्याउन मद्दत गर्नुहोस्। यसले प्रणाली तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंको खातामा अतिरिक्त वेब तथा एपसम्बन्धी गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ।</translation>
 <translation id="5021750053540820849">अझैसम्म अद्यावधिक गरिएको छैन</translation>
@@ -4502,9 +4492,6 @@
 <translation id="5397794290049113714">तपाइँ</translation>
 <translation id="5398497406011404839">लुकाइएका बुकमार्कहरू</translation>
 <translation id="5398572795982417028">सीमा बाहिरको पृष्ठ सन्दर्भ, सीमा <ph name="MAXIMUM_PAGE" /> हो</translation>
-<translation id="5398724494943676484">अरूले देखेको पासवर्ड सफलतापूर्वक परिवर्तन गरियो।
-
-तपाईं <ph name="GOOGLE_PASSWORD_MANAGER" /> मा गई जुनसुकै बेला आफ्ना पासवर्डहरू जाँच्न सक्नुहुन्छ।</translation>
 <translation id="5401426944298678474">साइट अनफलो गर्नुहोस्</translation>
 <translation id="5402815541704507626">मोबाइल डेटाको खपत गरेर अद्यावधिक डाउनलोड गर्नुहोस्</translation>
 <translation id="540296380408672091"><ph name="HOST" />मा कुकीहरू सधैँ रोक्नुहोस्</translation>
@@ -4750,7 +4737,6 @@
 <translation id="562935524653278697">तपाईंको प्रशासकले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूको सिंक गर्ने सेवालाई असक्षम पार्नुभएको छ।</translation>
 <translation id="5631017369956619646">CPU प्रयोग</translation>
 <translation id="5632059346822207074">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न Ctrl + Forward थिच्नुहोस्</translation>
-<translation id="5632485077360054581">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="5632566673632479864">तपाईंको खाता <ph name="EMAIL" /> लाई अब उप्रान्त प्राथमिक खाताका रूपमा अनुमति दिइँदैन। यो खाताको व्यवस्थापन <ph name="DOMAIN" /> ले गर्ने हुनाले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू यस डिभाइसबाट खाली गरिने छ।</translation>
 <translation id="5632592977009207922">डाउनलोड गर्दै, <ph name="PERCENT_REMAINING" />% बाँकी</translation>
 <translation id="563371367637259496">मोबाइल</translation>
@@ -5402,6 +5388,7 @@
 <translation id="6291949900244949761">कुनै साइटले USB यन्त्रहरूमाथि पहुँच राख्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6291953229176937411">&amp;फोल्डरमा देखाउनुहोस्</translation>
 <translation id="6292699686837272722">ट्याबहरू चौडाइ मध्यम हुने गरी साना हुन्छन्</translation>
+<translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
 <translation id="6294759976468837022">स्वतः स्क्यान गर्ने गति</translation>
 <translation id="6295158916970320988">सबै साइटहरू</translation>
 <translation id="6295855836753816081">सुरक्षित गर्दै...</translation>
@@ -5464,7 +5451,6 @@
 <translation id="63566973648609420">तपाईंको इन्क्रिप्ट गरिएको डेटालाई तपाईंको पासफ्रेज भएको व्यक्तिले मात्र पढ्न सक्छ। पासफ्रेजलाई Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिदैन। यदि तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा यस सेटिङलाई परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले <ph name="BEGIN_LINK" />सिंकलाई रिसेट<ph name="END_LINK" /> गर्नुपर्ने हुन्छ।</translation>
 <translation id="6357305427698525450">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" /> मा वा  <ph name="APP_NAME_2" /> मा खुल्ने छन्।</translation>
 <translation id="6358884629796491903">ड्रागन</translation>
-<translation id="6361470537267923629">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्</translation>
 <translation id="6361850914223837199">त्रुटि विवरणहरू:</translation>
 <translation id="6362853299801475928">एउटा मामिलालाई &amp;रिपोर्ट गर्नुहोस्...</translation>
 <translation id="6363786367719063276">लगहरू हेर्नुहोस्</translation>
@@ -6012,7 +5998,6 @@
 <translation id="689007770043972343">अन्य खुला ट्याबहरू ड्र्याग गरी आफ्नो समूहमा लैजाने प्रयास गर्नुहोस्</translation>
 <translation id="6892812721183419409"><ph name="USER" /> को रूपमा लिंक खोल्नुहोस्</translation>
 <translation id="6895032998810961280">अनावश्यक सफ्टवेयर पत्ता लगाउने र हटाउने क्रममा तपाईंको कम्प्युटरमा फेला परेका हानिकारक सफ्टवेयर, सिस्टमका सेटिङ र प्रक्रियासम्बन्धी विवरणहरू Google मा रिपोर्ट गर्नुहोस्</translation>
-<translation id="6895902329218596456"><ph name="MANAGER" /> ले <ph name="USER_EMAIL" /> व्यवस्थापन गर्नुहुन्छ र तपाईंका एड्मिनले दोस्रो खाता प्रयोग गरी साइन इन गर्न नमिल्ने बनाउनुभएको छ</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6897363604023044284">हटाउनु पर्ने साइटहरू छनौट गर्नुहोस्</translation>
 <translation id="6898440773573063262">किओस्क एप्लिकेसनहरूलाई यस यन्त्रमा स्वत: सुरुवातका लागि अब कन्फिगर गर्न सकिन्छ।</translation>
@@ -6242,7 +6227,6 @@
 <translation id="7115361495406486998">सम्पर्क सूचीमा Google खाता भएका कोही पनि हुनुहुन्न</translation>
 <translation id="7117228822971127758">कृपया पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="711840821796638741">व्यवस्थित बुकमार्कहरू देखाउनुहोस्</translation>
-<translation id="711902386174337313">तपाईंका साइन-इन भएका डिभाइसहरूको सूची पढ्नुहोस्</translation>
 <translation id="711985611146095797">तिमी यो पेजमार्फत आफ्ना साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्छौ। <ph name="LINK_BEGIN" />थप जान<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome ब्राउजर र Android को ट्राफिक VPN कनेक्ट नहुँदासम्म ब्लक गरिने छ</translation>
 <translation id="7120865473764644444">सिंक सर्भरमा जडान गर्न सकिएन। पुन:प्रयास गर्दै...</translation>
@@ -7056,7 +7040,6 @@
 <translation id="7928175190925744466">यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="7930294771522048157">सुरक्षित गरिएका भुक्तानी विधिहरू यहाँ देखिने छन्</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> तपाईँको स्क्रिन र अडियोलाई साझेदारी गर्दैछ।</translation>
-<translation id="7932741659804096942">पासवर्डहरू यो डिभाइसको <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिन्छन्</translation>
 <translation id="793293630927785390">नयाँ Wi-Fi नेटवर्कसम्बन्धी संवाद</translation>
 <translation id="7932969338829957666">आदान प्रदान गरिएका फोल्डरहरू Linux को <ph name="BASE_DIR" /> मा उपलब्ध छन्।</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
@@ -7570,7 +7553,6 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428271547607112339">विद्यालयको खाता थप्नुहोस्</translation>
 <translation id="8428628598981198790">तपाईंको सुरक्षा साँचो यस साइटमा प्रयोग गर्न सकिँदैन</translation>
-<translation id="8428634594422941299">बुझेँ</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> मा तपाईंलाई साइन आउट गरिने छ</translation>
 <translation id="8431190899827883166">ट्याप देखाइयोस्</translation>
 <translation id="8434480141477525001">NaCl डिबग पोर्ट</translation>
@@ -7894,7 +7876,6 @@
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="87646919272181953">Google Photos को एल्बम</translation>
 <translation id="8767621466733104912">सबै प्रयोगकर्ताहरूको Chrome स्वतः अपडेट गर्नुहोस्</translation>
-<translation id="8767765348545497220">मद्दतसम्बन्धी बबल बन्द गर्नुहोस्</translation>
 <translation id="8769901904650373714">Steam सेटअप गर्ने क्रममा समस्या भयो</translation>
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
@@ -7934,7 +7915,6 @@
 <translation id="8809147117840417135">हल्का निलो-हरियो मिश्रित रङ्ग</translation>
 <translation id="8811862054141704416">Crostini लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
 <translation id="8812593354822910461">ब्राउजिङ डेटा (<ph name="URL" />) पनि हटाउनुहोस्। यस कार्यले तपाईंलाई <ph name="DOMAIN" /> बाट साइन आउट गराउने छ। <ph name="LEARN_MORE" /></translation>
-<translation id="8813277370772331957">मलाई पछि सम्झाउनुहोस्</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> मा साइन इन गर्न सकिँदैन</translation>
 <translation id="8813872945700551674">अभिभावकलाई "<ph name="EXTENSION_NAME" />" अनुमोदन गर्न अनुरोध गर्नुहोस्</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>

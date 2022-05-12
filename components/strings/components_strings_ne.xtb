@@ -306,6 +306,7 @@
 <translation id="1717218214683051432">चालसम्बन्धी सेन्सरहरू</translation>
 <translation id="1717494416764505390">मेलबक्स ३</translation>
 <translation id="1718029547804390981">कागजात एनोटेसन गर्नै नमिल्ने गरी ठुलो छ</translation>
+<translation id="1720941539803966190">ट्युटोरियल बन्द गर्नुहोस्</translation>
 <translation id="1721424275792716183">* क्षेत्र आवश्यक छ</translation>
 <translation id="1727613060316725209">प्रमाणपत्र वैध छ</translation>
 <translation id="1727741090716970331">कार्डको मान्य नम्बर थप्नुहोस्</translation>
@@ -482,6 +483,7 @@
 <translation id="2215727959747642672">फाइल सम्पादन गर्दै</translation>
 <translation id="2215963164070968490">कुकुरहरू</translation>
 <translation id="2218879909401188352">हाल <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले तपाईंको यन्त्रलाई नोक्सानी पुऱ्याउने, तपाईंको मोबाइल बिलमा नदेखिने शुल्क थप्ने वा तपाईंको व्यक्तिगत जानकारी चोर्ने जस्ता खतरनाक एपहरू इन्स्टल गर्न सक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2219658597883514593">ट्यूटोरियल रिस्टार्ट गर्नुहोस्</translation>
 <translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />निदान एप<ph name="END_LINK" /> प्रयोग गरेर आफ्नो जडान सम्बन्धी समस्याको समाधान गर्नुहोस्</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
@@ -1062,10 +1064,10 @@
 <translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Docs प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
-<translation id="3851515670389017037">Journeys बन्द गरिएको छ</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
+<translation id="3875783148670536197">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="3881478300875776315">कम हरफ देखाउनुहोस्</translation>
 <translation id="3884278016824448484">विभेदात्मक यन्त्र पहिचानकर्ता</translation>
 <translation id="3885155851504623709">प्यारिस</translation>
@@ -1364,7 +1366,6 @@
 <translation id="470284880436071933">अपराध तथा न्याय</translation>
 <translation id="4704732901923281920">जीव विज्ञान</translation>
 <translation id="4708268264240856090">तपाईंको जडानमा अवरोध भयो</translation>
-<translation id="4709819737903924300">Journeys पूर्ण उचाइमा खोलिएको छ</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> को पासवर्ड</translation>
@@ -1478,6 +1479,7 @@
 <translation id="5011561501798487822">पत्ता लागेको भाषा</translation>
 <translation id="5015510746216210676">मेसिनको नाम:</translation>
 <translation id="5017554619425969104">तपाईंले प्रतिलिपि गर्नुभएको पाठ</translation>
+<translation id="5017828934289857214">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="5018422839182700155">यो पृष्ठ खोल्न सकिँदैन</translation>
 <translation id="5019198164206649151">खराब स्थितिमा भण्डार ब्याकिङ गर्दै</translation>
 <translation id="5020776957610079374">विश्व सङ्गीत</translation>
@@ -1711,6 +1713,7 @@
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5629630648637658800">नीति सेटिङहरू लोड गर्न असफल</translation>
 <translation id="5631439013527180824">अवैध यन्त्र व्यवस्थापन टोकन</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाइयोस्</translation>
 <translation id="5633066919399395251">हाल <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले तपाईंको कम्प्युटरमा तपाईंको जानकारी (उदाहरणका लागि तस्बिर, पासवर्ड, सन्देश र क्रेडिट कार्डहरू) चोर्ने वा मेट्नसक्ने खतरनाक कार्यक्रमहरू स्थापना गर्ने प्रयास गर्नसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="563324245173044180">भ्रामक सामग्रीमाथि रोक लगाइयो।</translation>
 <translation id="5633259641094592098">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
@@ -2608,7 +2611,6 @@
 <translation id="8163866351304776260">बायाँपट्टि चार प्वाल</translation>
 <translation id="8175796834047840627">तपाईं साइन इन हुनुभएकाले Chrome ले तपाईंको Google खातामा तपाईंका कार्डहरू सुरक्षित गरिदिने प्रस्ताव गर्दै छ। तपाईं सेटिङहरूमा गई उक्त व्यवहार परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="8176440868214972690">यो डिभाइसका एड्मिनले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाउनुभएको छ।</translation>
-<translation id="8179003511148538426">Journeys आधा उचाइमा खोलिएको छ</translation>
 <translation id="8184538546369750125">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (अनुमति दिनुहोस्)</translation>
 <translation id="8186706823560132848">सफ्टवेयर</translation>
 <translation id="8190193880870196235">कुनै एक्स्टेन्सनले व्यवस्थापन गरेको</translation>
@@ -2700,6 +2702,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
+<translation id="8428634594422941299">बुझेँ</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8433057134996913067">यसले तपाईँलाई अधिकांश साइटहरूबाट साइन आउट गराउनेछ।</translation>
 <translation id="8434840396568290395">पाल्तु जनावरहरू</translation>
@@ -2804,6 +2807,7 @@
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="8763986294015493060">हाल खोलिएका सबै इन्कोग्निटो विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="8766943070169463815">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना खुला छ</translation>
+<translation id="8767765348545497220">मद्दतसम्बन्धी बबल बन्द गर्नुहोस्</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">मोटरसाइकलहरू</translation>
 <translation id="8790007591277257123">मेटाउने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -2816,6 +2820,7 @@
 <translation id="8806285662264631610">नुहाउने तथा शरीरमा लगाइने उत्पादनहरू</translation>
 <translation id="8807160976559152894">हरेक पृष्ठपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="8808828119384186784">Chrome का सेटिङ</translation>
+<translation id="8813277370772331957">मलाई पछि सम्झाउनुहोस्</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="882338992931677877">म्यानुअल स्लट</translation>
