@@ -218,7 +218,7 @@ gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
   if (value == "display-p3-d65")
     return gfx::ColorSpace::CreateDisplayP3D65();
   if (value == "scrgb-linear")
-    return gfx::ColorSpace::CreateSCRGBLinear();
+    return gfx::ColorSpace::CreateSRGBLinear();
   if (value == "hdr10")
     return gfx::ColorSpace::CreateHDR10();
   if (value == "extended-srgb")

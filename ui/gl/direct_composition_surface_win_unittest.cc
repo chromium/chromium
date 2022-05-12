@@ -833,7 +833,7 @@ TEST_F(DirectCompositionVideoPixelTest, SRGB) {
 
 TEST_F(DirectCompositionVideoPixelTest, SCRGBLinear) {
   // SCRGB doesn't make sense on an NV12 input, but don't crash.
-  TestVideo(gfx::ColorSpace::CreateSCRGBLinear(), SK_ColorTRANSPARENT, false);
+  TestVideo(gfx::ColorSpace::CreateSRGBLinear(), SK_ColorTRANSPARENT, false);
 }
 
 TEST_F(DirectCompositionVideoPixelTest, InvalidColorSpace) {

@@ -934,7 +934,7 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
     float c3 = (2392.0f / 4096.0f) * 32.0f;
     float p = pow(v, 1.0f / m2);
     v = powf(max(p - c1, 0.0f) / (c2 - c3 * p), 1.0f / m1);
-    v *= 10000.0f / ColorSpace::kDefaultScrgbLinearSdrWhiteLevel;
+    v *= 10000.0f / ColorSpace::kDefaultSDRWhiteLevel;
     return v;
   }
 
@@ -976,7 +976,7 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
                           std::stringstream* src,
                           size_t step_index) const override {
     auto sdr_white_level =
-        base::NumberToString(ColorSpace::kDefaultScrgbLinearSdrWhiteLevel);
+        base::NumberToString(ColorSpace::kDefaultSDRWhiteLevel);
     *hdr << "vec3 PQToneMapStep" << step_index << "(vec3 color) {\n"
          << "  vec3 result = max(color, 0.0);\n"
          << "  result =\n"
@@ -1012,7 +1012,7 @@ class ColorTransformPQToneMapToLinear : public ColorTransformStep {
 
   void AppendSkShaderSource(std::stringstream* src) const override {
     auto sdr_white_level =
-        base::NumberToString(ColorSpace::kDefaultScrgbLinearSdrWhiteLevel);
+        base::NumberToString(ColorSpace::kDefaultSDRWhiteLevel);
     *src << "{\n"
          << "  half4 result = max(color, 0.0);\n"
          << "  result =\n"

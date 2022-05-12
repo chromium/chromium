@@ -6000,13 +6000,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
       gfx::BufferFormat::RGBA_8888);
   display_color_spaces.SetOutputColorSpaceAndBufferFormat(
       gfx::ContentColorUsage::kWideColorGamut, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSCRGBLinear(), gfx::BufferFormat::RGBA_8888);
+      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_8888);
   display_color_spaces.SetOutputColorSpaceAndBufferFormat(
       gfx::ContentColorUsage::kHDR, false /* needs_alpha */,
       gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102);
   display_color_spaces.SetOutputColorSpaceAndBufferFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSCRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
 
   std::vector<Pass> passes = {
       Pass(quads[0], CompositorRenderPassId{2}, kSurfaceSize),
@@ -6085,7 +6085,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
       gfx::BufferFormat::BGRA_1010102);
   display_color_spaces.SetOutputColorSpaceAndBufferFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSCRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
 
   // Opaque content renders to the appropriate space directly.
   passes[1].has_transparent_background = false;

@@ -239,7 +239,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   // TODO: check |gpu_task_runner_|.
 
   MailboxHolderArray mailboxes;
-  gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+  gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSRGBLinear();
   gfx::ColorSpace output_color_space;
   EXPECT_EQ(wrapper
                 ->Init(gpu_task_runner_, CreateMockHelperCB(),
@@ -292,7 +292,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
   MockVideoProcessorProxy* processor_raw = processor.get();
   auto wrapper = std::make_unique<CopyingTexture2DWrapper>(
       gfx::Size(100, 200), ExpectTextureWrapper(), std::move(processor),
-      nullptr, gfx::ColorSpace::CreateSCRGBLinear());
+      nullptr, gfx::ColorSpace::CreateSRGBLinear());
 
   const DXGI_HDR_METADATA_HDR10 dxgi_metadata =
       gl::HDRMetadataHelperWin::HDRMetadataToDXGI(metadata);

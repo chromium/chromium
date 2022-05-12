@@ -441,7 +441,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kUseHDRTransferFunction);
 
-  const auto display_color_space = gfx::ColorSpace::CreateHDR10(100.0f);
+  const auto display_color_space = gfx::ColorSpace::CreateHDR10();
   const std::unique_ptr<DisplaySnapshot> display_snapshot =
       FakeDisplaySnapshot::Builder()
           .SetId(123)

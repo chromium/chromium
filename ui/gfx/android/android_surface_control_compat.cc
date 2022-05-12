@@ -397,7 +397,7 @@ uint64_t ColorSpaceToADataSpace(const gfx::ColorSpace& color_space) {
   if (!color_space.IsValid() || color_space == gfx::ColorSpace::CreateSRGB())
     return ADATASPACE_SRGB;
 
-  if (color_space == gfx::ColorSpace::CreateSCRGBLinear())
+  if (color_space == gfx::ColorSpace::CreateSRGBLinear())
     return ADATASPACE_SCRGB_LINEAR;
 
   if (color_space == gfx::ColorSpace::CreateDisplayP3D65())

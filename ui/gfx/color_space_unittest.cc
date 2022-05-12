@@ -175,7 +175,7 @@ TEST(ColorSpace, Blending) {
 
   // A linear transfer function being used for HDR should be blended using an
   // sRGB-like transfer function.
-  display_color_space = ColorSpace::CreateSCRGBLinear();
+  display_color_space = ColorSpace::CreateSRGBLinear();
   EXPECT_FALSE(display_color_space.IsSuitableForBlending());
 
   // If not used for HDR, a linear transfer function should be left unchanged.
@@ -199,7 +199,7 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
       ColorSpace(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::SRGB),
       ColorSpace::CreateCustom(primary_matrix, transfer_fn),
       // HDR
-      ColorSpace::CreateSCRGBLinear(),
+      ColorSpace::CreateSRGBLinear(),
   };
   sk_sp<SkColorSpace> sk_color_spaces[] = {
       SkColorSpace::MakeSRGB(),
@@ -316,57 +316,6 @@ TEST(ColorSpace, GetsPrimariesTransferMatrixAndRange) {
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::BT709);
   EXPECT_EQ(color_space.GetMatrixID(), ColorSpace::MatrixID::BT709);
   EXPECT_EQ(color_space.GetRangeID(), ColorSpace::RangeID::LIMITED);
-}
-
-TEST(ColorSpace, PQWhiteLevel) {
-  constexpr float kCustomWhiteLevel = 200.f;
-
-  ColorSpace color_space = ColorSpace::CreateHDR10(kCustomWhiteLevel);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
-  float sdr_white_level;
-  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
-
-  color_space = ColorSpace::CreateHDR10();
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
-  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_EQ(sdr_white_level, ColorSpace::kDefaultSDRWhiteLevel);
-
-  color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
-  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
-
-  constexpr float kCustomWhiteLevel2 = kCustomWhiteLevel * 2;
-  color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel2);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
-  EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_EQ(sdr_white_level, kCustomWhiteLevel2);
-}
-
-TEST(ColorSpace, LinearHDRWhiteLevel) {
-  constexpr float kCustomWhiteLevel = 200.f;
-  constexpr float kCustomSlope =
-      ColorSpace::kDefaultScrgbLinearSdrWhiteLevel / kCustomWhiteLevel;
-
-  ColorSpace color_space = ColorSpace::CreateSCRGBLinear(kCustomWhiteLevel);
-  skcms_TransferFunction fn;
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::CUSTOM_HDR);
-  EXPECT_TRUE(color_space.GetTransferFunction(&fn));
-  EXPECT_EQ(std::make_tuple(fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f),
-            std::make_tuple(1.f, kCustomSlope, 0.f, 0.f, 0.f, 0.f, 0.f));
-
-  color_space = ColorSpace::CreateSCRGBLinear();
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::LINEAR_HDR);
-  EXPECT_TRUE(color_space.GetTransferFunction(&fn));
-  EXPECT_EQ(std::make_tuple(fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f),
-            std::make_tuple(1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f));
-
-  color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::CUSTOM_HDR);
-  EXPECT_TRUE(color_space.GetTransferFunction(&fn));
-  EXPECT_EQ(std::make_tuple(fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f),
-            std::make_tuple(1.f, kCustomSlope, 0.f, 0.f, 0.f, 0.f, 0.f));
 }
 
 TEST(ColorSpace, ExpectationsMatchSRGB) {

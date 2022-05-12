@@ -157,7 +157,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
       color_space_name = kCGColorSpaceDisplayP3;
     } else if (color_space == ColorSpace::CreateExtendedSRGB()) {
       color_space_name = kCGColorSpaceExtendedSRGB;
-    } else if (color_space == ColorSpace::CreateSCRGBLinear()) {
+    } else if (color_space == ColorSpace::CreateSRGBLinear()) {
       color_space_name = kCGColorSpaceExtendedLinearSRGB;
     }
   }

@@ -34,7 +34,7 @@ gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
       return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                              gfx::ColorSpace::TransferID::PQ);
     case PredefinedColorSpace::kSRGBLinear:
-      return gfx::ColorSpace::CreateSCRGBLinear();
+      return gfx::ColorSpace::CreateSRGBLinear();
   }
   NOTREACHED();
 }

@@ -149,7 +149,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
     display.set_color_spaces(display_color_spaces);
   }
   display_color_spaces.SetSDRMaxLuminanceNits(
-      gfx::ColorSpace::kDefaultSDRWhiteLevelV2);
+      gfx::ColorSpace::kDefaultSDRWhiteLevel);
 
   if (enable_hdr) {
     display.set_color_depth(Display::kHDR10BitsPerPixel);

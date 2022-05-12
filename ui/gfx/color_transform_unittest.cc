@@ -518,7 +518,7 @@ TEST(SimpleColorSpace, SampleShaderSource) {
 TEST(SimpleColorSpace, CanParseSkShaderSource) {
   std::vector<ColorSpace> common_color_spaces = {
       ColorSpace::CreateSRGB(),         ColorSpace::CreateDisplayP3D65(),
-      ColorSpace::CreateExtendedSRGB(), ColorSpace::CreateSCRGBLinear(),
+      ColorSpace::CreateExtendedSRGB(), ColorSpace::CreateSRGBLinear(),
       ColorSpace::CreateJpeg(),         ColorSpace::CreateREC601(),
       ColorSpace::CreateREC709()};
   for (const auto& src : common_color_spaces) {
@@ -605,9 +605,9 @@ typedef std::tuple<ColorSpace::PrimaryID,
                    bool>
     ColorSpaceTestData;
 
-class ColorSpaceTest : public testing::TestWithParam<ColorSpaceTestData> {
+class ColorSpaceTestBase : public testing::TestWithParam<ColorSpaceTestData> {
  public:
-  ColorSpaceTest()
+  ColorSpaceTestBase()
       : color_space_(std::get<0>(GetParam()),
                      std::get<1>(GetParam()),
                      std::get<2>(GetParam()),
@@ -620,7 +620,7 @@ class ColorSpaceTest : public testing::TestWithParam<ColorSpaceTestData> {
   ColorTransform::Options options_;
 };
 
-TEST_P(ColorSpaceTest, testNullTransform) {
+TEST_P(ColorSpaceTestBase, testNullTransform) {
   std::unique_ptr<ColorTransform> t(
       ColorTransform::NewColorTransform(color_space_, color_space_, options_));
   ColorTransform::TriStim tristim(0.4f, 0.5f, 0.6f);
@@ -630,7 +630,7 @@ TEST_P(ColorSpaceTest, testNullTransform) {
   EXPECT_NEAR(tristim.z(), 0.6f, kMathEpsilon);
 }
 
-TEST_P(ColorSpaceTest, toXYZandBack) {
+TEST_P(ColorSpaceTestBase, toXYZandBack) {
   std::unique_ptr<ColorTransform> t1(ColorTransform::NewColorTransform(
       color_space_, ColorSpace::CreateXYZD50(), options_));
   std::unique_ptr<ColorTransform> t2(ColorTransform::NewColorTransform(
@@ -645,7 +645,7 @@ TEST_P(ColorSpaceTest, toXYZandBack) {
 
 INSTANTIATE_TEST_SUITE_P(
     A,
-    ColorSpaceTest,
+    ColorSpaceTestBase,
     testing::Combine(testing::ValuesIn(all_primaries),
                      testing::ValuesIn(simple_transfers),
                      testing::Values(ColorSpace::MatrixID::BT709),
@@ -654,7 +654,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     B,
-    ColorSpaceTest,
+    ColorSpaceTestBase,
     testing::Combine(testing::Values(ColorSpace::PrimaryID::BT709),
                      testing::ValuesIn(simple_transfers),
                      testing::ValuesIn(all_matrices),
@@ -663,7 +663,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     C,
-    ColorSpaceTest,
+    ColorSpaceTestBase,
     testing::Combine(testing::ValuesIn(all_primaries),
                      testing::Values(ColorSpace::TransferID::BT709),
                      testing::ValuesIn(all_matrices),
@@ -770,7 +770,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
       0.5f,       // 0.5 * sqrt(1.0 * 100 / 100)
       0.65641f,   // 0.17883277 * ln(1.0 * 200 / 100 - 0.28466892) + 0.55991073
   };
-  constexpr float nits[] = {80.f, 100.f, 200.f};
+  constexpr float nits[] = {203.f / 2, 203.f, 203.f * 2};
 
   for (size_t i = 0; i < 3; ++i) {
     // We'll set the SDR white level to the values in |nits| and also the
@@ -796,7 +796,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
     // via a ColorSpace with the right SDR white level.
     switch (i) {
       case 0:
-        EXPECT_NEAR(val.x(), 1.f, kMathEpsilon);
+        EXPECT_NEAR(val.x(), 1.6f, kMathEpsilon);
         break;
       case 1:
         EXPECT_NEAR(val.y(), 1.f, kMathEpsilon);
@@ -809,10 +809,6 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
         EXPECT_NEAR(val.y(), 1.f, kMathEpsilon);
         break;
     }
-
-    // The nit ratios should be preserved by the transform.
-    EXPECT_NEAR(val.y() / val.x(), nits[1] / nits[0], kMathEpsilon);
-    EXPECT_NEAR(val.z() / val.x(), nits[2] / nits[0], kMathEpsilon);
 
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(

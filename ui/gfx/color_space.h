@@ -206,13 +206,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
   }
 
   // scRGB uses the same primaries as sRGB but has a linear transfer function
-  // for all real values, and a white point of kDefaultScrgbLinearSdrWhiteLevel.
-  static constexpr ColorSpace CreateSCRGBLinear() {
+  // for all real values.
+  static constexpr ColorSpace CreateSRGBLinear() {
     return ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR, MatrixID::RGB,
                       RangeID::FULL);
   }
-  // Allows specifying a custom SDR white level.  Only used on Windows.
-  static ColorSpace CreateSCRGBLinear(float sdr_white_level);
+
   // scRGB uses the same primaries as sRGB but has a linear transfer function
   // for all real values, and an SDR white level of 80 nits.
   static constexpr ColorSpace CreateSCRGBLinear80Nits() {
@@ -225,11 +224,12 @@ class COLOR_SPACE_EXPORT ColorSpace {
     return ColorSpace(PrimaryID::BT2020, TransferID::PQ, MatrixID::RGB,
                       RangeID::FULL);
   }
-  // Allows specifying a custom SDR white level.  Only used on Windows.
-  static ColorSpace CreateHDR10(float sdr_white_level);
 
   // HLG uses the BT.2020 primaries with the ARIB_STD_B67 transfer function.
-  static ColorSpace CreateHLG();
+  static constexpr ColorSpace CreateHLG() {
+    return ColorSpace(PrimaryID::BT2020, TransferID::HLG, MatrixID::RGB,
+                      RangeID::FULL);
+  }
 
   // Create a piecewise-HDR color space.
   // - If |primaries| is CUSTOM, then |custom_primary_matrix| must be
@@ -265,26 +265,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // The default number of nits for SDR white. This is used for transformations
   // between color spaces that do not specify an SDR white for tone mapping
   // (e.g, in 2D canvas).
-  // TODO(https://crbug.com/1286076): Replace both kDefaultSDRWhiteLevel and
-  // kDefaultScrgbLinearSdrWhiteLevel with this constant.
-  static constexpr float kDefaultSDRWhiteLevelV2 = 203.f;
-
-  // On macOS and on ChromeOS, sRGB's (1,1,1) always coincides with PQ's 100
-  // nits (which may not be 100 physical nits). On Windows, sRGB's (1,1,1)
-  // maps to scRGB linear's (1,1,1) when the SDR white level is set to 80 nits.
-  // See also kDefaultScrgbLinearSdrWhiteLevel.
-  static constexpr float kDefaultSDRWhiteLevel = 100.f;
-
-  // The default white level in nits for scRGB linear color space. On Windows,
-  // sRGB's (1,1,1) maps to scRGB linear's (1,1,1) when the SDR white level is
-  // set to 80 nits. On Mac and ChromeOS, sRGB's (1,1,1) maps to PQ's 100 nits.
-  // Using a platform specific value here satisfies both constraints.
-#if BUILDFLAG(IS_WIN)
-  static constexpr float kDefaultScrgbLinearSdrWhiteLevel = 80.0f;
-#else
-  static constexpr float kDefaultScrgbLinearSdrWhiteLevel =
-      kDefaultSDRWhiteLevel;
-#endif  // BUILDFLAG(IS_WIN)
+  static constexpr float kDefaultSDRWhiteLevel = 203.f;
 
   bool operator==(const ColorSpace& other) const;
   bool operator!=(const ColorSpace& other) const;
@@ -334,11 +315,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // the caller but replacing the matrix and range with the given values.
   ColorSpace GetWithMatrixAndRange(MatrixID matrix, RangeID range) const;
 
-  // If this color space has a PQ or scRGB linear transfer function, then return
-  // |this| with its SDR white level set to |sdr_white_level|. Otherwise return
-  // |this| unmodified.
-  ColorSpace GetWithSDRWhiteLevel(float sdr_white_level) const;
-
   // This will return nullptr for non-RGB spaces, spaces with non-FULL
   // range, unspecified spaces, and spaces that require but are not provided
   // and SDR white level.
@@ -374,11 +350,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   bool GetInverseTransferFunction(
       skcms_TransferFunction* fn,
       absl::optional<float> sdr_white_level = absl::nullopt) const;
-
-  // Returns the SDR white level specified for the PQ or HLG transfer functions.
-  // If no value was specified, then use kDefaultSDRWhiteLevel. If the transfer
-  // function is not PQ then return false.
-  bool GetSDRWhiteLevel(float* sdr_white_level) const;
 
   // Returns the parameters for a PIECEWISE_HDR transfer function. See
   // CreatePiecewiseHDR for parameter meanings.

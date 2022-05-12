@@ -263,7 +263,7 @@ gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
   // space is scRGB linear (defaults to 80 nits) or PQ (defaults to 100 nits).
   const auto& color_space = GetForcedDisplayColorProfile();
   auto display_color_spaces = CreateDisplayColorSpaces(
-      color_space, gfx::ColorSpace::kDefaultSDRWhiteLevelV2);
+      color_space, gfx::ColorSpace::kDefaultSDRWhiteLevel);
   // Use the forced color profile's buffer format for all content usages.
   if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
     display_color_spaces.SetOutputBufferFormats(
@@ -303,7 +303,7 @@ Display CreateDisplayFromDisplayInfo(
       hdr_max_luminance_relative =
           dxgi_output_desc->max_luminance / sdr_white_level;
       if (!dxgi_output_desc->hdr_enabled)
-        sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevelV2;
+        sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     }
     hdr_max_luminance_relative = std::max(hdr_max_luminance_relative,
                                           kMinHDRCapableMaxLuminanceRelative);
@@ -312,7 +312,7 @@ Display CreateDisplayFromDisplayInfo(
   } else {
     color_spaces = CreateDisplayColorSpaces(
         color_profile_reader->GetDisplayColorSpace(display.id()),
-        gfx::ColorSpace::kDefaultSDRWhiteLevelV2);
+        gfx::ColorSpace::kDefaultSDRWhiteLevel);
   }
   if (color_spaces.SupportsHDR()) {
     // These are (ab)used by pages via media query APIs to detect HDR support.

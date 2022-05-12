@@ -690,7 +690,7 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
   }
   {
     data.device_supports_hdr =
-        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear())
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSRGBLinear())
             .SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);

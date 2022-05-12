@@ -284,7 +284,7 @@ TEST_F(DisplayTest, DisplayDamaged) {
   settings.partial_swap_enabled = true;
   SetUpSoftwareDisplay(settings);
   gfx::ColorSpace color_space_1 = gfx::ColorSpace::CreateXYZD50();
-  gfx::ColorSpace color_space_2 = gfx::ColorSpace::CreateSCRGBLinear();
+  gfx::ColorSpace color_space_2 = gfx::ColorSpace::CreateSRGBLinear();
   gfx::DisplayColorSpaces color_spaces_1(color_space_1);
   gfx::DisplayColorSpaces color_spaces_2(color_space_2);
 

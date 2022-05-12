@@ -87,7 +87,7 @@ class VideoFrameFactoryImplTest : public testing::Test {
     gfx::Size coded_size{100, 100};
     gfx::Rect visible_rect{coded_size};
     gfx::Size natural_size{coded_size};
-    gfx::ColorSpace color_space{gfx::ColorSpace::CreateSCRGBLinear()};
+    gfx::ColorSpace color_space{gfx::ColorSpace::CreateSRGBLinear()};
   } video_frame_params_;
 
   void RequestVideoFrame() {
