@@ -111,6 +111,12 @@ function frameToTreeItem(frame) {
   if (frame.siteInstance.requiresOriginKeyedProcess) {
     itemLabel += ', origin-keyed';
   }
+  if (frame.siteInstance.isGuest) {
+    itemLabel += ', guest';
+  }
+  if (frame.siteInstance.storagePartition) {
+    itemLabel += `, partition:${frame.siteInstance.storagePartition}`;
+  }
   if (frame.lastCommittedUrl) {
     itemLabel += ` | url: ${frame.lastCommittedUrl.url}`;
   }
