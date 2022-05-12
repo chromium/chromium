@@ -39,11 +39,13 @@ source_set("first_follow") {
   ]
   deps = [
     ":first_follow_ui",
+    ":follow",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
@@ -54,7 +56,6 @@ source_set("first_follow_ui") {
     "first_follow_favicon_data_source.h",
     "first_follow_view_controller.h",
     "first_follow_view_controller.mm",
-    "first_follow_view_delegate.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
@@ -63,6 +64,7 @@ source_set("first_follow_ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ui/base",

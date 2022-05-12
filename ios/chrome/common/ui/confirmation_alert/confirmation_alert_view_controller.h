@@ -48,7 +48,7 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // The text for the tertiary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* tertiaryActionString;
 
-// The image. Must be set before the view is loaded.
+// The image. May be updated after the view is loaded.
 @property(nonatomic, strong) UIImage* image;
 
 // Sets the custom spacing between the top and the image, if there is no

@@ -7,7 +7,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
-#import "ios/chrome/browser/ui/follow/first_follow_view_delegate.h"
 #import "ios/chrome/browser/ui/follow/follow_block_types.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
@@ -64,8 +63,7 @@ NSInteger kFaviconSymbolPointSize = 17;
 
   self.alerter = [[ProtocolAlerter alloc] initWithProtocols:@[
     @protocol(FeedManagementFollowDelegate),
-    @protocol(FeedManagementNavigationDelegate),
-    @protocol(FirstFollowViewDelegate)
+    @protocol(FeedManagementNavigationDelegate)
   ]];
 
   UIButton* button1 = [[UIButton alloc] init];
@@ -144,8 +142,6 @@ NSInteger kFaviconSymbolPointSize = 17;
 
   firstFollowViewController.followedWebChannel = ch1;
   self.alerter.baseViewController = firstFollowViewController;
-  firstFollowViewController.delegate =
-      static_cast<id<FirstFollowViewDelegate>>(self.alerter);
   firstFollowViewController.faviconDataSource = self;
 
   if (@available(iOS 15, *)) {

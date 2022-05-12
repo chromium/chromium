@@ -7,19 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol FirstFollowViewDelegate;
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+
 @protocol FirstFollowFaviconDataSource;
 @class FollowedWebChannel;
 
 // The UI that informs the user about the feed and following channels the
 // first few times the user follows any channel.
-@interface FirstFollowViewController : UIViewController
+@interface FirstFollowViewController : ConfirmationAlertViewController
 
 // The web channel that was recently followed.
 @property(nonatomic, strong) FollowedWebChannel* followedWebChannel;
-
-// Delegate to execute actions triggered in this UI.
-@property(nonatomic, weak) id<FirstFollowViewDelegate> delegate;
 
 // Data source for favicons.
 @property(nonatomic, weak) id<FirstFollowFaviconDataSource> faviconDataSource;

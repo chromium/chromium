@@ -418,6 +418,11 @@ constexpr CGFloat kContentOptimalWidth = 327;
   return topToolbar;
 }
 
+- (void)setImage:(UIImage*)image {
+  _image = image;
+  _imageView.image = image;
+}
+
 // Helper to create the image view.
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:self.image];
