@@ -23,6 +23,7 @@
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
@@ -441,37 +442,8 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
     return false;
   }
 
-  // Each top-level key maps a policy name to its description.
-  //
-  // Each description is an object that contains the policy value under the
-  // "Value" key. The optional "Level" key is either "Mandatory" (default) or
-  // "Recommended".
-  for (auto it : json.DictItems()) {
-    const std::string& policy_name = it.first;
-    base::Value description = std::move(it.second);
-    if (!description.is_dict()) {
-      *error = "The JSON blob dictionary value is not a dictionary.";
-      return false;
-    }
-
-    absl::optional<base::Value> value = description.ExtractKey(kValue);
-    if (!value.has_value()) {
-      *error = base::StrCat(
-          {"The JSON blob dictionary value doesn't contain the required ",
-           kValue, " field."});
-      return false;
-    }
-
-    PolicyLevel level = POLICY_LEVEL_MANDATORY;
-    const std::string* level_string = description.FindStringKey(kLevel);
-    if (level_string && *level_string == kRecommended)
-      level = POLICY_LEVEL_RECOMMENDED;
-
-    policy->Set(policy_name, level, domain_constants_->scope,
-                POLICY_SOURCE_CLOUD, std::move(value.value()), nullptr);
-  }
-
-  return true;
+  return ParseComponentPolicy(std::move(json), domain_constants_->scope,
+                              POLICY_SOURCE_CLOUD, policy, error);
 }
 
 ComponentPolicyMap ComponentCloudPolicyStore::GetJsonPolicyMap() {
