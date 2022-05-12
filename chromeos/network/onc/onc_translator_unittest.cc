@@ -181,7 +181,9 @@ INSTANTIATE_TEST_SUITE_P(
                        "and_active.onc"),
         std::make_pair("shill_cellular_with_roaming_required_and_inactive.json",
                        "translation_of_shill_cellular_with_roaming_required_"
-                       "and_inactive.onc")));
+                       "and_inactive.onc"),
+        std::make_pair("shill_wifi_eap_empty_certid.json",
+                       "translation_of_shill_wifi_eap_empty_certid.onc")));
 
 }  // namespace onc
 }  // namespace chromeos

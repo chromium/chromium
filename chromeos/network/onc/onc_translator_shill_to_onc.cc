@@ -791,7 +791,7 @@ void ShillToONCTranslator::TranslateEap() {
 
   const std::string* shill_cert_id =
       shill_dictionary_->FindStringKey(shill::kEapCertIdProperty);
-  if (shill_cert_id) {
+  if (shill_cert_id && !shill_cert_id->empty()) {
     onc_object_.SetKey(::onc::client_cert::kClientCertType,
                        base::Value(::onc::client_cert::kPKCS11Id));
     // Note: shill::kEapCertIdProperty is already in the format slot:key_id.
