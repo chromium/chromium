@@ -86,13 +86,24 @@ test("browser_switcher_bho_unittests") {
   ]
 }
 
-assert(is_clang)
+if (is_clang) {
+  browser_switcher_x64_toolchain = "//build/toolchain/win:win_clang_x64"
+  if (!is_asan) {
+    browser_switcher_x86_toolchain = "//build/toolchain/win:win_clang_x86"
+  }
+} else {
+  browser_switcher_x64_toolchain = "//build/toolchain/win:x64"
+  if (!is_asan) {
+    browser_switcher_x86_toolchain = "//build/toolchain/win:x86"
+  }
+}
+
 browser_switcher_x64_label =
-    ":browser_switcher_bho(//build/toolchain/win:win_clang_x64)"
+    ":browser_switcher_bho($browser_switcher_x64_toolchain)"
 
 if (!is_asan) {
   browser_switcher_x86_label =
-      ":browser_switcher_bho(//build/toolchain/win:win_clang_x86)"
+      ":browser_switcher_bho($browser_switcher_x86_toolchain)"
 
   copy("copy_browser_switcher_binaries") {
     # Make sure we have both bitnesses in the root out directory.

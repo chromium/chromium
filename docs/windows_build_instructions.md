@@ -52,9 +52,8 @@ $ PATH_TO_INSTALLER.EXE ^
 ```
 
 -You must have the version 10.0.20348.0 [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
-installed. This
-can be installed separately or by checking the appropriate box in the Visual
-Studio Installer.
+installed. This can be installed separately or by checking the appropriate box
+in the Visual Studio Installer.
 
 The SDK Debugging Tools must also be installed. If the Windows 10 SDK was
 installed via the Visual Studio installer, then they can be installed by going

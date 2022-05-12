@@ -117,8 +117,9 @@ using AllocationStateMap =
 //   booted out of the active list. If there are no suitable active slot spans
 //   found, an empty or decommitted slot spans (if one exists) will be pulled
 //   from the empty/decommitted list on to the active list.
+#pragma pack(push, 1)
 template <bool thread_safe>
-struct __attribute__((packed)) SlotSpanMetadata {
+struct SlotSpanMetadata {
  private:
   PartitionFreelistEntry* freelist_head = nullptr;
 
@@ -302,6 +303,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
         empty_cache_index_(0),
         unused2_(0) {}
 };
+#pragma pack(pop)
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
 
@@ -324,11 +326,12 @@ struct SubsequentPageMetadata {
 // first page of a slot span, describes that slot span. If a slot span spans
 // more than 1 page, the page metadata may contain rudimentary additional
 // information.
+// "Pack" the union so that common page metadata still fits within
+// kPageMetadataSize. (SlotSpanMetadata is also "packed".)
+#pragma pack(push, 1)
 template <bool thread_safe>
-struct __attribute__((packed)) PartitionPage {
-  // "Pack" the union so that common page metadata still fits within
-  // kPageMetadataSize. (SlotSpanMetadata is also "packed".)
-  union __attribute__((packed)) {
+struct PartitionPage {
+  union {
     SlotSpanMetadata<thread_safe> slot_span_metadata;
 
     SubsequentPageMetadata subsequent_page_metadata;
@@ -366,7 +369,7 @@ struct __attribute__((packed)) PartitionPage {
 
   ALWAYS_INLINE static PartitionPage* FromAddr(uintptr_t address);
 };
-
+#pragma pack(pop)
 static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
 

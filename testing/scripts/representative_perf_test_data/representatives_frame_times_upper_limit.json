@@ -22,7 +22,7 @@
     },
     "css_transitions_inline_style": {
       "ci_095": 6.862,
-      "avg": 19.535,
+      "avg": 23.008,
       "cpu_wall_time_ratio": 0.326
     },
     "aquarium_20k_fast_call": {
