@@ -137,6 +137,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
+#include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
@@ -4304,6 +4305,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
   MaybeAddThrottle(
       WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(handle),
+      &throttles);
+
+  MaybeAddThrottle(
+      PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
 
   throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(

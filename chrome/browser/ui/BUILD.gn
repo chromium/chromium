@@ -140,6 +140,8 @@ static_library("ui") {
     "passwords/password_generation_popup_controller_impl.h",
     "passwords/password_generation_popup_observer.h",
     "passwords/password_generation_popup_view.h",
+    "passwords/password_manager_navigation_throttle.cc",
+    "passwords/password_manager_navigation_throttle.h",
     "passwords/settings/password_manager_porter.cc",
     "passwords/settings/password_manager_porter.h",
     "passwords/settings/password_manager_presenter.cc",
