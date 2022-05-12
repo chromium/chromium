@@ -489,7 +489,7 @@ public class RelatedSearchesControl {
         boolean isRelatedSearchesSuggestion = suggestionIndex > 0 || !mDisplayDefaultQuery;
         ContextualSearchUma.logAllSearches(isRelatedSearchesSuggestion);
 
-        mControlView.scrollToPosition(suggestionIndex);
+        mControlView.smoothScrollToPosition(suggestionIndex);
     }
 
     /** The position of the first Related Searches suggestion in the carousel UI. */
@@ -579,12 +579,12 @@ public class RelatedSearchesControl {
         }
 
         /**
-         * Scroll to the view in the position.
+         * Smoothly scroll to the view in the position.
          * @param position the position of the view to scroll to.
          */
-        private void scrollToPosition(int position) {
+        private void smoothScrollToPosition(int position) {
             RecyclerView recyclerView = (RecyclerView) mChipsCoordinator.getView();
-            recyclerView.scrollToPosition(position);
+            recyclerView.smoothScrollToPosition(position);
         }
 
         /** Returns the view for this control. */
