@@ -17,12 +17,20 @@ class PrivacySandboxNoticeBubbleView : public views::View,
                                        public AppMenuButtonObserver {
  public:
   METADATA_HEADER(PrivacySandboxNoticeBubbleView);
+
   PrivacySandboxNoticeBubbleView(Browser* browser,
                                  std::unique_ptr<views::View> image);
   ~PrivacySandboxNoticeBubbleView() override;
 
   // AppMenuButtonObserver:
   void AppMenuShown() override;
+
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxNoticeBubbleViewBrowserTest,
+                           OpenLearnMoreNotice);
+  // View ID of the description label that contains "Learn more" link. Used for
+  // testing.
+  static constexpr int kNoticeLearnMoreLinkId = 1;
 
  private:
   void OpenAboutAdPersonalizationSettings();
