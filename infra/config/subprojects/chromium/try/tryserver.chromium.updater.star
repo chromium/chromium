@@ -62,6 +62,10 @@ updater_windows_builder(
 
 updater_windows_builder(
     name = "win-updater-try-builder-rel",
+    mirrors = [
+        "ci/win-updater-builder-rel",
+        "ci/win10-updater-tester-rel",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
