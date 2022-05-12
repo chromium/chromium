@@ -68,7 +68,6 @@ static_library("search_engines") {
     "//base:i18n",
     "//components/country_codes",
     "//components/database_utils",
-    "//components/history/core/browser",
     "//components/infobars/core",
     "//components/lens:lens",
     "//components/omnibox/common",

@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/database_utils/url_converter.h"
-#include "components/history/core/browser/url_database.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/webdata/common/web_database.h"

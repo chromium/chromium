@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include "components/search_engines/template_url_id.h"
+
 namespace history {
 
 // ID of a keyword associated with a URL and a search term.
-// 0 is the invalid value.
-typedef int64_t KeywordID;
+// 0 is the invalid value, i.e., kInvalidTemplateURLID.
+using KeywordID = TemplateURLID;
 
 }  // namespace history
 
