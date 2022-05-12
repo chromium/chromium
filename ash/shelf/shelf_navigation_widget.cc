@@ -314,13 +314,18 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   // Initializes the view.
   void Init(ui::Layer* parent_layer);
 
+  // Updates the layout and visibility of `opaque_background_`.
   void UpdateOpaqueBackground();
+
+  // Updates the color of `opaque_background_`.
+  void UpdateBackgroundColor();
 
   // views::View:
   FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+  void OnThemeChanged() override;
 
   // views::AccessiblePaneView:
   View* GetDefaultFocusableChild() override;
@@ -409,11 +414,7 @@ void ShelfNavigationWidget::Delegate::Init(ui::Layer* parent_layer) {
 }
 
 void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
-  SkColor background_color = ShelfConfig::Get()->GetShelfControlButtonColor();
-  if (background_delegate_)
-    background_delegate_->SetBackgroundColor(background_color);
-  else
-    opaque_background_.SetColor(background_color);
+  UpdateBackgroundColor();
 
   // Hide background if no buttons should be shown.
   if (!IsHomeButtonShown() &&
@@ -440,6 +441,14 @@ void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
   opaque_background_.SetBounds(opaque_background_bounds);
   opaque_background_.SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+}
+
+void ShelfNavigationWidget::Delegate::UpdateBackgroundColor() {
+  SkColor background_color = ShelfConfig::Get()->GetShelfControlButtonColor();
+  if (background_delegate_)
+    background_delegate_->SetBackgroundColor(background_color);
+  else
+    opaque_background_.SetColor(background_color);
 }
 
 bool ShelfNavigationWidget::Delegate::CanActivate() const {
@@ -471,6 +480,11 @@ void ShelfNavigationWidget::Delegate::ReorderChildLayers(
 void ShelfNavigationWidget::Delegate::OnBoundsChanged(
     const gfx::Rect& old_bounds) {
   UpdateOpaqueBackground();
+}
+
+void ShelfNavigationWidget::Delegate::OnThemeChanged() {
+  views::AccessiblePaneView::OnThemeChanged();
+  UpdateBackgroundColor();
 }
 
 views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
