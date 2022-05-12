@@ -7112,6 +7112,16 @@ class DesksCloseAllTest : public DesksTest {
     ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   }
 
+  void ClickOnUndoDeskRemovalButton() {
+    views::LabelButton* dismiss_button =
+        DesksTestApi::GetCloseAllUndoToastDismissButton();
+    const gfx::Point button_center =
+        dismiss_button->GetBoundsInScreen().CenterPoint();
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(button_center);
+    event_generator->ClickLeftButton();
+  }
+
   // DesksTest:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksCloseAll);
@@ -7372,13 +7382,7 @@ TEST_F(DesksCloseAllTest, RestoreOrDestroyDeskWithToast) {
     if (test_case.restore_desk) {
       // When `desk_1` is restored it should be back in its original position
       // and should be active again.
-      views::LabelButton* dismiss_button =
-          DesksTestApi::GetCloseAllUndoToastDismissButton();
-      const gfx::Point button_center =
-          dismiss_button->GetBoundsInScreen().CenterPoint();
-      auto* event_generator = GetEventGenerator();
-      event_generator->MoveMouseTo(button_center);
-      event_generator->ClickLeftButton();
+      ClickOnUndoDeskRemovalButton();
       EXPECT_FALSE(desk_1->is_desk_being_removed());
       EXPECT_EQ(2u, controller->desks().size());
       EXPECT_TRUE(desk_1->is_active());
@@ -7792,6 +7796,25 @@ TEST_F(DesksCloseAllTest, ContextMenuOpensOnLongPress) {
   LongGestureTap(desk_preview_view_center, event_generator);
 
   EXPECT_TRUE(DesksTestApi::IsContextMenuRunningForDesk(0));
+}
+
+// Tests that desks can be closed in quick succession while still saving the
+// removed desk.
+TEST_F(DesksCloseAllTest, CanCloseMultipleDesksInSuccessionAndUndo) {
+  NewDesk();
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(3u, controller->desks().size());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  ClickOnCloseAllButtonForDesk(0);
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  ClickOnCloseAllButtonForDesk(0);
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  ClickOnUndoDeskRemovalButton();
+  EXPECT_EQ(2u, controller->desks().size());
 }
 
 // TODO(afakhry): Add more tests:

@@ -46,6 +46,9 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class AutoConnectNotifierTest;
   friend class DesksTestApi;
 
+  // Tells if the toast with the provided ID is running.
+  bool IsRunning(const std::string& id) const;
+
   void ShowLatest();
   void OnDurationPassed(int toast_number);
 

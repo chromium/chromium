@@ -381,7 +381,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // this function in the combine desks process.
   void FinalizeDeskRemoval(RemovedDeskData* removed_desk_data);
 
-  void CommitPendingDeskRemoval();
+  // Saves metrics and resets `temporary_removed_desk_` if `toast_id` is empty
+  // or it matches the toast ID stored in `temporary_removed_desk_`.
+  void MaybeCommitPendingDeskRemoval(
+      const std::string& toast_id = std::string());
 
   // Forcefully cleans up app windows that should be closed.
   void CleanUpClosedAppWindowsTask(

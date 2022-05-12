@@ -76,7 +76,8 @@ namespace ash {
 
 namespace {
 
-constexpr char kCloseAllToastID[] = "UndoCloseAllToast";
+// Used to initialize toasts to undo desk removal with different IDs.
+unsigned int g_close_desk_toast_counter = 0;
 
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
@@ -207,10 +208,11 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
   return active_window == app_list_controller->GetWindow();
 }
 
-void ShowDeskRemovalUndoToast(base::RepeatingClosure dismiss_callback,
+void ShowDeskRemovalUndoToast(const std::string& toast_id,
+                              base::RepeatingClosure dismiss_callback,
                               base::RepeatingClosure expired_callback) {
   ToastData undo_toast_data(
-      kCloseAllToastID, ash::ToastCatalogName::kUndoCloseAll,
+      toast_id, ash::ToastCatalogName::kUndoCloseAll,
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT),
       ToastData::kDefaultToastDuration,
       /*visible_on_lock_screen=*/false,
@@ -228,7 +230,11 @@ void ShowDeskRemovalUndoToast(base::RepeatingClosure dismiss_callback,
 class DesksController::RemovedDeskData {
  public:
   RemovedDeskData(std::unique_ptr<Desk> desk, int index)
-      : was_active_(desk->is_active()), desk_(std::move(desk)), index_(index) {
+      : toast_id_(base::StringPrintf("UndoCloseAllToast_%d",
+                                     ++g_close_desk_toast_counter)),
+        was_active_(desk->is_active()),
+        desk_(std::move(desk)),
+        index_(index) {
     desk_->set_is_desk_being_removed(true);
   }
 
@@ -236,16 +242,20 @@ class DesksController::RemovedDeskData {
   RemovedDeskData& operator=(const RemovedDeskData&) = delete;
 
   ~RemovedDeskData() {
-    if (desk_)
+    if (desk_) {
+      ToastManager::Get()->Cancel(toast_id_);
       DesksController::Get()->FinalizeDeskRemoval(this);
+    }
   }
 
+  const std::string& toast_id() const { return toast_id_; }
   bool was_active() const { return was_active_; }
   Desk* desk() { return desk_.get(); }
   int index() const { return index_; }
   std::unique_ptr<Desk> AcquireDesk() { return std::move(desk_); }
 
  private:
+  const std::string toast_id_;
   const bool was_active_;
   std::unique_ptr<Desk> desk_;
   const int index_;
@@ -458,9 +468,10 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
 
-  // Cancelling the close-all toast closes the toast and also runs the callback
-  // that deletes any existing data in `temporary_removed_desk_`.
-  ToastManager::Get()->Cancel(kCloseAllToastID);
+  // We do not want this function to run here when there is no
+  // `temporary_removed_desk_` because that will incorrectly record metrics.
+  if (temporary_removed_desk_)
+    MaybeCommitPendingDeskRemoval();
 
   // The first default desk should not overwrite any desks restore data, nor
   // should it trigger any UMA stats reports.
@@ -1356,9 +1367,10 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
                                          DeskCloseType close_type) {
-  // Cancelling the close-all toast closes the toast and also runs the callback
-  // that deletes any existing data in `temporary_removed_desk_`.
-  ToastManager::Get()->Cancel(kCloseAllToastID);
+  // We do not want this function to run here when there is no
+  // `temporary_removed_desk_` because that will incorrectly record metrics.
+  if (temporary_removed_desk_)
+    MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanRemoveDesks());
 
@@ -1382,7 +1394,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     }
   }
 
-  // Keep the removed desk alive until at least the end of this function.
+  // Keep the removed desk's data alive until at least the end of this function.
   auto temporary_removed_desk =
       std::make_unique<RemovedDeskData>(std::move(*iter), removed_desk_index);
   auto* temporary_removed_desk_ptr = temporary_removed_desk.get();
@@ -1534,11 +1546,14 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   if (close_type == DeskCloseType::kCloseAllWindowsAndWait) {
     ShowDeskRemovalUndoToast(
-        /*dismiss_callback=*/base::BindRepeating(
-            &DesksController::UndoDeskRemoval, base::Unretained(this)),
-        /*expired_callback=*/base::BindRepeating(
-            &DesksController::CommitPendingDeskRemoval,
-            base::Unretained(this)));
+        temporary_removed_desk_->toast_id(),
+        /*dismiss_callback=*/
+        base::BindRepeating(&DesksController::UndoDeskRemoval,
+                            base::Unretained(this)),
+        /*expired_callback=*/
+        base::BindRepeating(&DesksController::MaybeCommitPendingDeskRemoval,
+                            base::Unretained(this),
+                            temporary_removed_desk_->toast_id()));
   }
 }
 
@@ -1583,6 +1598,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   non_const_desk->RecordLifetimeHistogram(removed_desk_data->index());
   non_const_desk->RecordAndResetConsecutiveDailyVisits(
       /*being_removed=*/true);
+
   // Record number of windows being closed by desk removal.
   UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsClosed,
                            removed_desk->windows().size());
@@ -1630,14 +1646,19 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
                      std::move(closing_window_tracker)),
       kCloseAllWindowCloseTimeout);
 
-  // Remove the desk.
-  temporary_removed_desk_.reset();
+  // `temporary_removed_desk_` should not be set at this point.
+  DCHECK(!temporary_removed_desk_);
 }
 
-void DesksController::CommitPendingDeskRemoval() {
+void DesksController::MaybeCommitPendingDeskRemoval(
+    const std::string& toast_id) {
   // This method will be invoked on both undo and expired toast.
   base::UmaHistogramBoolean(kCloseAllUndoAndExpiredHistogramName, true);
-  temporary_removed_desk_.reset();
+
+  if (toast_id.empty() || (temporary_removed_desk_ &&
+                           temporary_removed_desk_->toast_id() == toast_id)) {
+    temporary_removed_desk_.reset();
+  }
 }
 
 void DesksController::CleanUpClosedAppWindowsTask(

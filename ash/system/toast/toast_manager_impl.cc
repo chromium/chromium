@@ -36,7 +36,7 @@ void ToastManagerImpl::Show(const ToastData& data) {
     *existing_toast = data;
     existing_toast->time_created = old_time_created;
   } else {
-    if (current_toast_data_ && current_toast_data_->id == id) {
+    if (IsRunning(id)) {
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
@@ -53,7 +53,7 @@ void ToastManagerImpl::Show(const ToastData& data) {
 }
 
 void ToastManagerImpl::Cancel(const std::string& id) {
-  if (current_toast_data_ && current_toast_data_->id == id) {
+  if (IsRunning(id)) {
     overlay_->Show(false);
     return;
   }
@@ -74,6 +74,10 @@ void ToastManagerImpl::OnClosed() {
   // manually after the state is changed. See OnLockStateChanged.
   if (!queue_.empty())
     ShowLatest();
+}
+
+bool ToastManagerImpl::IsRunning(const std::string& id) const {
+  return overlay_ && current_toast_data_ && current_toast_data_->id == id;
 }
 
 void ToastManagerImpl::ShowLatest() {
