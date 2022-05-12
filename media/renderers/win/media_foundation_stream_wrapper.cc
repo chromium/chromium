@@ -374,7 +374,6 @@ bool MediaFoundationStreamWrapper::ServicePostFlushSampleRequest() {
     return false;
   }
 
-  pending_sample_request_tokens_.pop();
   post_flush_buffers_.pop();
   return true;
 }
