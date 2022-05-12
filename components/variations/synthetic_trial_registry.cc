@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -165,14 +166,19 @@ void SyntheticTrialRegistry::NotifySyntheticTrialObservers() {
 
 void SyntheticTrialRegistry::GetSyntheticFieldTrialsOlderThan(
     base::TimeTicks time,
-    std::vector<ActiveGroupId>* synthetic_trials) const {
+    std::vector<ActiveGroupId>* synthetic_trials,
+    base::StringPiece suffix) const {
   DCHECK(synthetic_trials);
   synthetic_trials->clear();
+  base::FieldTrial::ActiveGroups active_groups;
   for (const auto& entry : synthetic_trial_groups_) {
     if (entry.start_time() <= time ||
         entry.annotation_mode() == SyntheticTrialAnnotationMode::kCurrentLog)
-      synthetic_trials->push_back(entry.id());
+      active_groups.push_back(entry.active_group());
   }
+
+  GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,
+                                             synthetic_trials);
 }
 
 }  // namespace variations

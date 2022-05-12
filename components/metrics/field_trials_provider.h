@@ -43,9 +43,9 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   void SetLogCreationTimeForTesting(base::TimeTicks time);
 
  private:
-  // Overrideable for testing.
-  virtual void GetFieldTrialIds(
-      std::vector<ActiveGroupId>* field_trial_ids) const;
+  // Populates |field_trial_ids| with currently active field trials groups. The
+  // trial and group names are suffixed with |suffix_| before being hashed.
+  void GetFieldTrialIds(std::vector<ActiveGroupId>* field_trial_ids) const;
 
   // Gets active FieldTrials and SyntheticFieldTrials and populates
   // |system_profile_proto| with them.

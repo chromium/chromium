@@ -19,12 +19,12 @@ SyntheticTrialGroup::SyntheticTrialGroup(
 SyntheticTrialGroup::SyntheticTrialGroup(const SyntheticTrialGroup&) = default;
 
 void SyntheticTrialGroup::SetTrialName(base::StringPiece trial_name) {
-  trial_name_ = std::string(trial_name);
+  active_group_.trial_name = std::string(trial_name);
   id_.name = variations::HashName(trial_name);
 }
 
 void SyntheticTrialGroup::SetGroupName(base::StringPiece group_name) {
-  group_name_ = std::string(group_name);
+  active_group_.group_name = std::string(group_name);
   id_.group = variations::HashName(group_name);
 }
 

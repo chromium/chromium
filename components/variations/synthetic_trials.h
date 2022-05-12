@@ -44,8 +44,9 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
 
   ~SyntheticTrialGroup() = default;
 
-  base::StringPiece trial_name() const { return trial_name_; }
-  base::StringPiece group_name() const { return group_name_; }
+  base::FieldTrial::ActiveGroup active_group() const { return active_group_; }
+  base::StringPiece trial_name() const { return active_group_.trial_name; }
+  base::StringPiece group_name() const { return active_group_.group_name; }
   ActiveGroupId id() const { return id_; }
   base::TimeTicks start_time() const { return start_time_; }
   SyntheticTrialAnnotationMode annotation_mode() const {
@@ -62,8 +63,7 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
   void SetIsExternal(bool is_external) { is_external_ = is_external; }
 
  private:
-  std::string trial_name_;
-  std::string group_name_;
+  base::FieldTrial::ActiveGroup active_group_;
   ActiveGroupId id_;
   base::TimeTicks start_time_;
 

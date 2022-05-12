@@ -85,6 +85,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   friend SyntheticTrialRegistryTest;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
+                           GetSyntheticFieldTrialsOlderThanSuffix);
+  FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
 
@@ -119,10 +121,12 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                                          const std::string& experiment_id);
 
   // Returns a list of synthetic field trials that are either (1) older than
-  // |time|, or (2) specify |kCurrentLog| as |annotation_mode|.
+  // |time|, or (2) specify |kCurrentLog| as |annotation_mode|. The trial and
+  // group names are suffixed with |suffix| before being hashed.
   void GetSyntheticFieldTrialsOlderThan(
       base::TimeTicks time,
-      std::vector<ActiveGroupId>* synthetic_trials) const;
+      std::vector<ActiveGroupId>* synthetic_trials,
+      base::StringPiece suffix = "") const;
 
   // Notifies observers on a synthetic trial list change.
   void NotifySyntheticTrialObservers();

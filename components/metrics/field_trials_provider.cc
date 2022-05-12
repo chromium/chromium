@@ -35,7 +35,6 @@ FieldTrialsProvider::~FieldTrialsProvider() = default;
 
 void FieldTrialsProvider::GetFieldTrialIds(
     std::vector<ActiveGroupId>* field_trial_ids) const {
-  // We use the default field trial suffixing (no suffix).
   variations::GetFieldTrialActiveGroupIds(suffix_, field_trial_ids);
 }
 
@@ -89,7 +88,7 @@ void FieldTrialsProvider::GetAndWriteFieldTrials(
   if (registry_) {
     std::vector<ActiveGroupId> synthetic_trials;
     registry_->GetSyntheticFieldTrialsOlderThan(log_creation_time_,
-                                                &synthetic_trials);
+                                                &synthetic_trials, suffix_);
     WriteFieldTrials(synthetic_trials, system_profile_proto);
   }
 }

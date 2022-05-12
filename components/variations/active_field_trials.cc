@@ -22,20 +22,6 @@ namespace {
 
 base::LazyInstance<std::string>::Leaky g_seed_version;
 
-// Populates |name_group_ids| based on |active_groups|. Field trial names are
-// suffixed with |suffix| before hashing is executed.
-void GetFieldTrialActiveGroupIdsForActiveGroups(
-    base::StringPiece suffix,
-    const base::FieldTrial::ActiveGroups& active_groups,
-    std::vector<ActiveGroupId>* name_group_ids) {
-  DCHECK(name_group_ids->empty());
-  for (auto it = active_groups.begin(); it != active_groups.end(); ++it) {
-    name_group_ids->push_back(
-        MakeActiveGroupId(it->trial_name + std::string(suffix),
-                          it->group_name + std::string(suffix)));
-  }
-}
-
 void AppendActiveGroupIdsAsStrings(
     const std::vector<ActiveGroupId> name_group_ids,
     std::vector<std::string>* output) {
@@ -53,6 +39,18 @@ ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
   id.name = HashName(trial_name);
   id.group = HashName(group_name);
   return id;
+}
+
+void GetFieldTrialActiveGroupIdsForActiveGroups(
+    base::StringPiece suffix,
+    const base::FieldTrial::ActiveGroups& active_groups,
+    std::vector<ActiveGroupId>* name_group_ids) {
+  DCHECK(name_group_ids->empty());
+  for (const auto& active_group : active_groups) {
+    name_group_ids->push_back(
+        MakeActiveGroupId(active_group.trial_name + std::string(suffix),
+                          active_group.group_name + std::string(suffix)));
+  }
 }
 
 void GetFieldTrialActiveGroupIds(base::StringPiece suffix,

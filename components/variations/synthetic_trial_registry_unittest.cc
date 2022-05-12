@@ -134,6 +134,28 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial4", "Group4"));
 }
 
+TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialsOlderThanSuffix) {
+  SyntheticTrialRegistry registry;
+  SyntheticTrialGroup trial("TestTrial", "Group",
+                            SyntheticTrialAnnotationMode::kCurrentLog);
+  registry.RegisterSyntheticFieldTrial(trial);
+
+  std::vector<ActiveGroupId> synthetic_trials;
+  // Get list of synthetic trials, but with no added suffixes to the trial and
+  // group names.
+  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
+                                            &synthetic_trials);
+  ASSERT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial", "Group"));
+
+  // Get list of synthetic trials, but with "UKM" suffixed to the trial and
+  // group names.
+  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
+                                            &synthetic_trials, "UKM");
+  ASSERT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrialUKM", "GroupUKM"));
+}
+
 TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_NoAllowlist) {
   SyntheticTrialRegistry registry(false);
   const std::string context = "TestTrial1";

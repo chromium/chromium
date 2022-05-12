@@ -4,6 +4,7 @@
 
 #include "components/metrics/field_trials_provider.h"
 
+#include "base/metrics/field_trial.h"
 #include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -11,38 +12,36 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+using ActiveGroup = base::FieldTrial::ActiveGroup;
+
 namespace variations {
 
 namespace {
 
-const ActiveGroupId kFieldTrialIds[] = {MakeActiveGroupId("Trial1", "Group1"),
-                                        MakeActiveGroupId("Trial2", "Group2"),
-                                        MakeActiveGroupId("Trial3", "Group3")};
-const SyntheticTrialGroup kSyntheticFieldTrials[] = {
-    SyntheticTrialGroup("Synthetic1",
-                        "SyntheticGroup1",
-                        variations::SyntheticTrialAnnotationMode::kNextLog),
-    SyntheticTrialGroup("Synthetic2",
-                        "SyntheticGroup2",
-                        variations::SyntheticTrialAnnotationMode::kNextLog)};
+constexpr const char* kSuffix = "UKM";
+
+const ActiveGroup kFieldTrials[] = {{"Trial1", "Group1"},
+                                    {"Trial2", "Group2"},
+                                    {"Trial3", "Group3"}};
+const ActiveGroup kSyntheticFieldTrials[] = {{"Synthetic1", "SyntheticGroup1"},
+                                             {"Synthetic2", "SyntheticGroup2"}};
+
+ActiveGroupId ToActiveGroupId(ActiveGroup active_group,
+                              std::string suffix = "");
+
+const ActiveGroupId kFieldTrialIds[] = {ToActiveGroupId(kFieldTrials[0]),
+                                        ToActiveGroupId(kFieldTrials[1]),
+                                        ToActiveGroupId(kFieldTrials[2])};
 const ActiveGroupId kAllTrialIds[] = {
-    kFieldTrialIds[0], kFieldTrialIds[1], kFieldTrialIds[2],
-    kSyntheticFieldTrials[0].id(), kSyntheticFieldTrials[1].id()};
-
-class TestProvider : public FieldTrialsProvider {
- public:
-  TestProvider(SyntheticTrialRegistry* registry, base::StringPiece suffix)
-      : FieldTrialsProvider(registry, suffix) {}
-  ~TestProvider() override {}
-
-  void GetFieldTrialIds(
-      std::vector<ActiveGroupId>* field_trial_ids) const override {
-    ASSERT_TRUE(field_trial_ids->empty());
-    for (const ActiveGroupId& id : kFieldTrialIds) {
-      field_trial_ids->push_back(id);
-    }
-  }
-};
+    ToActiveGroupId(kFieldTrials[0]), ToActiveGroupId(kFieldTrials[1]),
+    ToActiveGroupId(kFieldTrials[2]), ToActiveGroupId(kSyntheticFieldTrials[0]),
+    ToActiveGroupId(kSyntheticFieldTrials[1])};
+const ActiveGroupId kAllTrialIdsWithSuffixes[] = {
+    ToActiveGroupId(kFieldTrials[0], kSuffix),
+    ToActiveGroupId(kFieldTrials[1], kSuffix),
+    ToActiveGroupId(kFieldTrials[2], kSuffix),
+    ToActiveGroupId(kSyntheticFieldTrials[0], kSuffix),
+    ToActiveGroupId(kSyntheticFieldTrials[1], kSuffix)};
 
 // Check that the field trials in |system_profile| correspond to |expected|.
 void CheckFieldTrialsInSystemProfile(
@@ -56,24 +55,43 @@ void CheckFieldTrialsInSystemProfile(
   }
 }
 
+ActiveGroupId ToActiveGroupId(ActiveGroup active_group, std::string suffix) {
+  return MakeActiveGroupId(active_group.trial_name + suffix,
+                           active_group.group_name + suffix);
+}
+
 }  // namespace
 
 class FieldTrialsProviderTest : public ::testing::Test {
  public:
-  FieldTrialsProviderTest() {}
-  ~FieldTrialsProviderTest() override {}
+  FieldTrialsProviderTest() = default;
+  ~FieldTrialsProviderTest() override = default;
 
  protected:
+  void SetUp() override {
+    // Register the field trials.
+    for (const ActiveGroup& trial : kFieldTrials) {
+      base::FieldTrial* field_trial = base::FieldTrialList::CreateFieldTrial(
+          trial.trial_name, trial.group_name);
+      // Call group() to finalize and mark the field trial as active.
+      field_trial->group();
+    }
+  }
+
   // Register trials which should get recorded.
   void RegisterExpectedSyntheticTrials() {
-    for (const SyntheticTrialGroup& synthetic_trial : kSyntheticFieldTrials) {
-      registry_.RegisterSyntheticFieldTrial(synthetic_trial);
+    for (const ActiveGroup& trial : kSyntheticFieldTrials) {
+      registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
+          trial.trial_name, trial.group_name,
+          /*annotation_mode=*/
+          variations::SyntheticTrialAnnotationMode::kNextLog));
     }
   }
   // Register trial which shouldn't get recorded.
   void RegisterExtraSyntheticTrial() {
     registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
         "ExtraSynthetic", "ExtraGroup",
+        /*annotation_mode=*/
         variations::SyntheticTrialAnnotationMode::kNextLog));
   }
 
@@ -89,7 +107,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
 };
 
 TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
-  TestProvider provider(&registry_, base::StringPiece());
+  FieldTrialsProvider provider(&registry_, base::StringPiece());
 
   RegisterExpectedSyntheticTrials();
   // Make sure these trials are older than the log.
@@ -113,7 +131,7 @@ TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
 }
 
 TEST_F(FieldTrialsProviderTest, NoSyntheticTrials) {
-  TestProvider provider(nullptr, base::StringPiece());
+  FieldTrialsProvider provider(nullptr, base::StringPiece());
 
   metrics::SystemProfileProto proto;
   provider.ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks(),
@@ -136,7 +154,7 @@ TEST_F(FieldTrialsProviderTest, ProvideCurrentSessionData) {
   trial->set_name_id(1);
   trial->set_group_id(1);
 
-  TestProvider provider(&registry_, base::StringPiece());
+  FieldTrialsProvider provider(&registry_, base::StringPiece());
   RegisterExpectedSyntheticTrials();
   WaitUntilTimeChanges(base::TimeTicks::Now());
   provider.SetLogCreationTimeForTesting(base::TimeTicks::Now());
@@ -146,6 +164,23 @@ TEST_F(FieldTrialsProviderTest, ProvideCurrentSessionData) {
   EXPECT_EQ(std::size(kAllTrialIds),
             static_cast<size_t>(uma_log.system_profile().field_trial_size()));
   CheckFieldTrialsInSystemProfile(uma_log.system_profile(), kAllTrialIds);
+}
+
+TEST_F(FieldTrialsProviderTest, GetAndWriteFieldTrialsWithSuffixes) {
+  metrics::ChromeUserMetricsExtension uma_log;
+  uma_log.system_profile();
+
+  FieldTrialsProvider provider(&registry_, kSuffix);
+  RegisterExpectedSyntheticTrials();
+  WaitUntilTimeChanges(base::TimeTicks::Now());
+  provider.SetLogCreationTimeForTesting(base::TimeTicks::Now());
+
+  provider.ProvideCurrentSessionData(&uma_log);
+
+  EXPECT_EQ(std::size(kAllTrialIdsWithSuffixes),
+            static_cast<size_t>(uma_log.system_profile().field_trial_size()));
+  CheckFieldTrialsInSystemProfile(uma_log.system_profile(),
+                                  kAllTrialIdsWithSuffixes);
 }
 
 }  // namespace variations
