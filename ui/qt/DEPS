@@ -1,0 +1,5 @@
+include_rules = [
+  "+ui/gfx",
+  "+ui/shell_dialogs",
+  "+ui/views",
+]

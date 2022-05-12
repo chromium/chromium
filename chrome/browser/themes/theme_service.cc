@@ -496,6 +496,8 @@ ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
         }
 #endif
       }
+      if (!native_theme)
+        return absl::nullopt;
 
       auto color_provider_key = native_theme->GetColorProviderKey(
           GetThemeSupplier(), delegate_->ShouldUseCustomFrame());

@@ -1,0 +1,83 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/linux/pkg_config.gni")
+import("//ui/qt/qt.gni")
+
+assert(use_qt)
+assert(is_linux)
+assert(!is_chromecast)
+
+pkg_config("qt5_config") {
+  packages = [
+    "Qt5Core",
+    "Qt5Widgets",
+  ]
+}
+
+source_set("qt_interface") {
+  visibility = [ ":*" ]
+
+  # Since `:qt` depends on `qt_shim` via data_deps, gn check would error-out
+  # if qt_interface.h was placed in `qt_shim`, so it's placed in a separate
+  # target instead.
+  public = [ "qt_interface.h" ]
+}
+
+shared_library("qt5_shim") {
+  visibility = [
+    ":qt",
+    "//chrome/installer/linux:*",
+  ]
+
+  # Since qt_shim is a shared library even in non-component builds, it shouldn't
+  # depend on any other targets since that would duplicate code between binaries
+  # leading to increased size and potential issues from duplicated global state.
+  no_default_deps = true
+  assert_no_deps = [
+    "//base",
+    "//buildtools/third_party/libc++",
+  ]
+  deps = [ ":qt_interface" ]
+
+  # It's OK to depend on the system libstdc++ since it's a dependency of QT, so
+  # it will get loaded into the process anyway.
+  libs = [ "stdc++" ]
+
+  configs += [ ":qt5_config" ]
+
+  public = []
+  sources = [
+    "qt_shim.cc",
+    "qt_shim.h",
+
+    # This file is generated to avoid a dependency on `moc` during the build.
+    # 1. $ build/linux/debian_bullseye_amd64-sysroot/usr/lib/qt5/bin/moc \
+    #      ui/qt/qt_shim.h > ui/qt/qt_shim_moc.cc
+    # 2. $ git cl format
+    # 3. Manually add copyright header.
+    "qt_shim_moc.cc",
+  ]
+}
+
+component("qt") {
+  visibility = [ "//ui/views/linux_ui:linux_ui_factory" ]
+
+  defines = [ "IS_QT_IMPL" ]
+
+  # qt_shim is in data_deps since we want to load it manually.
+  data_deps = [ ":qt5_shim" ]
+  deps = [
+    ":qt_interface",
+    "//base",
+    "//ui/shell_dialogs",
+    "//ui/views",
+  ]
+
+  sources = [
+    "qt_ui.cc",
+    "qt_ui.h",
+  ]
+}

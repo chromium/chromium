@@ -18,6 +18,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
+import("//ui/qt/qt.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -83,6 +84,7 @@ buildflag_header("buildflags") {
     "HAS_NATIVE_ACCESSIBILITY=$has_native_accessibility",
     "HAS_PLATFORM_ACCESSIBILITY_SUPPORT=$has_platform_accessibility_support",
     "USE_GTK=$use_gtk",
+    "USE_QT=$use_qt",
   ]
 }
 
