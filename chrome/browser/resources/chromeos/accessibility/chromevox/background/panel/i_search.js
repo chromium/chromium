@@ -29,10 +29,6 @@ export class ISearch {
 
     /** @private {number} */
     this.callbackId_ = 0;
-
-    // Global exports.
-    /** Exported for the panel script. */
-    ChromeVox = chrome.extension.getBackgroundPage()['ChromeVox'];
   }
 
   /** @param {?ISearchHandler} handler */
