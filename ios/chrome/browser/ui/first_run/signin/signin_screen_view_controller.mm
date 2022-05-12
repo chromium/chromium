@@ -25,8 +25,8 @@
 
 namespace {
 
-// Margin above the identity button.
-constexpr CGFloat kTopMarginForBottomView = 16.;
+// Top margin for the managed icon in the enteprised image view
+constexpr CGFloat kTopMarginForManagedIcon = 16.;
 
 // Banner at the top of the view.
 NSString* const kSigninBannerName = @"signin_banner";
@@ -130,7 +130,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
     [NSLayoutConstraint activateConstraints:@[
       [enterpriseImageView.topAnchor
           constraintGreaterThanOrEqualToAnchor:topAnchorForEnterpriseIcon
-                                      constant:kTopMarginForBottomView],
+                                      constant:kTopMarginForManagedIcon],
       [enterpriseImageView.bottomAnchor
           constraintEqualToAnchor:self.specificContentView.bottomAnchor],
       [enterpriseImageView.centerXAnchor
