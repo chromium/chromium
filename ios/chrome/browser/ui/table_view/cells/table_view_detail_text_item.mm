@@ -47,6 +47,11 @@
     }
   }
 
+  cell.allowMultilineDetailText = self.allowMultilineDetailText;
+  if (self.allowMultilineDetailText) {
+    cell.detailTextLabel.numberOfLines = 0;
+  }
+
   // Styling.
   if (self.textColor) {
     cell.textLabel.textColor = self.textColor;
@@ -185,6 +190,9 @@
     } else {
       self.textLabel.numberOfLines = 1;
       self.detailTextLabel.numberOfLines = 1;
+    }
+    if (self.allowMultilineDetailText) {
+      self.detailTextLabel.numberOfLines = 0;
     }
   }
 }

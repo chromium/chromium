@@ -82,6 +82,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
   interestsItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
+  interestsItem.allowMultilineDetailText = YES;
   [model addItem:interestsItem toSectionWithIdentifier:OtherSectionIdentifier];
 
   TableViewDetailTextItem* hiddenItem =
@@ -91,6 +92,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL);
   hiddenItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
+  hiddenItem.allowMultilineDetailText = YES;
   [model addItem:hiddenItem toSectionWithIdentifier:OtherSectionIdentifier];
 
   TableViewDetailTextItem* activityItem =
@@ -101,6 +103,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL);
   activityItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
+  activityItem.allowMultilineDetailText = YES;
   [model addItem:activityItem toSectionWithIdentifier:OtherSectionIdentifier];
 }
 

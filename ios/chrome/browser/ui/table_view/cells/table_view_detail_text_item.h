@@ -24,6 +24,9 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 // Text Alignment for the cell's textLabel. Default is NSTextAlignmentNatural.
 @property(nonatomic, assign) NSTextAlignment textAlignment;
 
+// YES if multiple lines are allowed in the detail text.
+@property(nonatomic, assign) BOOL allowMultilineDetailText;
+
 // UIColor for the cell's textLabel. Default is
 // [UIColor colorNamed:kTextPrimaryColor]. ChromeTableViewStyler's
 // |cellTitleColor| takes precedence over the default color, but not over
@@ -57,6 +60,9 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 
 // The detail text to display.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
+
+// YES if multiple lines are allowed in the detail text.
+@property(nonatomic, assign) BOOL allowMultilineDetailText;
 
 @end
 
