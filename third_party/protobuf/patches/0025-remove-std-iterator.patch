@@ -1,0 +1,97 @@
+diff --git a/src/google/protobuf/reflection.h b/src/google/protobuf/reflection.h
+index af8eb00ef84ca..bb41fbaeb52ed 100644
+--- a/src/google/protobuf/reflection.h
++++ b/src/google/protobuf/reflection.h
+@@ -392,13 +392,18 @@ class PROTOBUF_EXPORT RepeatedFieldAccessor {
+ 
+ // Implement (Mutable)RepeatedFieldRef::iterator
+ template <typename T>
+-class RepeatedFieldRefIterator
+-    : public std::iterator<std::forward_iterator_tag, T> {
++class RepeatedFieldRefIterator {
+   typedef typename RefTypeTraits<T>::AccessorValueType AccessorValueType;
+   typedef typename RefTypeTraits<T>::IteratorValueType IteratorValueType;
+   typedef typename RefTypeTraits<T>::IteratorPointerType IteratorPointerType;
+ 
+  public:
++  using iterator_category = std::forward_iterator_tag;
++  using value_type = T;
++  using pointer = T*;
++  using reference = T&;
++  using difference_type = std::ptrdiff_t;
++
+   // Constructor for non-message fields.
+   RepeatedFieldRefIterator(const void* data,
+                            const RepeatedFieldAccessor* accessor, bool begin)
+diff --git a/src/google/protobuf/repeated_field.h b/src/google/protobuf/repeated_field.h
+index c1c4774685ed3..f9e120218fe54 100644
+--- a/src/google/protobuf/repeated_field.h
++++ b/src/google/protobuf/repeated_field.h
+@@ -2667,9 +2667,14 @@ RepeatedPtrField<Element>::pointer_end() const {
+ namespace internal {
+ // A back inserter for RepeatedField objects.
+ template <typename T>
+-class RepeatedFieldBackInsertIterator
+-    : public std::iterator<std::output_iterator_tag, T> {
++class RepeatedFieldBackInsertIterator {
+  public:
++  using iterator_category = std::output_iterator_tag;
++  using value_type = T;
++  using pointer = void;
++  using reference = void;
++  using difference_type = std::ptrdiff_t;
++
+   explicit RepeatedFieldBackInsertIterator(
+       RepeatedField<T>* const mutable_field)
+       : field_(mutable_field) {}
+@@ -2689,9 +2694,14 @@ class RepeatedFieldBackInsertIterator
+ 
+ // A back inserter for RepeatedPtrField objects.
+ template <typename T>
+-class RepeatedPtrFieldBackInsertIterator
+-    : public std::iterator<std::output_iterator_tag, T> {
++class RepeatedPtrFieldBackInsertIterator {
+  public:
++  using iterator_category = std::output_iterator_tag;
++  using value_type = T;
++  using pointer = void;
++  using reference = void;
++  using difference_type = std::ptrdiff_t;
++
+   RepeatedPtrFieldBackInsertIterator(RepeatedPtrField<T>* const mutable_field)
+       : field_(mutable_field) {}
+   RepeatedPtrFieldBackInsertIterator<T>& operator=(const T& value) {
+@@ -2720,9 +2730,14 @@ class RepeatedPtrFieldBackInsertIterator
+ // A back inserter for RepeatedPtrFields that inserts by transferring ownership
+ // of a pointer.
+ template <typename T>
+-class AllocatedRepeatedPtrFieldBackInsertIterator
+-    : public std::iterator<std::output_iterator_tag, T> {
++class AllocatedRepeatedPtrFieldBackInsertIterator {
+  public:
++  using iterator_category = std::output_iterator_tag;
++  using value_type = T;
++  using pointer = void;
++  using reference = void;
++  using difference_type = std::ptrdiff_t;
++
+   explicit AllocatedRepeatedPtrFieldBackInsertIterator(
+       RepeatedPtrField<T>* const mutable_field)
+       : field_(mutable_field) {}
+@@ -2744,9 +2759,14 @@ class AllocatedRepeatedPtrFieldBackInsertIterator
+ // Almost identical to AllocatedRepeatedPtrFieldBackInsertIterator. This one
+ // uses the UnsafeArenaAddAllocated instead.
+ template <typename T>
+-class UnsafeArenaAllocatedRepeatedPtrFieldBackInsertIterator
+-    : public std::iterator<std::output_iterator_tag, T> {
++class UnsafeArenaAllocatedRepeatedPtrFieldBackInsertIterator {
+  public:
++  using iterator_category = std::output_iterator_tag;
++  using value_type = T;
++  using pointer = void;
++  using reference = void;
++  using difference_type = std::ptrdiff_t;
++
+   explicit UnsafeArenaAllocatedRepeatedPtrFieldBackInsertIterator(
+       RepeatedPtrField<T>* const mutable_field)
+       : field_(mutable_field) {}

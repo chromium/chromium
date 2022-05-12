@@ -91,3 +91,9 @@ Description of the patches:
   Adds hooks to allow running callback before and after protobuf initialisation.
   These hooks allows to fix priority inversion by injecting code that boost
   the thread priority while loading protobufs (https://crbug.com/1218253).
+
+- 0025-remove-std-iterator.patch
+
+  Imports
+  https://github.com/protocolbuffers/protobuf/commit/ed8b2e6f62afee17e2f8249be3b9b69eb0666532
+  to remove uses of std::iterator.
