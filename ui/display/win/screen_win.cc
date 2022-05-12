@@ -207,7 +207,7 @@ std::vector<DisplayInfo> FindAndRemoveTouchingDisplayInfos(
 // and |sdr_white_level| with default buffer formats for Windows.
 gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     const gfx::ColorSpace& color_space,
-    float sdr_white_level = gfx::ColorSpace::kDefaultScrgbLinearSdrWhiteLevel) {
+    float sdr_white_level) {
   gfx::DisplayColorSpaces display_color_spaces(color_space);
   // When alpha is not needed, specify BGRX_8888 to get
   // DXGI_ALPHA_MODE_IGNORE. This saves significant power (see
@@ -262,7 +262,8 @@ gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
   // Adjust white level to a default value irrespective of whether the color
   // space is scRGB linear (defaults to 80 nits) or PQ (defaults to 100 nits).
   const auto& color_space = GetForcedDisplayColorProfile();
-  auto display_color_spaces = CreateDisplayColorSpaces(color_space);
+  auto display_color_spaces = CreateDisplayColorSpaces(
+      color_space, gfx::ColorSpace::kDefaultSDRWhiteLevelV2);
   // Use the forced color profile's buffer format for all content usages.
   if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
     display_color_spaces.SetOutputBufferFormats(
@@ -296,11 +297,13 @@ Display CreateDisplayFromDisplayInfo(
   if (HasForceDisplayColorProfile()) {
     color_spaces = GetForcedDisplayColorSpaces();
   } else if (hdr_enabled_on_any_display) {
-    const float sdr_white_level = display_info.sdr_white_level();
+    float sdr_white_level = display_info.sdr_white_level();
     float hdr_max_luminance_relative = 0.f;
     if (dxgi_output_desc) {
       hdr_max_luminance_relative =
           dxgi_output_desc->max_luminance / sdr_white_level;
+      if (!dxgi_output_desc->hdr_enabled)
+        sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevelV2;
     }
     hdr_max_luminance_relative = std::max(hdr_max_luminance_relative,
                                           kMinHDRCapableMaxLuminanceRelative);
@@ -308,7 +311,8 @@ Display CreateDisplayFromDisplayInfo(
                                                hdr_max_luminance_relative);
   } else {
     color_spaces = CreateDisplayColorSpaces(
-        color_profile_reader->GetDisplayColorSpace(display.id()));
+        color_profile_reader->GetDisplayColorSpace(display.id()),
+        gfx::ColorSpace::kDefaultSDRWhiteLevelV2);
   }
   if (color_spaces.SupportsHDR()) {
     // These are (ab)used by pages via media query APIs to detect HDR support.

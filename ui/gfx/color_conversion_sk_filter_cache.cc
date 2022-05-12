@@ -22,7 +22,7 @@ namespace gfx {
 namespace {
 
 const base::Feature kToneMappingV2{"ToneMappingV2",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Additional YUV information to skia renderer to draw 9- and 10- bits color.
 struct YUVInput {
