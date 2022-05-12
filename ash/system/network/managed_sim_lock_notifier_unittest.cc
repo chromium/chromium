@@ -50,7 +50,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
 
     // User must be logged in for notification to be visible.
-    SimulateUserLogin("user1@test.com");
+    LogIn();
   }
 
   void TearDown() override {
@@ -58,6 +58,10 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     network_config_helper_.reset();
     network_handler_test_helper_.reset();
   }
+
+  void LogIn() { SimulateUserLogin("user1@test.com"); }
+
+  void LogOut() { ClearLogin(); }
 
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler() {
     return NetworkHandler::Get()->managed_network_configuration_handler();
@@ -127,6 +131,11 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void RemoveNotification() {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        ManagedSimLockNotifier::kManagedSimLockNotificationId, false);
+  }
+
   // Returns the managed SIM lock notification if it is shown, and null if it is
   // not shown.
   message_center::Notification* GetManagedSimLockNotification() {
@@ -154,4 +163,57 @@ TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
   SetAllowCellularSimLock(true);
   EXPECT_FALSE(GetManagedSimLockNotification());
 }
+
+TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
+  AddCellularDevice();
+  AddCellularService();
+  SetCellularSimLockState(true);
+  SetAllowCellularSimLock(false);
+
+  // Notification should be shown; proceed to remove it.
+  EXPECT_TRUE(GetManagedSimLockNotification());
+  RemoveNotification();
+  EXPECT_FALSE(GetManagedSimLockNotification());
+
+  LogOut();
+  LogIn();
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should surface in new active session since the SIM is PIN
+  // locked and policy is true.
+  EXPECT_TRUE(GetManagedSimLockNotification());
+
+  RemoveNotification();
+  SetAllowCellularSimLock(true);
+
+  LogOut();
+  LogIn();
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should not surface in new active session since the policy is
+  // false.
+  EXPECT_FALSE(GetManagedSimLockNotification());
+
+  SetCellularSimLockState(false);
+  SetAllowCellularSimLock(false);
+
+  LogOut();
+  LogIn();
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should not surface in new active session since the SIM is not
+  // PIN locked.
+  EXPECT_FALSE(GetManagedSimLockNotification());
+
+  SetAllowCellularSimLock(true);
+
+  LogOut();
+  LogIn();
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should not surface in new active session since the SIM is not
+  // PIN locked.
+  EXPECT_FALSE(GetManagedSimLockNotification());
+}
+
 }  // namespace ash

@@ -7,12 +7,14 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "components/onc/onc_constants.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -33,15 +35,26 @@ ManagedSimLockNotifier::ManagedSimLockNotifier() {
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   remote_cros_network_config_->AddObserver(
       cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
-ManagedSimLockNotifier::~ManagedSimLockNotifier() {}
+ManagedSimLockNotifier::~ManagedSimLockNotifier() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
+void ManagedSimLockNotifier::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::ACTIVE) {
+    CheckGlobalNetworkConfiguration();
+  }
+}
 
 void ManagedSimLockNotifier::OnPoliciesApplied(const std::string& userhash) {
-  CheckGlobalNetworkConfiguarion();
+  CheckGlobalNetworkConfiguration();
 }
 
-void ManagedSimLockNotifier::CheckGlobalNetworkConfiguarion() {
+void ManagedSimLockNotifier::CheckGlobalNetworkConfiguration() {
   remote_cros_network_config_->GetGlobalPolicy(
       base::BindOnce(&ManagedSimLockNotifier::OnGetGlobalPolicy,
                      weak_ptr_factory_.GetWeakPtr()));
