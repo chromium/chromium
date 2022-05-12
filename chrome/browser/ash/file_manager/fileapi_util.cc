@@ -623,7 +623,8 @@ std::unique_ptr<base::ListValue> ConvertEntryDefinitionListToListValue(
   auto entries = std::make_unique<base::ListValue>();
   for (auto it = entry_definition_list.begin();
        it != entry_definition_list.end(); ++it) {
-    entries->Append(ConvertEntryDefinitionToValue(*it));
+    entries->GetList().Append(
+        base::Value::FromUniquePtrValue(ConvertEntryDefinitionToValue(*it)));
   }
   return entries;
 }

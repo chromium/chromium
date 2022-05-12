@@ -77,64 +77,63 @@ GURL GetFileManagerMainPageUrlWithParams(
     const std::string& search_query,
     bool show_android_picker_apps,
     std::vector<std::string> volume_filter) {
-  base::DictionaryValue arg_value;
-  arg_value.SetStringKey("type", GetDialogTypeAsString(type));
-  arg_value.SetStringKey("title", title);
-  arg_value.SetStringKey("currentDirectoryURL", current_directory_url.spec());
-  arg_value.SetStringKey("selectionURL", selection_url.spec());
+  base::Value::Dict arg_value;
+  arg_value.Set("type", GetDialogTypeAsString(type));
+  arg_value.Set("title", title);
+  arg_value.Set("currentDirectoryURL", current_directory_url.spec());
+  arg_value.Set("selectionURL", selection_url.spec());
   // |targetName| is only relevant for SaveAs.
   if (type == ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE)
-    arg_value.SetStringKey("targetName", target_name);
-  arg_value.SetStringKey("searchQuery", search_query);
-  arg_value.SetBoolKey("showAndroidPickerApps", show_android_picker_apps);
+    arg_value.Set("targetName", target_name);
+  arg_value.Set("searchQuery", search_query);
+  arg_value.Set("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {
-    base::ListValue types_list;
+    base::Value::List types_list;
     for (size_t i = 0; i < file_types->extensions.size(); ++i) {
-      base::Value extensions_list(base::Value::Type::LIST);
+      base::Value::List extensions_list;
       for (size_t j = 0; j < file_types->extensions[i].size(); ++j)
         extensions_list.Append(file_types->extensions[i][j]);
 
-      auto dict = std::make_unique<base::DictionaryValue>();
-      dict->SetKey("extensions", std::move(extensions_list));
+      base::Value::Dict dict;
+      dict.Set("extensions", std::move(extensions_list));
 
       if (i < file_types->extension_description_overrides.size()) {
         std::u16string desc = file_types->extension_description_overrides[i];
-        dict->SetStringKey("description", desc);
+        dict.Set("description", desc);
       }
 
       // file_type_index is 1-based. 0 means no selection at all.
-      dict->SetBoolKey("selected",
-                       (static_cast<size_t>(file_type_index) == (i + 1)));
+      dict.Set("selected", static_cast<size_t>(file_type_index) == (i + 1));
 
       types_list.Append(std::move(dict));
     }
-    arg_value.SetKey("typeList", std::move(types_list));
+    arg_value.Set("typeList", std::move(types_list));
 
-    arg_value.SetBoolKey("includeAllFiles", file_types->include_all_files);
+    arg_value.Set("includeAllFiles", file_types->include_all_files);
   }
 
   if (file_types) {
     switch (file_types->allowed_paths) {
       case ui::SelectFileDialog::FileTypeInfo::NATIVE_PATH:
-        arg_value.SetStringKey(kAllowedPaths, kNativePath);
+        arg_value.Set(kAllowedPaths, kNativePath);
         break;
       case ui::SelectFileDialog::FileTypeInfo::ANY_PATH:
-        arg_value.SetStringKey(kAllowedPaths, kAnyPath);
+        arg_value.Set(kAllowedPaths, kAnyPath);
         break;
       case ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL:
-        arg_value.SetStringKey(kAllowedPaths, kAnyPathOrUrl);
+        arg_value.Set(kAllowedPaths, kAnyPathOrUrl);
         break;
     }
   } else {
-    arg_value.SetStringKey(kAllowedPaths, kNativePath);
+    arg_value.Set(kAllowedPaths, kNativePath);
   }
 
   if (!volume_filter.empty()) {
-    base::Value volume_filter_list(base::Value::Type::LIST);
+    base::Value::List volume_filter_list;
     for (const auto& item : volume_filter)
       volume_filter_list.Append(item);
-    arg_value.SetKey("volumeFilter", std::move(volume_filter_list));
+    arg_value.Set("volumeFilter", std::move(volume_filter_list));
   }
 
   std::string json_args;

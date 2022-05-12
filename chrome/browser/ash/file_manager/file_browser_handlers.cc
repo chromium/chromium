@@ -339,21 +339,20 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   SetupHandlerHostFileAccessPermissions(
       file_definition_list.get(), extension_.get(), handler_pid);
 
-  std::unique_ptr<base::ListValue> event_args(new base::ListValue());
-  event_args->Append(action_id_);
-  auto details = std::make_unique<base::DictionaryValue>();
+  std::vector<base::Value> event_args;
+  event_args.emplace_back(action_id_);
+  base::Value::Dict details;
   // Get file definitions. These will be replaced with Entry instances by
   // dispatchEvent() method from event_binding.js.
   auto file_entries = file_manager::util::ConvertEntryDefinitionListToListValue(
       *entry_definition_list);
 
-  details->SetKey("entries",
-                  base::Value::FromUniquePtrValue(std::move(file_entries)));
-  event_args->Append(std::move(details));
+  details.Set("entries",
+              base::Value::FromUniquePtrValue(std::move(file_entries)));
+  event_args.emplace_back(std::move(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,
-      "fileBrowserHandler.onExecute",
-      std::move(*event_args).TakeListDeprecated(), profile_);
+      "fileBrowserHandler.onExecute", std::move(event_args), profile_);
   router->DispatchEventToExtension(extension_->id(), std::move(event));
 
   ExecuteDoneOnUIThread(true, "");
