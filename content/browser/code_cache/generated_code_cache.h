@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/code_cache/simple_lru_cache_index.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/io_buffer.h"
@@ -232,6 +233,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
   base::FilePath path_;
   int max_size_bytes_;
   CodeCacheType cache_type_;
+
+  // A hypothetical memory-backed code cache. Used to collect UMAs.
+  SimpleLruCacheIndex lru_cache_index_{/*capacity=*/200 * 1024 * 1024};
 
   base::WeakPtrFactory<GeneratedCodeCache> weak_ptr_factory_{this};
 };
