@@ -11,7 +11,7 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
 
 const PrivacySandboxDialogAppElementBase = PolymerElement;
 
@@ -80,35 +80,35 @@ export class PrivacySandboxDialogAppElement extends
     window.addEventListener('keydown', event => {
       // Only notice dialog can be dismissed by pressing "Esc".
       if (event.key === 'Escape' && !this.isConsent_) {
-        this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_DISMISS);
+        this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_DISMISS);
       }
     });
   }
 
   private onNoticeOpenSettings_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+    this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_OPEN_SETTINGS);
   }
 
   private onNoticeAcknowledge_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
+    this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_ACKNOWLEDGE);
   }
 
   private onConsentAccepted_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_ACCEPTED);
+    this.dialogActionOccurred(PrivacySandboxDialogAction.CONSENT_ACCEPTED);
   }
 
   private onConsentDeclined_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.CONSENT_DECLINED);
+    this.dialogActionOccurred(PrivacySandboxDialogAction.CONSENT_DECLINED);
   }
 
   private onLearnMoreExpandedChanged_(newVal: boolean, oldVal: boolean) {
     if (!oldVal && newVal) {
-      this.promptActionOccurred(
-          PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+      this.dialogActionOccurred(
+          PrivacySandboxDialogAction.CONSENT_MORE_INFO_OPENED);
     }
     if (oldVal && !newVal) {
-      this.promptActionOccurred(
-          PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
+      this.dialogActionOccurred(
+          PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
     }
     // Show divider if the dialog was scrollable from the beginning or became
     // scrollable because the section is expanded. Otherwise, hide the
@@ -133,8 +133,8 @@ export class PrivacySandboxDialogAppElement extends
     }
   }
 
-  private promptActionOccurred(action: PrivacySandboxPromptAction) {
-    PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
+  private dialogActionOccurred(action: PrivacySandboxDialogAction) {
+    PrivacySandboxDialogBrowserProxy.getInstance().dialogActionOccurred(action);
   }
 }
 

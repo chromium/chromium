@@ -22,8 +22,8 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   ~MockPrivacySandboxService() override;
 
   MOCK_METHOD(void,
-              PromptActionOccurred,
-              (PrivacySandboxService::PromptAction),
+              DialogActionOccurred,
+              (PrivacySandboxService::DialogAction),
               (override));
 };
 

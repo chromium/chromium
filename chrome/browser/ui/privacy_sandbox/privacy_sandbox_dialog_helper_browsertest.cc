@@ -38,8 +38,8 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(void, DialogOpenedForBrowser, (Browser*), (override));
   MOCK_METHOD(bool, IsDialogOpenForBrowser, (Browser*), (override));
   MOCK_METHOD(void,
-              PromptActionOccurred,
-              (PrivacySandboxService::PromptAction),
+              DialogActionOccurred,
+              (PrivacySandboxService::DialogAction),
               (override));
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
 };

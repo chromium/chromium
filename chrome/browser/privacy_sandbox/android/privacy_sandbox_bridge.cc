@@ -142,10 +142,10 @@ static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(JNIEnv* env) {
                               ->GetRequiredPromptType());
 }
 
-static void JNI_PrivacySandboxBridge_PromptActionOccurred(JNIEnv* env,
+static void JNI_PrivacySandboxBridge_DialogActionOccurred(JNIEnv* env,
                                                           jint action) {
   PrivacySandboxServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
-      ->PromptActionOccurred(
-          static_cast<PrivacySandboxService::PromptAction>(action));
+      ->DialogActionOccurred(
+          static_cast<PrivacySandboxService::DialogAction>(action));
 }

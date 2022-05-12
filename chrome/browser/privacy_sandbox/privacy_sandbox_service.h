@@ -62,9 +62,11 @@ class PrivacySandboxService : public KeyedService,
   };
 
   // An exhaustive list of actions related to showing & interacting with the
-  // prompt. Includes actions which do not impact consent / notice state.
+  // dialog. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  enum class PromptAction {
+  // TODO(crbug.com/1321587): Rename to PromptAction as the UI can be presented
+  // as a bubble, a dialog or a bottomsheet.
+  enum class DialogAction {
     // Notice Interactions:
     kNoticeShown = 0,
     kNoticeOpenSettings = 1,
@@ -118,13 +120,13 @@ class PrivacySandboxService : public KeyedService,
   // Virtual to allow mocking in tests.
   virtual PromptType GetRequiredPromptType();
 
-  // Informs the service that |action| occurred with the prompt. This allows
+  // Informs the service that |action| occurred with the dialog. This allows
   // the service to record this information in preferences such that future
   // calls to GetRequiredPromptType() are correct. This is expected to be
-  // called appropriately by all locations showing the prompt. Metrics shared
+  // called appropriately by all locations showing the dialog. Metrics shared
   // between platforms will also be recorded.
   // This method is virtual for mocking in tests.
-  virtual void PromptActionOccurred(PromptAction action);
+  virtual void DialogActionOccurred(DialogAction action);
 
   // Returns whether |url| is suitable to display the Privacy Sandbox dialog
   // over. Only about:blank and certain chrome:// URLs are considered suitable.
@@ -493,7 +495,7 @@ class PrivacySandboxService : public KeyedService,
   // Informs the TrustSafetySentimentService, if it exists, that a
   // Privacy Sandbox 3 interaction for an area has occurred The area is
   // determined by |action|. Only a subset of actions has a corresponding area.
-  void InformSentimentService(PrivacySandboxService::PromptAction action);
+  void InformSentimentService(PrivacySandboxService::DialogAction action);
 
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };

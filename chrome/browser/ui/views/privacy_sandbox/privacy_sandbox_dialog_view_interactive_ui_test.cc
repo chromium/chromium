@@ -58,14 +58,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTest,
   // Check that when the escape key is pressed, the notice is closed.
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
+      DialogActionOccurred(PrivacySandboxService::DialogAction::kNoticeShown));
   EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kNoticeDismiss));
+              DialogActionOccurred(
+                  PrivacySandboxService::DialogAction::kNoticeDismiss));
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
+      DialogActionOccurred(
+          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction))
       .Times(0);
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
@@ -91,11 +91,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTest,
   // Check that when the escape key is pressed, the consent is not closed.
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
+      DialogActionOccurred(PrivacySandboxService::DialogAction::kConsentShown));
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
+      DialogActionOccurred(
+          PrivacySandboxService::DialogAction::kConsentClosedNoDecision))
       .Times(0);
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
