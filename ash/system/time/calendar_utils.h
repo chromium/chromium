@@ -172,6 +172,14 @@ ASH_EXPORT int GetTimeDifferenceInMinutes(base::Time date);
 // Gets the first day's local midnight of the week based on the `date`.
 base::Time GetFirstDayOfWeekLocalMidnight(base::Time date);
 
+// Calculate the start/end times for a fetch of a single month's events.
+// `start_of_month_local_midnight` should be local midnight on the first day of
+// a month, and the two `base::Time` objects returned are the UTC times that
+// represent the start of the month and start of the next month. See the unit
+// test of this method in calendar_utils_unittest.cc for examples.
+ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
+    base::Time start_of_month_local_midnight);
+
 }  // namespace calendar_utils
 
 }  // namespace ash

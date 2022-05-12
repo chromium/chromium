@@ -51,8 +51,11 @@ class TestCalendarClient : public CalendarClient {
     // like a event fetch in production.  Use set_response_delay() to use a
     // value that's different from the default.
     StartResponseDelayTimeout();
-    return base::DoNothing();
+    return base::BindOnce(&TestCalendarClient::CancelCallback,
+                          weak_factory_.GetWeakPtr());
   }
+
+  void CancelCallback() { set_api_error_code(google_apis::CANCELLED); }
 
   void set_event_list(
       std::unique_ptr<google_apis::calendar::EventList> event_list) {
@@ -360,6 +363,31 @@ TEST_F(CalendarEventFetchTest, Timeout) {
   // Metrics now recorded.
   histogram_tester.ExpectBucketCount("Ash.Calendar.FetchEvents.Timeout", true,
                                      /*expected_count=*/1);
+}
+
+TEST_F(CalendarEventFetchTest, Cancel) {
+  // Register our TestCalendarClient with the default user.
+  RegisterClient();
+
+  // Month whose events we want to fetch.
+  base::Time start_of_month =
+      GetStartOfMonthFromString("23 Oct 2009 11:30 GMT");
+
+  // Perform the fetch.
+  std::unique_ptr<CalendarEventFetch> fetch = PerformFetch(start_of_month);
+
+  // Cancel the request.
+  fetch->Cancel();
+
+  // Advance time to when the fetch is complete. `fetch` can no longer be used
+  // after this.
+  task_environment()->FastForwardBy(client_.get_response_delay());
+
+  // API error is CANCELLED.
+  absl::optional<google_apis::ApiErrorCode> return_error_code =
+      api_error_code();
+  EXPECT_TRUE(return_error_code.has_value() &&
+              return_error_code == google_apis::CANCELLED);
 }
 
 }  // namespace ash

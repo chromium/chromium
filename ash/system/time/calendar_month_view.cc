@@ -10,6 +10,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/bind.h"
@@ -42,7 +43,7 @@ constexpr float kTodayRoundedRadius = 22.f;
 // The radius used to draw rounded today's circle when focused.
 constexpr float kTodayFocusedRoundedRadius = 18.f;
 
-// Radius of the small dot we display on a CalendarDateCellView if events are
+// Radius of the small dot displayed on a CalendarDateCellView if events are
 // present for that day.
 constexpr float kEventsPresentRoundedRadius = 1.f;
 
@@ -116,8 +117,8 @@ void CalendarDateCellView::OnThemeChanged() {
 
 // Draws the background for this date. Note that this includes not only the
 // circular fill (if any), but also the border (if focused) and text color. If
-// this is a grayed out date, which is shown in its previous/next month, we
-// won't draw this background.
+// this is a grayed out date, which is shown in its previous/next month, this
+// background won't be drawn.
 void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   if (grayed_out_)
     return;
@@ -315,7 +316,8 @@ void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
 CalendarMonthView::CalendarMonthView(
     const base::Time first_day_of_month,
     CalendarViewController* calendar_view_controller)
-    : calendar_view_controller_(calendar_view_controller) {
+    : calendar_view_controller_(calendar_view_controller),
+      calendar_model_(Shell::Get()->system_tray_model()->calendar_model()) {
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
   // The layer is required in animation.
@@ -340,6 +342,10 @@ CalendarMonthView::CalendarMonthView(
 
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExplodedUTC(current_date_local);
+
+  // Fetch events for the month.
+  fetch_month_ = first_day_of_month_local.UTCMidnight();
+  FetchEvents(fetch_month_);
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
@@ -382,6 +388,9 @@ CalendarMonthView::CalendarMonthView(
 
   last_row_index_ = row_number - 1;
 
+  // To receive the fetched events.
+  scoped_calendar_model_observer_.Observe(calendar_model_);
+
   if (calendar_utils::GetDayOfWeek(current_date) ==
       calendar_utils::kFirstDayOfWeekString)
     return;
@@ -409,7 +418,21 @@ CalendarMonthView::CalendarMonthView(
   }
 }
 
-CalendarMonthView::~CalendarMonthView() = default;
+CalendarMonthView::~CalendarMonthView() {
+  calendar_model_->CancelFetch(fetch_month_);
+}
+
+void CalendarMonthView::FetchEvents(const base::Time& month) {
+  calendar_model_->FetchEvents({month});
+}
+
+void CalendarMonthView::OnEventsFetched(
+    const CalendarModel::FetchingStatus status,
+    const base::Time start_time,
+    const google_apis::calendar::EventList* events) {
+  if (status == CalendarModel::kSuccess && start_time == fetch_month_)
+    SchedulePaintChildren();
+}
 
 CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     base::Time current_date,

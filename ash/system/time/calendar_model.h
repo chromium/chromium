@@ -92,6 +92,9 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Requests events that fall in `num_months` months surrounding `day`.
   void FetchEventsSurrounding(int num_months, const base::Time day);
 
+  // Cancels any pending event fetch for `start_of_month`.
+  void CancelFetch(const base::Time& start_of_month);
+
   // Same as `FindEvents`, except that return of any events on `day` constitutes
   // "use" in the most-recently-used sense, so the month that includes day will
   // then be promoted to most-recently-used status.  Use this to get events if

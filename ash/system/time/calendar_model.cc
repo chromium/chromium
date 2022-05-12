@@ -97,8 +97,8 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
   if (!calendar_utils::IsActiveUser())
     return;
 
-  // Bail out early if we have no CalendarClient.  This will be the case in most
-  // unit tests.
+  // Bail out early if there is no CalendarClient.  This will be the case in
+  // most unit tests.
   CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
   if (!client)
     return;
@@ -165,7 +165,7 @@ void CalendarModel::ClearAllCachedEvents() {
   // Destroy all outstanding fetch requests.
   pending_fetches_.clear();
 
-  // Destroy the set of months we've fetched.
+  // Destroy the set of months that have been fetched.
   months_fetched_.clear();
 
   // Destroy all prunable months.
@@ -219,6 +219,16 @@ void CalendarModel::FetchEventsSurrounding(int num_months,
   FetchEvents(months);
 }
 
+void CalendarModel::CancelFetch(const base::Time& start_of_month) {
+  if (base::Contains(pending_fetches_, start_of_month)) {
+    // Note that the `CalendarEventFetch` here will be removed from
+    // `pending_fetches_` in `OnEventsFetched`, which will receive an error code
+    // of `google_apis::CANCELLED` and an empty event list, so there's no need
+    // to remove it here.
+    pending_fetches_[start_of_month]->Cancel();
+  }
+}
+
 int CalendarModel::EventsNumberOfDayInternal(base::Time day,
                                              SingleDayEventList* events) const {
   const SingleDayEventList& list = FindEvents(day);
@@ -226,7 +236,7 @@ int CalendarModel::EventsNumberOfDayInternal(base::Time day,
   if (list.empty())
     return 0;
 
-  // We have events, and we assume the destination is empty.
+  // There are events, and the destination should be empty.
   if (events) {
     DCHECK(events->empty());
     *events = list;
@@ -249,13 +259,11 @@ void CalendarModel::OnEventsFetched(
     const google_apis::calendar::EventList* events) {
   base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
   if (error != google_apis::HTTP_SUCCESS) {
-    LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
     // Request is no longer outstanding, so it can be destroyed.
-    // TODO: https://crbug.com/1298187 We need to respond further based on the
-    // specific error code, retry in some cases, etc.
     pending_fetches_.erase(start_of_month);
-    // TODO: https://crbug.com/1298187 maybe notify observers.
-    // e.g. observer.OnEventsFetched(kError, start_of_month, events);
+    // TODO(https://crbug.com/1298187): Possibly respond further based on the
+    // specific error code, retry in some cases, etc. Or notify observers e.g.
+    // observer.OnEventsFetched(kError, start_of_month, events);
     return;
   }
 
@@ -297,7 +305,7 @@ void CalendarModel::OnEventsFetched(
   event_months_.erase(start_of_month);
 
   if (!events || events->items().empty()) {
-    // Even though `start_of_month` has no events, we insert an empty map to
+    // Even though `start_of_month` has no events, insert an empty map to
     // indicate a successful fetch.
     SingleMonthEventMap empty_event_map;
     event_months_.emplace(start_of_month, empty_event_map);
@@ -322,20 +330,17 @@ void CalendarModel::OnEventsFetched(
                              GetEventMapSize(event_months_[start_of_month]));
 
   // If `start_of_month` is further, in months, from the on-screen month when
-  // the calendar first opened, then update our max distance.
+  // the calendar first opened, then update the max distance.
   UpdateMaxDistanceBrowsed(start_of_month);
 }
 
 void CalendarModel::OnEventFetchFailedInternalError(
     base::Time start_of_month,
     CalendarEventFetchInternalErrorCode error) {
-  LOG(ERROR) << __FUNCTION__
-             << " Event fetch received internal error: " << (int)error;
-
   // Request is no longer outstanding, so it can be destroyed.
-  // TODO: https://crbug.com/1298187 We need to respond further based on the
-  // specific error code, retry in some cases, etc.
   pending_fetches_.erase(start_of_month);
+  // TODO(https://crbug.com/1298187): May need to respond further based on the
+  // specific error code, retry in some cases, etc.
 }
 
 void CalendarModel::UpdateMaxDistanceBrowsed(const base::Time& start_of_month) {
@@ -457,13 +462,13 @@ void CalendarModel::InsertEventsForTesting(
 SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   SingleDayEventList event_list;
 
-  // Early return if we know we have no events for this month.
+  // Early return if there are no events for this month.
   base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(day);
   auto it = event_months_.find(start_of_month);
   if (it == event_months_.end())
     return event_list;
 
-  // Early return if we know we have no events for this day.
+  // Early return if there are no events for this day.
   base::Time midnight = day.UTCMidnight();
   const SingleMonthEventMap& month = it->second;
   auto it2 = month.find(midnight);

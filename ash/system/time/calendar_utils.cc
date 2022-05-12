@@ -220,6 +220,17 @@ base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
   return first_day;
 }
 
+ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
+    base::Time start_of_month_local_midnight) {
+  int diff = DateHelper::GetInstance()->GetTimeDifferenceInMinutes(
+      start_of_month_local_midnight);
+  base::Time start = start_of_month_local_midnight - base::Minutes(diff);
+  base::Time end =
+      GetStartOfMonthUTC(start_of_month_local_midnight + base::Days(33)) -
+      base::Minutes(diff);
+  return std::make_pair(start, end);
+}
+
 }  // namespace calendar_utils
 
 }  // namespace ash

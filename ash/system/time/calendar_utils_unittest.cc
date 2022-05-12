@@ -162,4 +162,39 @@ TEST_F(CalendarUtilsUnittest, GetMonthsBetween) {
   ASSERT_TRUE(base::Time::FromString("31 Dec 2009 11:00 GMT", &end_date));
   EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -1);
 }
+
+TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
+  base::Time date, expected_start, expected_end;
+  std::pair<base::Time, base::Time> fetch;
+
+  // Event and timezone are both GMT, no difference.
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &expected_start));
+  ASSERT_TRUE(base::Time::FromString("01 May 2022 00:00 GMT", &expected_end));
+  fetch = calendar_utils::GetFetchStartEndTimes(date);
+  EXPECT_EQ(fetch.first, expected_start);
+  EXPECT_EQ(fetch.second, expected_end);
+
+  // Timezone "America/Los_Angeles" is GMT - 7h.
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"America/Los_Angeles");
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 07:00 GMT", &expected_start));
+  ASSERT_TRUE(base::Time::FromString("01 May 2022 07:00 GMT", &expected_end));
+  fetch = calendar_utils::GetFetchStartEndTimes(date);
+  EXPECT_EQ(fetch.first, expected_start);
+  EXPECT_EQ(fetch.second, expected_end);
+
+  // Timezone "Asia/Bangkok" is GMT + 7h.
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"Asia/Bangkok");
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
+  ASSERT_TRUE(base::Time::FromString("31 Mar 2022 17:00 GMT", &expected_start));
+  ASSERT_TRUE(base::Time::FromString("30 Apr 2022 17:00 GMT", &expected_end));
+  fetch = calendar_utils::GetFetchStartEndTimes(date);
+  EXPECT_EQ(fetch.first, expected_start);
+  EXPECT_EQ(fetch.second, expected_end);
+}
+
 }  // namespace ash

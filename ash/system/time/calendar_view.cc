@@ -62,10 +62,6 @@ constexpr int kMonthLabelPaddingOffset = -1;
 // expanded.
 constexpr float kExpandedCalendarViewHeightScale = 1.1;
 
-// After the user is finished navigating to a different month, this is how long
-// we wait before fetchiung more events.
-constexpr base::TimeDelta kScrollingSettledTimeout = base::Milliseconds(100);
-
 // Duration of the delay for modifying opacity.
 constexpr base::TimeDelta kDelayVisibilityAnimationDuration =
     base::Milliseconds(200);
@@ -341,11 +337,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
     : TrayDetailedView(delegate),
       controller_(controller),
       calendar_view_controller_(std::make_unique<CalendarViewController>()),
-      scrolling_settled_timer_(
-          FROM_HERE,
-          kScrollingSettledTimeout,
-          base::BindRepeating(&CalendarView::OnScrollingSettledTimerFired,
-                              base::Unretained(this))),
       header_animation_restart_timer_(
           FROM_HERE,
           kAnimationDisablingTimeout,
@@ -445,8 +436,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   SetMonthViews();
 
-  scoped_calendar_model_observer_.Observe(
-      Shell::Get()->system_tray_model()->calendar_model());
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);
@@ -701,7 +690,6 @@ void CalendarView::RestoreHeadersStatus() {
   header_->layer()->GetAnimator()->StopAnimating();
   header_->layer()->SetOpacity(1.0f);
   header_->layer()->SetTransform(gfx::Transform());
-  scrolling_settled_timer_.Reset();
   if (!should_header_animate_)
     header_animation_restart_timer_.Reset();
 }
@@ -894,7 +882,6 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
             if (!calendar_view)
               return;
             calendar_view->set_should_header_animate(true);
-            calendar_view->reset_scrolling_settled_timer();
           },
           weak_factory_.GetWeakPtr()))
       .OnAborted(base::BindOnce(
@@ -915,18 +902,6 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
       .Then()
       .SetDuration(calendar_utils::kAnimationDurationForVisibility)
       .SetOpacity(header_, 1.0f);
-}
-
-void CalendarView::OnEventsFetched(
-    const CalendarModel::FetchingStatus status,
-    const base::Time start_time,
-    const google_apis::calendar::EventList* events) {
-  // No need to store the events, but we need to notify the month views that
-  // something may have changed and they need to refresh.
-  previous_month_->SchedulePaintChildren();
-  current_month_->SchedulePaintChildren();
-  next_month_->SchedulePaintChildren();
-  next_next_month_->SchedulePaintChildren();
 }
 
 void CalendarView::OpenEventList() {
@@ -1478,10 +1453,6 @@ void CalendarView::OnEvent(ui::Event* event) {
     default:
       NOTREACHED();
   }
-}
-
-void CalendarView::OnScrollingSettledTimerFired() {
-  calendar_view_controller_->FetchEvents();
 }
 
 void CalendarView::OnContentsScrolled() {

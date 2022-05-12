@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TIME_CALENDAR_MONTH_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -37,7 +38,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   void OnThemeChanged() override;
 
   // Draws the background for 'today'. If today is a grayed out date, which is
-  // shown in its previous/next month, we won't draw this background.
+  // shown in its previous/next month, this background won't be drawn.
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
   // CalendarViewController::Observer:
@@ -74,10 +75,10 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Callback called when this view is activated.
   void OnDateCellActivated(const ui::Event& event);
 
-  // Computes the position of the indicator that our day has events.
+  // Computes the position of the indicator that the day has events.
   gfx::Point GetEventsPresentIndicatorCenterPosition();
 
-  // Draw the indicator if our day has events.
+  // Draw the indicator if the day has events.
   void MaybeDrawEventsIndicator(gfx::Canvas* canvas);
 
   // The date used to render this cell view.
@@ -107,13 +108,19 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 };
 
 //  Container for `CalendarDateCellView` for a single month.
-class ASH_EXPORT CalendarMonthView : public views::View {
+class ASH_EXPORT CalendarMonthView : public views::View,
+                                     public CalendarModel::Observer {
  public:
   CalendarMonthView(base::Time first_day_of_month,
                     CalendarViewController* calendar_view_controller);
   CalendarMonthView(const CalendarMonthView& other) = delete;
   CalendarMonthView& operator=(const CalendarMonthView& other) = delete;
   ~CalendarMonthView() override;
+
+  // CalendarModel::Observer:
+  void OnEventsFetched(const CalendarModel::FetchingStatus status,
+                       const base::Time start_time,
+                       const google_apis::calendar::EventList* events) override;
 
   // Enable each cell's focus behavior.
   void EnableFocus();
@@ -141,6 +148,9 @@ class ASH_EXPORT CalendarMonthView : public views::View {
                                             bool is_in_current_month,
                                             int row_index);
 
+  // Fetches events.
+  void FetchEvents(const base::Time& month);
+
   // Owned by `CalendarView`.
   CalendarViewController* const calendar_view_controller_;
 
@@ -153,6 +163,16 @@ class ASH_EXPORT CalendarMonthView : public views::View {
   // The cells of each row that should be first focused on. These
   // `CalendarDateCellView`s are the children of this view.
   std::vector<CalendarDateCellView*> focused_cells_;
+
+  // UTC midnight to designate the month whose events will be fetched.
+  base::Time fetch_month_;
+
+  // Raw pointer to the (singleton) CalendarModel, to avoid a bunch of
+  // daisy-chained calls to get the std::unique_ptr<>.
+  CalendarModel* const calendar_model_;
+
+  base::ScopedObservation<CalendarModel, CalendarModel::Observer>
+      scoped_calendar_model_observer_{this};
 };
 
 }  // namespace ash

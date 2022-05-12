@@ -44,6 +44,9 @@ class ASH_EXPORT CalendarEventFetch {
   CalendarEventFetch& operator=(const CalendarEventFetch& other) = delete;
   ~CalendarEventFetch();
 
+  // Cancels the fetch request, invokes `cancel_closure_`.
+  void Cancel();
+
  private:
   // Callback invoked when results of a fetch are available.
   void OnResultReceived(
@@ -68,6 +71,9 @@ class ASH_EXPORT CalendarEventFetch {
   // Timer we run at the start of a fetch, to ensure that we terminate if we
   // go too long without a response.
   base::OneShotTimer timeout_;
+
+  // Closure to be invoked if the request needs to be canceled.
+  base::OnceClosure cancel_closure_;
 
   base::WeakPtrFactory<CalendarEventFetch> weak_factory_{this};
 };

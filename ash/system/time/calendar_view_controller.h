@@ -119,9 +119,6 @@ class ASH_EXPORT CalendarViewController {
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
 
-  // Performs the initial fetch when the calendar is first opened.
-  void InitialFetchEvents();
-
   // Requests more events as needed.
   void FetchEvents();
 

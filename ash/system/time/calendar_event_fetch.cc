@@ -32,15 +32,19 @@ CalendarEventFetch::CalendarEventFetch(
   CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
   DCHECK(client);
 
-  const base::Time start_of_next_month =
-      calendar_utils::GetStartOfNextMonthUTC(start_of_month);
+  const std::pair<base::Time, base::Time> fetch_times =
+      calendar_utils::GetFetchStartEndTimes(start_of_month);
 
-  if (ash::features::IsCalendarModelDebugModeEnabled())
-    VLOG(1) << "Fetching: " << start_of_month << " => " << start_of_next_month;
+  if (ash::features::IsCalendarModelDebugModeEnabled()) {
+    VLOG(1) << "Fetching: " << fetch_times.first << " => "
+            << fetch_times.second;
+  }
 
-  client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
-                                      weak_factory_.GetWeakPtr()),
-                       start_of_month, start_of_next_month);
+  cancel_closure_ =
+      client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
+                                          weak_factory_.GetWeakPtr()),
+                           fetch_times.first, fetch_times.second);
+  DCHECK(cancel_closure_);
 
   timeout_.Start(
       FROM_HERE, calendar_utils::kEventFetchTimeout,
@@ -48,6 +52,10 @@ CalendarEventFetch::CalendarEventFetch(
 }
 
 CalendarEventFetch::~CalendarEventFetch() = default;
+
+void CalendarEventFetch::Cancel() {
+  std::move(cancel_closure_).Run();
+}
 
 void CalendarEventFetch::OnResultReceived(
     google_apis::ApiErrorCode error,
