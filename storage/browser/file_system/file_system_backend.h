@@ -53,9 +53,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
  public:
   // Callback for InitializeFileSystem.
   using OpenFileSystemCallback =
-      base::OnceCallback<void(const GURL& root_url,
+      base::OnceCallback<void(const FileSystemURL& root_url,
                               const std::string& name,
                               base::File::Error error)>;
+  using ResolveURLCallback = base::OnceCallback<
+      void(const GURL&, const std::string&, base::File::Error)>;
   virtual ~FileSystemBackend() = default;
 
   // Returns true if this filesystem backend can handle |type|.
@@ -75,7 +77,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // doesn't exist.
   virtual void ResolveURL(const FileSystemURL& url,
                           OpenFileSystemMode mode,
-                          OpenFileSystemCallback callback) = 0;
+                          ResolveURLCallback callback) = 0;
 
   // Returns the specialized AsyncFileUtil for this backend.
   virtual AsyncFileUtil* GetAsyncFileUtil(FileSystemType type) = 0;

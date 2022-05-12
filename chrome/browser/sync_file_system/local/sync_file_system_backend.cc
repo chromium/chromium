@@ -84,7 +84,7 @@ void SyncFileSystemBackend::Initialize(storage::FileSystemContext* context) {
 
 void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                        storage::OpenFileSystemMode mode,
-                                       OpenFileSystemCallback callback) {
+                                       ResolveURLCallback callback) {
   DCHECK(CanHandleType(url.type()));
 
   if (skip_initialize_syncfs_service_for_testing_) {
@@ -266,7 +266,7 @@ void SyncFileSystemBackend::DidInitializeSyncFileSystemService(
     const GURL& origin_url,
     storage::FileSystemType type,
     storage::OpenFileSystemMode mode,
-    OpenFileSystemCallback callback,
+    ResolveURLCallback callback,
     SyncStatusCode status) {
   // Repost to switch from UI thread to IO thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {

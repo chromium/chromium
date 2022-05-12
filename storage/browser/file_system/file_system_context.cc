@@ -40,6 +40,7 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_quota_client.h"
 #include "storage/browser/file_system/file_system_request_info.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/isolated_file_system_backend.h"
@@ -416,22 +417,25 @@ ExternalFileSystemBackend* FileSystemContext::external_backend() const {
       GetFileSystemBackend(kFileSystemTypeExternal));
 }
 
-void FileSystemContext::OpenFileSystem(const blink::StorageKey& storage_key,
-                                       FileSystemType type,
-                                       OpenFileSystemMode mode,
-                                       OpenFileSystemCallback callback) {
+void FileSystemContext::OpenFileSystem(
+    const blink::StorageKey& storage_key,
+    const absl::optional<storage::BucketLocator>& bucket,
+    FileSystemType type,
+    OpenFileSystemMode mode,
+    OpenFileSystemCallback callback) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!callback.is_null());
+  CHECK(!bucket.has_value() || storage_key == bucket->storage_key);
 
   if (!FileSystemContext::IsSandboxFileSystem(type)) {
     // Disallow opening a non-sandboxed filesystem.
-    std::move(callback).Run(GURL(), std::string(),
+    std::move(callback).Run(FileSystemURL(), std::string(),
                             base::File::FILE_ERROR_SECURITY);
     return;
   }
 
   // Quota manager isn't provided by all tests.
-  if (quota_manager_proxy()) {
+  if (quota_manager_proxy() && !bucket.has_value()) {
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
     quota_manager_proxy()->GetOrCreateBucketDeprecated(
@@ -441,7 +445,8 @@ void FileSystemContext::OpenFileSystem(const blink::StorageKey& storage_key,
                        weak_factory_.GetWeakPtr(), storage_key, type, mode,
                        std::move(callback)));
   } else {
-    ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+    ResolveURLOnOpenFileSystem(storage_key, bucket, type, mode,
+                               std::move(callback));
   }
 }
 
@@ -452,15 +457,17 @@ void FileSystemContext::OnGetOrCreateBucket(
     OpenFileSystemCallback callback,
     QuotaErrorOr<BucketInfo> result) {
   if (!result.ok()) {
-    std::move(callback).Run(GURL(), std::string(),
+    std::move(callback).Run(FileSystemURL(), std::string(),
                             base::File::FILE_ERROR_FAILED);
     return;
   }
-  ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+  ResolveURLOnOpenFileSystem(storage_key, result->ToBucketLocator(), type, mode,
+                             std::move(callback));
 }
 
 void FileSystemContext::ResolveURLOnOpenFileSystem(
     const blink::StorageKey& storage_key,
+    const absl::optional<storage::BucketLocator>& bucket,
     FileSystemType type,
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback) {
@@ -468,27 +475,34 @@ void FileSystemContext::ResolveURLOnOpenFileSystem(
 
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend) {
-    std::move(callback).Run(GURL(), std::string(),
+    std::move(callback).Run(FileSystemURL(), std::string(),
                             base::File::FILE_ERROR_SECURITY);
     return;
   }
 
+  FileSystemURL url =
+      CreateCrackedFileSystemURL(storage_key, type, base::FilePath());
+  // Override the default storage bucket if a custom BucketLocator was given.
+  if (bucket.has_value()) {
+    url.SetBucket(bucket.value());
+  }
   // Bind `this` to the callback to ensure this instance stays alive while the
   // URL is resolving.
   backend->ResolveURL(
-      CreateCrackedFileSystemURL(storage_key, type, base::FilePath()), mode,
+      url, mode,
       base::BindOnce(&FileSystemContext::DidResolveURLOnOpenFileSystem, this,
-                     std::move(callback)));
+                     url, std::move(callback)));
 }
 
 void FileSystemContext::DidResolveURLOnOpenFileSystem(
+    const FileSystemURL& filesystem_root_url,
     OpenFileSystemCallback callback,
     const GURL& filesystem_root,
     const std::string& filesystem_name,
     base::File::Error error) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  std::move(callback).Run(filesystem_root, filesystem_name, error);
+  std::move(callback).Run(filesystem_root_url, filesystem_name, error);
 }
 
 void FileSystemContext::ResolveURL(const FileSystemURL& url,

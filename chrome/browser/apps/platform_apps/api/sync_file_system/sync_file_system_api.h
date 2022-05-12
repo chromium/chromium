@@ -111,7 +111,7 @@ class SyncFileSystemRequestFileSystemFunction : public ExtensionFunction {
   // Returns the file system context for this extension.
   storage::FileSystemContext* GetFileSystemContext();
 
-  void DidOpenFileSystem(const GURL& root_url,
+  void DidOpenFileSystem(const storage::FileSystemURL& root_url,
                          const std::string& file_system_name,
                          base::File::Error error);
 };

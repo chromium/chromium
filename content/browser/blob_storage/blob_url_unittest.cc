@@ -127,7 +127,8 @@ class BlobURLTest : public testing::Test {
     base::RunLoop run_loop;
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kFileSystemURLOrigin),
-        kFileSystemType, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+        /*bucket=*/absl::nullopt, kFileSystemType,
+        storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce(&BlobURLTest::OnValidateFileSystem,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -147,7 +148,7 @@ class BlobURLTest : public testing::Test {
   }
 
   GURL GetFileSystemURL(const std::string& filename) {
-    return GURL(file_system_root_url_.spec() + filename);
+    return GURL(file_system_root_url_.ToGURL().spec() + filename);
   }
 
   void WriteFileSystemFile(const std::string& filename,
@@ -172,7 +173,7 @@ class BlobURLTest : public testing::Test {
   }
 
   void OnValidateFileSystem(base::OnceClosure quit_closure,
-                            const GURL& root,
+                            const storage::FileSystemURL& root,
                             const std::string& name,
                             base::File::Error result) {
     ASSERT_EQ(base::File::FILE_OK, result);
@@ -329,7 +330,7 @@ class BlobURLTest : public testing::Test {
   base::FilePath temp_file2_;
   base::Time temp_file_modification_time1_;
   base::Time temp_file_modification_time2_;
-  GURL file_system_root_url_;
+  storage::FileSystemURL file_system_root_url_;
   GURL temp_file_system_file1_;
   GURL temp_file_system_file2_;
   base::Time temp_file_system_file_modification_time1_;

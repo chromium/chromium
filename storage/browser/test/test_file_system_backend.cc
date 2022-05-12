@@ -135,7 +135,7 @@ void TestFileSystemBackend::Initialize(FileSystemContext* context) {}
 
 void TestFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                        OpenFileSystemMode mode,
-                                       OpenFileSystemCallback callback) {
+                                       ResolveURLCallback callback) {
   std::move(callback).Run(
       GetFileSystemRootURI(url.origin().GetURL(), url.type()),
       GetFileSystemName(url.origin().GetURL(), url.type()),

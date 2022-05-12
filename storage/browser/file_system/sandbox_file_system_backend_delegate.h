@@ -70,6 +70,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
     : public FileSystemQuotaUtil {
  public:
   using OpenFileSystemCallback = FileSystemBackend::OpenFileSystemCallback;
+  using ResolveURLCallback = FileSystemBackend::ResolveURLCallback;
 
   // The FileSystem directory name.
   static const base::FilePath::CharType kFileSystemDirectory[];
@@ -130,7 +131,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   void OpenFileSystem(const blink::StorageKey& storage_key,
                       FileSystemType type,
                       OpenFileSystemMode mode,
-                      OpenFileSystemCallback callback,
+                      ResolveURLCallback callback,
                       const GURL& root_url);
   std::unique_ptr<FileSystemOperationContext> CreateFileSystemOperationContext(
       const FileSystemURL& url,

@@ -31,7 +31,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -60,9 +59,10 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
 
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        kFileSystemTypeTemporary, OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-        base::BindOnce([](const GURL& root_url, const std::string& name,
-                          base::File::Error result) {
+        /*bucket=*/absl::nullopt, kFileSystemTypeTemporary,
+        OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+        base::BindOnce([](const FileSystemURL& root_url,
+                          const std::string& name, base::File::Error result) {
           ASSERT_EQ(base::File::FILE_OK, result);
         }));
     base::RunLoop().RunUntilIdle();

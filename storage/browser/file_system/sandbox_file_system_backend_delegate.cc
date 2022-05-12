@@ -248,7 +248,7 @@ void SandboxFileSystemBackendDelegate::OpenFileSystem(
     const blink::StorageKey& storage_key,
     FileSystemType type,
     OpenFileSystemMode mode,
-    OpenFileSystemCallback callback,
+    ResolveURLCallback callback,
     const GURL& root_url) {
   if (!IsAllowedScheme(storage_key.origin().GetURL())) {
     std::move(callback).Run(GURL(), std::string(),

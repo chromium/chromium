@@ -18,6 +18,7 @@
 #include "chrome/browser/sync_file_system/sync_file_status.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
+#include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "chrome/common/apps/platform_apps/api/sync_file_system.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -155,12 +156,13 @@ SyncFileSystemRequestFileSystemFunction::Run() {
   // Initializes sync context for this extension and continue to open
   // a new file system.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, BindOnce(&storage::FileSystemContext::OpenFileSystem,
-                          GetFileSystemContext(),
-                          blink::StorageKey(url::Origin::Create(source_url())),
-                          storage::kFileSystemTypeSyncable,
-                          storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-                          base::BindOnce(&self::DidOpenFileSystem, this)));
+      FROM_HERE,
+      BindOnce(&storage::FileSystemContext::OpenFileSystem,
+               GetFileSystemContext(),
+               blink::StorageKey(url::Origin::Create(source_url())),
+               /*bucket=*/absl::nullopt, storage::kFileSystemTypeSyncable,
+               storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+               base::BindOnce(&self::DidOpenFileSystem, this)));
   return RespondLater();
 }
 
@@ -173,7 +175,7 @@ SyncFileSystemRequestFileSystemFunction::GetFileSystemContext() {
 }
 
 void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
-    const GURL& root_url,
+    const storage::FileSystemURL& root_url,
     const std::string& file_system_name,
     base::File::Error error) {
   // Repost to switch from IO thread to UI thread for SendResponse().
@@ -195,7 +197,9 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
 
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetStringKey("name", file_system_name);
-  dict->SetStringKey("root", root_url.spec());
+  dict->SetStringKey("root", ::sync_file_system::GetSyncableFileSystemRootURI(
+                                 root_url.origin().GetURL())
+                                 .spec());
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 

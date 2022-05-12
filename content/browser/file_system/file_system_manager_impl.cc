@@ -255,7 +255,8 @@ void FileSystemManagerImpl::ContinueOpen(
     RecordAction(base::UserMetricsAction("OpenFileSystemPersistent"));
   }
   context_->OpenFileSystem(
-      storage_key, ToStorageFileSystemType(file_system_type),
+      storage_key, /*bucket=*/absl::nullopt,
+      ToStorageFileSystemType(file_system_type),
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&FileSystemManagerImpl::DidOpenFileSystem, GetWeakPtr(),
                      std::move(callback)));
@@ -1136,12 +1137,12 @@ void FileSystemManagerImpl::DidWriteSync(WriteSyncCallbackEntry* entry,
 
 void FileSystemManagerImpl::DidOpenFileSystem(
     OpenCallback callback,
-    const GURL& root,
+    const FileSystemURL& root,
     const std::string& filesystem_name,
     base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(root.is_valid() || result != base::File::FILE_OK);
-  std::move(callback).Run(filesystem_name, root, result);
+  std::move(callback).Run(filesystem_name, root.ToGURL(), result);
   // For OpenFileSystem we do not create a new operation, so no unregister here.
 }
 

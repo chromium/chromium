@@ -120,8 +120,8 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
     scoped_refptr<storage::FileSystemContext> file_system_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!file_system_context.get()) {
-    OpenFileSystemComplete(reply_context, GURL(), std::string(),
-                           base::File::FILE_ERROR_FAILED);
+    OpenFileSystemComplete(reply_context, storage::FileSystemURL(),
+                           std::string(), base::File::FILE_ERROR_FAILED);
     return;
   }
 
@@ -131,8 +131,8 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
   // should replaced with a third-party value: is ppapi only limited to
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
-      blink::StorageKey(url::Origin::Create(origin)), file_system_type,
-      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      blink::StorageKey(url::Origin::Create(origin)), /*bucket=*/absl::nullopt,
+      file_system_type, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&IOThreadState::OpenFileSystemComplete, this,
                      reply_context));
 }
@@ -171,14 +171,15 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenIsolatedFileSystem(
 
 void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystemComplete(
     ppapi::host::ReplyMessageContext reply_context,
-    const GURL& root,
+    const storage::FileSystemURL& root,
     const std::string& name,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   int32_t pp_error = ppapi::FileErrorToPepperError(error);
   if (pp_error == PP_OK) {
     opened_ = true;
-    root_url_ = root;
+    // TODO(crbug.com/1323925): Store and use FileSystemURL instead.
+    root_url_ = root.ToGURL();
 
     ShouldCreateQuotaReservation(base::BindOnce(
         [](scoped_refptr<IOThreadState> io_thread_state,

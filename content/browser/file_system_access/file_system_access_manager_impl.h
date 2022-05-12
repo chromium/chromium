@@ -391,7 +391,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       bool default_directory_exists);
   void DidOpenSandboxedFileSystem(const BindingContext& binding_context,
                                   GetSandboxedFileSystemCallback callback,
-                                  const GURL& root,
+                                  const storage::FileSystemURL& root,
                                   const std::string& filesystem_name,
                                   base::File::Error result);
 

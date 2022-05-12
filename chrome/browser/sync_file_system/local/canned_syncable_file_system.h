@@ -52,8 +52,9 @@ class SyncFileSystemBackend;
 class CannedSyncableFileSystem
     : public LocalFileSyncStatus::Observer {
  public:
-  typedef base::OnceCallback<
-      void(const GURL& root, const std::string& name, base::File::Error result)>
+  typedef base::OnceCallback<void(const storage::FileSystemURL& root,
+                                  const std::string& name,
+                                  base::File::Error result)>
       OpenFileSystemCallback;
   typedef base::OnceCallback<void(base::File::Error)> StatusCallback;
   typedef base::RepeatingCallback<void(int64_t)> WriteCallback;
@@ -214,7 +215,7 @@ class CannedSyncableFileSystem
   // Callbacks.
   void DidOpenFileSystem(base::SingleThreadTaskRunner* original_task_runner,
                          base::OnceClosure quit_closure,
-                         const GURL& root,
+                         const storage::FileSystemURL& root,
                          const std::string& name,
                          base::File::Error result);
   void DidInitializeFileSystemContext(base::OnceClosure quit_closure,

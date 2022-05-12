@@ -526,8 +526,9 @@ void CannedSyncableFileSystem::DoOpenFileSystem(
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_FALSE(is_filesystem_opened_);
   file_system_context_->OpenFileSystem(
-      blink::StorageKey(url::Origin::Create(origin_)), type_,
-      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, std::move(callback));
+      blink::StorageKey(url::Origin::Create(origin_)), /*bucket=*/absl::nullopt,
+      type_, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      std::move(callback));
 }
 
 void CannedSyncableFileSystem::DoCreateDirectory(const FileSystemURL& url,
@@ -685,7 +686,7 @@ void CannedSyncableFileSystem::DoGetUsageAndQuota(
 void CannedSyncableFileSystem::DidOpenFileSystem(
     base::SingleThreadTaskRunner* original_task_runner,
     base::OnceClosure quit_closure,
-    const GURL& root,
+    const storage::FileSystemURL& root,
     const std::string& name,
     File::Error result) {
   if (io_task_runner_->RunsTasksInCurrentSequence()) {
@@ -702,7 +703,7 @@ void CannedSyncableFileSystem::DidOpenFileSystem(
     return;
   }
   result_ = result;
-  root_url_ = root;
+  root_url_ = GetSyncableFileSystemRootURI(root.origin().GetURL());
   std::move(quit_closure).Run();
 }
 

@@ -139,7 +139,7 @@ void FileSystemBackend::Initialize(storage::FileSystemContext* context) {}
 
 void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                    storage::OpenFileSystemMode mode,
-                                   OpenFileSystemCallback callback) {
+                                   ResolveURLCallback callback) {
   std::string id;
   storage::FileSystemType type;
   std::string cracked_id;

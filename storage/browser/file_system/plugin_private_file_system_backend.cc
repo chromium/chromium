@@ -168,10 +168,9 @@ bool PluginPrivateFileSystemBackend::CanHandleType(FileSystemType type) const {
 
 void PluginPrivateFileSystemBackend::Initialize(FileSystemContext* context) {}
 
-void PluginPrivateFileSystemBackend::ResolveURL(
-    const FileSystemURL& url,
-    OpenFileSystemMode mode,
-    OpenFileSystemCallback callback) {
+void PluginPrivateFileSystemBackend::ResolveURL(const FileSystemURL& url,
+                                                OpenFileSystemMode mode,
+                                                ResolveURLCallback callback) {
   // We never allow opening a new plugin-private filesystem via usual
   // ResolveURL.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

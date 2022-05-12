@@ -232,7 +232,7 @@ void MediaFileSystemBackend::Initialize(storage::FileSystemContext* context) {
 
 void MediaFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                         storage::OpenFileSystemMode mode,
-                                        OpenFileSystemCallback callback) {
+                                        ResolveURLCallback callback) {
   // We never allow opening a new FileSystem via usual ResolveURL.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::string(),

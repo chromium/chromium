@@ -9,16 +9,21 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,14 +66,20 @@ class FileSystemContextTest : public testing::Test {
  protected:
   scoped_refptr<FileSystemContext> CreateFileSystemContextForTest(
       scoped_refptr<ExternalMountPoints> external_mount_points) {
+    std::vector<std::unique_ptr<storage::FileSystemBackend>>
+        additional_providers;
+    additional_providers.push_back(std::make_unique<TestFileSystemBackend>(
+        base::ThreadTaskRunnerHandle::Get().get(), data_dir_.GetPath()));
     return FileSystemContext::Create(
         base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(), std::move(external_mount_points),
         storage_policy_, mock_quota_manager_->proxy(),
-        std::vector<std::unique_ptr<FileSystemBackend>>(),
+        std::move(additional_providers),
         std::vector<URLRequestAutoMountHandler>(), data_dir_.GetPath(),
         data_dir_.GetPath(), CreateAllowFileAccessOptions());
   }
+
+  QuotaManagerProxy* proxy() { return mock_quota_manager_->proxy(); }
 
   // Verifies a *valid* filesystem url has expected values.
   void ExpectFileSystemURLMatches(const FileSystemURL& url,
@@ -88,11 +99,28 @@ class FileSystemContextTest : public testing::Test {
     EXPECT_EQ(expect_filesystem_id, url.filesystem_id());
   }
 
+  inline static absl::optional<FileSystemURL> last_resolved_url_ =
+      absl::nullopt;
+
  private:
   base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<SpecialStoragePolicy> storage_policy_;
   scoped_refptr<MockQuotaManager> mock_quota_manager_;
+
+  // Mock FileSystemBackend implementation which saves the last resolved URL.
+  class TestFileSystemBackend : public storage::TestFileSystemBackend {
+   public:
+    TestFileSystemBackend(base::SequencedTaskRunner* task_runner,
+                          const base::FilePath& base_path)
+        : storage::TestFileSystemBackend(task_runner, base_path) {}
+
+    void ResolveURL(const FileSystemURL& url,
+                    OpenFileSystemMode mode,
+                    ResolveURLCallback callback) override {
+      last_resolved_url_ = url;
+    }
+  };
 };
 
 // It is not valid to pass nullptr ExternalMountPoints to FileSystemContext on
@@ -173,6 +201,31 @@ TEST_F(FileSystemContextTest, FileSystemContextKeepsMountPointsAlive) {
 
   // No need to revoke the registered filesystem since |mount_points| lifetime
   // is bound to this test.
+}
+
+TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);
+  const auto open_callback = base::BindLambdaForTesting(
+      [&](const FileSystemURL& root_url, const std::string& name,
+          base::File::Error error) { return; });
+  const auto storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host/test.crswap");
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+      bucket_future;
+  proxy()->CreateBucketForTesting(
+      storage_key, "custom_bucket", blink::mojom::StorageType::kTemporary,
+      base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+  auto bucket = bucket_future.Take();
+  EXPECT_TRUE(bucket.ok());
+  ASSERT_FALSE(last_resolved_url_.has_value());
+
+  file_system_context->ResolveURLOnOpenFileSystemForTesting(
+      storage_key, bucket->ToBucketLocator(), kFileSystemTypeTest,
+      OpenFileSystemMode::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      std::move(open_callback));
+  ASSERT_TRUE(last_resolved_url_.has_value());
+  ASSERT_EQ(last_resolved_url_.value().bucket(), bucket->ToBucketLocator());
 }
 
 TEST_F(FileSystemContextTest, CrackFileSystemURL) {

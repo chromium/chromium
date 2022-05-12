@@ -213,7 +213,7 @@ class FileSystemURLLoaderFactoryTest
         base::BindOnce(
             &FileSystemContext::OpenFileSystem, file_system_context_,
             blink::StorageKey::CreateFromStringForTesting("http://remote/"),
-            storage::kFileSystemTypeTemporary,
+            /*bucket=*/absl::nullopt, storage::kFileSystemTypeTemporary,
             storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
             base::BindOnce(&FileSystemURLLoaderFactoryTest::OnOpenFileSystem,
                            loop.QuitClosure())));
@@ -438,7 +438,7 @@ class FileSystemURLLoaderFactoryTest
 
  private:
   static void OnOpenFileSystem(base::OnceClosure done_closure,
-                               const GURL& root_url,
+                               const FileSystemURL& root_url,
                                const std::string& name,
                                base::File::Error result) {
     ASSERT_EQ(base::File::FILE_OK, result);

@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackend
   void Initialize(FileSystemContext* context) override;
   void ResolveURL(const FileSystemURL& url,
                   OpenFileSystemMode mode,
-                  OpenFileSystemCallback callback) override;
+                  ResolveURLCallback callback) override;
   AsyncFileUtil* GetAsyncFileUtil(FileSystemType type) override;
   WatcherManager* GetWatcherManager(FileSystemType type) override;
   CopyOrMoveFileValidatorFactory* GetCopyOrMoveFileValidatorFactory(

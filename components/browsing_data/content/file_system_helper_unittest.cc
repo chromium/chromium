@@ -79,7 +79,7 @@ class FileSystemHelperTest : public testing::Test {
   // Callback that should be executed in response to
   // storage::FileSystemContext::OpenFileSystem.
   void OpenFileSystemCallback(base::RunLoop* run_loop,
-                              const GURL& root,
+                              const storage::FileSystemURL& root,
                               const std::string& name,
                               base::File::Error error) {
     open_file_system_result_ = error;
@@ -93,7 +93,8 @@ class FileSystemHelperTest : public testing::Test {
     browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
-            blink::StorageKey(origin), type, open_mode,
+            blink::StorageKey(origin), /*bucket=*/absl::nullopt, type,
+            open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);

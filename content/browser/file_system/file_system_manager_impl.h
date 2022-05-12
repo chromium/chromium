@@ -242,7 +242,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
                     int64_t bytes,
                     bool complete);
   void DidOpenFileSystem(OpenCallback callback,
-                         const GURL& root,
+                         const storage::FileSystemURL& root,
                          const std::string& filesystem_name,
                          base::File::Error result);
   void DidResolveURL(ResolveURLCallback callback,

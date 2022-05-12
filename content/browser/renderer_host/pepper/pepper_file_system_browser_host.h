@@ -136,7 +136,7 @@ class CONTENT_EXPORT PepperFileSystemBrowserHost
     ~IOThreadState();
 
     void OpenFileSystemComplete(ppapi::host::ReplyMessageContext reply_context,
-                                const GURL& root,
+                                const storage::FileSystemURL& root,
                                 const std::string& name,
                                 base::File::Error error);
     void OpenPluginPrivateFileSystem(

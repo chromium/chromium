@@ -66,7 +66,7 @@ void IsolatedFileSystemBackend::Initialize(FileSystemContext* context) {}
 
 void IsolatedFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                            OpenFileSystemMode mode,
-                                           OpenFileSystemCallback callback) {
+                                           ResolveURLCallback callback) {
   // We never allow opening a new isolated FileSystem via usual ResolveURL.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), GURL(), std::string(),

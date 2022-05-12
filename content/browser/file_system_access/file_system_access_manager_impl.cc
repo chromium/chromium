@@ -349,8 +349,9 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
       [](base::WeakPtr<FileSystemAccessManagerImpl> manager,
          const BindingContext& binding_context,
          GetSandboxedFileSystemCallback callback,
-         scoped_refptr<base::SequencedTaskRunner> task_runner, const GURL& root,
-         const std::string& fs_name, base::File::Error result) {
+         scoped_refptr<base::SequencedTaskRunner> task_runner,
+         const storage::FileSystemURL& root, const std::string& fs_name,
+         base::File::Error result) {
         task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(
@@ -361,9 +362,12 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
       weak_factory_.GetWeakPtr(), receivers_.current_context(),
       std::move(callback), base::SequencedTaskRunnerHandle::Get());
 
+  // TODO(crbug.com/1300211): Allow a custom bucket to be provided and populate
+  // it here.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemContext::OpenFileSystem, context(),
                                 receivers_.current_context().storage_key,
+                                /*bucket=*/absl::nullopt,
                                 storage::kFileSystemTypeTemporary,
                                 storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                                 std::move(response_callback)));
@@ -1110,13 +1114,10 @@ FileSystemAccessManagerImpl::operation_runner() {
   return operation_runner_;
 }
 
-// TODO(https://crbug.com/1270739): Determine if `root` should be refactored to
-// be a FileSystemURL type instead of GURL both here and in
-// FileSystemContext::OpenFileSystem.
 void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
     const BindingContext& binding_context,
     GetSandboxedFileSystemCallback callback,
-    const GURL& root,
+    const storage::FileSystemURL& root,
     const std::string& filesystem_name,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1134,8 +1135,7 @@ void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
   std::move(callback).Run(
       file_system_access_error::Ok(),
       CreateDirectoryHandle(
-          binding_context,
-          context()->CrackURL(root, binding_context.storage_key),
+          binding_context, root,
           SharedHandleState(permission_grant, permission_grant)));
 }
 

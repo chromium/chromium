@@ -59,7 +59,7 @@ void SandboxFileSystemBackend::Initialize(FileSystemContext* context) {
 
 void SandboxFileSystemBackend::ResolveURL(const FileSystemURL& url,
                                           OpenFileSystemMode mode,
-                                          OpenFileSystemCallback callback) {
+                                          ResolveURLCallback callback) {
   DCHECK(CanHandleType(url.type()));
   DCHECK(delegate_);
   if (delegate_->file_system_options().is_incognito() &&
