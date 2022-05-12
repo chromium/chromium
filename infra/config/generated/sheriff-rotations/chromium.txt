@@ -72,6 +72,7 @@ ci/ios-simulator-noncq
 ci/lacros-amd64-generic-binary-size-rel
 ci/lacros-amd64-generic-rel
 ci/lacros-arm-generic-rel
+ci/lacros64-archive-rel
 ci/linux-archive-dbg
 ci/linux-archive-rel
 ci/linux-bfcache-rel

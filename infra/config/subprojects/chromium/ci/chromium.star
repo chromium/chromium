@@ -204,9 +204,7 @@ ci.builder(
             ],
         },
     },
-    # TODO(crbug.com/1320042): Turn on after it's stable.
-    tree_closing = False,
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
 )
 
 ci.builder(
