@@ -8075,6 +8075,21 @@
             ]
         }
     ],
+    "V8VirtualMemoryCageAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8VirtualMemoryCage"
+                    ]
+                }
+            ]
+        }
+    ],
     "VaapiVideoDecoder": [
         {
             "platforms": [
