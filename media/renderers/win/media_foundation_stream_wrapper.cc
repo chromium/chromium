@@ -326,6 +326,8 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
   if (buffer->end_of_stream()) {
     if (!enabled_) {
       DVLOG_FUNC(2) << "Ignoring EOS for disabled stream";
+      // token not dropped to reflect an outstanding request that stream wrapper
+      // should service when the stream is enabled
       return S_OK;
     }
     DVLOG_FUNC(2) << "End of stream";
@@ -348,6 +350,9 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
     RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamUnk(
         MEMediaSample, GUID_NULL, S_OK, mf_sample.Get()));
   }
+
+  pending_sample_request_tokens_.pop();
+
   return S_OK;
 }
 
@@ -417,7 +422,6 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
                       << ": ServiceSampleRequest failed: " << PrintHr(hr);
           return;
         }
-        pending_sample_request_tokens_.pop();
       }
     } else if (status == DemuxerStream::Status::kConfigChanged) {
       DVLOG_FUNC(2) << "Stream config changed, AreFormatChangesEnabled="
