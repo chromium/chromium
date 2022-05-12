@@ -35,13 +35,15 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
     virtual void OnNewVideoConfig(media::VideoDecoderConfig new_config) = 0;
   };
 
-  // Creates a new instance of this class. |client| and |rpc_messenger| are both
-  // expected to outlive this class.
+  // Creates a new instance of this class. |client| is expected to outlive this
+  // class.
+  using HandleFactory =
+      base::RepeatingCallback<openscreen::cast::RpcMessenger::Handle()>;
   using RpcProcessMessageCB = base::RepeatingCallback<void(
       openscreen::cast::RpcMessenger::Handle,
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
   RpcDemuxerStreamHandler(Client* client,
-                          openscreen::cast::RpcMessenger* rpc_messenger,
+                          HandleFactory handle_factory,
                           RpcProcessMessageCB message_processor);
 
   ~RpcDemuxerStreamHandler() override;
@@ -111,7 +113,7 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
 
     uint32_t total_frames_received_ = 0;
 
-    bool is_read_until_call_pending_ = true;
+    bool is_read_until_call_pending_ = false;
   };
 
   // Helpers for the above methods of the same name.
@@ -130,7 +132,7 @@ class RpcDemuxerStreamHandler : public RpcDemuxerStreamCBMessageHandler {
       uint32_t total_frames_received) override;
 
   Client* const client_;
-  openscreen::cast::RpcMessenger* const rpc_messenger_;
+  HandleFactory handle_factory_;
   RpcProcessMessageCB message_processor_;
 
   std::unique_ptr<MessageProcessor> audio_message_processor_;

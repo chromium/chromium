@@ -72,6 +72,17 @@ class PlaybackCommandDispatcher
   void ProcessRemotingRpcMessageFromRemote(
       std::unique_ptr<openscreen::cast::RpcMessage> message);
 
+  // Acquires a new handle from |messenger_|.
+  openscreen::cast::RpcMessenger::Handle AcquireHandle();
+
+  // Registers a |handle| with |messenger_| to receive callbacks to
+  // ProcessRemotingRpcMessageFromRemote().
+  void RegisterHandleForCallbacks(
+      openscreen::cast::RpcMessenger::Handle handle);
+
+  // Starts streaming if each expected audio or video config has been received.
+  void MaybeStartStreamingSession();
+
   // Callback for mojom::RendererController::SetPlaybackController() call.
   void OnSetPlaybackControllerDone();
 
@@ -90,14 +101,14 @@ class PlaybackCommandDispatcher
   base::OnceCallback<void()> acquire_renderer_cb_;
 
   openscreen::cast::RpcMessenger* messenger_;
-  openscreen::cast::RpcMessenger::Handle handle_;
 
   // Multiplexes Renderer commands from a number of senders.
   std::unique_ptr<RendererControlMultiplexer> muxer_;
 
   // Handles translating between Remoting commands (in proto form) and mojo
   // commands.
-  std::unique_ptr<remoting::RendererRpcCallTranslator> call_translator_;
+  std::unique_ptr<remoting::RendererRpcCallTranslator>
+      renderer_call_translator_;
 
   // Handles DemuxerStream interactions.
   std::unique_ptr<remoting::RpcDemuxerStreamHandler> demuxer_stream_handler_;

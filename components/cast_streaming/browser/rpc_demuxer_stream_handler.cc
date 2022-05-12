@@ -19,13 +19,13 @@ constexpr int kNumFramesInEachReadUntil = 16;
 
 RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
     Client* client,
-    openscreen::cast::RpcMessenger* rpc_messenger,
+    HandleFactory handle_factory,
     RpcProcessMessageCB message_processor)
     : client_(client),
-      rpc_messenger_(rpc_messenger),
+      handle_factory_(std::move(handle_factory)),
       message_processor_(std::move(message_processor)),
       weak_factory_(this) {
-  DCHECK(rpc_messenger_);
+  DCHECK(handle_factory_);
   DCHECK(message_processor_);
 }
 
@@ -38,7 +38,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
   // initialize the DemuxerStreams.
   if (audio_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     audio_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, rpc_messenger_->GetUniqueHandle(), audio_stream_handle,
+        client_, handle_factory_.Run(), audio_stream_handle,
         MessageProcessor::Type::kAudio);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(
@@ -49,7 +49,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
 
   if (video_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     video_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, rpc_messenger_->GetUniqueHandle(), video_stream_handle,
+        client_, handle_factory_.Run(), video_stream_handle,
         MessageProcessor::Type::kVideo);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(

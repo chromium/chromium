@@ -28,18 +28,23 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
                                   public RpcRendererCallMessageHandler {
  public:
   using RpcMessageProcessor = base::RepeatingCallback<void(
+      openscreen::cast::RpcMessenger::Handle handle,
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
 
   // |remote_renderer| is the remote media::mojom::Renderer to which commands
   // translated from proto messages should be sent.
+  // |processor| is responsible for handling any proto messages ready to be sent
+  // out.
   explicit RendererRpcCallTranslator(
+      RpcMessageProcessor processor,
       mojo::Remote<media::mojom::Renderer> remote_renderer);
   ~RendererRpcCallTranslator() override;
 
-  // |processor| is responsible for handling any proto messages ready to be sent
-  // out. This callback is expected to set the handle in each incoming message.
-  // This callback must be callable from any thread.
-  void SetMessageProcessor(RpcMessageProcessor processor);
+  // Sets the |handle| to be used for future outgoing RPC calls.
+  void set_handle(openscreen::cast::RpcMessenger::Handle handle) {
+    handle_ = handle;
+  }
+  openscreen::cast::RpcMessenger::Handle handle() const { return handle_; }
 
  private:
   // media::mojom::RendererClient overrides.
@@ -65,17 +70,27 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   void OnRpcSetPlaybackRate(double playback_rate) override;
   void OnRpcSetVolume(double volume) override;
 
-  // Callbacks for mojo calls. |processor| is included as an input so that if
-  // the callback changes before the response to this message is returned, it
-  // will send with the old |message_processor_| value.
-  void OnInitializeCompleted(RpcMessageProcessor processor, bool succeeded);
-  void OnFlushCompleted(RpcMessageProcessor processor);
+  // Callbacks for mojo calls. |handle_at_time_of_sending| is included as an
+  // input so that if |handle_| changes before the response to this message is
+  // returned, it will send with the old |handle_| value.
+  void OnInitializeCompleted(
+      openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending,
+      bool succeeded);
+  void OnFlushCompleted(
+      openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending);
+
+  // Signifies whether the Initialize() command has been sent to the Renderer,
+  // which will only be done once over the duration of this instance's lifetime.
+  bool has_been_initialized_ = false;
 
   RpcMessageProcessor message_processor_;
 
   mojo::AssociatedReceiver<media::mojom::RendererClient>
       renderer_client_receiver_;
   mojo::Remote<media::mojom::Renderer> renderer_remote_;
+
+  openscreen::cast::RpcMessenger::Handle handle_ =
+      openscreen::cast::RpcMessenger::kInvalidHandle;
 
   base::WeakPtrFactory<RendererRpcCallTranslator> weak_factory_;
 };

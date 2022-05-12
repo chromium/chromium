@@ -10,31 +10,33 @@
 namespace cast_streaming::remoting {
 
 RendererRpcCallTranslator::RendererRpcCallTranslator(
+    RpcMessageProcessor processor,
     mojo::Remote<media::mojom::Renderer> remote_renderer)
-    : renderer_client_receiver_(this),
+    : message_processor_(std::move(processor)),
+      renderer_client_receiver_(this),
       renderer_remote_(std::move(remote_renderer)),
       weak_factory_(this) {}
 
 RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;
 
-void RendererRpcCallTranslator::SetMessageProcessor(
-    RpcMessageProcessor processor) {
-  message_processor_ = std::move(processor);
-}
-
 void RendererRpcCallTranslator::OnRpcInitialize() {
-  renderer_remote_->Initialize(
-      renderer_client_receiver_.BindNewEndpointAndPassRemote(),
-      /* streams */ {}, /* media_url_params */ nullptr,
-      base::BindOnce(&RendererRpcCallTranslator::OnInitializeCompleted,
-                     weak_factory_.GetWeakPtr(), message_processor_));
+  if (!has_been_initialized_) {
+    has_been_initialized_ = true;
+    renderer_remote_->Initialize(
+        renderer_client_receiver_.BindNewEndpointAndPassRemote(),
+        /* streams */ {}, /* media_url_params */ nullptr,
+        base::BindOnce(&RendererRpcCallTranslator::OnInitializeCompleted,
+                       weak_factory_.GetWeakPtr(), handle_));
+  } else {
+    OnInitializeCompleted(handle_, true);
+  }
 }
 
 void RendererRpcCallTranslator::OnRpcFlush(uint32_t audio_count,
                                            uint32_t video_count) {
   renderer_remote_->Flush(
       base::BindOnce(&RendererRpcCallTranslator::OnFlushCompleted,
-                     weak_factory_.GetWeakPtr(), message_processor_));
+                     weak_factory_.GetWeakPtr(), handle_));
 }
 
 void RendererRpcCallTranslator::OnRpcStartPlayingFrom(base::TimeDelta time) {
@@ -52,58 +54,60 @@ void RendererRpcCallTranslator::OnRpcSetVolume(double volume) {
 void RendererRpcCallTranslator::OnTimeUpdate(base::TimeDelta media_time,
                                              base::TimeDelta max_time,
                                              base::TimeTicks capture_time) {
-  message_processor_.Run(CreateMessageForMediaTimeUpdate(media_time));
+  message_processor_.Run(handle_, CreateMessageForMediaTimeUpdate(media_time));
 }
 
 void RendererRpcCallTranslator::OnBufferingStateChange(
     media::BufferingState state,
     media::BufferingStateChangeReason reason) {
-  message_processor_.Run(CreateMessageForBufferingStateChange(state));
+  message_processor_.Run(handle_, CreateMessageForBufferingStateChange(state));
 }
 
 void RendererRpcCallTranslator::OnError(const media::PipelineStatus& status) {
-  message_processor_.Run(CreateMessageForError());
+  message_processor_.Run(handle_, CreateMessageForError());
 }
 
 void RendererRpcCallTranslator::OnEnded() {
-  message_processor_.Run(CreateMessageForMediaEnded());
+  message_processor_.Run(handle_, CreateMessageForMediaEnded());
 }
 
 void RendererRpcCallTranslator::OnAudioConfigChange(
     const media::AudioDecoderConfig& config) {
-  message_processor_.Run(CreateMessageForAudioConfigChange(config));
+  message_processor_.Run(handle_, CreateMessageForAudioConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoConfigChange(
     const media::VideoDecoderConfig& config) {
-  message_processor_.Run(CreateMessageForVideoConfigChange(config));
+  message_processor_.Run(handle_, CreateMessageForVideoConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoNaturalSizeChange(
     const gfx::Size& size) {
-  message_processor_.Run(CreateMessageForVideoNaturalSizeChange(size));
+  message_processor_.Run(handle_, CreateMessageForVideoNaturalSizeChange(size));
 }
 
 void RendererRpcCallTranslator::OnVideoOpacityChange(bool opaque) {
-  message_processor_.Run(CreateMessageForVideoOpacityChange(opaque));
+  message_processor_.Run(handle_, CreateMessageForVideoOpacityChange(opaque));
 }
 
 void RendererRpcCallTranslator::OnStatisticsUpdate(
     const media::PipelineStatistics& stats) {
-  message_processor_.Run(CreateMessageForStatisticsUpdate(stats));
+  message_processor_.Run(handle_, CreateMessageForStatisticsUpdate(stats));
 }
 
 void RendererRpcCallTranslator::OnWaiting(media::WaitingReason reason) {}
 
 void RendererRpcCallTranslator::OnInitializeCompleted(
-    RpcMessageProcessor processor,
+    openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending,
     bool success) {
-  message_processor_.Run(CreateMessageForInitializationComplete(success));
+  message_processor_.Run(handle_at_time_of_sending,
+                         CreateMessageForInitializationComplete(success));
 }
 
 void RendererRpcCallTranslator::OnFlushCompleted(
-    RpcMessageProcessor processor) {
-  message_processor_.Run(CreateMessageForFlushComplete());
+    openscreen::cast::RpcMessenger::Handle handle_at_time_of_sending) {
+  message_processor_.Run(handle_at_time_of_sending,
+                         CreateMessageForFlushComplete());
 }
 
 }  // namespace cast_streaming::remoting

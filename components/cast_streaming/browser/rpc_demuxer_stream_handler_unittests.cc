@@ -29,7 +29,7 @@ using testing::StrictMock;
 namespace cast_streaming::remoting {
 namespace {
 
-ACTION_P(CheckInitializeDemuxerStream, remote_handle, local_handle_ptr) {
+ACTION_P(CheckInitializeDemuxerStream, remote_handle, local_handle) {
   const openscreen::cast::RpcMessenger::Handle handle = arg0;
   const std::unique_ptr<openscreen::cast::RpcMessage>& rpc = arg1;
 
@@ -37,8 +37,7 @@ ACTION_P(CheckInitializeDemuxerStream, remote_handle, local_handle_ptr) {
   EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
   EXPECT_EQ(handle, remote_handle);
   ASSERT_TRUE(rpc->has_integer_value());
-  *local_handle_ptr = rpc->integer_value();
-  EXPECT_NE(*local_handle_ptr, openscreen::cast::RpcMessenger::kInvalidHandle);
+  EXPECT_EQ(local_handle, rpc->integer_value());
 }
 
 ACTION_P(CheckReadUntilCall, remote_handle, local_handle, last_total) {
@@ -84,19 +83,21 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
                            {1920, 1080},
                            media::EmptyExtraData(),
                            media::EncryptionScheme::kUnencrypted),
-        rpc_messenger_(
-            [](auto data) { FAIL() << "Messages should not be sent here"; }),
         stream_handler_(
             &client_,
-            &rpc_messenger_,
+            base::BindRepeating(&RpcDemuxerStreamHandlerTest::GetHandle,
+                                base::Unretained(this)),
             base::BindRepeating(&RpcDemuxerStreamHandlerTest::SendMessage,
                                 base::Unretained(this))) {
+    EXPECT_CALL(*this, GetHandle())
+        .WillOnce(Return(audio_local_handle_))
+        .WillOnce(Return(video_local_handle_));
     EXPECT_CALL(*this, SendMessage(audio_remote_handle_, _))
         .WillOnce(CheckInitializeDemuxerStream(audio_remote_handle_,
-                                               &audio_local_handle_));
+                                               audio_local_handle_));
     EXPECT_CALL(*this, SendMessage(video_remote_handle_, _))
         .WillOnce(CheckInitializeDemuxerStream(video_remote_handle_,
-                                               &video_local_handle_));
+                                               video_local_handle_));
     stream_handler_.OnRpcAcquireDemuxer(audio_remote_handle_,
                                         video_remote_handle_);
   }
@@ -115,6 +116,8 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
   MOCK_METHOD2(SendMessage,
                void(openscreen::cast::RpcMessenger::Handle,
                     std::unique_ptr<openscreen::cast::RpcMessage>));
+
+  MOCK_METHOD0(GetHandle, openscreen::cast::RpcMessenger::Handle());
 
   void OnRpcInitializeCallback(
       openscreen::cast::RpcMessenger::Handle handle,
@@ -139,13 +142,12 @@ class RpcDemuxerStreamHandlerTest : public testing::Test {
   openscreen::cast::RpcMessenger::Handle audio_remote_handle_ = 123;
   openscreen::cast::RpcMessenger::Handle video_remote_handle_ = 456;
 
-  openscreen::cast::RpcMessenger::Handle audio_local_handle_;
-  openscreen::cast::RpcMessenger::Handle video_local_handle_;
+  openscreen::cast::RpcMessenger::Handle audio_local_handle_ = 135;
+  openscreen::cast::RpcMessenger::Handle video_local_handle_ = 246;
 
   media::AudioDecoderConfig test_audio_config_;
   media::VideoDecoderConfig test_video_config_;
 
-  openscreen::cast::RpcMessenger rpc_messenger_;
   StrictMock<MockClient> client_;
 
   RpcDemuxerStreamHandler stream_handler_;
