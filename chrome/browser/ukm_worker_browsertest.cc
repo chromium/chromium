@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(UkmWorkerBrowserTest,
         return response;
       }));
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(

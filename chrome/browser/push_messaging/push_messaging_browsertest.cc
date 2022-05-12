@@ -2910,7 +2910,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   ExecuteScriptAsync(prerender_rfh, "documentSubscribePush()");
 
   // Activate the prerendered page and wait for a response of script execution.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(web_contents());
   prerender_helper_.NavigatePrimaryPage(prerendering_url);
   // Make sure that the prerender was activated.
   ASSERT_TRUE(prerender_observer.was_activated());

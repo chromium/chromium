@@ -80,7 +80,7 @@ void ExecuteProgrammaticContentScriptNoWait(content::WebContents* web_contents,
 void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
                                       const ExtensionId& extension_id,
                                       const std::string& content_script) {
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(web_contents);
   ExecuteProgrammaticContentScriptNoWait(
       web_contents, extension_id, content_script, "Hello from acking script!");
   std::string msg;
@@ -114,7 +114,8 @@ class ContentScriptExecuterBeforeDidCommit {
                                        content::WebContents* web_contents,
                                        const ExtensionId& extension_id,
                                        const std::string& content_script)
-      : commit_delayer_(
+      : message_queue_(web_contents),
+        commit_delayer_(
             web_contents,
             postponed_commit_url,
             base::BindOnce(

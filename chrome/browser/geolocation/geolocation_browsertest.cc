@@ -377,7 +377,7 @@ void GeolocationBrowserTest::ExpectValueFromScript(
 
 bool GeolocationBrowserTest::SetPositionAndWaitUntilUpdated(double latitude,
                                                             double longitude) {
-  content::DOMMessageQueue dom_message_queue;
+  content::DOMMessageQueue dom_message_queue(render_frame_host_);
 
   fake_latitude_ = latitude;
   fake_longitude_ = longitude;

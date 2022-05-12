@@ -113,7 +113,7 @@ absl::optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
 IN_PROC_BROWSER_TEST_F(DISABLED_CanvasInputKeyBrowserTest,
                        TestCanvasFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,

@@ -148,9 +148,8 @@ void NavigateToFeedAndValidate(net::EmbeddedTestServer* server,
     // TODO(finnur): Implement this is a non-flaky way.
   }
 
-  content::DOMMessageQueue message_queue;
-
   WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(tab);
   NamedFrameCreatedObserver subframe_observer(tab, "preview");
 
   // Navigate to the subscribe page directly.

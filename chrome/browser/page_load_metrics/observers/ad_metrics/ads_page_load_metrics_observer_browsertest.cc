@@ -886,7 +886,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       .GetBackForwardCache()
       .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  content::DOMMessageQueue msg_queue;
+  content::DOMMessageQueue msg_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();

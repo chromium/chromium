@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestSetTimeoutWithout1MsClamp, DisablePolicy) {
   EXPECT_FALSE(profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled));
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(web_contents);
   content::ExecuteScriptAsync(web_contents, kSetTimeout0Script);
   std::string message;
   EXPECT_TRUE(message_queue.WaitForMessage(&message));

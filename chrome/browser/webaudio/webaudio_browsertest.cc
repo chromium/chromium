@@ -37,7 +37,7 @@ class WebAudioBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
                        MAYBE_VerifyDynamicsCompressorFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
   ASSERT_TRUE(content::NavigateToURL(

@@ -778,7 +778,8 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsWebSocketBrowserTest,
                                  server().GetURL("a.test", "/"),
                                  "same-site-cookie=1; SameSite=Lax; Secure"));
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ConnectTo("b.test", wss_server_.GetURL("a.test", "echo-request-headers"));
 
   std::string message;

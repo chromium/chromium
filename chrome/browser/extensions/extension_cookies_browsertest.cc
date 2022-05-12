@@ -834,7 +834,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
     // Use `fetch_script` to ask the service worker to perform a `fetch` and
     // reply with the response.
-    content::DOMMessageQueue queue;
+    content::DOMMessageQueue queue(extension_frame);
     content::ExecuteScriptAsync(extension_frame, fetch_script);
 
     // Provide the HTTP response.

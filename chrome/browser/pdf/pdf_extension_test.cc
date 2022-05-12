@@ -3421,7 +3421,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
 // catching future regression in docs/ and slides/ pages (see
 // https://crbug.com/763812).
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PostMessageForZeroSizedEmbed) {
-  content::DOMMessageQueue queue;
+  content::DOMMessageQueue queue(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/pdf/post_message_zero_sized_embed.html")));
@@ -3895,7 +3896,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
 
   // Helper to simulate a tab press and wait for a focus message.
   auto press_tab_and_wait_for_message = [guest_contents](bool reverse) {
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(guest_contents);
     std::string reply;
     SimulateKeyPress(guest_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, /*shift=*/reverse, false, false);
