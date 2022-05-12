@@ -171,8 +171,6 @@ static_library("test_support") {
     "../public/test/frame_test_utils.h",
     "../public/test/hit_test_region_observer.cc",
     "../public/test/hit_test_region_observer.h",
-    "../public/test/idle_test_utils.cc",
-    "../public/test/idle_test_utils.h",
     "../public/test/javascript_test_observer.cc",
     "../public/test/javascript_test_observer.h",
     "../public/test/local_frame_host_interceptor.cc",

@@ -17,10 +17,8 @@
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/idle_test_utils.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -31,6 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 
 using blink::mojom::IdleManagerError;
 using blink::mojom::IdleStatePtr;
@@ -60,7 +60,7 @@ class MockIdleMonitor : public blink::mojom::IdleMonitor {
   MOCK_METHOD2(Update, void(IdleStatePtr, bool));
 };
 
-class MockIdleTimeProvider : public IdleTimeProvider {
+class MockIdleTimeProvider : public ui::IdleTimeProvider {
  public:
   MockIdleTimeProvider() = default;
   ~MockIdleTimeProvider() override = default;
@@ -93,8 +93,9 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
     idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
     idle_manager_ = std::make_unique<IdleManagerImpl>(main_rfh());
-    scoped_idle_time_provider_ = std::make_unique<ScopedIdleProviderForTest>(
-        base::WrapUnique(idle_time_provider_.get()));
+    scoped_idle_time_provider_ =
+        std::make_unique<ui::test::ScopedIdleProviderForTest>(
+            base::WrapUnique(idle_time_provider_.get()));
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -172,7 +173,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   std::unique_ptr<IdleManagerImpl> idle_manager_;
   raw_ptr<MockPermissionManager> permission_manager_;
   raw_ptr<MockIdleTimeProvider> idle_time_provider_;
-  std::unique_ptr<ScopedIdleProviderForTest> scoped_idle_time_provider_;
+  std::unique_ptr<ui::test::ScopedIdleProviderForTest>
+      scoped_idle_time_provider_;
   NiceMock<MockIdleMonitor> idle_monitor_;
   mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver_{&idle_monitor_};
   GURL url_ = GURL(kTestUrl);
@@ -340,11 +342,11 @@ TEST_F(IdleManagerTest, RemoveMonitorStopsPolling) {
 
   AddMonitorRequest();
 
-  EXPECT_TRUE(IdlePollingService::GetInstance()->IsPollingForTest());
+  EXPECT_TRUE(ui::IdlePollingService::GetInstance()->IsPollingForTest());
 
   DisconnectRenderer();
 
-  EXPECT_FALSE(IdlePollingService::GetInstance()->IsPollingForTest());
+  EXPECT_FALSE(ui::IdlePollingService::GetInstance()->IsPollingForTest());
 }
 
 TEST_F(IdleManagerTest, PermissionDenied) {

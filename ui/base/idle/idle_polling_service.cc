@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/idle/idle_polling_service.h"
+#include "ui/base/idle/idle_polling_service.h"
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "content/public/browser/idle_time_provider.h"
 #include "ui/base/idle/idle.h"
+#include "ui/base/idle/idle_time_provider.h"
 
-namespace content {
+namespace ui {
 
 namespace {
 
@@ -99,4 +99,4 @@ void IdlePollingService::PollIdleState() {
   }
 }
 
-}  // namespace content
+}  // namespace ui

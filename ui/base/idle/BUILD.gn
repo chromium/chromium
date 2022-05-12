@@ -18,7 +18,11 @@ component("idle") {
   # All targets in this file are allowed to access any of the headers.
   friend = [ ":*" ]
 
-  public = [ "idle.h" ]
+  public = [
+    "idle.h",
+    "idle_polling_service.h",
+    "idle_time_provider.h",
+  ]
 
   deps = [
     "//base",
@@ -34,6 +38,9 @@ component("idle") {
     "idle.h",
     "idle_internal.cc",
     "idle_internal.h",
+    "idle_polling_service.cc",
+    "idle_polling_service.h",
+    "idle_time_provider.h",
   ]
 
   if (is_chromeos_ash) {

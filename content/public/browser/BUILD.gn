@@ -202,7 +202,6 @@ source_set("browser_sources") {
     "host_zoom_map.h",
     "identity_request_dialog_controller.cc",
     "identity_request_dialog_controller.h",
-    "idle_time_provider.h",
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",

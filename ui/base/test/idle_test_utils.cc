@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/idle_test_utils.h"
+#include "ui/base/test/idle_test_utils.h"
 
-#include "content/browser/idle/idle_polling_service.h"
-#include "content/public/browser/idle_time_provider.h"
+#include "ui/base/idle/idle_polling_service.h"
+#include "ui/base/idle/idle_time_provider.h"
 
-namespace content {
+namespace ui {
+namespace test {
 
 ScopedIdleProviderForTest::ScopedIdleProviderForTest(
     std::unique_ptr<IdleTimeProvider> provider) {
@@ -18,4 +19,5 @@ ScopedIdleProviderForTest::~ScopedIdleProviderForTest() {
   IdlePollingService::GetInstance()->SetProviderForTest(nullptr);
 }
 
-}  // namespace content
+}  // namespace test
+}  // namespace ui

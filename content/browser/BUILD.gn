@@ -991,8 +991,6 @@ source_set("browser") {
     "host_zoom_map_impl.h",
     "idle/idle_manager_impl.cc",
     "idle/idle_manager_impl.h",
-    "idle/idle_polling_service.cc",
-    "idle/idle_polling_service.h",
     "image_capture/image_capture_impl.cc",
     "image_capture/image_capture_impl.h",
     "indexed_db/cursor_impl.cc",

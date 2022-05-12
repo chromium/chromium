@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_IDLE_IDLE_POLLING_SERVICE_H_
-#define CONTENT_BROWSER_IDLE_IDLE_POLLING_SERVICE_H_
+#ifndef UI_BASE_IDLE_IDLE_POLLING_SERVICE_H_
+#define UI_BASE_IDLE_IDLE_POLLING_SERVICE_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
 
-namespace content {
+namespace ui {
 
 class IdleTimeProvider;
 
 // Polls the system to determine whether the user is idle or the screen is
 // locked and notifies observers.
-class CONTENT_EXPORT IdlePollingService {
+class COMPONENT_EXPORT(UI_BASE_IDLE) IdlePollingService {
  public:
   static IdlePollingService* GetInstance();
 
@@ -59,6 +59,6 @@ class CONTENT_EXPORT IdlePollingService {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_IDLE_IDLE_POLLING_SERVICE_H_
+#endif  // UI_BASE_IDLE_IDLE_POLLING_SERVICE_H_

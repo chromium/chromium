@@ -12,23 +12,23 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/idle_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 
 using ::testing::NiceMock;
 
 namespace {
 
-class MockIdleTimeProvider : public content::IdleTimeProvider {
+class MockIdleTimeProvider : public ui::IdleTimeProvider {
  public:
   MockIdleTimeProvider() = default;
 
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
       // Simulates an unlocked screen as user goes back to active.
       .WillRepeatedly(testing::Return(false));
 
-  content::ScopedIdleProviderForTest scoped_idle_provider(
+  ui::test::ScopedIdleProviderForTest scoped_idle_provider(
       std::move(mock_time_provider));
 
   EXPECT_EQ("idle-unlocked,idle-locked,active-unlocked",

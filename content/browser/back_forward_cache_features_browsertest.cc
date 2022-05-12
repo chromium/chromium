@@ -13,14 +13,12 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
-#include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/idle_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "content/shell/browser/shell.h"
@@ -35,6 +33,8 @@
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 
 // This file contains back-/forward-cache tests for web-platform features and
 // APIs. It was forked from
@@ -1421,7 +1421,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithWebFileSystem) {
 
 namespace {
 
-class FakeIdleTimeProvider : public IdleTimeProvider {
+class FakeIdleTimeProvider : public ui::IdleTimeProvider {
  public:
   FakeIdleTimeProvider() = default;
   ~FakeIdleTimeProvider() override = default;
@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver deleted(rfh_a);
 
-  ScopedIdleProviderForTest scoped_idle_provider(
+  ui::test::ScopedIdleProviderForTest scoped_idle_provider(
       std::make_unique<FakeIdleTimeProvider>());
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(

@@ -65,7 +65,7 @@ void IdleManagerImpl::ClearIdleOverride() {
     return;
   }
 
-  observer_.Observe(IdlePollingService::GetInstance());
+  observer_.Observe(ui::IdlePollingService::GetInstance());
   last_state_ = CheckIdleState();
   for (const auto& monitor : monitors_) {
     monitor->Update(last_state_->Clone(), /*is_overridden_by_devtools=*/false);
@@ -83,7 +83,7 @@ void IdleManagerImpl::AddMonitor(
   }
 
   if (monitors_.empty() && !state_override_) {
-    observer_.Observe(IdlePollingService::GetInstance());
+    observer_.Observe(ui::IdlePollingService::GetInstance());
     last_state_ = CheckIdleState();
   }
 
@@ -111,7 +111,7 @@ void IdleManagerImpl::OnMonitorDisconnected(mojo::RemoteSetElementId id) {
 }
 
 void IdleManagerImpl::OnIdleStateChange(
-    const IdlePollingService::State& state) {
+    const ui::IdlePollingService::State& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::mojom::IdleStatePtr new_state = CreateIdleState(state);
@@ -126,7 +126,7 @@ void IdleManagerImpl::OnIdleStateChange(
 }
 
 blink::mojom::IdleStatePtr IdleManagerImpl::CreateIdleState(
-    const IdlePollingService::State& state) {
+    const ui::IdlePollingService::State& state) {
   auto result = IdleState::New();
   if (state.idle_time >= kUserInputThreshold) {
     result->idle_time = state.idle_time - kUserInputThreshold;
@@ -136,7 +136,7 @@ blink::mojom::IdleStatePtr IdleManagerImpl::CreateIdleState(
 }
 
 blink::mojom::IdleStatePtr IdleManagerImpl::CheckIdleState() {
-  return CreateIdleState(IdlePollingService::GetInstance()->GetIdleState());
+  return CreateIdleState(ui::IdlePollingService::GetInstance()->GetIdleState());
 }
 
 }  // namespace content

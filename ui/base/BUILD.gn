@@ -713,6 +713,8 @@ static_library("test_support") {
     "interaction/interaction_test_util.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
+    "test/idle_test_utils.cc",
+    "test/idle_test_utils.h",
   ]
 
   if (is_mac) {
@@ -776,7 +778,10 @@ static_library("test_support") {
     ]
   }
 
-  public_deps = [ ":base" ]
+  public_deps = [
+    ":base",
+    "//ui/base/idle",
+  ]
   deps = [
     "//base",
     "//base/test:test_config",

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_IDLE_TIME_PROVIDER_H_
-#define CONTENT_PUBLIC_BROWSER_IDLE_TIME_PROVIDER_H_
+#ifndef UI_BASE_IDLE_IDLE_TIME_PROVIDER_H_
+#define UI_BASE_IDLE_IDLE_TIME_PROVIDER_H_
 
 #include "base/time/time.h"
 
-namespace content {
+namespace ui {
 
 // Provides an interface for querying a user's idle time and screen state.
 class IdleTimeProvider {
@@ -19,6 +19,6 @@ class IdleTimeProvider {
   virtual bool CheckIdleStateIsLocked() = 0;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_PUBLIC_BROWSER_IDLE_TIME_PROVIDER_H_
+#endif  // UI_BASE_IDLE_IDLE_TIME_PROVIDER_H_
