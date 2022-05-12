@@ -422,7 +422,7 @@ void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
 }
 
 void NativeWidgetNSWindowBridge::StackAtTop() {
-  [window_ orderWindow:NSWindowAbove relativeTo:0];
+  [window_ setOrderedIndex:0];
 }
 
 void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
