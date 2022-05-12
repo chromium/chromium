@@ -216,19 +216,19 @@ TEST_F(CachingWordShaperTest, SegmentEmojiSequences) {
   std::vector<std::string> test_strings = {
       // A family followed by a couple with heart emoji sequence,
       // the latter including a variation selector.
-      u8"\U0001f468\u200D\U0001f469\u200D\U0001f467\u200D\U0001f466\U0001f469"
-      u8"\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      "\U0001f468\u200D\U0001f469\u200D\U0001f467\u200D\U0001f466\U0001f469"
+      "\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
       // Pirate flag
-      u8"\U0001F3F4\u200D\u2620\uFE0F",
+      "\U0001F3F4\u200D\u2620\uFE0F",
       // Pilot, judge sequence
-      u8"\U0001f468\U0001f3fb\u200D\u2696\uFE0F\U0001f468\U0001f3fb\u200D\u2708"
-      u8"\uFE0F",
+      "\U0001f468\U0001f3fb\u200D\u2696\uFE0F\U0001f468\U0001f3fb\u200D\u2708"
+      "\uFE0F",
       // Woman, Kiss, Man sequence
-      u8"\U0001f469\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      "\U0001f469\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
       // Signs of horns with skin tone modifier
-      u8"\U0001f918\U0001f3fb",
+      "\U0001f918\U0001f3fb",
       // Man, dark skin tone, red hair
-      u8"\U0001f468\U0001f3ff\u200D\U0001f9b0"};
+      "\U0001f468\U0001f3ff\u200D\U0001f9b0"};
 
   for (auto test_string : test_strings) {
     String emoji_string = String::FromUTF8(test_string);

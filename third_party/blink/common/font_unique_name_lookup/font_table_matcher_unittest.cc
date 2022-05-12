@@ -44,8 +44,8 @@ class FontTableMatcherTest : public ::testing::Test {
         kDummyAndroidBuildFingerPrint);
     PopulateFontUniqueNameEntry(
         &font_unique_name_table, kTestFilePath1, 0,
-        {u8"FONT NAME UPPERCASE", u8"எழுத்துரு பெயர்", u8"字體名稱",
-         u8"FONT-NAME-UPPERCASE", u8"எழுத்துரு-பெயர்", u8"字體名稱"});
+        {"FONT NAME UPPERCASE", "எழுத்துரு பெயர்", "字體名稱",
+         "FONT-NAME-UPPERCASE", "எழுத்துரு-பெயர்", "字體名稱"});
     base::ReadOnlySharedMemoryMapping mapping =
         FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
             std::move(font_unique_name_table));
@@ -72,8 +72,7 @@ TEST_F(FontTableMatcherTest, CaseInsensitiveMatchingBothNames) {
 
 TEST_F(FontTableMatcherTest, MatchTamilChinese) {
   ASSERT_EQ(matcher_->AvailableFonts(), 1u);
-  for (std::string font_name :
-       {u8"எழுத்துரு பெயர்", u8"எழுத்துரு-பெயர்", u8"字體名稱"}) {
+  for (std::string font_name : {"எழுத்துரு பெயர்", "எழுத்துரு-பெயர்", "字體名稱"}) {
     absl::optional<FontTableMatcher::MatchResult> result =
         matcher_->MatchName(font_name);
     ASSERT_TRUE(result.has_value());

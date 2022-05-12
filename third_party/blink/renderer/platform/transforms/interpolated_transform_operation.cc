@@ -32,10 +32,8 @@
 
 namespace blink {
 
-bool InterpolatedTransformOperation::operator==(
+bool InterpolatedTransformOperation::IsEqualAssumingSameType(
     const TransformOperation& o) const {
-  if (!IsSameType(o))
-    return false;
   const InterpolatedTransformOperation* t =
       static_cast<const InterpolatedTransformOperation*>(&o);
   return progress_ == t->progress_ && from_ == t->from_ && to_ == t->to_;

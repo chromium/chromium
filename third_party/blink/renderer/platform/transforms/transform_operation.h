@@ -68,7 +68,9 @@ class PLATFORM_EXPORT TransformOperation
   TransformOperation& operator=(const TransformOperation&) = delete;
   virtual ~TransformOperation() = default;
 
-  virtual bool operator==(const TransformOperation&) const = 0;
+  bool operator==(const TransformOperation& o) const {
+    return IsSameType(o) && IsEqualAssumingSameType(o);
+  }
   bool operator!=(const TransformOperation& o) const { return !(*this == o); }
 
   virtual void Apply(TransformationMatrix&,
@@ -123,6 +125,9 @@ class PLATFORM_EXPORT TransformOperation
                                                       BoxSizeDependency b) {
     return static_cast<BoxSizeDependency>(a | b);
   }
+
+ protected:
+  virtual bool IsEqualAssumingSameType(const TransformOperation&) const = 0;
 };
 
 }  // namespace blink

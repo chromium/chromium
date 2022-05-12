@@ -62,9 +62,7 @@ CSSValue* StylePath::ComputedCSSValue() const {
       const_cast<StylePath*>(this), kTransformToAbsolute);
 }
 
-bool StylePath::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
   const StylePath& other = To<StylePath>(o);
   return wind_rule_ == other.wind_rule_ && *byte_stream_ == *other.byte_stream_;
 }

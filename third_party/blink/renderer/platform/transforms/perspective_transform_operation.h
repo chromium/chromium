@@ -59,16 +59,15 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
     return type == kPerspective;
   }
 
- private:
-  OperationType GetType() const override { return kPerspective; }
-
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const PerspectiveTransformOperation* p =
         static_cast<const PerspectiveTransformOperation*>(&o);
     return p_ == p->p_;
   }
+
+ private:
+  OperationType GetType() const override { return kPerspective; }
 
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF&) const override {

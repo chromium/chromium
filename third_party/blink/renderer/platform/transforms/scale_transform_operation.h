@@ -46,10 +46,6 @@ class PLATFORM_EXPORT ScaleTransformOperation final
     return base::AdoptRef(new ScaleTransformOperation(sx, sy, sz, type));
   }
 
-  bool operator==(const ScaleTransformOperation& other) const {
-    return *this == static_cast<const TransformOperation&>(other);
-  }
-
   double X() const { return x_; }
   double Y() const { return y_; }
   double Z() const { return z_; }
@@ -73,15 +69,14 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   OperationType GetType() const override { return type_; }
   OperationType PrimitiveType() const final { return kScale3D; }
 
- private:
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const ScaleTransformOperation* s =
         static_cast<const ScaleTransformOperation*>(&o);
     return x_ == s->x_ && y_ == s->y_ && z_ == s->z_;
   }
 
+ private:
   bool HasNonTrivial3DComponent() const override { return z_ != 1.0; }
 
   void CommonPrimitiveForInterpolation(

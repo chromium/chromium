@@ -170,7 +170,7 @@ TEST_F(TextBreakIteratorTest, ChineseSpaces) {
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJFamilyIsolate) {
-  SetTestString(u8"\U0001F468\u200D\U0001F469\u200D\U0001F467\u200D\U0001F466");
+  SetTestString("\U0001F468\u200D\U0001F469\u200D\U0001F467\u200D\U0001F466");
   MatchLineBreaks(LineBreakType::kNormal, {11});
   MatchLineBreaks(LineBreakType::kBreakAll, {11});
   MatchLineBreaks(LineBreakType::kBreakCharacter, {11});
@@ -178,7 +178,7 @@ TEST_F(TextBreakIteratorTest, KeepEmojiZWJFamilyIsolate) {
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequenceIsolate) {
-  SetTestString(u8"\u261D\U0001F3FB");
+  SetTestString("\u261D\U0001F3FB");
   MatchLineBreaks(LineBreakType::kNormal, {3});
   MatchLineBreaks(LineBreakType::kBreakAll, {3});
   MatchLineBreaks(LineBreakType::kBreakCharacter, {3});
@@ -187,7 +187,7 @@ TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequenceIsolate) {
 
 TEST_F(TextBreakIteratorTest, KeepEmojiZWJSequence) {
   SetTestString(
-      u8"abc \U0001F469\u200D\U0001F469\u200D\U0001F467\u200D\U0001F467 def");
+      "abc \U0001F469\u200D\U0001F469\u200D\U0001F467\u200D\U0001F467 def");
   MatchLineBreaks(LineBreakType::kNormal, {3, 15, 19});
   MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 3, 15, 17, 18, 19});
   MatchLineBreaks(LineBreakType::kBreakCharacter,
@@ -196,7 +196,7 @@ TEST_F(TextBreakIteratorTest, KeepEmojiZWJSequence) {
 }
 
 TEST_F(TextBreakIteratorTest, KeepEmojiModifierSequence) {
-  SetTestString(u8"abc \u261D\U0001F3FB def");
+  SetTestString("abc \u261D\U0001F3FB def");
   MatchLineBreaks(LineBreakType::kNormal, {3, 7, 11});
   MatchLineBreaks(LineBreakType::kBreakAll, {1, 2, 3, 7, 9, 10, 11});
   MatchLineBreaks(LineBreakType::kBreakCharacter,

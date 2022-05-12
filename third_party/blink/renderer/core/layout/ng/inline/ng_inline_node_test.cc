@@ -217,7 +217,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesFloat) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCghi\uFFFCmno", node.Text())
+  EXPECT_EQ("abc\uFFFCghi\uFFFCmno", node.Text())
       << "floats are appeared as an object replacement character";
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(5u, items.size());
@@ -235,7 +235,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesInlineBlock) {
             "</div>");
   NGInlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  EXPECT_EQ(u8"abc\uFFFCjkl", node.Text())
+  EXPECT_EQ("abc\uFFFCjkl", node.Text())
       << "inline-block is appeared as an object replacement character";
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
@@ -345,7 +345,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   NGInlineNodeForTest node = CreateInlineNode(
       To<LayoutNGTextCombine>(layout_object_->SlowFirstChild()));
   node.CollectInlines();
-  EXPECT_EQ(u8"\u2022", node.Text());
+  EXPECT_EQ("\u2022", node.Text());
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(1u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);
@@ -376,7 +376,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
   NGInlineNodeForTest node =
       CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
-  EXPECT_EQ(u8"a\u200Bz", node.Text());
+  EXPECT_EQ("a\u200Bz", node.Text());
   HeapVector<NGInlineItem>& items = node.Items();
   ASSERT_EQ(3u, items.size());
   TEST_ITEM_TYPE_OFFSET(items[0], kText, 0u, 1u);

@@ -82,7 +82,7 @@ TEST_F(DeleteSelectionCommandTest, FixupWhitespace) {
                              .SetSanitizeMarkup(true)
                              .Build());
   EXPECT_TRUE(command.Apply()) << "the delete command should have succeeded";
-  EXPECT_EQ(u8"<p contenteditable>a<b>\u00A0|</b>\u00A0<ruby></ruby></p>",
+  EXPECT_EQ("<p contenteditable>a<b>\u00A0|</b>\u00A0<ruby></ruby></p>",
             GetSelectionTextFromBody());
 }
 

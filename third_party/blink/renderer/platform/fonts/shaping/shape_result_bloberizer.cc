@@ -264,6 +264,9 @@ class GlyphCallbackContext {
   STACK_ALLOCATED();
 
  public:
+  GlyphCallbackContext(ShapeResultBloberizer* bloberizer,
+                       const StringView& text)
+      : bloberizer(bloberizer), text(text) {}
   GlyphCallbackContext(const GlyphCallbackContext&) = delete;
   GlyphCallbackContext& operator=(const GlyphCallbackContext&) = delete;
 
@@ -328,6 +331,14 @@ class ClusterCallbackContext {
   STACK_ALLOCATED();
 
  public:
+  ClusterCallbackContext(ShapeResultBloberizer* bloberizer,
+                         const StringView& text,
+                         const GlyphData& emphasis_data,
+                         gfx::PointF glyph_center)
+      : bloberizer(bloberizer),
+        text(text),
+        emphasis_data(emphasis_data),
+        glyph_center(std::move(glyph_center)) {}
   ClusterCallbackContext(const ClusterCallbackContext&) = delete;
   ClusterCallbackContext& operator=(const ClusterCallbackContext&) = delete;
 

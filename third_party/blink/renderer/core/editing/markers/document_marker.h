@@ -68,10 +68,10 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
         : remaining_types_(marker_types) {}
     MarkerTypesIterator(const MarkerTypesIterator& other) = default;
 
-    bool operator==(const MarkerTypesIterator& other) {
+    bool operator==(const MarkerTypesIterator& other) const {
       return remaining_types_ == other.remaining_types_;
     }
-    bool operator!=(const MarkerTypesIterator& other) {
+    bool operator!=(const MarkerTypesIterator& other) const {
       return !operator==(other);
     }
 

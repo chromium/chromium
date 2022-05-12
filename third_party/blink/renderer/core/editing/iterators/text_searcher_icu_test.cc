@@ -101,7 +101,7 @@ TEST(TextSearcherICUTest, FindSubstringWithOffset) {
 
 TEST(TextSearcherICUTest, FindControlCharacter) {
   TextSearcherICU searcher;
-  const String& pattern = MakeUTF16(u8"\u0080");
+  const String& pattern = MakeUTF16("\u0080");
   searcher.SetPattern(pattern, 0);
 
   const String& text = MakeUTF16("some text");

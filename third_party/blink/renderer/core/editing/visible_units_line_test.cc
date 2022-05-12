@@ -1052,7 +1052,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
       "p { font: 10px/1 Ahem; }"
       "p { width: 4ch; }");
   const SelectionInDOMTree& selection =
-      SetSelectionTextToBody(u8"<p id=t>abcd^\u200B|wxyz</p>");
+      SetSelectionTextToBody("<p id=t>abcd^\u200B|wxyz</p>");
 
   const Position& after_zws = selection.Extent();
   const PositionWithAffinity after_zws_down =

@@ -46,16 +46,15 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
     return type == kSkewX || type == kSkewY || type == kSkew;
   }
 
- private:
-  OperationType GetType() const override { return type_; }
-
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const SkewTransformOperation* s =
         static_cast<const SkewTransformOperation*>(&o);
     return angle_x_ == s->angle_x_ && angle_y_ == s->angle_y_;
   }
+
+ private:
+  OperationType GetType() const override { return type_; }
 
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF&) const override {

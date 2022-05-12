@@ -45,16 +45,15 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
     return type == kMatrix3D;
   }
 
- private:
-  OperationType GetType() const override { return kMatrix3D; }
-
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const Matrix3DTransformOperation* m =
         static_cast<const Matrix3DTransformOperation*>(&o);
     return matrix_ == m->matrix_;
   }
+
+ private:
+  OperationType GetType() const override { return kMatrix3D; }
 
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF&) const override {

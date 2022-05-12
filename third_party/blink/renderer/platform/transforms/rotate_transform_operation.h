@@ -54,10 +54,6 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
     return base::AdoptRef(new RotateTransformOperation(rotation, type));
   }
 
-  bool operator==(const RotateTransformOperation& other) const {
-    return *this == static_cast<const TransformOperation&>(other);
-  }
-
   double X() const { return rotation_.axis.x(); }
   double Y() const { return rotation_.axis.y(); }
   double Z() const { return rotation_.axis.z(); }
@@ -84,7 +80,7 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
   }
 
  protected:
-  bool operator==(const TransformOperation&) const override;
+  bool IsEqualAssumingSameType(const TransformOperation&) const override;
 
   bool HasNonTrivial3DComponent() const override {
     return Angle() && (X() || Y());
@@ -131,12 +127,13 @@ class PLATFORM_EXPORT RotateAroundOriginTransformOperation final
   }
   OperationType PrimitiveType() const override { return kRotateAroundOrigin; }
 
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation&) const override;
+
  private:
   RotateAroundOriginTransformOperation(double angle,
                                        double origin_x,
                                        double origin_y);
-
-  bool operator==(const TransformOperation&) const override;
 
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,

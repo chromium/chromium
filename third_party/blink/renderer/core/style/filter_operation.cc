@@ -61,9 +61,8 @@ void ReferenceFilterOperation::RemoveClient(SVGResourceClient& client) {
     resource_->RemoveClient(client);
 }
 
-bool ReferenceFilterOperation::operator==(const FilterOperation& o) const {
-  if (!IsSameType(o))
-    return false;
+bool ReferenceFilterOperation::IsEqualAssumingSameType(
+    const FilterOperation& o) const {
   const auto& other = To<ReferenceFilterOperation>(o);
   return url_ == other.url_ && resource_ == other.resource_;
 }
@@ -84,9 +83,8 @@ gfx::RectF BoxReflectFilterOperation::MapRect(const gfx::RectF& rect) const {
   return reflection_.MapRect(rect);
 }
 
-bool BoxReflectFilterOperation::operator==(const FilterOperation& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BoxReflectFilterOperation::IsEqualAssumingSameType(
+    const FilterOperation& o) const {
   const auto& other = static_cast<const BoxReflectFilterOperation&>(o);
   return reflection_ == other.reflection_;
 }

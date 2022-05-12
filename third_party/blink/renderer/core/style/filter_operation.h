@@ -102,7 +102,9 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   virtual ~FilterOperation() = default;
   virtual void Trace(Visitor* visitor) const {}
 
-  virtual bool operator==(const FilterOperation&) const = 0;
+  bool operator==(const FilterOperation& o) const {
+    return IsSameType(o) && IsEqualAssumingSameType(o);
+  }
   bool operator!=(const FilterOperation& o) const { return !(*this == o); }
 
   OperationType GetType() const { return type_; }
@@ -123,6 +125,8 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
 
  protected:
   FilterOperation(OperationType type) : type_(type) {}
+
+  virtual bool IsEqualAssumingSameType(const FilterOperation&) const = 0;
 
   OperationType type_;
 
@@ -151,9 +155,10 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
 
   void Trace(Visitor*) const override;
 
- private:
-  bool operator==(const FilterOperation&) const override;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation&) const override;
 
+ private:
   AtomicString url_;
   Member<SVGResource> resource_;
   Member<Filter> filter_;
@@ -176,15 +181,14 @@ class CORE_EXPORT BasicColorMatrixFilterOperation : public FilterOperation {
 
   double Amount() const { return amount_; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BasicColorMatrixFilterOperation* other =
         static_cast<const BasicColorMatrixFilterOperation*>(&o);
     return amount_ == other->amount_;
   }
 
+ private:
   double amount_;
 };
 
@@ -196,15 +200,14 @@ class CORE_EXPORT ColorMatrixFilterOperation : public FilterOperation {
 
   const Vector<float>& Values() const { return values_; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const ColorMatrixFilterOperation* other =
         static_cast<const ColorMatrixFilterOperation*>(&o);
     return values_ == other->values_;
   }
 
+ private:
   Vector<float> values_;
 };
 
@@ -244,15 +247,14 @@ class CORE_EXPORT BasicComponentTransferFilterOperation
 
   bool AffectsOpacity() const override { return type_ == kOpacity; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BasicComponentTransferFilterOperation* other =
         static_cast<const BasicComponentTransferFilterOperation*>(&o);
     return amount_ == other->amount_;
   }
 
+ private:
   double amount_;
 };
 
@@ -283,15 +285,14 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BlurFilterOperation* other =
         static_cast<const BlurFilterOperation*>(&o);
     return std_deviation_ == other->std_deviation_;
   }
 
+ private:
   Length std_deviation_;
 };
 
@@ -313,15 +314,14 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const DropShadowFilterOperation* other =
         static_cast<const DropShadowFilterOperation*>(&o);
     return shadow_ == other->shadow_;
   }
 
+ private:
   ShadowData shadow_;
 };
 
@@ -343,9 +343,10 @@ class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
- private:
-  bool operator==(const FilterOperation&) const override;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation&) const override;
 
+ private:
   BoxReflection reflection_;
 };
 
@@ -382,10 +383,8 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
   bool PreserveAlpha() const { return preserve_alpha_; }
   const Vector<float>& KernelMatrix() const { return kernel_matrix_; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const ConvolveMatrixFilterOperation* other =
         static_cast<const ConvolveMatrixFilterOperation*>(&o);
     return (kernel_size_ == other->kernel_size_ &&
@@ -396,6 +395,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
             kernel_matrix_ == other->kernel_matrix_);
   }
 
+ private:
   gfx::Size kernel_size_;
   float divisor_;
   float bias_;
@@ -429,10 +429,8 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
   ComponentTransferFunction BlueFunc() const { return blue_func_; }
   ComponentTransferFunction AlphaFunc() const { return alpha_func_; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const ComponentTransferFilterOperation* other =
         static_cast<const ComponentTransferFilterOperation*>(&o);
     return (
@@ -440,6 +438,7 @@ class CORE_EXPORT ComponentTransferFilterOperation : public FilterOperation {
         blue_func_ == other->blue_func_ && alpha_func_ == other->alpha_func_);
   }
 
+ private:
   ComponentTransferFunction red_func_;
   ComponentTransferFunction green_func_;
   ComponentTransferFunction blue_func_;
@@ -476,10 +475,8 @@ class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
   float Seed() const { return seed_; }
   bool StitchTiles() const { return stitch_tiles_; }
 
- private:
-  bool operator==(const FilterOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const TurbulenceFilterOperation* other =
         static_cast<const TurbulenceFilterOperation*>(&o);
     return (type_ == other->type_ &&
@@ -489,6 +486,7 @@ class CORE_EXPORT TurbulenceFilterOperation : public FilterOperation {
             stitch_tiles_ == other->stitch_tiles_);
   }
 
+ private:
   TurbulenceType type_;
   float base_frequency_x_;
   float base_frequency_y_;

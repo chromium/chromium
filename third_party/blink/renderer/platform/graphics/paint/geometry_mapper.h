@@ -131,12 +131,12 @@ class PLATFORM_EXPORT GeometryMapper {
       return Matrix().ToSkM44().asM33();
     }
 
-    bool operator==(const Translation2DOrMatrix& other) {
+    bool operator==(const Translation2DOrMatrix& other) const {
       return translation_2d_ == other.translation_2d_ &&
              matrix_ == other.matrix_;
     }
 
-    bool operator!=(const Translation2DOrMatrix& other) {
+    bool operator!=(const Translation2DOrMatrix& other) const {
       return !(*this == other);
     }
 

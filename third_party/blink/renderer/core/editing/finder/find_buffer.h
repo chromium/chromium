@@ -88,11 +88,11 @@ class CORE_EXPORT FindBuffer {
                TextSearcherICU* text_searcher,
                const String& search_text);
 
-      bool operator==(const Iterator& other) {
+      bool operator==(const Iterator& other) const {
         return has_match_ == other.has_match_;
       }
 
-      bool operator!=(const Iterator& other) {
+      bool operator!=(const Iterator& other) const {
         return has_match_ != other.has_match_;
       }
 

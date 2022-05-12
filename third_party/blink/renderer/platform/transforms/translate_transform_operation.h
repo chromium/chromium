@@ -48,10 +48,6 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return base::AdoptRef(new TranslateTransformOperation(tx, ty, tz, type));
   }
 
-  bool operator==(const TranslateTransformOperation& other) const {
-    return *this == static_cast<const TransformOperation&>(other);
-  }
-
   BoxSizeDependency BoxSizeDependencies() const override {
     return CombineDependencies(
         (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
@@ -84,15 +80,14 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   OperationType GetType() const override { return type_; }
   OperationType PrimitiveType() const final { return kTranslate3D; }
 
- private:
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const TranslateTransformOperation* t =
         static_cast<const TranslateTransformOperation*>(&o);
     return x_ == t->x_ && y_ == t->y_ && z_ == t->z_;
   }
 
+ private:
   scoped_refptr<TransformOperation> Accumulate(
       const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(

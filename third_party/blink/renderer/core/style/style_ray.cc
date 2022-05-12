@@ -17,9 +17,7 @@ scoped_refptr<StyleRay> StyleRay::Create(float angle,
 StyleRay::StyleRay(float angle, RaySize size, bool contain)
     : angle_(angle), size_(size), contain_(contain) {}
 
-bool StyleRay::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
   const StyleRay& other = To<StyleRay>(o);
   return angle_ == other.angle_ && size_ == other.size_ &&
          contain_ == other.contain_;

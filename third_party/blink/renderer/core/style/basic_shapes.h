@@ -70,12 +70,16 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
 
   virtual void GetPath(Path&, const gfx::RectF&, float zoom) = 0;
   virtual WindRule GetWindRule() const { return RULE_NONZERO; }
-  virtual bool operator==(const BasicShape&) const = 0;
+  bool operator==(const BasicShape& o) const {
+    return IsSameType(o) && IsEqualAssumingSameType(o);
+  }
 
   virtual ShapeType GetType() const = 0;
 
  protected:
   BasicShape() = default;
+
+  virtual bool IsEqualAssumingSameType(const BasicShape&) const = 0;
 };
 
 class BasicShapeCenterCoordinate {
@@ -149,9 +153,11 @@ class CORE_EXPORT BasicShapeCircle final : public BasicShape {
   void SetRadius(BasicShapeRadius radius) { radius_ = radius; }
 
   void GetPath(Path&, const gfx::RectF&, float) override;
-  bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeCircleType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapeCircle() = default;
@@ -188,9 +194,11 @@ class BasicShapeEllipse final : public BasicShape {
   void SetRadiusY(BasicShapeRadius radius_y) { radius_y_ = radius_y; }
 
   void GetPath(Path&, const gfx::RectF&, float) override;
-  bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeEllipseType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapeEllipse() = default;
@@ -223,11 +231,13 @@ class BasicShapePolygon final : public BasicShape {
   }
 
   void GetPath(Path&, const gfx::RectF&, float) override;
-  bool operator==(const BasicShape&) const override;
 
   WindRule GetWindRule() const override { return wind_rule_; }
 
   ShapeType GetType() const override { return kBasicShapePolygonType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapePolygon() : wind_rule_(RULE_NONZERO) {}
@@ -276,9 +286,11 @@ class BasicShapeInset : public BasicShape {
   }
 
   void GetPath(Path&, const gfx::RectF&, float) override;
-  bool operator==(const BasicShape&) const override;
 
   ShapeType GetType() const override { return kBasicShapeInsetType; }
+
+ protected:
+  bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
   BasicShapeInset() = default;

@@ -842,47 +842,46 @@ TEST_F(VisibleUnitsTest, MostBackwardOrForwardCaretPositionWithBrInOptgroup) {
 TEST_F(VisibleUnitsTest, SnapBackwardWithZeroWidthSpace) {
   // Note: We should skip <wbr> otherwise caret stops before/after <wbr>.
 
-  EXPECT_EQ(u8"<p>ab|<wbr></p>", TestSnapBackward(u8"<p>ab<wbr>|</p>"));
-  EXPECT_EQ(u8"<p>ab\u200B|</p>", TestSnapBackward(u8"<p>ab\u200B|</p>"));
-  EXPECT_EQ(u8"<p>ab<!-- -->\u200B|</p>",
-            TestSnapBackward(u8"<p>ab<!-- -->\u200B|</p>"));
+  EXPECT_EQ("<p>ab|<wbr></p>", TestSnapBackward("<p>ab<wbr>|</p>"));
+  EXPECT_EQ("<p>ab\u200B|</p>", TestSnapBackward("<p>ab\u200B|</p>"));
+  EXPECT_EQ("<p>ab<!-- -->\u200B|</p>",
+            TestSnapBackward("<p>ab<!-- -->\u200B|</p>"));
 
-  EXPECT_EQ(u8"<p>ab|<wbr><wbr></p>",
-            TestSnapBackward(u8"<p>ab<wbr><wbr>|</p>"));
-  EXPECT_EQ(u8"<p>ab\u200B\u200B|</p>",
-            TestSnapBackward(u8"<p>ab\u200B\u200B|</p>"));
+  EXPECT_EQ("<p>ab|<wbr><wbr></p>", TestSnapBackward("<p>ab<wbr><wbr>|</p>"));
+  EXPECT_EQ("<p>ab\u200B\u200B|</p>",
+            TestSnapBackward("<p>ab\u200B\u200B|</p>"));
 
-  EXPECT_EQ(u8"<p>ab|<wbr>cd</p>", TestSnapBackward(u8"<p>ab<wbr>|cd</p>"));
-  EXPECT_EQ(u8"<p>ab\u200B|cd</p>", TestSnapBackward(u8"<p>ab\u200B|cd</p>"));
+  EXPECT_EQ("<p>ab|<wbr>cd</p>", TestSnapBackward("<p>ab<wbr>|cd</p>"));
+  EXPECT_EQ("<p>ab\u200B|cd</p>", TestSnapBackward("<p>ab\u200B|cd</p>"));
 
-  EXPECT_EQ(u8"<p>ab|<wbr><wbr>cd</p>",
-            TestSnapBackward(u8"<p>ab<wbr><wbr>|cd</p>"));
-  EXPECT_EQ(u8"<p>ab\u200B\u200B|cd</p>",
-            TestSnapBackward(u8"<p>ab\u200B\u200B|cd</p>"));
+  EXPECT_EQ("<p>ab|<wbr><wbr>cd</p>",
+            TestSnapBackward("<p>ab<wbr><wbr>|cd</p>"));
+  EXPECT_EQ("<p>ab\u200B\u200B|cd</p>",
+            TestSnapBackward("<p>ab\u200B\u200B|cd</p>"));
 }
 
 // http://crbug.com/1134470
 TEST_F(VisibleUnitsTest, SnapForwardWithZeroWidthSpace) {
   // Note: We should skip <wbr> otherwise caret stops before/after <wbr>.
 
-  EXPECT_EQ(u8"<p>ab<wbr></p>", TestSnapForward(u8"<p>ab|<wbr></p>"))
+  EXPECT_EQ("<p>ab<wbr></p>", TestSnapForward("<p>ab|<wbr></p>"))
       << "We get <wbr>@0";
-  EXPECT_EQ(u8"<p>ab|\u200B</p>", TestSnapForward(u8"<p>ab|\u200B</p>"));
-  EXPECT_EQ(u8"<p>ab<!-- -->|\u200B</p>",
-            TestSnapForward(u8"<p>ab<!-- -->|\u200B</p>"));
+  EXPECT_EQ("<p>ab|\u200B</p>", TestSnapForward("<p>ab|\u200B</p>"));
+  EXPECT_EQ("<p>ab<!-- -->|\u200B</p>",
+            TestSnapForward("<p>ab<!-- -->|\u200B</p>"));
 
-  EXPECT_EQ(u8"<p>ab<wbr><wbr></p>", TestSnapForward(u8"<p>ab|<wbr><wbr></p>"))
+  EXPECT_EQ("<p>ab<wbr><wbr></p>", TestSnapForward("<p>ab|<wbr><wbr></p>"))
       << "We get <wbr>@0";
-  EXPECT_EQ(u8"<p>ab|\u200B\u200B</p>",
-            TestSnapForward(u8"<p>ab|\u200B\u200B</p>"));
+  EXPECT_EQ("<p>ab|\u200B\u200B</p>",
+            TestSnapForward("<p>ab|\u200B\u200B</p>"));
 
-  EXPECT_EQ(u8"<p>ab<wbr>|cd</p>", TestSnapForward(u8"<p>ab|<wbr>cd</p>"));
-  EXPECT_EQ(u8"<p>ab|\u200Bcd</p>", TestSnapForward(u8"<p>ab|\u200Bcd</p>"));
+  EXPECT_EQ("<p>ab<wbr>|cd</p>", TestSnapForward("<p>ab|<wbr>cd</p>"));
+  EXPECT_EQ("<p>ab|\u200Bcd</p>", TestSnapForward("<p>ab|\u200Bcd</p>"));
 
-  EXPECT_EQ(u8"<p>ab<wbr><wbr>|cd</p>",
-            TestSnapForward(u8"<p>ab|<wbr><wbr>cd</p>"));
-  EXPECT_EQ(u8"<p>ab|\u200B\u200Bcd</p>",
-            TestSnapForward(u8"<p>ab|\u200B\u200Bcd</p>"));
+  EXPECT_EQ("<p>ab<wbr><wbr>|cd</p>",
+            TestSnapForward("<p>ab|<wbr><wbr>cd</p>"));
+  EXPECT_EQ("<p>ab|\u200B\u200Bcd</p>",
+            TestSnapForward("<p>ab|\u200B\u200Bcd</p>"));
 }
 
 }  // namespace visible_units_test

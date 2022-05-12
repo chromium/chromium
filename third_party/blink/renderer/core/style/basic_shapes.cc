@@ -36,9 +36,7 @@
 
 namespace blink {
 
-bool BasicShapeCircle::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapeCircle::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeCircle& other = To<BasicShapeCircle>(o);
   return center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
          radius_ == other.radius_;
@@ -75,9 +73,7 @@ void BasicShapeCircle::GetPath(Path& path,
   path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
 }
 
-bool BasicShapeEllipse::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapeEllipse::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeEllipse& other = To<BasicShapeEllipse>(o);
   return center_x_ == other.center_x_ && center_y_ == other.center_y_ &&
          radius_x_ == other.radius_x_ && radius_y_ == other.radius_y_;
@@ -136,9 +132,7 @@ void BasicShapePolygon::GetPath(Path& path,
   path.CloseSubpath();
 }
 
-bool BasicShapePolygon::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapePolygon::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapePolygon& other = To<BasicShapePolygon>(o);
   return wind_rule_ == other.wind_rule_ && values_ == other.values_;
 }
@@ -169,9 +163,7 @@ void BasicShapeInset::GetPath(Path& path,
   path.AddRoundedRect(final_rect);
 }
 
-bool BasicShapeInset::operator==(const BasicShape& o) const {
-  if (!IsSameType(o))
-    return false;
+bool BasicShapeInset::IsEqualAssumingSameType(const BasicShape& o) const {
   const BasicShapeInset& other = To<BasicShapeInset>(o);
   return right_ == other.right_ && top_ == other.top_ &&
          bottom_ == other.bottom_ && left_ == other.left_ &&
