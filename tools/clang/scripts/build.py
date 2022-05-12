@@ -34,13 +34,13 @@ from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 LLVM_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm')
 COMPILER_RT_DIR = os.path.join(LLVM_DIR, 'compiler-rt')
-LLVM_BOOTSTRAP_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-bootstrap')
-LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
-                                          'llvm-bootstrap-install')
-LLVM_INSTRUMENTED_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-instrumented')
-LLVM_PROFDATA_FILE = os.path.join(LLVM_INSTRUMENTED_DIR, 'profdata.prof')
 LLVM_BUILD_TOOLS_DIR = os.path.abspath(
-    os.path.join(LLVM_DIR, '..', 'llvm-build-tools'))
+    os.path.join(THIRD_PARTY_DIR, 'llvm-build-tools'))
+LLVM_BOOTSTRAP_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'llvm-bootstrap')
+LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR,
+                                          'llvm-bootstrap-install')
+LLVM_INSTRUMENTED_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'llvm-instrumented')
+LLVM_PROFDATA_FILE = os.path.join(LLVM_INSTRUMENTED_DIR, 'profdata.prof')
 ANDROID_NDK_DIR = os.path.join(
     CHROMIUM_DIR, 'third_party', 'android_ndk')
 FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
