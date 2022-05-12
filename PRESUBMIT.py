@@ -2941,13 +2941,16 @@ def _CheckChangeForIpcSecurityOwners(input_api, output_api):
         '*.aidl',
     ]
 
-    # These third_party directories do not contain IPCs, but contain files
-    # matching the above patterns, which trigger false positives.
     excluded_patterns = [
+        # These third_party directories do not contain IPCs, but contain files
+        # matching the above patterns, which trigger false positives.
         'third_party/crashpad/*',
         'third_party/blink/renderer/platform/bindings/*',
         'third_party/protobuf/benchmarks/python/*',
         'third_party/win_build_output/*',
+        # Enums used for web metrics, so no security review needed.
+        'third_party/blink/public/mojom/use_counter/css_property_id.mojom',
+        'third_party/blink/public/mojom/web_feature/web_feature.mojom',
         # These files are just used to communicate between class loaders running
         # in the same process.
         'weblayer/browser/java/org/chromium/weblayer_private/interfaces/*',

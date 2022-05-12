@@ -1,11 +1,7 @@
 dcheng@chromium.org
 
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# Changes in css_property_id.mojom are always just mechanical updates to
-# kMaximumCSSSampleId, hence we allow all committers to review this file.
-# See also UseCounterHelperTest.MaximumCSSSampleId, which verifies the
-# correctness of kMaximumCSSSampleId.
+# Changes in css_property_id.mojom are always mechanical updates to
+# kMaximumCSSSampleId, so no IPC security review is required; all committers can
+# approve changes. See also UseCounterHelperTest.MaximumCSSSampleId, which
+# verifies the correctness of kMaximumCSSSampleId.
 per-file css_property_id.mojom=*

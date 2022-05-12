@@ -1,9 +1,6 @@
-# //PRESUBMIT.py requires the following two lines.
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# OWNERS review for adding / removing UseCounters comes from the code being
-# changed (which is often, but not always in blink/renderer/core).
-# No additional review is required for just adding/remove entries from this
-# enum (consistent with metrics/histograms/enums.xml).
+# OWNERS review for adding / removing UseCounters already happens as part of
+# reviewing the actual implementation changes (which is often, but not always
+# in blink/renderer/core). No additional review (including IPC security review)
+# is required for adding/removing entries from this enum (consistent with
+# metrics/histograms/enums.xml).
 per-file web_feature.mojom=*
