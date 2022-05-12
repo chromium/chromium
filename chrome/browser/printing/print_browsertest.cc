@@ -100,6 +100,9 @@ namespace printing {
 using testing::_;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+using OnDidInvokeUseDefaultSettingsCallback = base::RepeatingCallback<void()>;
+using OnDidInvokeGetSettingsWithUICallback = base::RepeatingCallback<void()>;
+
 using ErrorCheckCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidUseDefaultSettingsCallback =
@@ -122,6 +125,14 @@ using OnDidDocumentDoneCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
 using OnStopCallback = base::RepeatingCallback<void()>;
+
+// Callbacks to run for overrides in `TestPrintJobWorker`.
+struct TestPrintCallbacks {
+  OnDidInvokeUseDefaultSettingsCallback
+      did_invoke_use_default_settings_callback;
+  OnDidInvokeGetSettingsWithUICallback did_invoke_get_settings_with_ui_callback;
+  OnStopCallback did_stop_callback;
+};
 
 // Overriding callbacks for `TestPrintJobWorkerOop` is broken into the
 // following steps:
@@ -2300,6 +2311,41 @@ INSTANTIATE_TEST_SUITE_P(
 #if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+class TestPrintJobWorker : public PrintJobWorker {
+ public:
+  TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
+                     TestPrintCallbacks* callbacks)
+      : PrintJobWorker(rfh_id), callbacks_(callbacks) {}
+  TestPrintJobWorker(const TestPrintJobWorker&) = delete;
+  TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
+  ~TestPrintJobWorker() override = default;
+
+ private:
+  void InvokeUseDefaultSettings(SettingsCallback callback) override {
+    DVLOG(1) << "Observed: invoke use default settings";
+    PrintJobWorker::InvokeUseDefaultSettings(std::move(callback));
+    callbacks_->did_invoke_use_default_settings_callback.Run();
+  }
+
+  void InvokeGetSettingsWithUI(uint32_t document_page_count,
+                               bool has_selection,
+                               bool is_scripted,
+                               SettingsCallback callback) override {
+    DVLOG(1) << "Observed: invoke get settings with UI";
+    PrintJobWorker::InvokeGetSettingsWithUI(document_page_count, has_selection,
+                                            is_scripted, std::move(callback));
+    callbacks_->did_invoke_get_settings_with_ui_callback.Run();
+  }
+
+  void Stop() override {
+    DVLOG(1) << "Observed: stop print job worker";
+    PrintJobWorker::Stop();
+    callbacks_->did_stop_callback.Run();
+  }
+
+  TestPrintCallbacks* callbacks_;
+};
+
 class TestPrintJobWorkerOop : public PrintJobWorkerOop {
  public:
   TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
@@ -2445,12 +2491,23 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
           base::Unretained(this));
       test_print_oop_callbacks_.did_stop_callback = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidStop, base::Unretained(this));
-      test_create_print_job_worker_callback_ = base::BindRepeating(
-          &PrintBackendPrintBrowserTestBase::CreatePrintJobWorker,
-          base::Unretained(this));
-      PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
-          &test_create_print_job_worker_callback_);
+    } else {
+      test_print_callbacks_.did_invoke_use_default_settings_callback =
+          base::BindRepeating(
+              &PrintBackendPrintBrowserTestBase::OnDidInvokeUseDefaultSettings,
+              base::Unretained(this));
+      test_print_callbacks_.did_invoke_get_settings_with_ui_callback =
+          base::BindRepeating(
+              &PrintBackendPrintBrowserTestBase::OnDidInvokeGetSettingsWithUI,
+              base::Unretained(this));
+      test_print_callbacks_.did_stop_callback = base::BindRepeating(
+          &PrintBackendPrintBrowserTestBase::OnDidStop, base::Unretained(this));
     }
+    test_create_print_job_worker_callback_ = base::BindRepeating(
+        &PrintBackendPrintBrowserTestBase::CreatePrintJobWorker,
+        base::Unretained(this), UseService());
+    PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
+        &test_create_print_job_worker_callback_);
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
     test_backend_ = base::MakeRefCounted<TestPrintBackend>();
@@ -2577,6 +2634,18 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   void PrimeForAccessDeniedErrorsInDocumentDone() {
     test_printing_context_factory_.SetAccessDeniedErrorOnDocumentDone(
         /*cause_errors=*/true);
+  }
+
+  bool did_invoke_use_default_settings() const {
+    return did_invoke_use_default_settings_;
+  }
+
+  bool did_invoke_get_settings_with_ui() const {
+    return did_invoke_get_settings_with_ui_;
+  }
+
+  bool print_backend_service_use_detected() const {
+    return print_backend_service_use_detected_;
   }
 
   mojom::ResultCode use_default_settings_result() const {
@@ -2708,11 +2777,37 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
+      bool use_service,
       content::GlobalRenderFrameHostId rfh_id) {
-    return std::make_unique<TestPrintJobWorkerOop>(
-        rfh_id, simulate_spooling_memory_errors_, &test_print_oop_callbacks_);
+    if (use_service) {
+      return std::make_unique<TestPrintJobWorkerOop>(
+          rfh_id, simulate_spooling_memory_errors_, &test_print_oop_callbacks_);
+    }
+    return std::make_unique<TestPrintJobWorker>(rfh_id, &test_print_callbacks_);
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
+  void OnDidInvokeUseDefaultSettings() {
+    did_invoke_use_default_settings_ = true;
+    PrintBackendServiceDetectionCheck();
+    CheckForQuit();
+  }
+
+  void OnDidInvokeGetSettingsWithUI() {
+    did_invoke_get_settings_with_ui_ = true;
+    PrintBackendServiceDetectionCheck();
+    CheckForQuit();
+  }
+
+  void PrintBackendServiceDetectionCheck() {
+    // Want to know if `PrintBackendService` clients are ever detected, since
+    // registrations could have gone away by the time checks are made at the
+    // end of tests.
+    if (PrintBackendServiceManager::GetInstance().GetClientsRegisteredCount() >
+        0) {
+      print_backend_service_use_detected_ = true;
+    }
+  }
 
   void ErrorCheck(mojom::ResultCode result) {
     // Interested to reset any trigger for causing access-denied errors, so
@@ -2790,8 +2885,12 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   TestPrintingContextDelegate test_printing_context_delegate_;
   PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  TestPrintCallbacks test_print_callbacks_;
   TestPrintOopCallbacks test_print_oop_callbacks_;
   CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
+  bool did_invoke_use_default_settings_ = false;
+  bool did_invoke_get_settings_with_ui_ = false;
+  bool print_backend_service_use_detected_ = false;
   bool simulate_spooling_memory_errors_ = false;
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
@@ -2838,6 +2937,16 @@ class PrintBackendPrintBrowserTestService
 INSTANTIATE_TEST_SUITE_P(All,
                          PrintBackendPrintBrowserTestService,
                          testing::Bool());
+
+class PrintBackendPrintBrowserTestInBrowser
+    : public PrintBackendPrintBrowserTestBase {
+ public:
+  PrintBackendPrintBrowserTestInBrowser() = default;
+  ~PrintBackendPrintBrowserTestInBrowser() override = default;
+
+  bool UseService() override { return false; }
+  bool SandboxService() override { return false; }
+};
 
 enum class PrintBackendFeatureVariation {
   // `PrintBackend` calls occur from browser process.
@@ -3193,6 +3302,42 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartBasicPrint) {
   EXPECT_EQ(render_printed_page_count(), 1);
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_TRUE(stop_invoked());
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestInBrowser,
+                       StartBasicPrintCancel) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForCancelInAskUserForSettings();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // The test will get the default settings followed by asking the user for
+  // settings.  Since this pretends the user canceled from that, no further
+  // printing calls are made.  Wait for a call to `Stop()` to ensure print job
+  // wrap-up finished cleanly before completing the test.  This results in a
+  // total of 3 expected calls.
+  SetNumExpectedMessages(/*num=*/3);
+
+  StartBasicPrint(web_contents);
+
+  WaitUntilCallbackReceived();
+
+  EXPECT_TRUE(did_invoke_use_default_settings());
+  EXPECT_TRUE(did_invoke_get_settings_with_ui());
+  EXPECT_TRUE(stop_invoked());
+
+  // `PrintBackendService` should never be used when printing in-browser.
+  // TODO(crbug.com/1324715):  Change to EXPECT_FALSE once there is no longer
+  // any activity with `PrintBackendServiceManager` for in-browser printing.
+  EXPECT_TRUE(print_backend_service_use_detected());
 }
 
 IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
