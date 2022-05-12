@@ -115,8 +115,11 @@ class AutofillShadowPredictionMetricsTest
     : public autofill::metrics::AutofillMetricsBaseTest {
  public:
   AutofillShadowPredictionMetricsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillParsingPatternProvider);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {base::test::ScopedFeatureList::FeatureAndParams(
+            features::kAutofillParsingPatternProvider,
+            {{"prediction_source", "default"}})},
+        {});
   }
 
   ~AutofillShadowPredictionMetricsTest() override = default;
@@ -162,17 +165,8 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
 // Test that Autofill.ShadowPredictions.* describes the differences between the
 // predictions and the submitted values.
-#if BUILDFLAG(IS_ANDROID)
-// https://crbug.com/1324261
-#define MAYBE_SubmissionWithAgreeingShadowPredictions \
-  DISABLED_SubmissionWithAgreeingShadowPredictions
-#else
-#define MAYBE_SubmissionWithAgreeingShadowPredictions \
-  SubmissionWithAgreeingShadowPredictions
-#endif
-
 TEST_F(AutofillShadowPredictionMetricsTest,
-       MAYBE_SubmissionWithAgreeingShadowPredictions) {
+       SubmissionWithAgreeingShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
   form.fields[0].value = u"Elvis Aaron Presley";  // A known `NAME_FULL`.
   form.fields[1].value = u"buddy@gmail.com";      // A known `EMAIL_ADDRESS`.
