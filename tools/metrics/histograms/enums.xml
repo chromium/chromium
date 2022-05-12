@@ -74901,6 +74901,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PersonalizationEntryPoint">
+  <int value="0" label="Home Screen"/>
+  <int value="1" label="System Tray"/>
+  <int value="2" label="Launcher search"/>
+  <int value="3" label="Settings"/>
+  <int value="4" label="Settings search"/>
+</enum>
+
 <enum name="PersonalizationPath">
   <int value="0" label="Screensaver"/>
   <int value="1" label="Screensaver Albums"/>

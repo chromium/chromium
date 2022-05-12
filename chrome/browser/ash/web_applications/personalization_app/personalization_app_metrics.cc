@@ -19,5 +19,10 @@ void LogAmbientModeAnimationTheme(ash::AmbientAnimationTheme animation_theme) {
                                 animation_theme);
 }
 
+void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point) {
+  base::UmaHistogramEnumeration(ash::kPersonalizationEntryPointHistogramName,
+                                entry_point);
+}
+
 }  // namespace personalization_app
 }  // namespace ash

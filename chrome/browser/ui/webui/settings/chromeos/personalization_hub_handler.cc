@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_hub_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/personalization_entry_point.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
@@ -29,6 +31,9 @@ void PersonalizationHubHandler::RegisterMessages() {
 void PersonalizationHubHandler::HandleOpenPersonalizationHub(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
+  // Record entry point metric to Personalization Hub through Settings.
+  ash::personalization_app::LogPersonalizationEntryPoint(
+      ash::PersonalizationEntryPoint::kSettings);
   web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
                                    web_app::SystemAppType::PERSONALIZATION);
 }

@@ -559,6 +559,12 @@ function isPersonalizationSearchResult(result) {
             'ChromeOS.Settings.SearchResultPersonalizationSelected',
             /** @type {!ash.personalizationApp.mojom.SearchResult} */
             (this.searchResult).searchConceptId);
+        // Record entry point metric to Personalization Hub through Settings
+        // search.
+        chrome.metricsPrivate.recordEnumerationValue(
+            'Ash.Personalization.EntryPoint',
+            loadTimeData.getInteger('settingsSearchEntryPoint'),
+            loadTimeData.getInteger('entryPointEnumSize'));
         return;
       }
       const SearchResultType = chromeos.settings.mojom.SearchResultType;

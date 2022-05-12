@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/system/system_clock.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -415,6 +417,10 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
 
 void SystemTrayClientImpl::ShowDarkModeSettings() {
   DCHECK(ash::features::IsPersonalizationHubEnabled());
+  // Record entry point metric to Personalization through Dark Mode Quick
+  // Settings/System Tray.
+  ash::personalization_app::LogPersonalizationEntryPoint(
+      ash::PersonalizationEntryPoint::kSystemTray);
   ash::NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
 }
 

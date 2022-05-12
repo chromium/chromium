@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_METRICS_H_
 
 #include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/personalization_entry_point.h"
 
 namespace ash {
 namespace personalization_app {
@@ -36,6 +37,8 @@ constexpr char kPersonalizationThemeColorModeHistogramName[] =
 void LogPersonalizationTheme(ColorMode color_mode);
 
 void LogAmbientModeAnimationTheme(ash::AmbientAnimationTheme animation_theme);
+
+void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point);
 
 }  // namespace personalization_app
 }  // namespace ash

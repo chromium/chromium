@@ -3125,6 +3125,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.EntryPoint"
+    enum="PersonalizationEntryPoint" expires_after="2023-05-05">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records which entry point is used to access Personalization Hub. Emitted
+    every time Personalization hub is accessed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.Path" enum="PersonalizationPath"
     expires_after="2023-04-15">
   <owner>jasontt@chromium.org</owner>

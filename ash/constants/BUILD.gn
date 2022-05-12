@@ -25,6 +25,7 @@ component("constants") {
     "ash_switches.h",
     "devicetype.cc",
     "devicetype.h",
+    "personalization_entry_point.h",
     "url_constants.cc",
     "url_constants.h",
   ]
