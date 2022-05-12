@@ -49,16 +49,6 @@ suite('EnterpriseProfileWelcomeTest', function() {
     assertEquals(expectedUrl, img.src);
   }
 
-  /**
-   * Checks that the expected header color is displayed.
-   */
-  function checkHeaderColor(expectedColor: string) {
-    assertTrue(isChildVisible(app, '#headerContainer'));
-    const headerElement = app.shadowRoot!.querySelector('#headerContainer')!;
-    assertEquals(
-        expectedColor, getComputedStyle(headerElement).backgroundColor);
-  }
-
   test('proceed', async function() {
     assertTrue(isChildVisible(app, '#proceedButton'));
     app.$.proceedButton.click();
@@ -129,7 +119,6 @@ suite('EnterpriseProfileWelcomeTest', function() {
     checkTextValues('title', 'subtitle', 'enterprise_info', 'proceed_label');
     checkImageUrl(AVATAR_URL_1);
     assertFalse(isChildVisible(app, '.work-badge'));
-    checkHeaderColor('rgb(255, 0, 0)');
 
     // Update the values.
     webUIListenerCallback('on-profile-info-changed', {
@@ -149,6 +138,5 @@ suite('EnterpriseProfileWelcomeTest', function() {
     checkImageUrl(AVATAR_URL_2);
     assertTrue(isChildVisible(app, '.work-badge'));
     assertFalse(isChildVisible(app, '#cancelButton'));
-    checkHeaderColor('rgb(0, 255, 0)');
   });
 });

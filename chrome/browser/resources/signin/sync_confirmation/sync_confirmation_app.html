@@ -5,7 +5,7 @@
     --banner-size: auto;
     --confirmation-description-margin-inline: auto;
     --content-container-margin-bottom: calc(32px + 2 * var(--footer-margin));
-    --content-container-margin-top: 104px;
+    --content-container-margin-top: 72px;
     --footer-margin: 40px;
     --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
@@ -122,7 +122,6 @@
   }
 
   #headerContainer {
-    background-color: var(--theme-frame-color);
     height: var(--banner-height);
     position: relative;
     width: 100%;
@@ -193,12 +192,14 @@
   }
 
   #contentContainer h2 {
-    font-size: 1.85em;
-    font-weight: normal;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
   }
 
   #confirmationDescription {
-    font-size: var(--text-font-size);
+    font-size: 14px;
+    line-height: 20px;
     margin-inline: var(--confirmation-description-margin-inline);
     margin-top: 16px;
     max-width: 516px;
