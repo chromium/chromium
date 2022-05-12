@@ -52,6 +52,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -327,6 +328,12 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     : overview_grid_(overview_grid) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder2,
+        /*use_light_colors=*/false));
+  }
 
   SetBackground(
       views::CreateSolidBackground(AshColorProvider::Get()->GetShieldLayerColor(
