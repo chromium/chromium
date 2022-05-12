@@ -345,12 +345,12 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     // Configure the (mock) model.
     test_page_content_annotator_.UsePageTopics(
         *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-        {{"foo6 com", TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-         {"foo5 com", TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-         {"foo4 com", TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-         {"foo3 com", TopicsAndWeight({4, 5, 6}, 0.1)},
-         {"foo2 com", TopicsAndWeight({5, 6}, 0.1)},
-         {"foo1 com", TopicsAndWeight({6}, 0.1)}});
+        {{"foo6.com", TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+         {"foo5.com", TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+         {"foo4.com", TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+         {"foo3.com", TopicsAndWeight({4, 5, 6}, 0.1)},
+         {"foo2.com", TopicsAndWeight({5, 6}, 0.1)},
+         {"foo1.com", TopicsAndWeight({6}, 0.1)}});
 
     // Add some initial history.
     history::HistoryAddPageArgs add_page_args;

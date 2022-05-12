@@ -45,13 +45,6 @@ constexpr char kHost4[] = "www.foo4.com";
 constexpr char kHost5[] = "www.foo5.com";
 constexpr char kHost6[] = "www.foo6.com";
 
-constexpr char kTokenizedHost1[] = "foo1 com";
-constexpr char kTokenizedHost2[] = "foo2 com";
-constexpr char kTokenizedHost3[] = "foo3 com";
-constexpr char kTokenizedHost4[] = "foo4 com";
-constexpr char kTokenizedHost5[] = "foo5 com";
-constexpr char kTokenizedHost6[] = "foo6 com";
-
 }  // namespace
 
 class BrowsingTopicsCalculatorTest : public testing::Test {
@@ -323,12 +316,12 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsRankedByFrequency) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -351,12 +344,12 @@ TEST_F(BrowsingTopicsCalculatorTest, ModelHasNoTopicsForHost) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, {}},
-       {kTokenizedHost2, {}},
-       {kTokenizedHost3, {}},
-       {kTokenizedHost4, {}},
-       {kTokenizedHost5, {}},
-       {kTokenizedHost6, {}}});
+      {{kHost1, {}},
+       {kHost2, {}},
+       {kHost3, {}},
+       {kHost4, {}},
+       {kHost5, {}},
+       {kHost6, {}}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -381,12 +374,12 @@ TEST_F(BrowsingTopicsCalculatorTest,
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -412,12 +405,12 @@ TEST_F(BrowsingTopicsCalculatorTest,
   // affect the top topics ordering.
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2}, 0.9)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2}, 0.9)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -435,12 +428,12 @@ TEST_F(BrowsingTopicsCalculatorTest,
 TEST_F(BrowsingTopicsCalculatorTest, AllTopTopicsRandomlyPadded) {
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   EpochTopics result = CalculateTopics();
   ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
@@ -462,12 +455,12 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsPartiallyPadded) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -508,12 +501,12 @@ TEST_F(BrowsingTopicsCalculatorTest, CalculationResultUkm) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -580,12 +573,12 @@ TEST_F(BrowsingTopicsCalculatorTest, TopTopicsAndObservingDomains) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -618,12 +611,12 @@ TEST_F(
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 103, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 103, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({103, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -655,12 +648,12 @@ TEST_F(
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({103, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 103, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 103, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({103, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -696,12 +689,12 @@ TEST_F(BrowsingTopicsCalculatorTest,
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -737,12 +730,12 @@ TEST_F(BrowsingTopicsCalculatorTest,
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -775,12 +768,12 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicBlocked) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -817,12 +810,12 @@ TEST_F(BrowsingTopicsCalculatorTest, PaddedTopicsDoNotDuplicate) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 102}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 102}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 102}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 102}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 102}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({102}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 102}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 102}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 102}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 102}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 102}, 0.1)},
+       {kHost6, TopicsAndWeight({102}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 
@@ -852,12 +845,12 @@ TEST_F(BrowsingTopicsCalculatorTest, Metrics) {
 
   test_page_content_annotator_.UsePageTopics(
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
-      {{kTokenizedHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
-       {kTokenizedHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
-       {kTokenizedHost5, TopicsAndWeight({5, 6}, 0.1)},
-       {kTokenizedHost6, TopicsAndWeight({6}, 0.1)}});
+      {{kHost1, TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost6, TopicsAndWeight({6}, 0.1)}});
 
   task_environment_.AdvanceClock(base::Seconds(1));
 

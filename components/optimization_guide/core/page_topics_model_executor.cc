@@ -5,8 +5,10 @@
 #include "components/optimization_guide/core/page_topics_model_executor.h"
 
 #include "base/barrier_closure.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -125,24 +127,46 @@ void PageTopicsModelExecutor::ExecuteJob(
       std::move(on_job_complete_callback), std::move(job));
 }
 
+// static
+std::string PageTopicsModelExecutor::PreprocessHost(const std::string& host) {
+  std::string output = base::ToLowerASCII(host);
+
+  // Strip the 'www.' if it exists.
+  if (base::StartsWith(output, "www.")) {
+    output = output.substr(4);
+  }
+
+  static const char kCharsToReplaceWithSpace[] = {'-', '_', '.', '+'};
+  for (char c : kCharsToReplaceWithSpace) {
+    std::replace(output.begin(), output.end(), c, ' ');
+  }
+
+  return output;
+}
+
 void PageTopicsModelExecutor::ExecuteOnSingleInput(
     AnnotationType annotation_type,
-    const std::string& input,
+    const std::string& raw_input,
     base::OnceCallback<void(const BatchAnnotationResult&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(annotation_type, AnnotationType::kPageTopics);
 
+  // |processed_input| is needed by the override list and the model, but we pass
+  // the |raw_input| to where the BatchAnnotationResult is created so that the
+  // original input is passed back to the caller.
+  std::string processed_input = PreprocessHost(raw_input);
+
   if (override_list_) {
     DCHECK(override_list_file_path_);
-    auto iter = override_list_->find(input);
+    auto iter = override_list_->find(processed_input);
 
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageTopicsOverrideList.UsedOverride",
         iter != override_list_->end());
 
     if (iter != override_list_->end()) {
-      std::move(callback).Run(
-          BatchAnnotationResult::CreatePageTopicsResult(input, iter->second));
+      std::move(callback).Run(BatchAnnotationResult::CreatePageTopicsResult(
+          raw_input, iter->second));
       return;
     }
   }
@@ -151,8 +175,8 @@ void PageTopicsModelExecutor::ExecuteOnSingleInput(
       base::BindOnce(&PageTopicsModelExecutor::
                          PostprocessCategoriesToBatchAnnotationResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     annotation_type, input),
-      input);
+                     annotation_type, raw_input),
+      processed_input);
 }
 
 void PageTopicsModelExecutor::OnOverrideListLoadAttemptDone(
@@ -177,7 +201,7 @@ void PageTopicsModelExecutor::OnOverrideListLoadAttemptDone(
 void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
     base::OnceCallback<void(const BatchAnnotationResult&)> callback,
     AnnotationType annotation_type,
-    const std::string& input,
+    const std::string& raw_input,
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(annotation_type, AnnotationType::kPageTopics);
@@ -187,7 +211,7 @@ void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
     categories = ExtractCategoriesFromModelOutput(*output);
   }
   std::move(callback).Run(
-      BatchAnnotationResult::CreatePageTopicsResult(input, categories));
+      BatchAnnotationResult::CreatePageTopicsResult(raw_input, categories));
 }
 
 absl::optional<std::vector<WeightedIdentifier>>

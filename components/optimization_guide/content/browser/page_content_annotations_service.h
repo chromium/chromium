@@ -51,7 +51,6 @@ class LocalPageEntitiesMetadataProvider;
 class OptimizationGuideModelProvider;
 class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
-class PageContentAnnotationsServiceTest;
 class PageContentAnnotationsValidator;
 class PageContentAnnotationsWebContentsObserver;
 
@@ -118,11 +117,6 @@ class PageContentAnnotationsService : public KeyedService,
                      const std::vector<std::string>& inputs,
                      AnnotationType annotation_type);
 
-  // Calls |BatchAnnotate| with pre-processing the hosts into tokens, all
-  // specific to PageTopics.
-  void BatchAnnotatePageTopics(BatchAnnotationCallback callback,
-                               const std::vector<std::string>& inputs);
-
   // Requests that the given model for |type| be loaded in the background and
   // then runs |callback| with true when the model is ready to execute. If the
   // model is ready now, the callback is run immediately. If the model file will
@@ -145,9 +139,6 @@ class PageContentAnnotationsService : public KeyedService,
   void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
 
  private:
-  friend class PageContentAnnotationsServiceTest;
-  static std::string StringInputForPageTopicsHost(const std::string& host);
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(

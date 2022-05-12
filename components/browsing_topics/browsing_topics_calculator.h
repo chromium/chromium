@@ -102,7 +102,6 @@ class BrowsingTopicsCalculator {
                                bool successful);
 
   void OnGetTopicsForHostsCompleted(
-      std::vector<std::string> raw_hosts,
       const std::vector<optimization_guide::BatchAnnotationResult>& results);
 
   void OnCalculateCompleted(CalculatorResultStatus status,

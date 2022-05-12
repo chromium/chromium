@@ -27,38 +27,6 @@ namespace optimization_guide {
 using ::testing::FloatEq;
 using ::testing::UnorderedElementsAre;
 
-namespace {
-
-// Fetch and calculate the total number of samples from all the bins for
-// |histogram_name|.
-int GetTotalHistogramSamples(const base::HistogramTester* histogram_tester,
-                             const std::string& histogram_name) {
-  std::vector<base::Bucket> buckets =
-      histogram_tester->GetAllSamples(histogram_name);
-  int total = 0;
-  for (const auto& bucket : buckets)
-    total += bucket.count;
-
-  return total;
-}
-
-int RetryForHistogramUntilCountReached(
-    const base::HistogramTester* histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  while (true) {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    int total = GetTotalHistogramSamples(histogram_tester, histogram_name);
-    if (total >= count) {
-      return total;
-    }
-  }
-}
-
-}  // namespace
-
 class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
@@ -306,9 +274,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageTopics) {
                             AnnotationType::kPageTopics);
   run_loop.Run();
 
-  RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "OptimizationGuide.ModelExecutor.ExecutionStatus.PageTopicsV2", 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutor.ExecutionStatus.PageTopicsV2",
       ExecutionStatus::kSuccess, 1);

@@ -64,25 +64,22 @@ void RecordCalculatorResultMetrics(
 // Precondition: the annotation didn't fail in general (e.g. `ModelInfo` is
 // valid).
 void DeriveHostTopicsMapAndTopicHostsMap(
-    const std::vector<std::string>& raw_hosts,
     const std::vector<optimization_guide::BatchAnnotationResult>& results,
     std::map<HashedHost, std::set<Topic>>& host_topics_map,
     std::map<Topic, std::set<HashedHost>>& topic_hosts_map) {
   DCHECK(host_topics_map.empty());
   DCHECK(topic_hosts_map.empty());
 
-  DCHECK_EQ(raw_hosts.size(), results.size());
-
   for (size_t i = 0; i < results.size(); ++i) {
     const optimization_guide::BatchAnnotationResult& result = results[i];
-    const std::string raw_host = raw_hosts[i];
+    const std::string& original_host = result.input();
 
     const absl::optional<std::vector<optimization_guide::WeightedIdentifier>>&
         annotation_result_topics = result.topics();
     if (!annotation_result_topics)
       continue;
 
-    HashedHost host = HashMainFrameHostForStorage(raw_host);
+    HashedHost host = HashMainFrameHostForStorage(original_host);
 
     for (const optimization_guide::WeightedIdentifier& annotation_result_topic :
          *annotation_result_topics) {
@@ -339,18 +336,17 @@ void BrowsingTopicsCalculator::OnRequestModelCompleted(
   // Ignore `successful`. In `OnGetTopicsForHostsCompleted()`, it will need to
   // check the model again anyway in case there's a race.
   if (raw_hosts.empty()) {
-    OnGetTopicsForHostsCompleted(/*raw_hosts=*/{}, /*results=*/{});
+    OnGetTopicsForHostsCompleted(/*results=*/{});
     return;
   }
 
-  annotations_service_->BatchAnnotatePageTopics(
+  annotations_service_->BatchAnnotate(
       base::BindOnce(&BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), raw_hosts),
-      raw_hosts);
+                     weak_ptr_factory_.GetWeakPtr()),
+      raw_hosts, optimization_guide::AnnotationType::kPageTopics);
 }
 
 void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
-    std::vector<std::string> raw_hosts,
     const std::vector<optimization_guide::BatchAnnotationResult>& results) {
   absl::optional<optimization_guide::ModelInfo> model_info =
       annotations_service_->GetModelInfoForType(
@@ -374,7 +370,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
   std::map<HashedHost, std::set<Topic>> host_topics_map;
   std::map<Topic, std::set<HashedHost>> topic_hosts_map;
-  DeriveHostTopicsMapAndTopicHostsMap(raw_hosts, results, host_topics_map,
+  DeriveHostTopicsMapAndTopicHostsMap(results, host_topics_map,
                                       topic_hosts_map);
 
   std::vector<Topic> top_topics;

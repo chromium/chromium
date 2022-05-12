@@ -38,7 +38,7 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
                   std::unique_ptr<PageContentAnnotationJob> job) override;
   void ExecuteOnSingleInput(
       AnnotationType annotation_type,
-      const std::string& input,
+      const std::string& raw_input,
       base::OnceCallback<void(const BatchAnnotationResult&)> callback) override;
 
   // BertModelHandler:
@@ -52,7 +52,7 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
   void PostprocessCategoriesToBatchAnnotationResult(
       base::OnceCallback<void(const BatchAnnotationResult&)> callback,
       AnnotationType annotation_type,
-      const std::string& input,
+      const std::string& raw_input,
       const absl::optional<std::vector<tflite::task::core::Category>>& output);
 
   // Extracts the scored categories from the output of the model.
@@ -69,6 +69,9 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
           std::unordered_map<std::string, std::vector<WeightedIdentifier>>>
           override_list);
 
+  // Does the required preprocessing on a input domain.
+  static std::string PreprocessHost(const std::string& host);
+
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Set whenever a valid override list file is passed along with the model file
@@ -79,7 +82,8 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
 
   // Set whenever an override list file is available and the model file is
   // loaded into memory. Reset whenever the model file is unloaded.
-  // Used on the UI thread.
+  // Used on the UI thread. Lookups in this mapping should have |PreprocessHost|
+  // applied first.
   absl::optional<
       std::unordered_map<std::string, std::vector<WeightedIdentifier>>>
       override_list_;

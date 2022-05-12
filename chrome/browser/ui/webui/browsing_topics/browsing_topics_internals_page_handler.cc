@@ -113,11 +113,11 @@ void BrowsingTopicsInternalsPageHandler::ClassifyHosts(
     return;
   }
 
-  annotations_service->BatchAnnotatePageTopics(
+  annotations_service->BatchAnnotate(
       base::BindOnce(
           &BrowsingTopicsInternalsPageHandler::OnGetTopicsForHostsCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      hosts);
+      hosts, optimization_guide::AnnotationType::kPageTopics);
 }
 
 void BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted(

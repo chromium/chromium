@@ -49,6 +49,29 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
       registered_model_metadata_;
 };
 
+class TestPageTopicsModelExecutor : public PageTopicsModelExecutor {
+ public:
+  TestPageTopicsModelExecutor(
+      OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      const absl::optional<proto::Any>& model_metadata)
+      : PageTopicsModelExecutor(model_provider,
+                                background_task_runner,
+                                model_metadata) {}
+  ~TestPageTopicsModelExecutor() override = default;
+
+  void ExecuteModelWithInput(ExecutionCallback callback,
+                             const std::string& input) override {
+    inputs_.push_back(input);
+    std::move(callback).Run(absl::nullopt);
+  }
+
+  const std::vector<std::string>& inputs() const { return inputs_; }
+
+ private:
+  std::vector<std::string> inputs_;
+};
+
 class PageTopicsModelExecutorTest : public testing::Test {
  public:
   PageTopicsModelExecutorTest() {
@@ -60,7 +83,7 @@ class PageTopicsModelExecutorTest : public testing::Test {
 
   void SetUp() override {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
-    model_executor_ = std::make_unique<PageTopicsModelExecutor>(
+    model_executor_ = std::make_unique<TestPageTopicsModelExecutor>(
         model_observer_tracker_.get(),
         task_environment_.GetMainThreadTaskRunner(),
         /*model_metadata=*/absl::nullopt);
@@ -96,7 +119,7 @@ class PageTopicsModelExecutorTest : public testing::Test {
     return model_observer_tracker_.get();
   }
 
-  PageTopicsModelExecutor* model_executor() const {
+  TestPageTopicsModelExecutor* model_executor() const {
     return model_executor_.get();
   }
 
@@ -106,7 +129,7 @@ class PageTopicsModelExecutorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
-  std::unique_ptr<PageTopicsModelExecutor> model_executor_;
+  std::unique_ptr<TestPageTopicsModelExecutor> model_executor_;
 };
 
 TEST_F(
@@ -336,6 +359,38 @@ TEST_F(PageTopicsModelExecutorTest,
             BatchAnnotationResult::CreatePageTopicsResult("", absl::nullopt));
 }
 
+TEST_F(PageTopicsModelExecutorTest, HostPreprocessing) {
+  std::vector<std::pair<std::string, std::string>> tests = {
+      {"www.chromium.org", "chromium org"},
+      {"foo-bar.com", "foo bar com"},
+      {"foo_bar.com", "foo bar com"},
+      {"cats.co.uk", "cats co uk"},
+      {"cats+dogs.com", "cats dogs com"},
+      {"www.foo-bar_.baz.com", "foo bar  baz com"},
+      {"www.foo-bar-baz.com", "foo bar baz com"},
+      {"WwW.LOWER-CASE.com", "lower case com"},
+  };
+
+  for (const auto& test : tests) {
+    std::string raw_host = test.first;
+    std::string processed_host = test.second;
+
+    std::string got_input;
+    // The callback is run synchronously in this test.
+    model_executor()->ExecuteOnSingleInput(
+        AnnotationType::kPageTopics, raw_host,
+        base::BindOnce(
+            [](std::string* got_input_out,
+               const BatchAnnotationResult& result) {
+              EXPECT_EQ(result.type(), AnnotationType::kPageTopics);
+              *got_input_out = result.input();
+            },
+            &got_input));
+    EXPECT_EQ(raw_host, got_input);
+    EXPECT_EQ(processed_host, model_executor()->inputs().back());
+  }
+}
+
 class PageTopicsModelExecutorOverrideListTest
     : public PageTopicsModelExecutorTest {
  public:
@@ -493,7 +548,7 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, SuccessCase) {
 
   proto::PageTopicsOverrideList override_list;
   proto::PageTopicsOverrideEntry* entry = override_list.add_entries();
-  entry->set_domain("input");
+  entry->set_domain("input com");
   entry->mutable_topics()->add_topic_ids(1337);
 
   std::string enc_pb;
@@ -509,14 +564,15 @@ TEST_F(PageTopicsModelExecutorOverrideListTest, SuccessCase) {
       std::make_unique<PageContentAnnotationJob>(
           base::BindOnce([](const std::vector<BatchAnnotationResult>& results) {
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "input");
+            EXPECT_EQ(results[0].input(), "www.input.com");
             EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
             ASSERT_TRUE(results[0].topics());
             EXPECT_EQ(*results[0].topics(), (std::vector<WeightedIdentifier>{
                                                 WeightedIdentifier(1337, 1.0),
                                             }));
           }),
-          std::vector<std::string>{"input"}, AnnotationType::kPageTopics));
+          std::vector<std::string>{"www.input.com"},
+          AnnotationType::kPageTopics));
   run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(

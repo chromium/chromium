@@ -77,7 +77,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "page_content_annotations_service_unittest.cc",
     "page_content_annotations_validator_unittest.cc",
     "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",

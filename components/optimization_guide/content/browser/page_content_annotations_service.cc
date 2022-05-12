@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_service.h"
@@ -331,48 +330,10 @@ void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
   annotator_ = annotator;
 }
 
-// static
-std::string PageContentAnnotationsService::StringInputForPageTopicsHost(
-    const std::string& host) {
-  std::string output = base::ToLowerASCII(host);
-
-  // Strip the 'www.' if it exists.
-  if (base::StartsWith(output, "www.")) {
-    output = output.substr(4);
-  }
-
-  const char kCharsToReplaceWithSpace[] = {'-', '_', '.', '+'};
-  for (char c : kCharsToReplaceWithSpace) {
-    std::replace(output.begin(), output.end(), c, ' ');
-  }
-
-  return output;
-}
-
-void PageContentAnnotationsService::BatchAnnotatePageTopics(
-    BatchAnnotationCallback callback,
-    const std::vector<std::string>& hosts) {
-  std::vector<std::string> tokenized_hosts;
-  for (const std::string& host : hosts) {
-    tokenized_hosts.emplace_back(StringInputForPageTopicsHost(host));
-  }
-
-  if (!annotator_) {
-    std::move(callback).Run(CreateEmptyBatchAnnotationResults(tokenized_hosts));
-    return;
-  }
-
-  annotator_->Annotate(std::move(callback), tokenized_hosts,
-                       AnnotationType::kPageTopics);
-}
-
 void PageContentAnnotationsService::BatchAnnotate(
     BatchAnnotationCallback callback,
     const std::vector<std::string>& inputs,
     AnnotationType annotation_type) {
-  DCHECK_NE(annotation_type, AnnotationType::kPageTopics)
-      << "Please use |BatchAnnotatePageTopics| instead";
-
   if (!annotator_) {
     std::move(callback).Run(CreateEmptyBatchAnnotationResults(inputs));
     return;

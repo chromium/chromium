@@ -546,8 +546,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, ClassifierTab) {
            .SetModelFilePath(
                base::FilePath::FromASCII("/test_path/test_model.tflite"))
            .Build(),
-      {{"foo2 com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
-       {"foo1 com", TopicsWithUniformWeight({1, 2}, 0.1)}});
+      {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
+       {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));

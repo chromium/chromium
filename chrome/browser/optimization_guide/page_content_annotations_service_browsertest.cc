@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
 
   std::vector<BatchAnnotationResult> results;
   base::RunLoop run_loop;
-  service->BatchAnnotatePageTopics(
+  service->BatchAnnotate(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              std::vector<BatchAnnotationResult>* out_results,
@@ -236,12 +236,13 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
           "youtube.com",
           "chrome.com",
           "music.youtube.com",
-      });
+      },
+      AnnotationType::kPageTopics);
   run_loop.Run();
 
   ASSERT_EQ(results.size(), 3U);
 
-  EXPECT_EQ(results[0].input(), "youtube com");
+  EXPECT_EQ(results[0].input(), "youtube.com");
   EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[0].topics());
   EXPECT_THAT(*results[0].topics(),
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
                   CrossPlatformMatcher(WeightedIdentifier(43, 0.915914)),
               }));
 
-  EXPECT_EQ(results[1].input(), "chrome com");
+  EXPECT_EQ(results[1].input(), "chrome.com");
   EXPECT_EQ(results[1].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[1].topics());
   EXPECT_THAT(*results[1].topics(),
@@ -260,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServicePageTopicsBrowserTest,
                   CrossPlatformMatcher(WeightedIdentifier(148, 0.881723)),
               }));
 
-  EXPECT_EQ(results[2].input(), "music youtube com");
+  EXPECT_EQ(results[2].input(), "music.youtube.com");
   EXPECT_EQ(results[2].type(), AnnotationType::kPageTopics);
   ASSERT_TRUE(results[2].topics());
   EXPECT_THAT(*results[2].topics(),
@@ -463,19 +464,21 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
 
   base::RunLoop run_loop;
-  service->BatchAnnotatePageTopics(
+  service->BatchAnnotate(
       base::BindOnce(
           [](base::RunLoop* run_loop,
              const std::vector<BatchAnnotationResult>& results) {
             ASSERT_EQ(results.size(), 1U);
-            EXPECT_EQ(results[0].input(), "chromium org");
+            EXPECT_EQ(results[0].input(), "www.chromium.org");
             EXPECT_EQ(results[0].type(), AnnotationType::kPageTopics);
-            // Intentionally does not test model execution, since that is well
-            // covered in the unittests for PageContentAnnotationsModelManager.
+            // Intentionally does not test the output of model inference, since
+            // that is well covered in the unittests for
+            // PageContentAnnotationsModelManager.
             run_loop->Quit();
           },
           &run_loop),
-      std::vector<std::string>{"www.chromium.org"});
+      std::vector<std::string>{"www.chromium.org"},
+      AnnotationType::kPageTopics);
 
   run_loop.Run();
 }
