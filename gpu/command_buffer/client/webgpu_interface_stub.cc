@@ -48,7 +48,9 @@ scoped_refptr<APIChannel> WebGPUInterfaceStub::GetAPIChannel() const {
   return api_channel_;
 }
 void WebGPUInterfaceStub::FlushCommands() {}
-void WebGPUInterfaceStub::EnsureAwaitingFlush(bool* needs_flush) {}
+bool WebGPUInterfaceStub::EnsureAwaitingFlush() {
+  return false;
+}
 void WebGPUInterfaceStub::FlushAwaitingCommands() {}
 ReservedTexture WebGPUInterfaceStub::ReserveTexture(WGPUDevice) {
   return {nullptr, 0, 0, 0, 0};

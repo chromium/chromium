@@ -26,35 +26,11 @@ void DawnObjectBase::setLabel(const String& value) {
 }
 
 void DawnObjectBase::EnsureFlush() {
-  bool needs_flush = false;
-  auto context_provider = GetContextProviderWeakPtr();
-  if (UNLIKELY(!context_provider))
-    return;
-  context_provider->ContextProvider()->WebGPUInterface()->EnsureAwaitingFlush(
-      &needs_flush);
-  if (!needs_flush) {
-    // We've already enqueued a task to flush, or the command buffer
-    // is empty. Do nothing.
-    return;
-  }
-  Microtask::EnqueueMicrotask(WTF::Bind(
-      [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
-        if (auto context_provider =
-                dawn_control_client->GetContextProviderWeakPtr()) {
-          context_provider->ContextProvider()
-              ->WebGPUInterface()
-              ->FlushAwaitingCommands();
-        }
-      },
-      dawn_control_client_));
+  dawn_control_client_->EnsureFlush();
 }
 
-// Flush commands up until now on this object's parent device immediately.
 void DawnObjectBase::FlushNow() {
-  auto context_provider = GetContextProviderWeakPtr();
-  if (LIKELY(context_provider)) {
-    context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
-  }
+  dawn_control_client_->Flush();
 }
 
 DawnObjectImpl::DawnObjectImpl(GPUDevice* device)

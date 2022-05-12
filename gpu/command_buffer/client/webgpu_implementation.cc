@@ -480,22 +480,21 @@ void WebGPUImplementation::FlushCommands() {
 #endif
 }
 
-void WebGPUImplementation::EnsureAwaitingFlush(bool* needs_flush) {
+bool WebGPUImplementation::EnsureAwaitingFlush() {
 #if BUILDFLAG(USE_DAWN)
   // If there is already a flush waiting, we don't need to flush.
   // We only want to set |needs_flush| on state transition from
   // false -> true.
   if (dawn_wire_->serializer()->AwaitingFlush()) {
-    *needs_flush = false;
-    return;
+    return false;
   }
 
   // Set the state to waiting for flush, and then write |needs_flush|.
   // Could still be false if there's no data to flush.
   dawn_wire_->serializer()->SetAwaitingFlush(true);
-  *needs_flush = dawn_wire_->serializer()->AwaitingFlush();
+  return dawn_wire_->serializer()->AwaitingFlush();
 #else
-  *needs_flush = false;
+  return false;
 #endif
 }
 

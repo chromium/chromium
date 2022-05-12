@@ -115,7 +115,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 
   // WebGPUInterface implementation
   void FlushCommands() override;
-  void EnsureAwaitingFlush(bool* needs_flush) override;
+  bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
   scoped_refptr<APIChannel> GetAPIChannel() const override;
   ReservedTexture ReserveTexture(WGPUDevice device) override;

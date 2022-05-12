@@ -54,7 +54,7 @@ class WebGPUInterface : public InterfaceBase {
   // if a flush has already been indicated, or a flush is not needed (there may
   // be no commands to flush). Returns true if the caller should schedule a
   // flush.
-  virtual void EnsureAwaitingFlush(bool* needs_flush) = 0;
+  virtual bool EnsureAwaitingFlush() = 0;
 
   // If the awaiting flush flag is set, flushes commands. Otherwise, does
   // nothing.

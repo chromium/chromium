@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 
 #include "base/check.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -77,6 +78,36 @@ DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info,
                                                    bool is_origin_top_left) {
   return recyclable_resource_cache_.GetOrCreateCanvasResource(
       info, is_origin_top_left);
+}
+
+void DawnControlClientHolder::Flush() {
+  auto context_provider = GetContextProviderWeakPtr();
+  if (LIKELY(context_provider)) {
+    context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
+  }
+}
+
+void DawnControlClientHolder::EnsureFlush() {
+  auto context_provider = GetContextProviderWeakPtr();
+  if (UNLIKELY(!context_provider))
+    return;
+  if (!context_provider->ContextProvider()
+           ->WebGPUInterface()
+           ->EnsureAwaitingFlush()) {
+    // We've already enqueued a task to flush, or the command buffer
+    // is empty. Do nothing.
+    return;
+  }
+  Microtask::EnqueueMicrotask(WTF::Bind(
+      [](scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+        if (auto context_provider =
+                dawn_control_client->GetContextProviderWeakPtr()) {
+          context_provider->ContextProvider()
+              ->WebGPUInterface()
+              ->FlushAwaitingCommands();
+        }
+      },
+      scoped_refptr<DawnControlClientHolder>(this)));
 }
 
 }  // namespace blink
