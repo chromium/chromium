@@ -210,6 +210,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-bfcache-rel",
+    mirrors = [
+        "ci/linux-bfcache-rel",
+    ],
 )
 
 try_.builder(
