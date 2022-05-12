@@ -220,8 +220,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   AddTrayItemToContainer(new PowerTrayView(shelf));
 
   auto vertical_clock_padding = std::make_unique<views::View>();
-  vertical_clock_padding->SetPreferredSize(
-      gfx::Size(0, kTrayTimeIconTopPadding));
+  vertical_clock_padding->SetPreferredSize(gfx::Size(
+      0, features::IsCalendarViewEnabled() ? 0 : kTrayTimeIconTopPadding));
   vertical_clock_padding_ =
       tray_container()->AddChildView(std::move(vertical_clock_padding));
 
