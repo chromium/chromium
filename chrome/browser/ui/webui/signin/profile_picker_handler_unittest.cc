@@ -355,7 +355,8 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
   EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
   EXPECT_EQ(data1.arg2()->GetListDeprecated().size(), 2u);
 
-  // ****** Account 1 syncing in Secondary profile: return account 2.
+  // ****** Account 1 syncing in Secondary profile: return account 1 and 2
+  // regardless of syncing status.
   secondary->SetAuthInfo(kGaiaId1, u"example1@gmail.com",
                          /*is_consented_primary_account=*/true);
   // Send message to the handler.
@@ -366,11 +367,20 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
   const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
   EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
-  EXPECT_EQ(data2.arg2()->GetListDeprecated().size(), 1u);
-  const std::string* gaia_id =
+  EXPECT_EQ(data2.arg2()->GetListDeprecated().size(), 2u);
+  // Arbitrary order of results; using a set to perform the search without
+  // order.
+  base::flat_set<std::string> gaia_id_results;
+  const std::string* gaia_id1 =
       data2.arg2()->GetListDeprecated()[0].FindStringPath("gaiaId");
-  EXPECT_NE(gaia_id, nullptr);
-  EXPECT_EQ(*gaia_id, kGaiaId2);
+  EXPECT_NE(gaia_id1, nullptr);
+  gaia_id_results.insert(*gaia_id1);
+  const std::string* gaia_id2 =
+      data2.arg2()->GetListDeprecated()[1].FindStringPath("gaiaId");
+  EXPECT_NE(gaia_id2, nullptr);
+  gaia_id_results.insert(*gaia_id2);
+  EXPECT_TRUE(gaia_id_results.contains(kGaiaId1));
+  EXPECT_TRUE(gaia_id_results.contains(kGaiaId2));
   // TODO(https://crbug/1226050): Test all other fields.
 }
 

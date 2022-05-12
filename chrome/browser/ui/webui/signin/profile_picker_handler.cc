@@ -1193,16 +1193,8 @@ void ProfilePickerHandler::UpdateAvailableAccounts() {
   AccountProfileMapper* mapper =
       g_browser_process->profile_manager()->GetAccountProfileMapper();
 
-  if (IsSelectingSecondaryAccount(web_ui())) {
-    GetAccountsAvailableAsSecondary(
-        mapper, GetCurrentProfilePath(web_ui()),
-        base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-  GetAccountsAvailableAsPrimary(
-      mapper,
-      &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
+  GetAllAvailableAccounts(
+      mapper, GetCurrentProfilePath(web_ui()),
       base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
                      weak_factory_.GetWeakPtr()));
 }

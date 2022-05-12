@@ -32,7 +32,7 @@ SigninHelperLacros::SigninHelperLacros(
             consistency_cookie_manager->CreateScopedAccountUpdate());
   }
 
-  GetAccountsAvailableAsSecondary(
+  GetAllAvailableAccounts(
       account_profile_mapper, profile_path,
       base::BindOnce(&SigninHelperLacros::OnAccountsAvailableAsSecondaryFetched,
                      weak_factory_.GetWeakPtr()));
