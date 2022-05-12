@@ -3335,9 +3335,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestInBrowser,
   EXPECT_TRUE(stop_invoked());
 
   // `PrintBackendService` should never be used when printing in-browser.
-  // TODO(crbug.com/1324715):  Change to EXPECT_FALSE once there is no longer
-  // any activity with `PrintBackendServiceManager` for in-browser printing.
-  EXPECT_TRUE(print_backend_service_use_detected());
+  EXPECT_FALSE(print_backend_service_use_detected());
 }
 
 IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,

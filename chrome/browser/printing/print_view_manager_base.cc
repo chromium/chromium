@@ -325,10 +325,12 @@ bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
     return false;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register this worker so that the service persists as long as the user
-  // keeps the system print dialog UI displayed.
-  if (!RegisterSystemPrintClient())
-    return false;
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Register this worker so that the service persists as long as the user
+    // keeps the system print dialog UI displayed.
+    if (!RegisterSystemPrintClient())
+      return false;
+  }
 #endif
 
   SetPrintingRFH(rfh);
@@ -504,9 +506,11 @@ void PrintViewManagerBase::ScriptedPrintReply(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Finished getting all settings (defaults and from user), no further need
-  // to be registered as a system print client.
-  UnregisterSystemPrintClient();
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Finished getting all settings (defaults and from user), no further need
+    // to be registered as a system print client.
+    UnregisterSystemPrintClient();
+  }
 #endif
   if (!content::RenderProcessHost::FromID(process_id)) {
     // Early return if the renderer is not alive.
@@ -981,10 +985,12 @@ void PrintViewManagerBase::ReleasePrintJob() {
   printing_rfh_ = nullptr;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Ensure that any residual registration of printing client is released.
-  // This might be necessary in some abnormal cases, such as the associated
-  // render process having terminated.
-  UnregisterSystemPrintClient();
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Ensure that any residual registration of printing client is released.
+    // This might be necessary in some abnormal cases, such as the associated
+    // render process having terminated.
+    UnregisterSystemPrintClient();
+  }
 #endif
 
   if (!print_job_)
