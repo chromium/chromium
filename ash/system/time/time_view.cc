@@ -58,7 +58,7 @@ const int kVerticalClockLeftPadding = 9;
 
 // Padding between the left/right edge of the shelf and the left edge of the
 // vertical clock with date.
-const int kVerticalDateClockHorizontalPadding = 4;
+const int kVerticalDateClockHorizontalPadding = 8;
 
 // Padding on top/bottom of the vertical clock date view.
 const int kVerticalDateVerticalPadding = 2;
