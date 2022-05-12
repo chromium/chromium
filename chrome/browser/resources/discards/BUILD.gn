@@ -9,6 +9,8 @@ import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android)
+
 preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
 
@@ -75,14 +77,6 @@ action("generate_graph_tab") {
                      ],
                      root_build_dir)
   deps = [ ":build_ts" ]
-}
-
-# Action with a transparent name.
-group("discards_resources_gen") {
-  public_deps = [
-    ":build_ts",
-    ":generate_graph_tab",
-  ]
 }
 
 copy("copy_mojo") {
