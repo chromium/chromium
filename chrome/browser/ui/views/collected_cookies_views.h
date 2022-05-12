@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
@@ -40,6 +41,9 @@ class CollectedCookiesViews : public views::DialogDelegateView,
                               public views::TreeViewController {
  public:
   METADATA_HEADER(CollectedCookiesViews);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabbedPaneElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockedCookiesTreeElementId);
+
   CollectedCookiesViews(const CollectedCookiesViews&) = delete;
   CollectedCookiesViews& operator=(const CollectedCookiesViews&) = delete;
   ~CollectedCookiesViews() override;

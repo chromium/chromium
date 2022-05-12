@@ -53,6 +53,11 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CollectedCookiesViews,
+                                      kTabbedPaneElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CollectedCookiesViews,
+                                      kBlockedCookiesTreeElementId);
+
 namespace {
 
 // Dimensions of the tree views.
@@ -409,6 +414,7 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
   tabbed_pane->AddTab(label_blocked, CreateBlockedPane());
   tabbed_pane->SelectTabAt(0);
   tabbed_pane->set_listener(this);
+  tabbed_pane->SetProperty(views::kElementIdentifierKey, kTabbedPaneElementId);
 
   cookie_info_view_ = AddChildView(std::make_unique<CookieInfoView>());
   // Fix the height of the cookie info view, which is scrollable. It needs to be
@@ -526,6 +532,8 @@ std::unique_ptr<views::View> CollectedCookiesViews::CreateBlockedPane() {
   blocked_cookies_tree->SetEditable(false);
   blocked_cookies_tree->set_auto_expand_children(true);
   blocked_cookies_tree->SetController(this);
+  blocked_cookies_tree->SetProperty(views::kElementIdentifierKey,
+                                    kBlockedCookiesTreeElementId);
   blocked_cookies_tree_ = blocked_cookies_tree.get();
   auto* scroll_view =
       pane->AddChildView(CreateScrollView(std::move(blocked_cookies_tree)));

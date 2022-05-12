@@ -39,6 +39,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -50,6 +51,8 @@ constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
 
 PageInfoMainView::ContainerView::ContainerView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -150,6 +153,8 @@ void PageInfoMainView::EnsureCookieInfo() {
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
             tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
             .release();
+    cookie_button_->SetProperty(views::kElementIdentifierKey,
+                                kCookieButtonElementId);
     site_settings_view_->AddChildView(cookie_button_.get());
 
     if (base::FeatureList::IsEnabled(

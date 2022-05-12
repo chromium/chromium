@@ -591,6 +591,48 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       StateChangeOnPromise) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  constexpr base::TimeDelta kPollTime = base::Milliseconds(50);
+  auto util = InteractionSequenceBrowserUtil::ForExistingTabInBrowser(
+      browser(), kInteractionSequenceBrowserUtilTestId);
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             InteractionSequenceBrowserUtil::StateChange
+                                 state_change;
+                             state_change.test_function = R"(() => {
+                                 return new Promise(r => {
+                                       setTimeout(() => r(1), 100);
+                                     });
+                                 })";
+                             state_change.event =
+                                 kInteractionTestUtilCustomEventType;
+                             state_change.polling_interval = kPollTime;
+                             util->SendEventOnStateChange(state_change);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        SendStateChangeEventsForDifferentDataTypes) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);

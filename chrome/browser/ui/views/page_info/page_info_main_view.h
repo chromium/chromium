@@ -15,6 +15,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -43,6 +44,7 @@ class PageInfoMainView : public views::View,
  public:
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookieButtonElementId);
 
   // Container view that fills the bubble width for button rows. Supports
   // updating the layout.
