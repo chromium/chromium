@@ -331,4 +331,26 @@ suite('ReadAnythingAppTest', () => {
     const expected: ContentNode[] = [];
     assertContentNodes(expected);
   });
+
+  test('showContent clearContainer', async () => {
+    const contentNodes1: ContentNode[] = [
+      new ContentNodeBuilder(ContentType.kStaticText)
+          .setText('First set of content.')
+          .build(),
+    ];
+
+    callbackRouter.showContent(contentNodes1);
+    await flushTasks();
+    assertContentNodes(contentNodes1);
+
+    const contentNodes2: ContentNode[] = [
+      new ContentNodeBuilder(ContentType.kStaticText)
+          .setText('Second set of content.')
+          .build(),
+    ];
+
+    callbackRouter.showContent(contentNodes2);
+    await flushTasks();
+    assertContentNodes(contentNodes2);
+  });
 });

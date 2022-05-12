@@ -144,6 +144,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
 
+    // Remove all children from container. Use `replaceChildren` rather than
+    // setting `innerHTML = ''` in order to remove all listeners, too.
+    container.replaceChildren();
+
     // Construct a dom node corresponding to each ContentNode and append it to
     // container. This does not use polymer's templating abstraction, which
     // would create a shadow node element representing each ContentNode, because
