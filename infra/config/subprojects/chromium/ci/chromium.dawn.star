@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.dawn builder group."""
 
-load("//lib/builders.star", "goma")
 load("//lib/branches.star", "branches")
+load("//lib/builder_config.star", "builder_config")
+load("//lib/builders.star", "goma")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -272,6 +273,22 @@ ci.gpu.windows_builder(
 ci.gpu.windows_builder(
     name = "Dawn Win10 x86 DEPS Builder",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",
         short_name = "x86",
@@ -287,6 +304,23 @@ ci.gpu.windows_builder(
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel HD 630)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x86",
@@ -298,6 +332,23 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x86",
