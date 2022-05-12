@@ -19,7 +19,7 @@ namespace internal {
 
 template <typename CALLBACK_TYPE>
 class RefCountedCallback
-    : public base::RefCounted<RefCountedCallback<CALLBACK_TYPE>> {
+    : public base::RefCountedThreadSafe<RefCountedCallback<CALLBACK_TYPE>> {
  public:
   RefCountedCallback(CALLBACK_TYPE callback) : callback_(std::move(callback)) {}
   RefCountedCallback(const RefCountedCallback&) = delete;
@@ -28,7 +28,7 @@ class RefCountedCallback
   CALLBACK_TYPE& callback() { return callback_; }
 
  private:
-  friend class base::RefCounted<RefCountedCallback<CALLBACK_TYPE>>;
+  friend class base::RefCountedThreadSafe<RefCountedCallback<CALLBACK_TYPE>>;
 
   ~RefCountedCallback() = default;
   CALLBACK_TYPE callback_;
