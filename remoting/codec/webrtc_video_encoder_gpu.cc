@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
 
 namespace {
@@ -411,6 +412,9 @@ bool WebrtcVideoEncoderGpu::IsSupportedByH264(
   // H.264 and run the encoder on a different thread, we use a locally scoped
   // object for now.
   base::win::ScopedCOMInitializer scoped_com_initializer;
+
+  // Ensure the required MF DLLs are loaded before we call into the VEA below.
+  media::MediaFoundationVideoEncodeAccelerator::PreSandboxInitialization();
 #endif
 
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
