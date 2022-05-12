@@ -66,7 +66,7 @@ def ProcessFile(filename):
         indices_to_remove.append(i)
 
   if len(indices_to_remove):
-    print 'stripping CSS from: ' + filename
+    print('stripping CSS from: ' + filename)
 
   # Process line numbers in descinding order, such that the array can be
   # modified in-place.
