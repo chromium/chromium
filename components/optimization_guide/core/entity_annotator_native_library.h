@@ -179,6 +179,14 @@ class EntityAnnotatorNativeLibrary {
   EntityMetadataGetHumanReadableCategoryScoreAtIndexFunc
       entity_metadata_get_human_readable_category_score_at_index_func_ =
           nullptr;
+  using EntityMetadataGetHumanReadableAliasesCountFunc =
+      int32_t (*)(const void*);
+  EntityMetadataGetHumanReadableAliasesCountFunc
+      entity_metadata_get_human_readable_aliases_count_func_ = nullptr;
+  using EntityMetadataGetHumanReadableAliasAtIndexFunc =
+      const char* (*)(const void*, int32_t);
+  EntityMetadataGetHumanReadableCategoryNameAtIndexFunc
+      entity_metadata_get_human_readable_alias_at_index_func_ = nullptr;
 };
 
 }  // namespace optimization_guide

@@ -235,6 +235,16 @@ void EntityAnnotatorNativeLibrary::LoadFunctions() {
               native_library_,
               "OptimizationGuideEntityMetadataGetHumanReadableCategoryScoreAtIn"
               "dex"));
+  entity_metadata_get_human_readable_aliases_count_func_ =
+      reinterpret_cast<EntityMetadataGetHumanReadableAliasesCountFunc>(
+          base::GetFunctionPointerFromNativeLibrary(
+              native_library_,
+              "OptimizationGuideEntityMetadataGetHumanReadableAliasesCount"));
+  entity_metadata_get_human_readable_alias_at_index_func_ =
+      reinterpret_cast<EntityMetadataGetHumanReadableAliasAtIndexFunc>(
+          base::GetFunctionPointerFromNativeLibrary(
+              native_library_,
+              "OptimizationGuideEntityMetadataGetHumanReadableAliasAtIndex"));
 }
 
 DISABLE_CFI_ICALL
@@ -255,7 +265,9 @@ bool EntityAnnotatorNativeLibrary::IsValid() const {
          entity_metadata_get_human_readable_name_func_ &&
          entity_metadata_get_human_readable_categories_count_func_ &&
          entity_metadata_get_human_readable_category_name_at_index_func_ &&
-         entity_metadata_get_human_readable_category_score_at_index_func_;
+         entity_metadata_get_human_readable_category_score_at_index_func_ &&
+         entity_metadata_get_human_readable_aliases_count_func_ &&
+         entity_metadata_get_human_readable_alias_at_index_func_;
 }
 
 DISABLE_CFI_ICALL
@@ -494,6 +506,14 @@ EntityMetadata EntityAnnotatorNativeLibrary::
         entity_metadata_get_human_readable_category_score_at_index_func_(
             og_entity_metadata, i);
     entity_metadata.human_readable_categories[category_name] = category_score;
+  }
+  int32_t human_readable_aliases_count =
+      entity_metadata_get_human_readable_aliases_count_func_(
+          og_entity_metadata);
+  for (int32_t i = 0; i < human_readable_aliases_count; i++) {
+    entity_metadata.human_readable_aliases.push_back(
+        entity_metadata_get_human_readable_alias_at_index_func_(
+            og_entity_metadata, i));
   }
   return entity_metadata;
 }
