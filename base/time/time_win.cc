@@ -40,7 +40,6 @@
 
 #include <atomic>
 
-#include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
@@ -407,7 +406,7 @@ DWORD (*g_tick_function)(void) = &timeGetTimeWrapper;
 // "rollover" counter.
 union LastTimeAndRolloversState {
   // The state as a single 32-bit opaque value.
-  subtle::Atomic32 as_opaque_32;
+  std::atomic<int32_t> as_opaque_32;
 
   // The state as usable values.
   struct {
@@ -423,7 +422,7 @@ union LastTimeAndRolloversState {
     uint16_t rollovers;
   } as_values;
 };
-subtle::Atomic32 g_last_time_and_rollovers = 0;
+std::atomic<int32_t> g_last_time_and_rollovers = 0;
 static_assert(
     sizeof(LastTimeAndRolloversState) <= sizeof(g_last_time_and_rollovers),
     "LastTimeAndRolloversState does not fit in a single atomic word");
@@ -442,7 +441,8 @@ TimeTicks RolloverProtectedNow() {
     // incrementing the "rollovers" counter if the tick-value has wrapped back
     // around. Atomic operations ensure that both "last" and "rollovers" are
     // always updated together.
-    int32_t original = subtle::Acquire_Load(&g_last_time_and_rollovers);
+    int32_t original =
+        g_last_time_and_rollovers.load(std::memory_order_acquire);
     state.as_opaque_32 = original;
     now = g_tick_function();
     uint8_t now_8 = static_cast<uint8_t>(now >> 24);
@@ -456,8 +456,8 @@ TimeTicks RolloverProtectedNow() {
 
     // Save the changed state. If the existing value is unchanged from the
     // original, exit the loop.
-    int32_t check = subtle::Release_CompareAndSwap(
-        &g_last_time_and_rollovers, original, state.as_opaque_32);
+    int32_t check = g_last_time_and_rollovers.compare_exchange_strong(
+        original, state.as_opaque_32, std::memory_order_release);
     if (check == original)
       break;
 
@@ -596,7 +596,7 @@ TimeTicks::TickFunctionType TimeTicks::SetMockTickFunction(
     TickFunctionType ticker) {
   TickFunctionType old = g_tick_function;
   g_tick_function = ticker;
-  subtle::NoBarrier_Store(&g_last_time_and_rollovers, 0);
+  g_last_time_and_rollovers.store(0, std::memory_order_relaxed);
   return old;
 }
 
