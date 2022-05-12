@@ -43,6 +43,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/gurl.h"
 
 namespace wallpaper_handlers {
@@ -180,6 +182,32 @@ std::string MaybeConvertToTestUrl(std::string url) {
                                            "chromecast-staging.sandbox");
   }
   return url;
+}
+
+// Returns a language tag for the device's locale. This tag is a maximized
+// version of the default locale, i.e., an attempt is made to infer the region
+// code when the default locale has none. Subtags other than language and region
+// are omitted, and if there is a failure while obtaining the language tag, an
+// empty string is returned.
+std::string GetLanguageTag() {
+  auto locale = icu::Locale::getDefault();
+  if (!locale.getLanguage() || base::StringPiece(locale.getLanguage()).empty())
+    return "";
+
+  UErrorCode status = U_ZERO_ERROR;
+
+  // Attempt to infer a region code if the device's locale does not have one.
+  if (!locale.getCountry() || base::StringPiece(locale.getCountry()).empty()) {
+    locale.addLikelySubtags(status);
+    if (U_FAILURE(status))
+      return "";
+  }
+
+  // Return a language tag with only the language and region codes, excluding
+  // extraneous subtags such as script type that may have been added above.
+  auto language_tag = icu::Locale(locale.getLanguage(), locale.getCountry())
+                          .toLanguageTag<std::string>(status);
+  return U_SUCCESS(status) ? language_tag : "";
 }
 
 // Attempts to parse `photo` as a `GooglePhotosPhoto`. If successful, adds the
@@ -605,6 +633,11 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
                                       "application/json");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
+  auto language_tag = GetLanguageTag();
+  if (!language_tag.empty()) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAcceptLanguage, language_tag);
+  }
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);
