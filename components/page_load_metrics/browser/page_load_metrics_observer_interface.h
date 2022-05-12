@@ -131,6 +131,12 @@ class PageLoadMetricsObserverInterface {
   // receives forward metrics via FORWARD_OBSERVING, and returns STOP_OBSERVING,
   // It just stop observing forward metrics, and still see other callbacks for
   // the orinally bound page.
+  // Most events requiring preprocesses, such as lifecycle events, are forwarded
+  // to the outer page at the PageLoadTracker layer, and only events that are
+  // directly delivered to the observers need FORWARD_OBSERVING. See
+  // PageLoadMetricsForwardObserver to know which events need the observer layer
+  // forwarding. Eventually, we may treat all forwarding at the PageLoadTracker
+  // layer to deprecate the FORWARD_OBSERVING for simplicity.
   enum ObservePolicy {
     CONTINUE_OBSERVING,
     STOP_OBSERVING,
