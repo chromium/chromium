@@ -498,7 +498,7 @@ bool IsOriginTrialHintEnabledForFrame(
 
 // TODO(crbug.com/1258063): Delete this function when the UserAgentReduction and
 // SendFullUserAgentAfterReduction Origin Trial is finished.
-void RemoveAllClientHintsExceptUaReducedOrUaDeprecation(
+void RemoveAllClientHintsExceptOriginTrialHints(
     const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
@@ -510,7 +510,8 @@ void RemoveAllClientHintsExceptUaReducedOrUaDeprecation(
 
   for (auto it = accept_ch->begin(); it != accept_ch->end();) {
     if (*it == WebClientHintsType::kUAReduced ||
-        *it == WebClientHintsType::kFullUserAgent) {
+        *it == WebClientHintsType::kFullUserAgent ||
+        *it == WebClientHintsType::kPartitionedCookies) {
       ++it;
     } else {
       it = accept_ch->erase(it);
@@ -1067,7 +1068,7 @@ ParseAndPersistAcceptCHForNavigation(
   // TODO(crbug.com/1258063): Delete this call when the UserAgentReduction
   // Origin Trial is finished.
   if (!frame_tree_node->IsMainFrame()) {
-    RemoveAllClientHintsExceptUaReducedOrUaDeprecation(
+    RemoveAllClientHintsExceptOriginTrialHints(
         origin, frame_tree_node, delegate, &accept_ch, &main_frame_origin,
         &third_party_origin);
     if (accept_ch.empty()) {

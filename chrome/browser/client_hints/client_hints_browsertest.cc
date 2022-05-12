@@ -5802,6 +5802,131 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyPartitionedCookiesOriginTrialBrowserTest,
   EXPECT_FALSE(cookies[0].IsPartitioned());
 }
 
+class EmbeddedPartitionedCookiesOriginTrialBrowserTest
+    : public PartitionedCookiesOriginTrialBrowserTest {
+ public:
+  EmbeddedPartitionedCookiesOriginTrialBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
+    // the origin trial token in the response is associated with a fixed
+    // origin, whereas EmbeddedTestServer serves content on a random port.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
+            &EmbeddedPartitionedCookiesOriginTrialBrowserTest::InterceptRequest,
+            base::Unretained(this)));
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  // URLLoaderInterceptor callback
+  bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
+    if (expected_request_urls_.find(params->url_request.url) ==
+        expected_request_urls_.end())
+      return false;
+
+    if (params->url_request.url.path() ==
+        base::StrCat({"/partitioned_cookies_embedder.html"})) {
+      std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+      std::string body = "<html><head>";
+      base::StrAppend(&body, {"</head><body>"});
+      base::StrAppend(&body, {BuildIframeHTML()});
+      base::StrAppend(&body, {"</body></html>"});
+      URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+      return true;
+    }
+
+    if (params->url_request.url.path() ==
+        base::StrCat({"/partitioned_cookies_embeddee.html"})) {
+      std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+      base::StrAppend(&headers, {BuildOriginTrialHeader()});
+      URLLoaderInterceptor::WriteResponse(
+          "chrome/test/data/client_hints/partitioned_cookies_embeddee.html",
+          params->client.get(), &headers, absl::nullopt,
+          params->url_request.url);
+      return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+
+  GURL embedder_url() const {
+    return GURL(base::StrCat(
+        {kFirstPartyOriginUrl, "/partitioned_cookies_embedder.html"}));
+  }
+
+  // In this test, the OT participant is the embedded site.
+  GURL origin_trial_participant_url() const {
+    return GURL(
+        base::StrCat({kCookieOriginUrl, "/partitioned_cookies_embeddee.html"}));
+  }
+
+  // The URL that was used to register the Origin Trial token as the first
+  // party. Requests to this origin should be handled by URLLoader interceptor.
+  static constexpr const char kFirstPartyOriginUrl[] =
+      "https://my-site.com:44444";
+
+  // The URL of the site receiving cookies.
+  // Requests to this origin should be handled by the test server.
+  static constexpr char kCookieOriginUrl[] = "https://127.0.0.1:44444";
+
+  std::string BuildOriginTrialHeader() const override {
+    std::string headers;
+
+    static constexpr const char kOriginTrialToken[] =
+        "A1mBOyrOKGAaaoT8mjM1qSNrOSrdDUa9WyqicVLlDGW3feIBSdWqSiHDAXUeKkGKaVqUiC"
+        "X8avwCM0gpG5LtxgAAAAByeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQi"
+        "LCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMjAwMDAwMD"
+        "AwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
+    if (test_options_.has_accept_ch_header) {
+      base::StrAppend(&headers,
+                      {"Accept-CH: ", "sec-ch-partitioned-cookies", "\n"});
+    }
+    if (test_options_.has_critical_ch_header) {
+      base::StrAppend(&headers,
+                      {"Critical-CH: ", "sec-ch-partitioned-cookies", "\n"});
+    }
+    if (test_options_.has_ot_token) {
+      base::StrAppend(
+          &headers,
+          {"Origin-Trial: ",
+           test_options_.valid_ot_token ? kOriginTrialToken : "invalid", "\n"});
+    }
+
+    return headers;
+  }
+
+ private:
+  std::string BuildIframeHTML() {
+    std::string html = "<iframe src=\"";
+    base::StrAppend(&html,
+                    {kCookieOriginUrl, "/partitioned_cookies_embeddee.html",
+                     "\"></iframe>"});
+    return html;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPartitionedCookiesOriginTrialBrowserTest,
+                       ValidTokenAndHeaderPresent) {
+  SetTestOptions(
+      {/*has_ot_token=*/true, /*valid_ot_token=*/true,
+       /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/false},
+      {embedder_url(), origin_trial_participant_url()});
+
+  NavigateTwiceAndCheckClientHint(embedder_url(), true, true);
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPartitionedCookiesOriginTrialBrowserTest,
+                       InvalidToken) {
+  SetTestOptions(
+      {/*has_ot_token=*/false, /*valid_ot_token=*/true,
+       /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/false},
+      {embedder_url(), origin_trial_participant_url()});
+
+  NavigateTwiceAndCheckClientHint(embedder_url(), false, false);
+}
+
 class PartitionedCookiesBypassOriginTrialBrowserTest
     : public PartitionedCookiesOriginTrialBrowserTest {
  public:
