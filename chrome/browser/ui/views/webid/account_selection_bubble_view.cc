@@ -6,6 +6,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/monogram_utils.h"
@@ -438,7 +439,9 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   SizeToContents();
   PreferredSizeChanged();
 
-  continue_button_->RequestFocus();
+  // Focus `continue_button` if screen reader is enabled.
+  if (accessibility_state_utils::IsScreenReaderEnabled())
+    continue_button_->RequestFocus();
   SendAccessibilityEvent(GetWidget());
 }
 
