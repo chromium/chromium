@@ -35,6 +35,7 @@ bool ExtensionRunsInAsh(const std::string& extension_id) {
        extension_misc::kKeyboardExtensionId,
        extension_misc::kHelpAppExtensionId, extension_misc::kGCSEExtensionId,
        extension_misc::kGnubbyV3ExtensionId,
+       extension_misc::kBruSecurityKeyForwarderExtensionId,
        file_manager::kImageLoaderExtensionId});
   return base::Contains(*keep_list, extension_id) ||
          ash::input_method::ComponentExtensionIMEManagerDelegateImpl::
