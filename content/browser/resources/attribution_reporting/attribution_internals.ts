@@ -5,21 +5,15 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './attribution_internals_table.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {$, getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, ReportType, SourceType, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, ReportType, SourceType, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {Column, TableModel} from './table_model.js';
 
-/**
- * @template T
- * @param {!T} a
- * @param {!T} b
- * @return {number}
- */
-function compareDefault(a, b) {
+function compareDefault<T>(a: T, b: T): number {
   if (a < b) {
     return -1;
   }
@@ -29,84 +23,52 @@ function compareDefault(a, b) {
   return 0;
 }
 
-/**
- * @param {string} key
- * @param {*} value
- * @return {*}
- */
-function bigint_replacer(key, value) {
+function bigintReplacer(_key: string, value: any): any {
   return typeof value === 'bigint' ? value.toString() : value;
 }
 
-/**
- * @template T
- * @template V
- * @extends {Column<T>}
- */
-class ValueColumn extends Column {
-  /**
-   * @param {string} header
-   * @param {function(!T): !V} getValue
-   * @param {?function(!T, !T): number} compare
-   */
+class ValueColumn<T, V> implements Column<T> {
+  compare: (a: T, b: T) => number;
+  header: string;
+  protected getValue: (param: T) => V;
+
   constructor(
-      header, getValue,
-      compare = (a, b) => compareDefault(getValue(a), getValue(b))) {
-    super();
-
+      header: string, getValue: (param: T) => V,
+      compare?: ((a: T, b: T) => number)) {
     this.header = header;
-
-    /** @protected */
     this.getValue = getValue;
-
-    this.compare = compare;
+    if (compare) {
+      this.compare = compare;
+    } else {
+      this.compare = (a: T, b: T) => compareDefault(getValue(a), getValue(b));
+    }
   }
 
-  /** @override */
-  render(td, row) {
-    td.innerText = this.getValue(row);
+  render(td: HTMLElement, row: T) {
+    td.innerText = `${this.getValue(row)}`;
   }
 
-  /** @override */
-  renderHeader(th) {
-    th.innerText = this.header;
+  renderHeader(th: HTMLElement) {
+    th.innerText = `${this.header}`;
   }
 }
 
-/**
- * @template T
- * @extends {ValueColumn<T, Date>}
- */
-class DateColumn extends ValueColumn {
-  /**
-   * @param {string} header
-   * @param {function(!T): Date} getValue
-   */
-  constructor(header, getValue) {
+class DateColumn<T> extends ValueColumn<T, Date> {
+  constructor(header: string, getValue: (p: T) => Date) {
     super(header, getValue);
   }
 
-  /** @override */
-  render(td, row) {
+  override render(td: HTMLElement, row: T) {
     td.innerText = this.getValue(row).toLocaleString();
   }
 }
 
-/**
- * @template T
- * @extends {ValueColumn<T, string>}
- */
-class CodeColumn extends ValueColumn {
-  /**
-   * @param {string} header
-   * @param {function(!T): string} getValue
-   */
-  constructor(header, getValue) {
-    super(header, getValue, /*compare=*/ null);
+class CodeColumn<T> extends ValueColumn<T, string> {
+  constructor(header: string, getValue: (p: T) => string) {
+    super(header, getValue);
   }
 
-  /** @override */
-  render(td, row) {
+  override render(td: HTMLElement, row: T) {
     const code = td.ownerDocument.createElement('code');
     code.innerText = this.getValue(row);
 
@@ -117,19 +79,15 @@ class CodeColumn extends ValueColumn {
   }
 }
 
-const debugPathPattern =
+const debugPathPattern: RegExp =
     /(?<=\/\.well-known\/attribution-reporting\/)debug(?=\/)/;
 
-/**
- * @extends {ValueColumn<Report, string>}
- */
-class ReportUrlColumn extends ValueColumn {
+class ReportUrlColumn extends ValueColumn<Report, string> {
   constructor() {
     super('Report URL', (e) => e.reportUrl);
   }
 
-  /** @override */
-  render(td, row) {
+  override render(td: HTMLElement, row: Report) {
     if (!row.isDebug) {
       td.innerText = row.reportUrl;
       return;
@@ -148,23 +106,23 @@ class ReportUrlColumn extends ValueColumn {
 }
 
 class Selectable {
+  input: HTMLInputElement;
+
   constructor() {
     this.input = document.createElement('input');
     this.input.type = 'checkbox';
   }
 }
 
-/**
- * @template T
- * @extends {Column<T>}
- */
-class SelectionColumn extends Column {
-  /**
-   * @param {!TableModel<T>} model
-   */
-  constructor(model) {
-    super();
+class SelectionColumn<T extends Selectable> implements Column<T> {
+  compare: ((a: T, b: T) => number)|null;
+  model: TableModel<T>;
+  selectAll: HTMLInputElement;
+  listener: () => void;
+  selectionChangedListeners: Set<(param: boolean) => void>;
 
+  constructor(model: TableModel<T>) {
+    this.compare = null;
     this.model = model;
 
     this.selectAll = document.createElement('input');
@@ -181,18 +139,14 @@ class SelectionColumn extends Column {
 
     this.listener = () => this.onChange();
     this.model.rowsChangedListeners.add(this.listener);
-
-    /** @type {!Set<function(boolean)>} */
     this.selectionChangedListeners = new Set();
   }
 
-  /** @override */
-  render(td, row) {
+  render(td: HTMLElement, row: T) {
     td.appendChild(row.input);
   }
 
-  /** @override */
-  renderHeader(th) {
+  renderHeader(th: HTMLElement) {
     th.appendChild(this.selectAll);
   }
 
@@ -226,79 +180,88 @@ class SelectionColumn extends Column {
     this.notifySelectionChanged(anySelected);
   }
 
-  /** @param {boolean} anySelected */
-  notifySelectionChanged(anySelected) {
+  notifySelectionChanged(anySelected: boolean) {
     this.selectionChangedListeners.forEach((f) => f(anySelected));
   }
 }
 
 class Source {
-  /**
-   * @param {!WebUISource} mojo
-   */
-  constructor(mojo) {
+  sourceEventId: bigint;
+  impressionOrigin: string;
+  attributionDestination: string;
+  reportingOrigin: string;
+  impressionTime: Date;
+  expiryTime: Date;
+  sourceType: string;
+  filterData: string;
+  aggregatableSource: string;
+  debugKey: string;
+  dedupKeys: string;
+  priority: bigint;
+  status: string;
+
+  constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
-    this.impressionOrigin = OriginToText(mojo.impressionOrigin);
+    this.impressionOrigin = originToText(mojo.impressionOrigin);
     this.attributionDestination = mojo.attributionDestination;
-    this.reportingOrigin = OriginToText(mojo.reportingOrigin);
+    this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.impressionTime = new Date(mojo.impressionTime);
     this.expiryTime = new Date(mojo.expiryTime);
-    this.sourceType = SourceTypeToText(mojo.sourceType);
+    this.sourceType = sourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
-    this.aggregatableSource = JSON.stringify(mojo.aggregatableSource, bigint_replacer, ' ');
-    this.debugKey = mojo.debugKey ? mojo.debugKey.value : '';
+    this.aggregatableSource =
+        JSON.stringify(mojo.aggregatableSource, bigintReplacer, ' ');
+    this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
     this.dedupKeys = mojo.dedupKeys.join(', ');
-    this.status = AttributabilityToText(mojo.attributability);
+    this.status = attributabilityToText(mojo.attributability);
   }
 }
 
-/** @extends {TableModel<Source>} */
-class SourceTableModel extends TableModel {
+class SourceTableModel extends TableModel<Source> {
+  storedSources: Source[] = [];
+  unstoredSources: Source[] = [];
+
   constructor() {
     super();
 
     this.cols = [
-      new ValueColumn('Source Event ID', (e) => e.sourceEventId),
-      new ValueColumn('Status', (e) => e.status),
-      new ValueColumn('Source Origin', (e) => e.impressionOrigin),
-      new ValueColumn('Destination', (e) => e.attributionDestination),
-      new ValueColumn('Report To', (e) => e.reportingOrigin),
-      new DateColumn('Source Registration Time', (e) => e.impressionTime),
-      new DateColumn('Expiry Time', (e) => e.expiryTime),
-      new ValueColumn('Source Type', (e) => e.sourceType),
-      new ValueColumn('Priority', (e) => e.priority),
-      new CodeColumn('Filter Data', (e) => e.filterData),
-      new CodeColumn('Aggregatable Source', (e) => e.aggregatableSource),
-      new ValueColumn('Debug Key', (e) => e.debugKey),
-      new ValueColumn('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
+      new ValueColumn<Source, bigint>(
+          'Source Event ID', (e) => e.sourceEventId),
+      new ValueColumn<Source, string>('Status', (e) => e.status),
+      new ValueColumn<Source, string>(
+          'Source Origin', (e) => e.impressionOrigin),
+      new ValueColumn<Source, string>(
+          'Destination', (e) => e.attributionDestination),
+      new ValueColumn<Source, string>('Report To', (e) => e.reportingOrigin),
+      new DateColumn<Source>(
+          'Source Registration Time', (e) => e.impressionTime),
+      new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+      new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
+      new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
+      new CodeColumn<Source>('Filter Data', (e) => e.filterData),
+      new CodeColumn<Source>(
+          'Aggregatable Source', (e) => e.aggregatableSource),
+      new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
+      new ValueColumn<Source, string>('Dedup Keys', (e) => e.dedupKeys),
     ];
 
     this.emptyRowText = 'No sources.';
 
     // Sort by source registration time by default.
     this.sortIdx = 5;
-
-    /** @type {!Array<!Source>} */
-    this.unstoredSources = [];
-
-    /** @type {!Array<!Source>} */
-    this.storedSources = [];
   }
 
-  /** @override */
-  getRows() {
+  override getRows() {
     return this.unstoredSources.concat(this.storedSources);
   }
 
-  /** @param {!Array<!Source>} storedSources */
-  setStoredSources(storedSources) {
+  setStoredSources(storedSources: Source[]) {
     this.storedSources = storedSources;
     this.notifyRowsChanged();
   }
 
-  /** @param {!Source} source */
-  addUnstoredSource(source) {
+  addUnstoredSource(source: Source) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
     if (this.unstoredSources.length >= 1000) {
@@ -317,15 +280,21 @@ class SourceTableModel extends TableModel {
 }
 
 class Trigger {
-  /**
-   * @param {!WebUITrigger} mojo
-   */
-  constructor(mojo) {
+  triggerTime: Date;
+  destinationOrigin: string;
+  reportingOrigin: string;
+  filters: string;
+  debugKey: string;
+  eventTriggers: string;
+  eventLevelStatus: string;
+  aggregatableStatus: string;
+
+  constructor(mojo: WebUITrigger) {
     this.triggerTime = new Date(mojo.triggerTime);
-    this.destinationOrigin = OriginToText(mojo.destinationOrigin);
-    this.reportingOrigin = OriginToText(mojo.reportingOrigin);
+    this.destinationOrigin = originToText(mojo.destinationOrigin);
+    this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.filters = JSON.stringify(mojo.filters, null, ' ');
-    this.debugKey = mojo.debugKey ? mojo.debugKey.value : '';
+    this.debugKey = mojo.debugKey ? mojo.debugKey.value.toString() : '';
 
     this.eventTriggers = JSON.stringify(
         mojo.eventTriggers.map((e) => {
@@ -342,45 +311,44 @@ class Trigger {
                 undefined,
           };
         }),
-        bigint_replacer, ' ');
+        bigintReplacer, ' ');
 
-    this.eventLevelStatus = TriggerStatusToText(mojo.eventLevelStatus);
-    this.aggregatableStatus = TriggerStatusToText(mojo.aggregatableStatus);
+    this.eventLevelStatus = triggerStatusToText(mojo.eventLevelStatus);
+    this.aggregatableStatus = triggerStatusToText(mojo.aggregatableStatus);
   }
 }
 
-/** @extends {TableModel<Trigger>} */
-class TriggerTableModel extends TableModel {
+class TriggerTableModel extends TableModel<Trigger> {
+  triggers: Trigger[] = [];
+
   constructor() {
     super();
 
     this.cols = [
-      new DateColumn('Trigger Time', (e) => e.triggerTime),
-      new ValueColumn('Event-Level Status', (e) => e.eventLevelStatus),
-      new ValueColumn('Aggregatable Status', (e) => e.aggregatableStatus),
-      new ValueColumn('Destination', (e) => e.destinationOrigin),
-      new ValueColumn('Report To', (e) => e.reportingOrigin),
-      new ValueColumn('Debug Key', (e) => e.debugKey),
-      new CodeColumn('Filters', (e) => e.filters),
-      new CodeColumn('Event Triggers', (e) => e.eventTriggers),
+      new DateColumn<Trigger>('Trigger Time', (e) => e.triggerTime),
+      new ValueColumn<Trigger, string>(
+          'Event-Level Status', (e) => e.eventLevelStatus),
+      new ValueColumn<Trigger, string>(
+          'Aggregatable Status', (e) => e.aggregatableStatus),
+      new ValueColumn<Trigger, string>(
+          'Destination', (e) => e.destinationOrigin),
+      new ValueColumn<Trigger, string>('Report To', (e) => e.reportingOrigin),
+      new ValueColumn<Trigger, string>('Debug Key', (e) => e.debugKey),
+      new CodeColumn<Trigger>('Filters', (e) => e.filters),
+      new CodeColumn<Trigger>('Event Triggers', (e) => e.eventTriggers),
     ];
 
     this.emptyRowText = 'No triggers.';
 
     // Sort by trigger time by default.
     this.sortIdx = 0;
-
-    /** @type {!Array<!Trigger>} */
-    this.triggers = [];
   }
 
-  /** @override */
-  getRows() {
+  override getRows() {
     return this.triggers;
   }
 
-  /** @param {!Trigger} trigger */
-  addTrigger(trigger) {
+  addTrigger(trigger: Trigger) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
     if (this.triggers.length >= 1000) {
@@ -398,10 +366,16 @@ class TriggerTableModel extends TableModel {
 }
 
 class Report extends Selectable {
-  /**
-   * @param {!WebUIReport} mojo
-   */
-  constructor(mojo) {
+  id: ReportID;
+  reportBody: string;
+  reportUrl: string;
+  triggerTime: Date;
+  reportTime: Date;
+  isDebug: boolean;
+  status: string;
+  httpResponseCode?: number;
+
+  constructor(mojo: WebUIReport) {
     super();
 
     this.id = mojo.id;
@@ -438,47 +412,54 @@ class Report extends Selectable {
   }
 }
 
-/** @extends {Report} */
 class EventLevelReport extends Report {
-  /**
-   * @param {!WebUIReport} mojo
-   */
-  constructor(mojo) {
+  reportPriority: bigint;
+  attributedTruthfully: boolean;
+
+  constructor(mojo: WebUIReport) {
     super(mojo);
 
-    this.reportPriority = mojo.data.eventLevelData.priority;
-    this.attributedTruthfully = mojo.data.eventLevelData.attributedTruthfully;
+    this.reportPriority = mojo.data.eventLevelData!.priority;
+    this.attributedTruthfully = mojo.data.eventLevelData!.attributedTruthfully;
   }
 }
 
-/** @extends {Report} */
 class AggregatableAttributionReport extends Report {
-  /**
-   * @param {!WebUIReport} mojo
-   */
-  constructor(mojo) {
+  contributions: string;
+
+  constructor(mojo: WebUIReport) {
     super(mojo);
 
     this.contributions = JSON.stringify(
-        mojo.data.aggregatableAttributionData.contributions, bigint_replacer, ' ');
+        mojo.data.aggregatableAttributionData!.contributions, bigintReplacer,
+        ' ');
   }
 }
 
-/**
- * @extends {TableModel<Report>}
- */
-class ReportTableModel extends TableModel {
-  /**
-   * @param {!Element} showDebugReportsContainer
-   * @param {!Element} sendReportsButton
-   */
-  constructor(showDebugReportsContainer, sendReportsButton) {
+class ReportTableModel extends TableModel<Report> {
+  showDebugReportsCheckbox: HTMLInputElement;
+  hiddenDebugReportsSpan: HTMLSpanElement;
+  sendReportsButton: HTMLButtonElement;
+  selectionColumn: SelectionColumn<Report>;
+  sentOrDroppedReports: Report[] = [];
+  storedReports: Report[] = [];
+  debugReports: Report[] = [];
+
+  constructor(
+      showDebugReportsContainer: HTMLElement,
+      sendReportsButton: HTMLButtonElement) {
     super();
 
-    this.showDebugReportsCheckbox = queryRequiredElement(
-        'input[type="checkbox"]', showDebugReportsContainer);
-    this.hiddenDebugReportsSpan =
-        queryRequiredElement('span', showDebugReportsContainer);
+    const showDebugReportsCheckbox =
+        showDebugReportsContainer.querySelector<HTMLInputElement>(
+            'input[type="checkbox"]');
+    assert(showDebugReportsCheckbox);
+    this.showDebugReportsCheckbox = showDebugReportsCheckbox;
+
+    const hiddenDebugReportsSpan =
+        showDebugReportsContainer.querySelector('span');
+    assert(hiddenDebugReportsSpan);
+    this.hiddenDebugReportsSpan = hiddenDebugReportsSpan;
 
     this.sendReportsButton = sendReportsButton;
 
@@ -486,35 +467,26 @@ class ReportTableModel extends TableModel {
 
     this.emptyRowText = 'No sent or pending reports.';
 
-    /** @type {!Array<!Report>} */
-    this.sentOrDroppedReports = [];
-
-    /** @type {!Array<!Report>} */
-    this.storedReports = [];
-
-    /** @type {!Array<!Report>} */
-    this.debugReports = [];
-
     this.showDebugReportsCheckbox.addEventListener(
         'input', () => this.notifyRowsChanged());
 
-    this.sendReportsButton.addEventListener('click', () => this.sendReports());
-    this.selectionColumn.selectionChangedListeners.add((anySelected) => {
-      this.sendReportsButton.disabled = !anySelected;
-    });
+    this.sendReportsButton.addEventListener('click', () => this.sendReports_());
+    this.selectionColumn.selectionChangedListeners.add(
+        (anySelected: boolean) => {
+          this.sendReportsButton.disabled = !anySelected;
+        });
 
-    this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan());
+    this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan_());
   }
 
-  /** @override */
-  styleRow(tr, report) {
+  override styleRow(tr: HTMLElement, report: Report) {
     tr.classList.toggle(
         'http-error',
-        report.httpResponseCode < 200 || report.httpResponseCode >= 400);
+        report.httpResponseCode !== undefined &&
+            (report.httpResponseCode < 200 || report.httpResponseCode >= 400));
   }
 
-  /** @override */
-  getRows() {
+  override getRows() {
     let rows = this.sentOrDroppedReports.concat(this.storedReports);
     if (this.showDebugReportsCheckbox.checked) {
       rows = rows.concat(this.debugReports);
@@ -522,14 +494,12 @@ class ReportTableModel extends TableModel {
     return rows;
   }
 
-  /** @param {!Array<!Report>} storedReports */
-  setStoredReports(storedReports) {
+  setStoredReports(storedReports: Report[]) {
     this.storedReports = storedReports;
     this.notifyRowsChanged();
   }
 
-  /** @param {!Report} report */
-  addSentOrDroppedReport(report) {
+  addSentOrDroppedReport(report: Report) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
     if (this.sentOrDroppedReports.length + this.debugReports.length >= 1000) {
@@ -553,8 +523,7 @@ class ReportTableModel extends TableModel {
     this.notifyRowsChanged();
   }
 
-  /** @private */
-  updateHiddenDebugReportsSpan() {
+  private updateHiddenDebugReportsSpan_() {
     this.hiddenDebugReportsSpan.innerText =
         this.showDebugReportsCheckbox.checked ?
         '' :
@@ -565,12 +534,11 @@ class ReportTableModel extends TableModel {
    * Sends all selected reports.
    * Disables the button while the reports are still being sent.
    * Observer.onReportsChanged and Observer.onSourcesChanged will be called
-   * automatically as reports are deleted, so there's no need to manually refresh
-   * the data on completion.
-   * @private
+   * automatically as reports are deleted, so there's no need to manually
+   * refresh the data on completion.
    */
-  sendReports() {
-    const ids = [];
+  private sendReports_() {
+    const ids: ReportID[] = [];
     this.storedReports.forEach((report) => {
       if (!report.input.disabled && report.input.checked) {
         ids.push(report.id);
@@ -586,31 +554,31 @@ class ReportTableModel extends TableModel {
     this.sendReportsButton.disabled = true;
     this.sendReportsButton.innerText = 'Sending...';
 
+    assert(pageHandler);
     pageHandler.sendReports(ids).then(() => {
       this.sendReportsButton.innerText = previousText;
     });
   }
 }
 
-/** @extends {ReportTableModel} */
 class EventLevelReportTableModel extends ReportTableModel {
-  /**
-   * @param {!Element} showDebugReportsContainer
-   * @param {!Element} sendReportsButton
-   */
-  constructor(showDebugReportsContainer, sendReportsButton) {
+  constructor(
+      showDebugReportsContainer: HTMLElement,
+      sendReportsButton: HTMLButtonElement) {
     super(showDebugReportsContainer, sendReportsButton);
 
     this.cols = [
       this.selectionColumn,
-      new CodeColumn('Report Body', (e) => e.reportBody),
-      new ValueColumn('Status', (e) => e.status),
+      new CodeColumn<Report>('Report Body', (e) => e.reportBody),
+      new ValueColumn<Report, string>('Status', (e) => e.status),
       new ReportUrlColumn(),
-      new DateColumn('Trigger Time', (e) => e.triggerTime),
-      new DateColumn('Report Time', (e) => e.reportTime),
-      new ValueColumn('Report Priority', (e) => e.reportPriority),
-      new ValueColumn(
-          'Randomized Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
+      new DateColumn<Report>('Trigger Time', (e) => e.triggerTime),
+      new DateColumn<Report>('Report Time', (e) => e.reportTime),
+      new ValueColumn<Report, bigint>(
+          'Report Priority', (e) => (e as EventLevelReport).reportPriority),
+      new ValueColumn<Report, string>(
+          'Randomized Report',
+          (e) => (e as EventLevelReport).attributedTruthfully ? 'no' : 'yes'),
     ];
 
     // Sort by report time by default.
@@ -618,23 +586,22 @@ class EventLevelReportTableModel extends ReportTableModel {
   }
 }
 
-/** @extends {ReportTableModel} */
 class AggregatableAttributionReportTableModel extends ReportTableModel {
-  /**
-   * @param {!Element} showDebugReportsContainer
-   * @param {!Element} sendReportsButton
-   */
-  constructor(showDebugReportsContainer, sendReportsButton) {
+  constructor(
+      showDebugReportsContainer: HTMLElement,
+      sendReportsButton: HTMLButtonElement) {
     super(showDebugReportsContainer, sendReportsButton);
 
     this.cols = [
       this.selectionColumn,
-      new CodeColumn('Report Body', (e) => e.reportBody),
-      new ValueColumn('Status', (e) => e.status),
+      new CodeColumn<Report>('Report Body', (e) => e.reportBody),
+      new ValueColumn<Report, string>('Status', (e) => e.status),
       new ReportUrlColumn(),
-      new DateColumn('Trigger Time', (e) => e.triggerTime),
-      new DateColumn('Report Time', (e) => e.reportTime),
-      new CodeColumn('Histograms', (e) => e.contributions),
+      new DateColumn<Report>('Trigger Time', (e) => e.triggerTime),
+      new DateColumn<Report>('Report Time', (e) => e.reportTime),
+      new CodeColumn<Report>(
+          'Histograms',
+          (e) => (e as AggregatableAttributionReport).contributions),
     ];
 
     // Sort by report time by default.
@@ -645,29 +612,23 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
 
 /**
  * Reference to the backend providing all the data.
- * @type {?AttributionInternalsHandlerRemote}
  */
-let pageHandler = null;
+let pageHandler: AttributionInternalsHandlerRemote|null = null;
 
+let sourceTableModel: SourceTableModel|null = null;
 
-/** @type {?SourceTableModel} */
-let sourceTableModel = null;
+let triggerTableModel: TriggerTableModel|null = null;
 
-/** @type {?TriggerTableModel} */
-let triggerTableModel = null;
+let eventLevelReportTableModel: EventLevelReportTableModel|null = null;
 
-/** @type {?EventLevelReportTableModel} */
-let eventLevelReportTableModel = null;
-
-/** @type {?AggregatableAttributionReportTableModel} */
-let aggregatableAttributionReportTableModel = null;
+let aggregatableAttributionReportTableModel:
+    AggregatableAttributionReportTableModel|null = null;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
- * @param {Origin} origin Origin to convert
- * @return {string}
+ * @param origin Origin to convert
  */
-function OriginToText(origin) {
+function originToText(origin: Origin): string {
   if (origin.host.length === 0) {
     return 'Null';
   }
@@ -683,10 +644,9 @@ function OriginToText(origin) {
 
 /**
  * Converts a mojo SourceType into a user-readable string.
- * @param {SourceType} sourceType Source type to convert
- * @return {string}
+ * @param sourceType Source type to convert
  */
-function SourceTypeToText(sourceType) {
+function sourceTypeToText(sourceType: SourceType): string {
   switch (sourceType) {
     case SourceType.kNavigation:
       return 'Navigation';
@@ -699,11 +659,10 @@ function SourceTypeToText(sourceType) {
 
 /**
  * Converts a mojo Attributability into a user-readable string.
- * @param {WebUISource_Attributability} attributability
- *     Attributability to convert
- * @return {string}
+ * @param attributability Attributability to convert
  */
-function AttributabilityToText(attributability) {
+function attributabilityToText(attributability: WebUISource_Attributability):
+    string {
   switch (attributability) {
     case WebUISource_Attributability.kAttributable:
       return 'Attributable';
@@ -717,8 +676,7 @@ function AttributabilityToText(attributability) {
       return 'Rejected: internal error';
     case WebUISource_Attributability.kInsufficientSourceCapacity:
       return 'Rejected: insufficient source capacity';
-    case WebUISource_Attributability
-        .kInsufficientUniqueDestinationCapacity:
+    case WebUISource_Attributability.kInsufficientUniqueDestinationCapacity:
       return 'Rejected: insufficient unique destination capacity';
     case WebUISource_Attributability.kExcessiveReportingOrigins:
       return 'Rejected: excessive reporting origins';
@@ -729,11 +687,7 @@ function AttributabilityToText(attributability) {
   }
 }
 
-/**
- * @param {WebUITrigger_Status} status
- * @return {string}
- */
-function TriggerStatusToText(status) {
+function triggerStatusToText(status: WebUITrigger_Status): string {
   switch (status) {
     case WebUITrigger_Status.kSuccess:
       return 'Success: Report stored';
@@ -773,18 +727,24 @@ function TriggerStatusToText(status) {
  * backend and populate the tables. Also update measurement enabled status.
  */
 function updatePageData() {
+  assert(pageHandler);
   // Get the feature status for Attribution Reporting and populate it.
   pageHandler.isAttributionReportingEnabled().then((response) => {
-    $('feature-status-content').innerText =
-        response.enabled ? 'enabled' : 'disabled';
-    $('feature-status-content').classList.toggle('disabled', !response.enabled);
+    const featureStatusContent =
+        document.querySelector<HTMLElement>('#feature-status-content');
+    assert(featureStatusContent);
+    featureStatusContent.innerText = response.enabled ? 'enabled' : 'disabled';
+    featureStatusContent.classList.toggle('disabled', !response.enabled);
 
-    $('debug-mode-content').innerHTML =
-        getTrustedHTML`The #conversion-measurement-debug-mode flag is
+    const debugModeContent =
+        document.querySelector<HTMLElement>('#debug-mode-content');
+    assert(debugModeContent);
+    const html = getTrustedHTML`The #conversion-measurement-debug-mode flag is
  <strong>enabled</strong>, reports are sent immediately and never pending.`;
+    debugModeContent.innerHTML = html as unknown as string;
 
     if (!response.debugMode) {
-      $('debug-mode-content').innerText = '';
+      debugModeContent.innerText = '';
     }
   });
 
@@ -794,25 +754,27 @@ function updatePageData() {
 }
 
 function updateSources() {
+  assert(pageHandler);
   pageHandler.getActiveSources().then((response) => {
+    assert(sourceTableModel);
     sourceTableModel.setStoredSources(
         response.sources.map((mojo) => new Source(mojo)));
   });
 }
 
-/**
- * @param {!ReportType} reportType
- */
-function updateReports(reportType) {
+function updateReports(reportType: ReportType) {
+  assert(pageHandler);
   pageHandler.getReports(reportType).then((response) => {
     switch (reportType) {
       case ReportType.kEventLevel:
+        assert(eventLevelReportTableModel);
         eventLevelReportTableModel.setStoredReports(
             response.reports
                 .filter((mojo) => mojo.data.eventLevelData !== undefined)
                 .map((mojo) => new EventLevelReport(mojo)));
         break;
       case ReportType.kAggregatableAttribution:
+        assert(aggregatableAttributionReportTableModel);
         aggregatableAttributionReportTableModel.setStoredReports(
             response.reports
                 .filter(
@@ -831,64 +793,61 @@ function updateReports(reportType) {
  * the data on completion.
  */
 function clearStorage() {
+  assert(sourceTableModel);
   sourceTableModel.clear();
+  assert(triggerTableModel);
   triggerTableModel.clear();
+  assert(eventLevelReportTableModel);
   eventLevelReportTableModel.clear();
+  assert(aggregatableAttributionReportTableModel);
   aggregatableAttributionReportTableModel.clear();
+  assert(pageHandler);
   pageHandler.clearStorage();
 }
 
-/**
- * @param {!WebUIReport} mojo
- */
-function addSentOrDroppedReport(mojo) {
+function addSentOrDroppedReport(mojo: WebUIReport) {
   if (mojo.data.eventLevelData !== undefined) {
+    assert(eventLevelReportTableModel);
     eventLevelReportTableModel.addSentOrDroppedReport(
         new EventLevelReport(mojo));
   } else {
+    assert(aggregatableAttributionReportTableModel);
     aggregatableAttributionReportTableModel.addSentOrDroppedReport(
         new AggregatableAttributionReport(mojo));
   }
 }
 
-/** @implements {ObserverInterface} */
-class Observer {
-  /** @override */
+class Observer implements ObserverInterface {
   onSourcesChanged() {
     updateSources();
   }
 
-  /** @override */
-  onReportsChanged(reportType) {
+  onReportsChanged(reportType: ReportType) {
     updateReports(reportType);
   }
 
-  /** @override */
-  onSourceRejectedOrDeactivated(mojo) {
+  onSourceRejectedOrDeactivated(mojo: WebUISource) {
+    assert(sourceTableModel);
     sourceTableModel.addUnstoredSource(new Source(mojo));
   }
 
-  /** @override */
-  onReportSent(mojo) {
+  onReportSent(mojo: WebUIReport) {
     addSentOrDroppedReport(mojo);
   }
 
-  /** @override */
-  onReportDropped(mojo) {
+  onReportDropped(mojo: WebUIReport) {
     addSentOrDroppedReport(mojo);
   }
 
-  /** @override */
-  onTriggerHandled(mojo) {
+  onTriggerHandled(mojo: WebUITrigger) {
+    assert(triggerTableModel);
     triggerTableModel.addTrigger(new Trigger(mojo));
   }
 }
 
-/**
- * @param {!TableModel<?>} model
- * @param {!Element} tab
- */
-function installUnreadIndicator(model, tab) {
+function installUnreadIndicator(model: TableModel<any>, tab: HTMLElement|null) {
+  assert(tab);
+
   model.rowsChangedListeners.add(() => {
     if (!tab.hasAttribute('selected')) {
       tab.classList.add('unread');
@@ -902,49 +861,74 @@ document.addEventListener('DOMContentLoaded', function() {
 
   sourceTableModel = new SourceTableModel();
   triggerTableModel = new TriggerTableModel();
-  eventLevelReportTableModel = new EventLevelReportTableModel(
-      getRequiredElement('show-debug-event-reports'),
-      getRequiredElement('send-reports'));
+  const showDebugReports =
+      document.querySelector<HTMLButtonElement>('#show-debug-event-reports');
+  assert(showDebugReports);
+  const sendReports =
+      document.querySelector<HTMLButtonElement>('#send-reports');
+  assert(sendReports);
+  eventLevelReportTableModel =
+      new EventLevelReportTableModel(showDebugReports, sendReports);
+  const showDebugAggregatableReports =
+      document.querySelector<HTMLElement>('#show-debug-aggregatable-reports');
+  assert(showDebugAggregatableReports);
+  const sendAggregatableReports =
+      document.querySelector<HTMLButtonElement>('#send-aggregatable-reports');
+  assert(sendAggregatableReports);
   aggregatableAttributionReportTableModel =
       new AggregatableAttributionReportTableModel(
-          getRequiredElement('show-debug-aggregatable-reports'),
-          getRequiredElement('send-aggregatable-reports'));
+          showDebugAggregatableReports, sendAggregatableReports);
 
   const tabBox = document.querySelector('cr-tab-box');
+  assert(tabBox);
   tabBox.addEventListener('selected-index-change', e => {
-    const tabs = document.querySelectorAll('div[slot=\'tab\']');
-    tabs[/** @type {!CustomEvent<number>} */ (e).detail].classList.remove(
-        'unread');
+    const tabs = document.querySelectorAll<HTMLElement>('div[slot=\'tab\']');
+    tabs[(e as CustomEvent<number>).detail]!.classList.remove('unread');
   });
-  installUnreadIndicator(sourceTableModel, getRequiredElement('sources-tab'));
-  installUnreadIndicator(triggerTableModel, getRequiredElement('triggers-tab'));
+
+  installUnreadIndicator(
+      sourceTableModel, document.querySelector<HTMLElement>('#sources-tab'));
+  installUnreadIndicator(
+      triggerTableModel, document.querySelector<HTMLElement>('#triggers-tab'));
   installUnreadIndicator(
       eventLevelReportTableModel,
-      getRequiredElement('event-level-reports-tab'));
+      document.querySelector<HTMLElement>('#event-level-reports-tab'));
   installUnreadIndicator(
       aggregatableAttributionReportTableModel,
-      getRequiredElement('aggregatable-reports-tab'));
+      document.querySelector<HTMLElement>('#aggregatable-reports-tab'));
 
-  $('refresh').addEventListener('click', updatePageData);
-  $('clear-data').addEventListener('click', clearStorage);
+  const refresh = document.querySelector('#refresh');
+  assert(refresh);
+  refresh.addEventListener('click', updatePageData);
+  const clearData = document.querySelector('#clear-data');
+  assert(clearData);
+  clearData.addEventListener('click', clearStorage);
 
-  const sourceTable = /** @type {{ setModel: function(TableModel) }} */ (
-      document.querySelector('#sourceTable'));
-  sourceTable.setModel(sourceTableModel);
-  const triggerTable = /** @type {{ setModel: function(TableModel) }} */ (
-      document.querySelector('#triggerTable'));
-  triggerTable.setModel(triggerTableModel);
-  const reportTable = /** @type {{ setModel: function(TableModel) }} */ (
-      document.querySelector('#reportTable'));
-  reportTable.setModel(eventLevelReportTableModel);
+  const sourceTable =
+      document.querySelector<AttributionInternalsTableElement<Source>>(
+          '#sourceTable');
+  assert(sourceTable);
+  sourceTable.setModel(sourceTableModel!);
+  const triggerTable =
+      document.querySelector<AttributionInternalsTableElement<Trigger>>(
+          '#triggerTable');
+  assert(triggerTable);
+  triggerTable.setModel(triggerTableModel!);
+  const reportTable =
+      document.querySelector<AttributionInternalsTableElement<Report>>(
+          '#reportTable');
+  assert(reportTable);
+  reportTable.setModel(eventLevelReportTableModel!);
   const aggregatableReportTable =
-      /** @type {{ setModel: function(TableModel) }} */ (
-          document.querySelector('#aggregatableReportTable'));
-  aggregatableReportTable.setModel(aggregatableAttributionReportTableModel);
+      document.querySelector<AttributionInternalsTableElement<Report>>(
+          '#aggregatableReportTable');
+  assert(aggregatableReportTable);
+  aggregatableReportTable.setModel(aggregatableAttributionReportTableModel!);
 
   tabBox.hidden = false;
 
   const receiver = new ObserverReceiver(new Observer());
+  assert(pageHandler);
   pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());
 
   updatePageData();
