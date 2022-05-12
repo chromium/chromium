@@ -91,7 +91,7 @@ mojom::ResultCode PrintingContext::OnError() {
   return result;
 }
 
-mojom::ResultCode PrintingContext::UsePdfSettings() {
+void PrintingContext::UsePdfSettings() {
   base::Value::Dict pdf_settings;
   pdf_settings.Set(kSettingHeaderFooterEnabled, false);
   pdf_settings.Set(kSettingShouldPrintBackgrounds, false);
@@ -112,7 +112,17 @@ mojom::ResultCode PrintingContext::UsePdfSettings() {
   pdf_settings.Set(kSettingScaleFactor, 100);
   pdf_settings.Set(kSettingRasterizePdf, false);
   pdf_settings.Set(kSettingPagesPerSheet, 1);
-  return UpdatePrintSettings(std::move(pdf_settings));
+  mojom::ResultCode result = UpdatePrintSettings(std::move(pdf_settings));
+  // TODO(thestig): Downgrade these to DCHECKs after shipping these CHECKs to
+  // production without any failures.
+  CHECK_EQ(result, mojom::ResultCode::kSuccess);
+  // UsePdfSettings() should never fail and the returned DPI should always be a
+  // well-known value that is safe to use as a divisor.
+#if BUILDFLAG(IS_MAC)
+  CHECK_EQ(settings_->device_units_per_inch(), kPointsPerInch);
+#else
+  CHECK_EQ(settings_->device_units_per_inch(), kDefaultPdfDpi);
+#endif
 }
 
 mojom::ResultCode PrintingContext::UpdatePrintSettings(

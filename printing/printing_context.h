@@ -88,8 +88,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // default device settings.
   virtual mojom::ResultCode UseDefaultSettings() = 0;
 
-  // Updates the context with PDF printer settings.
-  mojom::ResultCode UsePdfSettings();
+  // Updates the context with PDF printer settings. The PDF settings are
+  // guaranteed to be valid.
+  void UsePdfSettings();
 
   // Returns paper size to be used for PDF or Cloud Print in device units.
   virtual gfx::Size GetPdfPaperSizeDeviceUnits() = 0;

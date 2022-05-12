@@ -91,10 +91,7 @@ gfx::Size GetDefaultPdfMediaSizeMicrons() {
   // calls.
   auto printing_context(
       PrintingContext::Create(&delegate, /*skip_system_calls=*/false));
-  if (mojom::ResultCode::kSuccess != printing_context->UsePdfSettings() ||
-      printing_context->settings().device_units_per_inch() <= 0) {
-    return gfx::Size();
-  }
+  printing_context->UsePdfSettings();
   gfx::Size pdf_media_size = printing_context->GetPdfPaperSizeDeviceUnits();
   float device_microns_per_device_unit =
       static_cast<float>(kMicronsPerInch) /
