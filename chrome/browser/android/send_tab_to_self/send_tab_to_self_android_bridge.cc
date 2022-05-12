@@ -37,16 +37,6 @@ namespace send_tab_to_self {
 
 namespace {
 
-ScopedJavaLocalRef<jobject> CreateJavaTargetDeviceInfo(
-    JNIEnv* env,
-    const std::string& device_name,
-    const TargetDeviceInfo& device_info) {
-  return Java_TargetDeviceInfo_createTargetDeviceInfo(
-      env, ConvertUTF8ToJavaString(env, device_name),
-      ConvertUTF8ToJavaString(env, device_info.cache_guid),
-      device_info.device_type, device_info.last_updated_timestamp.ToJavaTime());
-}
-
 SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   SendTabToSelfModel* model = SendTabToSelfSyncServiceFactory::GetInstance()
@@ -57,39 +47,38 @@ SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
 
 }  // namespace
 
-// Populates a list of GUIDs in the model.
-static void JNI_SendTabToSelfAndroidBridge_GetAllGuids(
+static ScopedJavaLocalRef<jobjectArray>
+JNI_SendTabToSelfAndroidBridge_GetAllGuids(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_guid_list_obj) {
+    const JavaParamRef<jobject>& j_profile) {
   SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return;
-  }
-  std::vector<std::string> all_ids = model->GetAllGuids();
-  for (std::vector<std::string>::iterator it = all_ids.begin();
-       it != all_ids.end(); ++it) {
-    ScopedJavaLocalRef<jstring> j_guid = ConvertUTF8ToJavaString(env, *it);
-    Java_SendTabToSelfAndroidBridge_addToGuidList(env, j_guid_list_obj, j_guid);
-  }
+  auto guids =
+      model->IsReady() ? model->GetAllGuids() : std::vector<std::string>();
+  return base::android::ToJavaArrayOfStrings(env, guids);
 }
 
-// Populates a list of TargetDeviceInfos in the model.
-static void JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
+static ScopedJavaLocalRef<jobjectArray>
+JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_device_info_list_obj) {
+    const JavaParamRef<jobject>& j_profile) {
+  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env,
+      "org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo");
   SendTabToSelfModel* model = GetModel(j_profile);
   if (!model->IsReady()) {
-    return;
+    return base::android::ToTypedJavaArrayOfObjects(
+        env, std::vector<ScopedJavaLocalRef<jobject>>(), type);
   }
-  std::vector<TargetDeviceInfo> all_infos =
-      model->GetTargetDeviceInfoSortedList();
-  for (auto it = all_infos.begin(); it != all_infos.end(); ++it) {
-    Java_SendTabToSelfAndroidBridge_addToTargetDeviceInfoList(
-        env, j_device_info_list_obj,
-        CreateJavaTargetDeviceInfo(env, it->device_name, *it));
+
+  std::vector<ScopedJavaLocalRef<jobject>> infos;
+  for (const TargetDeviceInfo& info : model->GetTargetDeviceInfoSortedList()) {
+    infos.push_back(Java_TargetDeviceInfo_build(
+        env, ConvertUTF8ToJavaString(env, info.device_name),
+        ConvertUTF8ToJavaString(env, info.cache_guid), info.device_type,
+        info.last_updated_timestamp.ToJavaTime()));
   }
+
+  return base::android::ToTypedJavaArrayOfObjects(env, infos, type);
 }
 
 // Deletes all entries in the model.

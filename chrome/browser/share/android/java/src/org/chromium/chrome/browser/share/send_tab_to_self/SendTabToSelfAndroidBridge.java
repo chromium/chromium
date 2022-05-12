@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,25 +24,12 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param profile Profile of the user to retrieve the GUIDs for.
-     * @returns All GUIDs for all SendTabToSelf entries
+     * @return All GUIDs for all SendTabToSelf entries, or an empty list if the model isn't ready.
      */
     public static List<String> getAllGuids(Profile profile) {
         // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
         // place. assert mIsNativeSendTabToSelfModelLoaded;
-        List<String> toPopulate = new ArrayList<String>();
-        SendTabToSelfAndroidBridgeJni.get().getAllGuids(profile, toPopulate);
-        return toPopulate;
-    }
-
-    /**
-     * Called by the native code in order to populate the list.
-     *
-     * @param allGuids List to populate provided by getAllGuids
-     * @param newGuid The GUID to add to the list
-     */
-    @CalledByNative
-    private static void addToGuidList(List<String> allGuids, String newGuid) {
-        allGuids.add(newGuid);
+        return Arrays.asList(SendTabToSelfAndroidBridgeJni.get().getAllGuids(profile));
     }
 
     /**
@@ -102,14 +88,12 @@ public class SendTabToSelfAndroidBridge {
 
     /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
-     * @returns All {@link TargetDeviceInfo} for the user.
+     * @return All {@link TargetDeviceInfo} for the user, or an empty list if the model isn't ready.
      */
     public static List<TargetDeviceInfo> getAllTargetDeviceInfos(Profile profile) {
         // TODO(https://crbug.com/942549): Add this assertion back in once the
         // code to load is in place. assert mIsNativeSendTabToSelfModelLoaded;
-        List<TargetDeviceInfo> toPopulate = new ArrayList<TargetDeviceInfo>();
-        SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile, toPopulate);
-        return toPopulate;
+        return Arrays.asList(SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(profile));
     }
 
     /**
@@ -120,24 +104,12 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
     }
 
-    /**
-     * Called by the native code in order to populate the list.
-     *
-     * @param allInfos List to populate provided by getAllTargetDeviceInfos.
-     * @param newInfo The DeviceInfo to add to the list.
-     */
-    @CalledByNative
-    private static void addToTargetDeviceInfoList(
-            List<TargetDeviceInfo> allInfos, TargetDeviceInfo newInfo) {
-        allInfos.add(newInfo);
-    }
-
     @NativeMethods
     public interface Natives {
         boolean addEntry(
                 Profile profile, String url, String title, String targetDeviceSyncCacheGuid);
 
-        void getAllGuids(Profile profile, List<String> guids);
+        String[] getAllGuids(Profile profile);
 
         void deleteAllEntries(Profile profile);
 
@@ -147,7 +119,7 @@ public class SendTabToSelfAndroidBridge {
 
         void markEntryOpened(Profile profile, String guid);
 
-        void getAllTargetDeviceInfos(Profile profile, List<TargetDeviceInfo> guids);
+        TargetDeviceInfo[] getAllTargetDeviceInfos(Profile profile);
 
         void updateActiveWebContents(WebContents webContents);
     }

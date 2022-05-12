@@ -45,7 +45,7 @@ public class TargetDeviceInfo {
     }
 
     @CalledByNative
-    public static TargetDeviceInfo createTargetDeviceInfo(
+    public static TargetDeviceInfo build(
             String name, String cacheGuid, @DeviceType int deviceType, long lastUpdatedTimestamp) {
         return new TargetDeviceInfo(name, cacheGuid, deviceType, lastUpdatedTimestamp);
     }

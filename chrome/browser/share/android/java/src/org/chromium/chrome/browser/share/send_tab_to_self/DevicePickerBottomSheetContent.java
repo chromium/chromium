@@ -39,7 +39,6 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,8 +80,8 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     }
 
     private void createContentView() {
-        List<TargetDeviceInfo> targetDeviceList = new ArrayList<TargetDeviceInfo>();
-        SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(mProfile, targetDeviceList);
+        List<TargetDeviceInfo> targetDeviceList =
+                SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
 
         // First check if sharing is unavailable, e.g. because there are no target devices. If so,
         // show |sharingUnavailableView|, modulo adjusting the strings and the visibility of the
