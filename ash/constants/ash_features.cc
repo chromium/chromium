@@ -989,7 +989,7 @@ const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
 
 // Whether PDF files are opened by default in the ChromeOS media app.
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature to continuously log PSI memory pressure data to UMA.
 const base::Feature kMemoryPressureMetricsDetail{
