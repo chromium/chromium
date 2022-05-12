@@ -30,4 +30,7 @@ message SyncInvalidationsPayload {
   // Opaque field, which has to be provided as part of resulting GetUpdates
   // back to the server.
   optional bytes hint = 2;
+
+  // Version of invalidation, used to order incoming invalidations.
+  optional int64 version = 3;
 }

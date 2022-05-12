@@ -938,6 +938,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {
   VISIT_REP(data_type_invalidations);
   VISIT_BYTES(hint);
+  VISIT(version);
 }
 
 VISIT_PROTO_FIELDS(

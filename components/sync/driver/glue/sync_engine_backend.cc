@@ -33,6 +33,7 @@
 #include "components/sync/nigori/nigori_storage_impl.h"
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncers involved.
@@ -48,27 +49,27 @@ const base::FilePath::CharType kNigoriStorageFilename[] =
 
 class SyncInvalidationAdapter : public SyncInvalidation {
  public:
-  explicit SyncInvalidationAdapter(const std::string& payload)
-      : payload_(payload) {}
+  SyncInvalidationAdapter(const std::string& payload,
+                          absl::optional<int64_t> version)
+      : payload_(payload), version_(version) {}
   ~SyncInvalidationAdapter() override = default;
 
-  bool IsUnknownVersion() const override { return true; }
+  bool IsUnknownVersion() const override { return !version_.has_value(); }
 
   const std::string& GetPayload() const override { return payload_; }
 
   int64_t GetVersion() const override {
-    // TODO(crbug.com/1102322): implement versions. This method is not called
-    // until IsUnknownVersion() returns true.
-    NOTREACHED();
-    return 0;
+    DCHECK(version_.has_value());
+    return version_.value();
   }
 
-  void Acknowledge() override { NOTIMPLEMENTED(); }
+  void Acknowledge() override {}
 
-  void Drop() override { NOTIMPLEMENTED(); }
+  void Drop() override {}
 
  private:
   const std::string payload_;
+  const absl::optional<int64_t> version_;
 };
 
 void RecordInvalidationPerModelType(ModelType type) {
@@ -507,8 +508,13 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
 
     contains_valid_model_type = true;
     RecordInvalidationPerModelType(model_type);
+    absl::optional<int64_t> version;
+    if (payload_message.has_version()) {
+      version = payload_message.version();
+    }
     std::unique_ptr<SyncInvalidation> inv_adapter =
-        std::make_unique<SyncInvalidationAdapter>(payload_message.hint());
+        std::make_unique<SyncInvalidationAdapter>(payload_message.hint(),
+                                                  version);
     sync_manager_->OnIncomingInvalidation(model_type, std::move(inv_adapter));
   }
   if (contains_valid_model_type) {

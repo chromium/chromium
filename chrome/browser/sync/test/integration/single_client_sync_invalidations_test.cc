@@ -42,6 +42,7 @@ using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::ServerBookmarksEqualityChecker;
 using testing::AllOf;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::Not;
 using testing::NotNull;
 using testing::SizeIs;
@@ -304,6 +305,45 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldPropagateInvalidationHints) {
+  ASSERT_TRUE(SetupSync());
+
+  // Simulate a server-side change which generates an invalidation.
+  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+
+  // Verify that the latest GetUpdates happened due to an invalidation.
+  ASSERT_EQ(message.get_updates().get_updates_origin(),
+            sync_pb::SyncEnums::GU_TRIGGER);
+
+  // Find progress marker for BOOKMARKS.
+  sync_pb::DataTypeProgressMarker bookmark_progress_marker;
+  for (const sync_pb::DataTypeProgressMarker& progress_marker :
+       message.get_updates().from_progress_marker()) {
+    if (progress_marker.data_type_id() ==
+        GetSpecificsFieldNumberFromModelType(syncer::BOOKMARKS)) {
+      bookmark_progress_marker = progress_marker;
+    } else {
+      // Other progress markers shouldn't contain hints.
+      EXPECT_THAT(progress_marker.get_update_triggers().notification_hint(),
+                  IsEmpty());
+    }
+  }
+
+  // Verify that BOOKMARKS progress marker was found and contains a non-empty
+  // notification hint.
+  ASSERT_TRUE(bookmark_progress_marker.has_data_type_id());
+  EXPECT_THAT(
+      bookmark_progress_marker.get_update_triggers().notification_hint(),
+      Contains(Not(IsEmpty())));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/fake_server_sync_invalidation_sender.h"
 
+#include "base/time/time.h"
 #include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 
@@ -54,6 +55,11 @@ void FakeServerSyncInvalidationSender::OnCommit(
       payload.add_data_type_invalidations()->set_data_type_id(
           syncer::GetSpecificsFieldNumberFromModelType(data_type));
     }
+
+    // Versions are used to keep hints ordered. Versions are not really used by
+    // tests, just use current time.
+    payload.set_version(base::Time::Now().ToJavaTime());
+    payload.set_hint("hint");
 
     gcm::IncomingMessage message;
     message.raw_data = payload.SerializeAsString();
