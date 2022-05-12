@@ -32,13 +32,13 @@ class NudgeWidgetObserver : public views::WidgetObserver {
     widget_observation_.Observe(widget);
   }
 
-  void WaitForClose() {
+  void WaitForDestruction() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override {
+  void OnWidgetDestroying(views::Widget* widget) override {
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -75,8 +75,8 @@ class AdaptiveChargingNudgeControllerTest : public AshTestBase {
 
   AdaptiveChargingNudgeController* GetController() { return controller_.get(); }
 
-  void WaitForWidgetClose(AdaptiveChargingNudgeController* controller,
-                          SystemNudge* nudge) {
+  void WaitForWidgetDestruction(AdaptiveChargingNudgeController* controller,
+                                SystemNudge* nudge) {
     views::Widget* nudge_widget = nudge->widget();
     ASSERT_TRUE(nudge_widget);
     EXPECT_FALSE(nudge_widget->IsClosed());
@@ -86,12 +86,12 @@ class AdaptiveChargingNudgeControllerTest : public AshTestBase {
         ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
     // Pretend the hide nudge timer has elapsed.
-    NudgeWidgetObserver widget_close_observer(nudge_widget);
+    NudgeWidgetObserver widget_destruction_observer(nudge_widget);
     controller->FireHideNudgeTimerForTesting();
 
     EXPECT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
 
-    widget_close_observer.WaitForClose();
+    widget_destruction_observer.WaitForDestruction();
   }
 
  private:
@@ -109,7 +109,7 @@ TEST_F(AdaptiveChargingNudgeControllerTest, ShowsAndHidesNudge) {
   SystemNudge* nudge = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge);
 
-  WaitForWidgetClose(controller, nudge);
+  WaitForWidgetDestruction(controller, nudge);
 }
 
 TEST_F(AdaptiveChargingNudgeControllerTest, NoNudgeShowForDisabledFeature) {
@@ -135,7 +135,7 @@ TEST_F(AdaptiveChargingNudgeControllerTest, NudgeShowExactlyOnce) {
   controller->GetNudgeDelayTimerForTesting()->FireNow();
   SystemNudge* nudge1 = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge1);
-  WaitForWidgetClose(controller, nudge1);
+  WaitForWidgetDestruction(controller, nudge1);
 
   // No nudge for the second time.
   controller->ShowNudge();
