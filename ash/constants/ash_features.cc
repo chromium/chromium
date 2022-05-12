@@ -539,7 +539,7 @@ const base::Feature kEnableIdleInhibit{"EnableIdleInhibit",
 // This will only take effect when running a compatible kernel, see
 // crbug/1275421.
 const base::Feature kEnableIkev2Vpn{"EnableIkev2Vpn",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, the input device cards will be shown in the diagnostics app.
 const base::Feature kEnableInputInDiagnosticsApp{
