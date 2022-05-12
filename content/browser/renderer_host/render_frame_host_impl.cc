@@ -1497,19 +1497,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
 
-  if (policy_container_host_) {
-    // The initial empty documents sandbox flags is the union from:
-    // - The parent or opener document's sandbox flags inherited by policy
-    //   container.
-    // - The frame's sandbox flags, contained in browsing_context_state. This
-    //   are either:
-    //   1. For iframe: the parent + iframe.sandbox attribute.
-    //   2. For popups: the opener if "allow-popups-to-escape-sandbox" isn't
-    //   set.
-    policy_container_host_->set_sandbox_flags(
-        browsing_context_state_->effective_frame_policy().sandbox_flags);
-  }
-
   InitializePrivateNetworkRequestPolicy();
 
   unload_event_monitor_timeout_ =
@@ -2819,40 +2806,44 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 
   if (parent_) {
     SetPolicyContainerHost(parent_->policy_container_host()->Clone());
-    return;
-  }
-
-  if (frame_tree_node_->opener()) {
+  } else if (frame_tree_node_->opener()) {
     SetPolicyContainerHost(frame_tree_node_->opener()
                                ->current_frame_host()
                                ->policy_container_host()
                                ->Clone());
-    return;
+  } else {
+    PolicyContainerPolicies policies;
+
+    // Main frames created by the browser are treated as belonging the `local`
+    // address space, so that they can make requests to any address space
+    // unimpeded. The only way to execute code in such a context is to inject it
+    // via DevTools, WebView APIs, or extensions; it is impossible to do so with
+    // Web Platform means only.
+    //
+    // See also https://crbug.com/1191161.
+    //
+    // We also exclude prerendering from this case manually, since prendering
+    // render frame hosts are unconditionally created with the
+    // `renderer_initiated_creation_of_main_frame` set to false, even though the
+    // frames arguably are renderer-created.
+    //
+    // TODO(https://crbug.com/1194421): Address the prerendering case.
+    if (is_main_frame() && !renderer_initiated_creation_of_main_frame &&
+        lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
+      policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
+    }
+
+    SetPolicyContainerHost(
+        base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
   }
 
-  PolicyContainerPolicies policies;
-
-  // Main frames created by the browser are treated as belonging the `local`
-  // address space, so that they can make requests to any address space
-  // unimpeded. The only way to execute code in such a context is to inject it
-  // via DevTools, WebView APIs, or extensions; it is impossible to do so with
-  // Web Platform means only.
-  //
-  // See also https://crbug.com/1191161.
-  //
-  // We also exclude prerendering from this case manually, since prendering
-  // render frame hosts are unconditionally created with the
-  // `renderer_initiated_creation_of_main_frame` set to false, even though the
-  // frames arguably are renderer-created.
-  //
-  // TODO(https://crbug.com/1194421): Address the prerendering case.
-  if (is_main_frame() && !renderer_initiated_creation_of_main_frame &&
-      lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
-    policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
-  }
-
-  SetPolicyContainerHost(
-      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+  // The initial empty documents sandbox flags is the frame's sandbox flags,
+  // contained in browsing_context_state. This are either:
+  //   1. For iframe: the parent + iframe.sandbox attribute.
+  //   2. For popups: the opener if "allow-popups-to-escape-sandbox" isn't
+  //   set.
+  policy_container_host_->set_sandbox_flags(
+      browsing_context_state_->effective_frame_policy().sandbox_flags);
 }
 
 void RenderFrameHostImpl::SetPolicyContainerHost(

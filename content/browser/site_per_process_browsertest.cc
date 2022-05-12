@@ -5423,7 +5423,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Verify that popup frames opened from sandboxed documents with the
 // "allow-popups-to-escape-sandbox" directive do *not* inherit sandbox flags AND
-// that local scheme documents do inherit flags from the opener/initiator.
+// that local scheme documents do *not* inherit flags from the opener/initiator.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTest,
     OpenSandboxedDocumentInUnsandboxedPopupFromSandboxedFrame) {
@@ -5463,9 +5463,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(expected_flags,
             root->child_at(0)->effective_frame_policy().sandbox_flags);
 
-  // Open a popup named "foo" from the child frame.
-  GURL b_url("about:blank");
-  Shell* foo_shell = OpenPopup(root->child_at(0), b_url, "foo");
+  // Open a popup named "foo" from the child frame on about:blank.
+  GURL foo_url("about:blank");
+  Shell* foo_shell = OpenPopup(root->child_at(0), foo_url, "foo");
   EXPECT_TRUE(foo_shell);
 
   FrameTreeNode* foo_root =
@@ -5478,8 +5478,59 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
             foo_root->effective_frame_policy().sandbox_flags);
   // Check that the sandbox flags for the popup document are correct in the
-  // browser process: They should have been inherited.
-  // TODO(https://crbug.com/1148405) This should be expected_flags.
+  // browser process. They should not have been inherited (for about:blank).
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            foo_root->current_frame_host()->active_sandbox_flags());
+}
+
+// Verify that popup frames opened from sandboxed documents with the
+// "allow-popups-to-escape-sandbox" directive do *not* inherit sandbox flags AND
+// that local scheme documents do inherit CSP sandbox flags from the
+// opener/initiator.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    OpenSandboxedDocumentInUnsandboxedPopupFromCSPSandboxedDocument) {
+  GURL main_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Content-Security-Policy: sandbox "
+      "allow-scripts allow-popups allow-popups-to-escape-sandbox");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Set expected flags for the child frame.  Note that "allow-scripts" resets
+  // both network::mojom::WebSandboxFlags::Scripts and
+  // network::mojom::WebSandboxFlags::AutomaticFeatures bits per
+  // blink::parseSandboxPolicy().
+  network::mojom::WebSandboxFlags expected_flags =
+      network::mojom::WebSandboxFlags::kAll &
+      ~network::mojom::WebSandboxFlags::kScripts &
+      ~network::mojom::WebSandboxFlags::kAutomaticFeatures &
+      ~network::mojom::WebSandboxFlags::kPopups &
+      ~network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols &
+      ~network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+
+  EXPECT_EQ(expected_flags, root->current_frame_host()->active_sandbox_flags());
+
+  // Open a popup named "foo" from the child frame on about:blank.
+  GURL foo_url("about:blank");
+  Shell* foo_shell = OpenPopup(root, foo_url, "foo");
+  EXPECT_TRUE(foo_shell);
+
+  FrameTreeNode* foo_root =
+      static_cast<WebContentsImpl*>(foo_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+
+  // Check that the sandbox flags for new popup frame are correct in the browser
+  // process. They should not have been inherited.
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            foo_root->effective_frame_policy().sandbox_flags);
+  // Check that the sandbox flags for the popup document are correct in the
+  // browser process. They should have been inherited.
   EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
             foo_root->current_frame_host()->active_sandbox_flags());
 }
