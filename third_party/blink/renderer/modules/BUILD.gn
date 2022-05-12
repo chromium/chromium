@@ -634,7 +634,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
-    "//components/digital_goods/mojom:mojom_blink",
     "//components/schema_org/common:mojom_blink",
     "//components/ukm:test_support",
     "//media:test_support",

@@ -832,7 +832,6 @@ mojom("android_mojo_bindings") {
   ]
 
   public_deps = [
-    "//components/digital_goods/mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//mojo/public/mojom/base",

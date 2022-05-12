@@ -15,8 +15,5 @@ blink_modules_sources("goods") {
     "util.cc",
     "util.h",
   ]
-  deps = [
-    "//components/digital_goods/mojom:mojom_blink",
-    "//third_party/blink/renderer/modules/payments",
-  ]
+  deps = [ "//third_party/blink/renderer/modules/payments" ]
 }
