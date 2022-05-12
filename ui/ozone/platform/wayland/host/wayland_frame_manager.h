@@ -16,7 +16,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
-#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 
 namespace ui {
 
@@ -33,21 +33,19 @@ class WaylandSubsurface;
 struct WaylandFrame {
  public:
   // A frame originated from gpu process, and hence, requires acknowledgements.
-  WaylandFrame(
-      uint32_t frame_id,
-      WaylandSurface* root_surface,
-      ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
-      base::circular_deque<std::pair<WaylandSubsurface*,
-                                     ui::ozone::mojom::WaylandOverlayConfigPtr>>
-          subsurfaces_to_overlays = {});
+  WaylandFrame(uint32_t frame_id,
+               WaylandSurface* root_surface,
+               wl::WaylandOverlayConfig root_config,
+               base::circular_deque<
+                   std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
+                   subsurfaces_to_overlays = {});
 
   // A frame that does not require acknowledgements.
-  WaylandFrame(
-      WaylandSurface* root_surface,
-      ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
-      base::circular_deque<std::pair<WaylandSubsurface*,
-                                     ui::ozone::mojom::WaylandOverlayConfigPtr>>
-          subsurfaces_to_overlays = {});
+  WaylandFrame(WaylandSurface* root_surface,
+               wl::WaylandOverlayConfig root_config,
+               base::circular_deque<
+                   std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
+                   subsurfaces_to_overlays = {});
 
   WaylandFrame() = delete;
   WaylandFrame(const WaylandFrame&) = delete;
@@ -59,9 +57,8 @@ struct WaylandFrame {
 
   uint32_t frame_id;
   WaylandSurface* root_surface;
-  ui::ozone::mojom::WaylandOverlayConfigPtr root_config;
-  base::circular_deque<
-      std::pair<WaylandSubsurface*, ui::ozone::mojom::WaylandOverlayConfigPtr>>
+  wl::WaylandOverlayConfig root_config;
+  base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
 
   base::flat_map<WaylandSurface*, WaylandBufferHandle*> submitted_buffers;
@@ -127,7 +124,7 @@ class WaylandFrameManager {
   // Configures |surface| but does not commit wl_surface states yet.
   void ApplySurfaceConfigure(WaylandFrame* frame,
                              WaylandSurface* surface,
-                             ui::ozone::mojom::WaylandOverlayConfigPtr& config,
+                             wl::WaylandOverlayConfig& config,
                              bool needs_opaque_region);
 
   void MaybeProcessSubmittedFrames();

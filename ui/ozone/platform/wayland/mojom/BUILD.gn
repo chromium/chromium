@@ -16,4 +16,22 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "wl.mojom.WaylandOverlayConfig"
+          cpp = "::wl::WaylandOverlayConfig"
+          move_only = true
+        },
+      ]
+      traits_sources = [ "wayland_overlay_config_mojom_traits.cc" ]
+      traits_headers = [ "wayland_overlay_config_mojom_traits.h" ]
+      traits_deps = [
+        "//components/crash/core/common:crash_key_lib",
+        "//ui/ozone/platform/wayland:common",
+      ]
+    },
+  ]
 }

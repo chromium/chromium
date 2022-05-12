@@ -107,10 +107,9 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // Called by the GPU and asks to configure the surface/subsurfaces and attach
   // wl_buffers to WaylandWindow with the specified |widget|. Calls OnSubmission
   // and OnPresentation on successful swap and pixels presented.
-  void CommitOverlays(
-      gfx::AcceleratedWidget widget,
-      uint32_t frame_id,
-      std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays) override;
+  void CommitOverlays(gfx::AcceleratedWidget widget,
+                      uint32_t frame_id,
+                      std::vector<wl::WaylandOverlayConfig> overlays) override;
 
   // Ensures a WaylandBufferHandle of |buffer_id| is created for the
   // |requestor|, with its wl_buffer object requested via Wayland. Returns said
@@ -150,8 +149,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                            uint32_t buffer_id);
   bool ValidateDataFromGpu(const gfx::Size& size, uint32_t buffer_id);
   bool ValidateBufferExistence(uint32_t buffer_id);
-  bool ValidateOverlayData(
-      const ui::ozone::mojom::WaylandOverlayConfig& overlay_data);
+  bool ValidateOverlayData(const wl::WaylandOverlayConfig& overlay_data);
 
   // Terminates the GPU process on invalid data received
   void TerminateGpuProcess();

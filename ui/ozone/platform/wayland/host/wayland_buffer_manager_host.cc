@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
@@ -27,7 +28,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
-#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 
 namespace ui {
 
@@ -257,7 +257,7 @@ WaylandBufferHandle* WaylandBufferManagerHost::GetBufferHandle(
 void WaylandBufferManagerHost::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays) {
+    std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   TRACE_EVENT0("wayland", "WaylandBufferManagerHost::CommitOverlays");
@@ -277,7 +277,7 @@ void WaylandBufferManagerHost::CommitOverlays(
     return;
 
   for (auto& overlay : overlays) {
-    if (!ValidateOverlayData(*overlay)) {
+    if (!ValidateOverlayData(overlay)) {
       TerminateGpuProcess();
       return;
     }
@@ -405,7 +405,7 @@ bool WaylandBufferManagerHost::ValidateBufferExistence(uint32_t buffer_id) {
 }
 
 bool WaylandBufferManagerHost::ValidateOverlayData(
-    const ui::ozone::mojom::WaylandOverlayConfig& overlay_data) {
+    const wl::WaylandOverlayConfig& overlay_data) {
   if (!ValidateBufferExistence(overlay_data.buffer_id))
     return false;
 

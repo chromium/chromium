@@ -23,7 +23,6 @@
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
-#include "ui/ozone/public/overlay_plane.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ui {
@@ -179,13 +178,12 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
   DCHECK(surfaceless);
 
   DCHECK(acquire_fences.empty() || acquire_fences.size() == 1u);
-  surfaceless->QueueOverlayPlane(
-      OverlayPlane(this,
-                   acquire_fences.empty() ? nullptr
-                                          : std::make_unique<gfx::GpuFence>(
-                                                std::move(acquire_fences[0])),
-                   overlay_plane_data),
-      buffer_id_);
+  surfaceless->QueueWaylandOverlayConfig(
+      {overlay_plane_data,
+       acquire_fences.empty()
+           ? nullptr
+           : std::make_unique<gfx::GpuFence>(std::move(acquire_fences[0])),
+       buffer_id_, surfaceless->surface_scale_factor()});
   return true;
 }
 

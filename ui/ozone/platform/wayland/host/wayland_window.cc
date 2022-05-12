@@ -30,6 +30,7 @@
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
@@ -51,10 +52,9 @@ namespace {
 using mojom::CursorType;
 using mojom::DragOperation;
 
-bool OverlayStackOrderCompare(
-    const ui::ozone::mojom::WaylandOverlayConfigPtr& i,
-    const ui::ozone::mojom::WaylandOverlayConfigPtr& j) {
-  return i->z_order < j->z_order;
+bool OverlayStackOrderCompare(const wl::WaylandOverlayConfig& i,
+                              const wl::WaylandOverlayConfig& j) {
+  return i.z_order < j.z_order;
 }
 
 }  // namespace
@@ -251,18 +251,20 @@ void WaylandWindow::Hide() {
 
 void WaylandWindow::OnChannelDestroyed() {
   frame_manager_->ClearStates();
-  base::circular_deque<
-      std::pair<WaylandSubsurface*, ui::ozone::mojom::WaylandOverlayConfigPtr>>
+  base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
   subsurfaces_to_overlays.reserve(wayland_subsurfaces_.size() +
                                   (primary_subsurface() ? 1 : 0));
   if (primary_subsurface())
-    subsurfaces_to_overlays.emplace_back(primary_subsurface(), nullptr);
+    subsurfaces_to_overlays.emplace_back(primary_subsurface(),
+                                         wl::WaylandOverlayConfig());
   for (auto& subsurface : wayland_subsurfaces_)
-    subsurfaces_to_overlays.emplace_back(subsurface.get(), nullptr);
+    subsurfaces_to_overlays.emplace_back(subsurface.get(),
+                                         wl::WaylandOverlayConfig());
 
-  frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
-      root_surface(), nullptr, std::move(subsurfaces_to_overlays)));
+  frame_manager_->RecordFrame(
+      std::make_unique<WaylandFrame>(root_surface(), wl::WaylandOverlayConfig(),
+                                     std::move(subsurfaces_to_overlays)));
 }
 
 void WaylandWindow::Close() {
@@ -786,7 +788,7 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
 
 bool WaylandWindow::CommitOverlays(
     uint32_t frame_id,
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr>& overlays) {
+    std::vector<wl::WaylandOverlayConfig>& overlays) {
   if (overlays.empty())
     return true;
 
@@ -794,15 +796,14 @@ bool WaylandWindow::CommitOverlays(
   std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
 
   // Find the location where z_oder becomes non-negative.
-  ozone::mojom::WaylandOverlayConfigPtr value =
-      ozone::mojom::WaylandOverlayConfig::New();
+  wl::WaylandOverlayConfig value;
   auto split = std::lower_bound(overlays.begin(), overlays.end(), value,
                                 OverlayStackOrderCompare);
-  DCHECK(split == overlays.end() || (*split)->z_order >= 0);
+  DCHECK(split == overlays.end() || (*split).z_order >= 0);
   size_t num_primary_planes =
-      (split != overlays.end() && (*split)->z_order == 0) ? 1 : 0;
+      (split != overlays.end() && (*split).z_order == 0) ? 1 : 0;
   size_t num_background_planes =
-      (overlays.front()->z_order == INT32_MIN) ? 1 : 0;
+      (overlays.front().z_order == INT32_MIN) ? 1 : 0;
 
   size_t above = (overlays.end() - split) - num_primary_planes;
   size_t below = (split - overlays.begin()) - num_background_planes;
@@ -812,9 +813,9 @@ bool WaylandWindow::CommitOverlays(
   if (!ArrangeSubsurfaceStack(above, below))
     return false;
 
-  gfx::SizeF visual_size = (*overlays.begin())->bounds_rect.size();
-  float buffer_scale = (*overlays.begin())->surface_scale_factor;
-  auto& rounded_clip_bounds = (*overlays.begin())->rounded_clip_bounds;
+  gfx::SizeF visual_size = (*overlays.begin()).bounds_rect.size();
+  float buffer_scale = (*overlays.begin()).surface_scale_factor;
+  auto& rounded_clip_bounds = (*overlays.begin()).rounded_clip_bounds;
 
   if (!wayland_overlay_delegation_enabled_) {
     DCHECK_EQ(overlays.size(), 1u);
@@ -823,15 +824,15 @@ bool WaylandWindow::CommitOverlays(
     return true;
   }
 
-  base::circular_deque<
-      std::pair<WaylandSubsurface*, ui::ozone::mojom::WaylandOverlayConfigPtr>>
+  base::circular_deque<std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
       subsurfaces_to_overlays;
   subsurfaces_to_overlays.reserve(
       std::max(overlays.size() - num_background_planes,
                wayland_subsurfaces_.size() + 1));
 
   subsurfaces_to_overlays.emplace_back(
-      primary_subsurface(), num_primary_planes ? std::move(*split) : nullptr);
+      primary_subsurface(),
+      num_primary_planes ? std::move(*split) : wl::WaylandOverlayConfig());
 
   {
     // Iterate through |subsurface_stack_below_|, setup subsurfaces and place
@@ -845,7 +846,8 @@ bool WaylandWindow::CommitOverlays(
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
-        subsurfaces_to_overlays.emplace_front(*iter, nullptr);
+        subsurfaces_to_overlays.emplace_front(*iter,
+                                              wl::WaylandOverlayConfig());
       }
     }
 
@@ -860,22 +862,24 @@ bool WaylandWindow::CommitOverlays(
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
-        subsurfaces_to_overlays.emplace_back(*iter, nullptr);
+        subsurfaces_to_overlays.emplace_back(*iter, wl::WaylandOverlayConfig());
       }
     }
   }
 
   // Configuration of the root_surface
-  ui::ozone::mojom::WaylandOverlayConfigPtr root_config;
+  wl::WaylandOverlayConfig root_config;
   if (num_background_planes) {
     root_config = std::move(overlays.front());
   } else {
-    root_config = ui::ozone::mojom::WaylandOverlayConfig::New(
-        INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-        root_surface()->buffer_id(), buffer_scale, gfx::RectF(visual_size),
-        gfx::RectF(), gfx::Rect(), root_surface()->use_blending(),
-        root_surface()->opacity(), gfx::GpuFenceHandle(),
-        gfx::OverlayPriorityHint::kNone, rounded_clip_bounds, absl::nullopt);
+    root_config = wl::WaylandOverlayConfig(
+        gfx::OverlayPlaneData(
+            INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+            gfx::RectF(visual_size), gfx::RectF(),
+            root_surface()->use_blending(), gfx::Rect(),
+            root_surface()->opacity(), gfx::OverlayPriorityHint::kNone,
+            rounded_clip_bounds, gfx::ColorSpace(), absl::nullopt),
+        nullptr, root_surface()->buffer_id(), buffer_scale);
   }
 
   frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(

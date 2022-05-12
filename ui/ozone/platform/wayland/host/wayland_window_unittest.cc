@@ -34,8 +34,10 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/common/bitmap_cursor.h"
@@ -2741,14 +2743,10 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   SendConfigureEvent(mock_surface->xdg_surface(), 100, 100, 1, states.get());
 
   // Commit a frame with only background.
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays;
-  ui::ozone::mojom::WaylandOverlayConfigPtr background{
-      ui::ozone::mojom::WaylandOverlayConfig::New()};
-  background->z_order = INT32_MIN;
-  background->transform = gfx::OVERLAY_TRANSFORM_NONE;
-  background->buffer_id = buffer_id1;
-  background->surface_scale_factor = 1;
-  background->opacity = 1.f;
+  std::vector<wl::WaylandOverlayConfig> overlays;
+  wl::WaylandOverlayConfig background;
+  background.z_order = INT32_MIN;
+  background.buffer_id = buffer_id1;
   overlays.push_back(std::move(background));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u,
                                       std::move(overlays));
@@ -2775,13 +2773,9 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
 
   // Commit a frame with only the primary_plane.
   overlays.clear();
-  ui::ozone::mojom::WaylandOverlayConfigPtr primary{
-      ui::ozone::mojom::WaylandOverlayConfig::New()};
-  primary->z_order = 0;
-  primary->transform = gfx::OVERLAY_TRANSFORM_NONE;
-  primary->buffer_id = buffer_id2;
-  primary->surface_scale_factor = 1;
-  primary->opacity = 1.f;
+  wl::WaylandOverlayConfig primary;
+  primary.z_order = 0;
+  primary.buffer_id = buffer_id2;
   overlays.push_back(std::move(primary));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u,
                                       std::move(overlays));

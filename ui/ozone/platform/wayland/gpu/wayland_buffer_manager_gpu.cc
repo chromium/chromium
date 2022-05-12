@@ -17,8 +17,8 @@
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
-#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/public/overlay_plane.h"
 
 #if defined(WAYLAND_GBM)
@@ -26,38 +26,6 @@
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #endif
-
-namespace mojo {
-// static
-ui::ozone::mojom::WaylandOverlayConfigPtr
-TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
-              ui::OverlayPlane>::Convert(const ui::OverlayPlane& input) {
-  ui::ozone::mojom::WaylandOverlayConfigPtr wayland_overlay_config{
-      ui::ozone::mojom::WaylandOverlayConfig::New()};
-  wayland_overlay_config->z_order = input.overlay_plane_data.z_order;
-  wayland_overlay_config->transform = input.overlay_plane_data.plane_transform;
-  wayland_overlay_config->bounds_rect = input.overlay_plane_data.display_bounds;
-  wayland_overlay_config->crop_rect = input.overlay_plane_data.crop_rect;
-  wayland_overlay_config->enable_blend = input.overlay_plane_data.enable_blend;
-  wayland_overlay_config->opacity = input.overlay_plane_data.opacity;
-  wayland_overlay_config->damage_region = input.overlay_plane_data.damage_rect;
-  wayland_overlay_config->access_fence_handle =
-      !input.gpu_fence || input.gpu_fence->GetGpuFenceHandle().is_null()
-          ? gfx::GpuFenceHandle()
-          : input.gpu_fence->GetGpuFenceHandle().Clone();
-  wayland_overlay_config->priority_hint =
-      input.overlay_plane_data.priority_hint;
-
-  wayland_overlay_config->rounded_clip_bounds =
-      input.overlay_plane_data.rounded_corners;
-
-  // Solid color quads are created as wl_buffers. Though, some overlays may
-  // have background data passed.
-  if (!input.overlay_plane_data.is_solid_color)
-    wayland_overlay_config->background_color = input.overlay_plane_data.color;
-  return wayland_overlay_config;
-}
-}  // namespace mojo
 
 namespace ui {
 
@@ -277,23 +245,23 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
                                            const gfx::Rect& bounds_rect,
                                            float surface_scale_factor,
                                            const gfx::Rect& damage_region) {
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   // This surface only commits one buffer per frame, use INT32_MIN to attach
   // the buffer to root_surface of wayland window.
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
-      surface_scale_factor, gfx::RectF(bounds_rect),
-      gfx::RectF(1.f, 1.f) /* no crop */, damage_region, false,
-      1.0f /*opacity*/, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      gfx::RRectF(), absl::nullopt));
-
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  overlay_configs.emplace_back(
+      gfx::OverlayPlaneData(
+          INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+          gfx::RectF(bounds_rect), gfx::RectF(1.f, 1.f) /* no crop */, false,
+          damage_region, 1.0f /*opacity*/, gfx::OverlayPriorityHint::kNone,
+          gfx::RRectF(), gfx::ColorSpace(), absl::nullopt),
+      nullptr, buffer_id, surface_scale_factor);
   CommitOverlays(widget, frame_id, std::move(overlay_configs));
 }
 
 void WaylandBufferManagerGpu::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays) {
+    std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK(gpu_thread_runner_);
   if (!gpu_thread_runner_->BelongsToCurrentThread()) {
     // Do the mojo call on the GpuMainThread.
@@ -524,7 +492,7 @@ void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor color,
 void WaylandBufferManagerGpu::CommitOverlaysTask(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
-    std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays) {
+    std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   DCHECK(remote_host_);
 

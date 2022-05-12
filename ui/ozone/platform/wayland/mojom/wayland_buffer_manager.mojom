@@ -83,7 +83,7 @@ interface WaylandBufferManagerHost {
   // following |widget| and |frame_id|.
   CommitOverlays(gfx.mojom.AcceleratedWidget widget,
                  uint32 frame_id,
-                 array<WaylandOverlayConfig> overlays);
+                 array<wl.mojom.WaylandOverlayConfig> overlays);
 };
 
 

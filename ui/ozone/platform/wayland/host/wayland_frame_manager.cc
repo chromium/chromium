@@ -43,9 +43,9 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 WaylandFrame::WaylandFrame(
     uint32_t frame_id,
     WaylandSurface* root_surface,
-    ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
-    base::circular_deque<std::pair<WaylandSubsurface*,
-                                   ui::ozone::mojom::WaylandOverlayConfigPtr>>
+    wl::WaylandOverlayConfig root_config,
+    base::circular_deque<
+        std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
         subsurfaces_to_overlays)
     : frame_id(frame_id),
       root_surface(root_surface),
@@ -56,9 +56,9 @@ WaylandFrame::WaylandFrame(
 
 WaylandFrame::WaylandFrame(
     WaylandSurface* root_surface,
-    ui::ozone::mojom::WaylandOverlayConfigPtr root_config,
-    base::circular_deque<std::pair<WaylandSubsurface*,
-                                   ui::ozone::mojom::WaylandOverlayConfigPtr>>
+    wl::WaylandOverlayConfig root_config,
+    base::circular_deque<
+        std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
         subsurfaces_to_overlays)
     : root_surface(root_surface),
       root_config(std::move(root_config)),
@@ -81,18 +81,17 @@ void WaylandFrameManager::RecordFrame(std::unique_ptr<WaylandFrame> frame) {
 
   // Request for buffer handle creation at record time.
   for (auto& subsurface_to_overlay : frame->subsurfaces_to_overlays) {
-    if (!subsurface_to_overlay.second.is_null() &&
-        subsurface_to_overlay.second->buffer_id) {
+    if (subsurface_to_overlay.second.buffer_id) {
       auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
           subsurface_to_overlay.first->wayland_surface(),
-          subsurface_to_overlay.second->buffer_id);
+          subsurface_to_overlay.second.buffer_id);
       if (!handle)
         return;
     }
   }
-  if (frame->root_config && frame->root_config->buffer_id) {
+  if (frame->root_config.buffer_id) {
     auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
-        frame->root_surface, frame->root_config->buffer_id);
+        frame->root_surface, frame->root_config.buffer_id);
     if (!handle)
       return;
   }
@@ -104,6 +103,7 @@ void WaylandFrameManager::RecordFrame(std::unique_ptr<WaylandFrame> frame) {
 void WaylandFrameManager::MaybeProcessPendingFrame() {
   if (pending_frames_.empty())
     return;
+
   auto* frame = pending_frames_.front().get();
   DCHECK(frame) << "This WaylandFrame is already in playback.";
   if (!frame)
@@ -112,15 +112,14 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   // Ensure wl_buffer existence.
   WaylandBufferHandle* handle_pending_creation = nullptr;
   for (auto& subsurface_to_overlay : frame->subsurfaces_to_overlays) {
-    if (!subsurface_to_overlay.second.is_null() &&
-        subsurface_to_overlay.second->buffer_id) {
+    if (subsurface_to_overlay.second.buffer_id) {
       auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
           subsurface_to_overlay.first->wayland_surface(),
-          subsurface_to_overlay.second->buffer_id);
+          subsurface_to_overlay.second.buffer_id);
       // Buffer is gone while this frame is pending, remove this config.
       if (!handle) {
         frame->buffer_lost = true;
-        subsurface_to_overlay.second.reset();
+        subsurface_to_overlay.second = wl::WaylandOverlayConfig();
       } else if (!handle->wl_buffer() && !handle_pending_creation) {
         // Found the first not-ready buffer, let handle invoke
         // MaybeProcessPendingFrame() when wl_buffer is created.
@@ -128,12 +127,12 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
       }
     }
   }
-  if (frame->root_config && frame->root_config->buffer_id) {
+  if (frame->root_config.buffer_id) {
     auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
-        frame->root_surface, frame->root_config->buffer_id);
+        frame->root_surface, frame->root_config.buffer_id);
     if (!handle) {
       frame->buffer_lost = true;
-      frame->root_config.reset();
+      frame->root_config = wl::WaylandOverlayConfig();
     } else if (!handle->wl_buffer() && !handle_pending_creation) {
       handle_pending_creation = handle;
     }
@@ -181,12 +180,12 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   auto* root_surface = frame->root_surface;
   auto& root_config = frame->root_config;
-  bool empty_frame = !root_config || !root_config->buffer_id;
+  bool empty_frame = !root_config.buffer_id;
 
   if (!empty_frame) {
     window_->UpdateVisualSize(
-        gfx::ToRoundedSize(root_config->bounds_rect.size()),
-        root_config->surface_scale_factor);
+        gfx::ToRoundedSize(root_config.bounds_rect.size()),
+        root_config.surface_scale_factor);
   }
 
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
@@ -196,8 +195,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
        base::Reversed(frame->subsurfaces_to_overlays)) {
     DCHECK(subsurface);
     auto* surface = subsurface->wayland_surface();
-    if (empty_frame || config.is_null() ||
-        wl_fixed_from_double(config->opacity) == 0) {
+    if (empty_frame || !config.buffer_id ||
+        wl_fixed_from_double(config.opacity) == 0) {
       subsurface->Hide();
       // Mutter sometimes does not call buffer.release if wl_surface role is
       // destroyed, causing graphics freeze. Manually release buffer from the
@@ -213,8 +212,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
       }
     } else {
       subsurface->ConfigureAndShowSurface(
-          config->bounds_rect, root_config->bounds_rect,
-          root_config->surface_scale_factor, nullptr, reference_above);
+          config.bounds_rect, root_config.bounds_rect,
+          root_config.surface_scale_factor, nullptr, reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
       reference_above = subsurface;
       surface->Commit(false);
@@ -235,7 +234,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
          frame->pending_feedback || frame->feedback.has_value());
   root_surface->Commit(true);
 
-  frame->root_config.reset();
+  frame->root_config = wl::WaylandOverlayConfig();
   frame->subsurfaces_to_overlays.clear();
 
   // Empty frames do not expect feedbacks so don't push to |submitted_frames_|.
@@ -250,10 +249,10 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 void WaylandFrameManager::ApplySurfaceConfigure(
     WaylandFrame* frame,
     WaylandSurface* surface,
-    ui::ozone::mojom::WaylandOverlayConfigPtr& config,
+    wl::WaylandOverlayConfig& config,
     bool set_opaque_region) {
   DCHECK(surface);
-  if (!config->buffer_id)
+  if (!config.buffer_id)
     return;
 
   static const wl_callback_listener frame_listener = {
@@ -263,32 +262,32 @@ void WaylandFrameManager::ApplySurfaceConfigure(
       &WaylandFrameManager::FeedbackPresented,
       &WaylandFrameManager::FeedbackDiscarded};
 
-  surface->SetBufferTransform(config->transform);
-  surface->SetSurfaceBufferScale(ceil(config->surface_scale_factor));
-  surface->SetViewportSource(config->crop_rect);
-  surface->SetViewportDestination(config->bounds_rect.size());
-  surface->SetOpacity(config->opacity);
-  surface->SetBlending(config->enable_blend);
-  surface->SetRoundedClipBounds(config->rounded_clip_bounds);
-  surface->SetOverlayPriority(config->priority_hint);
-  surface->SetBackgroundColor(config->background_color);
+  surface->SetBufferTransform(config.transform);
+  surface->SetSurfaceBufferScale(ceil(config.surface_scale_factor));
+  surface->SetViewportSource(config.crop_rect);
+  surface->SetViewportDestination(config.bounds_rect.size());
+  surface->SetOpacity(config.opacity);
+  surface->SetBlending(config.enable_blend);
+  surface->SetRoundedClipBounds(config.rounded_clip_bounds);
+  surface->SetOverlayPriority(config.priority_hint);
+  surface->SetBackgroundColor(config.background_color);
   if (set_opaque_region) {
     std::vector<gfx::Rect> region_px = {
-        gfx::Rect(gfx::ToRoundedSize(config->bounds_rect.size()))};
-    surface->SetOpaqueRegion(config->enable_blend ? nullptr : &region_px);
+        gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))};
+    surface->SetOpaqueRegion(config.enable_blend ? nullptr : &region_px);
   }
 
   WaylandBufferHandle* buffer_handle =
       connection_->buffer_manager_host()->GetBufferHandle(surface,
-                                                          config->buffer_id);
+                                                          config.buffer_id);
   DCHECK(buffer_handle);
   bool will_attach = surface->AttachBuffer(buffer_handle);
   // If we don't attach a released buffer, graphics freeze will occur.
   DCHECK(will_attach || !buffer_handle->released(surface));
 
-  surface->UpdateBufferDamageRegion(config->damage_region);
-  if (!config->access_fence_handle.is_null())
-    surface->SetAcquireFence(std::move(config->access_fence_handle));
+  surface->UpdateBufferDamageRegion(config.damage_region);
+  if (!config.access_fence_handle.is_null())
+    surface->SetAcquireFence(std::move(config.access_fence_handle));
 
   if (will_attach) {
     // Setup frame callback if wayland_surface will commit this buffer.
@@ -337,7 +336,6 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   // Send instructions across wayland protocol, but do not commit yet, let the
   // caller decide whether the commit should flush.
   surface->ApplyPendingState();
-  return;
 }
 
 // static

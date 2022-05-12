@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -21,6 +23,7 @@
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -239,6 +242,26 @@ class WaylandBufferManagerTest : public WaylandTest {
 
     EXPECT_NE(new_window->GetWidget(), gfx::kNullAcceleratedWidget);
     return new_window;
+  }
+
+  wl::WaylandOverlayConfig CreateBasicWaylandOverlayConfig(
+      int z_order,
+      uint32_t buffer_id,
+      const gfx::Rect& bounds_rect) {
+    return CreateBasicWaylandOverlayConfig(z_order, buffer_id,
+                                           gfx::RectF(bounds_rect));
+  }
+
+  wl::WaylandOverlayConfig CreateBasicWaylandOverlayConfig(
+      int z_order,
+      uint32_t buffer_id,
+      const gfx::RectF& bounds_rect) {
+    wl::WaylandOverlayConfig config;
+    config.z_order = z_order;
+    config.buffer_id = buffer_id;
+    config.bounds_rect = bounds_rect;
+    config.damage_region = gfx::ToEnclosedRect(bounds_rect);
+    return config;
   }
 
   MockTerminateGpuCallback callback_;
@@ -463,21 +486,12 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   // Can't commit for non-existing buffer id.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
 
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
-      kDefaultScale, gfx::RectF(window_->GetBounds()), gfx::RectF(),
-      window_->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
-      gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(INT32_MIN, 1u, window_->GetBounds()));
   // Non-existing buffer id
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
-      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
-      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      gfx::RRectF(), absl::nullopt /* background_color */));
-
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(0, 2u, window_->GetBounds()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
 
@@ -495,17 +509,11 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
   // Re-using the same buffer id across multiple surfaces is allowed.
   SetTerminateCallbackExpectationAndDestroyChannel(&callback_, false /*fail*/);
 
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
-      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
-      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      gfx::RRectF(), absl::nullopt /* background_color */));
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
-      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
-      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      gfx::RRectF(), absl::nullopt /* background_color */));
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(0, 1u, window_->GetBounds()));
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(1, 1u, window_->GetBounds()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
@@ -556,13 +564,9 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
     // Can't commit for bounds rect containing NaN
     SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
 
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-        1u, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
-        bounds_rect, gfx::RectF(), window_->GetBounds(), false, 1.0f,
-        gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-        absl::nullopt /* background_color */));
-
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
+    overlay_configs.emplace_back(
+        CreateBasicWaylandOverlayConfig(1u, 1u, bounds_rect));
     buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                         std::move(overlay_configs));
 
@@ -1780,22 +1784,13 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
   EXPECT_CALL(*mock_surface, Commit()).Times(0);
 
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(INT32_MIN, kBufferId1, bounds));
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(0, kBufferId2, bounds));
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(1, kBufferId3, bounds));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
   Sync();
@@ -2023,22 +2018,13 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
 
   // Prepare a frame with one background buffer, one primary plane and one
   // additional overlay plane. This will simulate hw accelerated compositing.
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
+  std::vector<wl::WaylandOverlayConfig> overlay_configs;
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(INT32_MIN, kBufferId1, bounds));
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(0, kBufferId2, bounds));
+  overlay_configs.emplace_back(
+      CreateBasicWaylandOverlayConfig(1, kBufferId3, bounds));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
                                       std::move(overlay_configs));
   Sync();
@@ -2094,13 +2080,9 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
   ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
                                                false /* fail */);
 
-  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs2;
-  overlay_configs2.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-      absl::nullopt /* background_color */));
-
+  std::vector<wl::WaylandOverlayConfig> overlay_configs2;
+  overlay_configs2.push_back(
+      CreateBasicWaylandOverlayConfig(INT32_MIN, kBufferId1, bounds));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 2u,
                                       std::move(overlay_configs2));
 
@@ -2176,14 +2158,11 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
 
   uint32_t frame_id = 0u;
   for (const auto& priority : priorities) {
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
     for (auto id : kBufferIds) {
-      overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-          id == 1 ? INT32_MIN : id,
-          gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
-          gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
-          false, 1.0f, gfx::GpuFenceHandle(), priority.first, gfx::RRectF(),
-          absl::nullopt /* background_color */));
+      overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+          id == 1 ? INT32_MIN : id, id, window_->GetBounds()));
+      overlay_configs.back().priority_hint = priority.first;
     }
 
     buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), ++frame_id,
@@ -2257,15 +2236,12 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
     connection_->set_surface_submission_in_pixel_coordinates(is_in_px);
     for (auto scale_factor : scale_factors) {
       for (const auto& rounded_corners : rounded_corners_vec) {
-        std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+        std::vector<wl::WaylandOverlayConfig> overlay_configs;
         for (auto id : kBufferIds) {
-          overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-              id == 1 ? INT32_MIN : id,
-              gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, scale_factor,
-              gfx::RectF(window_->GetBounds()), gfx::RectF(),
-              window_->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
-              gfx::OverlayPriorityHint::kNone, rounded_corners,
-              absl::nullopt /* background_color */));
+          overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+              id == 1 ? INT32_MIN : id, id, window_->GetBounds()));
+          overlay_configs.back().surface_scale_factor = scale_factor;
+          overlay_configs.back().rounded_clip_bounds = rounded_corners;
         }
 
         buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), ++frame_id,
@@ -2466,27 +2442,14 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
 
     Sync();
 
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-        INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
-        gfx::RectF(temp_window->GetBounds()), gfx::RectF(),
-        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
-        gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-        absl::nullopt /* background_color */));
-
-    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-        0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
-        gfx::RectF(window_->GetBounds()), gfx::RectF(),
-        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
-        gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-        absl::nullopt /* background_color */));
-
-    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-        1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
-        bounds_rect, gfx::RectF(), temp_window->GetBounds(), false, 1.0f,
-        gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-        absl::nullopt /* background_color */));
-
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
+    auto bounds = temp_window->GetBounds();
+    overlay_configs.emplace_back(
+        CreateBasicWaylandOverlayConfig(INT32_MIN, kBufferId1, bounds));
+    overlay_configs.emplace_back(
+        CreateBasicWaylandOverlayConfig(0, kBufferId1, bounds));
+    overlay_configs.emplace_back(
+        CreateBasicWaylandOverlayConfig(1, kBufferId1, bounds_rect));
     buffer_manager_gpu_->CommitOverlays(temp_window->GetWidget(), 1u,
                                         std::move(overlay_configs));
 

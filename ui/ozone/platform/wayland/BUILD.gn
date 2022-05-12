@@ -14,6 +14,15 @@ import("//ui/ozone/platform/wayland/wayland.gni")
 
 assert(is_linux || is_chromeos_lacros)
 
+source_set("common") {
+  sources = [
+    "common/wayland_overlay_config.cc",
+    "common/wayland_overlay_config.h",
+  ]
+
+  deps = [ "//ui/gfx" ]
+}
+
 source_set("wayland") {
   sources = [
     "client_native_pixmap_factory_wayland.cc",
@@ -207,6 +216,7 @@ source_set("wayland") {
   defines = [ "OZONE_IMPLEMENTATION" ]
 
   deps = [
+    ":common",
     "//base",
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
@@ -525,6 +535,7 @@ source_set("wayland_unittests") {
   ]
 
   deps = [
+    ":common",
     ":test_support",
     ":wayland",
     "//build:chromeos_buildflags",

@@ -127,9 +127,9 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
       std::make_unique<PendingFrame>(next_frame_id()));
 }
 
-void GbmSurfacelessWayland::QueueOverlayPlane(OverlayPlane plane,
-                                              BufferId buffer_id) {
-  unsubmitted_frames_.back()->planes.emplace_back(buffer_id, std::move(plane));
+void GbmSurfacelessWayland::QueueWaylandOverlayConfig(
+    wl::WaylandOverlayConfig config) {
+  unsubmitted_frames_.back()->configs.emplace_back(std::move(config));
 }
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
@@ -217,9 +217,12 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
 
   base::OnceClosure fence_wait_task;
   std::vector<std::unique_ptr<gfx::GpuFence>> fences;
-  for (auto& plane : frame->planes) {
-    if (plane.second.gpu_fence)
-      fences.push_back(std::move(plane.second.gpu_fence));
+  for (auto& config : frame->configs) {
+    if (!config.access_fence_handle.is_null()) {
+      fences.push_back(std::make_unique<gfx::GpuFence>(
+          std::move(config.access_fence_handle)));
+      config.access_fence_handle = gfx::GpuFenceHandle();
+    }
   }
 
   fence_wait_task = base::BindOnce(&WaitForGpuFences, std::move(fences));
@@ -320,6 +323,7 @@ void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
   // Solid color overlays are non-backed. Thus, queue them directly.
   // TODO(msisov): reconsider this once Linux Wayland compositors also support
   // creation of non-backed solid color wl_buffers.
+  in_flight_color_buffers.reserve(non_backed_overlays.size());
   for (auto& overlay_data : non_backed_overlays) {
     // This mustn't happen, but let's be explicit here and fail scheduling if
     // it is not a solid color overlay.
@@ -336,8 +340,9 @@ void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
       schedule_planes_succeeded = false;
       return;
     }
-    surfaceless->QueueOverlayPlane(OverlayPlane(nullptr, nullptr, overlay_data),
-                                   buf_id);
+    in_flight_color_buffers.push_back(buf_id);
+    surfaceless->QueueWaylandOverlayConfig(
+        {overlay_data, nullptr, buf_id, surfaceless->surface_scale_factor()});
   }
 
   schedule_planes_succeeded = true;
@@ -367,19 +372,8 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       return;
     }
 
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    for (auto& plane : submitted_frame->planes) {
-      overlay_configs.push_back(
-          ui::ozone::mojom::WaylandOverlayConfig::From(plane.second));
-      overlay_configs.back()->buffer_id = plane.first;
-      // The current scale factor of the surface, which is used to determine
-      // the size in pixels of resources allocated by the GPU process.
-      overlay_configs.back()->surface_scale_factor = surface_scale_factor_;
-      plane.second.gpu_fence.reset();
-    }
-
     buffer_manager_->CommitOverlays(widget_, submitted_frame->frame_id,
-                                    std::move(overlay_configs));
+                                    std::move(submitted_frame->configs));
     submitted_frames_.push_back(std::move(submitted_frame));
   }
 }
@@ -417,11 +411,11 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
 
   auto submitted_frame = std::move(submitted_frames_.front());
   submitted_frames_.erase(submitted_frames_.begin());
-  for (auto& plane : submitted_frame->planes) {
+  for (auto& buf : submitted_frame->in_flight_color_buffers) {
     // Let the holder mark this buffer as free to reuse.
-    solid_color_buffers_holder_->OnSubmission(plane.first, buffer_manager_);
+    solid_color_buffers_holder_->OnSubmission(buf, buffer_manager_);
   }
-  submitted_frame->planes.clear();
+  submitted_frame->in_flight_color_buffers.clear();
   submitted_frame->overlays.clear();
 
   // Check if the fence has retired.
