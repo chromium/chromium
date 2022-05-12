@@ -95,7 +95,14 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
 // 1) On start up, we determined that they had not consented to metrics
 //    reporting (including first run users), or,
 // 2) They disabled metrics reporting.
-IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
+// TODO(crbug.com/1324877): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ClientIdSaved DISABLED_ClientIdSaved
+#else
+#define MAYBE_ClientIdSaved ClientIdSaved
+#endif
+IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest,
+                       MAYBE_ClientIdSaved) {
   // Verify that the client ID is initially empty.
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(
