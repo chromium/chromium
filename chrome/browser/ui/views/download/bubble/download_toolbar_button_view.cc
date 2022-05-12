@@ -115,6 +115,9 @@ void DownloadToolbarButtonView::Show() {
 }
 
 void DownloadToolbarButtonView::Hide() {
+  if (bubble_delegate_) {
+    CloseDialog(views::Widget::ClosedReason::kUnspecified);
+  }
   SetVisible(false);
   PreferredSizeChanged();
 }

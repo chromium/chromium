@@ -188,17 +188,18 @@ void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
                      }),
       offline_items_.end());
   partial_view_ids_.erase(id);
-  display_controller_->OnRemovedItem();
+  display_controller_->OnRemovedItem(id);
 }
 
 void DownloadBubbleUIController::OnDownloadRemoved(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  partial_view_ids_.erase(
+  const ContentId& id =
       DownloadItemModel::Wrap(
           item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>())
-          ->GetContentId());
-  display_controller_->OnRemovedItem();
+          ->GetContentId();
+  partial_view_ids_.erase(id);
+  display_controller_->OnRemovedItem(id);
 }
 
 void DownloadBubbleUIController::OnItemUpdated(

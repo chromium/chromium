@@ -77,7 +77,15 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   UpdateToolbarButtonState();
 }
 
-void DownloadDisplayController::OnRemovedItem() {
+void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
+  std::vector<DownloadUIModelPtr> all_models =
+      bubble_controller_->GetAllItemsToDisplay();
+  // Hide the button if there is only one download item left and that item is
+  // about to be removed.
+  if (all_models.size() == 1 && all_models[0]->GetContentId() == id) {
+    HideToolbarButton();
+    return;
+  }
   UpdateToolbarButtonState();
 }
 
@@ -116,6 +124,10 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
 
   std::vector<DownloadUIModelPtr> all_models =
       bubble_controller_->GetAllItemsToDisplay();
+  if (all_models.empty()) {
+    HideToolbarButton();
+    return;
+  }
   for (const auto& model : all_models) {
     if (model->GetDangerType() ==
             download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
@@ -186,6 +198,9 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
       GetLastCompleteTime(bubble_controller_->GetOfflineItems());
   if (!HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,
                                  last_complete_time)) {
+    return;
+  }
+  if (bubble_controller_->GetAllItemsToDisplay().empty()) {
     return;
   }
   // If the last download complete time is less than

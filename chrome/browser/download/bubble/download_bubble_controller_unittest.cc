@@ -49,7 +49,7 @@ class MockDownloadDisplayController : public DownloadDisplayController {
   void MaybeShowButtonWhenCreated() override {}
   MOCK_METHOD1(OnNewItem, void(bool));
   MOCK_METHOD2(OnUpdatedItem, void(bool, bool));
-  MOCK_METHOD0(OnRemovedItem, void());
+  MOCK_METHOD1(OnRemovedItem, void(const ContentId&));
 };
 
 struct DownloadSortingState {
