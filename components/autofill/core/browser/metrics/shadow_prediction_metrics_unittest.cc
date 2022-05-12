@@ -33,6 +33,7 @@ constexpr int kEmailAddressDifferentPredictionsValueAgreesWithNew = 58;
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
 constexpr int kNameFullSamePredictionValueAgrees = 43;
 constexpr int kNameFullDifferentPredictionsValueAgreesWithOld = 45;
+constexpr int kEmailAddressDifferentPredictionsValueAgreesWithOld = 57;
 constexpr int kSearchTermSamePredictionValueDisagrees = 584;
 constexpr int kSearchTermDifferentPredictionsValueAgreesWithNew = 586;
 #endif
@@ -208,6 +209,13 @@ TEST_F(AutofillShadowPredictionMetricsTest,
               UnorderedElementsAre(
                   Bucket(kNameFullDifferentPredictionsValueAgreesWithOld, 1),
                   Bucket(kSearchTermSamePredictionValueDisagrees, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.ShadowPredictions.NextGenToExperimental"),
+      UnorderedElementsAre(
+          Bucket(kNameFullDifferentPredictionsValueAgreesWithOld, 1),
+          Bucket(kEmailAddressDifferentPredictionsValueAgreesWithOld, 1)));
 }
 #endif
 

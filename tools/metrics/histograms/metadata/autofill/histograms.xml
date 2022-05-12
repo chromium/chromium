@@ -122,6 +122,8 @@ chromium-metrics-reviews@google.com.
       summary="the heuristics being rolled out, the default heuristics"/>
   <variant name="NextGenToDefaultHeuristics"
       summary="the next-gen heuristics, the default heuristics"/>
+  <variant name="NextGenToExperimentalHeuristics"
+      summary="the next-gen heuristics, the experimental heuristics"/>
 </variants>
 
 <variants name="Autofill.Snackbar.Type">

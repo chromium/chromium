@@ -81,6 +81,12 @@ void LogShadowPredictionComparison(const AutofillField& field) {
       GetShadowPrediction(field.heuristic_type(PatternSource::kDefault),
                           field.heuristic_type(PatternSource::kNextGen),
                           submitted_types));
+
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.NextGenToExperimental",
+      GetShadowPrediction(field.heuristic_type(PatternSource::kExperimental),
+                          field.heuristic_type(PatternSource::kNextGen),
+                          submitted_types));
 #endif
 }
 
