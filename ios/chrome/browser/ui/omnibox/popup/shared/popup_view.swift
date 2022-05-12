@@ -68,8 +68,7 @@ struct PopupView: View {
 
       // Default list row insets. These are removed to inset the popup to the
       // width of the omnibox.
-      static let defaultInsetWhenSelfSizing: CGFloat = 16
-      static let defaultInset: CGFloat = 20
+      static let defaultInset: CGFloat = 16
 
       static let selfSizingListBottomMargin: CGFloat = 16
     }
@@ -350,17 +349,11 @@ struct PopupView: View {
       leadingHorizontalMargin = 0
       trailingHorizontalMargin = 0
     case .two:
-      leadingSpace =
-        uiConfiguration.omniboxLeadingSpace
-        - (shouldSelfSize
-          ? Dimensions.VariationTwo.defaultInsetWhenSelfSizing
-          : Dimensions.VariationTwo.defaultInset)
+      leadingSpace = uiConfiguration.omniboxLeadingSpace - Dimensions.VariationTwo.defaultInset
       trailingSpace =
         (shouldSelfSize && sizeClass != .compact
           ? uiConfiguration.omniboxTrailingSpace : uiConfiguration.safeAreaTrailingSpace)
-        - (shouldSelfSize
-          ? Dimensions.VariationTwo.defaultInsetWhenSelfSizing
-          : Dimensions.VariationTwo.defaultInset)
+        - Dimensions.VariationTwo.defaultInset
       leadingHorizontalMargin = 0
       trailingHorizontalMargin = sizeClass == .compact ? kContractedLocationBarHorizontalMargin : 0
     }

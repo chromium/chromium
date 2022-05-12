@@ -79,15 +79,15 @@ struct PopupMatchRowView: View {
   @ViewBuilder
   var customSeparator: some View {
     HStack(spacing: 0) {
-      Spacer().frame(width: uiConfiguration.omniboxTextFieldLeadingSpace + omniboxLeadingSpace)
+      Spacer().frame(
+        width: leadingMarginForRowContent + spaceBetweenRowContentLeadingEdgeAndSuggestionText)
       customSeparatorColor.frame(height: 0.5)
     }.environment(\.layoutDirection, .leftToRight)
   }
 
   @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
 
-  /// Leading spacing before the content of the row, within the row.
-  var omniboxLeadingSpace: CGFloat {
+  var leadingMarginForRowContent: CGFloat {
     switch uiVariation {
     case .one:
       return uiConfiguration.omniboxLeadingSpace
@@ -96,13 +96,30 @@ struct PopupMatchRowView: View {
     }
   }
 
-  /// Traling spacing after the content of the row, within the row.
-  var omniboxTrailingSpace: CGFloat {
+  var trailingMarginForRowContent: CGFloat {
     switch uiVariation {
     case .one:
       return uiConfiguration.safeAreaTrailingSpace + kExpandedLocationBarLeadingMarginRefreshedPopup
     case .two:
       return 0
+    }
+  }
+
+  var spaceBetweenRowContentLeadingEdgeAndCenterOfSuggestionImage: CGFloat {
+    switch uiVariation {
+    case .one:
+      return uiConfiguration.omniboxLeadingImageLeadingSpace
+    case .two:
+      return 30
+    }
+  }
+
+  var spaceBetweenRowContentLeadingEdgeAndSuggestionText: CGFloat {
+    switch uiVariation {
+    case .one:
+      return uiConfiguration.omniboxTextFieldLeadingSpace
+    case .two:
+      return 59
     }
   }
 
@@ -130,10 +147,10 @@ struct PopupMatchRowView: View {
 
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
-        Color.clear.frame(width: omniboxLeadingSpace)
+        Color.clear.frame(width: leadingMarginForRowContent)
         HStack(alignment: .center, spacing: 0) {
           Color.clear.frame(
-            width: uiConfiguration.omniboxLeadingImageLeadingSpace
+            width: spaceBetweenRowContentLeadingEdgeAndCenterOfSuggestionImage
               - PopupMatchImageView.Dimension.image / 2)
           match.image
             .map { image in
@@ -144,7 +161,7 @@ struct PopupMatchRowView: View {
               .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
             }
           Spacer()
-        }.frame(width: uiConfiguration.omniboxTextFieldLeadingSpace)
+        }.frame(width: spaceBetweenRowContentLeadingEdgeAndSuggestionText)
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
             GradientTextView(match.text, highlightColor: highlightColor)
@@ -175,7 +192,7 @@ struct PopupMatchRowView: View {
             .foregroundColor(isHighlighted ? highlightColor : .chromeBlue)
             .environment(\.layoutDirection, layoutDirection)
         }
-        Color.clear.frame(width: omniboxTrailingSpace)
+        Color.clear.frame(width: trailingMarginForRowContent)
       }
       .padding(
         uiVariation == .one ? Dimensions.VariationOne.padding : Dimensions.VariationTwo.padding
