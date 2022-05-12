@@ -160,6 +160,9 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-dbg",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+    ],
 )
 
 try_.builder(
@@ -169,6 +172,10 @@ try_.builder(
 try_.builder(
     name = "android-cronet-x86-dbg-10-tests",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-10-tests",
+    ],
     check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
@@ -186,14 +193,26 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-dbg-11-tests",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-11-tests",
+    ],
 )
 
 try_.builder(
     name = "android-cronet-x86-dbg-oreo-tests",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-oreo-tests",
+    ],
 )
 
 try_.builder(
     name = "android-cronet-x86-dbg-pie-tests",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-pie-tests",
+    ],
 )
 
 try_.builder(
