@@ -11,5 +11,8 @@
   "start_url": "isolated/simple.html",
   "display": "standalone",
   "orientation": "landscape",
-  "isolated_storage": true
+  "isolated_storage": true,
+  "permissions_policy": {
+    "usb": [ "self" ]
+  }
 }

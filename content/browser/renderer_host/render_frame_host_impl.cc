@@ -9764,11 +9764,26 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
         blink::PermissionsPolicy::CreateForFencedFrame(last_committed_origin_);
     return;
   }
+
   RenderFrameHostImpl* parent_frame_host = GetParent();
+  auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
+
+  if (!parent_frame_host && isolation_info.is_isolated_application()) {
+    // In Isolated Apps, the top level frame should use the policy declared in
+    // the Web App Manifest.
+    blink::ParsedPermissionsPolicy manifest_policy =
+        GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
+            GetBrowserContext(), isolation_info.origin());
+    permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
+        manifest_policy, last_committed_origin_);
+    return;
+  }
+
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
   blink::ParsedPermissionsPolicy container_policy =
       browsing_context_state_->effective_frame_policy().container_policy;
+
   permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);
 }

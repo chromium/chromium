@@ -314,6 +314,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -1970,6 +1971,27 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
       GetProcessCountToIgnoreForLimit();
 #else
   return 0;
+#endif
+}
+
+blink::ParsedPermissionsPolicy
+ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const url::Origin& app_origin) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  auto& registrar =
+      web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+  std::vector<web_app::AppId> app_ids_for_origin =
+      registrar.FindAppsInScope(app_origin.GetURL());
+  if (app_ids_for_origin.empty()) {
+    return blink::ParsedPermissionsPolicy();
+  }
+
+  return registrar.GetPermissionsPolicy(app_ids_for_origin[0]);
+#else
+  NOTIMPLEMENTED();
+  return blink::ParsedPermissionsPolicy();
 #endif
 }
 
