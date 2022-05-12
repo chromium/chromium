@@ -22,8 +22,8 @@ class WebState;
 
 namespace translate {
 
+class LanguageDetectionModelService;
 class TranslateManager;
-class TranslateModelService;
 
 // Content implementation of TranslateDriver.
 class IOSTranslateDriver
@@ -32,9 +32,10 @@ class IOSTranslateDriver
       public web::WebStateObserver,
       public language::IOSLanguageDetectionTabHelper::Observer {
  public:
-  IOSTranslateDriver(web::WebState* web_state,
-                     TranslateManager* translate_manager,
-                     TranslateModelService* translate_model_service);
+  IOSTranslateDriver(
+      web::WebState* web_state,
+      TranslateManager* translate_manager,
+      LanguageDetectionModelService* language_detection_model_service);
 
   IOSTranslateDriver(const IOSTranslateDriver&) = delete;
   IOSTranslateDriver& operator=(const IOSTranslateDriver&) = delete;
@@ -111,7 +112,7 @@ class IOSTranslateDriver
   std::unique_ptr<TranslateController> translate_controller_;
   std::unique_ptr<LanguageDetectionController> language_detection_controller_;
 
-  TranslateModelService* translate_model_service_ = nullptr;
+  LanguageDetectionModelService* language_detection_model_service_ = nullptr;
 
   // An ever-increasing sequence number of the current page, used to match up
   // translation requests with responses.

@@ -21,6 +21,7 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 #import "components/translate/ios/browser/js_translate_manager.h"
 #import "components/translate/ios/browser/language_detection_controller.h"
+#include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/web/public/browser_state.h"
@@ -43,26 +44,15 @@ namespace {
 // Language name passed to the Translate element for it to detect the language.
 const char kAutoDetectionLanguage[] = "auto";
 
-LanguageDetectionModel* GetLanguageDetectionModel() {
-  static base::NoDestructor<LanguageDetectionModel> instance;
-  return instance.get();
-}
-
-void SetLanguageDetectionModelModelFile(base::File model_file) {
-  LanguageDetectionModel* language_detection_model =
-      GetLanguageDetectionModel();
-  language_detection_model->UpdateWithFile(std::move(model_file));
-}
-
 }  // namespace
 
 IOSTranslateDriver::IOSTranslateDriver(
     web::WebState* web_state,
     TranslateManager* translate_manager,
-    TranslateModelService* translate_model_service)
+    LanguageDetectionModelService* language_detection_model_service)
     : web_state_(web_state),
       translate_manager_(translate_manager->GetWeakPtr()),
-      translate_model_service_(translate_model_service),
+      language_detection_model_service_(language_detection_model_service),
       page_seq_no_(0),
       pending_page_seq_no_(0) {
   DCHECK(translate_manager_);
@@ -70,15 +60,9 @@ IOSTranslateDriver::IOSTranslateDriver(
 
   web_state_->AddObserver(this);
   LanguageDetectionModel* language_detection_model = nullptr;
-  if (translate_model_service_ && IsTFLiteLanguageDetectionEnabled()) {
-    language_detection_model = GetLanguageDetectionModel();
-    if (!language_detection_model->IsAvailable()) {
-      translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
-          &IOSTranslateDriver::OnLanguageModelFileAvailabilityChanged,
-          weak_ptr_factory_.GetWeakPtr()));
-    } else {
-      OnLanguageModelFileAvailabilityChanged(true);
-    }
+  if (language_detection_model_service_ && IsTFLiteLanguageDetectionEnabled()) {
+    language_detection_model =
+        language_detection_model_service_->GetLanguageDetectionModel();
   }
 
   language::IOSLanguageDetectionTabHelper* language_detection_tab_helper =
@@ -120,19 +104,6 @@ void IOSTranslateDriver::OnLanguageDetermined(
 
   for (auto& observer : language_detection_observers())
     observer.OnLanguageDetermined(details);
-}
-
-void IOSTranslateDriver::OnLanguageModelFileAvailabilityChanged(
-    bool available) {
-  if (available) {
-    DCHECK(translate_model_service_);
-    base::File model_file =
-        translate_model_service_->GetLanguageDetectionModelFile();
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(SetLanguageDetectionModelModelFile,
-                       std::move(model_file)));
-  }
 }
 
 void IOSTranslateDriver::IOSLanguageDetectionTabHelperWasDestroyed(

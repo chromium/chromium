@@ -21,6 +21,8 @@ source_set("translate") {
   sources = [
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
+    "language_detection_model_service_factory.h",
+    "language_detection_model_service_factory.mm",
     "language_selection_context.h",
     "language_selection_context.mm",
     "translate_accept_languages_factory.cc",
@@ -49,6 +51,7 @@ source_set("translate") {
     "//components/translate/core/browser",
     "//components/translate/core/browser:translate_model_service",
     "//components/translate/core/common",
+    "//components/translate/core/language_detection",
     "//components/translate/ios/browser",
     "//components/web_resource",
     "//ios/chrome/app/strings",

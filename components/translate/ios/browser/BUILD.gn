@@ -13,6 +13,8 @@ source_set("browser") {
     "js_translate_manager.mm",
     "language_detection_controller.h",
     "language_detection_controller.mm",
+    "language_detection_model_service.h",
+    "language_detection_model_service.mm",
     "string_clipping_util.cc",
     "string_clipping_util.h",
     "translate_controller.h",
@@ -22,6 +24,7 @@ source_set("browser") {
   deps = [
     ":injected_js",
     "//base",
+    "//components/keyed_service/core",
     "//components/language/ios/browser",
     "//components/prefs",
     "//components/translate/core/browser",

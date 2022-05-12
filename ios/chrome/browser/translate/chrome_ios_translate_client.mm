@@ -25,6 +25,7 @@
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
+#include "ios/chrome/browser/translate/language_detection_model_service_factory.h"
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #include "ios/chrome/browser/translate/translate_model_service_factory.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
@@ -60,11 +61,12 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))
               ->GetPrimaryModel())),
-      translate_driver_(web_state,
-                        translate_manager_.get(),
-                        TranslateModelServiceFactory::GetForBrowserState(
-                            ChromeBrowserState::FromBrowserState(
-                                web_state->GetBrowserState()))) {
+      translate_driver_(
+          web_state,
+          translate_manager_.get(),
+          LanguageDetectionModelServiceFactory::GetForBrowserState(
+              ChromeBrowserState::FromBrowserState(
+                  web_state->GetBrowserState()))) {
   web_state_->AddObserver(this);
 }
 
