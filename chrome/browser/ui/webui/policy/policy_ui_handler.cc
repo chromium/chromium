@@ -1022,7 +1022,7 @@ base::Value PolicyUIHandler::GetPolicyNames() {
   return names;
 }
 
-base::Value::List PolicyUIHandler::GetPolicyValues() {
+base::Value PolicyUIHandler::GetPolicyValues() {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       web_ui()->GetWebContents()->GetBrowserContext());
 
@@ -1034,7 +1034,7 @@ base::Value::List PolicyUIHandler::GetPolicyValues() {
         .WithUpdaterPolicies(
             std::make_unique<policy::PolicyMap>(updater_policies_->Clone()))
         .WithUpdaterPolicySchemas(GetGoogleUpdatePolicySchemas())
-        .ToValueList();
+        .ToValue();
   }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -1044,7 +1044,7 @@ base::Value::List PolicyUIHandler::GetPolicyValues() {
   policy_conversions.WithAdditionalChromePolicies(device_policy_.Clone());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  return policy_conversions.EnableConvertValues(true).ToValueList();
+  return policy_conversions.EnableConvertValues(true).ToValue();
 }
 
 void PolicyUIHandler::AddExtensionPolicyNames(
@@ -1334,8 +1334,7 @@ void PolicyUIHandler::FileSelectionCanceled(void* params) {
 
 void PolicyUIHandler::SendPolicies() {
   if (IsJavascriptAllowed())
-    FireWebUIListener("policies-updated", GetPolicyNames(),
-                      base::Value(GetPolicyValues()));
+    FireWebUIListener("policies-updated", GetPolicyNames(), GetPolicyValues());
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

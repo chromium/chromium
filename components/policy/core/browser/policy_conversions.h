@@ -45,38 +45,39 @@ class POLICY_EXPORT PolicyConversions {
   // Set to get policy types as human friendly string instead of enum integer.
   // Policy types includes policy source, policy scope and policy level.
   // Enabled by default.
-  virtual PolicyConversions& EnableConvertTypes(bool enabled);
+  PolicyConversions& EnableConvertTypes(bool enabled);
   // Set to get dictionary policy value as JSON string.
   // Disabled by default.
-  virtual PolicyConversions& EnableConvertValues(bool enabled);
+  PolicyConversions& EnableConvertValues(bool enabled);
   // Set to get device local account policies on ChromeOS.
   // Disabled by default.
-  virtual PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
+  PolicyConversions& EnableDeviceLocalAccountPolicies(bool enabled);
   // Set to get device basic information on ChromeOS.
   // Disabled by default.
-  virtual PolicyConversions& EnableDeviceInfo(bool enabled);
+  PolicyConversions& EnableDeviceInfo(bool enabled);
   // Set to enable pretty print for all JSON string.
   // Enabled by default.
-  virtual PolicyConversions& EnablePrettyPrint(bool enabled);
+  PolicyConversions& EnablePrettyPrint(bool enabled);
   // Set to get all user scope policies.
   // Enabled by default.
-  virtual PolicyConversions& EnableUserPolicies(bool enabled);
+  PolicyConversions& EnableUserPolicies(bool enabled);
   // Set to drop the policies of which value is a default one set by the policy
   // provider. Disabled by default.
-  virtual PolicyConversions& SetDropDefaultValues(bool enabled);
+  PolicyConversions& SetDropDefaultValues(bool enabled);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sets the updater policies.
-  virtual PolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies);
+  PolicyConversions& WithUpdaterPolicies(std::unique_ptr<PolicyMap> policies);
 
   // Sets the updater policy schemas.
-  virtual PolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas);
+  PolicyConversions& WithUpdaterPolicySchemas(PolicyToSchemaMap schemas);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  // Returns the policy data as a base::Value object.
+  virtual base::Value ToValue() = 0;
+
   // Returns the policy data as a JSON string;
-  virtual std::string ToJSON() = 0;
+  virtual std::string ToJSON();
 
  protected:
   PolicyConversionsClient* client() { return client_.get(); }
@@ -94,34 +95,8 @@ class POLICY_EXPORT DictionaryPolicyConversions : public PolicyConversions {
       delete;
   ~DictionaryPolicyConversions() override;
 
-  DictionaryPolicyConversions& EnableConvertTypes(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableConvertValues(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableDeviceLocalAccountPolicies(
-      bool enabled) override;
-
-  DictionaryPolicyConversions& EnableDeviceInfo(bool enabled) override;
-
-  DictionaryPolicyConversions& EnablePrettyPrint(bool enabled) override;
-
-  DictionaryPolicyConversions& EnableUserPolicies(bool enabled) override;
-
-  DictionaryPolicyConversions& SetDropDefaultValues(bool enabled) override;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  DictionaryPolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies) override;
-
-  // Sets the updater policy schemas.
-  DictionaryPolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas) override;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  std::string ToJSON() override;
-
-  base::Value::Dict ToValueDict();
+  // TODO(chromium:1321529): Investigate returning base::Value::Dict.
+  base::Value ToValue() override;
 
  private:
   base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
@@ -139,34 +114,8 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
   ArrayPolicyConversions& operator=(const ArrayPolicyConversions&) = delete;
   ~ArrayPolicyConversions() override;
 
-  ArrayPolicyConversions& EnableConvertTypes(bool enabled) override;
-
-  ArrayPolicyConversions& EnableConvertValues(bool enabled) override;
-
-  ArrayPolicyConversions& EnableDeviceLocalAccountPolicies(
-      bool enabled) override;
-
-  ArrayPolicyConversions& EnableDeviceInfo(bool enabled) override;
-
-  ArrayPolicyConversions& EnablePrettyPrint(bool enabled) override;
-
-  ArrayPolicyConversions& EnableUserPolicies(bool enabled) override;
-
-  ArrayPolicyConversions& SetDropDefaultValues(bool enabled) override;
-
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Sets the updater policies.
-  ArrayPolicyConversions& WithUpdaterPolicies(
-      std::unique_ptr<PolicyMap> policies) override;
-
-  // Sets the updater policy schemas.
-  ArrayPolicyConversions& WithUpdaterPolicySchemas(
-      PolicyToSchemaMap schemas) override;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  std::string ToJSON() override;
-
-  base::Value::List ToValueList();
+  // TODO(chromium:1321529): Investigate returning base::Value::List.
+  base::Value ToValue() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Additional Chrome policies that need to be displayed, though not available

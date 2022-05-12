@@ -108,23 +108,24 @@ void UpdatePolicyInfo(em::Policy* policy_info,
 }  // namespace
 
 void AppendChromePolicyInfoIntoProfileReport(
-    const base::Value::Dict& policies,
+    const base::Value& policies,
     em::ChromeUserProfileInfo* profile_info) {
-  for (auto policy_iter : *policies.FindDict("chromePolicies")) {
+  for (auto policy_iter : policies.FindKey("chromePolicies")->DictItems()) {
     UpdatePolicyInfo(profile_info->add_chrome_policies(), policy_iter.first,
                      policy_iter.second);
   }
 }
 
 void AppendExtensionPolicyInfoIntoProfileReport(
-    const base::Value::Dict& policies,
+    const base::Value& policies,
     em::ChromeUserProfileInfo* profile_info) {
-  if (!policies.Find("extensionPolicies")) {
+  if (!policies.FindKey("extensionPolicies")) {
     // Android and iOS don't support extensions and their policies.
     return;
   }
 
-  for (auto extension_iter : *policies.FindDict("extensionPolicies")) {
+  for (auto extension_iter :
+       policies.FindKey("extensionPolicies")->DictItems()) {
     const base::Value& policies_value = extension_iter.second;
     if (policies_value.DictSize() == 0)
       continue;

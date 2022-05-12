@@ -87,7 +87,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
  private:
   base::Value GetPolicyNames();
-  base::Value::List GetPolicyValues();
+  base::Value GetPolicyValues();
 
   void AddExtensionPolicyNames(base::Value* names,
                                policy::PolicyDomain policy_domain);
