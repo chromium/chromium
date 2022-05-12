@@ -197,8 +197,7 @@ public class ProcessInitializationHandler {
         Context application = ContextUtils.getApplicationContext();
 
         // Initialize the AccountManagerFacade with the correct AccountManagerDelegate. Must be done
-        // only once and before AccountMangerHelper.get(...) is called to avoid using the
-        // default AccountManagerDelegate.
+        // only once and before AccountManagerFacadeProvider.getInstance() is invoked.
         AccountManagerFacadeProvider.setInstance(
                 new AccountManagerFacadeImpl(AppHooks.get().createAccountManagerDelegate()));
 
