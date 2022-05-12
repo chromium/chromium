@@ -70,7 +70,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // The opacity of the resize handle control.
 constexpr double kResizeHandleOpacity = 0.38;
 #endif
@@ -323,7 +323,7 @@ void VideoOverlayWindowViews::SetUpViews() {
         overlay->RecordButtonPressed(OverlayWindowControl::kHangUp);
       },
       base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   auto resize_handle_view =
       std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
 #endif
@@ -398,7 +398,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   hang_up_button->layer()->SetFillsBoundsOpaquely(false);
   hang_up_button->layer()->SetName("HangUpButton");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // views::View that shows the affordance that the window can be resized. ----
   resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
   resize_handle_view->layer()->SetFillsBoundsOpaquely(false);
@@ -438,7 +438,7 @@ void VideoOverlayWindowViews::SetUpViews() {
       controls_container_view->AddChildView(std::move(toggle_camera_button));
   hang_up_button_ =
       controls_container_view->AddChildView(std::move(hang_up_button));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   resize_handle_view_ =
       controls_container_view->AddChildView(std::move(resize_handle_view));
 #endif
