@@ -454,18 +454,6 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   dialog_side_insets.set_top(0);
   dialog_side_insets.set_bottom(0);
 
-  if (!model_->icon(GetPassKey()).IsEmpty()) {
-    // If we have a window icon, inset margins additionally to align with
-    // title label.
-    // TODO(pbos): Reconsider this. Aligning with title gives a massive gap on
-    // the left side of the dialog. This style is from
-    // ExtensionUninstallDialogView as part of refactoring it to use
-    // DialogModel.
-    dialog_side_insets.set_left(
-        dialog_side_insets.left() + model_->icon(GetPassKey()).Size().width() +
-        layout_provider->GetInsetsMetric(INSETS_DIALOG_TITLE).left());
-  }
-
   ui::DialogModelField* first_field = nullptr;
   ui::DialogModelField* last_field = nullptr;
   for (View* const view : contents_view_->children()) {
