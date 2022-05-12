@@ -501,14 +501,14 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
               CSSPrimitiveValue::CanonicalUnitTypeForCategory(
                   left_unit_category);
           if (canonical_type != CSSPrimitiveValue::UnitType::kUnknown) {
-            double left_value = ClampTo<double>(
+            double left_value =
                 left_side->DoubleValue() *
                 CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
-                    left_type));
-            double right_value = ClampTo<double>(
+                    left_type);
+            double right_value =
                 right_side->DoubleValue() *
                 CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
-                    right_type));
+                    right_type);
             return CSSMathExpressionNumericLiteral::Create(
                 EvaluateOperator({left_value, right_value}, op),
                 canonical_type);
