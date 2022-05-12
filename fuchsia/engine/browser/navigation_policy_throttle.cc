@@ -111,10 +111,12 @@ NavigationPolicyThrottle::HandleNavigationPhase(
         content::NavigationThrottle::PROCEED);
   }
 
-  policy_handler_->navigation_policy_provider()->EvaluateRequestedNavigation(
+  policy_handler_->EvaluateRequestedNavigation(
       ToRequestedNavigation(navigation_handle_, phase),
-      fit::bind_member(
-          this, &NavigationPolicyThrottle::OnRequestedNavigationEvaluated));
+      [weak_this = weak_factory_.GetWeakPtr()](auto decision) {
+        if (weak_this)
+          weak_this->OnRequestedNavigationEvaluated(std::move(decision));
+      });
 
   is_paused_ = true;
   return content::NavigationThrottle::ThrottleCheckResult(

@@ -18,7 +18,11 @@ SafePresenter::SafePresenter(scenic::Session* session) : session_(session) {
       fit::bind_member(this, &SafePresenter::OnFramePresented));
 }
 
-SafePresenter::~SafePresenter() = default;
+SafePresenter::~SafePresenter() {
+  // Clear the OnFramePresented callback, in case the `session_` outlives
+  // SafePresenter.
+  session_->set_on_frame_presented_handler({});
+}
 
 void SafePresenter::QueuePresent() {
   // Present to Scenic immediately, if we can.

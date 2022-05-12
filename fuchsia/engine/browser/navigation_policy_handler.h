@@ -30,13 +30,10 @@ class WEB_ENGINE_EXPORT NavigationPolicyHandler {
       NavigationPolicyThrottle* navigation_throttle);
   void RemoveNavigationThrottle(NavigationPolicyThrottle* navigation_throttle);
 
-  fuchsia::web::NavigationPolicyProvider* navigation_policy_provider() {
-    return provider_.get();
-  }
-
   bool is_provider_connected();
 
-  // Passes on the call to |provider_|.
+  // Sends the request to evaluate the `requested_navigation` to the
+  // `NavigationPolicyProvider`.
   void EvaluateRequestedNavigation(
       fuchsia::web::RequestedNavigation requested_navigation,
       fuchsia::web::NavigationPolicyProvider::

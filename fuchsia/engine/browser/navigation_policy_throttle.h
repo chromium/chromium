@@ -43,6 +43,10 @@ class WEB_ENGINE_EXPORT NavigationPolicyThrottle
 
   // Indicates if the navigation is currently paused.
   bool is_paused_ = false;
+
+  // Used for `EvaluateRequestedNavigation()` results callbacks that may outlive
+  // this object.
+  base::WeakPtrFactory<NavigationPolicyThrottle> weak_factory_{this};
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_NAVIGATION_POLICY_THROTTLE_H_
