@@ -477,42 +477,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         [weakSelf openSiteInformation];
       });
 
-  if (UseSymbols()) {
-    self.reloadAction =
-        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
-                                 kArrowClockWiseSymbol, NO, kToolsMenuReload, ^{
-                                   [weakSelf reload];
-                                 });
-  } else {
-    self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
-                                                 @"overflow_menu_action_reload",
-                                                 kToolsMenuReload, ^{
-                                                   [weakSelf reload];
-                                                 });
-  }
-
-  self.stopLoadAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_STOP, @"overflow_menu_action_stop", kToolsMenuStop, ^{
-        [weakSelf stopLoading];
-      });
-
-  self.openTabAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_NEW_TAB,
-                                                @"overflow_menu_action_new_tab",
-                                                kToolsMenuNewTabId, ^{
-                                                  [weakSelf openTab];
-                                                });
-  self.openIncognitoTabAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, @"overflow_menu_action_incognito",
-      kToolsMenuNewIncognitoTabId, ^{
-        [weakSelf openIncognitoTab];
-      });
-
-  self.openNewWindowAction = CreateOverflowMenuAction(
-      IDS_IOS_TOOLS_MENU_NEW_WINDOW, @"overflow_menu_action_new_window",
-      kToolsMenuNewWindowId, ^{
-        [weakSelf openNewWindow];
-      });
-
   [self logTranslateAvailability];
 
   if (UseSymbols()) {
@@ -543,6 +507,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         IDS_IOS_TOOLS_MENU_NEW_WINDOW, kNewWindowActionSymbol, YES,
         kToolsMenuNewWindowId, ^{
           [weakSelf openNewWindow];
+        });
+
+    self.clearBrowsingDataAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA, kTrashSymbol, YES,
+        kToolsMenuClearBrowsingData, ^{
+          [weakSelf openClearBrowsingData];
         });
 
     if (!self.isIncognito && IsWebChannelsEnabled() &&
@@ -664,6 +634,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         kToolsMenuNewWindowId, ^{
           [weakSelf openNewWindow];
         });
+
+    self.clearBrowsingDataAction =
+        CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA,
+                                 @"overflow_menu_action_clear_browsing_data",
+                                 kToolsMenuClearBrowsingData, ^{
+                                   [weakSelf openClearBrowsingData];
+                                 });
 
     if (!self.isIncognito && IsWebChannelsEnabled() &&
         GetFollowActionState(self.webState) != FollowActionStateHidden) {
