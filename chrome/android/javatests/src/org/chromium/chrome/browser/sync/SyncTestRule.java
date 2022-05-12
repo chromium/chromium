@@ -304,6 +304,12 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     public void clearServerData() {
         mFakeServerHelper.clearServerData();
+        // SyncTestRule doesn't currently exercise invalidations, as opposed to
+        // C++ sync integration tests (based on SyncTest) which use
+        // FakeServerInvalidationSender to mimic invalidations. Hence, it is
+        // necessary to invoke triggerSync() explicitly, just like many Java
+        // tests do.
+        SyncTestUtil.triggerSync();
         CriteriaHelper.pollUiThread(() -> {
             return !SyncService.get().isSyncRequested();
         }, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);

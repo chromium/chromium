@@ -57,7 +57,6 @@ public class SyncTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/1322619")
     public void testStopAndClear() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         CriteriaHelper.pollUiThread(
