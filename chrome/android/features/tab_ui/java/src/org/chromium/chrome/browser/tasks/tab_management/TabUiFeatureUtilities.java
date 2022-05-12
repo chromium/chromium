@@ -113,6 +113,7 @@ public class TabUiFeatureUtilities {
                     TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM, 190.f);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
+    private static Boolean sGridTabSwitcherPolishEnabledForTesting;
 
     /**
      * Set whether the tab management module is supported for testing.
@@ -156,10 +157,20 @@ public class TabUiFeatureUtilities {
     }
 
     /**
+     * Set whether the tablet grid tab switcher polish is enabled for testing.
+     */
+    public static void setTabletGridTabSwitcherPolishEnabledForTesting(@Nullable Boolean enabled) {
+        sGridTabSwitcherPolishEnabledForTesting = enabled;
+    }
+
+    /**
      * @return Whether the tablet Grid Tab Switcher Polish is enabled.
      * @param context The activity context.
      */
     public static boolean isTabletGridTabSwitcherPolishEnabled(Context context) {
+        if (sGridTabSwitcherPolishEnabledForTesting != null) {
+            return sGridTabSwitcherPolishEnabledForTesting;
+        }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }

@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.Matrix;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -350,9 +351,8 @@ class TabGridViewBinder {
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())) {
-                    // Resize bitmap to thumbnail
-                    result = resizeBitmap(result, thumbnail.getWidth(), thumbnail.getHeight());
-                    thumbnail.setScaleType(ScaleType.CENTER_CROP);
+                    // Adjust bitmap to thumbnail.
+                    updateThumbnailMatrix(thumbnail, result, model);
                 } else {
                     thumbnail.setScaleType(ScaleType.FIT_CENTER);
                     thumbnail.setAdjustViewBounds(true);
@@ -367,11 +367,39 @@ class TabGridViewBinder {
         }
     }
 
-    private static Bitmap resizeBitmap(Bitmap source, int newWidth, int newHeight) {
-        if (newWidth <= 0 || newHeight <= 0) {
-            return source;
+    /**
+     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then top-center
+     * aligned.
+     * @param thumbnail Destination image view @{@link TabGridThumbnailView}.
+     * @param source Image bitmap to resize.
+     * @param model PropertyModel containing the destination properties.
+     */
+    private static void updateThumbnailMatrix(TabGridThumbnailView thumbnail, Bitmap source,  PropertyModel model) {
+        int newWidth = model.get(TabProperties.GRID_CARD_WIDTH);
+        int newHeight = model.get(TabProperties.GRID_CARD_HEIGHT);
+        if (newWidth <= 0 || newHeight <= 0
+                || (newWidth == source.getWidth() && newHeight == source.getHeight())) {
+            thumbnail.setScaleType(ScaleType.FIT_CENTER);
+            return;
         }
-        return Bitmap.createScaledBitmap(source, newWidth, newHeight, true);
+
+        final Matrix m = new Matrix();
+
+        // Scale image to larger of the two dimensions.
+        final float scale = Math.max(
+                (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight()); //
+        m.setScale(scale, scale);
+
+        /**
+         * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
+         * center-aligned. |destination width - scaled width| is the width that is out of view
+         * bounds. We need to translate bitmap (to left) by half of this distance.
+         */
+        final int xOffset = (int) ((newWidth - (source.getWidth() * scale)) / 2);
+        m.postTranslate(xOffset, 0);
+
+        thumbnail.setScaleType(ScaleType.MATRIX);
+        thumbnail.setImageMatrix(m);
     }
 
     /**
