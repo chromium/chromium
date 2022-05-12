@@ -131,6 +131,12 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
   ]
 }
 
+copy("copy_webview_js_test_script_to_blink") {
+  sources = [ "test/data/resources/js-test.js" ]
+  outputs =
+      [ "$root_build_dir/third_party/blink/web_tests/resources/js-test.js" ]
+}
+
 instrumentation_test_apk("system_webview_shell_layout_test_apk") {
   apk_name = "SystemWebViewShellLayoutTest"
   apk_under_test = ":system_webview_shell_apk"
@@ -142,6 +148,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "layout_tests/src/org/chromium/webview_shell/test/WebViewThreadTest.java",
   ]
   deps = [
+    ":copy_webview_js_test_script_to_blink",
     ":system_webview_shell_apk_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -163,6 +170,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
     "//third_party/blink/web_tests/platform/generic/webexposed/global-interface-listing-expected.txt",
     "//third_party/blink/web_tests/platform/generic/webexposed/global-interface-listing-platform-specific-expected.txt",
+    "$root_build_dir/third_party/blink/web_tests/resources/js-test.js",
   ]
 
   # Tell GN to ignore 'incremental_install' even if the user has it in their GN

@@ -122,7 +122,6 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testNoUnexpectedInterfaces() throws Exception {
-        ensureJsTestCopied();
         loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
                 + "webexposed/global-interface-listing.html", mTestActivity);
         String webviewExpected = readFile(PATH_WEBVIEW_PREFIX
@@ -150,7 +149,6 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testWebViewExcludedInterfaces() throws Exception {
-        ensureJsTestCopied();
         loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
                 + "webexposed/global-interface-listing.html", mTestActivity);
         String blinkExpected = readFile(PATH_BLINK_PREFIX + "platform/generic/"
@@ -201,7 +199,6 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testWebViewIncludedStableInterfaces() throws Exception {
-        ensureJsTestCopied();
         loadUrlWebViewAsync("file://" + PATH_BLINK_PREFIX
                 + "webexposed/global-interface-listing.html", mTestActivity);
         String blinkStableExpected = readFileWithFallbacks(BLINK_STABLE_FALLBACKS);
@@ -326,9 +323,8 @@ public class WebViewLayoutTest {
         runTest(PATH_WEBVIEW_PREFIX + fileName, PATH_WEBVIEW_PREFIX + fileNameExpected, false);
     }
 
-    private void runBlinkLayoutTest(final String fileName, final String fileNameExpected,
-            boolean noFail) throws Exception {
-        ensureJsTestCopied();
+    private void runBlinkLayoutTest(
+            final String fileName, final String fileNameExpected, boolean noFail) throws Exception {
         runTest(PATH_BLINK_PREFIX + fileName, PATH_WEBVIEW_PREFIX + fileNameExpected, noFail);
     }
 
@@ -363,13 +359,6 @@ public class WebViewLayoutTest {
                 activity.loadUrl(fileUrl);
             }
         });
-    }
-
-    private static void ensureJsTestCopied() throws IOException {
-        File jsTestFile = new File(PATH_BLINK_PREFIX + "resources/js-test.js");
-        if (jsTestFile.exists()) return;
-        String original = readFile(PATH_WEBVIEW_PREFIX + "resources/js-test.js");
-        writeFile(PATH_BLINK_PREFIX + "resources/js-test.js", original, false);
     }
 
     /**
