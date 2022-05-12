@@ -65,17 +65,11 @@ function promiseSuccessful() {
 }
 
 /**
- * Promise executor. Always rejects the promise.
- */
-function promiseRejector(resolve, reject) {
-  reject('WebUI JS Error: The rejector always rejects!');
-}
-
-/**
  * Creates a promise which will be rejected and doesn't handle the rejection.
  */
 function unhandledPromiseRejection() {
-  const promise = new Promise(promiseRejector);
+  const promise =
+      Promise.reject('WebUI JS Error: The rejector always rejects!');
   promise.then(promiseSuccessful);
 }
 
