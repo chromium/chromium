@@ -146,8 +146,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   request.Request(
       env->scheme_host_port, version, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
       SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
-      true /* use_dns_aliases */, kCertVerifyFlags, GURL(kUrl), env->net_log,
-      &net_error_details,
+      true /* use_dns_aliases */, false /* require_dns_https_alpn */,
+      kCertVerifyFlags, GURL(kUrl), env->net_log, &net_error_details,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

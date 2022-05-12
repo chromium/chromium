@@ -886,7 +886,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
       std::move(destination), quic_version_, request_info_.privacy_mode,
       priority_, request_info_.socket_tag, request_info_.network_isolation_key,
       request_info_.secure_dns_policy, proxy_info_.is_direct(),
-      ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
+      /*require_dns_https_alpn=*/false, ssl_config->GetCertVerifyFlags(), url,
+      net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

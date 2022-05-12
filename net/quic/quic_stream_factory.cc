@@ -227,6 +227,25 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   return hosts;
 }
 
+quic::ParsedQuicVersion SelectQuicVersion(
+    const std::vector<HostResolverEndpointResult>& endpoint_results,
+    const quic::ParsedQuicVersionVector& supported_versions) {
+  for (const auto& result : endpoint_results) {
+    for (const auto& alpn : result.metadata.supported_protocol_alpns) {
+      quic::ParsedQuicVersion version = quic::ParseQuicVersionString(alpn);
+      if (!version.IsKnown()) {
+        continue;
+      }
+      for (const auto& supported_version : supported_versions) {
+        if (supported_version == version) {
+          return version;
+        }
+      }
+    }
+  }
+  return quic::UnsupportedQuicVersion();
+}
+
 }  // namespace
 
 // Refcounted class that owns quic::QuicCryptoClientConfig and tracks how many
@@ -358,6 +377,7 @@ class QuicStreamFactory::Job {
       bool race_stale_dns_on_connection,
       RequestPriority priority,
       bool use_dns_aliases,
+      bool require_dns_https_alpn,
       int cert_verify_flags,
       const NetLogWithSource& net_log);
 
@@ -497,6 +517,7 @@ class QuicStreamFactory::Job {
   const std::unique_ptr<CryptoClientConfigHandle> client_config_handle_;
   RequestPriority priority_;
   const bool use_dns_aliases_;
+  const bool require_dns_https_alpn_;
   const int cert_verify_flags_;
   const bool was_alternative_service_recently_broken_;
   const bool retry_on_alternate_network_before_handshake_;
@@ -532,6 +553,7 @@ QuicStreamFactory::Job::Job(
     bool race_stale_dns_on_connection,
     RequestPriority priority,
     bool use_dns_aliases,
+    bool require_dns_https_alpn,
     int cert_verify_flags,
     const NetLogWithSource& net_log)
     : io_state_(STATE_RESOLVE_HOST),
@@ -542,6 +564,7 @@ QuicStreamFactory::Job::Job(
       client_config_handle_(std::move(client_config_handle)),
       priority_(priority),
       use_dns_aliases_(use_dns_aliases),
+      require_dns_https_alpn_(require_dns_https_alpn),
       cert_verify_flags_(cert_verify_flags),
       was_alternative_service_recently_broken_(
           was_alternative_service_recently_broken),
@@ -555,6 +578,7 @@ QuicStreamFactory::Job::Job(
       connection_retried_(false),
       session_(nullptr),
       network_(NetworkChangeNotifier::kInvalidNetworkHandle) {
+  DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
   net_log_.BeginEvent(NetLogEventType::QUIC_STREAM_FACTORY_JOB,
                       [&] { return NetLogQuicStreamFactoryJobParams(&key_); });
   // Associate |net_log_| with |net_log|.
@@ -798,6 +822,15 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
   DCHECK(!fresh_resolve_host_request_);
   DCHECK(!factory_->HasActiveSession(key_.session_key()));
 
+  if (require_dns_https_alpn_) {
+    quic_version_ =
+        SelectQuicVersion(*resolve_host_request_->GetEndpointResults(),
+                          factory_->supported_versions());
+    if (quic_version_ == quic::ParsedQuicVersion::Unsupported()) {
+      return ERR_DNS_NO_MACHING_SUPPORTED_ALPN;
+    }
+  }
+
   // Inform the factory of this resolution, which will set up
   // a session alias, if possible.
   if (factory_->HasMatchingIpSession(
@@ -1016,13 +1049,14 @@ int QuicStreamRequest::Request(
     const NetworkIsolationKey& network_isolation_key,
     SecureDnsPolicy secure_dns_policy,
     bool use_dns_aliases,
+    bool require_dns_https_alpn,
     int cert_verify_flags,
     const GURL& url,
     const NetLogWithSource& net_log,
     NetErrorDetails* net_error_details,
     CompletionOnceCallback failed_on_default_network_callback,
     CompletionOnceCallback callback) {
-  DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
+  DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
   DCHECK(net_error_details);
   DCHECK(callback_.is_null());
   DCHECK(host_resolution_callback_.is_null());
@@ -1031,9 +1065,10 @@ int QuicStreamRequest::Request(
   net_error_details_ = net_error_details;
   failed_on_default_network_callback_ =
       std::move(failed_on_default_network_callback);
-  session_key_ =
-      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     network_isolation_key, secure_dns_policy);
+
+  session_key_ = QuicSessionKey(HostPortPair::FromURL(url), privacy_mode,
+                                socket_tag, network_isolation_key,
+                                secure_dns_policy, require_dns_https_alpn);
 
   int rv = factory_->Create(session_key_, std::move(destination), quic_version,
                             priority, use_dns_aliases, cert_verify_flags, url,
@@ -1303,7 +1338,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
       WasQuicRecentlyBroken(session_key),
       params_.retry_on_alternate_network_before_handshake,
       params_.race_stale_dns_on_connection, priority, use_dns_aliases,
-      cert_verify_flags, net_log);
+      session_key.require_dns_https_alpn(), cert_verify_flags, net_log);
   int rv = job->Run(base::BindOnce(&QuicStreamFactory::OnJobComplete,
                                    base::Unretained(this), job.get()));
   if (rv == ERR_IO_PENDING) {

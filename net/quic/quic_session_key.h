@@ -23,17 +23,20 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 SecureDnsPolicy secure_dns_policy);
+                 SecureDnsPolicy secure_dns_policy,
+                 bool require_dns_https_alpn);
   QuicSessionKey(const std::string& host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 SecureDnsPolicy secure_dns_policy);
+                 SecureDnsPolicy secure_dns_policy,
+                 bool require_dns_https_alpn);
   QuicSessionKey(const quic::QuicServerId& server_id,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 SecureDnsPolicy secure_dns_policy);
+                 SecureDnsPolicy secure_dns_policy,
+                 bool require_dns_https_alpn);
   QuicSessionKey(const QuicSessionKey& other);
   ~QuicSessionKey() = default;
 
@@ -68,12 +71,15 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
 
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
+  bool require_dns_https_alpn() const { return require_dns_https_alpn_; }
+
  private:
   quic::QuicServerId server_id_;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts.
   NetworkIsolationKey network_isolation_key_;
   SecureDnsPolicy secure_dns_policy_;
+  bool require_dns_https_alpn_ = false;
 };
 
 }  // namespace net

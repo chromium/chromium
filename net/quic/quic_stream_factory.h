@@ -131,6 +131,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
               const NetworkIsolationKey& network_isolation_key,
               SecureDnsPolicy secure_dns_policy,
               bool use_dns_aliases,
+              bool require_dns_https_alpn,
               int cert_verify_flags,
               const GURL& url,
               const NetLogWithSource& net_log,
@@ -505,6 +506,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   bool CryptoConfigCacheIsEmptyForTesting(
       const quic::QuicServerId& server_id,
       const NetworkIsolationKey& network_isolation_key);
+
+  const quic::ParsedQuicVersionVector& supported_versions() const {
+    return params_.supported_versions;
+  }
 
   // Whether QUIC is known to work on current network. This is true when QUIC is
   // expected to work in general, rather than whether QUIC was broken / recently

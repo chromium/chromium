@@ -1018,3 +1018,7 @@ NET_ERROR(DNS_NAME_HTTPS_ONLY, -809)
 
 // All DNS requests associated with this job have been cancelled.
 NET_ERROR(DNS_REQUEST_CANCELLED, -810)
+
+// The hostname resolution of HTTPS record was expected to be resolved with
+// alpn values of supported protocols, but did not.
+NET_ERROR(DNS_NO_MACHING_SUPPORTED_ALPN, -811)
