@@ -316,10 +316,6 @@ void NetworkTimeTracker::OverrideNonceForTesting(uint32_t nonce) {
   query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);
 }
 
-void NetworkTimeTracker::OverrideUMANoiseFactorForTesting(double noise_factor) {
-  uma_noise_factor_ = noise_factor;
-}
-
 base::TimeDelta NetworkTimeTracker::GetTimerDelayForTesting() const {
   DCHECK(timer_.IsRunning());
   return timer_.GetCurrentDelay();
@@ -572,10 +568,6 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
   // in the past. Adjust the `current_time` accordingly.
   base::TimeDelta system_clock_skew =
       clock_->Now() - (current_time + fetch_latency / 2);
-
-  // Add noise for privacy reasons.
-  system_clock_skew +=
-      system_clock_skew * (2 * base::RandDouble() - 1) * uma_noise_factor_;
 
   // Explicitly record clock skew of zero in the "positive" histograms.
   if (system_clock_skew >= base::TimeDelta()) {

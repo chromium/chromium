@@ -921,9 +921,6 @@ TEST_F(NetworkTimeTrackerTest, ClockSkewHistograms) {
   EXPECT_TRUE(test_server_->Start());
   tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
 
-  // Disable noise for deterministic tests.
-  tracker_->OverrideUMANoiseFactorForTesting(0.0);
-
   clock_->SetNow(
       base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[0] + 3500));
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
@@ -968,34 +965,6 @@ TEST_F(NetworkTimeTrackerTest, ClockSkewHistograms) {
   // After three fetches, the FetchLatencyJitter should be reported.
   histograms.ExpectUniqueTimeSample(
       "PrivacyBudget.ClockSkew.FetchLatencyJitter", base::Seconds(0), 1);
-}
-
-TEST_F(NetworkTimeTrackerTest, ClockSkewHistogramsNoise) {
-  MultipleGoodTimeResponseHandler response_handler;
-  base::HistogramTester histograms;
-
-  test_server_->RegisterRequestHandler(
-      base::BindRepeating(&MultipleGoodTimeResponseHandler::ResponseHandler,
-                          base::Unretained(&response_handler)));
-  EXPECT_TRUE(test_server_->Start());
-  tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
-
-  clock_->SetNow(
-      base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[0] + 3500));
-  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
-  // Simulate 1s latency.
-  tick_clock_->Advance(base::Seconds(1));
-  tracker_->WaitForFetchForTesting(123123123);
-
-  std::vector<base::Bucket> buckets =
-      histograms.GetAllSamples("PrivacyBudget.ClockSkew.Magnitude.Positive");
-
-  // The real clock skew is 3000ms. With 10% noise, this means that there should
-  // be exactly one sample between 2700 and 3300.
-  const int64_t sum =
-      histograms.GetTotalSum("PrivacyBudget.ClockSkew.Magnitude.Positive");
-  EXPECT_LE(2700, sum);
-  EXPECT_LE(sum, 3300);
 }
 
 TEST_F(NetworkTimeTrackerTest, ClockSkewHistogramsEmptyForOnDemandChecks) {
