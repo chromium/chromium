@@ -105,6 +105,41 @@ chromium-metrics-reviews@google.com.
   <variant name=".VrServicesUpgrade"/>
 </variants>
 
+<variants name="TaskType">
+  <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
+  <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
+  <variant name="ComponentUpdate" summary="ComponentUpdate"/>
+  <variant name="DeprecatedDownloadResumption"
+      summary="DeprecatedDownloadResumption"/>
+  <variant name="DeprecatedExploreSitesRefresh"
+      summary="DeprecatedExploreSitesRefresh"/>
+  <variant name="DownloadAutoResumption" summary="DownloadAutoResumption"/>
+  <variant name="DownloadCleanup" summary="DownloadCleanup"/>
+  <variant name="DownloadLater" summary="DownloadLater"/>
+  <variant name="DownloadService" summary="DownloadService"/>
+  <variant name="ExploreSitesRefresh" summary="ExploreSitesRefresh"/>
+  <variant name="FeedRefresh" summary="FeedRefresh"/>
+  <variant name="FeedV2Refresh" summary="FeedV2Refresh"/>
+  <variant name="Gcm" summary="Gcm"/>
+  <variant name="NotificationScheduler" summary="NotificationScheduler"/>
+  <variant name="NotificationService" summary="NotificationService"/>
+  <variant name="NotificationTrigger" summary="NotificationTrigger"/>
+  <variant name="OfflinePages" summary="OfflinePages"/>
+  <variant name="OfflinePagesPrefetch" summary="OfflinePagesPrefetch"/>
+  <variant name="OfflinePagesPrefetchNotification"
+      summary="OfflinePagesPrefetchNotification"/>
+  <variant name="Omaha" summary="Omaha"/>
+  <variant name="PeriodicBackgroundSyncChromeWakeup"
+      summary="PeriodicBackgroundSyncChromeWakeup"/>
+  <variant name="QueryTile" summary="QueryTile"/>
+  <variant name="Test" summary="Test"/>
+  <variant name="WebApkUpdate" summary="WebApkUpdate"/>
+  <variant name="WebviewComponentUpdate" summary="WebviewComponentUpdate"/>
+  <variant name="WebviewMinidumpUploading" summary="WebviewMinidumpUploading"/>
+  <variant name="WebviewVariationsSeedFetch"
+      summary="WebviewVariationsSeedFetch"/>
+</variants>
+
 <variants name="ThumbnailProvider_ClientType">
   <variant name=".DownloadHome" summary="Download home"/>
   <variant name=".NTPSnippets" summary="NTP snippets"/>
@@ -490,6 +525,17 @@ chromium-metrics-reviews@google.com.
     Records that a specific background task has expired. Recorded before the
     task is to be started.
   </summary>
+</histogram>
+
+<histogram name="Android.BackgroundTaskScheduler.TaskFinished.{TaskType}"
+    units="ms" expires_after="2022-11-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a background task of type
+    {TaskType}. Recorded when the task finished callback is invoked.
+  </summary>
+  <token key="TaskType" variants="TaskType"/>
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"

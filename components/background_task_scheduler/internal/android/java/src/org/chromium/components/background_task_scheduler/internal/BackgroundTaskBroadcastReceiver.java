@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.text.format.DateUtils;
 
 import androidx.annotation.Nullable;
@@ -49,6 +50,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
         private final PowerManager.WakeLock mWakeLock;
         private final TaskParameters mTaskParams;
         private final BackgroundTask mBackgroundTask;
+        private final long mTaskStartTimeMs;
 
         private boolean mHasExecuted;
 
@@ -58,6 +60,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
             mWakeLock = wakeLock;
             mTaskParams = taskParams;
             mBackgroundTask = backgroundTask;
+            mTaskStartTimeMs = SystemClock.uptimeMillis();
         }
 
         public void execute() {
@@ -99,7 +102,8 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
                 BackgroundTaskSchedulerUma.getInstance().reportTaskRescheduled();
                 mBackgroundTask.reschedule(mContext);
             }
-            // TODO(crbug.com/970160): Add UMA to record how long the tasks need to complete.
+            BackgroundTaskSchedulerUma.getInstance().reportTaskFinished(
+                    mTaskParams.getTaskId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
         }
     }
 

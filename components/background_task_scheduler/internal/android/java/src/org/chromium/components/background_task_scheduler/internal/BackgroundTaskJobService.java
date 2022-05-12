@@ -6,6 +6,7 @@ package org.chromium.components.background_task_scheduler.internal;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -34,12 +35,17 @@ public class BackgroundTaskJobService extends JobService {
         private final BackgroundTaskJobService mJobService;
         private final BackgroundTask mBackgroundTask;
         private final JobParameters mParams;
+        private final long mTaskStartTimeMs;
 
         TaskFinishedCallbackJobService(BackgroundTaskJobService jobService,
                 BackgroundTask backgroundTask, JobParameters params) {
             mJobService = jobService;
             mBackgroundTask = backgroundTask;
             mParams = params;
+
+            // We are using uptimeMillis here to record the exact amount of time needed for the task
+            // to run that excludes the time spent during deep sleep.
+            mTaskStartTimeMs = SystemClock.uptimeMillis();
         }
 
         @Override
@@ -60,6 +66,8 @@ public class BackgroundTaskJobService extends JobService {
 
                     mJobService.mCurrentTasks.remove(mParams.getJobId());
                     mJobService.jobFinished(mParams, needsReschedule);
+                    BackgroundTaskSchedulerUma.getInstance().reportTaskFinished(
+                            mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
                 }
             });
         }
