@@ -68,6 +68,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "chromeos-arm-generic-dbg",
+    mirrors = [
+        "ci/chromeos-arm-generic-dbg",
+    ],
 )
 
 try_.builder(
