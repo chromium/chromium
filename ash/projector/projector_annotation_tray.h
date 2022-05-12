@@ -5,8 +5,11 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
 #define ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
 
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -18,10 +21,12 @@ constexpr SkColor kProjectorMagentaPenColor = SkColorSetRGB(0xFF, 0x00, 0xE5);
 constexpr SkColor kProjectorRedPenColor = SkColorSetRGB(0xE9, 0x42, 0x35);
 constexpr SkColor kProjectorYellowPenColor = SkColorSetRGB(0xFB, 0xF1, 0x04);
 constexpr SkColor kProjectorBluePenColor = SkColorSetRGB(0x42, 0x85, 0xF4);
+constexpr SkColor kProjectorDefaultPenColor = kProjectorMagentaPenColor;
 
 // Status area tray which allows you to access the annotation tools for
 // Projector.
-class ProjectorAnnotationTray : public TrayBackgroundView {
+class ProjectorAnnotationTray : public TrayBackgroundView,
+                                public SessionObserver {
  public:
   explicit ProjectorAnnotationTray(Shelf* shelf);
   ProjectorAnnotationTray(const ProjectorAnnotationTray&) = delete;
@@ -42,12 +47,15 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
   void HideAnnotationTray();
   void OnCanvasInitializationFailed();
 
  private:
   void ToggleAnnotator();
-  void EnableAnnotatorTool();
+  void EnableAnnotatorWithPenColor();
   // Deactivates any annotation tool that is currently enabled and updates the
   // UI.
   void DeactivateActiveTool();
@@ -74,7 +82,10 @@ class ProjectorAnnotationTray : public TrayBackgroundView {
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // The last selected pen color.
-  SkColor current_pen_color_;
+  SkColor current_pen_color_ = kProjectorDefaultPenColor;
+
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_observer_{this};
 };
 
 }  // namespace ash

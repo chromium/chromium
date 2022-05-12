@@ -936,6 +936,11 @@ const char kDeskTemplatesEnabled[] = "ash.desk_templates_enabled";
 // predefined Desks templates configured by policy administrators.
 const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
 
+// An unsigned integer pref which contains the last used marker color for
+// Projector.
+const char kProjectorAnnotatorLastUsedMarkerColor[] =
+    "ash.projector.annotator_last_used_marker_color";
+
 // A boolean pref that tracks whether the user has enabled Projector creation
 // flow during onboarding.
 const char kProjectorCreationFlowEnabled[] =

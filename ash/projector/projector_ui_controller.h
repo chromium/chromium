@@ -42,7 +42,7 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   // Close Projector toolbar. Virtual for testing.
   virtual void CloseToolbar();
   // Invoked when marker button is pressed. Virtual for testing.
-  virtual void OnMarkerPressed();
+  virtual void EnableAnnotatorTool();
   // Sets the annotator tool.
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
   // Resets and disables the annotator tools and clears the canvas.

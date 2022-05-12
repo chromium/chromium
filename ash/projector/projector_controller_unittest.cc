@@ -229,10 +229,10 @@ TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
   EXPECT_FALSE(controller_->IsEligible());
 }
 
-TEST_F(ProjectorControllerTest, OnMarkerPressed) {
+TEST_F(ProjectorControllerTest, EnableAnnotatorTool) {
   // Verify that |OnMarkerPressed| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, OnMarkerPressed());
-  controller_->OnMarkerPressed();
+  EXPECT_CALL(*mock_ui_controller_, EnableAnnotatorTool());
+  controller_->EnableAnnotatorTool();
 }
 
 TEST_F(ProjectorControllerTest, SetAnnotatorTool) {

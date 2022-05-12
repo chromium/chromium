@@ -5,6 +5,7 @@
 #include "ash/projector/projector_annotation_tray.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
@@ -19,6 +20,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -101,6 +103,8 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   ResetTray();
+
+  session_observer_.Observe(Shell::Get()->session_controller());
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
@@ -233,9 +237,20 @@ void ProjectorAnnotationTray::OnThemeChanged() {
   UpdateIcon();
 }
 
+void ProjectorAnnotationTray::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  const uint64_t color =
+      pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor);
+  current_pen_color_ = !color ? kProjectorDefaultPenColor : color;
+}
+
 void ProjectorAnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  pref_service->SetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor,
+                          current_pen_color_);
   ResetTray();
 }
 
@@ -253,7 +268,7 @@ void ProjectorAnnotationTray::OnCanvasInitializationFailed() {
 
 void ProjectorAnnotationTray::ToggleAnnotator() {
   if (GetCurrentTool() == kToolNone) {
-    EnableAnnotatorTool();
+    EnableAnnotatorWithPenColor();
   } else {
     DeactivateActiveTool();
   }
@@ -263,10 +278,13 @@ void ProjectorAnnotationTray::ToggleAnnotator() {
   UpdateIcon();
 }
 
-void ProjectorAnnotationTray::EnableAnnotatorTool() {
+void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
   auto* controller = Shell::Get()->projector_controller();
   DCHECK(controller);
-  controller->OnMarkerPressed();
+  AnnotatorTool tool;
+  tool.color = current_pen_color_;
+  controller->SetAnnotatorTool(tool);
+  controller->EnableAnnotatorTool();
 }
 
 void ProjectorAnnotationTray::DeactivateActiveTool() {
@@ -286,12 +304,8 @@ void ProjectorAnnotationTray::UpdateIcon() {
 }
 
 void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  DCHECK(projector_controller);
-  AnnotatorTool tool;
-  tool.color = color;
-  projector_controller->SetAnnotatorTool(tool);
   current_pen_color_ = color;
+  EnableAnnotatorWithPenColor();
   CloseBubble();
   UpdateIcon();
 }
@@ -312,8 +326,6 @@ int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
 }
 
 void ProjectorAnnotationTray::ResetTray() {
-  // Set current pen to default pen color
-  current_pen_color_ = kProjectorMagentaPenColor;
   // Disable the tray icon. It is enabled once the ink canvas is initialized.
   SetEnabled(false);
 }

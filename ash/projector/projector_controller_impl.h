@@ -14,6 +14,8 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+class PrefRegistrySimple;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -61,6 +63,7 @@ class ASH_EXPORT ProjectorControllerImpl
   ~ProjectorControllerImpl() override;
 
   static ProjectorControllerImpl* Get();
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // ProjectorController:
   void StartProjectorSession(const std::string& storage_dir) override;
@@ -114,8 +117,8 @@ class ASH_EXPORT ProjectorControllerImpl
   // cancellation, an error, or a DLP/HDCP restriction.
   void OnRecordingStartAborted();
 
-  // Invoked when marker button is pressed.
-  void OnMarkerPressed();
+  // Enables the annotator tool.
+  void EnableAnnotatorTool();
   // Sets the annotator tool.
   void SetAnnotatorTool(const AnnotatorTool& tool);
   // Reset and disable the the annotator tools.

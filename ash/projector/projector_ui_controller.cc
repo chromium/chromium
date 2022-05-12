@@ -165,17 +165,15 @@ void ProjectorUiController::CloseToolbar() {
   current_root_ = nullptr;
 }
 
-void ProjectorUiController::OnMarkerPressed() {
-  ToggleAnnotator();
-  annotator_enabled_ = !annotator_enabled_;
-  RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
-}
-
-void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
+void ProjectorUiController::EnableAnnotatorTool() {
   if (!annotator_enabled_) {
     ToggleAnnotator();
     annotator_enabled_ = !annotator_enabled_;
+    RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
   }
+}
+
+void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
   ash::ProjectorAnnotatorController::Get()->SetTool(tool);
   RecordMarkerColorMetrics(GetMarkerColorForMetrics(tool.color));
 }

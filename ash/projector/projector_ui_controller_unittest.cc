@@ -8,11 +8,13 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -86,6 +88,7 @@ class ProjectorUiControllerTest : public AshTestBase {
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
+  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot.
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
@@ -98,13 +101,14 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
 TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
   base::HistogramTester histogram_tester;
 
+  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
   controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
 
-  controller_->OnMarkerPressed();
+  controller_->EnableAnnotatorTool();
   EXPECT_TRUE(controller_->is_annotator_enabled());
 
   controller_->CloseToolbar();
@@ -122,7 +126,7 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   base::HistogramTester histogram_tester;
 
   // Enable marker.
-  controller_->OnMarkerPressed();
+  controller_->EnableAnnotatorTool();
   EXPECT_TRUE(controller_->is_annotator_enabled());
 
   EXPECT_CALL(projector_client_, Clear());
@@ -135,13 +139,35 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
+  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
   base::HistogramTester histogram_tester;
   AnnotatorTool tool;
+  tool.color = kProjectorDefaultPenColor;
   EXPECT_CALL(projector_client_, SetTool(tool));
 
-  controller_->SetAnnotatorTool(tool);
+  // Assert that the initial pref is unset.
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  EXPECT_EQ(
+      pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor),
+      0u);
+
+  controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
+  controller_->OnCanvasInitialized(true);
+  LeftClickOn(projector_annotation_tray);
+  EXPECT_TRUE(controller_->is_annotator_enabled());
+
+  controller_->CloseToolbar();
+  EXPECT_FALSE(controller_->is_annotator_enabled());
+  // Check that the last used color is stored in the pref.
+  EXPECT_EQ(
+      pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor),
+      kProjectorDefaultPenColor);
   histogram_tester.ExpectUniqueSample(kProjectorMarkerColorHistogramName,
-                                      ProjectorMarkerColor::kBlack,
+                                      ProjectorMarkerColor::kMagenta,
                                       /*count=*/1);
 }
 
@@ -230,6 +256,7 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
 }
 
 TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {
+  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();

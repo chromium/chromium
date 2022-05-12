@@ -5038,11 +5038,11 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 
   auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->OnMarkerPressed();
+  projector_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
 
-  projector_controller->OnMarkerPressed();
+  projector_controller->ResetTools();
   EXPECT_FALSE(overlay_controller->is_enabled());
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
@@ -5060,7 +5060,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
       test_api.GetRecordingOverlayController();
 
   auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->OnMarkerPressed();
+  projector_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
 
@@ -5162,7 +5162,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
       test_api.GetRecordingOverlayController();
 
   auto* projector_controller = ProjectorControllerImpl::Get();
-  projector_controller->OnMarkerPressed();
+  projector_controller->EnableAnnotatorTool();
   EXPECT_TRUE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
@@ -5245,7 +5245,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
     // Enable annotation.
-    projector_controller->OnMarkerPressed();
+    projector_controller->EnableAnnotatorTool();
 
     // Verify shelf is invisible right now.
     EXPECT_FALSE(shelf->IsVisible());
@@ -5269,7 +5269,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
     EXPECT_TRUE(shelf->IsVisible());
 
     // Disable annotation.
-    projector_controller->OnMarkerPressed();
+    projector_controller->ResetTools();
     // Move mouse to the outside of the shelf activation area, and wait for the
     // animation to hide shelf to finish.
     event_generator->MoveMouseTo(display_center);

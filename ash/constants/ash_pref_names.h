@@ -426,6 +426,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeskTemplatesEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPreconfiguredDeskTemplates[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kProjectorAnnotatorLastUsedMarkerColor[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorCreationFlowEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
