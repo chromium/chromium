@@ -6,6 +6,8 @@ import("//build/buildflag_header.gni")
 import("//testing/test.gni")
 
 source_set("metadata_headers") {
+  visibility = [ ":*" ]
+
   sources = [
     "base_type_conversion.h",
     "metadata_cache.h",
