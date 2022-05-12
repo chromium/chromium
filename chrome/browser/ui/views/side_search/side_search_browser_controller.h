@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -115,6 +116,16 @@ class SideSearchBrowserController
   // open/close the side panel has changed. This is used for metrics collection
   // purposes.
   bool was_side_panel_available_for_page_ = false;
+
+  // The side panel for a given tab can be shown by having the user toggle it
+  // open via the entrypoint or by switching to a tab that already has its side
+  // panel in an open state. This tracks whether the current side panel was
+  // shown as the result of the user toggling it open via the entrypoint.
+  bool shown_via_entrypoint_ = false;
+
+  // Time since the active tab's side panel contents was hosted in the side
+  // panel.
+  absl::optional<base::ElapsedTimer> side_panel_shown_timer_;
 
   // Tracks and stores the last focused view which is not the
   // `side_panel_` or any of its children. Used to restore focus once

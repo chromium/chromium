@@ -633,20 +633,34 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   histogram_tester_.ExpectTotalCount(
       "SideSearch.TimeSinceSidePanelAvailableToFirstOpen", 2);
+  // TimeShownOpenedVia[Entrypoint/TabSwitch] is emitted when the side panel for
+  // a given tab is hidden.
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint", 1);
 
   ActivateTabAt(browser(), 1);
   TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint", 2);
 
   // Close the side panel on Tab 2 and switch to Tab 1. The side panel should be
   // still be visible for Tab 1, respecting its per-tab state.
   NotifyCloseButtonClick(browser());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch", 1);
 
   ActivateTabAt(browser(), 0);
   TestSidePanelOpenEntrypointState(browser());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+
+  NotifyCloseButtonClick(browser());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  histogram_tester_.ExpectTotalCount(
+      "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch", 2);
 }
 
 IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,

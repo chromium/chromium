@@ -127,6 +127,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SideSearch.SidePanel.TimeShownOpenedVia{OpenAction}"
+    units="ms" expires_after="2022-09-29">
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tracks the duration that a given tab's side search side panel was open for
+    when opened via a {OpenAction} action. This metric is emitted when the tab's
+    side search side panel is hidden.
+  </summary>
+  <token key="OpenAction">
+    <variant name="Entrypoint"/>
+    <variant name="TabSwitch"/>
+  </token>
+</histogram>
+
 <histogram name="SideSearch.TimeSinceSidePanelAvailableToFirstOpen" units="ms"
     expires_after="2022-09-29">
   <owner>yuhengh@chromium.org</owner>

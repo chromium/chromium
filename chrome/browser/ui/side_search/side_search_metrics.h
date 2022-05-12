@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_METRICS_H_
 #define CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_METRICS_H_
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 // Enums for histograms:
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -46,5 +50,7 @@ void RecordSideSearchCloseAction(SideSearchCloseActionType action);
 void RecordSideSearchNavigation(SideSearchNavigationType type);
 void RecordNavigationCommittedWithinSideSearchCountPerJourney(int count);
 void RecordRedirectionToTabCountPerJourney(int count);
+void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
+                                        base::TimeDelta sample);
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_METRICS_H_

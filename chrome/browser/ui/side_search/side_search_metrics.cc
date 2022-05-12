@@ -38,3 +38,11 @@ void RecordRedirectionToTabCountPerJourney(int count) {
   base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney",
                               count);
 }
+
+void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
+                                        base::TimeDelta sample) {
+  base::UmaHistogramMediumTimes(
+      shown_via_entrypoint ? "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint"
+                           : "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch",
+      sample);
+}

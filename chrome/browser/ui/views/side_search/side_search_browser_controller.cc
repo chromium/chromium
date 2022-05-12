@@ -459,6 +459,9 @@ void SideSearchBrowserController::OpenSidePanel() {
   RecordSideSearchOpenAction(
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
   RecordSidePanelOpenedMetrics();
+
+  shown_via_entrypoint_ = true;
+
   // Close the Side Search IPH if it is showing.
   browser_view_->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -557,9 +560,35 @@ void SideSearchBrowserController::UpdateSidePanel() {
   }
 
   // The side panel contents will be created if it does not already exist.
+  const auto* previous_hosted_contents = web_view_->web_contents();
   web_view_->SetWebContents(will_show_side_panel
                                 ? tab_contents_helper->GetSidePanelContents()
                                 : nullptr);
+
+  // Log time shown metrics whenever a new contents is hosted in the side panel.
+  if (previous_hosted_contents != web_view_->web_contents()) {
+    // If we were hosting a side panel contents, log its open duration.
+    if (previous_hosted_contents) {
+      DCHECK(side_panel_shown_timer_);
+      RecordSideSearchSidePanelTimeShown(shown_via_entrypoint_,
+                                         side_panel_shown_timer_->Elapsed());
+    }
+
+    // Reset the `shown_via_entrypoint_` flag only if we were previously hosting
+    // a side panel contents. Do this to avoid prematurely resetting the flag
+    // when the side panel is first shown before the shown duration is logged.
+    if (previous_hosted_contents)
+      shown_via_entrypoint_ = false;
+
+    // If hosting a new side panel contents start a new timer. If no longer
+    // hosting a side panel contents clear the timer.
+    DCHECK_EQ(will_show_side_panel, !!web_view_->web_contents());
+    if (web_view_->web_contents()) {
+      side_panel_shown_timer_ = base::ElapsedTimer();
+    } else {
+      side_panel_shown_timer_.reset();
+    }
+  }
 
   // Update the side panel header title text if necessary
   if (auto last_search_url = tab_contents_helper->last_search_url()) {
