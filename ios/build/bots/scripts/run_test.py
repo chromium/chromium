@@ -267,6 +267,56 @@ class UnitTest(unittest.TestCase):
     expected_test_cases = ['TestClass1.TestCase2', 'TestClass2.TestCase3']
     self.assertEqual(runner.args.test_cases, expected_test_cases)
 
+  @mock.patch('os.getenv')
+  def test_sharding_in_env_var(self, mock_env):
+    mock_env.side_effect = [2, 1]
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    sharding_env_vars = runner.sharding_env_vars()
+    self.assertIn('GTEST_SHARD_INDEX=1', sharding_env_vars)
+    self.assertIn('GTEST_TOTAL_SHARDS=2', sharding_env_vars)
+
+  @mock.patch('os.getenv')
+  def test_sharding_in_env_var_assertion_error(self, mock_env):
+    mock_env.side_effect = [2, 1]
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--env-var',
+        'GTEST_SHARD_INDEX=5',
+        '--env-var',
+        'GTEST_TOTAL_SHARDS=6',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertIn('GTEST_SHARD_INDEX=5', runner.args.env_var)
+    self.assertIn('GTEST_TOTAL_SHARDS=6', runner.args.env_var)
+    with self.assertRaises(AssertionError) as ctx:
+      runner.sharding_env_vars()
+      self.assertTrue(
+          re.match('GTest shard env vars should not be passed '
+                   'in --env-var', ctx.message))
+
   @mock.patch('os.getenv', return_value='2')
   def test_parser_error_sharding_environment(self, _):
     cmd = [

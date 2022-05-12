@@ -485,7 +485,7 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     }
 
     if self.env_vars:
-      self.xctestrun_data['TestTargetName'].update(
+      xctestrun_data['TestTargetName'].update(
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:
@@ -596,7 +596,7 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     }
 
     if self.env_vars:
-      self.xctestrun_data['TestTargetName'].update(
+      xctestrun_data['TestTargetName'].update(
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:

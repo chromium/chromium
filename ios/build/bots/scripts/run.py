@@ -123,6 +123,11 @@ class Runner():
     if gtest_total_shards > 1:
       self.args.test_cases = shard_util.shard_test_cases(
           self.args, gtest_shard_index, gtest_total_shards)
+      if self.args.test_cases:
+        assert (
+            self.args.xcode_parallelization or
+            self.args.xcodebuild_device_runner
+        ), 'Only real XCTests can use sharding by shard_util.shard_test_cases()'
     else:
       self.args.test_cases = self.args.test_cases or []
       if self.args.gtest_filter:
@@ -131,6 +136,21 @@ class Runner():
         self.args.test_cases.extend(
             self.args.isolated_script_test_filter.split('::'))
       self.args.test_cases.extend(args_json.get('test_cases', []))
+
+  def sharding_env_vars(self):
+    """Returns env_var arg with GTest sharding env var."""
+    gtest_total_shards = shard_util.total_shards()
+    if gtest_total_shards > 1:
+      assert not any((el.startswith('GTEST_SHARD_INDEX') or
+                      el.startswith('GTEST_TOTAL_SHARDS'))
+                     for el in self.args.env_var
+                    ), 'GTest shard env vars should not be passed in --env-var'
+      gtest_shard_index = shard_util.shard_index()
+      return [
+          'GTEST_SHARD_INDEX=%d' % gtest_shard_index,
+          'GTEST_TOTAL_SHARDS=%d' % gtest_total_shards
+      ]
+    return []
 
   def run(self, args):
     """
@@ -145,6 +165,9 @@ class Runner():
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
     self.resolve_test_cases()
+
+    # Sharding env var is required to shard GTest.
+    env_vars = self.args.env_var + self.sharding_env_vars()
 
     summary = {}
     tr = None
@@ -169,7 +192,7 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             use_clang_coverage=self.args.use_clang_coverage,
-            env_vars=self.args.env_var)
+            env_vars=env_vars)
       elif self.args.variations_seed_path != 'NO_PATH':
         tr = variations_runner.VariationsSimulatorParallelTestRunner(
             self.args.app,
@@ -183,7 +206,7 @@ class Runner():
             release=self.args.release,
             test_cases=self.args.test_cases,
             test_args=self.test_args,
-            env_vars=self.args.env_var)
+            env_vars=env_vars)
       elif self.args.replay_path != 'NO_PATH':
         tr = wpr_runner.WprProxySimulatorTestRunner(
             self.args.app,
@@ -194,7 +217,7 @@ class Runner():
             self.args.version,
             self.args.wpr_tools_path,
             self.args.out_dir,
-            env_vars=self.args.env_var,
+            env_vars=env_vars,
             readline_timeout=self.args.readline_timeout,
             retries=self.args.retries,
             shards=self.args.shards,
@@ -209,7 +232,7 @@ class Runner():
             self.args.platform,
             self.args.version,
             self.args.out_dir,
-            env_vars=self.args.env_var,
+            env_vars=env_vars,
             readline_timeout=self.args.readline_timeout,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
@@ -231,12 +254,12 @@ class Runner():
             retries=self.args.retries,
             test_cases=self.args.test_cases,
             test_args=self.test_args,
-            env_vars=self.args.env_var)
+            env_vars=env_vars)
       else:
         tr = test_runner.DeviceTestRunner(
             self.args.app,
             self.args.out_dir,
-            env_vars=self.args.env_var,
+            env_vars=env_vars,
             readline_timeout=self.args.readline_timeout,
             repeat_count=self.args.repeat,
             restart=self.args.restart,
