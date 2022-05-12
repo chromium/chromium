@@ -238,7 +238,7 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
 }
 
 TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
-  std::vector<history::Cluster> clusters;
+  std::vector<history::Cluster> all_clusters;
 
   // High scoring visits should always be above the fold.
   history::Cluster cluster1;
@@ -267,24 +267,51 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
   cluster3.keywords.push_back(u"keyword");
 
-  clusters.push_back(cluster1);
-  clusters.push_back(cluster2);
-  clusters.push_back(cluster3);
-
-  HideAndCullLowScoringVisits(clusters);
+  all_clusters.push_back(cluster1);
+  all_clusters.push_back(cluster2);
+  all_clusters.push_back(cluster3);
 
   {
+    Config config;
+    config.drop_hidden_visits = true;
+    SetConfigForTesting(config);
+
+    auto clusters = all_clusters;
+    HideAndCullLowScoringVisits(clusters);
+
     EXPECT_EQ(clusters[0].cluster_id, 4);
-    const auto& visits = clusters[0].visits;
+    auto& visits = clusters[0].visits;
     ASSERT_EQ(visits.size(), 5u);
     EXPECT_EQ(visits[0].hidden, false);
     EXPECT_EQ(visits[1].hidden, false);
     EXPECT_EQ(visits[2].hidden, false);
     EXPECT_EQ(visits[3].hidden, false);
     EXPECT_EQ(visits[4].hidden, false);
+
+    EXPECT_EQ(clusters[1].cluster_id, 6);
+    visits = clusters[1].visits;
+    ASSERT_EQ(visits.size(), 4u);
+    EXPECT_EQ(visits[0].hidden, false);
+    EXPECT_EQ(visits[1].hidden, false);
+    EXPECT_EQ(visits[2].hidden, false);
+    EXPECT_EQ(visits[3].hidden, false);
+
+    EXPECT_EQ(clusters[2].cluster_id, 8);
+    ASSERT_EQ(clusters[2].visits.size(), 1u);
+    EXPECT_EQ(clusters[2].visits[0].hidden, false);
   }
 
   {
+    Config config;
+    config.drop_hidden_visits = false;
+    SetConfigForTesting(config);
+
+    auto clusters = all_clusters;
+    HideAndCullLowScoringVisits(clusters);
+
+    EXPECT_EQ(clusters[0].cluster_id, 4);
+    EXPECT_EQ(clusters[0].visits.size(), 5u);
+
     EXPECT_EQ(clusters[1].cluster_id, 6);
     const auto& visits = clusters[1].visits;
     ASSERT_EQ(visits.size(), 5u);
@@ -293,9 +320,7 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
     EXPECT_EQ(visits[2].hidden, false);
     EXPECT_EQ(visits[3].hidden, false);
     EXPECT_EQ(visits[4].hidden, true);
-  }
 
-  {
     EXPECT_EQ(clusters[2].cluster_id, 8);
     ASSERT_EQ(clusters[2].visits.size(), 2u);
     EXPECT_EQ(clusters[2].visits[0].hidden, false);

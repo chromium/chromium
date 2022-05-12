@@ -64,7 +64,7 @@ struct Config {
 
   // If enabled, hidden visits are dropped entirely, instead of being gated
   // behind a "Show More" UI control.
-  bool drop_hidden_visits = false;
+  bool drop_hidden_visits = true;
 
   // If enabled, when there is a Journeys search query, the backend re-scores
   // visits within a cluster to account for whether or not that visit matches.
@@ -206,7 +206,9 @@ struct Config {
 
   // Whether to assign labels to clusters. If the label exists, it will be shown
   // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
-  bool should_label_clusters = false;
+  // Note: The default value here is meaningless, because the actual default
+  // value is derived from the base::Feature.
+  bool should_label_clusters = true;
 
   // Whether to assign labels to clusters from the hostnames of the cluster.
   // Does nothing if `should_label_clusters` is false. Note that since every
