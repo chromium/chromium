@@ -30,6 +30,7 @@ RgbKeyboardManager::RgbKeyboardManager(ImeControllerImpl* ime_controller)
 
   ime_controller_ptr_->AddObserver(this);
 
+  VLOG(1) << "Initializing RGB Keyboard support";
   FetchRgbKeyboardSupport();
 }
 
@@ -56,28 +57,42 @@ void RgbKeyboardManager::SetStaticBackgroundColor(uint8_t r,
                                                   uint8_t g,
                                                   uint8_t b) {
   DCHECK(RgbkbdClient::Get());
-  // TODO(michaelcheco): Check RGB capabilities before proceeding.
+  if (!IsRgbKeyboardSupported()) {
+    LOG(ERROR) << "Attempted to set RGB keyboard color, but flag is disabled.";
+    return;
+  }
+
+  VLOG(1) << "Setting RGB keyboard color to R:" << static_cast<int>(r)
+          << " G:" << static_cast<int>(g) << " B:" << static_cast<int>(b);
   RgbkbdClient::Get()->SetStaticBackgroundColor(r, g, b);
 }
 
 void RgbKeyboardManager::SetRainbowMode() {
   DCHECK(RgbkbdClient::Get());
-  // TODO(michaelcheco): Check RGB capabilities before proceeding.
+  if (!IsRgbKeyboardSupported()) {
+    LOG(ERROR) << "Attempted to set RGB rainbow mode, but flag is disabled.";
+    return;
+  }
+
+  VLOG(1) << "Setting RGB keyboard to rainbow mode";
   RgbkbdClient::Get()->SetRainbowMode();
 }
 
 void RgbKeyboardManager::SetAnimationMode(rgbkbd::RgbAnimationMode mode) {
   if (!features::IsExperimentalRgbKeyboardPatternsEnabled()) {
-    LOG(ERROR) << "Attempted to set animation mode, but flag is disabled.";
+    LOG(ERROR) << "Attempted to set RGB animation mode, but flag is disabled.";
     return;
   }
 
   DCHECK(RgbkbdClient::Get());
+  VLOG(1) << "Setting RGB keyboard animation mode to "
+          << static_cast<uint32_t>(mode);
   RgbkbdClient::Get()->SetAnimationMode(mode);
 }
 
 void RgbKeyboardManager::OnCapsLockChanged(bool enabled) {
   if (IsRgbKeyboardSupported()) {
+    VLOG(1) << "Setting RGB keyboard caps lock state to " << enabled;
     RgbkbdClient::Get()->SetCapsLockState(enabled);
   }
 }
@@ -90,13 +105,18 @@ RgbKeyboardManager* RgbKeyboardManager::Get() {
 void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
     absl::optional<rgbkbd::RgbKeyboardCapabilities> reply) {
   if (!reply.has_value()) {
-    LOG(ERROR) << "rgbkbd: No response received for GetRgbKeyboardCapabilities";
+    LOG(ERROR) << "No response received for GetRgbKeyboardCapabilities";
     return;
   }
+
   capabilities_ = reply.value();
+  VLOG(1) << "RGB Keyboard capabilities="
+          << static_cast<uint32_t>(capabilities_);
 
   // Upon login, CapsLock may already be enabled.
   if (IsRgbKeyboardSupported()) {
+    VLOG(1) << "Setting initial RGB keyboard caps lock state to "
+            << ime_controller_ptr_->IsCapsLockEnabled();
     RgbkbdClient::Get()->SetCapsLockState(
         ime_controller_ptr_->IsCapsLockEnabled());
   }
