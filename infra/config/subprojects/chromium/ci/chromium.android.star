@@ -662,6 +662,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-x86-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
         short_name = "dbg",
@@ -694,6 +695,7 @@ ci.builder(
 
 ci.builder(
     name = "android-cronet-x86-dbg-10-tests",
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "10",
