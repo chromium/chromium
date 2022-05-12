@@ -256,9 +256,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
       : PrintPreviewObserver(wait_for_loaded, /*pages_per_sheet=*/1) {}
 
   PrintPreviewObserver(bool wait_for_loaded, int pages_per_sheet)
-      : pages_per_sheet_(pages_per_sheet) {
-    if (wait_for_loaded)
-      queue_.emplace();  // DOMMessageQueue doesn't allow assignment
+      : pages_per_sheet_(pages_per_sheet), wait_for_loaded_(wait_for_loaded) {
     PrintPreviewUI::SetDelegateForTesting(this);
   }
 
@@ -307,9 +305,11 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
       run_loop_->Quit();
       preview_dialog_ = preview_dialog;
 
-      if (queue_.has_value()) {
+      if (wait_for_loaded_) {
+        // Instantiate |queue| to listen for messages in |preview_dialog_|.
+        queue_.emplace(preview_dialog_);
         content::ExecuteScriptAsync(
-            preview_dialog,
+            preview_dialog_.get(),
             "window.addEventListener('message', event => {"
             "  if (event.data.type === 'documentLoaded') {"
             "    domAutomationController.send(event.data.load_state);"
@@ -328,6 +328,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t expected_rendered_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
 
+  const bool wait_for_loaded_ = false;
   raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 };
@@ -1946,7 +1947,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   ASSERT_TRUE(success);
 
   // Simulate a <shift-tab> press and wait for a focus message.
-  content::DOMMessageQueue msg_queue;
+  content::DOMMessageQueue msg_queue(preview_dialog);
   SimulateKeyPress(preview_dialog, ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, true, false, false);
   std::string reply;

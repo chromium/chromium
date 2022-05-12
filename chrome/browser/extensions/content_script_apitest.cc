@@ -1553,11 +1553,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // https://crbug.com/963420.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_NullParent) {
-  content::DOMMessageQueue message_queue;
   NavigateParams navigate_params(browser(), null_document_url(),
                                  ui::PAGE_TRANSITION_TYPED);
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&navigate_params);
+
+  // Save the WebContents instance that will be created by this navigation, as
+  // the dom message that we later wait for is sent in this instance.
+  content::WebContents* web_contents = nullptr;
+  {
+    content::WebContentsAddedObserver new_web_contents_observer;
+    Navigate(&navigate_params);
+    web_contents = new_web_contents_observer.GetWebContents();
+  }
+
+  content::DOMMessageQueue message_queue(web_contents);
   std::string result;
   // We can't rely on the navigation observer logic, because the frame is
   // destroyed before it finishes loading. Instead, it sends a message through
