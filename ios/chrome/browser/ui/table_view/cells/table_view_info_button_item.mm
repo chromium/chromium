@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item_delegate.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,6 +45,9 @@
   if (self.accessibilityHint) {
     cell.customizedAccessibilityHint = self.accessibilityHint;
   }
+  if (self.accessibilityDelegate) {
+    cell.accessibilityCustomActions = [self createAccessibilityActions];
+  }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Update the icon image, if one is present.
@@ -49,6 +55,23 @@
 
   // Updates if the cells UI button should be hidden.
   [cell hideUIButton:self.infoButtonIsHidden];
+}
+
+#pragma mark - Accessibility
+
+// Creates custom accessibility actions.
+- (NSArray*)createAccessibilityActions {
+  UIAccessibilityCustomAction* tapAction = [[UIAccessibilityCustomAction alloc]
+      initWithName:l10n_util::GetNSString(
+                       IDS_IOS_TABLE_VIEW_INFO_BUTTON_ITEM_ACCESSIBILITY_TAP)
+            target:self
+          selector:@selector(handleTapOutsideInfoButtonForItem)];
+  return @[ tapAction ];
+}
+
+// Handles accessibility action for tapping outside the info button.
+- (void)handleTapOutsideInfoButtonForItem {
+  [self.accessibilityDelegate handleTapOutsideInfoButtonForItem:self];
 }
 
 @end

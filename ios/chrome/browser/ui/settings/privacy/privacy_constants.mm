@@ -17,10 +17,10 @@ NSString* const kSettingsPrivacySafeBrowsingCellId =
     @"kSettingsPrivacySafeBrowsingCellId";
 
 NSString* const kSettingsSafeBrowsingEnhancedProtectionCellId =
-    @"kSettingsSafeBrowsingStandardProtectionCellId";
+    @"kSettingsSafeBrowsingEnhancedProtectionCellId";
 
 NSString* const kSettingsSafeBrowsingStandardProtectionCellId =
     @"kSettingsSafeBrowsingStandardProtectionCellId";
 
 NSString* const kSettingsSafeBrowsingNoProtectionCellId =
-    @"kSettingsSafeBrowsingStandardProtectionCellId";
+    @"kSettingsSafeBrowsingNoProtectionCellId";

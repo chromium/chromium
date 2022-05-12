@@ -26,6 +26,7 @@ source_set("cells") {
     "table_view_info_button_cell.mm",
     "table_view_info_button_item.h",
     "table_view_info_button_item.mm",
+    "table_view_info_button_item_delegate.h",
     "table_view_item.h",
     "table_view_item.mm",
     "table_view_link_header_footer_item.h",

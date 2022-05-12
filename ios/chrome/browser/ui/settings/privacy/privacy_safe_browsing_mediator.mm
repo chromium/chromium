@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item_delegate.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -49,7 +50,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface PrivacySafeBrowsingMediator () <BooleanObserver>
+@interface PrivacySafeBrowsingMediator () <BooleanObserver,
+                                           TableViewInfoButtonItemDelegate>
 
 // Preference value for the enhanced safe browsing feature.
 @property(nonatomic, strong, readonly)
@@ -207,6 +209,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
     managedItem.detailTextColor =
         [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
+    managedItem.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   }
   managedItem.image =
       DefaultSymbolWithPointSize(kCheckmarkSymbol, kSymbolImagePointSize);
@@ -214,8 +218,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                               ? [UIColor colorNamed:kBlueColor]
                               : [UIColor clearColor];
   managedItem.accessibilityIdentifier = accessibilityIdentifier;
-  managedItem.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  managedItem.accessibilityDelegate = self;
 
   return managedItem;
 }
@@ -313,6 +316,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 }
+
+#pragma mark - TableViewInfoButtonItemDelegate
+
+- (void)handleTapOutsideInfoButtonForItem:(TableViewItem*)item {
+  [self didSelectItem:item];
+}
+
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
