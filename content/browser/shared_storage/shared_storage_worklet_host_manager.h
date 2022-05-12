@@ -29,7 +29,6 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   SharedStorageWorkletHost* GetOrCreateSharedStorageWorkletHost(
       SharedStorageDocumentServiceImpl* document_service);
 
- protected:
   const std::map<SharedStorageDocumentServiceImpl*,
                  std::unique_ptr<SharedStorageWorkletHost>>&
   GetAttachedWorkletHostsForTesting() {
@@ -42,6 +41,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
     return keep_alive_shared_storage_worklet_hosts_;
   }
 
+ protected:
   void OnWorkletKeepAliveFinished(SharedStorageWorkletHost*);
 
   // virtual for testing

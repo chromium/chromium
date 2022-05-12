@@ -846,6 +846,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* conversion_origin,
       const url::Origin* reporting_origin);
 
+  // Allows the embedder to control if Shared Storage API operations can happen
+  // in a given context.
+  virtual bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
+                                      const url::Origin& top_frame_origin,
+                                      const url::Origin& accessing_origin);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}

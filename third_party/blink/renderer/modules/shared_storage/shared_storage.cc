@@ -79,6 +79,24 @@ bool Serialize(ScriptState* script_state,
   return true;
 }
 
+void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
+                             SharedStorage* shared_storage,
+                             bool success,
+                             const String& error_message) {
+  DCHECK(resolver);
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!success) {
+    ScriptState::Scope scope(script_state);
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        error_message));
+    return;
+  }
+
+  resolver->Resolve();
+}
+
 }  // namespace
 
 SharedStorage::SharedStorage() = default;
@@ -123,12 +141,13 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
     return promise;
   }
 
-  resolver->Resolve();
-
   bool ignore_if_present =
       options->hasIgnoreIfPresent() && options->ignoreIfPresent();
   GetSharedStorageDocumentService(execution_context)
-      ->SharedStorageSet(key, value, ignore_if_present);
+      ->SharedStorageSet(
+          key, value, ignore_if_present,
+          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this)));
 
   return promise;
 }
@@ -158,10 +177,11 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
     return promise;
   }
 
-  resolver->Resolve();
-
   GetSharedStorageDocumentService(execution_context)
-      ->SharedStorageAppend(key, value);
+      ->SharedStorageAppend(
+          key, value,
+          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this)));
 
   return promise;
 }
@@ -183,9 +203,10 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
     return promise;
   }
 
-  resolver->Resolve();
-
-  GetSharedStorageDocumentService(execution_context)->SharedStorageDelete(key);
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageDelete(
+          key, WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                         WrapPersistent(this)));
 
   return promise;
 }
@@ -199,9 +220,10 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  resolver->Resolve();
-
-  GetSharedStorageDocumentService(execution_context)->SharedStorageClear();
+  GetSharedStorageDocumentService(execution_context)
+      ->SharedStorageClear(WTF::Bind(&OnVoidOperationFinished,
+                                     WrapPersistent(resolver),
+                                     WrapPersistent(this)));
 
   return promise;
 }
@@ -303,10 +325,12 @@ ScriptPromise SharedStorage::runOperation(
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  resolver->Resolve();
 
   GetSharedStorageDocumentService(execution_context)
-      ->RunOperationOnWorklet(name, std::move(serialized_data));
+      ->RunOperationOnWorklet(
+          name, std::move(serialized_data),
+          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this)));
 
   return promise;
 }

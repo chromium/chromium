@@ -19,6 +19,7 @@ class SharedStorageManager;
 
 namespace content {
 
+class BrowserContext;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
 class SharedStorageWorkletDriver;
@@ -149,6 +150,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   shared_storage_worklet::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
 
+  bool IsSharedStorageAllowed();
+
   AddModuleState add_module_state_ = AddModuleState::kNotInitiated;
 
   // Responsible for initializing the `SharedStorageWorkletService`.
@@ -171,8 +174,17 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // except for inside `~SharedStorageWorkletHost()`.
   storage::SharedStorageManager* shared_storage_manager_;
 
+  // Pointer to the `BrowserContext`, saved to be able to call
+  // `IsSharedStorageAllowed()`.
+  BrowserContext* browser_context_;
+
   // The shared storage owner document's origin.
   url::Origin shared_storage_origin_;
+
+  // To avoid race conditions associated with top frame navigations and to be
+  // able to call `IsSharedStorageAllowed()` during keep-alive, we need to save
+  // the value of the main frame origin in the constructor.
+  const url::Origin main_frame_origin_;
 
   // A map of unresolved URNs to the candidate URL vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is

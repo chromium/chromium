@@ -233,6 +233,8 @@ static_library("test_support") {
     "../public/test/service_worker_host_interceptor.h",
     "../public/test/service_worker_test_helpers.cc",
     "../public/test/service_worker_test_helpers.h",
+    "../public/test/shared_storage_test_utils.cc",
+    "../public/test/shared_storage_test_utils.h",
     "../public/test/signed_exchange_browser_test_helper.cc",
     "../public/test/signed_exchange_browser_test_helper.h",
     "../public/test/simple_url_loader_test_helper.cc",

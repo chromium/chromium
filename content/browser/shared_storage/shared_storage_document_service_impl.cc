@@ -11,9 +11,18 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
+
+const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
+
+// static
+bool& SharedStorageDocumentServiceImpl::
+    GetBypassIsSharedStorageAllowedForTesting() {
+  return GetBypassIsSharedStorageAllowed();
+}
 
 SharedStorageDocumentServiceImpl::~SharedStorageDocumentServiceImpl() {
   static_cast<StoragePartitionImpl*>(
@@ -34,6 +43,12 @@ void SharedStorageDocumentServiceImpl::Bind(
 void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     const GURL& script_source_url,
     AddModuleOnWorkletCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   if (!render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           script_source_url)) {
     // This could indicate a compromised renderer, so let's terminate it.
@@ -57,8 +72,16 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
 
 void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     const std::string& name,
-    const std::vector<uint8_t>& serialized_data) {
+    const std::vector<uint8_t>& serialized_data,
+    RunOperationOnWorkletCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   GetSharedStorageWorkletHost()->RunOperationOnWorklet(name, serialized_data);
+  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
 void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
@@ -66,6 +89,13 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationOnWorkletCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage,
+                            GURL());
+    return;
+  }
+
   if (!blink::IsValidSharedStorageURLsArrayLength(urls.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
@@ -81,7 +111,14 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
 void SharedStorageDocumentServiceImpl::SharedStorageSet(
     const std::u16string& key,
     const std::u16string& value,
-    bool ignore_if_present) {
+    bool ignore_if_present,
+    SharedStorageSetCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   storage::SharedStorageDatabase::SetBehavior set_behavior =
       ignore_if_present
           ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
@@ -89,25 +126,50 @@ void SharedStorageDocumentServiceImpl::SharedStorageSet(
 
   GetSharedStorageManager()->Set(render_frame_host().GetLastCommittedOrigin(),
                                  key, value, base::DoNothing(), set_behavior);
+  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageAppend(
     const std::u16string& key,
-    const std::u16string& value) {
+    const std::u16string& value,
+    SharedStorageAppendCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   GetSharedStorageManager()->Append(
       render_frame_host().GetLastCommittedOrigin(), key, value,
       base::DoNothing());
+  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageDelete(
-    const std::u16string& key) {
+    const std::u16string& key,
+    SharedStorageDeleteCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   GetSharedStorageManager()->Delete(
       render_frame_host().GetLastCommittedOrigin(), key, base::DoNothing());
+  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
-void SharedStorageDocumentServiceImpl::SharedStorageClear() {
+void SharedStorageDocumentServiceImpl::SharedStorageClear(
+    SharedStorageClearCallback callback) {
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
+    return;
+  }
+
   GetSharedStorageManager()->Clear(render_frame_host().GetLastCommittedOrigin(),
                                    base::DoNothing());
+  std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
 base::WeakPtr<SharedStorageDocumentServiceImpl>
@@ -115,9 +177,17 @@ SharedStorageDocumentServiceImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+// static
+bool& SharedStorageDocumentServiceImpl::GetBypassIsSharedStorageAllowed() {
+  static bool should_bypass = false;
+  return should_bypass;
+}
+
 SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
     RenderFrameHost* rfh)
-    : DocumentUserData<SharedStorageDocumentServiceImpl>(rfh) {}
+    : DocumentUserData<SharedStorageDocumentServiceImpl>(rfh),
+      main_frame_origin_(
+          rfh->GetOutermostMainFrame()->GetLastCommittedOrigin()) {}
 
 SharedStorageWorkletHost*
 SharedStorageDocumentServiceImpl::GetSharedStorageWorkletHost() {
@@ -140,6 +210,15 @@ SharedStorageDocumentServiceImpl::GetSharedStorageManager() {
   DCHECK(shared_storage_manager);
 
   return shared_storage_manager;
+}
+
+bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed() {
+  if (GetBypassIsSharedStorageAllowed())
+    return true;
+
+  return GetContentClient()->browser()->IsSharedStorageAllowed(
+      render_frame_host().GetBrowserContext(), main_frame_origin_,
+      render_frame_host().GetLastCommittedOrigin());
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(SharedStorageDocumentServiceImpl);
