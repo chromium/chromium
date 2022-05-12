@@ -48,6 +48,9 @@ class DeskActionContextMenu : public views::ContextMenuController,
   // can reflect whether there are windows on the desk.
   void SetCombineDesksMenuItemVisibility(bool visible);
 
+  // Closes the context menu if one is running.
+  void MaybeCloseMenu();
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* menu) override;

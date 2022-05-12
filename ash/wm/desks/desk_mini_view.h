@@ -100,8 +100,19 @@ class ASH_EXPORT DeskMiniView : public views::View,
   bool IsPointOnMiniView(const gfx::Point& screen_location) const;
 
   // Hides the `desk_action_view_` and opens `context_menu_`. Called when
-  // `desk_preview_` is right-clicked or long-pressed.
-  void OpenContextMenu();
+  // `desk_preview_` is right-clicked or long-pressed. `source` is the type of
+  // action that caused the context menu to be opened (e.g. long press versus
+  // mouse click), and is provided to the context menu runner when the menu is
+  // open in `DeskActionContextMenu::ShowContextMenuForViewImpl` so that it can
+  // further evaluate menu positioning. This ends up doing nothing in particular
+  // in the case of the `DeskActionContextMenu` because we use a
+  // `views::MenuRunner::FIXED_ANCHOR` run type parameter, but the
+  // `MenuRunner::RunMenuAt` function still requires this parameter, so we pass
+  // it down to the function through this parameter.
+  void OpenContextMenu(ui::MenuSourceType source);
+
+  // Closes context menu on this mini view if one exists.
+  void MaybeCloseContextMenu();
 
   // views::View:
   const char* GetClassName() const override;

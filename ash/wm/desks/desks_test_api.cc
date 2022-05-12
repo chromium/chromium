@@ -20,6 +20,7 @@
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
 
@@ -106,6 +107,7 @@ const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(int index) {
   return GetContextMenuForDesk(index)->context_menu_model_;
 }
 
+// static
 views::View* DesksTestApi::GetHighlightOverlayForDeskPreview(int index) {
   return GetDesksBarView()
       ->mini_views()[index]
@@ -126,6 +128,11 @@ bool DesksTestApi::DesksControllerHasDesk(Desk* desk) {
 // static
 bool DesksTestApi::DesksControllerCanUndoDeskRemoval() {
   return DesksController::Get()->temporary_removed_desk_ != nullptr;
+}
+
+// static
+bool DesksTestApi::IsContextMenuRunningForDesk(int index) {
+  return GetContextMenuForDesk(index)->context_menu_runner_->IsRunning();
 }
 
 // static

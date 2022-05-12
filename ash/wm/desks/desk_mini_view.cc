@@ -242,7 +242,7 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   return GetWidget() && HitTestPoint(point_in_view);
 }
 
-void DeskMiniView::OpenContextMenu() {
+void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   is_context_menu_open_ = true;
   UpdateDeskButtonVisibility();
 
@@ -255,13 +255,19 @@ void DeskMiniView::OpenContextMenu() {
   // visible on all desks.
   context_menu_->SetCombineDesksMenuItemVisibility(ContainsAppWindows(desk_));
 
-  // TODO(crbug.com/1308780): Source will need to be different when opening with
-  // long press and possibly keyboard.
+  // Only show the combine desks context menu option if there are app windows in
+  // the desk.
+  context_menu_->SetCombineDesksMenuItemVisibility(desk_->ContainsAppWindows());
   context_menu_->ShowContextMenuForView(
       this,
       base::i18n::IsRTL() ? desk_preview_->GetBoundsInScreen().bottom_right()
                           : desk_preview_->GetBoundsInScreen().bottom_left(),
-      ui::MENU_SOURCE_MOUSE);
+      source);
+}
+
+void DeskMiniView::MaybeCloseContextMenu() {
+  if (context_menu_)
+    context_menu_->MaybeCloseMenu();
 }
 
 const char* DeskMiniView::GetClassName() const {

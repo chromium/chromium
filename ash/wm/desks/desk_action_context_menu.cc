@@ -50,6 +50,11 @@ void DeskActionContextMenu::SetCombineDesksMenuItemVisibility(bool visible) {
   context_menu_model_.SetVisibleAt(CommandId::kCombineDesks, visible);
 }
 
+void DeskActionContextMenu::MaybeCloseMenu() {
+  if (context_menu_runner_)
+    context_menu_runner_->Cancel();
+}
+
 void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case CommandId::kCombineDesks:
@@ -74,7 +79,8 @@ void DeskActionContextMenu::ShowContextMenuForViewImpl(
     ui::MenuSourceType source_type) {
   const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
-                        views::MenuRunner::FIXED_ANCHOR;
+                        views::MenuRunner::FIXED_ANCHOR |
+                        views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
 
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(&context_menu_model_, run_types);

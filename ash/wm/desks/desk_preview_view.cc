@@ -417,7 +417,7 @@ bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
   // should open the context menu.
   if (features::IsDesksCloseAllEnabled() && event.IsRightMouseButton()) {
     DeskNameView::CommitChanges(GetWidget());
-    mini_view_->OpenContextMenu();
+    mini_view_->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
   } else {
     mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
   }
@@ -441,8 +441,6 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     // Only long press can trigger drag & drop.
     case ui::ET_GESTURE_LONG_PRESS:
-      // TODO(crbug.com/1308780): Need to figure out how we can still maintain
-      // drag functionality while allowing long press to open the context menu.
       owner_bar->HandleLongPressEvent(mini_view_, *event);
       event->SetHandled();
       break;

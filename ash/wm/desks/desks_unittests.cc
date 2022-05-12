@@ -7776,6 +7776,24 @@ TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
   }
 }
 
+// Checks that a `DeskActionContextMenu` opens when the user long-presses a
+// desk's mini view.
+TEST_F(DesksCloseAllTest, ContextMenuOpensOnLongPress) {
+  NewDesk();
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Long press on the first desk preview view.
+  const DeskPreviewView* desk_preview_view =
+      GetPrimaryRootDesksBarView()->mini_views()[0]->desk_preview();
+  const gfx::Point desk_preview_view_center =
+      desk_preview_view->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  LongGestureTap(desk_preview_view_center, event_generator);
+
+  EXPECT_TRUE(DesksTestApi::IsContextMenuRunningForDesk(0));
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

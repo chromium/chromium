@@ -547,6 +547,9 @@ void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
   gfx::PointF location = event.target()->GetScreenLocationF(event);
   InitDragDesk(mini_view, location);
   StartDragDesk(mini_view, location, event.IsMouseEvent());
+
+  if (features::IsDesksCloseAllEnabled())
+    mini_view->OpenContextMenu(ui::MENU_SOURCE_LONG_PRESS);
 }
 
 void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
@@ -555,6 +558,9 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
   // animating to be removed.
   if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return;
+
+  if (features::IsDesksCloseAllEnabled())
+    mini_view->MaybeCloseContextMenu();
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
 

@@ -51,6 +51,7 @@ class DesksTestApi {
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);
   static bool DesksControllerCanUndoDeskRemoval();
+  static bool IsContextMenuRunningForDesk(int index);
 
   static bool IsDesksBarLeftGradientVisible();
   static bool IsDesksBarRightGradientVisible();
