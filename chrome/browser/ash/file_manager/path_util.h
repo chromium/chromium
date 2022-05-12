@@ -182,6 +182,11 @@ void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 
+// Replace `prefix` with `replacement` on `s`.
+bool ReplacePrefix(std::string* s,
+                   const std::string& prefix,
+                   const std::string& replacement);
+
 // Convert path into a string suitable for display in settings.
 // Replacements:
 // * /home/chronos/user/Downloads                => Downloads
