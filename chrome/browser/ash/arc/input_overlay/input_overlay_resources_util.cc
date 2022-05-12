@@ -32,7 +32,6 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
       {"com.estoty.game2048", IDR_IO_COM_ESTOTY_GAME2048},
       {"com.s2apps.game2048", IDR_IO_COM_S2APPS_GAME2048},
       {"com.storms.azrun", IDR_IO_COM_STORMS_AZRUN},
-      {"io.shenron.lnr", IDR_IO_IO_SHENRON_LNR},
   };
 
   auto it = resource_id_map.find(package_name);

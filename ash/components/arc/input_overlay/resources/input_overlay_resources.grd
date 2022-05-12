@@ -31,7 +31,6 @@
        <include name="IDR_IO_COM_ESTOTY_GAME2048" file="com.estoty.game2048.json" type="BINDATA" />
        <include name="IDR_IO_COM_S2APPS_GAME2048" file="com.s2apps.game2048.json" type="BINDATA" />
        <include name="IDR_IO_COM_STORMS_AZRUN" file="com.storms.azrun.json" type="BINDATA" />
-       <include name="IDR_IO_IO_SHENRON_LNR" file="io.shenron.lnr.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
