@@ -6508,54 +6508,6 @@
             ]
         }
     ],
-    "SafeBrowsingCTDownloadWarning": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingCTDownloadWarning"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingCompareCSDDesktop": [
-        {
-            "platforms": [
-                "windows",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledTfLiteAndBaseline_20220217",
-                    "params": {
-                        "reporter_omaha_tag": "27.6"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionTag"
-                    ]
-                },
-                {
-                    "name": "EnabledTfLiteOnly_20220217",
-                    "params": {
-                        "reporter_omaha_tag": "27.7"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionTag"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [
