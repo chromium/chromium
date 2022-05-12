@@ -6,9 +6,11 @@
 
 #include "base/check.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/entry_point_display_reason.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #include "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 #include "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
@@ -16,6 +18,7 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,7 +74,12 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   BOOL can_send_tab_to_self =
-      send_tab_to_self::ShouldOfferFeature(browser_state, finalURLToShare);
+      send_tab_to_self::GetEntryPointDisplayReason(
+          finalURLToShare,
+          SyncServiceFactory::GetForBrowserState(browser_state),
+          SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state),
+          browser_state->GetPrefs())
+          .has_value();
 
   return [[ShareToData alloc] initWithShareURL:finalURLToShare
                                     visibleURL:web_state->GetVisibleURL()

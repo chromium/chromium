@@ -28,7 +28,6 @@ namespace {
 
 const char kHttpsUrl[] = "https://www.foo.com";
 const char kHttpsUrl2[] = "https://www.bar.com";
-const char kHttpUrl[] = "http://www.foo.com";
 
 class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
  public:
@@ -105,105 +104,6 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
         ->SetAccountInfo(account);
   }
 };
-
-TEST_F(SendTabToSelfUtilTest,
-       ShouldHideEntryPointIfSignedOutAndPromoFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSendTabToSelfSigninPromo);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest,
-       ShouldShowPromoIfSignedOutAndPromoFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSendTabToSelfSigninPromo);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_EQ(EntryPointDisplayReason::kOfferSignIn,
-            GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointIfModelNotReady) {
-  SignIn();
-  service()->GetSendTabToSelfModel()->SetIsReady(false);
-  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest,
-       ShouldHideEntryPointIfHasNoValidTargetDeviceAndPromoFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSendTabToSelfSigninPromo);
-
-  SignIn();
-  service()->GetSendTabToSelfModel()->SetIsReady(true);
-  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest,
-       ShouldShowPromoIfHasNoValidTargetDeviceAndPromoFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSendTabToSelfSigninPromo);
-
-  SignIn();
-  service()->GetSendTabToSelfModel()->SetIsReady(true);
-  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(false);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_EQ(EntryPointDisplayReason::kInformNoTargetDevice,
-            GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest, ShouldOnlyOfferFeatureIfHttpOrHttps) {
-  SignIn();
-  service()->GetSendTabToSelfModel()->SetIsReady(true);
-  service()->GetSendTabToSelfModel()->SetHasValidTargetDevice(true);
-
-  NavigateAndCommitActiveTab(GURL(kHttpsUrl));
-  EXPECT_EQ(EntryPointDisplayReason::kOfferFeature,
-            GetEntryPointDisplayReason(web_contents()));
-
-  NavigateAndCommitActiveTab(GURL(kHttpUrl));
-  EXPECT_EQ(EntryPointDisplayReason::kOfferFeature,
-            GetEntryPointDisplayReason(web_contents()));
-
-  NavigateAndCommitActiveTab(GURL("192.168.0.0"));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-
-  NavigateAndCommitActiveTab(GURL("chrome-untrusted://url"));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-
-  NavigateAndCommitActiveTab(GURL("chrome://flags"));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-
-  NavigateAndCommitActiveTab(GURL("tel:07399999999"));
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-}
-
-TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointInIncognitoMode) {
-  // TODO(crbug.com/1313539): This isn't a great way to fake an off-the-record
-  // profile, but BrowserWithTestWindowTest lacks support. More concretely, this
-  // harness relies on TestingProfileManager, and the only fitting method there
-  // is broken (CreateGuestProfile()).
-  SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(
-          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-            return nullptr;
-          }));
-
-  // Note: if changing this, audit profile-finding logic in the feature.
-  // For example, NotificationManager.java in the Android code assumes
-  // incognito is not supported.
-  EXPECT_FALSE(GetEntryPointDisplayReason(web_contents()));
-}
 
 TEST_F(SendTabToSelfUtilTest, ShouldHideEntryPointInOmniboxWhileNavigating) {
   SignIn();

@@ -4,6 +4,8 @@
 
 static_library("send_tab_to_self") {
   sources = [
+    "entry_point_display_reason.cc",
+    "entry_point_display_reason.h",
     "features.cc",
     "features.h",
     "metrics_util.cc",
@@ -28,7 +30,10 @@ static_library("send_tab_to_self") {
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
     "//components/sync_device_info",
@@ -65,6 +70,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "entry_point_display_reason_unittest.cc",
     "features_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
@@ -72,9 +78,11 @@ source_set("unit_tests") {
   ]
   deps = [
     ":send_tab_to_self",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/history/core/browser",
+    "//components/prefs:test_support",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
     "//components/sync:test_support",
     "//components/sync_device_info:test_support",

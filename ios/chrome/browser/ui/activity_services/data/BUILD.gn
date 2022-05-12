@@ -23,10 +23,11 @@ source_set("data") {
   ]
   deps = [
     "//base",
+    "//components/send_tab_to_self",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/find_in_page",
-    "//ios/chrome/browser/send_tab_to_self",
     "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/common/ui/util:image_util",

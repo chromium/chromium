@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 
+#include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -13,20 +14,7 @@ class WebContents;
 
 namespace send_tab_to_self {
 
-enum class EntryPointDisplayReason {
-  // The send-tab-to-self entry point should be shown because all the conditions
-  // are met and the feature is ready to be used.
-  kOfferFeature,
-  // The user might be able to use send-tab-to-self if they sign in, so offer
-  // that. "Might" because the list of target devices can't be known yet, it
-  // could be empty (see below).
-  kOfferSignIn,
-  // All the conditions for send-tab-to-self are met, but there is no valid
-  // target device. In that case the entry point should inform the user they
-  // can enjoy the feature by signing in on other devices.
-  kInformNoTargetDevice,
-};
-
+// |web_contents| can be null.
 absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents);
 

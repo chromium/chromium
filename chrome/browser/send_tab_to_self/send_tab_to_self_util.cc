@@ -19,53 +19,19 @@
 
 namespace send_tab_to_self {
 
-namespace {
-
-bool ShouldOfferSignin(Profile* profile) {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  return profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) &&
-         sync_service && sync_service->GetAccountInfo().IsEmpty() &&
-         !sync_service->IsLocalSyncEnabled();
-}
-
-}  // namespace
-
 absl::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents) {
+  // TODO(crbug.com/1274173): This can probably be a DCHECK instead.
   if (!web_contents)
     return absl::nullopt;
 
-  if (!web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
-    return absl::nullopt;
-
-  Profile* profile =
+  auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  SendTabToSelfSyncService* send_tab_to_self_sync_service =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
-  if (!send_tab_to_self_sync_service) {
-    // Can happen in incognito or guest profile.
-    return absl::nullopt;
-  }
-
-  if (ShouldOfferSignin(profile) &&
-      base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)) {
-    return EntryPointDisplayReason::kOfferSignIn;
-  }
-
-  SendTabToSelfModel* model =
-      send_tab_to_self_sync_service->GetSendTabToSelfModel();
-  if (!model->IsReady())
-    return absl::nullopt;
-
-  if (!model->HasValidTargetDevice()) {
-    return base::FeatureList::IsEnabled(kSendTabToSelfSigninPromo)
-               ? absl::make_optional(
-                     EntryPointDisplayReason::kInformNoTargetDevice)
-               : absl::nullopt;
-  }
-
-  return EntryPointDisplayReason::kOfferFeature;
+  return GetEntryPointDisplayReason(
+      web_contents->GetLastCommittedURL(),
+      SyncServiceFactory::GetForProfile(profile),
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }
 
 bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
