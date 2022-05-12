@@ -915,7 +915,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   float page_scale = 1.f;
 
   SetupDefaultTrees(layer_bounds);
-  GetTransformNode(active_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
   EXPECT_FLOAT_EQ(2u, active_layer()->tilings()->num_tilings());
   EXPECT_FLOAT_EQ(
       1.f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
@@ -2073,7 +2073,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   SetInitialDeviceScaleFactor(2.f);
 
   SetupDefaultTreesWithFixedTileSize(layer_bounds, tile_size, Region());
-  GetTransformNode(active_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
 
   // One ideal tile exists, this will get used when drawing.
   std::vector<Tile*> ideal_tiles;
@@ -3103,8 +3103,8 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.f);
 
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
+  SetWillChangeTransform(pending_layer(), true);
 
   // Starting an animation should cause tiling resolution to get set to the
   // maximum animation scale factor.
@@ -3132,6 +3132,41 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // Again, stop animating, because we have a will-change: transform hint
   // we should not reset the scale factor.
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
+
+  // Test that will-change:transform on an ancestor has the same
+  // effects.  We happen to have the page scale layer as an ancestor, so
+  // just use that.
+  maximum_animation_scale = 2.f;
+  LayerImpl* active_page_scale_layer =
+      host_impl()->active_tree()->LayerById(active_layer()->id() - 1);
+  LayerImpl* pending_page_scale_layer =
+      host_impl()->pending_tree()->LayerById(pending_layer()->id() - 1);
+  DCHECK_EQ(GetTransformNode(active_page_scale_layer)->id,
+            GetTransformNode(active_layer())->parent_id);
+  DCHECK_EQ(GetTransformNode(pending_page_scale_layer)->id,
+            GetTransformNode(pending_layer())->parent_id);
+  SetWillChangeTransform(active_layer(), false);
+  SetWillChangeTransform(pending_layer(), false);
+  SetContentsScaleOnBothLayers(contents_scale * 2.f, device_scale, page_scale);
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.f);
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.f);
+  SetWillChangeTransform(active_page_scale_layer, true);
+  SetWillChangeTransform(pending_page_scale_layer, true);
+  // re-set the false so node_or_ancestors_will_change_transform is recomputed
+  SetWillChangeTransform(active_layer(), false);
+  SetWillChangeTransform(pending_layer(), false);
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 2.f);
 }
@@ -3193,8 +3228,8 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // The clamping logic still works with will-change:transform.
   // Raster source size change forces adjustment of raster scale.
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
+  SetWillChangeTransform(pending_layer(), true);
   layer_bounds = gfx::Size(200, 200);
   Region invalidation;
   // UpdateRasterSource() requires that the pending tree doesn't have tiles.
@@ -3674,8 +3709,8 @@ TEST_F(LegacySWPictureLayerImplTest, RasterScaleChangeWithoutAnimation) {
   // If we change the layer contents scale after setting will change
   // will, then it will be updated if it's below the minimum scale (page scale *
   // device scale).
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
+  SetWillChangeTransform(pending_layer(), true);
 
   contents_scale = 0.75f;
 
@@ -3698,8 +3733,8 @@ TEST_F(LegacySWPictureLayerImplTest, RasterScaleChangeWithoutAnimation) {
 
   // Disabling the will-change hint will once again make the raster scale update
   // with the ideal scale.
-  GetTransformNode(active_layer())->will_change_transform = false;
-  GetTransformNode(pending_layer())->will_change_transform = false;
+  SetWillChangeTransform(active_layer(), false);
+  SetWillChangeTransform(pending_layer(), false);
 
   contents_scale = 3.f;
 
@@ -3723,8 +3758,8 @@ TEST_F(LegacySWPictureLayerImplTest, TinyRasterScale) {
   // If we change the layer contents scale after setting will change
   // will, then it will be updated if it's below the minimum scale (page scale *
   // device scale).
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
+  SetWillChangeTransform(pending_layer(), true);
 
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   // The scale is clamped to the native scale.
@@ -3760,8 +3795,8 @@ TEST_F(LegacySWPictureLayerImplTest,
   float contents_scale = 1.f;
   float device_scale = 1.f;
   float page_scale = 1.f;
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
+  SetWillChangeTransform(pending_layer(), true);
 
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.f);
@@ -4011,7 +4046,7 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   float page_scale = 1.f;
   float scale = 1.f;
 
-  GetTransformNode(active_layer())->will_change_transform = true;
+  SetWillChangeTransform(active_layer(), true);
   ResetTilingsAndRasterScales();
 
   SetContentsScaleOnBothLayers(scale, device_scale, page_scale);

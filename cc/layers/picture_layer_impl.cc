@@ -840,10 +840,11 @@ void PictureLayerImpl::UpdateCanUseLCDText(
       ComputeLCDTextDisallowedReason(raster_translation_aligns_pixels);
 }
 
-bool PictureLayerImpl::HasWillChangeTransformHint() const {
+bool PictureLayerImpl::AffectedByWillChangeTransformHint() const {
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
-  return transform_node && transform_node->will_change_transform;
+  return transform_node &&
+         transform_node->node_or_ancestors_will_change_transform;
 }
 
 LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
@@ -1233,7 +1234,7 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
   // Keep the non-ideal raster translation unchanged for transform animations
   // to avoid re-rasterization during animation.
   if (draw_properties().screen_space_transform_is_animating ||
-      HasWillChangeTransformHint())
+      AffectedByWillChangeTransformHint())
     return false;
   // Also avoid re-rasterization during pinch-zoom.
   if (layer_tree_impl()->PinchGestureActive())
@@ -1358,7 +1359,7 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
     // will-change: transform hint to preserve maximum resolution tiles
     // needed.
     if (draw_properties().screen_space_transform_is_animating ||
-        !HasWillChangeTransformHint())
+        !AffectedByWillChangeTransformHint())
       return true;
   }
 
@@ -1423,7 +1424,7 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
 
   // Don't update will-change: transform layers if the raster contents scale is
   // bigger than the minimum scale.
-  if (HasWillChangeTransformHint()) {
+  if (AffectedByWillChangeTransformHint()) {
     float min_raster_scale = MinimumRasterContentsScaleForWillChangeTransform();
     if (raster_contents_scale_.x() >= min_raster_scale &&
         raster_contents_scale_.y() >= min_raster_scale)
@@ -1530,7 +1531,7 @@ void PictureLayerImpl::RecalculateRasterScales() {
   if (draw_properties().screen_space_transform_is_animating)
     AdjustRasterScaleForTransformAnimation(preserved_raster_contents_scale);
 
-  if (HasWillChangeTransformHint()) {
+  if (AffectedByWillChangeTransformHint()) {
     float min_scale = MinimumRasterContentsScaleForWillChangeTransform();
     raster_contents_scale_.SetToMax(gfx::Vector2dF(min_scale, min_scale));
   }
@@ -1576,7 +1577,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   raster_contents_scale_.SetToMax(
       gfx::Vector2dF(maximum_animation_scale, maximum_animation_scale));
 
-  if (HasWillChangeTransformHint()) {
+  if (AffectedByWillChangeTransformHint()) {
     // If we have a will-change: transform hint, do not shrink the content
     // raster scale, otherwise we will end up throwing away larger tiles we may
     // need again.
@@ -1642,7 +1643,7 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
 
 float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
     const {
-  DCHECK(HasWillChangeTransformHint());
+  DCHECK(AffectedByWillChangeTransformHint());
   float native_scale = ideal_device_scale_ * ideal_page_scale_;
   float ideal_scale = ideal_contents_scale_key();
   // Clamp will-change: transform layers to be at least the native scale,

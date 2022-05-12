@@ -236,10 +236,9 @@ class CC_EXPORT PictureLayerImpl
       bool raster_translation_aligns_pixels) const;
   void UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
 
-  // TODO(crbug.com/1114504): For now this checks the immediate transform node
-  // only. The callers may actually want to know if this layer or ancestor has
-  // will change transform.
-  bool HasWillChangeTransformHint() const;
+  // Whether the transform node for this layer, or any ancestor transform
+  // node, has a will-change hint for one of the transform properties.
+  bool AffectedByWillChangeTransformHint() const;
 
   raw_ptr<PictureLayerImpl> twin_layer_ = nullptr;
 
