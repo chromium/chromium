@@ -46,7 +46,7 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
     // failure to the callback.
     std::move(callback_).Run(/*job=*/nullptr,
                              DeviceManagementStatus::DM_STATUS_REQUEST_FAILED,
-                             /*net_error=*/418,
+                             /*response_code=*/418,
                              /*response_body=*/absl::nullopt);
   }
 }

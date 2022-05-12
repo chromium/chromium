@@ -53,7 +53,7 @@ class MockCallbackObserver {
   MOCK_METHOD4(OnURLLoadComplete,
                void(DeviceManagementService::Job* job,
                     DeviceManagementStatus code,
-                    int net_error,
+                    int response_code,
                     absl::optional<base::Value::Dict>));
 };
 
@@ -220,7 +220,8 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
   base::Value::Dict response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_SUCCESS, net::OK,
+              OnURLLoadComplete(&job_, DM_STATUS_SUCCESS,
+                                DeviceManagementService::kSuccess,
                                 testing::Eq(testing::ByRef(response))));
   configuration_->OnURLLoadComplete(&job_, net::OK,
                                     DeviceManagementService::kSuccess,
@@ -228,17 +229,18 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
-  int net_error = net::ERR_CONNECTION_RESET;
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_FAILED, net_error,
+              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_FAILED, _,
                                 testing::Eq(absl::nullopt)));
-  configuration_->OnURLLoadComplete(&job_, net_error, 0, "");
+  configuration_->OnURLLoadComplete(&job_, net::ERR_CONNECTION_RESET,
+                                    0 /* ignored */, "");
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest,
        OnURLLoadComplete_InvalidRequest) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_INVALID, net::OK,
+              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_INVALID,
+                                DeviceManagementService::kInvalidArgument,
                                 testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidArgument, "");
@@ -249,7 +251,8 @@ TEST_F(RealtimeReportingJobConfigurationTest,
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
-                        net::OK, testing::Eq(absl::nullopt)));
+                        DeviceManagementService::kInvalidAuthCookieOrDMToken,
+                        testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidAuthCookieOrDMToken, "");
 }
@@ -258,14 +261,16 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NotSupported) {
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED,
-                        net::OK, testing::Eq(absl::nullopt)));
+                        DeviceManagementService::kDeviceManagementNotAllowed,
+                        testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kDeviceManagementNotAllowed, "");
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_TempError) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_TEMPORARY_UNAVAILABLE, net::OK,
+              OnURLLoadComplete(&job_, DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                DeviceManagementService::kServiceUnavailable,
                                 testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kServiceUnavailable, "");
@@ -273,7 +278,8 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_TempError) {
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_UnknownError) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_HTTP_STATUS_ERROR, net::OK,
+              OnURLLoadComplete(&job_, DM_STATUS_HTTP_STATUS_ERROR,
+                                DeviceManagementService::kInvalidURL,
                                 testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(&job_, net::OK,
                                     DeviceManagementService::kInvalidURL, "");

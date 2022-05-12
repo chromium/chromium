@@ -38,7 +38,7 @@ using ::testing::StrictMock;
 namespace policy {
 
 namespace {
-constexpr uint64_t kGenerationId = 4321;
+constexpr int64_t kGenerationId = 4321;
 constexpr ::reporting::Priority kPriority = ::reporting::Priority::IMMEDIATE;
 
 // Default values for EncryptionInfo
@@ -55,9 +55,9 @@ constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 // Encryption settings request key
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
-// Keys for EncrypedRecord
+// Keys for EncryptedRecord
 constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
-constexpr char kSequenceInformationKey[] = "sequencingInformation";
+constexpr char kSequenceInformationKey[] = "sequenceInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
 
 // Keys for internal encryption information dictionaries.
@@ -240,7 +240,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
  protected:
   using MockCompleteCb = MockFunction<void(DeviceManagementService::Job* job,
                                            DeviceManagementStatus code,
-                                           int net_error,
+                                           int response_code,
                                            absl::optional<base::Value::Dict>)>;
   static base::Value::Dict GenerateContext(base::StringPiece key,
                                            base::StringPiece value) {
@@ -499,7 +499,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
       *record_value.FindDictKey(kSequenceInformationKey), absl::nullopt);
 
   EXPECT_CALL(complete_cb_,
-              Call(&job_, DM_STATUS_SUCCESS, net::OK, Eq(ByRef(response))))
+              Call(&job_, DM_STATUS_SUCCESS, DeviceManagementService::kSuccess,
+                   Eq(ByRef(response))))
       .Times(1);
   EncryptedReportingJobConfiguration configuration(
       &client_, service_.configuration()->GetEncryptedReportingServerUrl(),
@@ -518,15 +519,15 @@ TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_Success) {
 
 // Ensures that upload failure is handled correctly.
 TEST_F(EncryptedReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
-  int net_error = net::ERR_CONNECTION_RESET;
-  EXPECT_CALL(complete_cb_, Call(&job_, DM_STATUS_REQUEST_FAILED, net_error,
+  EXPECT_CALL(complete_cb_, Call(&job_, DM_STATUS_REQUEST_FAILED, _,
                                  testing::Eq(absl::nullopt)))
       .Times(1);
   EncryptedReportingJobConfiguration configuration(
       &client_, service_.configuration()->GetEncryptedReportingServerUrl(),
       RequestPayloadBuilder().Build(),
       base::BindOnce(&MockCompleteCb::Call, base::Unretained(&complete_cb_)));
-  configuration.OnURLLoadComplete(&job_, net_error, 0, "");
+  configuration.OnURLLoadComplete(&job_, net::ERR_CONNECTION_RESET,
+                                  0 /* ignored */, "");
 }
 
 }  // namespace policy

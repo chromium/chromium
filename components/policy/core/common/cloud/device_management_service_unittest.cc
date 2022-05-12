@@ -296,7 +296,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
   MOCK_METHOD4(OnJobDone,
                void(DeviceManagementService::Job*,
                     DeviceManagementStatus,
-                    int,
+                    int /*net_error*/,
                     const std::string&));
 
   MOCK_METHOD2(OnJobRetry,

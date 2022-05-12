@@ -104,8 +104,6 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   std::string GetUmaString() const override;
 
  private:
-  friend class EncryptedReportingJobConfigurationTest;
-
   std::set<std::string> GetTopLevelKeyAllowList();
 };
 

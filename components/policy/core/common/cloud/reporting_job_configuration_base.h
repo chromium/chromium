@@ -42,8 +42,8 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   // Callback used once the job is complete.
   using UploadCompleteCallback =
       base::OnceCallback<void(DeviceManagementService::Job* job,
-                              DeviceManagementStatus code,
-                              int net_error,
+                              DeviceManagementStatus status,
+                              int response_code,
                               absl::optional<base::Value::Dict>)>;
 
   // Builds a Device dictionary for uploading information about the device to

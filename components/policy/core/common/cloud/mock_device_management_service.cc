@@ -301,9 +301,9 @@ void FakeJobConfiguration::OnURLLoadComplete(DeviceManagementService::Job* job,
                                              int net_error,
                                              int response_code,
                                              const std::string& response_body) {
-  DeviceManagementStatus code =
+  DeviceManagementStatus status =
       MapNetErrorAndResponseCodeToDMStatus(net_error, response_code);
-  std::move(callback_).Run(job, code, net_error, response_body);
+  std::move(callback_).Run(job, status, net_error, response_body);
 }
 
 }  // namespace policy

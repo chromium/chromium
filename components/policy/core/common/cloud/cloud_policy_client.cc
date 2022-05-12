@@ -722,12 +722,11 @@ void CloudPolicyClient::UploadEncryptedReport(
     return;
   }
 
-  std::unique_ptr<EncryptedReportingJobConfiguration> config =
-      std::make_unique<EncryptedReportingJobConfiguration>(
-          this, service()->configuration()->GetEncryptedReportingServerUrl(),
-          std::move(merging_payload),
-          base::BindOnce(&CloudPolicyClient::OnEncryptedReportUploadCompleted,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto config = std::make_unique<EncryptedReportingJobConfiguration>(
+      this, service()->configuration()->GetEncryptedReportingServerUrl(),
+      std::move(merging_payload),
+      base::BindOnce(&CloudPolicyClient::OnEncryptedReportUploadCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   if (context.has_value()) {
     config->UpdateContext(std::move(context.value()));
   }
@@ -1433,7 +1432,7 @@ void CloudPolicyClient::OnRealtimeReportUploadCompleted(
     StatusCallback callback,
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
-    int net_error,
+    int reponse_code,
     absl::optional<base::Value::Dict> response) {
   status_ = status;
   if (status != DM_STATUS_SUCCESS)
@@ -1450,8 +1449,9 @@ void CloudPolicyClient::OnEncryptedReportUploadCompleted(
     ResponseCallback callback,
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
-    int net_error,
+    int reponse_code,
     absl::optional<base::Value::Dict> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (job == nullptr) {
     std::move(callback).Run(absl::nullopt);
     return;
