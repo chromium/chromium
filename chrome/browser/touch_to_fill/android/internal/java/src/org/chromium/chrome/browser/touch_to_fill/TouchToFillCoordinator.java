@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
-
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -35,9 +33,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
             TouchToFillComponent.Delegate delegate) {
         mMediator.initialize(delegate, mModel,
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                context.getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
-                                ? R.dimen.touch_to_fill_favicon_size_modern
-                                : R.dimen.touch_to_fill_favicon_size));
+                context.getResources().getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size));
         setUpModelChangeProcessors(mModel, new TouchToFillView(context, sheetController));
     }
 
