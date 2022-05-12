@@ -58,6 +58,31 @@ class ExtraContainersElement extends ExtraContainersElementBase {
       lastMenuContainerInfo_: {
         type: Object,
       },
+
+      /**
+       * Whether the export import buttons should be enabled. Initially false
+       * until status has been confirmed.
+       * @private {boolean}
+       */
+      enableButtons_: {
+        type: Boolean,
+        computed:
+            'isEnabledButtons_(installerShowing_, exportImportInProgress_)',
+      },
+
+      /** @private */
+      installerShowing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      // TODO(b/231890242): Disable delete and stop buttons when a container is
+      // being exported or imported.
+      /** @private */
+      exportImportInProgress_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -76,6 +101,23 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     this.addWebUIListener(
         'crostini-container-info', (infos) => this.onContainerInfo_(infos));
     CrostiniBrowserProxyImpl.getInstance().requestContainerInfo();
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    this.addWebUIListener(
+        'crostini-export-import-operation-status-changed', inProgress => {
+          this.exportImportInProgress_ = inProgress;
+        });
+    this.addWebUIListener(
+        'crostini-installer-status-changed', installerShowing => {
+          this.installerShowing_ = installerShowing;
+        });
+
+    CrostiniBrowserProxyImpl.getInstance()
+        .requestCrostiniExportImportOperationStatus();
+    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
   }
 
   /**
@@ -142,6 +184,18 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    * @param {!Event} event
    * @private
    */
+  onExportContainerClick_(event) {
+    if (this.lastMenuContainerInfo_) {
+      CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer(
+          this.lastMenuContainerInfo_.id);
+    }
+    this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
   onContainerColorChange_(event) {
     const containerId =
         /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);
@@ -183,6 +237,15 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     assert(menu.open && this.lastMenuContainerInfo_);
     menu.close();
     this.lastMenuContainerInfo_ = null;
+  }
+
+  /**
+   * @param {!Boolean} installerShowing
+   * @param {!Boolean} exportImportInProgress
+   * @private
+   */
+  isEnabledButtons_(installerShowing, exportImportInProgress) {
+    return !(installerShowing || exportImportInProgress);
   }
 }
 

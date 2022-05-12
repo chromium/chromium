@@ -684,8 +684,7 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
 }
 
 bool CrostiniExportImport::GetExportImportOperationStatus() const {
-  ContainerId id(kCrostiniDefaultVmName, kCrostiniDefaultContainerName);
-  return status_trackers_.find(id) != status_trackers_.end();
+  return status_trackers_.size() != 0;
 }
 
 base::WeakPtr<CrostiniExportImportNotificationController>
