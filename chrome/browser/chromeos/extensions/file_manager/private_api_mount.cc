@@ -52,8 +52,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
                 params->file_url.empty() ? "(none)" : params->file_url.c_str());
@@ -62,9 +61,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   path_ = file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
                                                   GURL(params->file_url));
-
-  if (path_.empty())
-    return RespondNow(Error("Invalid path"));
 
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile)) {
@@ -139,16 +135,12 @@ FileManagerPrivateCancelMountingFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
 
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
                 params->file_url.empty() ? "(none)" : params->file_url.c_str());
   }
   set_log_on_completion(true);
-
-  if (params->file_url.empty())
-    return RespondNow(Error("Invalid path"));
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -180,8 +172,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (volume_id: '%s')", name(),
                 request_id(), params->volume_id.c_str());
   }
@@ -279,8 +270,7 @@ FileManagerPrivateGetVolumeMetadataListFunction::Run() {
     log_string += volume->mount_path().AsUTF8Unsafe();
   }
 
-  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-  if (logger) {
+  if (drive::EventLogger* logger = file_manager::util::GetLogger(profile)) {
     logger->Log(logging::LOG_INFO,
                 "%s[%d] succeeded. (results: '[%s]', %" PRIuS " mount points)",
                 name(), request_id(), log_string.c_str(), result.size());
