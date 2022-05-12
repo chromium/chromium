@@ -48,6 +48,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -469,7 +470,9 @@ void PasswordManager::OnDynamicFormSubmission(
 
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
 
-  if (gaia::IsGaiaSignonRealm(GURL(submitted_form->signon_realm))) {
+  const GURL gaia_signon_realm =
+      GaiaUrls::GetInstance()->gaia_origin().GetURL();
+  if (GURL(submitted_form->signon_realm) == gaia_signon_realm) {
     // The GAIA signon realm (i.e. https://accounts.google.com) will always
     // perform a full page redirect once the user cleared the login flow. Thus
     // don't respond to other JavaScript based signals that would result in

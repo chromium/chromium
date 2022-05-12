@@ -140,21 +140,6 @@ TEST(GaiaAuthUtilTest, GmailAndGooglemailAreSame) {
   EXPECT_FALSE(AreEmailsSame("bar@gmail.com", "foo@googlemail.com"));
 }
 
-TEST(GaiaAuthUtilTest, IsGaiaSignonRealm) {
-  // Only https versions of Gaia URLs should be considered valid.
-  EXPECT_TRUE(IsGaiaSignonRealm(GURL("https://accounts.google.com/")));
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("http://accounts.google.com/")));
-
-  // Other Google URLs are not valid.
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("https://www.google.com/")));
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("http://www.google.com/")));
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("https://google.com/")));
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("https://mail.google.com/")));
-
-  // Other https URLs are not valid.
-  EXPECT_FALSE(IsGaiaSignonRealm(GURL("https://www.example.com/")));
-}
-
 TEST(GaiaAuthUtilTest, HasGaiaSchemeHostPort) {
   EXPECT_TRUE(HasGaiaSchemeHostPort(GURL("https://accounts.google.com/")));
 

@@ -233,11 +233,11 @@ void ReportTimesPasswordUsedMetrics(
 void ReportSyncingAccountStateMetrics(
     const std::string& sync_username,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  std::string signon_realm =
-      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL().spec();
+  const GURL gaia_signon_realm =
+      GaiaUrls::GetInstance()->gaia_origin().GetURL();
   bool syncing_account_saved = base::ranges::any_of(
-      forms, [&signon_realm, &sync_username](const auto& form) {
-        return signon_realm == form->signon_realm &&
+      forms, [&gaia_signon_realm, &sync_username](const auto& form) {
+        return gaia_signon_realm == GURL(form->signon_realm) &&
                gaia::AreEmailsSame(sync_username,
                                    base::UTF16ToUTF8(form->username_value));
       });

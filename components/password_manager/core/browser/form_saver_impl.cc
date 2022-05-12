@@ -12,8 +12,6 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

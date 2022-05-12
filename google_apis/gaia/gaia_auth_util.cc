@@ -104,13 +104,6 @@ bool IsGoogleInternalAccountEmail(const std::string& email) {
   return ExtractDomainName(SanitizeEmail(email)) == kGoogleDomain;
 }
 
-bool IsGaiaSignonRealm(const GURL& url) {
-  if (!url.SchemeIsCryptographic())
-    return false;
-
-  return url == GaiaUrls::GetInstance()->gaia_origin().GetURL();
-}
-
 bool HasGaiaSchemeHostPort(const GURL& url) {
   if (!url.SchemeIsCryptographic())
     return false;

@@ -47,8 +47,6 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
