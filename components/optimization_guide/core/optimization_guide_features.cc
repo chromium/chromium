@@ -154,8 +154,8 @@ const base::Feature kPageVisibilityBatchAnnotations{
 const base::Feature kUseLocalPageEntitiesMetadataProvider{
     "UseLocalPageEntitiesMetadataProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBatchAnnotationsValidation{
-    "BatchAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPageContentAnnotationsValidation{
+    "PageContentAnnotationsValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPreventLongRunningPredictionModels{
     "PreventLongRunningPredictionModels", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -566,25 +566,45 @@ size_t AnnotateVisitBatchSize() {
                                           "annotate_visit_batch_size", 1));
 }
 
-bool BatchAnnotationsValidationEnabled() {
-  return base::FeatureList::IsEnabled(kBatchAnnotationsValidation);
+bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
+  if (base::FeatureList::IsEnabled(kPageContentAnnotationsValidation)) {
+    if (GetFieldTrialParamByFeatureAsBool(kPageContentAnnotationsValidation,
+                                          AnnotationTypeToString(type),
+                                          false)) {
+      return true;
+    }
+  }
+
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  switch (type) {
+    case AnnotationType::kPageTopics:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationPageTopics);
+    case AnnotationType::kPageEntities:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationPageEntities);
+    case AnnotationType::kContentVisibility:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationContentVisibility);
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  return false;
 }
 
-base::TimeDelta BatchAnnotationValidationStartupDelay() {
-  return base::Seconds(
-      std::max(1, GetFieldTrialParamByFeatureAsInt(kBatchAnnotationsValidation,
-                                                   "startup_delay", 30)));
+base::TimeDelta PageContentAnnotationValidationStartupDelay() {
+  return switches::PageContentAnnotationsValidationStartupDelay().value_or(
+      base::Seconds(std::max(
+          1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotationsValidation,
+                                              "startup_delay", 30))));
 }
 
-size_t BatchAnnotationsValidationBatchSize() {
-  int batch_size = GetFieldTrialParamByFeatureAsInt(kBatchAnnotationsValidation,
-                                                    "batch_size", 25);
-  return std::max(1, batch_size);
-}
-
-bool BatchAnnotationsValidationUsePageTopics() {
-  return GetFieldTrialParamByFeatureAsBool(kBatchAnnotationsValidation,
-                                           "use_page_topics", false);
+size_t PageContentAnnotationsValidationBatchSize() {
+  return switches::PageContentAnnotationsValidationBatchSize().value_or(
+      std::max(1, GetFieldTrialParamByFeatureAsInt(
+                      kPageContentAnnotationsValidation, "batch_size", 25)));
 }
 
 size_t MaxVisitAnnotationCacheSize() {

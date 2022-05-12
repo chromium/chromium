@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/values.h"
 
 namespace optimization_guide {
 
@@ -39,6 +40,8 @@ struct EntityMetadata {
 
   std::string ToString() const;
 
+  base::Value AsValue() const;
+
   friend std::ostream& operator<<(std::ostream& out, const EntityMetadata& md);
   friend bool operator==(const EntityMetadata& lhs, const EntityMetadata& rhs);
 };
@@ -57,6 +60,8 @@ struct ScoredEntityMetadata {
   float score;
 
   std::string ToString() const;
+
+  base::Value AsValue() const;
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const ScoredEntityMetadata& md);

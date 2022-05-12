@@ -40,6 +40,16 @@ class TestPageContentAnnotator : public PageContentAnnotator {
       const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
 
+  // Returns true iff |RequestAndNotifyWhenModelAvailable| was called for
+  // |type|.
+  bool ModelRequestedForType(AnnotationType type) const;
+
+  using AnnotateInputsAndType =
+      std::pair<std::vector<std::string>, AnnotationType>;
+  const std::vector<AnnotateInputsAndType>& annotation_requests() const {
+    return annotation_requests_;
+  }
+
   // PageContentAnnotator:
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
@@ -60,6 +70,10 @@ class TestPageContentAnnotator : public PageContentAnnotator {
 
   absl::optional<ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
+
+  std::vector<AnnotateInputsAndType> annotation_requests_;
+
+  base::flat_set<AnnotationType> model_requests_;
 };
 
 }  // namespace optimization_guide

@@ -27,12 +27,10 @@ namespace {
 bool ShouldEnablePageContentAnnotations() {
   // Allow for the validation experiment and/or the Topics experiment to enable
   // the PCAService without need to enable both features.
-  if (!optimization_guide::features::IsPageContentAnnotationEnabled() &&
-      !optimization_guide::features::BatchAnnotationsValidationEnabled() &&
-      !base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
-    return false;
-  }
-  return true;
+  return optimization_guide::features::IsPageContentAnnotationEnabled() ||
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kPageContentAnnotationsValidation) ||
+         base::FeatureList::IsEnabled(blink::features::kBrowsingTopics);
 }
 
 }  // namespace

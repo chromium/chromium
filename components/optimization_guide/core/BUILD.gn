@@ -105,6 +105,8 @@ static_library("features") {
     "optimization_guide_prefs.h",
     "optimization_guide_switches.cc",
     "optimization_guide_switches.h",
+    "page_content_annotation_type.cc",
+    "page_content_annotation_type.h",
   ]
   public_deps = [ "//base" ]
   deps = [
@@ -326,6 +328,8 @@ if (is_ios) {
       "optimization_guide_switches.h",
       "optimization_guide_test_util.cc",
       "optimization_guide_test_util.h",
+      "page_content_annotation_type.cc",
+      "page_content_annotation_type.h",
     ]
     deps = [
       "//base",

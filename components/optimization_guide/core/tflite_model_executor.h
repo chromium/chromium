@@ -118,7 +118,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
   // Called when a model file is available to load. Depending on feature flags,
   // the model may or may not be immediately loaded.
   void UpdateModelFile(const base::FilePath& file_path) override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(execution_task_runner_ &&
+           execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     UnloadModel();

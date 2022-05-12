@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
@@ -40,7 +41,7 @@ extern const base::Feature kPageVisibilityBatchAnnotations;
 extern const base::Feature kPageEntitiesModelResetOnShutdown;
 extern const base::Feature kPageEntitiesModelBypassFilters;
 extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
-extern const base::Feature kBatchAnnotationsValidation;
+extern const base::Feature kPageContentAnnotationsValidation;
 extern const base::Feature kPreventLongRunningPredictionModels;
 extern const base::Feature kOverrideNumThreadsForModelExecution;
 extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
@@ -280,19 +281,16 @@ bool UseLocalPageEntitiesMetadataProvider();
 // immediately after requested.
 size_t AnnotateVisitBatchSize();
 
-// Whether the batch annotation validation feature is enabled.
-bool BatchAnnotationsValidationEnabled();
+// Whether the page content annotation validation feature or command line flag
+// is enabled for the given annotation type.
+bool PageContentAnnotationValidationEnabledForType(AnnotationType type);
 
-// The time period between browser start and running a running batch annotation
-// validation.
-base::TimeDelta BatchAnnotationValidationStartupDelay();
+// The time period between browser start and running a running page content
+// annotation validation.
+base::TimeDelta PageContentAnnotationValidationStartupDelay();
 
-// The size of batches to run for validation.
-size_t BatchAnnotationsValidationBatchSize();
-
-// True if the batch annotations feature should use the PageTopics annotation
-// type instead of ContentVisibility.
-bool BatchAnnotationsValidationUsePageTopics();
+// The size of batches to run for page content validation.
+size_t PageContentAnnotationsValidationBatchSize();
 
 // The maximum size of the visit annotation cache.
 size_t MaxVisitAnnotationCacheSize();
