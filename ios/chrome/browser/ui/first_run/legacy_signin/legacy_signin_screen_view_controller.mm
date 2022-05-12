@@ -25,7 +25,6 @@ namespace {
 
 // Width of the identity control if nothing is contraining it.
 const CGFloat kIdentityControlMaxWidth = 327;
-const CGFloat kIdentityTopMargin = 16;
 
 // URL for the learn more text.
 // Need to set a value so the delegate gets called.
@@ -126,8 +125,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
   [NSLayoutConstraint activateConstraints:@[
     [self.identityControl.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor
-                       constant:kIdentityTopMargin],
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
     [self.identityControl.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [self.identityControl.widthAnchor
