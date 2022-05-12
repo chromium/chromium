@@ -83,7 +83,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
   DCHECK(clusters);
   // Within each cluster, sort visits.
   for (auto& cluster : *clusters) {
-    StableSortVisits(&cluster.visits);
+    StableSortVisits(cluster.visits);
   }
 
   // After that, sort clusters reverse-chronologically based on their highest

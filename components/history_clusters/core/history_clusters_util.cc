@@ -101,9 +101,8 @@ float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
 //
 // Note, this should NOT be called for `cluster_visits` with NO matching visits.
 void PromoteMatchingVisitsAboveNonMatchingVisits(
-    std::vector<history::ClusterVisit>* cluster_visits) {
-  DCHECK(cluster_visits);
-  for (auto& visit : *cluster_visits) {
+    std::vector<history::ClusterVisit>& cluster_visits) {
+  for (auto& visit : cluster_visits) {
     if (visit.matches_search_query) {
       // Smash all matching scores into the range that's above the fold.
       visit.score =
@@ -169,9 +168,8 @@ std::u16string ComputeURLForDisplay(const GURL& url, bool trim_after_host) {
                                   nullptr, nullptr, nullptr);
 }
 
-void StableSortVisits(std::vector<history::ClusterVisit>* visits) {
-  DCHECK(visits);
-  base::ranges::stable_sort(*visits, [](auto& v1, auto& v2) {
+void StableSortVisits(std::vector<history::ClusterVisit>& visits) {
+  base::ranges::stable_sort(visits, [](auto& v1, auto& v2) {
     if (v1.score != v2.score) {
       // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
       return v1.score > v2.score;
@@ -184,8 +182,7 @@ void StableSortVisits(std::vector<history::ClusterVisit>* visits) {
 }
 
 void ApplySearchQuery(const std::string& query,
-                      std::vector<history::Cluster>* clusters) {
-  DCHECK(clusters);
+                      std::vector<history::Cluster>& clusters) {
   if (query.empty())
     return;
 
@@ -198,7 +195,7 @@ void ApplySearchQuery(const std::string& query,
   // Move all the passed in `clusters` into `all_clusters`, and start rebuilding
   // `clusters` to only contain the matching ones.
   std::vector<history::Cluster> all_clusters;
-  std::swap(all_clusters, *clusters);
+  std::swap(all_clusters, clusters);
 
   for (auto& cluster : all_clusters) {
     const float total_matching_visit_score =
@@ -206,7 +203,7 @@ void ApplySearchQuery(const std::string& query,
     DCHECK_GE(total_matching_visit_score, 0);
     if (total_matching_visit_score > 0 &&
         GetConfig().rescore_visits_within_clusters_for_query) {
-      PromoteMatchingVisitsAboveNonMatchingVisits(&cluster.visits);
+      PromoteMatchingVisitsAboveNonMatchingVisits(cluster.visits);
     }
 
     cluster.search_match_score = total_matching_visit_score;
@@ -219,12 +216,12 @@ void ApplySearchQuery(const std::string& query,
 
     if (cluster.search_match_score > 0) {
       // Move the matching clusters into the final list.
-      clusters->push_back(std::move(cluster));
+      clusters.push_back(std::move(cluster));
     }
   }
 
   if (GetConfig().sort_clusters_within_batch_for_query) {
-    base::ranges::stable_sort(*clusters, [](auto& c1, auto& c2) {
+    base::ranges::stable_sort(clusters, [](auto& c1, auto& c2) {
       // Use c1 > c2 to get higher scored clusters BEFORE lower scored clusters.
       return c1.search_match_score > c2.search_match_score;
     });
@@ -233,37 +230,60 @@ void ApplySearchQuery(const std::string& query,
 
 void CullNonProminentOrDuplicateClusters(
     std::string query,
-    std::vector<history::Cluster>* clusters,
+    std::vector<history::Cluster>& clusters,
     std::set<GURL>* seen_single_visit_cluster_urls) {
-  DCHECK(clusters);
   DCHECK(seen_single_visit_cluster_urls);
   if (query.empty()) {
     // For the empty-query state, only show clusters with
     // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
     // NOT applied when the user is searching for a specific keyword.
-    clusters->erase(base::ranges::remove_if(
-                        *clusters,
-                        [](const history::Cluster& cluster) {
-                          return !cluster.should_show_on_prominent_ui_surfaces;
-                        }),
-                    clusters->end());
+    clusters.erase(base::ranges::remove_if(
+                       clusters,
+                       [](const history::Cluster& cluster) {
+                         return !cluster.should_show_on_prominent_ui_surfaces;
+                       }),
+                   clusters.end());
   } else {
-    clusters->erase(base::ranges::remove_if(
-                        *clusters,
-                        [&](const history::Cluster& cluster) {
-                          // Erase all duplicate single-visit non-prominent
-                          // clusters.
-                          if (!cluster.should_show_on_prominent_ui_surfaces &&
-                              cluster.visits.size() == 1) {
-                            auto [unused_iterator, newly_inserted] =
-                                seen_single_visit_cluster_urls->insert(
-                                    cluster.visits[0].url_for_deduping);
-                            return !newly_inserted;
-                          }
+    clusters.erase(base::ranges::remove_if(
+                       clusters,
+                       [&](const history::Cluster& cluster) {
+                         // Erase all duplicate single-visit non-prominent
+                         // clusters.
+                         if (!cluster.should_show_on_prominent_ui_surfaces &&
+                             cluster.visits.size() == 1) {
+                           auto [unused_iterator, newly_inserted] =
+                               seen_single_visit_cluster_urls->insert(
+                                   cluster.visits[0].url_for_deduping);
+                           return !newly_inserted;
+                         }
 
-                          return false;
-                        }),
-                    clusters->end());
+                         return false;
+                       }),
+                   clusters.end());
+  }
+}
+
+void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters) {
+  for (auto& cluster : clusters) {
+    for (size_t i = 0; i < cluster.visits.size(); ++i) {
+      auto& visit = cluster.visits[i];
+      // Even a 0.0 visit shouldn't be hidden if this is the first visit we
+      // encounter. The assumption is that the visits are always ranked by score
+      // in a descending order.
+      // TODO(crbug.com/1313631): Simplify this after removing "Show More" UI.
+      if ((visit.score == 0.0 && i != 0) ||
+          (visit.score < GetConfig().min_score_to_always_show_above_the_fold &&
+           i >= GetConfig().num_visits_to_always_show_above_the_fold)) {
+        visit.hidden = true;
+      }
+    }
+
+    if (GetConfig().drop_hidden_visits) {
+      cluster.visits.erase(
+          base::ranges::remove_if(
+              cluster.visits, [](const auto& visit) { return visit.hidden; }),
+          cluster.visits.end());
+    }
   }
 }
 

@@ -117,7 +117,7 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
                                     test_data[i].query.c_str()));
 
     auto clusters = all_clusters;
-    ApplySearchQuery(test_data[i].query, &clusters);
+    ApplySearchQuery(test_data[i].query, clusters);
 
     size_t expected_size =
         static_cast<size_t>(test_data[i].expect_first_cluster) +
@@ -150,7 +150,7 @@ TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
   // No promotion when we match a keyword.
   {
     std::vector clusters = all_clusters;
-    ApplySearchQuery("apples", &clusters);
+    ApplySearchQuery("apples", clusters);
     ASSERT_EQ(clusters.size(), 1U);
     ASSERT_EQ(clusters[0].visits.size(), 2U);
     EXPECT_EQ(clusters[0].visits[0].annotated_visit.visit_row.visit_id, 1);
@@ -162,7 +162,7 @@ TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
   // Promote the second visit over the first if we match the second visit.
   {
     std::vector clusters = all_clusters;
-    ApplySearchQuery("git", &clusters);
+    ApplySearchQuery("git", clusters);
     ASSERT_EQ(clusters.size(), 1U);
     ASSERT_EQ(clusters[0].visits.size(), 2U);
     EXPECT_EQ(clusters[0].visits[0].annotated_visit.visit_row.visit_id, 2);
@@ -197,7 +197,7 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     SetConfigForTesting(config);
 
     std::vector clusters = all_clusters;
-    ApplySearchQuery("search", &clusters);
+    ApplySearchQuery("search", clusters);
     ASSERT_EQ(clusters.size(), 2U);
     EXPECT_EQ(clusters[0].cluster_id, 1);
     EXPECT_EQ(clusters[1].cluster_id, 2);
@@ -213,7 +213,7 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     SetConfigForTesting(config);
 
     std::vector clusters = all_clusters;
-    ApplySearchQuery("search", &clusters);
+    ApplySearchQuery("search", clusters);
     ASSERT_EQ(clusters.size(), 2U);
     EXPECT_EQ(clusters[0].cluster_id, 2);
     EXPECT_EQ(clusters[1].cluster_id, 1);
@@ -228,12 +228,78 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     SetConfigForTesting(config);
 
     std::vector clusters = all_clusters;
-    ApplySearchQuery("google", &clusters);
+    ApplySearchQuery("google", clusters);
     ASSERT_EQ(clusters.size(), 2U);
     EXPECT_EQ(clusters[0].cluster_id, 1);
     EXPECT_EQ(clusters[1].cluster_id, 2);
     EXPECT_FLOAT_EQ(clusters[0].search_match_score, 0.5);
     EXPECT_FLOAT_EQ(clusters[1].search_match_score, 0.5);
+  }
+}
+
+TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
+  std::vector<history::Cluster> clusters;
+
+  // High scoring visits should always be above the fold.
+  history::Cluster cluster1;
+  cluster1.cluster_id = 4;
+  cluster1.visits.push_back(GetHardcodedClusterVisit(1, 1));
+  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .8));
+  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
+  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
+  cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
+  cluster1.keywords.push_back(u"keyword");
+
+  // Low scoring visits should be above the fold only if they're one of top 4.
+  history::Cluster cluster2;
+  cluster2.cluster_id = 6;
+  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
+  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
+  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
+  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
+  cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
+  cluster2.keywords.push_back(u"keyword");
+
+  // 0 scoring visits should be above the fold only if they're 1st.
+  history::Cluster cluster3;
+  cluster3.cluster_id = 8;
+  cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
+  cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
+  cluster3.keywords.push_back(u"keyword");
+
+  clusters.push_back(cluster1);
+  clusters.push_back(cluster2);
+  clusters.push_back(cluster3);
+
+  HideAndCullLowScoringVisits(clusters);
+
+  {
+    EXPECT_EQ(clusters[0].cluster_id, 4);
+    const auto& visits = clusters[0].visits;
+    ASSERT_EQ(visits.size(), 5u);
+    EXPECT_EQ(visits[0].hidden, false);
+    EXPECT_EQ(visits[1].hidden, false);
+    EXPECT_EQ(visits[2].hidden, false);
+    EXPECT_EQ(visits[3].hidden, false);
+    EXPECT_EQ(visits[4].hidden, false);
+  }
+
+  {
+    EXPECT_EQ(clusters[1].cluster_id, 6);
+    const auto& visits = clusters[1].visits;
+    ASSERT_EQ(visits.size(), 5u);
+    EXPECT_EQ(visits[0].hidden, false);
+    EXPECT_EQ(visits[1].hidden, false);
+    EXPECT_EQ(visits[2].hidden, false);
+    EXPECT_EQ(visits[3].hidden, false);
+    EXPECT_EQ(visits[4].hidden, true);
+  }
+
+  {
+    EXPECT_EQ(clusters[2].cluster_id, 8);
+    ASSERT_EQ(clusters[2].visits.size(), 2u);
+    EXPECT_EQ(clusters[2].visits[0].hidden, false);
+    EXPECT_EQ(clusters[2].visits[1].hidden, true);
   }
 }
 

@@ -13,6 +13,10 @@ namespace history_clusters {
 
 // The default configuration. Always use |GetConfig()| to get the current
 // configuration.
+//
+// Config has the same thread-safety as base::FeatureList. The first call to
+// GetConfig() (which performs initialization) must be done single threaded on
+// the main thread. After that, Config can be read from any thread.
 struct Config {
   // True if journeys feature is enabled as per field trial check. Does not
   // check for any user-specific conditions (such as locales).

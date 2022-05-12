@@ -51,39 +51,20 @@ class HistoryClustersHandlerTest : public testing::Test {
   TestingProfile profile_;
 };
 
-TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Hidden) {
+// Just a basic test that we transform the data to mojom. A lot of the meat of
+// the visit hiding logic is within QueryClustersState and HistoryClustersUtil.
+TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Integration) {
   std::vector<history::Cluster> clusters;
 
-  // High scoring visits should always be above the fold.
-  history::Cluster cluster1;
-  cluster1.cluster_id = 4;
-  cluster1.visits.push_back(CreateVisit("https://high-score-1", 1));
-  cluster1.visits.push_back(CreateVisit("https://high-score-2", .8));
-  cluster1.visits.push_back(CreateVisit("https://high-score-3", .5));
-  cluster1.visits.push_back(CreateVisit("https://high-score-4", .5));
-  cluster1.visits.push_back(CreateVisit("https://high-score-5", .5));
-  cluster1.keywords.push_back(u"keyword");
-
   // Low scoring visits should be above the fold only if they're one of top 4.
-  history::Cluster cluster2;
-  cluster2.cluster_id = 6;
-  cluster2.visits.push_back(CreateVisit("https://low-score-1", .4));
-  cluster2.visits.push_back(CreateVisit("https://low-score-2", .4));
-  cluster2.visits.push_back(CreateVisit("https://low-score-3", .4));
-  cluster2.visits.push_back(CreateVisit("https://low-score-4", .4));
-  cluster2.visits.push_back(CreateVisit("https://low-score-5", .4));
-  cluster2.keywords.push_back(u"keyword");
+  history::Cluster cluster;
+  cluster.cluster_id = 4;
+  cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
+  cluster.visits[0].hidden = false;
+  cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
+  cluster.visits[1].hidden = true;
 
-  // 0 scoring visits should be above the fold only if they're 1st.
-  history::Cluster cluster3;
-  cluster3.cluster_id = 8;
-  cluster3.visits.push_back(CreateVisit("https://zero-score-1", 0));
-  cluster3.visits.push_back(CreateVisit("https://zero-score-2", 0));
-  cluster3.keywords.push_back(u"keyword");
-
-  clusters.push_back(cluster1);
-  clusters.push_back(cluster2);
-  clusters.push_back(cluster3);
+  clusters.push_back(cluster);
 
   mojom::QueryResultPtr mojom_result =
       QueryClustersResultToMojom(&profile_, "query", clusters, true, false);
@@ -92,35 +73,15 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Hidden) {
   EXPECT_EQ(mojom_result->can_load_more, true);
   EXPECT_EQ(mojom_result->is_continuation, false);
 
-  ASSERT_EQ(mojom_result->clusters.size(), 3u);
+  ASSERT_EQ(mojom_result->clusters.size(), 1u);
 
   {
     EXPECT_EQ(mojom_result->clusters[0]->id, 4);
     const auto& visits = mojom_result->clusters[0]->visits;
-    ASSERT_EQ(visits.size(), 5u);
+    ASSERT_EQ(visits.size(), 2u);
+    // Test that the hidden attribute is passed through to mojom.
     EXPECT_EQ(visits[0]->hidden, false);
-    EXPECT_EQ(visits[1]->hidden, false);
-    EXPECT_EQ(visits[2]->hidden, false);
-    EXPECT_EQ(visits[3]->hidden, false);
-    EXPECT_EQ(visits[4]->hidden, false);
-  }
-
-  {
-    EXPECT_EQ(mojom_result->clusters[1]->id, 6);
-    const auto& visits = mojom_result->clusters[1]->visits;
-    ASSERT_EQ(visits.size(), 5u);
-    EXPECT_EQ(visits[0]->hidden, false);
-    EXPECT_EQ(visits[1]->hidden, false);
-    EXPECT_EQ(visits[2]->hidden, false);
-    EXPECT_EQ(visits[3]->hidden, false);
-    EXPECT_EQ(visits[4]->hidden, true);
-  }
-
-  {
-    EXPECT_EQ(mojom_result->clusters[2]->id, 8);
-    ASSERT_EQ(mojom_result->clusters[2]->visits.size(), 2u);
-    EXPECT_EQ(mojom_result->clusters[2]->visits[0]->hidden, false);
-    EXPECT_EQ(mojom_result->clusters[2]->visits[1]->hidden, true);
+    EXPECT_EQ(visits[1]->hidden, true);
   }
 }
 

@@ -100,7 +100,8 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
   return visits;
 }
 
-history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id) {
+history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id,
+                                               float score) {
   const auto& visits = GetHardcodedTestVisits();
   for (const auto& visit : visits) {
     if (visit.visit_row.visit_id != visit_id)
@@ -111,7 +112,7 @@ history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id) {
     cluster_visit.normalized_url = visit.url_row.url();
     cluster_visit.url_for_deduping =
         ComputeURLForDeduping(cluster_visit.normalized_url);
-    cluster_visit.score = 0.5;
+    cluster_visit.score = score;
     return cluster_visit;
   }
 
