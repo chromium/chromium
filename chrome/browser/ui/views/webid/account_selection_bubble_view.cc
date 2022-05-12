@@ -238,7 +238,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   if (brand_text_color_)
     button->SetEnabledTextColors(brand_text_color_);
   button->SetProminent(true);
-  row->AddChildView(std::move(button));
+  continue_button_ = row->AddChildView(std::move(button));
 
   // Do not add disclosure text if this is a sign in.
   if (account.login_state == Account::LoginState::kSignIn)
@@ -438,6 +438,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   SizeToContents();
   PreferredSizeChanged();
 
+  continue_button_->RequestFocus();
   SendAccessibilityEvent(GetWidget());
 }
 

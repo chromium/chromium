@@ -113,10 +113,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   const content::ClientIdData client_data_;
 
   // View containing the logo of the identity provider and the title.
-  views::View* header_view_;
+  views::View* header_view_{nullptr};
 
   // View containing the bubble title.
-  views::Label* title_label_;
+  views::Label* title_label_{nullptr};
+
+  // View containing the continue button.
+  views::View* continue_button_{nullptr};
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
