@@ -46,6 +46,7 @@ const char* kSensitivePolicies[] = {
     key::kChromeCleanupReportingEnabled,
     key::kCommandLineFlagSecurityWarningsEnabled,
     key::kDefaultSearchProviderEnabled,
+    key::kFirstPartySetsOverrides,
     key::kHomepageIsNewTabPage,
     key::kHomepageLocation,
     key::kMetricsReportingEnabled,
