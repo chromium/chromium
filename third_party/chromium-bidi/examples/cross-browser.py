@@ -25,6 +25,7 @@ import websockets
 
 
 logging.basicConfig(
+    format="%(message)s",
     level=logging.DEBUG,
 )
 
@@ -57,6 +58,10 @@ async def main():
     # const browser = await puppeteer.launch();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L29
     websocket = await get_websocket()
+    await run_and_wait_command({
+        "id": 0,
+        "method": "session.new",
+        "params": {}}, websocket)
 
     # Not implemented:
     # await browser.version());
@@ -71,7 +76,9 @@ async def main():
     command_result = await run_and_wait_command({
         "id": 1000,
         "method": "browsingContext.create",
-        "params": {}}, websocket)
+        "params": {
+            "type": "tab"
+        }}, websocket)
 
     # Part 2. Get the command result.
     # const page = ...
@@ -105,6 +112,9 @@ async def main():
     results_selector = {
         "type": "string",
         "value": ".titlelink"}
+
+    # `script.callFunction` is not implemented by Firefox yet:
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
 
     # Puppeteer:
     # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
