@@ -30,9 +30,9 @@ const char kDefaultSandboxedPageCSP[] =
 const char kDefaultExtensionPagesCSP[] =
     "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
-const char kDefaultSecureCSP[] =
+const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
+const char kMinimumMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
-
 }  // namespace
 
 using CSPInfoUnitTest = ManifestTest;
@@ -167,14 +167,14 @@ TEST_F(CSPInfoUnitTest, AllowWasmInMV3) {
   struct {
     const char* file_name;
     const char* csp;
-  } cases[] = {{"csp_dictionary_with_wasm.json",
-                "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
-               {"csp_dictionary_with_unsafe_wasm.json",
-                "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
-               {"csp_dictionary_empty_v3.json",
-                "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"},
-               {"csp_dictionary_valid_1.json", "default-src 'none'"},
-               {"csp_omitted_mv2.json", kDefaultExtensionPagesCSP}};
+  } cases[] = {
+      {"csp_dictionary_with_wasm.json",
+       "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
+      {"csp_dictionary_with_unsafe_wasm.json",
+       "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
+      {"csp_dictionary_empty_v3.json", "script-src 'self'; object-src 'self';"},
+      {"csp_dictionary_valid_1.json", "default-src 'none'"},
+      {"csp_omitted_mv2.json", kDefaultExtensionPagesCSP}};
 
   for (const auto& test_case : cases) {
     SCOPED_TRACE(base::StringPrintf("Testing %s.", test_case.file_name));
@@ -245,7 +245,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     const std::string* isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(kDefaultSecureCSP, *isolated_world_csp);
+    EXPECT_EQ(kMinimumMV3CSP, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));

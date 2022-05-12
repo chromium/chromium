@@ -2790,7 +2790,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
   const char* kDefaultCSP = GetParam() == ManifestVersion::kTwo
                                 ? "script-src 'self' blob: filesystem:; "
                                   "object-src 'self' blob: filesystem:;"
-                                : "script-src 'self' 'wasm-unsafe-eval'; "
+                                : "script-src 'self'; "
                                   "object-src 'self';";
   ExtensionTestMessageListener csp_modified_listener(kDefaultCSP, false);
   csp_modified_listener.set_extension_id(extension_id);

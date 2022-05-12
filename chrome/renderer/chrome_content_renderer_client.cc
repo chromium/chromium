@@ -1726,10 +1726,10 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
   if (!extension)
     return;
 
-  // Append a default CSP to ensure the extension can't relax the default
+  // Append a minimum CSP to ensure the extension can't relax the default
   // applied CSP through means like Service Worker.
   const std::string* default_csp =
-      extensions::CSPInfo::GetDefaultCSPToAppend(*extension, gurl.path());
+      extensions::CSPInfo::GetMinimumCSPToAppend(*extension, gurl.path());
   if (!default_csp)
     return;
 

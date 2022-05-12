@@ -36,9 +36,9 @@ struct CSPInfo : public Extension::ManifestData {
   // shouldn't be returned for those cases.
   static const std::string& GetExtensionPagesCSP(const Extension* extension);
 
-  // Returns the default CSP (if any) to append for the `extension`'s resource
+  // Returns the minimum CSP (if any) to append for the `extension`'s resource
   // at the given `relative_path`.
-  static const std::string* GetDefaultCSPToAppend(
+  static const std::string* GetMinimumCSPToAppend(
       const Extension& extension,
       const std::string& relative_path);
 

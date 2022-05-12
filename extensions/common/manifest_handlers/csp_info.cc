@@ -38,8 +38,11 @@ const char kDefaultSandboxedPageContentSecurityPolicy[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 
-// The default CSP to be used in order to prevent remote scripts.
-static const char kDefaultMV3CSP[] =
+// The default CSP to be used if no CSP provided.
+static const char kDefaultMV3CSP[] = "script-src 'self'; object-src 'self';";
+
+// The minimum CSP to be used in order to prevent remote scripts.
+static const char kMinimumMV3CSP[] =
     "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';";
 
 #define PLATFORM_APP_LOCAL_CSP_SOURCES "'self' blob: filesystem: data:"
@@ -120,7 +123,7 @@ const std::string& CSPInfo::GetExtensionPagesCSP(const Extension* extension) {
 }
 
 // static
-const std::string* CSPInfo::GetDefaultCSPToAppend(
+const std::string* CSPInfo::GetMinimumCSPToAppend(
     const Extension& extension,
     const std::string& relative_path) {
   if (!extension.is_extension())
@@ -135,11 +138,12 @@ const std::string* CSPInfo::GetDefaultCSPToAppend(
   if (extension.manifest_version() <= 2)
     return &GetExtensionPagesCSP(&extension);
 
-  // For manifest V3 extensions, append the default secure CSP. This
+  // For manifest V3 extensions, append the minimum secure CSP. This
   // additionally helps protect against bugs in our CSP parsing code which may
   // cause the parsed CSP to not be as strong as the default one. For example,
   // see crbug.com/1042963.
-  static const base::NoDestructor<std::string> default_csp(kDefaultMV3CSP);
+
+  static const base::NoDestructor<std::string> default_csp(kMinimumMV3CSP);
   return default_csp.get();
 }
 
@@ -149,7 +153,7 @@ const std::string* CSPInfo::GetIsolatedWorldCSP(const Extension& extension) {
     // The isolated world will use its own CSP which blocks remotely hosted
     // code.
     static const base::NoDestructor<std::string> default_isolated_world_csp(
-        kDefaultMV3CSP);
+        kMinimumMV3CSP);
     return default_isolated_world_csp.get();
   }
 
