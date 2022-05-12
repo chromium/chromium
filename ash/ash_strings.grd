@@ -4504,7 +4504,7 @@ Here are some things you can try to get started.
         Continue where you left off
       </message>
       <message name="IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION" desc="Context menu label to hide the launcher continue section (which defaults to being shown).">
-        Hide continue suggestions
+        Hide all suggestions
       </message>
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT" desc="Text for the privacy notice of the continue section of the launcher in clamshell mode, which shows recent files and apps that the user can continue using.">
         You’ll see recommendations so you can continue where you left off. You can right-click to remove recommendations.
