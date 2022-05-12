@@ -249,6 +249,13 @@ stage_install_common() {
     install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
 
+  # QT shim
+  if [ -f "${OUTPUTDIR}/libqt5_shim.so" ]; then
+    file="libqt5_shim.so"
+    strippedfile="${OUTPUTDIR}/${file}.stripped"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+  fi
+
   # libc++
   if [ -f "${OUTPUTDIR}/lib/libc++.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/lib/"

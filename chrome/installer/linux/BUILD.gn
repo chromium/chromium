@@ -17,6 +17,7 @@ import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/gl/features.gni")
+import("//ui/qt/qt.gni")
 
 if (bundle_widevine_cdm) {
   import("//media/cdm/library_cdm/cdm_paths.gni")
@@ -100,6 +101,12 @@ packaging_files = packaging_files_binaries + [
                     "$root_out_dir/MEIPreload/manifest.json",
                     "$root_out_dir/MEIPreload/preloaded_data.pb",
                   ]
+if (use_qt) {
+  # Even though this is a shared library, add it to `packaging_files` instead of
+  # `packaging_files_shlibs` to skip the dependency check.  This is intentional
+  # to prevent a hard dependency on QT for the package.
+  packaging_files += [ "$root_out_dir/libqt5_shim.so" ]
+}
 
 action_foreach("calculate_deb_dependencies") {
   deps = [ ":installer_deps" ]
@@ -231,6 +238,13 @@ if (build_with_internal_optimization_guide) {
     deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+  }
+}
+
+if (use_qt) {
+  strip_binary("strip_qt5_shim") {
+    binary_input = "$root_out_dir/libqt5_shim.so"
+    deps = [ "//ui/qt:qt5_shim" ]
   }
 }
 
@@ -424,6 +438,12 @@ group("installer_deps") {
     public_deps += [
       ":strip_optimization_guide",
       "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
+  if (use_qt) {
+    public_deps += [
+      ":strip_qt5_shim",
+      "//ui/qt:qt5_shim",
     ]
   }
 }
