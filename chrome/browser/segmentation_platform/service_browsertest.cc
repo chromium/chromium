@@ -4,6 +4,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -131,7 +132,13 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, PRE_RunDefaultModel) {
                                /*result_expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
+// TODO(crbug.com/1324887): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RunDefaultModel DISABLED_RunDefaultModel
+#else
+#define MAYBE_RunDefaultModel RunDefaultModel
+#endif
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, MAYBE_RunDefaultModel) {
   WaitForPlatformInit();
   // Result is available from previous session's selection.
   ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
@@ -166,7 +173,8 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
 // incognito mode. This disables the segmentation platform data collection.
 // TODO(ssid): Fix this test for CrOS by waiting for signin profile to be
 // deleted at startup before adding metrics.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1324887): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #define MAYBE_PRE_RunUkmBasedModel DISABLED_PRE_RunUkmBasedModel
 #define MAYBE_RunUkmBasedModel DISABLED_RunUkmBasedModel
 #else
