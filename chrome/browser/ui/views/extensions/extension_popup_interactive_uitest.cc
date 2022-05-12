@@ -146,11 +146,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // bubble.
   const bool is_stacked_above = views::test::WidgetTest::IsWindowStackedAbove(
       extension_popup->GetWidget(), permissions_api.GetPromptWindow());
-#if BUILDFLAG(IS_MAC)
-  // This doesn't yet work on mac.
-  // TODO(https://crbug.com/1300006): Investigate and fix.
-  EXPECT_TRUE(is_stacked_above);
-#else
   EXPECT_FALSE(is_stacked_above);
-#endif
 }
