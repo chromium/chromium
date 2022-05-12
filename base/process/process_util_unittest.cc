@@ -977,34 +977,21 @@ const int kChildPipe = 20;  // FD # for write end of pipe in child process.
 
 #if BUILDFLAG(IS_APPLE)
 
-// <http://opensource.apple.com/source/xnu/xnu-2422.1.72/bsd/sys/guarded.h>
-#if !defined(_GUARDID_T)
-#define _GUARDID_T
-typedef __uint64_t guardid_t;
-#endif  // _GUARDID_T
+// Declarations from 12.3 xnu-8020.101.4/bsd/sys/guarded.h (not in the SDK).
+extern "C" {
 
-// From .../MacOSX10.9.sdk/usr/include/sys/syscall.h
-#if !defined(SYS_change_fdguard_np)
-#define SYS_change_fdguard_np 444
-#endif
+using guardid_t = uint64_t;
 
-// <http://opensource.apple.com/source/xnu/xnu-2422.1.72/bsd/sys/guarded.h>
-#if !defined(GUARD_DUP)
 #define GUARD_DUP (1u << 1)
-#endif
 
-// <http://opensource.apple.com/source/xnu/xnu-2422.1.72/bsd/kern/kern_guarded.c?txt>
-//
-// Atomically replaces |guard|/|guardflags| with |nguard|/|nguardflags| on |fd|.
 int change_fdguard_np(int fd,
                       const guardid_t* guard,
-                      u_int guardflags,
+                      unsigned int guardflags,
                       const guardid_t* nguard,
-                      u_int nguardflags,
-                      int* fdflagsp) {
-  return syscall(SYS_change_fdguard_np, fd, guard, guardflags, nguard,
-                 nguardflags, fdflagsp);
-}
+                      unsigned int nguardflags,
+                      int* fdflagsp);
+
+}  // extern "C"
 
 // Attempt to set a file-descriptor guard on |fd|.  In case of success, remove
 // it and return |true| to indicate that it can be guarded.  Returning |false|
