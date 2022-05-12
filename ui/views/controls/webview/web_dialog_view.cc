@@ -47,8 +47,8 @@ ObservableWebView::~ObservableWebView() = default;
 void ObservableWebView::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Only listen to the main frame.
-  if (render_frame_host->GetParent())
+  // Only listen to the primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   if (delegate_)
