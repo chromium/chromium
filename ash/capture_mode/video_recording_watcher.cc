@@ -240,8 +240,10 @@ VideoRecordingWatcher::VideoRecordingWatcher(
         std::make_unique<RecordingOverlayController>(window_being_recorded_,
                                                      GetOverlayWidgetBounds());
   }
-  if (features::IsProjectorEnabled())
-    ProjectorControllerImpl::Get()->OnRecordingStarted(is_in_projector_mode_);
+  if (features::IsProjectorEnabled()) {
+    ProjectorControllerImpl::Get()->OnRecordingStarted(current_root_,
+                                                       is_in_projector_mode_);
+  }
 }
 
 VideoRecordingWatcher::~VideoRecordingWatcher() {
@@ -405,6 +407,9 @@ void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(
   root_observer_ =
       std::make_unique<RecordedWindowRootObserver>(current_root_, this);
   controller_->OnRecordedWindowChangingRoot(window_being_recorded_, new_root);
+
+  if (is_in_projector_mode_)
+    ProjectorControllerImpl::Get()->OnRecordedWindowChangingRoot(new_root);
 }
 
 void VideoRecordingWatcher::OnPaintLayer(const ui::PaintContext& context) {

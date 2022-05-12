@@ -287,13 +287,14 @@ void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
   ui_controller_->OnCanvasInitialized(success);
 }
 
-void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
+void ProjectorControllerImpl::OnRecordingStarted(aura::Window* current_root,
+                                                 bool is_in_projector_mode) {
   if (!is_in_projector_mode) {
     OnNewScreencastPreconditionChanged();
     return;
   }
   if (ui_controller_)
-    ui_controller_->ShowToolbar();
+    ui_controller_->ShowToolbar(current_root);
 
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
@@ -314,6 +315,13 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
   MaybeStopSpeechRecognition();
 
   RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingEnded);
+}
+
+void ProjectorControllerImpl::OnRecordedWindowChangingRoot(
+    aura::Window* new_root) {
+  DCHECK(projector_session_->is_active());
+
+  ui_controller_->OnRecordedWindowChangingRoot(new_root);
 }
 
 void ProjectorControllerImpl::OnDlpRestrictionCheckedAtVideoEnd(

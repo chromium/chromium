@@ -9,7 +9,12 @@
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ash {
 
@@ -32,8 +37,8 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
   ~ProjectorUiController() override;
 
-  // Show Projector toolbar. Virtual for testing.
-  virtual void ShowToolbar();
+  // Show Projector toolbar for `current_root`. Virtual for testing.
+  virtual void ShowToolbar(aura::Window* current_root);
   // Close Projector toolbar. Virtual for testing.
   virtual void CloseToolbar();
   // Invoked when marker button is pressed. Virtual for testing.
@@ -45,6 +50,8 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   // Invoked when the canvas has either succeeded or failed to initialize.
   void OnCanvasInitialized(bool success);
 
+  void OnRecordedWindowChangingRoot(aura::Window* new_root);
+
   bool is_annotator_enabled() { return annotator_enabled_; }
 
  private:
@@ -54,6 +61,11 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   ProjectorMarkerColor GetMarkerColorForMetrics(SkColor color);
 
   bool annotator_enabled_ = false;
+
+  // The current root window in which the video recording is happening.
+  aura::Window* current_root_ = nullptr;
+
+  absl::optional<bool> should_enable_annotation_tray_button_;
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};

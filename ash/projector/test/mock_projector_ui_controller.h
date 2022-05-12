@@ -27,7 +27,7 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
   ~MockProjectorUiController() override;
 
   // ProjectorUiController:
-  MOCK_METHOD0(ShowToolbar, void());
+  MOCK_METHOD1(ShowToolbar, void(aura::Window*));
   MOCK_METHOD0(CloseToolbar, void());
   MOCK_METHOD0(OnMarkerPressed, void());
   MOCK_METHOD1(SetAnnotatorTool, void(const AnnotatorTool&));

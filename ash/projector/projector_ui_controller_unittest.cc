@@ -89,7 +89,7 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
-  controller_->ShowToolbar();
+  controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
   controller_->CloseToolbar();
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
@@ -101,7 +101,7 @@ TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
-  controller_->ShowToolbar();
+  controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(projector_annotation_tray->visible_preferred());
 
   controller_->OnMarkerPressed();
@@ -233,6 +233,7 @@ TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
+  controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
 
   EXPECT_FALSE(projector_annotation_tray->GetEnabled());
 

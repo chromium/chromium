@@ -19,6 +19,7 @@
 #include "ash/projector/test/mock_projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -245,9 +246,10 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
   // Verify that |CloseToolbar| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
+  auto* root = Shell::GetPrimaryRootWindow();
+  EXPECT_CALL(*mock_ui_controller_, ShowToolbar(root)).Times(1);
 
-  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  controller_->OnRecordingStarted(root, /*is_in_projector_mode=*/true);
   histogram_tester_.ExpectUniqueSample(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
@@ -273,7 +275,8 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kSessionStarted, /*count=*/1);
 
-  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  controller_->OnRecordingStarted(Shell::GetPrimaryRootWindow(),
+                                  /*is_in_projector_mode=*/true);
   histogram_tester_.ExpectBucketCount(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
@@ -343,7 +346,8 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kSessionStarted, /*count=*/1);
 
-  controller_->OnRecordingStarted(/*is_in_projector_mode=*/true);
+  controller_->OnRecordingStarted(Shell::GetPrimaryRootWindow(),
+                                  /*is_in_projector_mode=*/true);
   histogram_tester_.ExpectBucketCount(
       kProjectorCreationFlowHistogramName,
       /*sample=*/ProjectorCreationFlow::kRecordingStarted, /*count=*/1);
