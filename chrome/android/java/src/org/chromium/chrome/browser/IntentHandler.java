@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
-
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
@@ -27,7 +25,6 @@ import android.util.Pair;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -38,7 +35,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
@@ -50,7 +46,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
-import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -73,6 +68,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 /**
  * Handles all browser-related Intents.
@@ -209,13 +206,6 @@ public class IntentHandler {
     public static final String EXTRA_PREFER_NEW = "com.android.chrome.prefer_new";
 
     /**
-     * Interested entities within Chrome relying on launching Incognito CCT should set this in their
-     *{@link CustomTabIntent} in order to identify themselves for metric purposes.
-     **/
-    public static final String EXTRA_INCOGNITO_CCT_CALLER_ID =
-            "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
-
-    /**
      * A boolean to indicate whether the ChromeTabbedActivity task was started by this Intent. Only
      * used for external View intents.
      */
@@ -291,9 +281,6 @@ public class IntentHandler {
     public @interface IncognitoCCTCallerId {
         int OTHER_APPS = 0;
         int GOOGLE_APPS = 1;
-        // This should not be used, it's a fallback for Chrome features that didn't identify
-        // themselves. Please see {@link
-        // IncognitoCustomTabIntentDataProvider#addIncognitoExtrasForChromeFeatures}
         int OTHER_CHROME_FEATURES = 2;
 
         // Chrome Features
@@ -572,26 +559,6 @@ public class IntentHandler {
      * @return The URL string or null if none should be used.
      */
     private static String getReferrerUrl(Intent intent) {
-        Uri referrerExtra = getReferrer(intent);
-        CustomTabsSessionToken customTabsSession =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        if (referrerExtra == null && customTabsSession != null) {
-            Referrer referrer = CustomTabsConnection.getInstance().getDefaultReferrerForSession(
-                    customTabsSession);
-            if (referrer != null) {
-                referrerExtra = Uri.parse(referrer.getUrl());
-            }
-        }
-
-        if (referrerExtra == null) return null;
-        if (isValidReferrerHeader(referrerExtra)) {
-            return referrerExtra.toString();
-        } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                || ChromeApplicationImpl.getComponent()
-                           .resolveSessionDataHolder()
-                           .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
-            return referrerExtra.toString();
-        }
         return null;
     }
 
@@ -830,8 +797,7 @@ public class IntentHandler {
         StringBuilder extraHeaders = new StringBuilder();
 
         boolean fromChrome = IntentHandler.wasIntentSenderChrome(intent);
-        boolean shouldAllowNonSafelistedHeaders =
-                CustomTabsConnection.getInstance().isFirstPartyOriginForIntent(intent);
+        boolean shouldAllowNonSafelistedHeaders = true;
 
         for (String key : bundleExtraHeaders.keySet()) {
             String value = bundleExtraHeaders.getString(key);
@@ -1218,7 +1184,6 @@ public class IntentHandler {
     private static String extractUrlFromIntent(Intent intent) {
         if (intent == null) return null;
         String url = getUrlFromVoiceSearchResult(intent);
-        if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = getUrlForWebapp(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;
@@ -1226,19 +1191,8 @@ public class IntentHandler {
         return TextUtils.isEmpty(url) ? null : url;
     }
 
-    private static String getUrlForCustomTab(Intent intent) {
-        if (intent == null || intent.getData() == null) return null;
-        Uri data = intent.getData();
-        return TextUtils.equals(data.getScheme(), UrlConstants.CUSTOM_TAB_SCHEME)
-                ? data.getQuery() : null;
-    }
-
     private static String getUrlForWebapp(Intent intent) {
-        if (intent == null || intent.getData() == null) return null;
-        Uri data = intent.getData();
-        return TextUtils.equals(data.getScheme(), WebappActivity.WEBAPP_SCHEME)
-                ? IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_URL)
-                : null;
+        return null;
     }
 
     @VisibleForTesting

@@ -434,25 +434,6 @@ by a child template that "extends" this file.
             </intent-filter>
         </receiver>
 
-        <!-- Custom Tabs -->
-        <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
-            android:theme="@style/Theme.Chromium.Activity"
-            android:exported="false"
-            {{ self.chrome_activity_common() }}
-            {{ self.supports_video_persistence() }}
-        >
-            {{ self.supports_vr() }}
-            {{ self.extra_web_rendering_activity_definitions() }}
-        </activity>
-        <activity android:name="org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity"
-                  android:theme="@style/Theme.Chromium.Activity.FakeTranslucent"
-                  android:exported="false"
-            {{ self.chrome_activity_common() }}
-            {{ self.supports_video_persistence() }}
-            >
-            {{ self.supports_vr() }}
-            {{ self.extra_web_rendering_activity_definitions() }}
-        </activity>
         <!-- ChromeTabbedActivity related -->
         <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
             android:theme="@style/Theme.Chromium.TabbedMode"
@@ -595,37 +576,7 @@ by a child template that "extends" this file.
         <activity-alias android:name="com.google.android.apps.chrome.webapps.WebappManager"
             android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
         </activity-alias>
-        <activity android:name="org.chromium.chrome.browser.webapps.WebappActivity"
-            android:theme="@style/Theme.Chromium.Webapp"
-            android:label="@string/webapp_activity_title"
-            android:launchMode="singleTop"
-            android:documentLaunchMode="intoExisting"
-            android:exported="false"
-            android:persistableMode="persistNever"
-            {{ self.supports_video_persistence() }}
-            {{ self.chrome_activity_common() }}
-        >
-            {{ self.supports_vr() }}
-            {{ self.extra_web_rendering_activity_definitions() }}
-        </activity>
-        <activity-alias android:name="com.google.android.apps.chrome.webapps.WebappActivity"
-            android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity"
-            android:label="@string/webapp_activity_title"
-            {{ self.supports_video_persistence() }} >
-        </activity-alias>
         <!-- Activities for WebAPKs. -->
-        <activity android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"
-            android:theme="@style/Theme.Chromium.Webapp.Translucent"
-            android:label="@string/webapp_activity_title"
-            android:exported="false"
-            android:persistableMode="persistNever"
-            {{ self.supports_video_persistence() }}
-            {{ self.chrome_activity_common() }}
-        >
-            {{ self.supports_vr() }}
-            {{ self.extra_web_rendering_activity_definitions() }}
-        </activity>
-
         <activity android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="true">
@@ -935,21 +886,6 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
             android:exported="true"
             tools:ignore="ExportedService" />
-        <service android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-              <action android:name="android.support.customtabs.action.CustomTabsService" />
-              <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
-              <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
-              <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>
-              <category android:name="androidx.browser.trusted.category.LaunchSiteSettings" />
-              <category android:name="androidx.browser.trusted.category.LaunchWebApkSiteSettings"/>
-              <category android:name="androidx.browser.trusted.category.TrustedWebActivities"/>
-              <category android:name="androidx.browser.trusted.category.TrustedWebActivitySplashScreensV1"/>
-              <category android:name="androidx.browser.trusted.category.WebShareTargetV2"/>
-            </intent-filter>
-        </service>
         <service android:name="androidx.browser.customtabs.PostMessageService" />
 
         <!-- Crash reporting services. -->
@@ -1022,9 +958,6 @@ by a child template that "extends" this file.
             android:exported="false"/>
 
         <receiver android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
-            android:exported="false"/>
-
-        <receiver android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver"
             android:exported="false"/>
 
         <receiver android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"

@@ -824,7 +824,6 @@ if (is_android) {
     ]
 
     sources = [
-      "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/autofill/autofill_uitest_util.cc",

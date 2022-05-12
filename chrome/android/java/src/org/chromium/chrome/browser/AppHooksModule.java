@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -20,11 +19,6 @@ import dagger.Provides;
 public class AppHooksModule {
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory { AppHooksModule create(); }
-
-    @Provides
-    public static CustomTabsConnection provideCustomTabsConnection() {
-        return CustomTabsConnection.getInstance();
-    }
 
     @Provides
     public ExternalAuthUtils provideExternalAuthUtils() {

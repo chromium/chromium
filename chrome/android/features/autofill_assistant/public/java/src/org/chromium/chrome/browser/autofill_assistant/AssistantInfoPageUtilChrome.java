@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 
 /**
@@ -15,6 +14,5 @@ import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 public class AssistantInfoPageUtilChrome implements AssistantInfoPageUtil {
     @Override
     public void showInfoPage(Context context, String url) {
-        CustomTabActivity.showInfoPage(context, url);
     }
 }

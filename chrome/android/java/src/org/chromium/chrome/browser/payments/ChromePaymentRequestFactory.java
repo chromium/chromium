@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.app.Activity;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.BrowserPaymentRequest;
@@ -111,15 +107,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         @Override
         @Nullable
         public String getTwaPackageName() {
-            WebContents liveWebContents =
-                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
-            if (liveWebContents == null) return null;
-            Activity activity = ActivityUtils.getActivityFromWebContents(liveWebContents);
-            if (!(activity instanceof CustomTabActivity)) return null;
-
-            CustomTabActivity customTabActivity = ((CustomTabActivity) activity);
-            if (!customTabActivity.isInTwaMode()) return null;
-            return customTabActivity.getTwaPackage();
+            return null;
         }
 
         @VisibleForTesting

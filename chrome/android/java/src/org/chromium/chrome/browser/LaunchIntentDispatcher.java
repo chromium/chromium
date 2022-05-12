@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,23 +17,15 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.browserservices.SessionDataHolder;
-import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -102,18 +93,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         return new LaunchIntentDispatcher(currentActivity, intent).dispatchToTabbedActivity();
     }
 
-    /**
-     * Dispatches the intent to proper tabbed activity.
-     * This method is similar to {@link #dispatch()}, but only handles intents that result in
-     * starting a custom tab activity.
-     */
-    public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
-        LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
-        if (!isCustomTabIntent(dispatcher.mIntent)) return Action.CONTINUE;
-        dispatcher.launchCustomTabActivity();
-        return Action.FINISH_ACTIVITY;
-    }
-
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
         mIntent = IntentUtils.sanitizeIntent(intent);
@@ -139,8 +118,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 mActivity.getApplicationContext());
 
-        boolean isCustomTabIntent = isCustomTabIntent(mIntent);
-
         int tabId = IntentHandler.getBringTabToFrontId(mIntent);
         boolean incognito =
                 mIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
@@ -164,19 +141,13 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
 
         // Check if we should launch an Instant App to handle the intent.
         if (InstantAppsHandler.getInstance().handleIncomingIntent(
-                    mActivity, mIntent, isCustomTabIntent, false)) {
+                    mActivity, mIntent, false, false)) {
             return Action.FINISH_ACTIVITY;
         }
 
         // Check if we should push the user through First Run.
         if (FirstRunFlowSequencer.launch(mActivity, mIntent, false /* requiresBroadcast */,
                     false /* preferLightweightFre */)) {
-            return Action.FINISH_ACTIVITY;
-        }
-
-        // Check if we should launch a Custom Tab.
-        if (isCustomTabIntent) {
-            launchCustomTabActivity();
             return Action.FINISH_ACTIVITY;
         }
 
@@ -261,106 +232,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             return false;
         }
         return IntentHandler.getUrlFromIntent(intent) != null;
-    }
-
-    /**
-     * Creates an Intent that can be used to launch a {@link CustomTabActivity}.
-     */
-    public static Intent createCustomTabActivityIntent(Context context, Intent intent) {
-        // Use the copy constructor to carry over the myriad of extras.
-        Uri uri = Uri.parse(IntentHandler.getUrlFromIntent(intent));
-
-        Intent newIntent = new Intent(intent);
-        newIntent.setAction(Intent.ACTION_VIEW);
-        newIntent.setData(uri);
-        newIntent.setClassName(context, CustomTabActivity.class.getName());
-
-        // Since configureIntentForResizableCustomTab() might change the componenet/class
-        // associated with the passed intent, it needs to be called after #setClassName(context,
-        // CustomTabActivity.class.getName());
-        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(context, newIntent);
-
-        if (clearTopIntentsForCustomTabsEnabled(intent)) {
-            // Ensure the new intent is routed into the instance of CustomTabActivity in this task.
-            // If the existing CustomTabActivity can't handle the intent, it will re-launch
-            // the intent without these flags.
-            // If you change this flow, please make sure it works correctly with
-            // - "Don't keep activities",
-            // - Multiple clients hosting CCTs,
-            // - Multiwindow mode.
-            Class<? extends Activity> handlerClass =
-                    getSessionDataHolder().getActiveHandlerClassInCurrentTask(intent, context);
-            if (handlerClass != null) {
-                newIntent.setClassName(context, handlerClass.getName());
-                newIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            }
-        }
-
-        // If |uri| is a content:// URI, we want to propagate the URI permissions. This can't be
-        // achieved by simply adding the FLAG_GRANT_READ_URI_PERMISSION to the Intent, since the
-        // data URI on the Intent isn't |uri|, it just has |uri| as a query parameter.
-        if (uri != null && UrlConstants.CONTENT_SCHEME.equals(uri.getScheme())) {
-            context.grantUriPermission(
-                    context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.OPEN_CUSTOM_TABS_IN_NEW_TASK)) {
-            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-
-        // Handle activity started in a new task.
-        // See https://developer.android.com/guide/components/activities/tasks-and-back-stack
-        if ((newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0
-                || (newIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_DOCUMENT) != 0) {
-            // If a CCT intent triggers First Run, then NEW_TASK will be automatically applied. As
-            // part of that, it will inherit the EXCLUDE_FROM_RECENTS bit from
-            // ChromeLauncherActivity, so explicitly remove it to ensure the CCT does not get lost
-            // in recents.
-            newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-
-            // Android will try to find and reuse an existing CCT activity in the background. Use
-            // this flag to always start a new one instead.
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            // Force a new document to ensure the proper task/stack creation.
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        }
-
-        return newIntent;
-    }
-
-    private static SessionDataHolder getSessionDataHolder() {
-        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
-    }
-
-    /**
-     * Handles launching a {@link CustomTabActivity}, which will sit on top of a client's activity
-     * in the same task.
-     */
-    private void launchCustomTabActivity() {
-        CustomTabsConnection.getInstance().onHandledIntent(
-                CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
-        if (!clearTopIntentsForCustomTabsEnabled(mIntent)) {
-            // The old way of delivering intents relies on calling the activity directly via a
-            // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an
-            // intent brings the task to foreground. The condition above is a temporary safety net.
-            boolean handled = getSessionDataHolder().handleIntent(mIntent);
-            if (handled) return;
-        }
-        maybePrefetchDnsInBackground();
-
-        // Create and fire a launch intent.
-        Intent launchIntent = createCustomTabActivityIntent(mActivity, mIntent);
-
-        // Allow disk writes during startActivity() to avoid strict mode violations on some
-        // Samsung devices, see https://crbug.com/796548.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
-                return;
-            }
-
-            mActivity.startActivity(launchIntent, null);
-        }
     }
 
     /**

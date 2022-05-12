@@ -32,20 +32,6 @@ import java.util.List;
  * Base class for model classes which parse incoming intent for customization data.
  */
 public abstract class BrowserServicesIntentDataProvider {
-    // The type of UI for Custom Tab to use.
-    @IntDef({CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE,
-            CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP,
-            CustomTabsUiType.OFFLINE_PAGE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CustomTabsUiType {
-        int DEFAULT = 0;
-        int MEDIA_VIEWER = 1;
-        int INFO_PAGE = 2;
-        int READER_MODE = 3;
-        int MINIMAL_UI_WEBAPP = 4;
-        int OFFLINE_PAGE = 5;
-        int READ_LATER = 6;
-    }
 
     // The type of Disclosure for TWAs to use.
     @IntDef({TwaDisclosureUi.DEFAULT, TwaDisclosureUi.V1_INFOBAR,
@@ -250,11 +236,6 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
-    @CustomTabsUiType
-    public int getUiType() {
-        return CustomTabsUiType.DEFAULT;
-    }
-
     /**
      * @return URL that should be loaded in place of the URL in {@link Intent#getData()}.
      */
@@ -442,20 +423,6 @@ public abstract class BrowserServicesIntentDataProvider {
             if (id == params.getId()) return params;
         }
         return null;
-    }
-
-    /**
-     * @return See {@link #getUiType()}.
-     */
-    public final boolean isMediaViewer() {
-        return getUiType() == CustomTabsUiType.MEDIA_VIEWER;
-    }
-
-    /**
-     * @return If the Activity is an info page.
-     */
-    public final boolean isInfoPage() {
-        return getUiType() == CustomTabsUiType.INFO_PAGE;
     }
 
     @TwaDisclosureUi

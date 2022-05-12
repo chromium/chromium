@@ -5,21 +5,14 @@
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.content_public.browser.NavigationHandle;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +25,6 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CurrentPageVerifier implements NativeInitObserver {
-    private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Verifier mDelegate;
 
@@ -61,35 +53,12 @@ public class CurrentPageVerifier implements NativeInitObserver {
         }
     }
 
-    /** A {@link TabObserver} that checks whether we are on a verified page on navigation. */
-    private final CustomTabTabObserver mVerifyOnPageLoadObserver = new CustomTabTabObserver() {
-        @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
-                    || navigation.isSameDocument()) {
-                return;
-            }
-            verify(navigation.getUrl().getSpec());
-        }
-
-        @Override
-        public void onObservingDifferentTab(@NonNull Tab tab) {
-            // When a link with target="_blank" is followed and the user navigates back, we
-            // don't get the onDidFinishNavigation event (because the original page wasn't
-            // navigated away from, it was only ever hidden). https://crbug.com/942088
-            verify(tab.getUrl().getSpec());
-        }
-    };
-
     @Inject
     public CurrentPageVerifier(ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabObserverRegistrar tabObserverRegistrar, CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider, Verifier delegate) {
-        mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
         mDelegate = delegate;
 
-        tabObserverRegistrar.registerActivityTabObserver(mVerifyOnPageLoadObserver);
         lifecycleDispatcher.register(this);
     }
 
@@ -137,13 +106,7 @@ public class CurrentPageVerifier implements NativeInitObserver {
      * in the cache.
      */
     private void onVerificationResult(String scope, boolean verified) {
-        Tab tab = mTabProvider.getTab();
 
-        boolean resultStillApplies =
-                tab != null && scope.equals(mDelegate.getVerifiedScope(tab.getUrl().getSpec()));
-        if (resultStillApplies) {
-            updateState(scope, verified ? VerificationStatus.SUCCESS : VerificationStatus.FAILURE);
-        }
     }
 
     private void updateState(String scope, @VerificationStatus int status) {

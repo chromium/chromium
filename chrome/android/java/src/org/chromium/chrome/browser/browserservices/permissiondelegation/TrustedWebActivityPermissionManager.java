@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -22,13 +16,10 @@ import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -42,6 +33,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Lazy;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
 
 /**
  * Handles the preserving and surfacing the permissions of TWA client apps for their associated
@@ -78,8 +73,7 @@ public class TrustedWebActivityPermissionManager {
     }
 
     boolean isRunningTwa() {
-        CustomTabActivity customTabActivity = getLastTrackedFocusedTwaCustomTabActivity();
-        return customTabActivity != null;
+        return false;
     }
 
     InstalledWebappBridge.Permission[] getPermissions(@ContentSettingsType int type) {
@@ -87,7 +81,6 @@ public class TrustedWebActivityPermissionManager {
             if (!isRunningTwa()) {
                 return new InstalledWebappBridge.Permission[0];
             }
-            recordLocationDelegationEnrollmentUma();
         }
 
         List<InstalledWebappBridge.Permission> permissions = new ArrayList<>();
@@ -288,25 +281,4 @@ public class TrustedWebActivityPermissionManager {
         return null;
     }
 
-    private void recordLocationDelegationEnrollmentUma() {
-        CustomTabActivity customTabActivity = getLastTrackedFocusedTwaCustomTabActivity();
-        if (customTabActivity == null) return;
-
-        String packageName = customTabActivity.getTwaPackage();
-
-        Tab activityTab = customTabActivity.getActivityTab();
-
-        mUmaRecorder.recordLocationDelegationEnrolled(
-                activityTab != null ? activityTab.getWebContents() : null,
-                hasAndroidLocationPermission(packageName) != null);
-    }
-
-    @Nullable
-    private CustomTabActivity getLastTrackedFocusedTwaCustomTabActivity() {
-        final Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof CustomTabActivity)) return null;
-        CustomTabActivity customTabActivity = (CustomTabActivity) activity;
-        if (customTabActivity.isInTwaMode()) return customTabActivity;
-        return null;
-    }
 }

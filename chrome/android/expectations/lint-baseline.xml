@@ -4876,17 +4876,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ParallelRequestStatus.NO_REQUEST, ParallelRequestStatus.SUCCESS, ParallelRequestStatus.FAILURE_NOT_INITIALIZED, ParallelRequestStatus.FAILURE_NOT_AUTHORIZED, ParallelRequestStatus.FAILURE_INVALID_URL, ParallelRequestStatus.FAILURE_INVALID_REFERRER, ParallelRequestStatus.FAILURE_INVALID_REFERRER_FOR_SESSION"
-        errorLine1="                ParallelRequestStatus.NUM_ENTRIES);"
-        errorLine2="                                      ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="902"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: CloseCause.USER_ACTION_CHROME, CloseCause.USER_ACTION_ANDROID, CloseCause.AUTOCLOSE"
         errorLine1="                &quot;CustomTabs.CloseCause&quot;, mCloseCause, CloseCause.COUNT);"
         errorLine2="                                                                 ~~~~~">
@@ -5543,17 +5532,6 @@
             file="../../chrome/browser/image_descriptions/android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialog.java"
             line="274"
             column="55"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: IncognitoCCTCallerId.OTHER_APPS, IncognitoCCTCallerId.GOOGLE_APPS, IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE, IncognitoCCTCallerId.READ_LATER"
-        errorLine1="                    &amp;&amp; incognitoCCTChromeClientId &lt; IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);"
-        errorLine2="                                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabIntentDataProvider.java"
-            line="179"
-            column="88"/>
     </issue>
 
     <issue
@@ -8474,17 +8452,6 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mConnection.cleanUpSession(sessionToken);"
-        errorLine2="                    ~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionServiceImpl.java"
-            line="104"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="                    mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName,"
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -9008,17 +8975,6 @@
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
             line="1832"
             column="29"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            WebappExtras webappExtras = customTabActivity.getIntentDataProvider().getWebappExtras();"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/webapps/WebappLocator.java"
-            line="45"
-            column="59"/>
     </issue>
 
     <issue

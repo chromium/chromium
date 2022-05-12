@@ -23,9 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackPressHelper;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -268,8 +266,6 @@ public class LightweightFirstRunActivity
      * @param url Resource id for the URL of the web page.
      */
     public void showInfoPage(@StringRes int url) {
-        CustomTabActivity.showInfoPage(
-                this, LocalizationUtils.substituteLocalePlaceholder(getString(url)));
     }
 
     private class LightWeightTosDialogMetricsNameProvider

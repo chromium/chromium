@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.browserservices;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -22,17 +20,10 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierStatics;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.net.NetError;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -58,7 +49,6 @@ public class QualityEnforcer {
 
     private final Activity mActivity;
     private final Verifier mVerifier;
-    private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSessionToken;
     private final ClientPackageNameProvider mClientPackageNameProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -67,114 +57,23 @@ public class QualityEnforcer {
     private boolean mFirstNavigationFinished;
     private boolean mOriginVerified;
 
-    private final CustomTabTabObserver mTabObserver = new CustomTabTabObserver() {
-        @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
-                    || navigation.isSameDocument()) {
-                return;
-            }
-
-            if (!mFirstNavigationFinished) {
-                String loadUrl = mIntentDataProvider.getUrlToLoad();
-                mFirstNavigationFinished = true;
-                mVerifier.verify(loadUrl).then((verified) -> {
-                    if (!verified) {
-                        trigger(tab, QualityEnforcementViolationType.DIGITAL_ASSET_LINK,
-                                mIntentDataProvider.getUrlToLoad(), 0);
-                    }
-                });
-            }
-
-            GURL newUrl = tab.getOriginalUrl();
-            if (isNavigationInScope(newUrl)) {
-                if (navigation.httpStatusCode() == 404) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR404, newUrl.getSpec(),
-                            navigation.httpStatusCode());
-                } else if (navigation.httpStatusCode() >= 500
-                        && navigation.httpStatusCode() <= 599) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR5XX, newUrl.getSpec(),
-                            navigation.httpStatusCode());
-                } else if (navigation.errorCode() == NetError.ERR_INTERNET_DISCONNECTED) {
-                    trigger(tab, QualityEnforcementViolationType.UNAVAILABLE_OFFLINE,
-                            newUrl.getSpec(), navigation.httpStatusCode());
-                }
-            }
-        }
-
-        @Override
-        public void onObservingDifferentTab(@NonNull Tab tab) {
-            // On tab switches, update the stored verification state.
-            isNavigationInScope(tab.getOriginalUrl());
-        }
-    };
-
     @Inject
     public QualityEnforcer(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabObserverRegistrar tabObserverRegistrar,
-            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection,
+            BrowserServicesIntentDataProvider intentDataProvider,
             Verifier verifier, ClientPackageNameProvider clientPackageNameProvider,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mActivity = activity;
         mVerifier = verifier;
         mSessionToken = intentDataProvider.getSession();
         mIntentDataProvider = intentDataProvider;
-        mConnection = connection;
         mClientPackageNameProvider = clientPackageNameProvider;
         mUmaRecorder = umaRecorder;
         // Initialize the value to true before the first navigation.
         mOriginVerified = true;
-        tabObserverRegistrar.registerActivityTabObserver(mTabObserver);
     }
 
     private void trigger(
             Tab tab, @QualityEnforcementViolationType int type, String url, int httpStatusCode) {
-        mUmaRecorder.recordQualityEnforcementViolation(tab.getWebContents(), type);
-
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING)) {
-            showErrorToast(getToastMessage(type, url, httpStatusCode));
-
-            if (tab.getWebContents() != null) {
-                String packageName = null;
-                String signature = null;
-                // Only get the package name and signature when violation type is
-                // DIGITAL_ASSET_LINK. This is because computing the fingerprint is expensive.
-                // We should figure out how to reuse the existing one in OriginVerifier.
-                if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK) {
-                    packageName = mClientPackageNameProvider.get();
-                    signature = OriginVerifierStatics.getCertificateSHA256FingerprintForPackage(
-                            packageName);
-                }
-
-                QualityEnforcerJni.get().reportDevtoolsIssue(tab.getWebContents().getMainFrame(),
-                        type, url, httpStatusCode, packageName, signature);
-            }
-        }
-
-        if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT)) {
-            return;
-        }
-
-        // Notify the client app.
-        Bundle args = new Bundle();
-        args.putString(KEY_CRASH_REASON, toTwaCrashMessage(type, url, httpStatusCode));
-        Bundle result = mConnection.sendExtraCallbackWithResult(mSessionToken, CRASH, args);
-        boolean success = result != null && result.getBoolean(KEY_SUCCESS);
-
-        // Do not crash on assetlink failures if the client app does not have installer package
-        // name.
-        if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK && !isDebugInstall()) {
-            return;
-        }
-
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
-                || success) {
-            mUmaRecorder.recordQualityEnforcementViolationCrashed(type);
-            mActivity.finish();
-        }
     }
 
     private void showErrorToast(String message) {

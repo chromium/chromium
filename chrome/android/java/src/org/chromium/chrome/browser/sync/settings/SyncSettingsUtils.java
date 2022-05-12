@@ -3,32 +3,22 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.sync.settings;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.provider.Browser;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -337,47 +327,6 @@ public class SyncSettingsUtils {
             runnable.run();
             return false;
         };
-    }
-
-    /**
-     * Opens web dashboard to specified url in a custom tab.
-     * @param activity The activity to use for starting the intent.
-     * @param url The url link to open in the custom tab.
-     */
-    private static void openCustomTabWithURL(Activity activity, String url) {
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(false).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-
-        Intent intent = LaunchIntentDispatcher.createCustomTabActivityIntent(
-                activity, customTabIntent.intent);
-        intent.setPackage(activity.getPackageName());
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, activity.getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        IntentUtils.safeStartActivity(activity, intent);
-    }
-
-    /**
-     * Opens web dashboard to manage sync in a custom tab.
-     * @param activity The activity to use for starting the intent.
-     */
-    public static void openSyncDashboard(Activity activity) {
-        // TODO(https://crbug.com/948103): Create a builder for custom tab intents.
-        openCustomTabWithURL(activity, DASHBOARD_URL);
-    }
-
-    /**
-     * Opens web dashboard to manage google account in a custom tab.
-     * @param activity The activity to use for starting the intent.
-     */
-    public static void openGoogleMyAccount(Activity activity) {
-        assert IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount(ConsentLevel.SYNC);
-        RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
-        openCustomTabWithURL(activity, MY_ACCOUNT_URL);
     }
 
     /**

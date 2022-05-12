@@ -8,7 +8,6 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -199,11 +197,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
@@ -252,16 +247,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             add(MAIN_LAUNCHER_ACTIVITY_NAME);
         }
     };
-
-    /**
-     * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
-     */
-    @IntDef({DispatchedBy.ON_CREATE, DispatchedBy.ON_NEW_INTENT})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface DispatchedBy {
-        int ON_CREATE = 1;
-        int ON_NEW_INTENT = 2;
-    }
 
     // Count histogram used to track number of tabs when we show the Overview on Return to Chrome.
     private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
@@ -483,80 +468,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // 'Move to other window' command from CTA2).
             return LaunchIntentDispatcher.dispatchToTabbedActivity(this, intent);
         }
-        @LaunchIntentDispatcher.Action
-        int action = maybeDispatchExplicitMainViewIntent(intent, DispatchedBy.ON_CREATE);
-        if (action != LaunchIntentDispatcher.Action.CONTINUE) {
-            return action;
-        }
         return super.maybeDispatchLaunchIntent(intent, savedInstanceState);
-    }
-
-    // We know of at least one app that explicitly specifies .Main activity in custom tab
-    // intents. The app shouldn't be doing that, but until it's updated, we need to support
-    // such use case.
-    //
-    // This method attempts to treat VIEW intents explicitly sent to .Main as custom tab
-    // intents, and dispatch them accordingly. If the intent was not dispatched, the method
-    // returns Action.CONTINUE.
-    //
-    // The method also updates the supplied boolean histogram with the dispatching result,
-    // but only if the intent is a VIEW intent sent explicitly to .Main activity.
-    private @LaunchIntentDispatcher.Action int maybeDispatchExplicitMainViewIntent(
-            Intent intent, @DispatchedBy int dispatchedBy) {
-        // The first check ensures that this is .Main activity alias (we can't check exactly, but
-        // this gets us sufficiently close).
-        if (getClass().equals(ChromeTabbedActivity.class)
-                && Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getComponent() != null
-                && MAIN_LAUNCHER_ACTIVITY_NAME.equals(intent.getComponent().getClassName())) {
-            @LaunchIntentDispatcher.Action
-            int action = LaunchIntentDispatcher.dispatchToCustomTabActivity(this, intent);
-            switch (dispatchedBy) {
-                case DispatchedBy.ON_CREATE:
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.MainActivity.ExplicitMainViewIntentDispatched.OnCreate",
-                            action != LaunchIntentDispatcher.Action.CONTINUE);
-                    break;
-                case DispatchedBy.ON_NEW_INTENT:
-
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.MainActivity.ExplicitMainViewIntentDispatched.OnNewIntent",
-                            action != LaunchIntentDispatcher.Action.CONTINUE);
-                    break;
-                default:
-                    assert false : "Unknown dispatchedBy value " + dispatchedBy;
-            }
-            if (action == LaunchIntentDispatcher.Action.CONTINUE) {
-                // Intent was not dispatched, record its source.
-                @IntentHandler.ExternalAppId
-                int externalId = IntentHandler.determineExternalIntentSource(intent);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.MainActivity.UndispatchedExplicitMainViewIntentSource", externalId,
-                        IntentHandler.ExternalAppId.NUM_ENTRIES);
-
-                // Crash if intent came from us, but only in debug builds and only if we weren't
-                // explicitly told not to. Hopefully we'll get enough reports to find where
-                // these intents come from.
-                if (externalId == IntentHandler.ExternalAppId.CHROME
-                        && 0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)
-                        && !CommandLine.getInstance().hasSwitch(
-                                ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS)) {
-                    String intentInfo = intent.toString();
-                    Bundle extras = intent.getExtras();
-                    if (extras != null) {
-                        intentInfo +=
-                                ", extras.keySet = [" + TextUtils.join(", ", extras.keySet()) + "]";
-                    }
-                    String message = String.format((Locale) null,
-                            "VIEW intent sent to .Main activity alias was not dispatched. PLEASE "
-                                    + "report the following info to crbug.com/789732: \"%s\". Use "
-                                    + "--%s flag to disable this check.",
-                            intentInfo, ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS);
-                    throw new IllegalStateException(message);
-                }
-            }
-            return action;
-        }
-        return LaunchIntentDispatcher.Action.CONTINUE;
     }
 
     @Override
@@ -867,20 +779,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onNewIntent(Intent intent) {
-        // The intent to use in maybeDispatchExplicitMainViewIntent(). We're explicitly
-        // adding NEW_TASK flag to make sure backing from CCT brings up the caller activity,
-        // and not Chrome
+
         Intent intentForDispatching = new Intent(intent);
         intentForDispatching.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        @LaunchIntentDispatcher.Action
-        int action = maybeDispatchExplicitMainViewIntent(
-                intentForDispatching, DispatchedBy.ON_NEW_INTENT);
-        if (action != LaunchIntentDispatcher.Action.CONTINUE) {
-            // Pressing back button in CCT should bring user to the caller activity.
-            moveTaskToBack(true);
-            // Intent was dispatched to CustomTabActivity, consume it.
-            return;
-        }
 
         mIntentHandlingTimeMs = SystemClock.uptimeMillis();
         super.onNewIntent(intent);

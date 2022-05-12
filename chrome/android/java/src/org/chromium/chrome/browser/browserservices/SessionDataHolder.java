@@ -15,12 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.Lazy;
 
 /**
  * Holds the currently active {@link SessionHandler} and redirects relevant intents
@@ -29,7 +25,6 @@ import dagger.Lazy;
  */
 @Singleton
 public class SessionDataHolder {
-    private final Lazy<CustomTabsConnection> mConnection;
     private final SparseArray<SessionData> mTaskIdToSessionData = new SparseArray<>();
 
     @Nullable
@@ -37,11 +32,6 @@ public class SessionDataHolder {
 
     @Nullable
     private Callback<CustomTabsSessionToken> mSessionDisconnectCallback;
-
-    @Inject
-    public SessionDataHolder(Lazy<CustomTabsConnection> connection) {
-        mConnection = connection;
-    }
 
     /**
      * Data associated with a {@link SessionHandler} necessary to pass new intents to it.
@@ -169,6 +159,5 @@ public class SessionDataHolder {
                 }
             }
         };
-        mConnection.get().setDisconnectCallback(mSessionDisconnectCallback);
     }
 }

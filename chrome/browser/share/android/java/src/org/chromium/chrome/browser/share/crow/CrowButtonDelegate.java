@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.share.crow;
 
-import android.app.Activity;
-
 import org.chromium.url.GURL;
 
 /**
@@ -19,17 +17,6 @@ public interface CrowButtonDelegate {
      * @param url URL for current tab where the app menu was launched.
      */
     boolean isEnabledForSite(GURL url);
-
-    /**
-     * Launches a custom tab to a server-provided interaction flow.
-     * Uses URL defined by the study config.
-     *
-     * @param currentActivity the current Activity for which the user activated an
-     *                        entry point.
-     * @param pageUrl URL for the page; passed in rather than derived from currentTab
-     *     or WebContents's lastCommittedURL as it was used to construct UI in the caller.
-     */
-    void launchCustomTab(Activity currentActivity, GURL pageUrl);
 
     /**
      * @return experiment-configured chip text.

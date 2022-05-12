@@ -144,7 +144,6 @@ if (is_android) {
     testonly = true
 
     sources = [
-      "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",

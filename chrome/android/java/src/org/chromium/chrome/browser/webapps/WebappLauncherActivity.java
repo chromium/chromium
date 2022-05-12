@@ -4,11 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
-import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_RELAUNCH;
-import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_SPLASH_PROVIDED_BY_WEBAPK;
-import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,13 +28,15 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 
-import java.lang.ref.WeakReference;
+import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
+import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_RELAUNCH;
+import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_SPLASH_PROVIDED_BY_WEBAPK;
+import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME;
 
 /**
  * Launches web apps.  This was separated from the ChromeLauncherActivity because the
@@ -107,10 +104,6 @@ public class WebappLauncherActivity extends Activity {
      * @return True if a live WebappActivity was found, false otherwise.
      */
     public static boolean bringWebappToFront(int tabId) {
-        WeakReference<BaseCustomTabActivity> customTabActivity =
-                WebappLocator.findWebappActivityWithTabId(tabId);
-        if (customTabActivity == null || customTabActivity.get() == null) return false;
-        customTabActivity.get().getWebContentsDelegate().activateContents();
         return true;
     }
 
@@ -121,16 +114,7 @@ public class WebappLauncherActivity extends Activity {
      */
     public static @Nullable BrowserServicesIntentDataProvider
     maybeSlowlyGenerateWebApkIntentDataProviderFromIntent(Intent fromIntent) {
-        // Check for intents targeted at WebappActivity, WebappActivity0-9,
-        // SameTaskWebApkActivity and WebappLauncherActivity.
-        String targetActivityClassName = fromIntent.getComponent().getClassName();
-        if (!targetActivityClassName.startsWith(WebappActivity.class.getName())
-                && !targetActivityClassName.equals(SameTaskWebApkActivity.class.getName())
-                && !targetActivityClassName.equals(WebappLauncherActivity.class.getName())) {
-            return null;
-        }
-
-        return WebApkIntentDataProviderFactory.create(fromIntent);
+        return null;
     }
 
     @Override
@@ -139,11 +123,6 @@ public class WebappLauncherActivity extends Activity {
 
         long createTimestamp = SystemClock.elapsedRealtime();
         Intent intent = getIntent();
-
-        if (WebappActionsNotificationManager.handleNotificationAction(intent)) {
-            finish();
-            return;
-        }
 
         ChromeWebApkHost.init();
 
@@ -308,10 +287,9 @@ public class WebappLauncherActivity extends Activity {
         return IntentHandler.wasIntentSenderChrome(intent);
     }
 
-    /** Returns the class name of the {@link WebappActivity} subclass to launch. */
+    /** Returns the class name of the {@link } subclass to launch. */
     private static String selectWebappActivitySubclass(@NonNull LaunchData launchData) {
-        return launchData.isSplashProvidedByWebApk ? SameTaskWebApkActivity.class.getName()
-                                                   : WebappActivity.class.getName();
+        return null;
     }
 
     /** Returns intent to launch for the web app. */
@@ -323,9 +301,6 @@ public class WebappLauncherActivity extends Activity {
         Intent launchIntent = new Intent();
         launchIntent.setClassName(ContextUtils.getApplicationContext(), launchActivityClassName);
         launchIntent.setAction(Intent.ACTION_VIEW);
-
-        // Firing intents with the exact same data should relaunch a particular Activity.
-        launchIntent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + launchData.id));
 
         IntentHandler.addTimestampToIntent(launchIntent, createTimestamp);
         if (launchData.isForWebApk) {

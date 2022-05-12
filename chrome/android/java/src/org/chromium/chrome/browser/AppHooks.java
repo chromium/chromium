@@ -15,7 +15,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
@@ -92,14 +91,6 @@ public abstract class AppHooks {
      */
     public AuthenticatorNavigationInterceptor createAuthenticatorNavigationInterceptor(Tab tab) {
         return null;
-    }
-
-    /**
-     * @return An instance of {@link CustomTabsConnection}. Should not be called
-     * outside of {@link CustomTabsConnection#getInstance()}.
-     */
-    public CustomTabsConnection createCustomTabsConnection() {
-        return new CustomTabsConnection();
     }
 
     /**

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Over
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
@@ -480,9 +479,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
-        boolean isCustomTab = toolbarLayout instanceof CustomTabToolbar;
-        ThemeColorProvider menuButtonThemeColorProvider =
-                isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
+        ThemeColorProvider menuButtonThemeColorProvider = browsingModeThemeColorProvider;
 
         Supplier<MenuButtonState> menuButtonStateSupplier =
                 () -> UpdateMenuItemHelper.getInstance().getUiState().buttonState;
@@ -535,47 +532,41 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
-        if (isCustomTab) {
-            CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
-            mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel,
-                    mActionModeController.getActionModeCallback(), modalDialogManagerSupplier);
-        } else {
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
-                    (url, transition, postDataType, postData, incognito)
-                    -> ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
-                            new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
-                            postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
-            ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
-                if (profileSupplier.hasValue()) {
-                    ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
-                } else {
-                    callback.onResult(null);
-                }
-            };
-            // clang-format off
-            LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
-                    mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
-                    PrivacyPreferencesManagerImpl.getInstance(), mLocationBarModel,
-                    mActionModeController.getActionModeCallback(),
-                    new WindowDelegate(mActivity.getWindow()), windowAndroid, mActivityTabProvider,
-                    modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
-                    activityLifecycleDispatcher, overrideUrlLoadingDelegate,
-                    new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
-                    null,
-                    null, IntentHandler::bringTabToFront,
-                    DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
-                    TabWindowManagerSingleton::getInstance,
-                    (url) -> false,
-                    VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker,
-                    exploreIconProvider,
-                    merchantTrustSignalsCoordinatorSupplier,
-                    mControlsVisibilityDelegate,
-                    ChromePureJavaExceptionReporter::postReportJavaException);
-            // clang-format on
-            toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
-            toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
-            mLocationBar = locationBarCoordinator;
-        }
+        OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
+                (url, transition, postDataType, postData, incognito)
+                        -> ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
+                        new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
+                        postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
+        ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
+            if (profileSupplier.hasValue()) {
+                ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
+            } else {
+                callback.onResult(null);
+            }
+        };
+        // clang-format off
+        LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
+                mActivity.findViewById(R.id.location_bar), toolbarLayout, profileSupplier,
+                PrivacyPreferencesManagerImpl.getInstance(), mLocationBarModel,
+                mActionModeController.getActionModeCallback(),
+                new WindowDelegate(mActivity.getWindow()), windowAndroid, mActivityTabProvider,
+                modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
+                activityLifecycleDispatcher, overrideUrlLoadingDelegate,
+                new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
+                null,
+                null, IntentHandler::bringTabToFront,
+                DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
+                TabWindowManagerSingleton::getInstance,
+                (url) -> false,
+                VoiceToolbarButtonController::isToolbarMicEnabled, jankTracker,
+                exploreIconProvider,
+                merchantTrustSignalsCoordinatorSupplier,
+                mControlsVisibilityDelegate,
+                ChromePureJavaExceptionReporter::postReportJavaException);
+        // clang-format on
+        toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
+        toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
+        mLocationBar = locationBarCoordinator;
 
         if (mLocationBar.getOmniboxStub() != null) {
             mLocationBar.getOmniboxStub().addUrlFocusChangeListener(this);

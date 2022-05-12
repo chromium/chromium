@@ -16,7 +16,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -186,13 +185,6 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
      */
     public static void notifyCustomTabCallbackFirstRunIfNecessary(
             Intent freIntent, boolean complete) {
-        boolean launchedByCCT = IntentUtils.safeGetBooleanExtra(
-                freIntent, EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
-        if (!launchedByCCT) return;
 
-        Bundle launchIntentExtras =
-                IntentUtils.safeGetBundleExtra(freIntent, EXTRA_CHROME_LAUNCH_INTENT_EXTRAS);
-        CustomTabsConnection.getInstance().sendFirstRunCallbackIfNecessary(
-                launchIntentExtras, complete);
     }
 }

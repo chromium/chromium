@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.share.crow;
 
-import android.app.Activity;
 import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -36,24 +32,6 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     public boolean isEnabledForSite(GURL url) {
         // TODO(skare): Make this an AMP-aware comparison if needed.
         return isCrowEnabled() && !getPublicationId(url).equals(DOMAIN_ID_NONE);
-    }
-
-    @Override
-    public void launchCustomTab(Activity currentActivity, GURL pageUrl) {
-        // TODO(skare): Fetch canonical URL, based on ShareDelegate.shouldFetchCanonicalUrl()
-        // and ShareDelegate.getUrlToShare.
-        String customTabUrl = buildServerUrl(
-                new GURL(getServerUrl()), pageUrl, pageUrl, getPublicationId(pageUrl));
-
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setShowTitle(true);
-        builder.setColorScheme(ColorUtils.inNightMode(currentActivity)
-                        ? CustomTabsIntent.COLOR_SCHEME_DARK
-                        : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.intent.setClassName(currentActivity, CustomTabActivity.class.getName());
-        customTabsIntent.launchUrl(currentActivity, Uri.parse(customTabUrl));
     }
 
     public boolean isCrowEnabled() {

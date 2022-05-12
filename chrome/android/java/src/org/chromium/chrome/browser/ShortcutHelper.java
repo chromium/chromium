@@ -18,7 +18,6 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
@@ -79,7 +78,7 @@ public class ShortcutHelper {
     }
 
     /**
-     * Adds home screen shortcut which opens in a {@link WebappActivity}. Creates web app
+     * Adds home screen shortcut which opens in a {@link }. Creates web app
      * home screen shortcut and registers web app asynchronously.
      */
     @SuppressWarnings("unused")

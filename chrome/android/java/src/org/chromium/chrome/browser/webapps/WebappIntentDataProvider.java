@@ -117,12 +117,6 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    @CustomTabsUiType
-    public int getUiType() {
-        return CustomTabsUiType.MINIMAL_UI_WEBAPP;
-    }
-
-    @Override
     public boolean shouldShowStarButton() {
         return false;
     }

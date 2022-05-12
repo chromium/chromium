@@ -8,8 +8,6 @@ import android.text.TextUtils;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
@@ -41,13 +39,7 @@ public class ChromeCachedFlags {
      * {@link #cacheMinimalBrowserFlags()}.
      */
     private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
-            new ArrayList<CachedFieldTrialParameter>() {
-                {
-                    // This is used by CustomTabsConnection implementation, which does not
-                    // necessarily start chrome.
-                    add(CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
-                }
-            };
+            new ArrayList<CachedFieldTrialParameter>();
 
     /**
      * @return The {@link ChromeCachedFlags} singleton.
@@ -91,7 +83,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP);
                 add(ChromeFeatureList.FEED_LOADING_PLACEHOLDER);
                 add(ChromeFeatureList
-                                .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
+                        .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
                 add(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
                 add(ChromeFeatureList.INSTANT_START);
@@ -132,9 +124,6 @@ public class ChromeCachedFlags {
                         add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS);
-                        add(CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY);
-                        add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
-                        add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
                         add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
@@ -148,7 +137,7 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
                         add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
                         add(StartSurfaceConfiguration
-                                        .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
+                                .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
                         add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS);
                         add(StartSurfaceConfiguration.SPARE_RENDERER_DELAY_MS);
                         add(StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES);
@@ -202,7 +191,7 @@ public class ChromeCachedFlags {
             omissions.add(trial.getFeatureName() + ":" + trial.getParameterName());
         }
         assert omissions.isEmpty()
-            : "The following trials are not correctly cached: "
+                : "The following trials are not correctly cached: "
                 + TextUtils.join(", ", omissions);
     }
 

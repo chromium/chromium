@@ -14,21 +14,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.SysUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -63,7 +56,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -231,13 +223,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // If a distiller URL was loaded and this is a custom tab, add a navigation
         // handler to bring any navigations back to the main chrome activity.
         Activity activity = TabUtils.getActivity(tab);
-        int uiType = CustomTabsUiType.DEFAULT;
-        if (activity != null && activity.getIntent().getExtras() != null) {
-            uiType = activity.getIntent().getExtras().getInt(
-                    CustomTabIntentDataProvider.EXTRA_UI_TYPE);
-        }
-        if (tab == null || uiType != CustomTabsUiType.READER_MODE
-                || !DomDistillerUrlUtils.isDistilledPage(params.getUrl())) {
+        if (tab == null || !DomDistillerUrlUtils.isDistilledPage(params.getUrl())) {
             return;
         }
 
@@ -599,11 +585,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void activateReaderMode() {
         RecordHistogram.recordBooleanHistogram("DomDistiller.InfoBarUsage", true);
 
-        if (DomDistillerTabUtils.isCctMode() && !SysUtils.isLowEndDevice()) {
-            distillInCustomTab();
-        } else {
-            navigateToReaderMode();
-        }
+        navigateToReaderMode();
     }
 
     /** Navigate the current tab to a Reader Mode URL. */
@@ -648,44 +630,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         BrowserControlsManager browserControlsManager = getBrowserControlsManager();
         return browserControlsManager == null ? null
                                               : browserControlsManager.getFullscreenManager();
-    }
-
-    private void distillInCustomTab() {
-        Activity activity = TabUtils.getActivity(mTab);
-        WebContents webContents = mTab.getWebContents();
-        if (webContents == null) return;
-
-        GURL url = webContents.getLastCommittedUrl();
-
-        onStartedReaderMode();
-
-        DomDistillerTabUtils.distillCurrentPage(webContents);
-
-        String distillerUrl = DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
-                DOM_DISTILLER_SCHEME, url.getSpec(), webContents.getTitle());
-
-        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        builder.setShowTitle(true);
-        builder.setColorScheme(ColorUtils.inNightMode(activity)
-                        ? CustomTabsIntent.COLOR_SCHEME_DARK
-                        : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.intent.setClassName(activity, CustomTabActivity.class.getName());
-
-        // Customize items on menu as Reader Mode UI to show 'Find in page' and 'Preference' only.
-        CustomTabIntentDataProvider.addReaderModeUIExtras(customTabsIntent.intent);
-
-        // Add the parent ID as an intent extra for back button functionality.
-        customTabsIntent.intent.putExtra(EXTRA_READER_MODE_PARENT, mTab.getId());
-
-        // Use Incognito CCT if the source page is in Incognito mode. This is gated by
-        // flag ChromeFeatureList.CCT_INCOGNITO.
-        if (mTab.isIncognito()) {
-            IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    customTabsIntent.intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
-        }
-
-        customTabsIntent.launchUrl(activity, Uri.parse(distillerUrl));
     }
 
     /**

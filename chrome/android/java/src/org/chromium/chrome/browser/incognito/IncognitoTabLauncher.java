@@ -14,7 +14,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -25,7 +24,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.version_info.VersionInfo;
 
@@ -68,22 +66,7 @@ public class IncognitoTabLauncher extends Activity {
 
         Intent chromeLauncherIntent = IntentHandler.createTrustedOpenNewTabIntent(this, true);
 
-        /**
-         * The method IntentHandler.createTrustedOpenNewTabIntent creates a new intent and the
-         * SESSION_TOKEN information about the original intent via getIntent() is lost in that
-         * process. We extract the package name from the SESSION_TOKEN and store the value in new
-         * intent.
-         */
-        CustomTabsSessionToken sessionToken =
-                CustomTabsSessionToken.getSessionTokenFromIntent(getIntent());
-        String sendersPackageName =
-                CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
 
-        // Since, we are using createTrustedOpenNewTabIntent, we know this intent can only be sent
-        // by chrome and cannot be spoofed by another application. That means that we can trust the
-        // package name the Intent contains.
-        chromeLauncherIntent.putExtra(
-                IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME, sendersPackageName);
         chromeLauncherIntent.putExtra(
                 IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, true);
 

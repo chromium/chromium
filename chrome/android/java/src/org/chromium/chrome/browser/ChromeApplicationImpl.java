@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermi
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
@@ -90,7 +89,6 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                 && GlobalDiscardableReferencePool.getReferencePool() != null) {
             GlobalDiscardableReferencePool.getReferencePool().drain();
         }
-        CustomTabsConnection.onTrimMemory(level);
     }
 
     @Override
