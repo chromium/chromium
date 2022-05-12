@@ -178,19 +178,23 @@ class AccountSelectionViewBinder {
             SpanApplier.SpanInfo termsOfServiceSpan =
                     createLink(context, properties.mTermsOfServiceUrl, "link_terms_of_service");
 
-            int consentTextId = termsOfServiceSpan == null
-                    ? R.string.account_selection_data_sharing_consent_no_tos
-                    : R.string.account_selection_data_sharing_consent;
+            int consentTextId;
+            if (privacyPolicySpan == null && termsOfServiceSpan == null) {
+                consentTextId = R.string.account_selection_data_sharing_consent_no_pp_or_tos;
+            } else if (privacyPolicySpan == null) {
+                consentTextId = R.string.account_selection_data_sharing_consent_no_pp;
+            } else if (termsOfServiceSpan == null) {
+                consentTextId = R.string.account_selection_data_sharing_consent_no_tos;
+            } else {
+                consentTextId = R.string.account_selection_data_sharing_consent;
+            }
             String consentText = String.format(
                     context.getString(consentTextId), properties.mFormattedIdpEtldPlusOne);
 
-            // |privacyPolicySpan| cannot be null due to the following:
-            // 1. We check that the privacy URL is valid in
-            // FederatedAuthRequestImpl::OnClientMetadataResponseReceived(), and an empty URL is
-            // invalid.
-            // 2. createLink() only returns null if the provided URL is empty.
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
-            spans.add(privacyPolicySpan);
+            if (privacyPolicySpan != null) {
+                spans.add(privacyPolicySpan);
+            }
             if (termsOfServiceSpan != null) {
                 spans.add(termsOfServiceSpan);
             }

@@ -262,6 +262,35 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
   std::vector<size_t> offsets;
+
+  if (client_data_.privacy_policy_url.is_empty() &&
+      client_data_.terms_of_service_url.is_empty()) {
+    // Case for both the privacy policy and terms of service URLs are missing.
+    std::u16string disclosure_text = l10n_util::GetStringFUTF16(
+        IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS,
+        {idp_etld_plus_one_});
+    disclosure_label->SetText(disclosure_text);
+    return row;
+  }
+
+  if (client_data_.privacy_policy_url.is_empty()) {
+    // Case for when we only need to add a link for terms of service URL, but
+    // not privacy policy. We use two placeholders for the start and end of
+    // 'terms of service' in order to style that text as a link.
+    std::u16string disclosure_text = l10n_util::GetStringFUTF16(
+        IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP,
+        {idp_etld_plus_one_, std::u16string(), std::u16string()}, &offsets);
+    disclosure_label->SetText(disclosure_text);
+    // Add link styling for terms of service url.
+    disclosure_label->AddStyleRange(
+        gfx::Range(offsets[1], offsets[2]),
+        views::StyledLabel::RangeStyleInfo::CreateForLink(
+            base::BindRepeating(&AccountSelectionBubbleView::OnLinkClicked,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                client_data_.terms_of_service_url)));
+    return row;
+  }
+
   if (client_data_.terms_of_service_url.is_empty()) {
     // Case for when we only need to add a link for privacy policy URL, but not
     // terms of service. We use two placeholders for the start and end of

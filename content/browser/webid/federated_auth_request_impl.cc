@@ -757,9 +757,7 @@ void FederatedAuthRequestImpl::OnManifestReady(
     IdentityProviderMetadata idp_metadata) {
   bool is_token_valid = IsEndpointUrlValid(endpoints_.token);
   bool is_accounts_valid = IsEndpointUrlValid(endpoints_.accounts);
-  bool is_client_metadata_valid =
-      IsEndpointUrlValid(endpoints_.client_metadata);
-  if (!is_token_valid || !is_accounts_valid || !is_client_metadata_valid) {
+  if (!is_token_valid || !is_accounts_valid) {
     std::string message =
         "Manifest is missing or has an invalid URL for the following "
         "endpoints:\n";
@@ -768,9 +766,6 @@ void FederatedAuthRequestImpl::OnManifestReady(
     }
     if (!is_accounts_valid) {
       message += "\"accounts_endpoint\"\n";
-    }
-    if (!is_client_metadata_valid) {
-      message += "\"client_metadata_endpoint\"\n";
     }
     render_frame_host_->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, message);
@@ -910,71 +905,31 @@ void FederatedAuthRequestImpl::OnBrandIconDownloaded(
     idp_metadata.brand_icon = bitmaps[0];
   }
 
-  network_manager_->FetchClientMetadata(
-      endpoints_.client_metadata, client_id_,
-      base::BindOnce(
-          &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
-          weak_ptr_factory_.GetWeakPtr(), std::move(idp_metadata)));
+  if (IsEndpointUrlValid(endpoints_.client_metadata)) {
+    network_manager_->FetchClientMetadata(
+        endpoints_.client_metadata, client_id_,
+        base::BindOnce(
+            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), std::move(idp_metadata)));
+  } else {
+    network_manager_->SendAccountsRequest(
+        endpoints_.accounts, client_id_,
+        base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+  }
 }
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     IdentityProviderMetadata idp_metadata,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata data) {
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataHttpNotFound,
-                                 render_frame_host_->GetPageUkmSourceId());
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
-          "",
-          /*should_call_callback=*/false);
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataNoResponse,
-                                 render_frame_host_->GetPageUkmSourceId());
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
-          "",
-          /*should_call_callback=*/false);
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataInvalidResponse,
-                                 render_frame_host_->GetPageUkmSourceId());
-      CompleteRequest(FederatedAuthRequestResult::
-                          kErrorFetchingClientMetadataInvalidResponse,
-                      "",
-                      /*should_call_callback=*/false);
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      // Since the |privacy_policy_url| is required, consider the result an
-      // invalid response in the case where the parser returns an empty value
-      // for it or an invalid url.
-      GURL pp_url(data.privacy_policy_url);
-      if (!pp_url.is_valid()) {
-        RecordRequestIdTokenStatus(
-            IdTokenStatus::kClientMetadataMissingPrivacyPolicyUrl,
-            render_frame_host_->GetPageUkmSourceId());
-        CompleteRequest(FederatedAuthRequestResult::
-                            kErrorClientMetadataMissingPrivacyPolicyUrl,
-                        "", /*should_call_callback=*/false);
-        return;
-      }
-      client_metadata_ = data;
-
-      network_manager_->SendAccountsRequest(
-          endpoints_.accounts, client_id_,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr(), idp_metadata));
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      NOTREACHED();
-    }
-  }
+  // TODO(yigu): Clean up the client metadata related errors for metrics and
+  // console logs.
+  client_metadata_ = data;
+  network_manager_->SendAccountsRequest(
+      endpoints_.accounts, client_id_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr(), idp_metadata));
 }
 
 void FederatedAuthRequestImpl::DownloadBitmap(
