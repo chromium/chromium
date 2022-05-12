@@ -206,6 +206,19 @@ fyi_goma_rbe_canary_builder(
 
 fyi_goma_rbe_canary_builder(
     name = "mac-archive-rel-goma-rbe-canary",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-archive-rel",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_canary",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     cores = 4,
     goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
@@ -454,6 +467,19 @@ fyi_goma_rbe_latest_client_builder(
 
 fyi_goma_rbe_latest_client_builder(
     name = "mac-archive-rel-goma-rbe-latest",
+    builder_spec = builder_config.copy_from(
+        "ci/mac-archive-rel",
+        lambda spec: structs.evolve(
+            spec,
+            chromium_config = structs.extend(
+                spec.chromium_config,
+                apply_configs = [
+                    "goma_latest_client",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
     cores = 4,
     goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,

@@ -190,6 +190,9 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_archive_rel_ng",
+    mirrors = [
+        "ci/mac-archive-rel",
+    ],
 )
 
 try_.builder(
