@@ -402,7 +402,6 @@ component("cpp") {
     "//ash/services/cellular_setup/public/mojom",
     "//ash/webui/personalization_app/proto",
     "//base",
-    "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/bluetooth_config/public/mojom",
