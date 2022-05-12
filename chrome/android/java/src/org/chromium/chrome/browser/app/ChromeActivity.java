@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
+import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
@@ -399,6 +400,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     protected BackPressManager mBackPressManager = new BackPressManager();
     private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
+    private SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
+    private Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -1593,6 +1596,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTextBubbleBackPressHandler = null;
         }
 
+        if (mSelectionPopupBackPressHandler != null) {
+            mSelectionPopupBackPressHandler.destroy();
+            mSelectionPopupBackPressHandler = null;
+        }
+
         mActivityTabProvider.destroy();
         ChromeActivitySessionTracker.getInstance().unregisterTabModelSelectorSupplier(this);
 
@@ -2323,12 +2331,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         mCompositorViewHolderSupplier.get().getLayoutManager();
                 if (layoutManager != null && layoutManager.onBackPressed()) return;
             }
-        }
 
-        SelectionPopupController controller = getSelectionPopupController();
-        if (controller != null && controller.isSelectActionBarShowing()) {
-            controller.clearSelection();
-            return;
+            SelectionPopupController controller = getSelectionPopupController();
+            if (controller != null && controller.isSelectActionBarShowing()) {
+                controller.clearSelection();
+                return;
+            }
         }
 
         if (!BackPressManager.isEnabled()) {
@@ -2367,6 +2375,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     : "LayoutManager should be only set at most once";
                 mBackPressManager.addHandler(layoutManager, Type.LAYOUT_MANAGER);
             });
+
+            mSelectionPopupBackPressInitCallback = (tabModelSelector) -> {
+                assert !mBackPressManager.has(Type.SELECTION_POPUP)
+                    : "Tab Model Selector should be set at most once";
+                mSelectionPopupBackPressHandler =
+                        new SelectionPopupBackPressHandler(tabModelSelector);
+                mBackPressManager.addHandler(mSelectionPopupBackPressHandler, Type.SELECTION_POPUP);
+                getTabModelSelectorSupplier().removeObserver(mSelectionPopupBackPressInitCallback);
+            };
+            getTabModelSelectorSupplier().addObserver(mSelectionPopupBackPressInitCallback);
 
             mBrowserControlsManagerSupplier.addObserver((controlManager) -> {
                 assert !mBackPressManager.has(Type.FULLSCREEN)

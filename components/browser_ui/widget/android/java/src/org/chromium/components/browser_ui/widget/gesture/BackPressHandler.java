@@ -21,16 +21,17 @@ import java.lang.annotation.RetentionPolicy;
 public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.LAYOUT_MANAGER,
-            Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER, Type.FULLSCREEN})
+            Type.SELECTION_POPUP, Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER, Type.FULLSCREEN})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
         int VR_DELEGATE = 1;
         int AR_DELEGATE = 2;
         int LAYOUT_MANAGER = 3;
-        int MANUAL_FILLING = 4;
-        int FULLSCREEN = 5;
-        int TAB_MODAL_HANDLER = 6;
+        int SELECTION_POPUP = 4;
+        int MANUAL_FILLING = 5;
+        int FULLSCREEN = 6;
+        int TAB_MODAL_HANDLER = 7;
         int NUM_TYPES = TAB_MODAL_HANDLER + 1;
     }
 
@@ -39,7 +40,9 @@ public interface BackPressHandler {
     /**
      * A {@link ObservableSupplier<Boolean>} which notifies of whether the implementer wants to
      * intercept the back gesture.
-     * @return True if the implementer wants to intercept the back gesture.
+     * @return An {@link ObservableSupplier<Boolean>} which yields true if the implementer wants to
+     *         intercept the back gesture; otherwise, it should yield false to prevent {@link
+     *         #handleBackPress()} from being called.
      */
     default ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return new ObservableSupplierImpl<>();

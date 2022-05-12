@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -86,6 +87,12 @@ public interface SelectionPopupController {
     void destroySelectActionMode();
 
     boolean isSelectActionBarShowing();
+
+    /**
+     * @return An {@link ObservableSupplier<Boolean>} which holds true when a selection action bar
+     *         is showing; otherwise, it holds false.
+     */
+    ObservableSupplier<Boolean> isSelectActionBarShowingSupplier();
 
     /**
      * @return {@link ActionModeCallbackHelper} object.

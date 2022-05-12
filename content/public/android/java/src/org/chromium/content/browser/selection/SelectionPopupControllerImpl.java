@@ -39,6 +39,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content.R;
 import org.chromium.content.browser.ContentApiHelperForM;
 import org.chromium.content.browser.ContentClassFactory;
@@ -138,6 +140,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Nullable
     private View mView;
     private ActionMode mActionMode;
+
+    // Supplier of whether action bar is showing now.
+    private final ObservableSupplierImpl<Boolean> mIsActionBarShowingSupplier =
+            new ObservableSupplierImpl<>();
 
     // Bit field for mappings from menu item to a flag indicating it is allowed.
     private int mAllowedMenuItems;
@@ -488,7 +494,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             // This is to work around an LGE email issue. See crbug.com/651706 for more details.
             LGEmailActionModeWorkaroundImpl.runIfNecessary(mContext, actionMode);
         }
-        mActionMode = actionMode;
+        setActionMode(actionMode);
         mUnselectAllOnDismiss = true;
 
         if (!isActionModeValid()) clearSelection();
@@ -612,7 +618,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             mActionMode.finish();
 
             // Should be nulled out in case #onDestroyActionMode() is not invoked in response.
-            mActionMode = null;
+            setActionMode(null);
         }
     }
 
@@ -974,7 +980,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onDestroyActionMode() {
-        mActionMode = null;
+        setActionMode(null);
         if (mUnselectAllOnDismiss) {
             clearSelection();
         }
@@ -1553,6 +1559,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return mLastSelectedText;
     }
 
+    private void setActionMode(ActionMode actionMode) {
+        mActionMode = actionMode;
+        mIsActionBarShowingSupplier.set(isSelectActionBarShowing());
+    }
+
     private boolean isShareAvailable() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -1614,6 +1625,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean isSelectActionBarShowing() {
         return isActionModeValid();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
+        return mIsActionBarShowingSupplier;
     }
 
     @Override

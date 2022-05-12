@@ -418,6 +418,7 @@ android_library("chrome_java") {
     "//chrome/browser/safety_check/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/segmentation_platform:factory_java",
+    "//chrome/browser/selection/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/share:java",
     "//chrome/browser/share/android:java_resources",

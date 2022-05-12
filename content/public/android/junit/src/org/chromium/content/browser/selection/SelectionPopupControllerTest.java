@@ -605,6 +605,7 @@ public class SelectionPopupControllerTest {
         // showActionModeOrClearOnFailure().
         Mockito.verify(spyController, times(1)).finishActionMode();
         assertTrue(spyController.isSelectActionBarShowing());
+        assertTrue(spyController.isSelectActionBarShowingSupplier().get());
 
         // Clear the selected text.
         spyController.onSelectionChanged("");
@@ -618,6 +619,7 @@ public class SelectionPopupControllerTest {
         spyController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0, 1, 1);
 
         assertFalse(spyController.isSelectActionBarShowing());
+        assertFalse(spyController.isSelectActionBarShowingSupplier().get());
         Mockito.verify(spyController, times(3)).finishActionMode();
     }
 
@@ -642,6 +644,7 @@ public class SelectionPopupControllerTest {
         // showActionModeOrClearOnFailure().
         Mockito.verify(spyController, times(1)).finishActionMode();
         assertTrue(spyController.isSelectActionBarShowing());
+        assertTrue(spyController.isSelectActionBarShowingSupplier().get());
 
         // Setting the window to null should clear selections and reset the state.
         spyController.onWindowAndroidChanged(null);
@@ -655,6 +658,7 @@ public class SelectionPopupControllerTest {
         spyController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0, 1, 1);
 
         assertFalse(spyController.isSelectActionBarShowing());
+        assertFalse(spyController.isSelectActionBarShowingSupplier().get());
         Mockito.verify(spyController, times(3)).finishActionMode();
     }
 
