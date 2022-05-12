@@ -38,7 +38,7 @@ class ToplevelWindowDragDelegate : public DragDropCaptureDelegate {
   virtual void OnToplevelWindowDragEvent(ui::LocatedEvent* event) = 0;
 
  protected:
-  virtual ~ToplevelWindowDragDelegate() = default;
+  ~ToplevelWindowDragDelegate() override = default;
 };
 
 }  // namespace ash

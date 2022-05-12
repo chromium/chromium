@@ -154,20 +154,21 @@ DragOperation DragDropController::StartDragAndDrop(
   current_drag_event_source_ = source;
   capture_delegate_ = nullptr;
 
-  bool touch_captured = false;
+  const bool is_touch_source = source == ui::mojom::DragEventSource::kTouch;
+  bool touch_capture_attempted = false;
 
   // When an extended drag is started, a capture window will be created to
   // handle moving gestures between different wl surfaces to support dragging
   // chrome tabs into and out of browsers.
-  if (source == ui::mojom::DragEventSource::kTouch &&
-      toplevel_window_drag_delegate_) {
-    touch_captured = true;
-    toplevel_window_drag_delegate_->TakeCapture(
-        root_window, source_window,
-        base::BindRepeating(&DragDropController::CancelIfInProgress,
-                            base::Unretained(this)),
-        ui::TransferTouchesBehavior::kCancel);
-    capture_delegate_ = toplevel_window_drag_delegate_;
+  if (is_touch_source && toplevel_window_drag_delegate_) {
+    touch_capture_attempted = true;
+    if (toplevel_window_drag_delegate_->TakeCapture(
+            root_window, source_window,
+            base::BindRepeating(&DragDropController::CancelIfInProgress,
+                                base::Unretained(this)),
+            ui::TransferTouchesBehavior::kCancel)) {
+      capture_delegate_ = toplevel_window_drag_delegate_;
+    }
   }
 
   drag_source_window_ = source_window;
@@ -199,43 +200,50 @@ DragOperation DragDropController::StartDragAndDrop(
   }
 
   if (TabDragDropDelegate::IsChromeTabDrag(*drag_data_)) {
+    // TODO(aluh): Figure out why this allocation is outside the inner if-block.
     DCHECK(!tab_drag_drop_delegate_);
     tab_drag_drop_delegate_ = std::make_unique<TabDragDropDelegate>(
         root_window, drag_source_window_, start_location_);
     static_cast<DragImageView*>(drag_image_widget_->GetContentsView())
         ->SetTouchDragOperationHintOff();
     // Avoid taking capture twice.
-    if (!touch_captured && source == ui::mojom::DragEventSource::kTouch) {
-      touch_captured = true;
-      tab_drag_drop_delegate_->TakeCapture(
-          root_window, source_window,
-          base::BindRepeating(&DragDropController::CancelIfInProgress,
-                              base::Unretained(this)),
-          ui::TransferTouchesBehavior::kDontCancel);
-      capture_delegate_ = tab_drag_drop_delegate_.get();
+    if (is_touch_source && !touch_capture_attempted) {
+      touch_capture_attempted = true;
+      if (tab_drag_drop_delegate_->TakeCapture(
+              root_window, source_window,
+              base::BindRepeating(&DragDropController::CancelIfInProgress,
+                                  base::Unretained(this)),
+              ui::TransferTouchesBehavior::kDontCancel)) {
+        capture_delegate_ = tab_drag_drop_delegate_.get();
+      }
     }
   }
   // If touch is not captured by either extended drag nor tab drag, start
   // a normal drag-and-drop using DragDropCaptureDelegate.
-  if (!touch_captured && source == ui::mojom::DragEventSource::kTouch) {
-    touch_captured = true;
+  if (is_touch_source && !touch_capture_attempted) {
+    touch_capture_attempted = true;
     // For other type of touch drag, use normal DDCaptureDelegate;
     touch_drag_drop_delegate_ = std::make_unique<DragDropCaptureDelegate>();
-    touch_drag_drop_delegate_->TakeCapture(
-        root_window, source_window,
-        base::BindRepeating(&DragDropController::CancelIfInProgress,
-                            base::Unretained(this)),
-        ui::TransferTouchesBehavior::kDontCancel);
-    capture_delegate_ = touch_drag_drop_delegate_.get();
+    if (touch_drag_drop_delegate_->TakeCapture(
+            root_window, source_window,
+            base::BindRepeating(&DragDropController::CancelIfInProgress,
+                                base::Unretained(this)),
+            ui::TransferTouchesBehavior::kDontCancel)) {
+      capture_delegate_ = touch_drag_drop_delegate_.get();
+    }
   }
 
-  if (test_loop_closure_) {
-    while (!quit_closure_.is_null())
-      test_loop_closure_.Run();
+  if (touch_capture_attempted && !capture_delegate_) {
+    Cleanup();
   } else {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
+    if (test_loop_closure_) {
+      while (!quit_closure_.is_null())
+        test_loop_closure_.Run();
+    } else {
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
   }
 
   if (!cancel_animation_.get() || !cancel_animation_->is_animating() ||

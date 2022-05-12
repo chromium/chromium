@@ -151,6 +151,8 @@ TEST_F(DragDropCaptureDelegateTest, CanTakeCaptureAndConvertToOriginalWindow2) {
 
   EXPECT_EQ(source_window_delegate.motion_event.GetAction(),
             ui::MotionEvent::Action::CANCEL);
+
+  drag_drop_controller->DragCancel();
 }
 
 }  // namespace ash

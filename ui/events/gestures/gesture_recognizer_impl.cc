@@ -322,12 +322,11 @@ void GestureRecognizerImpl::CancelActiveTouchesExceptImpl(
   // Do not iterate directly over |consumer_gesture_provider_| because canceling
   // active touches may cause the consumer to be removed from
   // |consumer_gesture_provider_|. See https://crbug.com/651258 for more info.
-  std::vector<GestureConsumer*> consumers(consumer_gesture_provider_.size());
+  std::vector<GestureConsumer*> consumers;
+  consumers.reserve(consumer_gesture_provider_.size());
   for (const auto& entry : consumer_gesture_provider_) {
-    if (entry.first == not_cancelled)
-      continue;
-
-    consumers.push_back(entry.first);
+    if (entry.first != not_cancelled)
+      consumers.push_back(entry.first);
   }
 
   for (auto* consumer : consumers)

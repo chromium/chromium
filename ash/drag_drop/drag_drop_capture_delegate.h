@@ -29,7 +29,7 @@ class ASH_EXPORT DragDropCaptureDelegate {
   DragDropCaptureDelegate(const DragDropCaptureDelegate&) = delete;
   DragDropCaptureDelegate& operator=(const DragDropCaptureDelegate&) = delete;
 
-  ~DragDropCaptureDelegate();
+  virtual ~DragDropCaptureDelegate();
 
   // Conditionally takes capture of top level touch events, returning whether
   // this was successful.

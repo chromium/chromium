@@ -45,7 +45,7 @@ class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
   TabDragDropDelegate(aura::Window* root_window,
                       aura::Window* source_window,
                       const gfx::Point& start_location_in_screen);
-  ~TabDragDropDelegate();
+  ~TabDragDropDelegate() override;
 
   TabDragDropDelegate(const TabDragDropDelegate&) = delete;
   TabDragDropDelegate& operator=(const TabDragDropDelegate&) = delete;

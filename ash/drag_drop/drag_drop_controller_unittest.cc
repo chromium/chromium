@@ -13,6 +13,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -1566,6 +1568,8 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch) {
   EXPECT_TRUE(delegate.current_location().has_value());
   EXPECT_EQ(gfx::PointF(5, 5), *delegate.current_location());
   EXPECT_EQ(0, delegate.events_forwarded());
+
+  drag_drop_controller_->DragCancel();
 }
 
 TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch2) {
@@ -1636,6 +1640,56 @@ TEST_F(DragDropControllerTest, DragWithChromeTabDelegateTakesCapture) {
   EXPECT_TRUE(drag_drop_controller_->get_capture_delegate());
 
   drag_drop_controller_.reset();
+}
+
+// Regression test for crbug.com/1297209.
+// In tablet mode split view, with the browser tab strip on one side and desks
+// overview (or any other window) on the other, touch and hold a desk mini view
+// (or that other window) and drag a browser tab simultaneously.
+TEST_F(DragDropControllerTest, TabletSplitViewDragTwoBrowserTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
+
+  // Enter tablet mode. Avoid TabletModeController::OnGetSwitchStates() from
+  // disabling tablet mode.
+  base::RunLoop().RunUntilIdle();
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  // Enter tablet split view mode by snapping a tab window on each side.
+  // A generic top level window is enough to fake a chrome tab.
+  std::unique_ptr<aura::Window> tab_window1 = CreateToplevelTestWindow();
+  std::unique_ptr<aura::Window> tab_window2 = CreateToplevelTestWindow();
+  SplitViewController* const split_view_controller =
+      SplitViewController::Get(tab_window1.get());
+  split_view_controller->SnapWindow(tab_window1.get(),
+                                    SplitViewController::SnapPosition::LEFT);
+  split_view_controller->SnapWindow(tab_window2.get(),
+                                    SplitViewController::SnapPosition::RIGHT);
+  EXPECT_TRUE(split_view_controller->InTabletSplitViewMode());
+
+  // Touch and hold the right tab window.
+  GetEventGenerator()->PressTouch(
+      tab_window2->GetBoundsInScreen().CenterPoint());
+
+  // Prepare to drag the left tab window.
+  EXPECT_CALL(*mock_shell_delegate(), IsTabDrag(_)).WillOnce(Return(true));
+
+  // Drag and drop needs a drag image to work.
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->SetString(u"I am being dragged");
+  gfx::ImageSkiaRep image_rep(gfx::Size(10, 20), 1.0f);
+  gfx::ImageSkia image_skia(image_rep);
+  data->provider().SetDragImage(image_skia, gfx::Vector2d());
+
+  // Start drag and drop on the left tab window.
+  auto drag_operation = drag_drop_controller_->StartDragAndDrop(
+      std::move(data), tab_window1->GetRootWindow(), tab_window1.get(),
+      tab_window1->GetBoundsInScreen().CenterPoint(),
+      ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kTouch);
+  EXPECT_EQ(drag_operation, DragOperation::kNone);
+  EXPECT_FALSE(drag_drop_controller_->IsDragDropInProgress());
+  EXPECT_FALSE(drag_drop_controller_->get_capture_delegate());
+  EXPECT_FALSE(tab_window1->HasObserver(drag_drop_controller_.get()));
 }
 
 namespace {
