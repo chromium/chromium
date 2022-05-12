@@ -9,6 +9,8 @@
 
 #include "ios/chrome/browser/discover_feed/feed_constants.h"
 
+@protocol FeedControlDelegate;
+
 // DO NOT CHANGE. Values are from enums.xml representing what could be broken in
 // the NTP view hierarchy. These values are persisted to logs. Entries should
 // not be renumbered and numeric values should never be reused.
@@ -242,8 +244,8 @@ class Time;
 // confirmation snackbar in the management UI.
 - (void)recordManagementTappedUnfollowTryAgainOnSnackbar;
 
-// The currently selected feed type in the NTP.
-@property(nonatomic, assign) FeedType selectedFeedType;
+// Delegate to get the currently selected feed.
+@property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;

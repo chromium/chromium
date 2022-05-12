@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
+#import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -189,13 +190,21 @@ const char kFollowingFeedEngagementTypeHistogram[] =
 const char kAllFeedsEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.AllFeeds.EngagementType";
 
-// Histogram name for a feed card shown at index.
+// Histogram name for a Discover feed card shown at index.
 const char kDiscoverFeedCardShownAtIndex[] =
     "NewTabPage.ContentSuggestions.Shown";
 
-// Histogram name for a feed card tapped at index.
+// Histogram name for a Following feed card shown at index.
+const char kFollowingFeedCardShownAtIndex[] =
+    "ContentSuggestions.Feed.WebFeed.Shown";
+
+// Histogram name for a Discover feed card tapped at index.
 const char kDiscoverFeedCardOpenedAtIndex[] =
     "NewTabPage.ContentSuggestions.Opened";
+
+// Histogram name for a Following feed card tapped at index.
+const char kFollowingFeedCardOpenedAtIndex[] =
+    "ContentSuggestions.Feed.WebFeed.Opened";
 
 // Histogram name to capture Feed Notice card impressions.
 const char kDiscoverFeedNoticeCardFulfilled[] =
@@ -300,7 +309,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log scrolled into Discover feed.
-  if (self.selectedFeedType == FeedTypeDiscover &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeDiscover &&
       !self.scrolledReportedDiscover) {
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedScrolled);
@@ -308,7 +317,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log scrolled into Following feed.
-  if (self.selectedFeedType == FeedTypeFollowing &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing &&
       !self.scrolledReportedFollowing) {
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedScrolled);
@@ -487,13 +496,27 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 }
 
 - (void)recordCardShownAtIndex:(int)index {
-  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardShownAtIndex, index,
-                             kMaxCardsInFeed);
+  switch ([self.feedControlDelegate selectedFeed]) {
+    case FeedTypeDiscover:
+      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardShownAtIndex, index,
+                                 kMaxCardsInFeed);
+      break;
+    case FeedTypeFollowing:
+      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedCardShownAtIndex, index,
+                                 kMaxCardsInFeed);
+  }
 }
 
 - (void)recordCardTappedAtIndex:(int)index {
-  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardOpenedAtIndex, index,
-                             kMaxCardsInFeed);
+  switch ([self.feedControlDelegate selectedFeed]) {
+    case FeedTypeDiscover:
+      UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedCardOpenedAtIndex, index,
+                                 kMaxCardsInFeed);
+      break;
+    case FeedTypeFollowing:
+      UMA_HISTOGRAM_EXACT_LINEAR(kFollowingFeedCardOpenedAtIndex, index,
+                                 kMaxCardsInFeed);
+  }
 }
 
 - (void)recordNoticeCardShown:(BOOL)shown {
@@ -747,19 +770,19 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
                             FeedEngagementType::kFeedInteracted);
 
   // Log interaction for Discover feed.
-  if (self.selectedFeedType == FeedTypeDiscover) {
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeDiscover) {
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedInteracted);
   }
 
   // Log interaction for Following feed.
-  if (self.selectedFeedType == FeedTypeFollowing) {
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing) {
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedInteracted);
   }
 }
 
-// Records simple engagement for the current |selectedFeedType|.
+// Records simple engagement for the current |selectedFeed|.
 - (void)recordEngagedSimple {
   // If neither feed has been engaged with, log "AllFeeds" simple engagement.
   if (!self.engagedSimpleReportedDiscover &&
@@ -769,7 +792,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log simple engagment for Discover feed.
-  if (self.selectedFeedType == FeedTypeDiscover &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeDiscover &&
       !self.engagedSimpleReportedDiscover) {
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngagedSimple);
@@ -777,7 +800,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log simple engagement for Following feed.
-  if (self.selectedFeedType == FeedTypeFollowing &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing &&
       !self.engagedSimpleReportedFollowing) {
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngagedSimple);
@@ -785,7 +808,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
-// Records engagement for the current |selectedFeedType|.
+// Records engagement for the currently selected feed.
 - (void)recordEngaged {
   // If neither feed has been engaged with, log "AllFeeds" engagement.
   if (!self.engagedReportedDiscover && !self.engagedReportedFollowing) {
@@ -794,7 +817,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log engagment for Discover feed.
-  if (self.selectedFeedType == FeedTypeDiscover &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeDiscover &&
       !self.engagedReportedDiscover) {
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
@@ -802,7 +825,7 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 
   // Log engagement for Following feed.
-  if (self.selectedFeedType == FeedTypeFollowing &&
+  if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing &&
       !self.engagedReportedFollowing) {
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
