@@ -120,7 +120,7 @@ class PrivacySandboxConsentDialogHandlerTest
         base::BindOnce(
             &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
             dialog_mock()),
-        PrivacySandboxService::DialogType::kConsent);
+        PrivacySandboxService::PromptType::kConsent);
   }
 };
 
@@ -235,7 +235,7 @@ class PrivacySandboxNoticeDialogHandlerTest
         base::BindOnce(
             &MockPrivacySandboxDialogView::OpenPrivacySandboxSettings,
             dialog_mock()),
-        PrivacySandboxService::DialogType::kNotice);
+        PrivacySandboxService::PromptType::kNotice);
   }
 };
 

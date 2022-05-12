@@ -31,8 +31,8 @@ const char kPrivacySandboxDialogDisplayHostHistogram[] =
 
 class MockPrivacySandboxService : public PrivacySandboxService {
  public:
-  MOCK_METHOD(PrivacySandboxService::DialogType,
-              GetRequiredDialogType,
+  MOCK_METHOD(PrivacySandboxService::PromptType,
+              GetRequiredPromptType,
               (),
               (override));
   MOCK_METHOD(void, DialogOpenedForBrowser, (Browser*), (override));
@@ -83,14 +83,14 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
                     context,
                     base::BindRepeating(&CreateMockPrivacySandboxService)));
 
-    ON_CALL(*mock_privacy_sandbox_service, GetRequiredDialogType())
-        .WillByDefault(testing::Return(TestDialogType()));
+    ON_CALL(*mock_privacy_sandbox_service, GetRequiredPromptType())
+        .WillByDefault(testing::Return(TestPromptType()));
     ON_CALL(*mock_privacy_sandbox_service, IsDialogOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));
   }
 
-  virtual PrivacySandboxService::DialogType TestDialogType() {
-    return PrivacySandboxService::DialogType::kNone;
+  virtual PrivacySandboxService::PromptType TestPromptType() {
+    return PrivacySandboxService::PromptType::kNone;
   }
 
   syncer::TestSyncService* test_sync_service() {
@@ -109,7 +109,7 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogHelperTest, NoDialogRequired) {
-  // Check when no dialog is required, it is not shown.
+  // Check when no prompt is required, it is not shown.
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
       .Times(0);
@@ -121,18 +121,18 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogHelperTest, NoDialogRequired) {
 class PrivacySandboxDialogHelperTestWithParam
     : public PrivacySandboxDialogHelperTest,
       public testing::WithParamInterface<bool> {
-  PrivacySandboxService::DialogType TestDialogType() override {
+  PrivacySandboxService::PromptType TestPromptType() override {
     // Setup consent / notice based on testing parameter. Helper behavior should
-    // be identical regardless of which type of dialog is required.
-    return GetParam() ? PrivacySandboxService::DialogType::kConsent
-                      : PrivacySandboxService::DialogType::kNotice;
+    // be identical regardless of which type of prompt is required.
+    return GetParam() ? PrivacySandboxService::PromptType::kConsent
+                      : PrivacySandboxService::PromptType::kNotice;
   }
 };
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensOnNtp) {
   // Check when a navigation to the Chrome controlled NTP occurs, which is a
-  // suitable location, a dialog is shown.
+  // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensAboutBlank) {
   // Check when a navigation to about:blank occurs, which is a suitable
-  // location, a dialog is shown.
+  // location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensOnSettings) {
   // Check when a navigation to the Chrome settings occurs, which is a
-  // suitable location, a dialog is shown.
+  // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        DialogOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a
-  // suitable location, a dialog is shown.
+  // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        NoDialogNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
-  // NTP is used, do not show a dialog.
+  // NTP is used, do not show a prompt.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
-  // Check when sync setup is in progress, that no dialog is shown.
+  // Check when sync setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
-  // Check that no dialog is shown for navigations to unsuitable URLs.
+  // Check that no prompt is shown for navigations to unsuitable URLs.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        SingleDialogPerBrowser) {
-  // Check that only a single dialog is opened per browser window at a time.
+  // Check that only a single prompt is opened per browser window at a time.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(browser()))
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                        MultipleBrowserWindows) {
   // Check that if multiple browser windows are opened, and navigated to
-  // appropriate tabs, two dialogs are opened.
+  // appropriate tabs, two prompts are opened.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
               DialogOpenedForBrowser(testing::_))

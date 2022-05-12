@@ -12,13 +12,13 @@ class Browser;
 // Creates and shows a dialog or bubble for |browser| displaying the Privacy
 // Sandbox notice or consent to the user.
 void ShowPrivacySandboxPrompt(Browser* browser,
-                              PrivacySandboxService::DialogType dialog_type);
+                              PrivacySandboxService::PromptType prompt_type);
 
 // Creates and shows a dialog for |browser| displaying the Privacy Sandbox
 // notice or consent to the user. Specific implementations are responsible for
-// altering the content as appropriate based on |dialog_type|.
+// altering the content as appropriate based on |prompt_type|.
 void ShowPrivacySandboxDialog(Browser* browser,
-                              PrivacySandboxService::DialogType dialog_type);
+                              PrivacySandboxService::PromptType prompt_type);
 
 // Creates and shows a bubble for |browser| displaying the Privacy Sandbox
 // notice the user.

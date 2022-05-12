@@ -19,18 +19,18 @@
 
 namespace {
 
-// Gets the type of dialog that should be displayed for |profile|, this includes
-// the possibility of no dialog being required.
-PrivacySandboxService::DialogType GetRequiredDialogType(Profile* profile) {
+// Gets the type of prompt that should be displayed for |profile|, this includes
+// the possibility of no prompt being required.
+PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
   if (!profile || !profile->IsRegularProfile())
-    return PrivacySandboxService::DialogType::kNone;
+    return PrivacySandboxService::PromptType::kNone;
 
   auto* privacy_sandbox_serivce =
       PrivacySandboxServiceFactory::GetForProfile(profile);
   if (!privacy_sandbox_serivce)
-    return PrivacySandboxService::DialogType::kNone;
+    return PrivacySandboxService::PromptType::kNone;
 
-  return privacy_sandbox_serivce->GetRequiredDialogType();
+  return privacy_sandbox_serivce->GetRequiredPromptType();
 }
 
 }  // namespace
@@ -53,7 +53,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     return;
   }
 
-  // Check whether the navigation target is a suitable dialog location. The
+  // Check whether the navigation target is a suitable prompt location. The
   // navigation URL, rather than the visible or committed URL, is required to
   // distinguish between different types of NTPs.
   if (!PrivacySandboxService::IsUrlSuitableForDialog(
@@ -61,7 +61,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
     return;
   }
 
-  // If a Sync setup is in progress, the dialog should not be shown.
+  // If a Sync setup is in progress, the prompt should not be shown.
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile())) {
     if (sync_service->IsSetupInProgress())
       return;
@@ -70,7 +70,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   auto* browser =
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
 
-  // If a Privacy Sandbox dialog already exists for this browser, do not attempt
+  // If a Privacy Sandbox prompt already exists for this browser, do not attempt
   // to open another one.
   if (auto* privacy_sandbox_serivce =
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
@@ -78,7 +78,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       return;
   }
 
-  // Record the URL that the dialog was displayed over.
+  // Record the URL that the prompt was displayed over.
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
                                       : navigation_handle->GetURL().host());
@@ -89,13 +89,13 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       browser->tab_strip_model()->GetIndexOfWebContents(
           navigation_handle->GetWebContents()));
 
-  ShowPrivacySandboxPrompt(browser, GetRequiredDialogType(profile()));
+  ShowPrivacySandboxPrompt(browser, GetRequiredPromptType(profile()));
 }
 
 // static
 bool PrivacySandboxPromptHelper::ProfileRequiresDialog(Profile* profile) {
-  return GetRequiredDialogType(profile) !=
-         PrivacySandboxService::DialogType::kNone;
+  return GetRequiredPromptType(profile) !=
+         PrivacySandboxService::PromptType::kNone;
 }
 
 Profile* PrivacySandboxPromptHelper::profile() {

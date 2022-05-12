@@ -16,7 +16,7 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
                               base::OnceCallback<void(int)> resize_callback,
                               base::OnceClosure show_dialog_callback,
                               base::OnceClosure open_settings_callback,
-                              PrivacySandboxService::DialogType dialog_type);
+                              PrivacySandboxService::PromptType prompt_type);
   ~PrivacySandboxDialogHandler() override;
 
   // content::WebUIMessageHandler:
@@ -55,7 +55,7 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   base::OnceCallback<void(int)> resize_callback_;
   base::OnceClosure show_dialog_callback_;
   base::OnceClosure open_settings_callback_;
-  PrivacySandboxService::DialogType dialog_type_;
+  PrivacySandboxService::PromptType prompt_type_;
 
   raw_ptr<PrivacySandboxService> privacy_sandbox_service_;
 

@@ -36,15 +36,15 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    PrivacySandboxService::DialogType dialog_type =
-        PrivacySandboxService::DialogType::kNone;
+    PrivacySandboxService::PromptType prompt_type =
+        PrivacySandboxService::PromptType::kNone;
     if (name == "Consent") {
-      dialog_type = PrivacySandboxService::DialogType::kConsent;
+      prompt_type = PrivacySandboxService::PromptType::kConsent;
     }
     if (name == "Notice") {
-      dialog_type = PrivacySandboxService::DialogType::kNotice;
+      prompt_type = PrivacySandboxService::PromptType::kNotice;
     }
-    ASSERT_NE(dialog_type, PrivacySandboxService::DialogType::kNone);
+    ASSERT_NE(prompt_type, PrivacySandboxService::PromptType::kNone);
 
     // Resize the browser window to guarantee enough space for the dialog.
     BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
@@ -53,7 +53,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxPrompt(browser(), dialog_type);
+    ShowPrivacySandboxPrompt(browser(), prompt_type);
     waiter.WaitIfNeededAndGet();
 
     base::RunLoop().RunUntilIdle();

@@ -61,7 +61,7 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
 
 // static
 void ShowPrivacySandboxDialog(Browser* browser,
-                              PrivacySandboxService::DialogType dialog_type) {
+                              PrivacySandboxService::PromptType prompt_type) {
   auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -69,14 +69,14 @@ void ShowPrivacySandboxDialog(Browser* browser,
   delegate->SetOwnedByWidget(true);
 
   delegate->SetContentsView(
-      std::make_unique<PrivacySandboxDialogView>(browser, dialog_type));
+      std::make_unique<PrivacySandboxDialogView>(browser, prompt_type));
   constrained_window::CreateBrowserModalDialogViews(
       std::move(delegate), browser->window()->GetNativeWindow());
 }
 
 PrivacySandboxDialogView::PrivacySandboxDialogView(
     Browser* browser,
-    PrivacySandboxService::DialogType dialog_type)
+    PrivacySandboxService::PromptType prompt_type)
     : browser_(browser) {
   // Create the web view in the native bubble.
   dialog_created_time_ = base::TimeTicks::Now();
@@ -86,7 +86,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
 
   auto width =
       views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogWidth);
-  auto height = dialog_type == PrivacySandboxService::DialogType::kConsent
+  auto height = prompt_type == PrivacySandboxService::PromptType::kConsent
                     ? kDefaultConsentDialogHeight
                     : kDefaultNoticeDialogHeight;
   web_view_->SetPreferredSize(gfx::Size(width, height));
@@ -106,7 +106,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
                      base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
                      base::Unretained(this)),
-      dialog_type);
+      prompt_type);
 
   SetUseDefaultFillLayout(true);
 }

@@ -130,16 +130,16 @@ static void JNI_PrivacySandboxBridge_SetTopicAllowed(JNIEnv* env,
       allowed);
 }
 
-static jint JNI_PrivacySandboxBridge_GetRequiredDialogType(JNIEnv* env) {
+static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(JNIEnv* env) {
   // If the FRE is disabled, as it is in tests which must not be interrupted
   // with dialogs, do not attempt to show a dialog.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch("disable-fre"))
-    return static_cast<int>(PrivacySandboxService::DialogType::kNone);
+    return static_cast<int>(PrivacySandboxService::PromptType::kNone);
 
   return static_cast<int>(PrivacySandboxServiceFactory::GetForProfile(
                               ProfileManager::GetActiveUserProfile())
-                              ->GetRequiredDialogType());
+                              ->GetRequiredPromptType());
 }
 
 static void JNI_PrivacySandboxBridge_DialogActionOccurred(JNIEnv* env,
