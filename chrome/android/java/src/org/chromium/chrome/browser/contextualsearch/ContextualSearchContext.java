@@ -39,10 +39,6 @@ public abstract class ContextualSearchContext {
     private int mSelectionStartOffset = INVALID_OFFSET;
     private int mSelectionEndOffset = INVALID_OFFSET;
 
-    // The home country, or an empty string if not set.
-    @NonNull
-    private String mHomeCountry = "";
-
     // The detected language of the context, or {@code null} if not yet detected, and empty if
     // it cannot be reliably determined.
     private String mDetectedLanguage;
@@ -66,12 +62,6 @@ public abstract class ContextualSearchContext {
 
     // The offset of the tap within the tapped word, or {@code INVALID_OFFSET} if not yet analyzed.
     private int mTapWithinWordOffset = INVALID_OFFSET;
-
-    // The words before and after the tapped word, and their offsets.
-    private String mWordPreviousToTap;
-    private int mWordPreviousToTapOffset = INVALID_OFFSET;
-    private String mWordFollowingTap;
-    private int mWordFollowingTapOffset = INVALID_OFFSET;
 
     // Data about the previous user interactions and the event-ID from the server that will log it.
     private long mPreviousEventId;
@@ -112,7 +102,6 @@ public abstract class ContextualSearchContext {
             @NonNull String fluentLanguages) {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
-        mHomeCountry = homeCountry;
         mPreviousEventId = previousEventId;
         mPreviousUserInteractions = previousUserInteractions;
         ContextualSearchContextJni.get().setResolveProperties(getNativePointer(), this, homeCountry,
@@ -221,13 +210,6 @@ public abstract class ContextualSearchContext {
      */
     String getEncoding() {
         return mEncoding;
-    }
-
-    /**
-     * @return The home country, or an empty string if none set.
-     */
-    String getHomeCountry() {
-        return mHomeCountry;
     }
 
     /**
@@ -392,51 +374,12 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * @return The offset of the start of the tapped word, or {@code INVALID_OFFSET} if the tapped
-     *         word cannot be identified by the current parsing capability.
-     * @see #analyzeTap(int)
-     */
-    int getWordTappedOffset() {
-        return mWordTappedStartOffset;
-    }
-
-    /**
      * @return The offset of the tap within the tapped word, or {@code INVALID_OFFSET} if the tapped
      *         word cannot be identified by the current parsing capability.
      * @see #analyzeTap(int)
      */
     int getTapOffsetWithinTappedWord() {
         return mTapWithinWordOffset;
-    }
-
-    /**
-     * @return The word previous to the word that was tapped, or {@code null} if not available.
-     */
-    String getWordPreviousToTap() {
-        return mWordPreviousToTap;
-    }
-
-    /**
-     * @return The offset of the first character of the word previous to the word that was tapped,
-     *         or {@code INVALID_OFFSET} if not available.
-     */
-    int getWordPreviousToTapOffset() {
-        return mWordPreviousToTapOffset;
-    }
-
-    /**
-     * @return The word following the word that was tapped, or {@code null} if not available.
-     */
-    String getWordFollowingTap() {
-        return mWordFollowingTap;
-    }
-
-    /**
-     * @return The offset of the first character of the word following the word that was tapped,
-     *         or {@code INVALID_OFFSET} if not available.
-     */
-    int getWordFollowingTapOffset() {
-        return mWordFollowingTapOffset;
     }
 
     /**
@@ -457,50 +400,8 @@ public abstract class ContextualSearchContext {
         int wordEndOffset = findWordEndOffset(mTapOffset);
         if (wordStartOffset == INVALID_OFFSET || wordEndOffset == INVALID_OFFSET) return;
 
-        mWordTappedStartOffset = wordStartOffset;
         mWordTapped = mSurroundingText.substring(wordStartOffset, wordEndOffset);
         mTapWithinWordOffset = mTapOffset - wordStartOffset;
-
-        findPreviousWord();
-        findFollowingWord();
-    }
-
-    /**
-     * Finds the word previous to the word tapped.
-     */
-    private void findPreviousWord() {
-        // Scan past word-break characters preceding the tapped word.
-        int previousWordEndOffset = mWordTappedStartOffset;
-        while (previousWordEndOffset >= 1 && isWordBreakAtIndex(previousWordEndOffset - 1)) {
-            --previousWordEndOffset;
-        }
-        if (previousWordEndOffset == 0) return;
-
-        mWordPreviousToTapOffset = findWordStartOffset(previousWordEndOffset);
-        if (mWordPreviousToTapOffset == INVALID_OFFSET) return;
-
-        mWordPreviousToTap =
-                mSurroundingText.substring(mWordPreviousToTapOffset, previousWordEndOffset);
-    }
-
-    /**
-     * Finds the word following the word tapped.
-     */
-    private void findFollowingWord() {
-        int tappedWordOffset = getWordTappedOffset();
-        int followingWordStartOffset = tappedWordOffset + mWordTapped.length() + 1;
-        while (followingWordStartOffset < mSurroundingText.length()
-                && isWordBreakAtIndex(followingWordStartOffset)) {
-            ++followingWordStartOffset;
-        }
-        if (followingWordStartOffset == mSurroundingText.length()) return;
-
-        int wordFollowingTapEndOffset = findWordEndOffset(followingWordStartOffset);
-        if (wordFollowingTapEndOffset == INVALID_OFFSET) return;
-
-        mWordFollowingTapOffset = followingWordStartOffset;
-        mWordFollowingTap =
-                mSurroundingText.substring(mWordFollowingTapOffset, wordFollowingTapEndOffset);
     }
 
     /**

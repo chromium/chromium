@@ -71,7 +71,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/contextmenu/ContextMenuCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContextTest.java",
-  "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchEntityHeuristicTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSelectionControllerTest.java",
   "junit/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTranslationImplTest.java",

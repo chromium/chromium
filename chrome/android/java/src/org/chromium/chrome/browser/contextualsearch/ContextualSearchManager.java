@@ -1844,7 +1844,7 @@ public class ContextualSearchManager
             public void decideSuppression() {
                 mInternalStateController.notifyStartingWorkOn(InternalState.DECIDING_SUPPRESSION);
                 // TODO(donnd): Move handleShouldSuppressTap out of the Selection Controller.
-                mSelectionController.handleShouldSuppressTap(mContext, mInteractionRecorder);
+                mSelectionController.handleShouldSuppressTap(mInteractionRecorder);
             }
 
             /** Starts showing the Tap UI by selecting a word around the current caret. */

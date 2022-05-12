@@ -450,17 +450,15 @@ public class ContextualSearchSelectionController {
      * or #handleNonSuppressedTap() after a possible delay.
      * This should be called when the context is fully built (by gathering surrounding text
      * if needed, etc) but before showing any UX.
-     * @param contextualSearchContext The {@link ContextualSearchContext} for the Tap gesture.
      * @param interactionRecorder The {@link ContextualSearchInteractionRecorder} currently being
      * used to measure or suppress the UI by Ranker.
      */
-    void handleShouldSuppressTap(ContextualSearchContext contextualSearchContext,
-            ContextualSearchInteractionRecorder interactionRecorder) {
+    void handleShouldSuppressTap(ContextualSearchInteractionRecorder interactionRecorder) {
         int x = (int) mX;
         int y = (int) mY;
 
         TapSuppressionHeuristics tapHeuristics = new TapSuppressionHeuristics(
-                this, mLastTapState, x, y, contextualSearchContext, mWasSelectionEmptyBeforeTap);
+                this, mLastTapState, x, y, mWasSelectionEmptyBeforeTap);
         // TODO(donnd): Move to be called when the panel closes to work with states that change.
         tapHeuristics.logConditionState();
 

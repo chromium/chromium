@@ -17,18 +17,16 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
      * @param previousTapState The state of the previous tap, or {@code null}.
      * @param x The x position of the Tap.
      * @param y The y position of the Tap.
-     * @param contextualSearchContext The {@link ContextualSearchContext} of this tap.
      * @param wasSelectionEmptyBeforeTap Whether the selection was empty before this tap.
      */
     TapSuppressionHeuristics(ContextualSearchSelectionController selectionController,
             @Nullable ContextualSearchTapState previousTapState, int x, int y,
-            ContextualSearchContext contextualSearchContext, boolean wasSelectionEmptyBeforeTap) {
+            boolean wasSelectionEmptyBeforeTap) {
         super();
         mHeuristics.add(new EngagementSuppression());
         mHeuristics.add(new RecentScrollTapSuppression(selectionController));
         mHeuristics.add(new TapFarFromPreviousSuppression(
                 selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));
-        mHeuristics.add(new ContextualSearchEntityHeuristic(contextualSearchContext));
         // Quick Answer that appears in the Caption via the JS API.
         QuickAnswersHeuristic quickAnswersHeuristic = new QuickAnswersHeuristic();
         setQuickAnswersHeuristic(quickAnswersHeuristic);
