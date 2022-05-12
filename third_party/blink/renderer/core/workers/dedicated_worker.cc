@@ -489,7 +489,7 @@ DedicatedWorker::CreateWebWorkerFetchContext() {
     } else {
       web_worker_fetch_context = frame->Client()->CreateWorkerFetchContext();
     }
-    web_worker_fetch_context->SetIsOnSubframe(!frame->IsMainFrame());
+    web_worker_fetch_context->SetIsOnSubframe(!frame->IsOutermostMainFrame());
     return web_worker_fetch_context;
   }
 
