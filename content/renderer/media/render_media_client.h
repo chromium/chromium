@@ -5,8 +5,13 @@
 #ifndef CONTENT_RENDERER_MEDIA_RENDER_MEDIA_CLIENT_H_
 #define CONTENT_RENDERER_MEDIA_RENDER_MEDIA_CLIENT_H_
 
+#include "base/synchronization/waitable_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_client.h"
+
+namespace gpu {
+class GpuChannelHost;
+}
 
 namespace content {
 
@@ -33,6 +38,13 @@ class RenderMediaClient : public media::MediaClient {
  private:
   RenderMediaClient();
   ~RenderMediaClient() override;
+
+  void OnEstablishedGpuChannel(scoped_refptr<gpu::GpuChannelHost> host);
+
+  // Used to indicate if optional video profile support information has been
+  // retrieved from the GPU channel. May be waited upon by any thread but the
+  // RenderThread since it's always signaled from the RenderThread.
+  base::WaitableEvent did_update_;
 };
 
 }  // namespace content

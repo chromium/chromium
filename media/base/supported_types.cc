@@ -41,7 +41,6 @@ class SupplementalProfileCache {
  public:
   void UpdateCache(const base::flat_set<media::VideoCodecProfile>& profiles) {
     base::AutoLock lock(profiles_lock_);
-    DCHECK_EQ(profiles_.size(), 0u);
     profiles_ = profiles;
   }
   bool IsProfileSupported(media::VideoCodecProfile profile) {
