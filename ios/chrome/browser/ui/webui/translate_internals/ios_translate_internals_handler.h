@@ -38,9 +38,6 @@ class IOSTranslateInternalsHandler
   variations::VariationsService* GetVariationsService() override;
   void RegisterMessageCallback(const std::string& message,
                                MessageCallback callback) override;
-  void RegisterDeprecatedMessageCallback(
-      const std::string& message,
-      const DeprecatedMessageCallback& callback) override;
   void CallJavascriptFunction(
       const std::string& function_name,
       const std::vector<const base::Value*>& args) override;

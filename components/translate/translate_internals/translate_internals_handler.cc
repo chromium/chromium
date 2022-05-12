@@ -68,19 +68,19 @@ base::Value TranslateInternalsHandler::GetLanguages() {
 }
 
 void TranslateInternalsHandler::RegisterMessageCallbacks() {
-  RegisterDeprecatedMessageCallback(
+  RegisterMessageCallback(
       "removePrefItem",
       base::BindRepeating(&TranslateInternalsHandler::OnRemovePrefItem,
                           base::Unretained(this)));
-  RegisterDeprecatedMessageCallback(
+  RegisterMessageCallback(
       "setRecentTargetLanguage",
       base::BindRepeating(&TranslateInternalsHandler::OnSetRecentTargetLanguage,
                           base::Unretained(this)));
-  RegisterDeprecatedMessageCallback(
+  RegisterMessageCallback(
       "requestInfo",
       base::BindRepeating(&TranslateInternalsHandler::OnRequestInfo,
                           base::Unretained(this)));
-  RegisterDeprecatedMessageCallback(
+  RegisterMessageCallback(
       "overrideCountry",
       base::BindRepeating(&TranslateInternalsHandler::OnOverrideCountry,
                           base::Unretained(this)));
@@ -160,31 +160,32 @@ void TranslateInternalsHandler::OnTranslateEvent(
   SendMessageToJs("translateEventDetailsAdded", dict);
 }
 
-void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
+void TranslateInternalsHandler::OnRemovePrefItem(
+    const base::Value::List& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  if (!args->GetListDeprecated()[0].is_string())
+  if (!args[0].is_string())
     return;
 
-  const std::string& pref_name = args->GetListDeprecated()[0].GetString();
+  const std::string& pref_name = args[0].GetString();
   if (pref_name == "blocked_languages") {
-    if (!args->GetListDeprecated()[1].is_string())
+    if (!args[1].is_string())
       return;
-    const std::string& language = args->GetListDeprecated()[1].GetString();
+    const std::string& language = args[1].GetString();
     translate_prefs->UnblockLanguage(language);
   } else if (pref_name == "site_blocklist") {
-    if (!args->GetListDeprecated()[1].is_string())
+    if (!args[1].is_string())
       return;
-    const std::string& site = args->GetListDeprecated()[1].GetString();
+    const std::string& site = args[1].GetString();
     translate_prefs->RemoveSiteFromNeverPromptList(site);
   } else if (pref_name == "allowlists") {
-    if (!args->GetListDeprecated()[1].is_string())
+    if (!args[1].is_string())
       return;
-    if (!args->GetListDeprecated()[2].is_string())
+    if (!args[2].is_string())
       return;
-    const std::string& from = args->GetListDeprecated()[1].GetString();
-    const std::string& to = args->GetListDeprecated()[2].GetString();
+    const std::string& from = args[1].GetString();
+    const std::string& to = args[2].GetString();
     translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(from, to);
   } else {
     return;
@@ -194,29 +195,31 @@ void TranslateInternalsHandler::OnRemovePrefItem(const base::ListValue* args) {
 }
 
 void TranslateInternalsHandler::OnSetRecentTargetLanguage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       GetTranslateClient()->GetTranslatePrefs();
 
-  if (!args->GetListDeprecated()[0].is_string())
+  if (!args[0].is_string())
     return;
 
-  const std::string& new_value = args->GetListDeprecated()[0].GetString();
+  const std::string& new_value = args[0].GetString();
   translate_prefs->SetRecentTargetLanguage(new_value);
 
   SendPrefsToJs();
 }
 
-void TranslateInternalsHandler::OnOverrideCountry(const base::ListValue* args) {
-  if (args->GetListDeprecated()[0].is_string()) {
-    const std::string& country = args->GetListDeprecated()[0].GetString();
+void TranslateInternalsHandler::OnOverrideCountry(
+    const base::Value::List& args) {
+  if (args[0].is_string()) {
+    const std::string& country = args[0].GetString();
     variations::VariationsService* variations_service = GetVariationsService();
     SendCountryToJs(
         variations_service->OverrideStoredPermanentCountry(country));
   }
 }
 
-void TranslateInternalsHandler::OnRequestInfo(const base::ListValue* /*args*/) {
+void TranslateInternalsHandler::OnRequestInfo(
+    const base::Value::List& /*args*/) {
   SendPrefsToJs();
   SendSupportedLanguagesToJs();
   SendCountryToJs(false);

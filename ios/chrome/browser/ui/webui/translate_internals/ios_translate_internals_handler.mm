@@ -38,12 +38,6 @@ void IOSTranslateInternalsHandler::RegisterMessageCallback(
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
-void IOSTranslateInternalsHandler::RegisterDeprecatedMessageCallback(
-    const std::string& message,
-    const DeprecatedMessageCallback& callback) {
-  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
-}
-
 void IOSTranslateInternalsHandler::CallJavascriptFunction(
     const std::string& function_name,
     const std::vector<const base::Value*>& args) {

@@ -55,12 +55,6 @@ void ChromeTranslateInternalsHandler::RegisterMessageCallback(
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
-void ChromeTranslateInternalsHandler::RegisterDeprecatedMessageCallback(
-    const std::string& message,
-    const DeprecatedMessageCallback& callback) {
-  web_ui()->RegisterDeprecatedMessageCallback(message, callback);
-}
-
 void ChromeTranslateInternalsHandler::CallJavascriptFunction(
     const std::string& function_name,
     const std::vector<const base::Value*>& args) {
