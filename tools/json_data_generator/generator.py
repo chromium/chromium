@@ -104,4 +104,4 @@ class JSONDataGenerator(object):
             sys.path.remove(template_helper_dir)
 
     def _ToHeaderGuard(self, path: str):
-        return re.sub(r'[\/\.\-]+', '_', path.upper())
+        return re.sub(r'[\\\/\.\-]+', '_', path.upper())
