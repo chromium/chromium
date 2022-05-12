@@ -1919,6 +1919,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
   // Let the capture button handle any events it can handle first.
   if (ShouldCaptureLabelHandleEvent(event_target)) {
+    // Don't hide capture settings when the event is targeted on the the capture
+    // label. The event on the capture label may lead to perform capture, and
+    // `PerformCapture` will take care of settings menu's visibility.
+    std::ignore = deferred_settings_hider.Release();
     UpdateCursor(screen_location, is_touch);
     return;
   }
