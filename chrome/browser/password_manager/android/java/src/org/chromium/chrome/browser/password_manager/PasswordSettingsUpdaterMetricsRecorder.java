@@ -78,8 +78,7 @@ class PasswordSettingsUpdaterMetricsRecorder {
                 getHistogramName("ErrorCode"), error, AndroidBackendErrorType.MAX_VALUE + 1);
         if (error == AndroidBackendErrorType.EXTERNAL_ERROR) {
             int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
-            RecordHistogram.recordEnumeratedHistogram(
-                    getHistogramName("APIError"), apiErrorCode, ChromeSyncStatusCode.MAX_VALUE + 1);
+            RecordHistogram.recordSparseHistogram(getHistogramName("APIError1"), apiErrorCode);
         }
     }
 }

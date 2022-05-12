@@ -87,7 +87,7 @@ public class PasswordSettingsUpdaterBridgeTest {
                         nameWithSuffixes + ".ErrorCode"));
         assertEquals(0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                        nameWithSuffixes + ".APIError"));
+                        nameWithSuffixes + ".APIError1"));
     }
 
     private void checkFailureHistograms(
@@ -109,11 +109,11 @@ public class PasswordSettingsUpdaterBridgeTest {
         apiErrorCode.ifPresentOrElse(apiError
                 -> assertEquals(1,
                         ShadowRecordHistogram.getHistogramValueCountForTesting(
-                                nameWithSuffixes + ".APIError", apiError)),
+                                nameWithSuffixes + ".APIError1", apiError)),
                 ()
                         -> assertEquals(0,
                                 ShadowRecordHistogram.getHistogramTotalCountForTesting(
-                                        nameWithSuffixes + ".APIError")));
+                                        nameWithSuffixes + ".APIError1")));
     }
 
     @Test

@@ -2116,7 +2116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError"
+    name="PasswordManager.PasswordSettings.{Function}.{Setting}.APIError1"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="M106">
   <owner>maxan@google.com</owner>
   <owner>ioanap@chromium.org</owner>
@@ -2124,6 +2124,10 @@ chromium-metrics-reviews@google.com.
     The error codes returned by the GMS Core Password preferences 1P API while
     attempting to {Function} for {Setting}. Recorded when the asynchronous job
     has returned. This is currently only recorded on Android.
+
+    Replacing PasswordManager.PasswordSettings.{Function}.{Setting}.APIError
+    which incorrectly recorded *only* the enum values and crashed for all
+    unknown values.
   </summary>
   <token key="Function" variants="PasswordManagerSettingAccessorFunction"/>
   <token key="Setting" variants="PasswordManagerSetting"/>
