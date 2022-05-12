@@ -198,13 +198,11 @@ bool RotateLacrosLogs() {
 // Return false when there is a failure that might break resource file sharing
 // feature.
 bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
-  base::FilePath shared_resource_path;
+  base::FilePath shared_resource_path =
+      browser_util::GetUserDataDir().Append(crosapi::kSharedResourcesPackName);
   // If shared resource pak doesn't exit, do nothing.
-  if (!base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
-                              &shared_resource_path) ||
-      !base::PathExists(shared_resource_path)) {
+  if (!base::PathExists(shared_resource_path))
     return true;
-  }
 
   // Clear shared resource file cache if `clear_shared_resource_file` is true.
   if (clear_shared_resource_file) {

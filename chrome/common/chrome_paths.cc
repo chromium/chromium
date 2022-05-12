@@ -43,6 +43,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/lacros/lacros_paths.h"
 #endif
 
@@ -366,14 +367,12 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif
       break;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     case chrome::FILE_RESOURCES_FOR_SHARING_PACK:
       if (!GetDefaultUserDataDirectory(&cur))
         return false;
-      cur = cur.Append(FILE_PATH_LITERAL("resources_for_sharing.rspak"));
+      cur = cur.Append(FILE_PATH_LITERAL(crosapi::kSharedResourcesPackName));
       break;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     case chrome::FILE_ASH_RESOURCES_PACK:
       if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
                                   &cur))
