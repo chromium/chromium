@@ -5,7 +5,7 @@
 import 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 
 import {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
-import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -16,11 +16,11 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 class TestPrivacySandboxDialogBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxDialogBrowserProxy {
   constructor() {
-    super(['dialogActionOccurred', 'resizeDialog', 'showDialog']);
+    super(['promptActionOccurred', 'resizeDialog', 'showDialog']);
   }
 
-  dialogActionOccurred() {
-    this.methodCalled('dialogActionOccurred', arguments);
+  promptActionOccurred() {
+    this.methodCalled('promptActionOccurred', arguments);
   }
 
   resizeDialog() {
@@ -79,14 +79,14 @@ suite('PrivacySandboxDialogConsent', function() {
 
   test('acceptClicked', async function() {
     testClickButton('#confirmButton');
-    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
-    assertEquals(action, PrivacySandboxDialogAction.CONSENT_ACCEPTED);
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, PrivacySandboxPromptAction.CONSENT_ACCEPTED);
   });
 
   test('declineClicked', async function() {
     testClickButton('#declineButton');
-    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
-    assertEquals(action, PrivacySandboxDialogAction.CONSENT_DECLINED);
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, PrivacySandboxPromptAction.CONSENT_DECLINED);
   });
 
   test('learnMoreClicked', async function() {
@@ -106,9 +106,9 @@ suite('PrivacySandboxDialogConsent', function() {
     testClickButton('#expandSection cr-expand-button');
     // TODO(crbug.com/1286276): Add testing for the scroll position.
     const [openedAction] =
-        await browserProxy.whenCalled('dialogActionOccurred');
+        await browserProxy.whenCalled('promptActionOccurred');
     assertEquals(
-        openedAction, PrivacySandboxDialogAction.CONSENT_MORE_INFO_OPENED);
+        openedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
     assertTrue(collapseElement!.opened);
     assertTrue(contentArea!.classList.contains('can-scroll'));
 
@@ -119,10 +119,10 @@ suite('PrivacySandboxDialogConsent', function() {
     // and returns to the initial state.
     testClickButton('#expandSection cr-expand-button');
     const [closedAction] =
-        await browserProxy.whenCalled('dialogActionOccurred');
+        await browserProxy.whenCalled('promptActionOccurred');
     hasScrollbar = contentArea!.offsetHeight < contentArea!.scrollHeight;
     assertEquals(
-        closedAction, PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
+        closedAction, PrivacySandboxPromptAction.CONSENT_MORE_INFO_CLOSED);
     assertFalse(collapseElement!.opened);
     assertEquals(contentArea!.classList.contains('can-scroll'), hasScrollbar);
   });
@@ -131,7 +131,7 @@ suite('PrivacySandboxDialogConsent', function() {
     browserProxy.reset();
     pressAndReleaseKeyOn(page, 0, '', 'Escape');
     // No user action is triggered by pressing Esc.
-    assertEquals(browserProxy.getCallCount('dialogActionOccurred'), 0);
+    assertEquals(browserProxy.getCallCount('promptActionOccurred'), 0);
   });
 });
 
@@ -181,19 +181,19 @@ suite('PrivacySandboxDialogNotice', function() {
 
   test('ackClicked', async function() {
     testClickButton('#ackButton');
-    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
-    assertEquals(action, PrivacySandboxDialogAction.NOTICE_ACKNOWLEDGE);
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
   });
 
   test('settingsClicked', async function() {
     testClickButton('#settingsButton');
-    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
-    assertEquals(action, PrivacySandboxDialogAction.NOTICE_OPEN_SETTINGS);
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 
   test('escPressed', async function() {
     pressAndReleaseKeyOn(page, 0, '', 'Escape');
-    const [action] = await browserProxy.whenCalled('dialogActionOccurred');
-    assertEquals(action, PrivacySandboxDialogAction.NOTICE_DISMISS);
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, PrivacySandboxPromptAction.NOTICE_DISMISS);
   });
 });

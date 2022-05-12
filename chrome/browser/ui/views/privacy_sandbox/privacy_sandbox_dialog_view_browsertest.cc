@@ -74,21 +74,21 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
                        MAYBE_InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
-      DialogActionOccurred(PrivacySandboxService::DialogAction::kConsentShown));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
   EXPECT_CALL(
       *mock_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Notice) {
   EXPECT_CALL(
       *mock_service(),
-      DialogActionOccurred(PrivacySandboxService::DialogAction::kNoticeShown));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
   EXPECT_CALL(
       *mock_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
   ShowAndVerifyUi();
 }

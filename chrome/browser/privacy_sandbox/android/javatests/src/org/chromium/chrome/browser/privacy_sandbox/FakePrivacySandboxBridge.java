@@ -19,7 +19,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<Topic> mCurrentTopTopics = new HashSet<>();
     private final Set<Topic> mBlockedTopics = new HashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
-    private Integer mLastDialogAction;
+    private Integer mLastPromptAction;
 
     public FakePrivacySandboxBridge() {
         setCurrentTopTopics("Foo", "Bar");
@@ -155,15 +155,15 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void dialogActionOccurred(@DialogAction int action) {
-        mLastDialogAction = action;
+    public void promptActionOccurred(@PromptAction int action) {
+        mLastPromptAction = action;
     }
 
-    public Integer getLastDialogAction() {
-        return mLastDialogAction;
+    public Integer getLastPromptAction() {
+        return mLastPromptAction;
     }
 
-    public void resetLastDialogAction() {
-        mLastDialogAction = null;
+    public void resetLastPromptAction() {
+        mLastPromptAction = null;
     }
 }

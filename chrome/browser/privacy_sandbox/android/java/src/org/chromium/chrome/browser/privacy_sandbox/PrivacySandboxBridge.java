@@ -92,8 +92,8 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getRequiredPromptType();
     }
 
-    public static void dialogActionOccurred(@DialogAction int action) {
-        PrivacySandboxBridgeJni.get().dialogActionOccurred(action);
+    public static void promptActionOccurred(@PromptAction int action) {
+        PrivacySandboxBridgeJni.get().promptActionOccurred(action);
     }
 
     @NativeMethods
@@ -115,6 +115,6 @@ public class PrivacySandboxBridge {
         Topic[] getBlockedTopics();
         void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
         int getRequiredPromptType();
-        void dialogActionOccurred(int action);
+        void promptActionOccurred(int action);
     }
 }

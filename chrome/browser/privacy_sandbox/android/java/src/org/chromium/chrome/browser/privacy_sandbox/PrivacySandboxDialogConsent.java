@@ -60,7 +60,7 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
 
     @Override
     public void show() {
-        PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_SHOWN);
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_SHOWN);
         super.show();
     }
 
@@ -70,19 +70,19 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.yes_button) {
-            PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_ACCEPTED);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED);
             dismiss();
         } else if (id == R.id.no_button) {
-            PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_DECLINED);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED);
             dismiss();
         } else if (id == R.id.dropdown_element) {
             LinearLayout dropdownContainer = mContentView.findViewById(R.id.dropdown_container);
             if (mDropdownExpanded) {
-                PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_MORE_INFO_CLOSED);
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_CLOSED);
                 dropdownContainer.removeAllViews();
                 dropdownContainer.setVisibility(View.GONE);
             } else {
-                PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_MORE_INFO_OPENED);
+                PrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_MORE_INFO_OPENED);
                 dropdownContainer.setVisibility(View.VISIBLE);
                 mLayoutInflater.inflate(
                         R.layout.privacy_sandbox_consent_dropdown, dropdownContainer);
