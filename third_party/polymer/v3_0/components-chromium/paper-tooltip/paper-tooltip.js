@@ -74,7 +74,6 @@ Polymer({
         color: var(--paper-tooltip-text-color, white);
         padding: 8px;
         border-radius: 2px;
-        @apply --paper-tooltip;
       }
 
       @keyframes keyFrameScaleUp {
@@ -222,7 +221,7 @@ Polymer({
       }
     </style>
 
-    <div id="tooltip" class="hidden">
+    <div id="tooltip" class="hidden" part="tooltip">
       <slot></slot>
     </div>
 `,

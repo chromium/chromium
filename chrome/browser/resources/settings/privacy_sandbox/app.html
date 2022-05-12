@@ -162,6 +162,16 @@
     --paper-tooltip-duration-in: 300;
     --paper-tooltip-opacity: 1;
   }
+
+  paper-tooltip::part(tooltip) {
+    border-radius: 4px;
+    box-shadow: var(--cr-elevation-2);
+    font-family: Roboto, Arial, sans-serif;
+    font-size: inherit;
+    font-weight: 400;
+    line-height: 154%;  /* 20px. */
+    margin: 0 4px;
+  }
 </style>
 
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>

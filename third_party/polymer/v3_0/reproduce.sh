@@ -51,6 +51,7 @@ find components-chromium/polymer/ -mindepth 3 -maxdepth 3 -name '*.js' \
 
 # Apply additional chrome specific patches.
 patch -p1 --forward -r - < chromium.patch
+patch -p1 --forward -r - < paper_tooltip.patch
 
 echo 'Minifying Polymer 3, since it comes non-minified from NPM.'
 python minify_polymer.py

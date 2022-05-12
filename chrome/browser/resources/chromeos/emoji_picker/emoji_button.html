@@ -71,19 +71,15 @@
     --paper-tooltip-delay-out: var(--emoji-tooltip-delay-out);
     --paper-tooltip-duration-in: 0;
     --paper-tooltip-duration-out: 0;
+  }
 
-    /* CSS mixin goes against style guide, but this is the only way to style
-     * the paper tooltip without changing the source code (which is in
-     * third_party)
-     */
-    --paper-tooltip: {
-      box-shadow: var(--cr-elevation-1);
-      font-family: 'Roboto', sans-serif;
-      font-size: 12px;
-      margin: 4px;
-      padding: 4px 8px 4px 8px;
-      white-space: nowrap;
-    };
+  #tooltip::part(tooltip) {
+    box-shadow: var(--cr-elevation-1);
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    margin: 4px;
+    padding: 4px 8px 4px 8px;
+    white-space: nowrap;
   }
 </style>
 
