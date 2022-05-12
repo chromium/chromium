@@ -14,6 +14,8 @@ source_set("updater") {
     "extension_downloader.h",
     "extension_downloader_delegate.cc",
     "extension_downloader_delegate.h",
+    "extension_downloader_task.cc",
+    "extension_downloader_task.h",
     "extension_downloader_test_delegate.h",
     "extension_downloader_types.h",
     "extension_installer.cc",
