@@ -25,8 +25,6 @@ class RoundedLabelWidget : public views::Widget {
     std::string name;
     int horizontal_padding;
     int vertical_padding;
-    SkColor background_color;
-    SkColor foreground_color;
     int rounding_dp;
     int preferred_height;
     int message_id;

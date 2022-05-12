@@ -27,8 +27,6 @@ class RoundedLabelView : public views::Label {
  public:
   RoundedLabelView(int horizontal_padding,
                    int vertical_padding,
-                   SkColor background_color,
-                   SkColor foreground_color,
                    int rounding_dp,
                    int preferred_height,
                    int message_id)
@@ -37,11 +35,9 @@ class RoundedLabelView : public views::Label {
         preferred_height_(preferred_height) {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(vertical_padding, horizontal_padding)));
-    SetBackground(views::CreateSolidBackground(background_color));
 
+    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetEnabledColor(foreground_color);
-    SetBackgroundColor(background_color);
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -57,6 +53,17 @@ class RoundedLabelView : public views::Label {
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(views::Label::CalculatePreferredSize().width(),
                      preferred_height_);
+  }
+
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    auto* color_provider = ColorProvider::Get();
+    const SkColor background_color = color_provider->GetBaseLayerColor(
+        ColorProvider::BaseLayerType::kTransparent80);
+    background()->SetNativeControlColor(background_color);
+    SetBackgroundColor(background_color);
+    SetEnabledColor(color_provider->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
  private:
@@ -92,8 +99,7 @@ void RoundedLabelWidget::Init(InitParams params) {
   views::Widget::Init(std::move(widget_params));
 
   SetContentsView(std::make_unique<RoundedLabelView>(
-      params.horizontal_padding, params.vertical_padding,
-      params.background_color, params.foreground_color, params.rounding_dp,
+      params.horizontal_padding, params.vertical_padding, params.rounding_dp,
       params.preferred_height, params.message_id));
   Show();
 }
