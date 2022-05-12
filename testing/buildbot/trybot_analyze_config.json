@@ -18,6 +18,7 @@
       "build/util/lib/common/unittest_util.py",
       "build/vs_toolchain.py",
       "DEPS",
+      "infra/orchestrator/BUILD.gn",
       "infra/scripts/.*",
       "testing/buildbot/gn_isolate_map.pyl",
       "testing/merge_scripts/.*",

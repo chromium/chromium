@@ -23,14 +23,9 @@ group("orchestrator_all") {
 
   # coverage tool for the Orchestrator to merge and output coverage data
   if (use_clang_coverage) {
-    data += [
-      "//third_party/llvm-build/Release+Asserts/bin/llvm-cov",
-      "//third_party/llvm-build/Release+Asserts/bin/llvm-profdata",
-      "//third_party/llvm-build/Release+Asserts/lib",
-    ]
+    data += [ "//tools/clang/scripts/update.py" ]
   }
-  write_runtime_deps =
-      "$root_out_dir/orchestrator_all.runtime_deps"
+  write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
 }
 
 # blink merge scripts pydeps files for the Orchestrator
