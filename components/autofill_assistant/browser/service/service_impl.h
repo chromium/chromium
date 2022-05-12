@@ -91,6 +91,8 @@ class ServiceImpl : public Service {
                    const UserData* user_data,
                    ServiceRequestSender::ResponseCallback callback) override;
 
+  void SetDisableRpcSigning(bool disable_rpc_signing) override;
+
  private:
   void SendUserDataRequest(
       uint64_t run_id,

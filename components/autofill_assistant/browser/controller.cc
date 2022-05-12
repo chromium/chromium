@@ -766,6 +766,10 @@ void Controller::InitFromParameters() {
   }
 
   user_model_.SetCurrentURL(GetCurrentURL());
+
+  GetService()->SetDisableRpcSigning(
+      trigger_context_->GetScriptParameters().GetDisableRpcSigning().value_or(
+          false));
 }
 
 void Controller::Track(std::unique_ptr<TriggerContext> trigger_context,

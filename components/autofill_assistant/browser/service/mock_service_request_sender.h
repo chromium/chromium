@@ -31,6 +31,11 @@ class MockServiceRequestSender : public ServiceRequestSender {
                     const std::string& request_body,
                     ResponseCallback& callback,
                     RpcType rpc_type));
+
+  MOCK_METHOD(void,
+              SetDisableRpcSigning,
+              (bool disable_rpc_signing),
+              (override));
 };
 
 }  // namespace autofill_assistant

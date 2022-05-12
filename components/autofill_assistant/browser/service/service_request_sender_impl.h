@@ -56,6 +56,11 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
                    ResponseCallback callback,
                    RpcType rpc_type) override;
 
+  // Sets the value of the |disable_rpc_signing| field. If |true| CUP signing
+  // and verification will be bypassed even if it is enabled and the RPC type
+  // supported. Intended for internal use only.
+  void SetDisableRpcSigning(bool disable_rpc_signing) override;
+
  private:
   // Unlike |ServiceRequestSenderImpl::SendRequest|, assumes that any necessary
   // CUP signing and validation is already done or accounted for in the
@@ -100,6 +105,9 @@ class ServiceRequestSenderImpl : public ServiceRequestSender {
 
   // API key to add to the URL of unauthenticated requests.
   std::string api_key_;
+
+  // Disable CUP RPC signing. Intended for internal use only.
+  bool disable_rpc_signing_ = false;
 
   // Getting the OAuth token failed. For requests with auth mode allowing to
   // fall back to API key, it will not be retried. For requests forcing auth,

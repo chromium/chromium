@@ -58,6 +58,8 @@ class Service {
                            const UserData* user_data,
                            ServiceRequestSender::ResponseCallback callback) = 0;
 
+  virtual void SetDisableRpcSigning(bool disable_rpc_signing) {}
+
  protected:
   Service() = default;
 };

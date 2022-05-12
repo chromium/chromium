@@ -65,6 +65,7 @@ class ScriptParameters {
   absl::optional<int> GetCaller() const;
   absl::optional<int> GetSource() const;
   std::vector<std::string> GetExperiments() const;
+  absl::optional<bool> GetDisableRpcSigning() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;

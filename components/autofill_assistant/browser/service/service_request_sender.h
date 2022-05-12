@@ -47,6 +47,8 @@ class ServiceRequestSender {
                            AuthMode auth_mode,
                            ResponseCallback response_callback,
                            RpcType rpc_type) = 0;
+
+  virtual void SetDisableRpcSigning(bool disable_rpc_signing) = 0;
 };
 
 }  // namespace autofill_assistant

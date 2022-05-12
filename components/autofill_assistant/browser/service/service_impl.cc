@@ -183,6 +183,10 @@ void ServiceImpl::GetUserData(const CollectUserDataOptions& options,
       preexisting_payment_instrument_ids, std::move(callback), std::string());
 }
 
+void ServiceImpl::SetDisableRpcSigning(bool disable_rpc_signing) {
+  request_sender_->SetDisableRpcSigning(disable_rpc_signing);
+}
+
 void ServiceImpl::SendUserDataRequest(
     uint64_t run_id,
     bool request_name,

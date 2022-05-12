@@ -207,7 +207,7 @@ void ServiceRequestSenderImpl::SendRequest(
     max_retries = kMaxRetriesGetUserData;
   }
 
-  if (!cup::IsRpcTypeSupported(rpc_type)) {
+  if (!cup::IsRpcTypeSupported(rpc_type) || disable_rpc_signing_) {
     InternalSendRequest(url, request_body, auth_mode, max_retries,
                         std::move(callback));
     return;
@@ -339,6 +339,10 @@ bool ServiceRequestSenderImpl::OAuthEnabled(
          (auth_mode ==
               ServiceRequestSender::AuthMode::OAUTH_WITH_API_KEY_FALLBACK &&
           !failed_to_fetch_oauth_token_);
+}
+
+void ServiceRequestSenderImpl::SetDisableRpcSigning(bool disable_rpc_signing) {
+  disable_rpc_signing_ = disable_rpc_signing;
 }
 
 }  // namespace autofill_assistant

@@ -55,6 +55,10 @@ class MockService : public Service {
                const UserData* user_data,
                ServiceRequestSender::ResponseCallback callback),
               (override));
+  MOCK_METHOD(void,
+              SetDisableRpcSigning,
+              (bool disable_rpc_signing),
+              (override));
 };
 
 }  // namespace autofill_assistant

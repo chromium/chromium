@@ -53,4 +53,6 @@ void JavaServiceRequestSender::OnResponse(
   std::move(callback_).Run(http_status, response, ResponseInfo{});
 }
 
+void JavaServiceRequestSender::SetDisableRpcSigning(bool disable_rpc_signing) {}
+
 }  // namespace autofill_assistant

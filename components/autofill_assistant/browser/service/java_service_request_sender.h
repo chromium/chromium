@@ -39,6 +39,8 @@ class JavaServiceRequestSender : public ServiceRequestSender {
                   jint http_status,
                   const base::android::JavaParamRef<jbyteArray>& jresponse);
 
+  void SetDisableRpcSigning(bool disable_rpc_signing) override;
+
  private:
   ResponseCallback callback_;
   base::android::ScopedJavaGlobalRef<jobject> jservice_request_sender_;

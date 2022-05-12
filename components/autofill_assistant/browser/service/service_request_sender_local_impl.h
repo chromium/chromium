@@ -26,6 +26,8 @@ class ServiceRequestSenderLocalImpl : public ServiceRequestSender {
                    ResponseCallback callback,
                    RpcType rpc_type) override;
 
+  void SetDisableRpcSigning(bool disable_rpc_signing) override;
+
  private:
   std::string response_;
 };

@@ -25,4 +25,7 @@ void ServiceRequestSenderLocalImpl::SendRequest(
                           /* response_info = */ {});
 }
 
+void ServiceRequestSenderLocalImpl::SetDisableRpcSigning(
+    bool disable_rpc_signing) {}
+
 }  // namespace autofill_assistant

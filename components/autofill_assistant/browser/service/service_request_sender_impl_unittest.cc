@@ -664,6 +664,39 @@ TEST_F(ServiceRequestSenderImplTest, DoesNotRecordCupEventForNonSupportedRpcs) {
       Metrics::CupRpcVerificationEvent::VERIFICATION_DISABLED, 0);
 }
 
+TEST_F(ServiceRequestSenderImplTest,
+       DoesNotPerformCupSigningIfRpcSigningDisabled) {
+  InitCupFeatures(true, true);
+  auto loader_factory =
+      std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
+  auto loader = std::make_unique<NiceMock<MockURLLoader>>();
+  auto response_info = CreateResponseInfo(net::HTTP_OK, "OK");
+  EXPECT_CALL(*loader_factory, OnCreateLoader)
+      .WillOnce([&](::network::ResourceRequest* resource_request,
+                    const ::net::NetworkTrafficAnnotationTag& annotation_tag) {
+        return std::move(loader);
+      });
+  EXPECT_CALL(*loader, DownloadToStringOfUnboundedSizeUntilCrashAndDie)
+      .WillOnce(RunOnceCallback<1>(std::make_unique<std::string>("response")));
+  EXPECT_CALL(*loader, ResponseInfo)
+      .WillRepeatedly(Return(response_info.get()));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response", _));
+
+  auto cup_factory =
+      std::make_unique<NiceMock<autofill_assistant::cup::MockCUPFactory>>();
+  EXPECT_CALL(*cup_factory, CreateInstance).Times(0);
+
+  ServiceRequestSenderImpl request_sender{
+      &context_,
+      /* access_token_fetcher = */ nullptr, std::move(cup_factory),
+      std::move(loader_factory), std::string("fake_api_key")};
+  request_sender.SetDisableRpcSigning(true);
+  request_sender.SendRequest(
+      GURL("https://www.example.com"), std::string("request"),
+      ServiceRequestSender::AuthMode::API_KEY, mock_response_callback_.Get(),
+      autofill_assistant::RpcType::GET_ACTIONS);
+}
+
 // TODO(b/170934170): Add tests for full unit test coverage of
 // service_request_sender.
 

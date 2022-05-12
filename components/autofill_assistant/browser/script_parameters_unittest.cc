@@ -108,6 +108,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"CALLER", "3"},
        {"SOURCE", "4"},
        {"EXPERIMENT_IDS", "123,456,789"},
+       {"DISABLE_RPC_SIGNING", "true"},
        {"DETAILS_SHOW_INITIAL", "true"},
        {"DETAILS_TITLE", "title"},
        {"DETAILS_DESCRIPTION_LINE_1", "line1"},
@@ -134,6 +135,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(
       parameters.GetExperiments(),
       UnorderedElementsAreArray(std::vector<std::string>{"123", "456", "789"}));
+  EXPECT_THAT(parameters.GetDisableRpcSigning(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));
   EXPECT_THAT(parameters.GetDetailsDescriptionLine1(), Eq("line1"));
