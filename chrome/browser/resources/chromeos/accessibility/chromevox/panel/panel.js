@@ -300,10 +300,6 @@ export class Panel extends PanelInterface {
       Panel.clearMenus();
       Panel.pendingCallback_ = null;
 
-      // Save the ChromeVox range (on the non-ChromeVox Menu UI first).
-      const bkgnd = chrome.extension.getBackgroundPage();
-      const range = bkgnd.ChromeVoxState.instance.getCurrentRange();
-      const node = range ? range.start.node : null;
       const eventSourceState = await BackgroundBridge.EventSourceState.get();
       const touchScreen =
           (eventSourceState === EventSourceType.TOUCH_GESTURE ||
@@ -1000,9 +996,7 @@ export class Panel extends PanelInterface {
    * Open the ChromeVox Options.
    */
   static onOptions() {
-    const bkgnd =
-        chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-    bkgnd['showOptionsPage']();
+    chrome.runtime.openOptionsPage();
     Panel.setMode(PanelMode.COLLAPSED);
   }
 
