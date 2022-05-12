@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_handler.h"
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -41,6 +42,11 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry) {
   profile_entry.SetStringKey("gaiaId", entry->GetGAIAId());
   profile_entry.SetStringKey("userName", entry->GetUserName());
   profile_entry.SetStringKey("hostedDomain", entry->GetHostedDomain());
+  profile_entry.SetBoolKey("isSupervised", entry->IsSupervised());
+  profile_entry.SetBoolKey("isOmitted", entry->IsOmitted());
+  profile_entry.SetBoolKey("isEphemeral", entry->IsEphemeral());
+  profile_entry.SetBoolKey("userAcceptedAccountManagement",
+                           entry->UserAcceptedAccountManagement());
 
   base::Value keep_alives(base::Value::Type::LIST);
   std::map<ProfileKeepAliveOrigin, int> keep_alives_map =
@@ -57,6 +63,12 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry) {
     }
   }
   profile_entry.SetKey("keepAlives", std::move(keep_alives));
+
+  base::Value signedAccounts(base::Value::Type::LIST);
+  for (const std::string& gaiaId : entry->GetGaiaIds()) {
+    signedAccounts.Append(gaiaId);
+  }
+  profile_entry.SetKey("signedAccounts", std::move(signedAccounts));
 
   return profile_entry;
 }

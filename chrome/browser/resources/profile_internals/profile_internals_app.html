@@ -2,6 +2,12 @@
   tr:nth-child(odd) {
     background: rgb(239, 243, 255);
   }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
 </style>
 <h2>Profiles</h2>\
 <template is="dom-repeat" items="[[profilesList_]]">
@@ -43,6 +49,22 @@
         <td>[[item.profileState.hostedDomain]]</td>
       </tr>
       <tr>
+        <td>Supervised</td>
+        <td>[[item.profileState.isSupervised]]</td>
+      </tr>
+      <tr>
+        <td>Omitted</td>
+        <td>[[item.profileState.isOmitted]]</td>
+      </tr>
+      <tr>
+        <td>Ephemeral</td>
+        <td>[[item.profileState.isEphemeral]]</td>
+      </tr>
+      <tr>
+        <td>User Accepted Account Management</td>
+        <td>[[item.profileState.userAcceptedAccountManagement]]</td>
+      </tr>
+      <tr>
         <td>KeepAlives</td>
         <td>
           <table>
@@ -53,6 +75,17 @@
               </tr>
             </template>
           </table>
+        </td>
+      </tr>
+      <tr>
+        <td>Signed Accounts</td>
+        <td>
+          <ul>
+            <template is="dom-repeat"
+                      items="[[item.profileState.signedAccounts]]">
+              <li>[[item]]</li>
+            </template>
+          </ul>
         </td>
       </tr>
     </table>

@@ -16,7 +16,12 @@ export type ProfileState = {
   gaiaId: string,
   userName: string,
   hostedDomain: string,
+  isSupervised: boolean,
+  isOmitted: boolean,
+  isEphemeral: boolean,
+  userAcceptedAccountManagement: boolean,
   keepAlives: Array<KeepAlive>,
+  signedAccounts: Array<string>,
 };
 
 export type ProfileStateElement = {
