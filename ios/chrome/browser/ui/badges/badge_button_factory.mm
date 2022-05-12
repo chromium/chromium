@@ -274,11 +274,10 @@ NSInteger kSymbolIncognitoFullScreenPointSize = 14;
 }
 
 - (BadgeButton*)permissionsMicrophoneBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:kBadgeTypePermissionsMicrophone
-                          image:[[UIImage systemImageNamed:@"mic.fill"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
+  BadgeButton* button = [self
+      createButtonForType:kBadgeTypePermissionsMicrophone
+                    image:DefaultSymbolTemplateWithPointSize(
+                              kMicrophoneFillSymbol, kSymbolImagePointSize)];
   [button addTarget:self.delegate
                 action:@selector(permissionsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];

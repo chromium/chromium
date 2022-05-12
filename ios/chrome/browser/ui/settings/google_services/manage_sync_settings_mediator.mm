@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/item_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
@@ -51,10 +53,6 @@ namespace {
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Sync error icon.
 NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
-// External link SF symbol.
-NSString* const kExternalLinkSystemImage = @"arrow.up.forward.square";
-// Chevron SF symbol.
-NSString* const kChevronForwardSystemImage = @"chevron.forward";
 
 // Ordered list of all sync switches. If a new switch is added, a new entry
 // must be added in |kSyncableItemTypes| below.
@@ -295,7 +293,8 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
       SyncSetupService::kSyncServiceNeedsTrustedVaultKey;
   if (hasDisclosureIndicator) {
     self.encryptionItem.accessoryView = [[UIImageView alloc]
-        initWithImage:[UIImage systemImageNamed:kChevronForwardSystemImage]];
+        initWithImage:DefaultSymbolTemplateWithPointSize(
+                          kChevronForwardSymbol, kSymbolAccessoryPointSize)];
     self.encryptionItem.accessoryView.tintColor =
         [UIColor colorNamed:kTextQuaternaryColor];
   } else {
@@ -310,7 +309,8 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   TableViewImageItem* googleActivityControlsItem =
       [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
   googleActivityControlsItem.accessoryView = [[UIImageView alloc]
-      initWithImage:[UIImage systemImageNamed:kExternalLinkSystemImage]];
+      initWithImage:DefaultSymbolTemplateWithPointSize(
+                        kExternalLinkSmbol, kSymbolAccessoryPointSize)];
   googleActivityControlsItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   googleActivityControlsItem.title =
@@ -325,7 +325,8 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   TableViewImageItem* dataFromChromeSyncItem =
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
   dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
-      initWithImage:[UIImage systemImageNamed:kExternalLinkSystemImage]];
+      initWithImage:DefaultSymbolTemplateWithPointSize(
+                        kExternalLinkSmbol, kSymbolAccessoryPointSize)];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
   dataFromChromeSyncItem.title =

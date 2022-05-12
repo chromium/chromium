@@ -13,3 +13,4 @@ NSInteger kSymbolDownloadSmallInfobarPointSize = 13;
 
 NSString* kDownloadPromptFillSymbol = @"arrow.down.to.line.circle.fill";
 NSString* kDownloadDocFillSymbol = @"doc.fill";
+NSString* kOpenInDownloadsSymbol = @"arrow.down.to.line.alt";
