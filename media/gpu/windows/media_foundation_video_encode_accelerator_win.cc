@@ -224,8 +224,9 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
       bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
       main_client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      encoder_thread_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner({})) {
+      encoder_thread_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
+          {},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
 }
 
