@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+import io
 
 _CWD = os.getcwd()
 _HERE_DIR = os.path.dirname(__file__)
@@ -25,6 +26,18 @@ def _write_tsconfig_json(gen_dir, tsconfig):
   with open(os.path.join(gen_dir, 'tsconfig.json'), 'w') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
+
+
+def _validate_tsconfig_json(tsconfig_file):
+  with io.open(tsconfig_file, encoding='utf-8', mode='r') as f:
+    tsconfig = json.loads(f.read())
+
+    if 'compilerOptions' in tsconfig and \
+        'composite' in tsconfig['compilerOptions']:
+      return False, f'Invalid |composite| flag detected in {tsconfig_file}.' + \
+          ' Use the dedicated |composite=true| attribute in ts_library() ' + \
+          'instead.'
+  return True, None
 
 
 def main(argv):
@@ -50,6 +63,13 @@ def main(argv):
   tsconfig['extends'] = args.tsconfig_base \
       if args.tsconfig_base is not None \
       else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
+
+  tsconfig_base_file = os.path.normpath(
+      os.path.join(args.gen_dir, tsconfig['extends']))
+
+  is_tsconfig_valid, error = _validate_tsconfig_json(tsconfig_base_file)
+  if not is_tsconfig_valid:
+    raise AssertionError(error)
 
   tsconfig['compilerOptions'] = collections.OrderedDict()
   tsconfig['compilerOptions']['rootDir'] = root_dir

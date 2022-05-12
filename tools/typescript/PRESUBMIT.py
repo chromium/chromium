@@ -17,7 +17,7 @@ def RunTypescriptTests(input_api, output_api):
   return input_api.canned_checks.RunUnitTests(input_api,
                                               output_api,
                                               tests,
-                                              skip_shebang_check=True)
+                                              run_on_python2=False)
 
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):

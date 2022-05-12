@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -215,6 +215,31 @@ class TsLibraryTest(unittest.TestCase):
           os.path.exists(os.path.join(gen_dir, 'tsconfig.tsbuildinfo')))
     else:
       self.fail('Failed to detect type error')
+
+  # Test error case where the project's tsconfig file is failing validation.
+  def testTsConfigValidationError(self):
+    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    root_dir = os.path.join(_HERE_DIR, 'tests', 'project5')
+    gen_dir = os.path.join(self._out_folder, 'project5')
+    try:
+      ts_library.main([
+          '--root_dir',
+          root_dir,
+          '--gen_dir',
+          gen_dir,
+          '--out_dir',
+          gen_dir,
+          '--in_files',
+          'bar.ts',
+          '--tsconfig_base',
+          os.path.relpath(os.path.join(root_dir, 'tsconfig_base.json'),
+                          gen_dir),
+      ])
+    except AssertionError as err:
+      self.assertTrue(
+          str(err).startswith('Invalid |composite| flag detected in '))
+    else:
+      self.fail('Failed to detect error')
 
 
 if __name__ == '__main__':
