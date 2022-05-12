@@ -316292,6 +316292,10 @@
        "701ad56cb4d0cbefe648d9664c2f1c4847925112",
        []
       ],
+      "example.pdf": [
+       "7bad251ba7e08efc9c383d88518367a6f204cdd6",
+       []
+      ],
       "fetch-and-record-js.h2.py": [
        "169f70c0450c79c01dc5c375e9fb35d5b81e5a73",
        []
@@ -316318,6 +316322,10 @@
       ],
       "multiple-early-hints-responses.html": [
        "3be2852348ba800662fa2caf626654b2f40b5902",
+       []
+      ],
+      "pdf-with-early-hints.h2.py": [
+       "0d05f2a3c57266ce183457b83dad020a4ce580fd",
        []
       ],
       "png-with-early-hints.h2.py": [
@@ -396483,7 +396491,7 @@
       ]
      },
      "scope-selector.html": [
-      "0340f25919f34aaad07d53d1550d5155f73fb26b",
+      "06b6bc13785dff351b2e518e22aa0889cc77d875",
       [
        null,
        {}
@@ -481706,6 +481714,24 @@
       "82365fafddbb8df1ea80cecdf2d24db65e3ef379",
       [
        "loading/early-hints/embed-object.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "iframe-pdf.h2.window.js": [
+      "11c1443c34de3e750a17b60aa2f99fe815380aca",
+      [
+       "loading/early-hints/iframe-pdf.h2.window.html",
        {
         "script_metadata": [
          [
