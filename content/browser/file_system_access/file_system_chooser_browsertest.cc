@@ -1556,12 +1556,20 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), false,
                         "not_matching.jpg", false});
 
-  // ".lnk", ".local", and ".scf" extensions should be sanitized.
-  name_infos.push_back({"dangerous_extension.local", ListValueOf(".local"),
-                        true, "dangerous_extension.download", false});
+  // ".lnk", ".local", ".scf", and ".url" extensions should be sanitized.
   name_infos.push_back({"dangerous_extension.lnk", ListValueOf(".lnk"), true,
                         "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.lnk", ListValueOf(".LNK"), true,
+                        "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.LNK", ListValueOf(".lnk"), true,
+                        "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.LNK", ListValueOf(".LNK"), true,
+                        "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.local", ListValueOf(".local"),
+                        true, "dangerous_extension.download", false});
   name_infos.push_back({"dangerous_extension.scf", ListValueOf(".scf"), true,
+                        "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.url", ListValueOf(".url"), true,
                         "dangerous_extension.download", false});
   // Compound extensions ending in a dangerous extension should be sanitized.
   name_infos.push_back({"dangerous_extension.png.local", ListValueOf(".local"),
@@ -1569,6 +1577,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   name_infos.push_back({"dangerous_extension.png.lnk", ListValueOf(".lnk"),
                         true, "dangerous_extension.png.download", false});
   name_infos.push_back({"dangerous_extension.png.scf", ListValueOf(".scf"),
+                        true, "dangerous_extension.png.download", false});
+  name_infos.push_back({"dangerous_extension.png.url", ListValueOf(".url"),
                         true, "dangerous_extension.png.download", false});
   // Compound extensions not ending in a dangerous extension should not be
   // sanitized.
@@ -1578,6 +1588,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
                         true, "dangerous_extension.lnk.png", true});
   name_infos.push_back({"dangerous_extension.scf.png", ListValueOf(".png"),
                         true, "dangerous_extension.scf.png", true});
+  name_infos.push_back({"dangerous_extension.url.png", ListValueOf(".png"),
+                        true, "dangerous_extension.url.png", true});
   // Invalid characters should be sanitized.
   name_infos.push_back({R"(inv*l:d\\ch%rבאמת!a<ters🤓.txt)",
                         ListValueOf(".txt"), true,

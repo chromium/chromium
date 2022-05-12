@@ -275,13 +275,15 @@ bool FileSystemChooser::IsShellIntegratedExtension(
   base::FilePath::StringType extension_lower =
       base::ToLowerASCII(GetLastExtension(extension));
 
-  // .lnk and .scf files may be used to execute arbitrary code (see
+  // '.lnk' and '.scf' files may be used to execute arbitrary code (see
   // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively). .local files are used by Windows
-  // to determine which DLLs to load for an application.
+  // https://crbug.com/1227995, respectively). '.local' files are used by
+  // Windows to determine which DLLs to load for an application. '.url' files
+  // can be used to read arbirtary files (see https://crbug.com/1307930).
   if ((extension_lower == FILE_PATH_LITERAL("lnk")) ||
       (extension_lower == FILE_PATH_LITERAL("local")) ||
-      (extension_lower == FILE_PATH_LITERAL("scf"))) {
+      (extension_lower == FILE_PATH_LITERAL("scf")) ||
+      (extension_lower == FILE_PATH_LITERAL("url"))) {
     return true;
   }
 
