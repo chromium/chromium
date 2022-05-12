@@ -81,7 +81,8 @@ class WTF_EXPORT Partitions {
 
   static size_t TotalActiveBytes();
 
-  static void DumpMemoryStats(bool is_light_dump, base::PartitionStatsDumper*);
+  static void DumpMemoryStats(bool is_light_dump,
+                              partition_alloc::PartitionStatsDumper*);
 
   static void* PA_MALLOC_FN BufferMalloc(size_t n, const char* type_name)
       PA_MALLOC_ALIGNED;
