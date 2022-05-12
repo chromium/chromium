@@ -29,7 +29,8 @@ class ScopedVolume {
       std::string display_name,
       std::string mount_label,
       base::FilePath homedir,
-      const ash::disks::DiskMountManager::MountPointInfo& mount_info)
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info,
+      VmType vm_type)
       : profile_(profile), mount_label_(mount_label) {
     base::FilePath mount_path = base::FilePath(mount_info.mount_path);
     if (!storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
@@ -44,7 +45,7 @@ class ScopedVolume {
     auto* vmgr = file_manager::VolumeManager::Get(profile_);
     if (vmgr) {
       // vmgr is null in unit tests.
-      vmgr->AddSftpGuestOsVolume(display_name, mount_path, homedir);
+      vmgr->AddSftpGuestOsVolume(display_name, mount_path, homedir, vm_type);
     }
   }
 
@@ -81,13 +82,15 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
                                      crostini::ContainerId container_id,
                                      int cid,
                                      int port,
-                                     base::FilePath homedir)
+                                     base::FilePath homedir,
+                                     VmType vm_type)
       : profile_(profile),
         display_name_(display_name),
         container_id_(container_id),
         cid_(cid),
         port_(port),
-        homedir_(homedir) {}
+        homedir_(homedir),
+        vm_type_(vm_type) {}
 
   // Mount.
   void Build(RealCallback callback) override {
@@ -118,7 +121,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
       return;
     }
     auto scoped_volume = std::make_unique<ScopedVolume>(
-        profile_, display_name_, mount_label_, homedir_, mount_info);
+        profile_, display_name_, mount_label_, homedir_, mount_info, vm_type_);
 
     // CachedCallback magic keeps the scope alive until we're destroyed or it's
     // invalidated.
@@ -132,6 +135,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
   int cid_;
   int port_;  // vsock port
   base::FilePath homedir_;
+  VmType vm_type_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -141,7 +145,8 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
 void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
   if (!callback_) {
     callback_ = std::make_unique<GuestOsMountProviderInner>(
-        profile(), DisplayName(), ContainerId(), cid(), port(), homedir());
+        profile(), DisplayName(), ContainerId(), cid(), port(), homedir(),
+        vm_type());
   }
   callback_->Get(base::BindOnce(
       [](base::OnceCallback<void(bool)> callback,

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/guest_os_test_helpers.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TEST_HELPERS_H_
@@ -26,6 +27,10 @@ Profile* MockMountProvider::profile() {
 
 crostini::ContainerId MockMountProvider::ContainerId() {
   return container_id_;
+}
+
+VmType MockMountProvider::vm_type() {
+  return VmType::ApplicationList_VmType_PLUGIN_VM;
 }
 
 }  // namespace guest_os

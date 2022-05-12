@@ -73,6 +73,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -1704,13 +1705,16 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     return crostini::ContainerId::GetDefault();
   }
 
+  guest_os::VmType vm_type() override {
+    return guest_os::VmType::ApplicationList_VmType_TERMINA;
+  }
+
   int cid_;
   int cid() override { return cid_; }
 
  private:
   Profile* profile_;
   std::string name_;
-  std::unique_ptr<GuestOsTestVolume> volume_;
 };
 
 // GuestOsTestVolume: local test volume for the "Guest OS" directories.

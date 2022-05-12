@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 namespace guest_os {
 class MockMountProvider : public GuestOsMountProvider {
@@ -17,6 +18,8 @@ class MockMountProvider : public GuestOsMountProvider {
   std::string DisplayName() override;
   Profile* profile() override;
   crostini::ContainerId ContainerId() override;
+
+  VmType vm_type() override;
 
   Profile* profile_;
   crostini::ContainerId container_id_;

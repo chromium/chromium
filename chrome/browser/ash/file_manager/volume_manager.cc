@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -444,7 +445,8 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
 std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
     const std::string display_name,
     const base::FilePath& sftp_mount_path,
-    const base::FilePath& remote_mount_path) {
+    const base::FilePath& remote_mount_path,
+    const guest_os::VmType vm_type) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_GUEST_OS;
   volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
@@ -456,6 +458,7 @@ std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ = display_name;
   volume->watchable_ = false;
+  volume->vm_type_ = vm_type;
   return volume;
 }
 
@@ -805,10 +808,11 @@ void VolumeManager::AddSshfsCrostiniVolume(
 void VolumeManager::AddSftpGuestOsVolume(
     const std::string display_name,
     const base::FilePath& sftp_mount_path,
-    const base::FilePath& remote_mount_path) {
+    const base::FilePath& remote_mount_path,
+    const guest_os::VmType vm_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<Volume> volume = Volume::CreateForSftpGuestOs(
-      display_name, sftp_mount_path, remote_mount_path);
+      display_name, sftp_mount_path, remote_mount_path, vm_type);
   // Ignore if volume already exists.
   if (mounted_volumes_.find(volume->volume_id()) != mounted_volumes_.end())
     return;
@@ -1695,12 +1699,15 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
       (error_code == chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED)) {
     // Remove metadata associated with the mount. It will be a no-op if it
     // wasn't mounted or unmounted out of band. We need the VolumeId to be
-    // consistent, which means the mount path needs to be the same. display_name
-    // and remote_mount_path aren't needed and we don't know them at unmount so
-    // leave them blank.
-    DoUnmountEvent(
-        chromeos::MOUNT_ERROR_NONE,
-        *Volume::CreateForSftpGuestOs("", sftp_mount_path, base::FilePath()));
+    // consistent, which means the mount path needs to be the same.
+    // display_name, remote_mount_path and vm_type aren't needed and we don't
+    // know them at unmount so leave them blank.
+    DoUnmountEvent(chromeos::MOUNT_ERROR_NONE,
+                   // TODO(b/230667118): Once http://crrev/3627129 makes it into
+                   // Chrome change the type to unknown.
+                   *Volume::CreateForSftpGuestOs(
+                       "", sftp_mount_path, base::FilePath(),
+                       guest_os::VmType::ApplicationList_VmType_TERMINA));
     if (callback)
       std::move(callback).Run(true);
     return;

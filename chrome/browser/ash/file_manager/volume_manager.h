@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,11 +25,13 @@
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -126,7 +129,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForSftpGuestOs(
       const std::string display_name,
       const base::FilePath& sftp_mount_path,
-      const base::FilePath& remote_mount_path);
+      const base::FilePath& remote_mount_path,
+      const guest_os::VmType vm_type);
   static std::unique_ptr<Volume> CreateForAndroidFiles(
       const base::FilePath& mount_path);
   static std::unique_ptr<Volume> CreateForDocumentsProvider(
@@ -196,6 +200,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
     return icon_set_;
   }
   bool hidden() const { return hidden_; }
+
+  absl::optional<guest_os::VmType> vm_type() const { return vm_type_; }
 
  private:
   Volume();
@@ -284,6 +290,9 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   // True if the volume is hidden and never shown to the user through File
   // Manager.
   bool hidden_;
+
+  // Only set for VOLUME_TYPE_GUEST_OS, identifies the type of Guest OS VM.
+  absl::optional<guest_os::VmType> vm_type_;
 };
 
 // Manages Volumes for file manager. Example of Volumes:
@@ -365,7 +374,8 @@ class VolumeManager : public KeyedService,
   // removed on unmount (including Guest OS shutdown).
   void AddSftpGuestOsVolume(const std::string display_name,
                             const base::FilePath& sftp_mount_path,
-                            const base::FilePath& remote_mount_path);
+                            const base::FilePath& remote_mount_path,
+                            const guest_os::VmType vm_type);
 
   // Removes specified sshfs crostini mount. Runs `callback` with true if the
   // mount was removed successfully or wasn't mounted to begin with. Runs

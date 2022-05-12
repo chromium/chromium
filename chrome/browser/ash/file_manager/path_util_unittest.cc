@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -1157,7 +1158,8 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
 
   volume_manager->AddVolumeForTesting(Volume::CreateForSftpGuestOs(
       "guest_os_label", base::FilePath("/mount_path/guest_os"),
-      base::FilePath("/remote_mount_path/guest_os")));
+      base::FilePath("/remote_mount_path/guest_os"),
+      guest_os::VmType::ApplicationList_VmType_TERMINA));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForMTP(
       base::FilePath("/mount_path/mtp"), "mtp_label", false));

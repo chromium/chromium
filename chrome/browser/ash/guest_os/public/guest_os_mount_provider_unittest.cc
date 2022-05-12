@@ -139,6 +139,7 @@ TEST_F(GuestOsMountProviderTest, MountDiskMountsDisk) {
   ASSERT_TRUE(volume);
   EXPECT_EQ(volume->type(), file_manager::VOLUME_TYPE_GUEST_OS);
   EXPECT_EQ(volume->volume_label(), provider_->DisplayName());
+  EXPECT_EQ(volume->vm_type(), provider_->vm_type());
 }
 
 TEST_F(GuestOsMountProviderTest, MultipleCallsAreQueuedAndOnlyMountOnce) {

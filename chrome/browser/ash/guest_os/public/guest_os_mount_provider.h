@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 
 class Profile;
 
@@ -40,6 +41,11 @@ class GuestOsMountProvider {
   virtual int cid();
   virtual int port();
   virtual base::FilePath homedir();
+
+  // The type of VM which this provider creates mounts for. Needed for e.g.
+  // enterprise policy which applies different rules to each disk volume
+  // depending on the underlying VM.
+  virtual VmType vm_type() = 0;
 
   // Requests the provider to mount its volume.
   void Mount(base::OnceCallback<void(bool)> callback);
