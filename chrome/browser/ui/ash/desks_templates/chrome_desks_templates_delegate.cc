@@ -414,7 +414,7 @@ void ChromeDesksTemplatesDelegate::OpenFeedbackDialog(
   chrome::ShowFeedbackPage(
       /*browser=*/nullptr, chrome::kFeedbackSourceDesksTemplates,
       /*description_template=*/
-      "#DesksTemplates\n\nProblem Template(s): \nProblem App(s): ",
+      "#SavedDesks",
       /*description_placeholder_text=*/std::string(),
       /*category_tag=*/std::string(), extra_diagnostics);
 }
