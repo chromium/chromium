@@ -19,19 +19,17 @@ extern const base::Feature kUpcomingSharingFeatures;
 #if !BUILDFLAG(IS_ANDROID)
 extern const base::Feature kDesktopSharePreview;
 
-extern const char kDesktopSharePreviewVariant_HQ[];
-extern const char kDesktopSharePreviewVariant_HQFavicon[];
-extern const char kDesktopSharePreviewVariant_HQFaviconFallback[];
-extern const char kDesktopSharePreviewVariant_HQFallback[];
+extern const char kDesktopSharePreviewVariant16[];
+extern const char kDesktopSharePreviewVariant40[];
+extern const char kDesktopSharePreviewVariant72[];
 
 extern const base::FeatureParam<std::string> kDesktopSharePreviewVariant;
 
 enum class DesktopSharePreviewVariant {
   kDisabled,
-  kEnabledHQ,
-  kEnabledHQFavicon,
-  kEnabledHQFaviconFallback,
-  kEnabledHQFallback,
+  kEnabled16,
+  kEnabled40,
+  kEnabled72,
 };
 
 DesktopSharePreviewVariant GetDesktopSharePreviewVariant();

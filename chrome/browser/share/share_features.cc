@@ -18,28 +18,23 @@ const base::Feature kUpcomingSharingFeatures{"UpcomingSharingFeatures",
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature kDesktopSharePreview{"DesktopSharePreview",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
-extern const char kDesktopSharePreviewVariant_HQ[] = "HQ";
-extern const char kDesktopSharePreviewVariant_HQFavicon[] = "HQFavicon";
-extern const char kDesktopSharePreviewVariant_HQFaviconFallback[] =
-    "HQFaviconFallback";
-extern const char kDesktopSharePreviewVariant_HQFallback[] = "HQFallback";
+extern const char kDesktopSharePreviewVariant16[] = "16";
+extern const char kDesktopSharePreviewVariant40[] = "40";
+extern const char kDesktopSharePreviewVariant72[] = "72";
 
 const base::FeatureParam<std::string> kDesktopSharePreviewVariant{
-    &kDesktopSharePreview, "variant",
-    kDesktopSharePreviewVariant_HQFaviconFallback};
+    &kDesktopSharePreview, "variant", kDesktopSharePreviewVariant16};
 
 namespace {
 
 DesktopSharePreviewVariant DesktopSharePreviewVariantFromName(
     const std::string& name) {
-  if (name == kDesktopSharePreviewVariant_HQ)
-    return DesktopSharePreviewVariant::kEnabledHQ;
-  if (name == kDesktopSharePreviewVariant_HQFavicon)
-    return DesktopSharePreviewVariant::kEnabledHQFavicon;
-  if (name == kDesktopSharePreviewVariant_HQFaviconFallback)
-    return DesktopSharePreviewVariant::kEnabledHQFaviconFallback;
-  if (name == kDesktopSharePreviewVariant_HQFallback)
-    return DesktopSharePreviewVariant::kEnabledHQFallback;
+  if (name == kDesktopSharePreviewVariant16)
+    return DesktopSharePreviewVariant::kEnabled16;
+  if (name == kDesktopSharePreviewVariant40)
+    return DesktopSharePreviewVariant::kEnabled40;
+  if (name == kDesktopSharePreviewVariant72)
+    return DesktopSharePreviewVariant::kEnabled72;
   return DesktopSharePreviewVariant::kDisabled;
 }
 

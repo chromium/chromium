@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/sharing_hub/preview_view.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -15,11 +16,40 @@
 namespace sharing_hub {
 
 namespace {
+
+struct LayoutVariant {
+  gfx::Insets interior_margin;
+  gfx::Insets default_margin;
+  gfx::Size image_size;
+
+  static LayoutVariant FromFeatureConfig();
+};
+
 // These values are all directly from the Figma redlines. See
-// https://crbug.com/1314486.
-constexpr gfx::Size kImageSize{32, 32};
-constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(12, 8);
-constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 8);
+// https://crbug.com/1314486 and https://crbug.com/1316473.
+constexpr LayoutVariant kVariant16{gfx::Insets::VH(8, 8),
+                                   gfx::Insets::VH(0, 16), gfx::Size(16, 16)};
+
+constexpr LayoutVariant kVariant40{gfx::Insets::VH(8, 8),
+                                   gfx::Insets::VH(0, 16), gfx::Size(40, 40)};
+
+constexpr LayoutVariant kVariant72{gfx::Insets::VH(8, 8),
+                                   gfx::Insets::VH(0, 16), gfx::Size(72, 72)};
+
+LayoutVariant LayoutVariant::FromFeatureConfig() {
+  switch (share::GetDesktopSharePreviewVariant()) {
+    case share::DesktopSharePreviewVariant::kEnabled16:
+      return kVariant16;
+    case share::DesktopSharePreviewVariant::kEnabled40:
+      return kVariant40;
+    case share::DesktopSharePreviewVariant::kEnabled72:
+      return kVariant72;
+    case share::DesktopSharePreviewVariant::kDisabled:
+      NOTREACHED();
+      return kVariant16;
+  }
+}
+
 }  // namespace
 
 // This view uses two nested FlexLayouts, a horizontal outer one and a vertical
@@ -31,16 +61,18 @@ constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 8);
 //       Label (title)
 //       Label (URL)
 PreviewView::PreviewView(std::u16string title, GURL url, ui::ImageModel image) {
+  auto variant = LayoutVariant::FromFeatureConfig();
+
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(kInteriorMargin)
-      .SetDefault(views::kMarginsKey, kDefaultMargin)
+      .SetInteriorMargin(variant.interior_margin)
+      .SetDefault(views::kMarginsKey, variant.default_margin)
       .SetCollapseMargins(true);
 
   image_ = AddChildView(std::make_unique<views::ImageView>(image));
-  image_->SetPreferredSize(kImageSize);
+  image_->SetPreferredSize(variant.image_size);
 
   auto* labels_container = AddChildView(std::make_unique<views::View>());
   labels_container->SetProperty(
@@ -75,7 +107,7 @@ void PreviewView::TakeCallbackSubscription(
 
 void PreviewView::OnImageChanged(ui::ImageModel model) {
   image_->SetImage(model);
-  image_->SetImageSize(kImageSize);
+  image_->SetImageSize(LayoutVariant::FromFeatureConfig().image_size);
 }
 
 }  // namespace sharing_hub

@@ -94,6 +94,16 @@ class SharingHubBubbleControllerDesktopImpl
 
   SharingHubModel* GetSharingHubModel();
 
+  // This method asynchronously fetches the preview image from the page;
+  // depending on the UI variant this may be either the favicon or a
+  // high-quality preview image supplied by the page. Either way, the resulting
+  // image is passed down to the preview view.
+  void FetchImageForPreview();
+
+  // This method fetches the webcontents' favicon, if it has one, and updates
+  // the preview view to contain it.
+  void FetchFaviconForPreview();
+
   // These three methods handle fetching and displaying high-quality preview
   // images. The first starts the process of fetching the page's OpenGraph
   // metadata. The second receives the resulting metadata and issues a request

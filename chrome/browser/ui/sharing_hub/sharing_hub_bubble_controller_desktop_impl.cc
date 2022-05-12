@@ -71,6 +71,12 @@ constexpr net::NetworkTrafficAnnotationTag kPreviewImageNetworkAnnotationTag =
       }
   )");
 
+bool ShouldUseHQPreviewImage() {
+  auto variant = share::GetDesktopSharePreviewVariant();
+  return variant != share::DesktopSharePreviewVariant::kDisabled &&
+         variant != share::DesktopSharePreviewVariant::kEnabled16;
+}
+
 }  // namespace
 
 // static
@@ -105,7 +111,7 @@ void SharingHubBubbleControllerDesktopImpl::ShowBubble() {
       browser->window()->ShowSharingHubBubble(web_contents());
 
   if (ShouldUsePreview())
-    FetchHQImageForPreview();
+    FetchImageForPreview();
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
@@ -226,6 +232,19 @@ SharingHubModel* SharingHubBubbleControllerDesktopImpl::GetSharingHubModel() {
   return sharing_hub_model_;
 }
 
+void SharingHubBubbleControllerDesktopImpl::FetchImageForPreview() {
+  if (ShouldUseHQPreviewImage())
+    FetchHQImageForPreview();
+  else
+    FetchFaviconForPreview();
+}
+
+void SharingHubBubbleControllerDesktopImpl::FetchFaviconForPreview() {
+  gfx::Image favicon = favicon::TabFaviconFromWebContents(&GetWebContents());
+  if (!favicon.IsEmpty())
+    preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(favicon));
+}
+
 void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
   content::RenderFrameHost& main_frame =
       GetWebContents().GetPrimaryPage().GetMainDocument();
@@ -236,13 +255,19 @@ void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
 
 void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
     blink::mojom::OpenGraphMetadataPtr metadata) {
-  if (!metadata->image)
+  if (!metadata->image) {
+    FetchFaviconForPreview();
     return;
+  }
 
   auto* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  if (!profile)
+  if (!profile) {
+    // No fallback to the favicon for this case: if the profile's gone, the
+    // favicon service will be too. Just use the default page icon for the
+    // preview.
     return;
+  }
 
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(),
@@ -260,7 +285,10 @@ void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
 void SharingHubBubbleControllerDesktopImpl::OnGetHQImage(
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(image));
+  if (!image.IsEmpty())
+    preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(image));
+  else
+    FetchFaviconForPreview();
 }
 
 SharingHubBubbleControllerDesktopImpl::SharingHubBubbleControllerDesktopImpl(

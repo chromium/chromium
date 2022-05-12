@@ -3094,21 +3094,17 @@ const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariantHQ{
-    "variant", share::kDesktopSharePreviewVariant_HQ};
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariantHQFavicon{
-    "variant", share::kDesktopSharePreviewVariant_HQFavicon};
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariantHQFaviconFallback{
-    "variant", share::kDesktopSharePreviewVariant_HQFaviconFallback};
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariantHQFallback{
-    "variant", share::kDesktopSharePreviewVariant_HQFallback};
+const FeatureEntry::FeatureParam kDesktopSharePreviewVariant16{
+    "variant", share::kDesktopSharePreviewVariant16};
+const FeatureEntry::FeatureParam kDesktopSharePreviewVariant40{
+    "variant", share::kDesktopSharePreviewVariant40};
+const FeatureEntry::FeatureParam kDesktopSharePreviewVariant72{
+    "variant", share::kDesktopSharePreviewVariant72};
 
 const FeatureEntry::FeatureVariation kDesktopSharePreviewVariations[] = {
-    {"HQ then favicon then fallback",
-     &kDesktopSharePreviewVariantHQFaviconFallback, 1, nullptr},
-    {"HQ only", &kDesktopSharePreviewVariantHQ, 1, nullptr},
-    {"HQ then favicon", &kDesktopSharePreviewVariantHQFavicon, 1, nullptr},
-    {"HQ then fallback", &kDesktopSharePreviewVariantHQFallback, 1, nullptr},
+    {"16pt preview", &kDesktopSharePreviewVariant16, 1, nullptr},
+    {"40pt preview", &kDesktopSharePreviewVariant40, 1, nullptr},
+    {"72pt preview", &kDesktopSharePreviewVariant72, 1, nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
