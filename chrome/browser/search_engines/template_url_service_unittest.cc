@@ -294,24 +294,22 @@ std::unique_ptr<TemplateURL> TemplateURLServiceTest::CreatePreloadedTemplateURL(
 
 void TemplateURLServiceTest::SetOverriddenEngines() {
   // Set custom search engine as default fallback through overrides.
-  auto entry = std::make_unique<base::DictionaryValue>();
-  entry->SetString("name", "override_name");
-  entry->SetString("keyword", "override_keyword");
-  entry->SetString("search_url", "http://override.com/s?q={searchTerms}");
-  entry->SetString("favicon_url", "http://override.com/favicon.ico");
-  entry->SetString("encoding", "UTF-8");
-  entry->SetInteger("id", 1001);
-  entry->SetString("suggest_url",
-                   "http://override.com/suggest?q={searchTerms}");
+  base::Value::Dict entry;
+  entry.Set("name", "override_name");
+  entry.Set("keyword", "override_keyword");
+  entry.Set("search_url", "http://override.com/s?q={searchTerms}");
+  entry.Set("favicon_url", "http://override.com/favicon.ico");
+  entry.Set("encoding", "UTF-8");
+  entry.Set("id", 1001);
+  entry.Set("suggest_url", "http://override.com/suggest?q={searchTerms}");
 
-  auto overrides_list = std::make_unique<base::ListValue>();
-  overrides_list->Append(std::move(entry));
+  base::Value::List overrides_list;
+  overrides_list.Append(std::move(entry));
 
   auto* prefs = test_util()->profile()->GetTestingPrefService();
-  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                     std::make_unique<base::Value>(1));
+  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
   prefs->SetUserPref(prefs::kSearchProviderOverrides,
-                     std::move(overrides_list));
+                     base::Value(std::move(overrides_list)));
 }
 
 void TemplateURLServiceTest::VerifyObserverCount(int expected_changed_count) {
