@@ -129,11 +129,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUseDesktopNativeCursorManager() const override;
   bool ShouldCreateVisibilityController() const override;
   void UpdateWindowShapeIfNeeded(const ui::PaintContext& context) override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
   // WindowTreeHost:
   gfx::Transform GetRootTransform() const override;
   void ShowImpl() override;
   void HideImpl() override;
+  gfx::Rect CalculateRootWindowBounds() const override;
+  gfx::Rect GetBoundsInDIP() const override;
 
   // PlatformWindowDelegate:
   void OnClosed() override;

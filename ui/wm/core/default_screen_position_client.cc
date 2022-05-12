@@ -54,11 +54,7 @@ void DefaultScreenPositionClient::SetBounds(aura::Window* window,
 
 gfx::Point DefaultScreenPositionClient::GetRootWindowOriginInScreen(
     const aura::Window* root_window) {
-  aura::Window* window = const_cast<aura::Window*>(root_window);
-  display::Screen* screen = display::Screen::GetScreen();
-  gfx::Rect screen_bounds = root_window->GetHost()->GetBoundsInPixels();
-  gfx::Rect dip_bounds = screen->ScreenToDIPRectInWindow(window, screen_bounds);
-  return dip_bounds.origin();
+  return root_window->GetHost()->GetBoundsInDIP().origin();
 }
 
 }  // namespace wm

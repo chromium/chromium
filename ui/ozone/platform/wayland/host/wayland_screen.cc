@@ -228,22 +228,25 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
   // wl_shell/xdg-shell do not provide either location of surfaces in global
   // space coordinate system or location of a pointer. Instead, only locations
   // of mouse/touch events are known. Given that Chromium assumes top-level
-  // windows are located at origin, always provide a cursor point in regards
-  // to surfaces' location.
+  // windows are located at origin when screen coordinates is not available,
+  // always provide a cursor point in regards to surfaces' location.
   //
   // If a pointer is located in any of the existing wayland windows, return
-  // the last known cursor position. Otherwise, return such a point, which is
-  // not contained by any of the windows.
+  // the last known cursor position.
   auto* cursor_position = connection_->wayland_cursor_position();
   if (connection_->wayland_window_manager()
           ->GetCurrentPointerOrTouchFocusedWindow() &&
       cursor_position)
     return cursor_position->GetCursorSurfacePoint();
 
+  // Make sure the cursor position does not overlap with any window by using the
+  // outside of largest window bounds.
+  // TODO(oshima): Change this for the case that screen coordinates is
+  // available.
   auto* window =
       connection_->wayland_window_manager()->GetWindowWithLargestBounds();
   DCHECK(window);
-  const gfx::Rect bounds = window->GetBounds();
+  const gfx::Rect bounds = window->GetBoundsInDIP();
   return gfx::Point(bounds.width() + 10, bounds.height() + 10);
 }
 

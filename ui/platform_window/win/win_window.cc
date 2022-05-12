@@ -104,6 +104,16 @@ gfx::Rect WinWindow::GetBounds() const {
   return gfx::Rect(cr);
 }
 
+void WinWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
+  // SetBounds should not be used on Windows tests.
+  NOTREACHED();
+}
+gfx::Rect WinWindow::GetBoundsInDIP() const {
+  // GetBounds should not be used on Windows tests.
+  NOTREACHED();
+  return GetBounds();
+}
+
 void WinWindow::SetTitle(const std::u16string& title) {
   SetWindowText(hwnd(), base::as_wcstr(title));
 }

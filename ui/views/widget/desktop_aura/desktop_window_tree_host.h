@@ -202,7 +202,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   // Sets the bounds in screen coordinate DIPs (WindowTreeHost generally
   // operates in pixels). This function is implemented in terms of Screen.
-  virtual void SetBoundsInDIP(const gfx::Rect& bounds);
+  virtual void SetBoundsInDIP(const gfx::Rect& bounds) = 0;
 
   // Updates window shape by clipping the canvas before paint starts.
   virtual void UpdateWindowShapeIfNeeded(const ui::PaintContext& context);

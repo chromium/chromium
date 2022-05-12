@@ -491,7 +491,7 @@ void DesktopWindowTreeHostPlatform::GetWindowPlacement(
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetWindowBoundsInScreen() const {
-  return ToDIPRect(GetBoundsInPixels());
+  return platform_window()->GetBoundsInDIP();
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetClientAreaBoundsInScreen() const {
@@ -765,19 +765,13 @@ void DesktopWindowTreeHostPlatform::UpdateWindowShapeIfNeeded(
   recorder.canvas()->ClipPath(clip_path, true);
 }
 
-gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  // This might be called before the |platform_window| is created. Thus,
-  // explicitly check if that exists before trying to access its visibility and
-  // the display where it is shown.
-  if (platform_window())
-    display = GetDisplayNearestRootWindow();
-  else if (window_parent_)
-    display = window_parent_->GetDisplayNearestRootWindow();
+void DesktopWindowTreeHostPlatform::SetBoundsInDIP(const gfx::Rect& bounds) {
+  platform_window()->SetBoundsInDIP(bounds);
+}
 
-  float scale = display.device_scale_factor();
+gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
   gfx::Transform transform;
-  transform.Scale(scale, scale);
+  transform.Scale(device_scale_factor(), device_scale_factor());
   return transform;
 }
 
@@ -788,6 +782,14 @@ void DesktopWindowTreeHostPlatform::ShowImpl() {
 void DesktopWindowTreeHostPlatform::HideImpl() {
   WindowTreeHostPlatform::HideImpl();
   native_widget_delegate_->OnNativeWidgetVisibilityChanged(false);
+}
+
+gfx::Rect DesktopWindowTreeHostPlatform::CalculateRootWindowBounds() const {
+  return gfx::Rect(platform_window()->GetBoundsInDIP().size());
+}
+
+gfx::Rect DesktopWindowTreeHostPlatform::GetBoundsInDIP() const {
+  return platform_window()->GetBoundsInDIP();
 }
 
 void DesktopWindowTreeHostPlatform::OnClosed() {

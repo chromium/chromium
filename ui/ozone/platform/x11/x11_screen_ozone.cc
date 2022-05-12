@@ -56,11 +56,8 @@ display::Display X11ScreenOzone::GetDisplayForAcceleratedWidget(
     return GetPrimaryDisplay();
 
   X11Window* window = window_manager_->GetWindow(widget);
-  if (window) {
-    gfx::Rect bounds_dip = gfx::ToEnclosingRect(
-        gfx::ConvertRectToDips(window->GetBounds(), GetXDisplayScaleFactor()));
-    return GetDisplayMatching(bounds_dip);
-  }
+  if (window)
+    return GetDisplayMatching(window->GetBoundsInDIP());
   return GetPrimaryDisplay();
 }
 

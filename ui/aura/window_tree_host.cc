@@ -399,6 +399,13 @@ void WindowTreeHost::Hide() {
   OnAcceleratedWidgetMadeVisible(false);
 }
 
+gfx::Rect WindowTreeHost::GetBoundsInDIP() const {
+  aura::Window* root_window = const_cast<aura::Window*>(window());
+  display::Screen* screen = display::Screen::GetScreen();
+  gfx::Rect screen_bounds = GetBoundsInPixels();
+  return screen->ScreenToDIPRectInWindow(root_window, screen_bounds);
+}
+
 gfx::Rect WindowTreeHost::GetBoundsInAcceleratedWidgetPixelCoordinates() {
   return gfx::Rect(GetBoundsInPixels().size());
 }
@@ -458,9 +465,12 @@ void WindowTreeHost::UpdateRootWindowSize() {
   bool compositor_inited = !!compositor()->root_layer();
   ScopedLocalSurfaceIdValidator lsi_validator(compositor_inited ? window()
                                                                 : nullptr);
-  gfx::Rect transformed_bounds_in_dp =
-      GetTransformedRootWindowBoundsFromPixelSize(GetBoundsInPixels().size());
-  window()->SetBounds(transformed_bounds_in_dp);
+  window()->SetBounds(CalculateRootWindowBounds());
+}
+
+gfx::Rect WindowTreeHost::CalculateRootWindowBounds() const {
+  return GetTransformedRootWindowBoundsFromPixelSize(
+      GetBoundsInPixels().size());
 }
 
 std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
@@ -530,11 +540,6 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless) &&
       base::FeatureList::IsEnabled(features::kCalculateNativeWinOcclusion);
 #endif
-}
-
-void WindowTreeHost::IntializeDeviceScaleFactor(float device_scale_factor) {
-  DCHECK(!compositor_->root_layer()) << "Only call this before InitHost()";
-  device_scale_factor_ = device_scale_factor;
 }
 
 void WindowTreeHost::UpdateCompositorVisibility(bool visible) {

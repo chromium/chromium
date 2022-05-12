@@ -177,6 +177,8 @@ class WaylandWindow : public PlatformWindow,
   bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInDIP() const override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
   gfx::Rect GetBounds() const override;
   void SetTitle(const std::u16string& title) override;
   void SetCapture() override;
@@ -308,9 +310,6 @@ class WaylandWindow : public PlatformWindow,
     return ui_task_runner_;
   }
 
-  // Returns bounds in DIP.
-  gfx::Rect GetBoundsInDIP() const;
-
   base::WeakPtr<WaylandWindow> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -326,7 +325,7 @@ class WaylandWindow : public PlatformWindow,
   const WaylandConnection* connection() const { return connection_; }
   PlatformWindowDelegate* delegate() { return delegate_; }
 
-  // Sets bounds in dip.
+  // [Deprecatd] Sets bounds in dip. This will be replaced with SetBoundsInDIP.
   void SetBoundsDip(const gfx::Rect& bounds_dip);
 
   void set_ui_scale(float ui_scale) { ui_scale_ = ui_scale; }

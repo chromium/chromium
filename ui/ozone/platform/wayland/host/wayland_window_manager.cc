@@ -62,7 +62,7 @@ WaylandWindow* WaylandWindowManager::GetWindowWithLargestBounds() const {
       continue;
     }
     WaylandWindow* window = entry.second;
-    if (window_with_largest_bounds->GetBounds() < window->GetBounds())
+    if (window_with_largest_bounds->GetBoundsInDIP() < window->GetBoundsInDIP())
       window_with_largest_bounds = window;
   }
   return window_with_largest_bounds;

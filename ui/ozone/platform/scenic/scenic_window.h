@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // ui::PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInDIP() const override;
+  void SetBoundsInDIP(const gfx::Rect& bounds) override;
   void SetTitle(const std::u16string& title) override;
   void Show(bool inactive) override;
   void Hide() override;

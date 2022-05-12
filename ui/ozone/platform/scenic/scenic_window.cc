@@ -123,6 +123,15 @@ void ScenicWindow::SetBounds(const gfx::Rect& bounds) {
   bounds_ = bounds;
 }
 
+gfx::Rect ScenicWindow::GetBoundsInDIP() const {
+  return delegate_->ConvertRectToDIP(bounds_);
+}
+
+void ScenicWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
+  // This path should only be reached in tests.
+  bounds_ = delegate_->ConvertRectToPixels(bounds);
+}
+
 void ScenicWindow::SetTitle(const std::u16string& title) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

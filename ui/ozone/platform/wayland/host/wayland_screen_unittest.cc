@@ -73,6 +73,33 @@ class TestDisplayObserver : public display::DisplayObserver {
   display::Display removed_display_;
 };
 
+class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
+ public:
+  MockWaylandPlatformWindowDelegate() = default;
+  MockWaylandPlatformWindowDelegate(const MockWaylandPlatformWindowDelegate&) =
+      delete;
+  MockWaylandPlatformWindowDelegate operator=(
+      const MockWaylandPlatformWindowDelegate&) = delete;
+  ~MockWaylandPlatformWindowDelegate() override = default;
+
+  gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const override {
+    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
+    return gfx::ScaleToEnclosingRect(rect_in_dp, scale);
+  }
+
+  gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override {
+    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
+    return gfx::ScaleToEnclosedRect(rect_in_pixels, 1.0f / scale);
+  }
+
+  void set_wayland_window(WaylandWindow* wayland_window) {
+    wayland_window_ = wayland_window;
+  }
+
+ private:
+  WaylandWindow* wayland_window_ = nullptr;
+};
+
 }  // namespace
 
 class WaylandScreenTest : public WaylandTest {
@@ -352,7 +379,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
       gfx::Point(window_bounds.width() + 1, window_bounds.height() + 1));
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
   auto menu_window_bounds =
       gfx::Rect(window_->GetBounds().width() - 10,
                 window_->GetBounds().height() - 10, 100, 100);
@@ -360,6 +387,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
       CreateWaylandWindowWithProperties(menu_window_bounds,
                                         PlatformWindowType::kMenu,
                                         window_->GetWidget(), &delegate);
+  delegate.set_wayland_window(menu_window.get());
 
   Sync();
 

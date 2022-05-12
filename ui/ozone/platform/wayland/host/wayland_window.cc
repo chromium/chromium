@@ -297,7 +297,11 @@ gfx::Rect WaylandWindow::GetBounds() const {
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
-  return gfx::ScaleToRoundedRect(bounds_px_, 1.0f / window_scale());
+  return delegate_->ConvertRectToDIP(bounds_px_);
+}
+
+void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
+  SetBounds(delegate_->ConvertRectToPixels(bounds));
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {

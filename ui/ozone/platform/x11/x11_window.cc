@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/x11_window.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -534,6 +535,14 @@ void X11Window::SetBounds(const gfx::Rect& bounds) {
 
 gfx::Rect X11Window::GetBounds() const {
   return bounds_in_pixels_;
+}
+
+void X11Window::SetBoundsInDIP(const gfx::Rect& bounds_in_dip) {
+  SetBounds(platform_window_delegate_->ConvertRectToPixels(bounds_in_dip));
+}
+
+gfx::Rect X11Window::GetBoundsInDIP() const {
+  return platform_window_delegate_->ConvertRectToDIP(bounds_in_pixels_);
 }
 
 void X11Window::SetTitle(const std::u16string& title) {
