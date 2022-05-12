@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/dawn_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -174,16 +174,16 @@ class GPUDevice final : public EventTargetWithInlineData,
   Member<GPUSupportedLimits> limits_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
-  std::unique_ptr<DawnRepeatingCallback<void(WGPUErrorType, const char*)>>
+  std::unique_ptr<WGPURepeatingCallback<void(WGPUErrorType, const char*)>>
       error_callback_;
-  std::unique_ptr<DawnRepeatingCallback<void(WGPULoggingType, const char*)>>
+  std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, const char*)>>
       logging_callback_;
   // lost_callback_ is stored as a unique_ptr since it may never be called.
   // We need to be sure to free it on deletion of the device.
   // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
   // free.
   std::unique_ptr<
-      DawnRepeatingCallback<void(WGPUDeviceLostReason, const char*)>>
+      WGPURepeatingCallback<void(WGPUDeviceLostReason, const char*)>>
       lost_callback_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 500;

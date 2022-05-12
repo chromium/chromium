@@ -2,42 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
+#ifndef GPU_WEBGPU_CALLBACK_H_
+#define GPU_WEBGPU_CALLBACK_H_
 
 #include <memory>
 
-#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "base/callback.h"
 
-namespace blink {
+namespace gpu::webgpu {
 
-// DawnCallback<Callback> is a heap-allocated version of
+// WGPUCallback<Callback> is a heap-allocated version of
 // base::OnceCallback or base::RepeatingCallback.
 // It is allocated on the heap so that it can be reinterpret_cast to/from
-// void* and passed to Dawn C callbacks.
+// void* and passed to WGPU C callbacks.
 //
 // Example:
-//   DawnOnceCallback<F>* callback =
-//     BindDawnOnceCallback(func, arg1);
+//   WGPUOnceCallback<F>* callback =
+//     BindWGPUOnceCallback(func, arg1);
 //
-//   // |someDawnFunction| expects callback function with arguments:
+//   // |someWGPUFunction| expects callback function with arguments:
 //   //    Args... args, void* userdata.
 //   // When it is called, it will forward to func(arg1, args...).
-//   GetProcs().someDawnFunction(
+//   GetProcs().someWGPUFunction(
 //     callback->UnboundCallback(), callback->AsUserdata());
 template <typename Callback>
-class DawnCallbackBase;
+class WGPUCallbackBase;
 
 template <typename Callback>
-class DawnOnceCallback;
+class WGPUOnceCallback;
 
 template <typename Callback>
-class DawnRepeatingCallback;
+class WGPURepeatingCallback;
 
 template <template <typename> class BaseCallbackTemplate,
           typename R,
           typename... Args>
-class DawnCallbackBase<BaseCallbackTemplate<R(Args...)>> {
+class WGPUCallbackBase<BaseCallbackTemplate<R(Args...)>> {
   using BaseCallback = BaseCallbackTemplate<R(Args...)>;
 
   static constexpr bool is_once_callback =
@@ -49,7 +49,7 @@ class DawnCallbackBase<BaseCallbackTemplate<R(Args...)>> {
       "Callback must be base::OnceCallback or base::RepeatingCallback");
 
  public:
-  explicit DawnCallbackBase(BaseCallback callback)
+  explicit WGPUCallbackBase(BaseCallback callback)
       : callback_(std::move(callback)) {}
 
   void* AsUserdata() { return static_cast<void*>(this); }
@@ -57,8 +57,8 @@ class DawnCallbackBase<BaseCallbackTemplate<R(Args...)>> {
  protected:
   using UnboundCallbackFunction = R (*)(Args..., void*);
 
-  static DawnCallbackBase* FromUserdata(void* userdata) {
-    return static_cast<DawnCallbackBase*>(userdata);
+  static WGPUCallbackBase* FromUserdata(void* userdata) {
+    return static_cast<WGPUCallbackBase*>(userdata);
   }
 
   R Run(Args... args) && {
@@ -80,14 +80,14 @@ class DawnCallbackBase<BaseCallbackTemplate<R(Args...)>> {
 };
 
 template <typename R, typename... Args>
-class DawnOnceCallback<R(Args...)>
-    : public DawnCallbackBase<base::OnceCallback<R(Args...)>> {
+class WGPUOnceCallback<R(Args...)>
+    : public WGPUCallbackBase<base::OnceCallback<R(Args...)>> {
   using BaseCallback = base::OnceCallback<R(Args...)>;
 
  public:
-  using DawnCallbackBase<BaseCallback>::DawnCallbackBase;
+  using WGPUCallbackBase<BaseCallback>::WGPUCallbackBase;
 
-  typename DawnCallbackBase<BaseCallback>::UnboundCallbackFunction
+  typename WGPUCallbackBase<BaseCallback>::UnboundCallbackFunction
   UnboundCallback() {
     return CallUnboundOnceCallback;
   }
@@ -96,58 +96,58 @@ class DawnOnceCallback<R(Args...)>
   static R CallUnboundOnceCallback(Args... args, void* handle) {
     // After this non-repeating callback is run, it should delete itself.
     auto callback =
-        std::unique_ptr<DawnOnceCallback>(static_cast<DawnOnceCallback*>(
-            DawnCallbackBase<BaseCallback>::FromUserdata(handle)));
+        std::unique_ptr<WGPUOnceCallback>(static_cast<WGPUOnceCallback*>(
+            WGPUCallbackBase<BaseCallback>::FromUserdata(handle)));
     return std::move(*callback).Run(std::forward<Args>(args)...);
   }
 };
 
 template <typename R, typename... Args>
-class DawnRepeatingCallback<R(Args...)>
-    : public DawnCallbackBase<base::RepeatingCallback<R(Args...)>> {
+class WGPURepeatingCallback<R(Args...)>
+    : public WGPUCallbackBase<base::RepeatingCallback<R(Args...)>> {
   using BaseCallback = base::RepeatingCallback<R(Args...)>;
 
  public:
-  using DawnCallbackBase<BaseCallback>::DawnCallbackBase;
+  using WGPUCallbackBase<BaseCallback>::WGPUCallbackBase;
 
-  typename DawnCallbackBase<BaseCallback>::UnboundCallbackFunction
+  typename WGPUCallbackBase<BaseCallback>::UnboundCallbackFunction
   UnboundCallback() {
     return CallUnboundRepeatingCallback;
   }
 
  private:
   static R CallUnboundRepeatingCallback(Args... args, void* handle) {
-    return static_cast<DawnRepeatingCallback*>(
-               DawnCallbackBase<BaseCallback>::FromUserdata(handle))
+    return static_cast<WGPURepeatingCallback*>(
+               WGPUCallbackBase<BaseCallback>::FromUserdata(handle))
         ->Run(std::forward<Args>(args)...);
   }
 };
 
 template <typename FunctionType, typename... BoundParameters>
-auto BindDawnOnceCallback(FunctionType&& function,
+auto BindWGPUOnceCallback(FunctionType&& function,
                           BoundParameters&&... bound_parameters) {
   static constexpr bool is_method =
       base::internal::MakeFunctorTraits<FunctionType>::is_method;
   static constexpr bool is_weak_method =
       base::internal::IsWeakMethod<is_method, BoundParameters...>();
   static_assert(!is_weak_method,
-                "BindDawnOnceCallback cannot be used with weak methods");
+                "BindWGPUOnceCallback cannot be used with weak methods");
 
-  auto cb = WTF::Bind(std::forward<FunctionType>(function),
-                      std::forward<BoundParameters>(bound_parameters)...);
-  return new DawnOnceCallback<typename decltype(cb)::RunType>(std::move(cb));
+  auto cb = base::BindOnce(std::forward<FunctionType>(function),
+                           std::forward<BoundParameters>(bound_parameters)...);
+  return new WGPUOnceCallback<typename decltype(cb)::RunType>(std::move(cb));
 }
 
 template <typename FunctionType, typename... BoundParameters>
-auto BindDawnRepeatingCallback(FunctionType&& function,
+auto BindWGPURepeatingCallback(FunctionType&& function,
                                BoundParameters&&... bound_parameters) {
   auto cb =
-      WTF::BindRepeating(std::forward<FunctionType>(function),
-                         std::forward<BoundParameters>(bound_parameters)...);
+      base::BindRepeating(std::forward<FunctionType>(function),
+                          std::forward<BoundParameters>(bound_parameters)...);
   return std::make_unique<
-      DawnRepeatingCallback<typename decltype(cb)::RunType>>(std::move(cb));
+      WGPURepeatingCallback<typename decltype(cb)::RunType>>(std::move(cb));
 }
 
-}  // namespace blink
+}  // namespace gpu::webgpu
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CALLBACK_H_
+#endif  // GPU_WEBGPU_CALLBACK_H_

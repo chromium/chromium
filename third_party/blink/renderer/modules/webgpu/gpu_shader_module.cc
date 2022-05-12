@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/dawn_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 
 namespace blink {
 
@@ -106,7 +106,7 @@ ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
+      BindWGPUOnceCallback(&GPUShaderModule::OnCompilationInfoCallback,
                            WrapPersistent(this), WrapPersistent(resolver));
 
   GetProcs().shaderModuleGetCompilationInfo(

@@ -71,9 +71,9 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
           this,
           GetProcs().deviceGetQueue(GetHandle()))),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
-      error_callback_(BindDawnRepeatingCallback(&GPUDevice::OnUncapturedError,
+      error_callback_(BindWGPURepeatingCallback(&GPUDevice::OnUncapturedError,
                                                 WrapWeakPersistent(this))),
-      logging_callback_(BindDawnRepeatingCallback(&GPUDevice::OnLogging,
+      logging_callback_(BindWGPURepeatingCallback(&GPUDevice::OnLogging,
                                                   WrapWeakPersistent(this))),
       // Note: This is a *repeating* callback even though we expect it to only
       // be called once. This is because it may be called *zero* times.
@@ -81,7 +81,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       // allocation so it can be appropriately freed on destruction. Thus, the
       // callback should not be a OnceCallback which self-deletes after it is
       // called.
-      lost_callback_(BindDawnRepeatingCallback(&GPUDevice::OnDeviceLostError,
+      lost_callback_(BindWGPURepeatingCallback(&GPUDevice::OnDeviceLostError,
                                                WrapWeakPersistent(this))) {
   DCHECK(dawn_device);
   DCHECK(limits);
@@ -368,7 +368,7 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
     resolver->Reject(exception_state);
   } else {
     auto* callback =
-        BindDawnOnceCallback(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
+        BindWGPUOnceCallback(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
                              WrapPersistent(this), WrapPersistent(resolver));
     GetProcs().deviceCreateRenderPipelineAsync(
         GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
@@ -393,7 +393,7 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
       AsDawnType(this, descriptor, &label, &computeStageDescriptor);
 
   auto* callback =
-      BindDawnOnceCallback(&GPUDevice::OnCreateComputePipelineAsyncCallback,
+      BindWGPUOnceCallback(&GPUDevice::OnCreateComputePipelineAsyncCallback,
                            WrapPersistent(this), WrapPersistent(resolver));
   GetProcs().deviceCreateComputePipelineAsync(GetHandle(), &dawn_desc,
                                               callback->UnboundCallback(),
@@ -430,7 +430,7 @@ ScriptPromise GPUDevice::popErrorScope(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnOnceCallback(&GPUDevice::OnPopErrorScopeCallback,
+      BindWGPUOnceCallback(&GPUDevice::OnPopErrorScopeCallback,
                            WrapPersistent(this), WrapPersistent(resolver));
 
   GetProcs().devicePopErrorScope(GetHandle(), callback->UnboundCallback(),
