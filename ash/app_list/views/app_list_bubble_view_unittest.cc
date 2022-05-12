@@ -455,6 +455,8 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
   // Smoothness was recorded.
   histograms.ExpectTotalCount(
       "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", 1);
+  histograms.ExpectTotalCount("Apps.ClamshellLauncher.AnimationSmoothness.Open",
+                              1);
 }
 
 TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {

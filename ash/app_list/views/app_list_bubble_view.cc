@@ -300,6 +300,13 @@ void AppListBubbleView::StartShowAnimation(bool is_side_shelf) {
     Layout();
   DCHECK(!needs_layout());
 
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        base::UmaHistogramPercentage(
+            "Apps.ClamshellLauncher.AnimationSmoothness.Open", value);
+      })));
+
   // Animation specification for bottom shelf:
   //
   // Y Position: Down 8px → End position (visually moves up)

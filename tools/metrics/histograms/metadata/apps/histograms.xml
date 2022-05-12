@@ -1808,6 +1808,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Close" summary="close launcher"/>
     <variant name="HideAppsPage"
         summary="switch away from apps page to another page"/>
+    <variant name="Open" summary="open launcher"/>
     <variant name="OpenAppsPage" summary="open launcher to apps page"/>
     <variant name="ShowAppsPage"
         summary="switch to apps page from another page"/>
