@@ -153,8 +153,7 @@ class MediaStreamVideoTrack::FrameDeliverer
   // Render Thread.
   THREAD_CHECKER(main_render_thread_checker_);
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  // Can be null in testing.
-  scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner_;
 
   base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track_;
 
@@ -177,17 +176,13 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
     base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
     bool enabled)
     : io_task_runner_(std::move(io_task_runner)),
+      // TODO(crbug.com/1223353, crbug.com/624696): Move to WebFrameScheduler.
+      main_render_task_runner_(Thread::MainThread()->GetTaskRunner()),
       media_stream_video_track_(media_stream_video_track),
       enabled_(enabled),
       emit_frame_drop_events_(true),
       await_next_key_frame_(false) {
   DCHECK(io_task_runner_.get());
-
-  WebLocalFrame* web_frame = WebLocalFrame::FrameForCurrentContext();
-  if (web_frame) {
-    main_render_task_runner_ =
-        web_frame->GetTaskRunner(TaskType::kInternalMedia);
-  }
 }
 
 MediaStreamVideoTrack::FrameDeliverer::~FrameDeliverer() {
@@ -328,7 +323,7 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
     std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  if (!enabled_ && main_render_task_runner_ && emit_frame_drop_events_) {
+  if (!enabled_ && emit_frame_drop_events_) {
     emit_frame_drop_events_ = false;
 
     // TODO(crbug.com/964947): A weak ptr instance of MediaStreamVideoTrack is
@@ -358,7 +353,7 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
   // frames will only be requested when the source has halted delivery (e.g., a
   // screen capturer stops sending frames because the screen is not being
   // updated).
-  if (main_render_task_runner_ && is_refreshing_for_min_frame_rate_) {
+  if (is_refreshing_for_min_frame_rate_) {
     PostCrossThreadTask(
         *main_render_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&MediaStreamVideoTrack::ResetRefreshTimer,
