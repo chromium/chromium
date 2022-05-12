@@ -40101,6 +40101,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4221" label="GestureScrollUpdate"/>
   <int value="4222" label="GestureScrollEnd"/>
   <int value="4223" label="ArrayBufferTooBigForWebAPI"/>
+  <int value="4224" label="FedCmRevoke"/>
+  <int value="4225" label="FedCmLogout"/>
+  <int value="4226" label="FedCmLogoutRps"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
