@@ -14,6 +14,7 @@ goog.provide('ChromeVoxStateObserver');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');
 goog.require('BrailleKeyEvent');
+goog.require('BridgeHelper');
 goog.require('UserActionMonitor');
 
 /**
@@ -159,16 +160,12 @@ ChromeVoxState.prototype = {
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
 
-/**
- * @param {ChromeVoxStateObserver} observer
- */
+/** @param {ChromeVoxStateObserver} observer */
 ChromeVoxState.addObserver = function(observer) {
   ChromeVoxState.observers.push(observer);
 };
 
-/**
- * @param {ChromeVoxStateObserver} observer
- */
+/** @param {ChromeVoxStateObserver} observer */
 ChromeVoxState.removeObserver = function(observer) {
   const index = ChromeVoxState.observers.indexOf(observer);
   if (index > -1) {
@@ -176,6 +173,9 @@ ChromeVoxState.removeObserver = function(observer) {
   }
 };
 
+BridgeHelper.registerHandler(
+    BridgeTarget.CHROMEVOX_STATE, BridgeAction.CLEAR_CURRENT_RANGE,
+    () => ChromeVoxState.instance.setCurrentRange(null));
 BridgeHelper.registerHandler(
     BridgeTarget.CHROMEVOX_STATE, BridgeAction.UPDATE_PUNCTUATION_ECHO,
     (echo) => ChromeVoxState.backgroundTts.updatePunctuationEcho(echo));

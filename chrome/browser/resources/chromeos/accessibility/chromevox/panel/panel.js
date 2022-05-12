@@ -1096,12 +1096,10 @@ export class Panel extends PanelInterface {
 
     // Add listeners. These are custom events fired from custom components.
     const backgroundPage = chrome.extension.getBackgroundPage();
-    const chromeVoxState = backgroundPage['ChromeVoxState'];
-    const chromeVoxStateInstance = chromeVoxState['instance'];
 
-    $('chromevox-tutorial').addEventListener('closetutorial', (evt) => {
+    $('chromevox-tutorial').addEventListener('closetutorial', async (evt) => {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      UserActionMonitor.destroy();
+      await BackgroundBridge.UserActionMonitor.destroy();
       Panel.onCloseTutorial();
     });
     $('chromevox-tutorial').addEventListener('requestspeech', (evt) => {
@@ -1123,18 +1121,19 @@ export class Panel extends PanelInterface {
       const cvox = backgroundPage['ChromeVox'];
       cvox.tts.speak(text, queueMode, properties);
     });
-    $('chromevox-tutorial').addEventListener('startinteractivemode', (evt) => {
-      const actions = evt.detail.actions;
-      UserActionMonitor.create(actions, () => {
-        UserActionMonitor.destroy();
-        if (Panel.tutorial && Panel.tutorial.showNextLesson) {
-          Panel.tutorial.showNextLesson();
-        }
-      });
-    });
-    $('chromevox-tutorial').addEventListener('stopinteractivemode', (evt) => {
-      UserActionMonitor.destroy();
-    });
+    $('chromevox-tutorial')
+        .addEventListener('startinteractivemode', async (evt) => {
+          const actions = evt.detail.actions;
+          await BackgroundBridge.UserActionMonitor.create(actions);
+          await BackgroundBridge.UserActionMonitor.destroy();
+          if (Panel.tutorial && Panel.tutorial.showNextLesson) {
+            Panel.tutorial.showNextLesson();
+          }
+        });
+    $('chromevox-tutorial')
+        .addEventListener('stopinteractivemode', async (evt) => {
+          await BackgroundBridge.UserActionMonitor.destroy();
+        });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
       BackgroundBridge.CommandHandler.onCommand('fullyDescribe');
     });
@@ -1149,18 +1148,16 @@ export class Panel extends PanelInterface {
     $('chromevox-tutorial').addEventListener('readyfortesting', () => {
       Panel.tutorialReadyForTesting_ = true;
     });
-    $('chromevox-tutorial').addEventListener('openUrl', (evt) => {
+    $('chromevox-tutorial').addEventListener('openUrl', async (evt) => {
       const url = evt.detail.url;
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      UserActionMonitor.destroy();
+      await BackgroundBridge.UserActionMonitor.destroy();
       Panel.onCloseTutorial();
       chrome.tabs.create({url});
     });
   }
 
-  /**
-   * Close the tutorial.
-   */
+  /** Close the tutorial. */
   static onCloseTutorial() {
     Panel.setMode(PanelMode.COLLAPSED);
   }

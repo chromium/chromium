@@ -93,6 +93,12 @@ BackgroundBridge.ChromeVoxPrefs = {
 };
 
 BackgroundBridge.ChromeVoxState = {
+  /** @return {!Promise} */
+  async clearCurrentRange() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.CHROMEVOX_STATE, BridgeAction.CLEAR_CURRENT_RANGE);
+  },
+
   /**
    * Method that updates the punctuation echo level, and also persists setting
    * to local storage.
@@ -288,5 +294,31 @@ BackgroundBridge.PanelBackground = {
   async waitForPanelCollapse() {
     return BridgeHelper.sendMessage(
         BridgeTarget.PANEL_BACKGROUND, BridgeAction.WAIT_FOR_PANEL_COLLAPSE);
+  },
+};
+
+BackgroundBridge.UserActionMonitor = {
+  /**
+   * Creates a new user action monitor.
+   * Resolves after all actions in |actions| have been observed.
+   * @param {!Array<{
+   *     type: string,
+   *     value: (string|Object),
+   *     beforeActionMsg: (string|undefined),
+   *     afterActionMsg: (string|undefined)}>} actions
+   * @return {!Promise}
+   */
+  async create(actions) {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.USER_ACTION_MONITOR, BridgeAction.CREATE, actions);
+  },
+
+  /**
+   * Destroys the user action monitor.
+   * @return {!Promise}
+   */
+  async destroy() {
+    return BridgeHelper.sendMessage(
+        BridgeTarget.USER_ACTION_MONITOR, BridgeAction.DESTROY);
   },
 };

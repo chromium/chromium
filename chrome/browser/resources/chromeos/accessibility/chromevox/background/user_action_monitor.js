@@ -355,3 +355,11 @@ UserActionMonitor.Action = class {
 
 /** @type {UserActionMonitor} */
 UserActionMonitor.instance;
+
+BridgeHelper.registerHandler(
+    BridgeTarget.USER_ACTION_MONITOR, BridgeAction.CREATE,
+    (actions) =>
+        new Promise(resolve => UserActionMonitor.create(actions, resolve)));
+BridgeHelper.registerHandler(
+    BridgeTarget.USER_ACTION_MONITOR, BridgeAction.DESTROY,
+    () => UserActionMonitor.destroy());

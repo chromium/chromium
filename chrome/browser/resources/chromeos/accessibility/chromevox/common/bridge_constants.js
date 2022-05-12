@@ -24,6 +24,7 @@ BridgeTarget = {
   LOG_STORE: 'LogStore',
   PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',
+  USER_ACTION_MONITOR: 'UserActionMonitor',
 };
 
 /**
@@ -33,9 +34,12 @@ BridgeTarget = {
 BridgeAction = {
   ADD_MENU_ITEM: 'addMenuItem',
   BACK_TRANSLATE: 'backTranslate',
+  CLEAR_CURRENT_RANGE: 'clearCurrentRange',
   CLEAR_LOG: 'clearLog',
+  CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
+  DESTROY: 'destroy',
   DESTROY_I_SEARCH: 'destroyISearch',
   FOCUS_TAB: 'focusTab',
   GET: 'get',

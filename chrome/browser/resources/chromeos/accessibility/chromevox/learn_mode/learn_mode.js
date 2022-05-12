@@ -280,10 +280,8 @@ export class LearnMode {
   }
 
   /** Clears ChromeVox range. */
-  static clearRange() {
-    chrome.extension
-        .getBackgroundPage()['ChromeVoxState']['instance']['setCurrentRange'](
-            null);
+  static async clearRange() {
+    await BackgroundBridge.ChromeVoxState.clearCurrentRange();
   }
 
   /** @private */
