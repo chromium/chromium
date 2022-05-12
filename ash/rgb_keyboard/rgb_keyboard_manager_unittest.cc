@@ -20,7 +20,6 @@ namespace ash {
 class RgbKeyboardManagerTest : public testing::Test {
  public:
   RgbKeyboardManagerTest() {
-    // scoped_feature_list_.InitAndEnableFeature(features::kRgbKeyboard);
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kRgbKeyboard,
                               features::kExperimentalRgbKeyboardPatterns},
