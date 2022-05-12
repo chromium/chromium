@@ -439,7 +439,8 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   SizeToContents();
   PreferredSizeChanged();
 
-  // Focus `continue_button` if screen reader is enabled.
+  // Focusing `continue_button_` without screen reader on makes the UI look
+  // awkward, so we only want to do so when screen reader is enabled.
   if (accessibility_state_utils::IsScreenReaderEnabled())
     continue_button_->RequestFocus();
   SendAccessibilityEvent(GetWidget());
