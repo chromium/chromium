@@ -7984,6 +7984,7 @@ test("unit_tests") {
       "../common/safe_browsing/ipc_protobuf_message_test_messages.h",
       "../common/safe_browsing/ipc_protobuf_message_unittest.cc",
     ]
+    deps += [ "../common/safe_browsing:archive_analyzer_results" ]
     if (is_mac) {
       sources += [
         "../browser/safe_browsing/incident_reporting/binary_integrity_analyzer_mac_unittest.cc",

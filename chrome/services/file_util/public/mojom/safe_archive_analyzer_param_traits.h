@@ -21,6 +21,9 @@ IPC_ENUM_TRAITS_VALIDATE(
     safe_browsing::ClientDownloadRequest_DownloadType,
     safe_browsing::ClientDownloadRequest_DownloadType_IsValid(value))
 
+IPC_ENUM_TRAITS_MAX_VALUE(safe_browsing::ArchiveAnalysisResult,
+                          safe_browsing::ArchiveAnalysisResult::kMaxValue)
+
 IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(safe_browsing::ClientDownloadRequest_Digests)
   IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_COMPLEX_MEMBER(sha256)
   IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_COMPLEX_MEMBER(sha1)
@@ -110,4 +113,5 @@ IPC_STRUCT_TRAITS_BEGIN(safe_browsing::ArchiveAnalyzerResults)
 #endif  // BUILDFLAG(IS_MAC)
   IPC_STRUCT_TRAITS_MEMBER(file_count)
   IPC_STRUCT_TRAITS_MEMBER(directory_count)
+  IPC_STRUCT_TRAITS_MEMBER(analysis_result)
 IPC_STRUCT_TRAITS_END()
