@@ -108,11 +108,17 @@ FirstRunDialog::~FirstRunDialog() {
 
 void FirstRunDialog::Done() {
   CHECK(!quit_runloop_.is_null());
+
+  if (!closed_through_accept_button_) {
+    ChangeMetricsReportingState(false);
+  }
+
   quit_runloop_.Run();
 }
 
 bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
+  closed_through_accept_button_ = true;
 
 #if BUILDFLAG(IS_MAC)
   ChangeMetricsReportingState(report_crashes_->GetChecked());

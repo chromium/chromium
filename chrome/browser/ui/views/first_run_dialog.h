@@ -38,6 +38,11 @@ class FirstRunDialog : public views::DialogDelegateView {
   // views::WidgetDelegate:
   void WindowClosing() override;
 
+  // Used to determine whether the dialog was closed by pressing the accept
+  // button. The user might close the dialog by pressing the close button
+  // instead, in which we default to disabling metrics reporting.
+  bool closed_through_accept_button_ = false;
+
   views::Checkbox* make_default_ = nullptr;
   views::Checkbox* report_crashes_ = nullptr;
   base::RepeatingClosure quit_runloop_;
