@@ -39,7 +39,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
@@ -71,7 +71,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
     low_disk_notification_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }

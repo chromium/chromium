@@ -71,7 +71,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
  public:
   CrostiniSshfsHelperTest() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
@@ -109,7 +109,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

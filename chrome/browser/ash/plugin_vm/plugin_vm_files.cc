@@ -107,7 +107,7 @@ void LaunchPluginVmAppImpl(Profile* profile,
       std::make_move_iterator(file_paths.end()),
       google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
 
-  chromeos::CiceroneClient::Get()->LaunchContainerApplication(
+  ash::CiceroneClient::Get()->LaunchContainerApplication(
       std::move(request),
       base::BindOnce(
           [](const std::string& app_id, LaunchPluginVmAppCallback callback,

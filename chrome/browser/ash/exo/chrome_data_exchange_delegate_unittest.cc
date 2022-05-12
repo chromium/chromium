@@ -73,7 +73,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
 
@@ -119,7 +119,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     profile_.reset();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

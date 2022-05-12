@@ -308,7 +308,7 @@ void VmApplicationsServiceProvider::MultiFilesSelected(
             for (const auto& file_url : file_urls) {
               data->signal.add_files(file_url);
             }
-            chromeos::CiceroneClient::Get()->FileSelected(data->signal);
+            CiceroneClient::Get()->FileSelected(data->signal);
           },
           std::move(data)));
 }

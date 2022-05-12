@@ -36,7 +36,7 @@ class FileManagerFileWatcherTest : public testing::Test {
   FileManagerFileWatcherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
   }
@@ -44,7 +44,7 @@ class FileManagerFileWatcherTest : public testing::Test {
   ~FileManagerFileWatcherTest() override {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -207,8 +207,8 @@ TEST_F(FileManagerFileWatcherTest, WatchLocalFile) {
 }
 
 TEST_F(FileManagerFileWatcherTest, WatchCrostiniFile) {
-  chromeos::FakeCiceroneClient* fake_cicerone_client =
-      chromeos::FakeCiceroneClient::Get();
+  ash::FakeCiceroneClient* fake_cicerone_client =
+      ash::FakeCiceroneClient::Get();
 
   const base::FilePath kVirtualPath("foo/bar.txt");
   const char kExtensionId[] = "extension-id";

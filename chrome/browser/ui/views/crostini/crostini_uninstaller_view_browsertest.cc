@@ -28,7 +28,7 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
  public:
   class WaitingFakeConciergeClient : public ash::FakeConciergeClient {
    public:
-    explicit WaitingFakeConciergeClient(chromeos::FakeCiceroneClient* client)
+    explicit WaitingFakeConciergeClient(ash::FakeCiceroneClient* client)
         : ash::FakeConciergeClient(client) {}
 
     void StopVm(

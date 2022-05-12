@@ -8,14 +8,14 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
 namespace ash {
+
+class FakeCiceroneClient;
 
 // ConciergeClient is used to communicate with Concierge, which is used to
 // start and stop VMs, as well as for disk image management.

@@ -55,7 +55,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
  public:
   CrostiniDiskTestDbus() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
@@ -73,7 +73,7 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

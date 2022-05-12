@@ -11,7 +11,7 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 // CiceroneClient is used to communicate with Cicerone, which is used to
 // communicate with containers running inside VMs.
@@ -383,11 +383,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public DBusClient {
   CiceroneClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CiceroneClient;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_CICERONE_CLIENT_H_

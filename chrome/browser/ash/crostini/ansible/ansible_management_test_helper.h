@@ -39,7 +39,7 @@ class AnsibleManagementTestHelper {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Owned by chromeos::DBusThreadManager
-  chromeos::FakeCiceroneClient* fake_cicerone_client_;
+  ash::FakeCiceroneClient* fake_cicerone_client_;
 };
 
 }  // namespace crostini

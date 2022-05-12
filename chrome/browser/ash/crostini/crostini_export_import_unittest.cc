@@ -126,11 +126,11 @@ class CrostiniExportImportTest : public testing::Test {
                               kCrostiniDefaultContainerName),
         custom_container_id_("MyVM", "MyContainer") {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_seneschal_client_ = ash::FakeSeneschalClient::Get();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
   }
 
   CrostiniExportImportTest(const CrostiniExportImportTest&) = delete;
@@ -139,7 +139,7 @@ class CrostiniExportImportTest : public testing::Test {
   ~CrostiniExportImportTest() override {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -186,7 +186,7 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
-  chromeos::FakeCiceroneClient* fake_cicerone_client_;
+  ash::FakeCiceroneClient* fake_cicerone_client_;
   ash::FakeSeneschalClient* fake_seneschal_client_;
 
   std::unique_ptr<TestingProfile> profile_;

@@ -194,10 +194,10 @@ class CrostiniManagerTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
     fake_anomaly_detector_client_ =
         static_cast<chromeos::FakeAnomalyDetectorClient*>(
@@ -210,7 +210,7 @@ class CrostiniManagerTest : public testing::Test {
   ~CrostiniManagerTest() override {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -288,7 +288,7 @@ class CrostiniManagerTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  chromeos::FakeCiceroneClient* fake_cicerone_client_;
+  ash::FakeCiceroneClient* fake_cicerone_client_;
   ash::FakeConciergeClient* fake_concierge_client_;
   // Owned by chromeos::DBusThreadManager
   chromeos::FakeAnomalyDetectorClient* fake_anomaly_detector_client_;
@@ -2356,9 +2356,9 @@ class CrostiniManagerUpgradeContainerTest
   void SendProgressSignal() {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &chromeos::FakeCiceroneClient::NotifyUpgradeContainerProgress,
-            base::Unretained(fake_cicerone_client_), progress_signal_));
+        base::BindOnce(&ash::FakeCiceroneClient::NotifyUpgradeContainerProgress,
+                       base::Unretained(fake_cicerone_client_),
+                       progress_signal_));
   }
 
  protected:

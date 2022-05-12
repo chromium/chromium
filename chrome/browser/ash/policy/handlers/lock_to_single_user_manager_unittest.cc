@@ -50,7 +50,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // DBusThreadManager::Get() for GetAnomalyDetectorClient.
     chromeos::DBusThreadManager::Initialize();
 
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
@@ -102,7 +102,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     chromeos::CryptohomeMiscClient::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -156,7 +156,7 @@ class CrostiniManager : public KeyedService,
                         public chromeos::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
                         public ash::ConciergeClient::ContainerObserver,
-                        public chromeos::CiceroneClient::Observer,
+                        public ash::CiceroneClient::Observer,
                         public chromeos::NetworkStateHandlerObserver,
                         public chromeos::PowerManagerClient::Observer {
  public:

@@ -204,7 +204,7 @@ class ChildStatusCollectorTest : public testing::Test {
     chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         base::WrapUnique<chromeos::UpdateEngineClient>(update_engine_client_));
 
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
@@ -220,7 +220,7 @@ class ChildStatusCollectorTest : public testing::Test {
     // |testing_profile_| must be destructed while ConciergeClient is alive.
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.

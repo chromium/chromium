@@ -737,7 +737,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     AppServiceAppModelBuilderTest::SetUp();
@@ -758,7 +758,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -977,14 +977,14 @@ class PluginVmAppTest : public testing::Test {
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
-      chromeos::CiceroneClient::InitializeFake();
+      ash::CiceroneClient::InitializeFake();
       ash::ConciergeClient::InitializeFake();
       ash::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
       ash::SeneschalClient::Shutdown();
       ash::ConciergeClient::Shutdown();
-      chromeos::CiceroneClient::Shutdown();
+      ash::CiceroneClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }
   } dbus_thread_manager_;

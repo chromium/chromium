@@ -44,7 +44,7 @@ class CrostiniPortForwarderTest : public testing::Test {
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     chromeos::PermissionBrokerClient::InitializeFake();
@@ -69,7 +69,7 @@ class CrostiniPortForwarderTest : public testing::Test {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

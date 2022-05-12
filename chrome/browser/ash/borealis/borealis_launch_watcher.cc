@@ -13,11 +13,11 @@ BorealisLaunchWatcher::BorealisLaunchWatcher(Profile* profile,
                                              std::string vm_name)
     : owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)),
       vm_name_(vm_name) {
-  chromeos::CiceroneClient::Get()->AddObserver(this);
+  ash::CiceroneClient::Get()->AddObserver(this);
 }
 
 BorealisLaunchWatcher::~BorealisLaunchWatcher() {
-  chromeos::CiceroneClient::Get()->RemoveObserver(this);
+  ash::CiceroneClient::Get()->RemoveObserver(this);
 }
 
 void BorealisLaunchWatcher::AwaitLaunch(OnLaunchCallback callback) {

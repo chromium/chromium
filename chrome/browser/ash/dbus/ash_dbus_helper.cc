@@ -115,7 +115,7 @@ void InitializeDBus() {
   InitializeDBusClient<AuthPolicyClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
   InitializeDBusClient<chromeos::CdmFactoryDaemonClient>(bus);
-  InitializeDBusClient<chromeos::CiceroneClient>(bus);
+  InitializeDBusClient<CiceroneClient>(bus);
   // ConciergeClient depends on CiceroneClient.
   InitializeDBusClient<ConciergeClient>(bus);
   InitializeDBusClient<chromeos::CrasAudioClient>(bus);
@@ -250,7 +250,7 @@ void ShutdownDBus() {
   cros_healthd::CrosHealthdClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
   ConciergeClient::Shutdown();
-  chromeos::CiceroneClient::Shutdown();
+  CiceroneClient::Shutdown();
   chromeos::CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();

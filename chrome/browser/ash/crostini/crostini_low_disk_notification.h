@@ -26,7 +26,7 @@ namespace crostini {
 // class should be created after DBus has been initialized and destroyed before
 // DBus has been shutdown.
 // This class must be instantiated on the UI thread.
-class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
+class CrostiniLowDiskNotification : public ash::CiceroneClient::Observer {
  public:
   // Registers this class as a Cicerone Observer.
   CrostiniLowDiskNotification();
@@ -38,7 +38,7 @@ class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
   // Unregisters from observing events.
   ~CrostiniLowDiskNotification() override;
 
-  // chromeos::CiceroneClient::Observer override.
+  // ash::CiceroneClient::Observer override.
   void OnLowDiskSpaceTriggered(
       const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) override;
 

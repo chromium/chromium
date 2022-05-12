@@ -906,7 +906,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::InitializeFake();
     chromeos::LoginState::Initialize();
 
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
   }
@@ -921,7 +921,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     // |testing_profile_| must be destroyed while ConciergeClient is alive.
     testing_profile_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::LoginState::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::AttestationClient::Shutdown();

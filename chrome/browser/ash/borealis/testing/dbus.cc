@@ -22,15 +22,15 @@ BasicDBusHelper::~BasicDBusHelper() {
 
 FakeCiceroneHelper::FakeCiceroneHelper(BasicDBusHelper* basic_helper) {
   DCHECK(basic_helper);
-  chromeos::CiceroneClient::InitializeFake();
+  ash::CiceroneClient::InitializeFake();
 }
 
 FakeCiceroneHelper::~FakeCiceroneHelper() {
-  chromeos::CiceroneClient::Shutdown();
+  ash::CiceroneClient::Shutdown();
 }
 
-chromeos::FakeCiceroneClient* FakeCiceroneHelper::FakeCiceroneClient() {
-  return chromeos::FakeCiceroneClient::Get();
+ash::FakeCiceroneClient* FakeCiceroneHelper::FakeCiceroneClient() {
+  return ash::FakeCiceroneClient::Get();
 }
 
 FakeSeneschalHelper::FakeSeneschalHelper(BasicDBusHelper* basic_helper) {

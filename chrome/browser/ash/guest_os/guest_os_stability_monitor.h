@@ -54,7 +54,7 @@ enum class FailureClasses {
 // call |LogUnexpectedVmShutdown| if any are considered unexpected.
 // Take care to ignore VMs owned by other implementers.
 class GuestOsStabilityMonitor : ash::ConciergeClient::Observer,
-                                chromeos::CiceroneClient::Observer,
+                                ash::CiceroneClient::Observer,
                                 ash::SeneschalClient::Observer,
                                 chromeos::ChunneldClient::Observer {
  public:
@@ -75,7 +75,7 @@ class GuestOsStabilityMonitor : ash::ConciergeClient::Observer,
   void ConciergeServiceStopped() override;
   void ConciergeServiceStarted() override;
 
-  //  chromeos::CiceroneClient::Observer::
+  //  ash::CiceroneClient::Observer::
   void CiceroneServiceStopped() override;
   void CiceroneServiceStarted() override;
 
@@ -91,8 +91,7 @@ class GuestOsStabilityMonitor : ash::ConciergeClient::Observer,
   std::string histogram_;
   base::ScopedObservation<ash::ConciergeClient, ash::ConciergeClient::Observer>
       concierge_observer_;
-  base::ScopedObservation<chromeos::CiceroneClient,
-                          chromeos::CiceroneClient::Observer>
+  base::ScopedObservation<ash::CiceroneClient, ash::CiceroneClient::Observer>
       cicerone_observer_;
   base::ScopedObservation<ash::SeneschalClient, ash::SeneschalClient::Observer>
       seneschal_observer_;

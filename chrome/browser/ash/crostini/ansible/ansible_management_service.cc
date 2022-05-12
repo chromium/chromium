@@ -24,8 +24,8 @@ const char kCrostiniDefaultAnsibleVersion[] =
 
 namespace {
 
-chromeos::CiceroneClient* GetCiceroneClient() {
-  return chromeos::CiceroneClient::Get();
+ash::CiceroneClient* GetCiceroneClient() {
+  return ash::CiceroneClient::Get();
 }
 
 }  // namespace

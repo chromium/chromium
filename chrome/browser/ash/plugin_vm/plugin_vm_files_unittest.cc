@@ -98,14 +98,14 @@ class PluginVmFilesTest : public testing::Test {
   struct ScopedDBusThreadManager {
     ScopedDBusThreadManager() {
       chromeos::DBusThreadManager::Initialize();
-      chromeos::CiceroneClient::InitializeFake();
+      ash::CiceroneClient::InitializeFake();
       ash::ConciergeClient::InitializeFake();
       ash::SeneschalClient::InitializeFake();
     }
     ~ScopedDBusThreadManager() {
       ash::SeneschalClient::Shutdown();
       ash::ConciergeClient::Shutdown();
-      chromeos::CiceroneClient::Shutdown();
+      ash::CiceroneClient::Shutdown();
       chromeos::DBusThreadManager::Shutdown();
     }
   } dbus_thread_manager_;
@@ -180,7 +180,7 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
   ASSERT_FALSE(launch_plugin_vm_callback.is_null());
 
   LaunchContainerApplicationCallback cicerone_response_callback;
-  chromeos::FakeCiceroneClient::Get()->SetOnLaunchContainerApplicationCallback(
+  ash::FakeCiceroneClient::Get()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
           [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
                   request,

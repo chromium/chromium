@@ -44,11 +44,11 @@ namespace crostini {
 
 namespace {
 
+using ::ash::FakeCiceroneClient;
 using ::ash::FakeConciergeClient;
 using ::ash::FakeSeneschalClient;
 using ::chromeos::DBusMethodCallback;
 using ::chromeos::DBusThreadManager;
-using ::chromeos::FakeCiceroneClient;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -175,10 +175,10 @@ class CrostiniPackageServiceTest : public testing::Test {
   void SetUp() override {
     DBusThreadManager::Initialize();
 
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
     ASSERT_TRUE(fake_cicerone_client_);
     fake_seneschal_client_ = FakeSeneschalClient::Get();
     ASSERT_TRUE(fake_seneschal_client_);
@@ -235,7 +235,7 @@ class CrostiniPackageServiceTest : public testing::Test {
     task_environment_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 

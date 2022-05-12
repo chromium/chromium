@@ -111,7 +111,7 @@ TEST_F(BorealisContextTest, ConciergeFailure) {
 }
 
 TEST_F(BorealisContextTest, CiceroneFailure) {
-  auto* cicerone_client = chromeos::FakeCiceroneClient::Get();
+  auto* cicerone_client = ash::FakeCiceroneClient::Get();
 
   cicerone_client->NotifyCiceroneStopped();
   histogram_tester_.ExpectUniqueSample(

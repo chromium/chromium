@@ -643,7 +643,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     AppSearchProviderTest::SetUp();
@@ -660,7 +660,7 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 };

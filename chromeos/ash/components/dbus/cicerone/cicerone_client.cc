@@ -21,7 +21,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/vm_cicerone/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -1186,4 +1186,4 @@ CiceroneClient* CiceroneClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

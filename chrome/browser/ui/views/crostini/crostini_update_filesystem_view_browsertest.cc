@@ -20,8 +20,8 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-chromeos::FakeCiceroneClient* GetFakeCiceroneClient() {
-  return chromeos::FakeCiceroneClient::Get();
+ash::FakeCiceroneClient* GetFakeCiceroneClient() {
+  return ash::FakeCiceroneClient::Get();
 }
 
 class CrostiniUpdateFilesystemViewBrowserTest

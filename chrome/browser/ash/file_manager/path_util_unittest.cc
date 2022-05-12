@@ -325,7 +325,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   // Initialize DBUS and running container.
   chromeos::DBusThreadManager::Initialize();
-  chromeos::CiceroneClient::InitializeFake();
+  ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
 
@@ -808,7 +808,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   chromeos::DBusThreadManager::Initialize();
-  chromeos::CiceroneClient::InitializeFake();
+  ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
 

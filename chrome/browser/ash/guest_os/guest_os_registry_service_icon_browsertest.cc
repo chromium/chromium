@@ -30,17 +30,17 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
-    fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
+    fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     service_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
@@ -132,7 +132,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
   }
 
  protected:
-  chromeos::FakeCiceroneClient* fake_cicerone_client_;
+  ash::FakeCiceroneClient* fake_cicerone_client_;
   static constexpr char kSvgData[] =
       "<svg width='20px' height='20px' viewBox='0 0 24 24' "
       "fill='rgb(95,99,104)' "

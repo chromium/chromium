@@ -234,7 +234,7 @@ class DlpFilesExternalDestinationTest
     crostini_features.set_enabled(true);
 
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
@@ -269,7 +269,7 @@ class DlpFilesExternalDestinationTest
     DlpFilesControllerTest::TearDown();
 
     chromeos::DBusThreadManager::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::SeneschalClient::Shutdown();
 

@@ -16,7 +16,7 @@ namespace borealis {
 
 // Watches to see if a specified VM (from a given owner id and vm name) was
 // started.
-class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
+class BorealisLaunchWatcher : public ash::CiceroneClient::Observer {
  public:
   using OnLaunchCallback =
       base::OnceCallback<void(absl::optional<std::string>)>;

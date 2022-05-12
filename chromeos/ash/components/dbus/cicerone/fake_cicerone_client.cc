@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -572,4 +572,4 @@ FakeCiceroneClient* FakeCiceroneClient::Get() {
   return g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

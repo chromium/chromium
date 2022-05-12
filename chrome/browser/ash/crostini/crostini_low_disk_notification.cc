@@ -36,8 +36,8 @@ const uint64_t kNotificationThreshold = 1 << 30;          // 1GB
 const uint64_t kNotificationSevereThreshold = 512 << 20;  // 512MB
 constexpr base::TimeDelta kNotificationInterval = base::Minutes(2);
 
-chromeos::CiceroneClient* GetCiceroneClient() {
-  return chromeos::CiceroneClient::Get();
+ash::CiceroneClient* GetCiceroneClient() {
+  return ash::CiceroneClient::Get();
 }
 
 }  // namespace

@@ -49,7 +49,7 @@ class PluginVmManagerImplTest : public testing::Test {
  public:
   PluginVmManagerImplTest() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     testing_profile_ = std::make_unique<TestingProfile>();
@@ -91,7 +91,7 @@ class PluginVmManagerImplTest : public testing::Test {
     testing_profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

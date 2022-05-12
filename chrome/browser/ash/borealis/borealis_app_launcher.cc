@@ -53,7 +53,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
       args.begin(), args.end(),
       google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
 
-  chromeos::CiceroneClient::Get()->LaunchContainerApplication(
+  ash::CiceroneClient::Get()->LaunchContainerApplication(
       std::move(request),
       base::BindOnce(
           [](OnLaunchedCallback callback,

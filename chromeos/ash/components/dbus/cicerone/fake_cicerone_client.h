@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // FakeCiceroneClient is a fake implementation of CiceroneClient used for
 // testing.
@@ -512,11 +512,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   base::WeakPtrFactory<FakeCiceroneClient> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::FakeCiceroneClient;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_

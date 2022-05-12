@@ -31,7 +31,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
  public:
   GuestOsStabilityMonitorTest() : task_env_() {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CiceroneClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
 
@@ -57,7 +57,7 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     profile_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::CiceroneClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -102,7 +102,7 @@ TEST_F(GuestOsStabilityMonitorTest, ConciergeFailure) {
 }
 
 TEST_F(GuestOsStabilityMonitorTest, CiceroneFailure) {
-  auto* cicerone_client = chromeos::FakeCiceroneClient::Get();
+  auto* cicerone_client = ash::FakeCiceroneClient::Get();
 
   cicerone_client->NotifyCiceroneStopped();
   histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
