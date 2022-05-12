@@ -132,10 +132,10 @@ class SoftwareVideoEncoderTest
         frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
         frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
         frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane),
-        0,                               // left
-        0,                               // top
-        frame->visible_rect().width(),   // right
-        frame->visible_rect().height(),  // bottom
+        frame->visible_rect().x(),       // x
+        frame->visible_rect().y(),       // y
+        frame->visible_rect().width(),   // width
+        frame->visible_rect().height(),  // height
         y,                               // Y color
         u,                               // U color
         v);                              // V color
@@ -161,10 +161,10 @@ class SoftwareVideoEncoderTest
 
     libyuv::ARGBRect(frame->data(VideoFrame::kARGBPlane),
                      frame->stride(VideoFrame::kARGBPlane),
-                     0,                               // left
-                     0,                               // top
-                     frame->visible_rect().width(),   // right
-                     frame->visible_rect().height(),  // bottom
+                     frame->visible_rect().x(),       // dst_x
+                     frame->visible_rect().y(),       // dst_y
+                     frame->visible_rect().width(),   // width
+                     frame->visible_rect().height(),  // height
                      color);
 
     return frame;
