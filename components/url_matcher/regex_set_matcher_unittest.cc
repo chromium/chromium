@@ -10,6 +10,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::StringPattern;
+using base::SubstringSetMatcher;
+
 namespace url_matcher {
 
 TEST(RegexSetMatcherTest, MatchRegexes) {

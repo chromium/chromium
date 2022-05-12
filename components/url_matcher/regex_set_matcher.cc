@@ -11,9 +11,11 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "components/url_matcher/substring_set_matcher.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/re2/src/re2/filtered_re2.h"
 #include "third_party/re2/src/re2/re2.h"
+
+using base::StringPattern;
 
 namespace url_matcher {
 
@@ -79,8 +81,8 @@ void RegexSetMatcher::RebuildMatcher() {
 
   for (auto it = regexes_.begin(); it != regexes_.end(); ++it) {
     RE2ID re2_id;
-    RE2::ErrorCode error = filtered_re2_->Add(
-        it->second->pattern(), RE2::DefaultOptions, &re2_id);
+    RE2::ErrorCode error =
+        filtered_re2_->Add(it->second->pattern(), RE2::DefaultOptions, &re2_id);
     if (error == RE2::NoError) {
       DCHECK_EQ(static_cast<RE2ID>(re2_id_map_.size()), re2_id);
       re2_id_map_.push_back(it->first);
@@ -95,14 +97,14 @@ void RegexSetMatcher::RebuildMatcher() {
   std::vector<std::string> strings_to_match;
   filtered_re2_->Compile(&strings_to_match);
 
-  std::vector<url_matcher::StringPattern> substring_patterns;
+  std::vector<StringPattern> substring_patterns;
   substring_patterns.reserve(strings_to_match.size());
 
   // Build SubstringSetMatcher from |strings_to_match|.
   for (size_t i = 0; i < strings_to_match.size(); ++i)
     substring_patterns.emplace_back(std::move(strings_to_match[i]), i);
 
-  substring_matcher_ = std::make_unique<SubstringSetMatcher>();
+  substring_matcher_ = std::make_unique<base::SubstringSetMatcher>();
   bool success = substring_matcher_->Build(substring_patterns);
   CHECK(success);
 }

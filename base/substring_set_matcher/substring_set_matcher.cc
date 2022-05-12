@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_matcher/substring_set_matcher.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 
 #include <stddef.h>
 
@@ -18,9 +18,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/numerics/checked_math.h"
-#include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
 
-namespace url_matcher {
+namespace base {
 
 namespace {
 
@@ -477,4 +477,4 @@ size_t SubstringSetMatcher::AhoCorasickNode::EstimateMemoryUsage() const {
   }
 }
 
-}  // namespace url_matcher
+}  // namespace base

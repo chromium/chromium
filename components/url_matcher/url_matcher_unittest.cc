@@ -13,6 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using base::StringPattern;
+
 namespace url_matcher {
 
 //
@@ -67,24 +69,24 @@ TEST(URLMatcherPortFilter, TestMatching) {
 
 TEST(URLMatcherConditionTest, IsFullURLCondition) {
   StringPattern pattern("example.com", 1);
-  EXPECT_FALSE(URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX,
-      &pattern).IsFullURLCondition());
+  EXPECT_FALSE(URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &pattern)
+                   .IsFullURLCondition());
 
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::HOST_CONTAINS,
-      &pattern).IsFullURLCondition());
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::PATH_CONTAINS,
-      &pattern).IsFullURLCondition());
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::QUERY_CONTAINS,
-      &pattern).IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::HOST_CONTAINS, &pattern)
+                  .IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::PATH_CONTAINS, &pattern)
+                  .IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::QUERY_CONTAINS, &pattern)
+                  .IsFullURLCondition());
 
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_PREFIX,
-      &pattern).IsFullURLCondition());
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_SUFFIX,
-      &pattern).IsFullURLCondition());
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_CONTAINS,
-      &pattern).IsFullURLCondition());
-  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_EQUALS,
-      &pattern).IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_PREFIX, &pattern)
+                  .IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_SUFFIX, &pattern)
+                  .IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_CONTAINS, &pattern)
+                  .IsFullURLCondition());
+  EXPECT_TRUE(URLMatcherCondition(URLMatcherCondition::URL_EQUALS, &pattern)
+                  .IsFullURLCondition());
 }
 
 TEST(URLMatcherConditionTest, IsMatch) {
@@ -153,8 +155,7 @@ TEST(URLMatcherConditionTest, Comparison) {
 namespace {
 
 bool Matches(const URLMatcherCondition& condition, const std::string& text) {
-  return text.find(condition.string_pattern()->pattern()) !=
-      std::string::npos;
+  return text.find(condition.string_pattern()->pattern()) != std::string::npos;
 }
 
 }  // namespace
@@ -196,12 +197,12 @@ TEST(URLMatcherConditionFactoryTest, Criteria) {
             factory.CreateQueryContainsCondition("foo").criterion());
   EXPECT_EQ(URLMatcherCondition::QUERY_EQUALS,
             factory.CreateQueryEqualsCondition("foo").criterion());
-  EXPECT_EQ(URLMatcherCondition::HOST_SUFFIX_PATH_PREFIX,
-            factory.CreateHostSuffixPathPrefixCondition("foo",
-                                                        "bar").criterion());
-  EXPECT_EQ(URLMatcherCondition::HOST_EQUALS_PATH_PREFIX,
-            factory.CreateHostEqualsPathPrefixCondition("foo",
-                                                        "bar").criterion());
+  EXPECT_EQ(
+      URLMatcherCondition::HOST_SUFFIX_PATH_PREFIX,
+      factory.CreateHostSuffixPathPrefixCondition("foo", "bar").criterion());
+  EXPECT_EQ(
+      URLMatcherCondition::HOST_EQUALS_PATH_PREFIX,
+      factory.CreateHostEqualsPathPrefixCondition("foo", "bar").criterion());
   EXPECT_EQ(URLMatcherCondition::URL_PREFIX,
             factory.CreateURLPrefixCondition("foo").criterion());
   EXPECT_EQ(URLMatcherCondition::URL_SUFFIX,
@@ -224,8 +225,7 @@ TEST(URLMatcherConditionFactoryTest, TestSingletonProperty) {
   EXPECT_EQ(c2.criterion(), c3.criterion());
   EXPECT_NE(c2.string_pattern(), c3.string_pattern());
   EXPECT_NE(c2.string_pattern()->id(), c3.string_pattern()->id());
-  EXPECT_NE(c2.string_pattern()->pattern(),
-            c3.string_pattern()->pattern());
+  EXPECT_NE(c2.string_pattern()->pattern(), c3.string_pattern()->pattern());
   URLMatcherCondition c4 = factory.CreateURLMatchesCondition("www.google.com");
   URLMatcherCondition c5 = factory.CreateURLContainsCondition("www.google.com");
   // Regex patterns and substring patterns do not share IDs.
@@ -247,10 +247,12 @@ TEST(URLMatcherConditionFactoryTest, TestSingletonProperty) {
 
 TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
   URLMatcherConditionFactory factory;
-  GURL gurl("https://www.google.com:1234/webhp?sourceid=chrome-instant&ie=UTF-8"
+  GURL gurl(
+      "https://www.google.com:1234/webhp?sourceid=chrome-instant&ie=UTF-8"
       "&ion=1#hl=en&output=search&sclient=psy-ab&q=chrome%20is%20awesome");
   std::string url = factory.CanonicalizeURLForComponentSearches(gurl);
-  GURL gurl2("https://www.google.com.:1234/webhp?sourceid=chrome-instant"
+  GURL gurl2(
+      "https://www.google.com.:1234/webhp?sourceid=chrome-instant"
       "&ie=UTF-8&ion=1#hl=en&output=search&sclient=psy-ab"
       "&q=chrome%20is%20awesome");
   std::string url2 = factory.CanonicalizeURLForComponentSearches(gurl2);
@@ -318,7 +320,6 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
   EXPECT_FALSE(
       Matches(factory.CreatePathEqualsCondition("www.google.com"), url));
 
-
   // Test query component.
   EXPECT_TRUE(Matches(factory.CreateQueryPrefixCondition(std::string()), url));
   EXPECT_TRUE(Matches(factory.CreateQueryPrefixCondition("sourceid"), url));
@@ -330,32 +331,41 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
   EXPECT_FALSE(Matches(factory.CreateQuerySuffixCondition("www"), url));
   // "Suffix" condition + pattern starting with '?' = "equals" condition.
   EXPECT_FALSE(Matches(factory.CreateQuerySuffixCondition(
-      "?sourceid=chrome-instant&ie=UTF-8&ion="), url));
+                           "?sourceid=chrome-instant&ie=UTF-8&ion="),
+                       url));
   EXPECT_TRUE(Matches(factory.CreateQuerySuffixCondition(
-      "?sourceid=chrome-instant&ie=UTF-8&ion=1"), url));
+                          "?sourceid=chrome-instant&ie=UTF-8&ion=1"),
+                      url));
 
   EXPECT_FALSE(Matches(factory.CreateQueryEqualsCondition(
-      "?sourceid=chrome-instant&ie=UTF-8&ion="), url));
+                           "?sourceid=chrome-instant&ie=UTF-8&ion="),
+                       url));
   EXPECT_FALSE(Matches(factory.CreateQueryEqualsCondition(
-      "sourceid=chrome-instant&ie=UTF-8&ion="), url));
+                           "sourceid=chrome-instant&ie=UTF-8&ion="),
+                       url));
   EXPECT_TRUE(Matches(factory.CreateQueryEqualsCondition(
-      "sourceid=chrome-instant&ie=UTF-8&ion=1"), url));
+                          "sourceid=chrome-instant&ie=UTF-8&ion=1"),
+                      url));
   // The '?' at the beginning is just ignored.
   EXPECT_TRUE(Matches(factory.CreateQueryEqualsCondition(
-      "?sourceid=chrome-instant&ie=UTF-8&ion=1"), url));
+                          "?sourceid=chrome-instant&ie=UTF-8&ion=1"),
+                      url));
   EXPECT_FALSE(
       Matches(factory.CreateQueryEqualsCondition("www.google.com"), url));
 
-
   // Test adjacent components
-  EXPECT_TRUE(Matches(factory.CreateHostSuffixPathPrefixCondition(
-      "google.com", "/webhp"), url));
-  EXPECT_TRUE(Matches(factory.CreateHostSuffixPathPrefixCondition(
-      "google.com", "/webhp"), url2));
-  EXPECT_TRUE(Matches(factory.CreateHostSuffixPathPrefixCondition(
-      "google.com.", "/webhp"), url));
-  EXPECT_TRUE(Matches(factory.CreateHostSuffixPathPrefixCondition(
-      "google.com.", "/webhp"), url2));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostSuffixPathPrefixCondition("google.com", "/webhp"),
+      url));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostSuffixPathPrefixCondition("google.com", "/webhp"),
+      url2));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostSuffixPathPrefixCondition("google.com.", "/webhp"),
+      url));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostSuffixPathPrefixCondition("google.com.", "/webhp"),
+      url2));
   EXPECT_TRUE(Matches(
       factory.CreateHostSuffixPathPrefixCondition(std::string(), "/webhp"),
       url));
@@ -365,14 +375,18 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
   EXPECT_FALSE(Matches(
       factory.CreateHostSuffixPathPrefixCondition("www", std::string()), url));
 
-  EXPECT_TRUE(Matches(factory.CreateHostEqualsPathPrefixCondition(
-      "www.google.com", "/webhp"), url));
-  EXPECT_TRUE(Matches(factory.CreateHostEqualsPathPrefixCondition(
-      "www.google.com", "/webhp"), url2));
-  EXPECT_TRUE(Matches(factory.CreateHostEqualsPathPrefixCondition(
-      ".www.google.com.", "/webhp"), url));
-  EXPECT_TRUE(Matches(factory.CreateHostEqualsPathPrefixCondition(
-      ".www.google.com.", "/webhp"), url2));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostEqualsPathPrefixCondition("www.google.com", "/webhp"),
+      url));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostEqualsPathPrefixCondition("www.google.com", "/webhp"),
+      url2));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostEqualsPathPrefixCondition(".www.google.com.", "/webhp"),
+      url));
+  EXPECT_TRUE(Matches(
+      factory.CreateHostEqualsPathPrefixCondition(".www.google.com.", "/webhp"),
+      url2));
   EXPECT_FALSE(Matches(
       factory.CreateHostEqualsPathPrefixCondition(std::string(), "/webhp"),
       url));
@@ -386,7 +400,8 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
 
 TEST(URLMatcherConditionFactoryTest, TestFullSearches) {
   // The Port 443 is stripped because it is the default port for https.
-  GURL gurl("https://www.google.com:443/webhp?sourceid=chrome-instant&ie=UTF-8"
+  GURL gurl(
+      "https://www.google.com:443/webhp?sourceid=chrome-instant&ie=UTF-8"
       "&ion=1#hl=en&output=search&sclient=psy-ab&q=chrome%20is%20awesome");
   URLMatcherConditionFactory factory;
   std::string url = factory.CanonicalizeURLForFullSearches(gurl);
@@ -394,12 +409,12 @@ TEST(URLMatcherConditionFactoryTest, TestFullSearches) {
   EXPECT_TRUE(Matches(factory.CreateURLPrefixCondition(std::string()), url));
   EXPECT_TRUE(
       Matches(factory.CreateURLPrefixCondition("https://www.goog"), url));
-  EXPECT_TRUE(Matches(factory.CreateURLPrefixCondition(
-      "https://www.google.com"), url));
-  EXPECT_TRUE(Matches(factory.CreateURLPrefixCondition(
-      "https://www.google.com/webhp?"), url));
-  EXPECT_FALSE(Matches(factory.CreateURLPrefixCondition(
-      "http://www.google.com"), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateURLPrefixCondition("https://www.google.com"), url));
+  EXPECT_TRUE(Matches(
+      factory.CreateURLPrefixCondition("https://www.google.com/webhp?"), url));
+  EXPECT_FALSE(
+      Matches(factory.CreateURLPrefixCondition("http://www.google.com"), url));
   EXPECT_FALSE(Matches(factory.CreateURLPrefixCondition("webhp"), url));
 
   EXPECT_TRUE(Matches(factory.CreateURLSuffixCondition(std::string()), url));
@@ -418,18 +433,21 @@ TEST(URLMatcherConditionFactoryTest, TestFullSearches) {
   EXPECT_FALSE(Matches(factory.CreateURLContainsCondition(":443"), url));
 
   EXPECT_TRUE(Matches(factory.CreateURLEqualsCondition(
-      "https://www.google.com/webhp?sourceid=chrome-instant&ie=UTF-8&ion=1"),
-      url));
+                          "https://www.google.com/"
+                          "webhp?sourceid=chrome-instant&ie=UTF-8&ion=1"),
+                      url));
   EXPECT_FALSE(
       Matches(factory.CreateURLEqualsCondition("https://www.google.com"), url));
 
   // Same as above but this time with a non-standard port.
-  gurl = GURL("https://www.google.com:1234/webhp?sourceid=chrome-instant&"
+  gurl = GURL(
+      "https://www.google.com:1234/webhp?sourceid=chrome-instant&"
       "ie=UTF-8&ion=1#hl=en&output=search&sclient=psy-ab&q=chrome%20is%20"
       "awesome");
   url = factory.CanonicalizeURLForFullSearches(gurl);
-  EXPECT_TRUE(Matches(factory.CreateURLPrefixCondition(
-      "https://www.google.com:1234/webhp?"), url));
+  EXPECT_TRUE(Matches(
+      factory.CreateURLPrefixCondition("https://www.google.com:1234/webhp?"),
+      url));
   EXPECT_TRUE(Matches(factory.CreateURLContainsCondition(":1234"), url));
 }
 
@@ -550,12 +568,8 @@ bool IsQueryMatch(
   conditions.insert(m1);
   conditions.insert(m2);
 
-  URLQueryElementMatcherCondition q1(key,
-                                     value,
-                                     query_value_match_type,
-                                     query_element_type,
-                                     match_type,
-                                     &factory);
+  URLQueryElementMatcherCondition q1(key, value, query_value_match_type,
+                                     query_element_type, match_type, &factory);
   URLMatcherConditionSet::QueryConditions query_conditions;
   query_conditions.insert(q1);
 
@@ -580,233 +594,157 @@ bool IsQueryMatch(
 }  // namespace
 
 TEST(URLMatcherConditionSetTest, QueryMatching) {
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo&b=foo&a=barr", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ANY));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo&b=foo&a=barr", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ANY));
   EXPECT_TRUE(
-      IsQueryMatch("a=foo&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
+      IsQueryMatch("a=foo&b=foo&a=barr", "a",
+                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "bar",
                    URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
                    URLQueryElementMatcherCondition::MATCH_ANY));
   EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
+      IsQueryMatch("a=foo&b=foo&a=barr", "a",
+                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "bar",
                    URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
                    URLQueryElementMatcherCondition::MATCH_ANY));
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ANY));
+  EXPECT_TRUE(IsQueryMatch(
+      "a&b=foo&a=barr", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "bar", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ANY));
   EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ANY));
-  EXPECT_TRUE(
-      IsQueryMatch("a&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ANY));
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=barr",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "bar",
+      IsQueryMatch("a=foo&b=foo&a=barr", "a",
+                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "bar",
                    URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
                    URLQueryElementMatcherCondition::MATCH_ANY));
 
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("a=bar&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("a=bar&b=foo&a=bar",
-                   "b",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_FALSE(
-      IsQueryMatch("a=bar&b=foo&a=bar",
-                   "b",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "goo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_FALSE(
-      IsQueryMatch("a=bar&b=foo&a=bar",
-                   "c",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "goo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo1&b=foo&a=foo2",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo1&b=foo&a=fo02",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("a&b=foo&a",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("alt&b=foo",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("b=foo&a",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_FALSE(
-      IsQueryMatch("b=foo",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
-  EXPECT_TRUE(
-      IsQueryMatch("b=foo&a",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=bar&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=bar&b=foo&a=bar", "b",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=bar&b=foo&a=bar", "b",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "goo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=bar&b=foo&a=bar", "c",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "goo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo1&b=foo&a=foo2", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo1&b=foo&a=fo02", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "a&b=foo&a", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "alt&b=foo", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "b=foo&a", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_FALSE(IsQueryMatch(
+      "b=foo", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_ALL));
+  EXPECT_TRUE(IsQueryMatch(
+      "b=foo&a", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_ALL));
 
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo1&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo1&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_TRUE(
-      IsQueryMatch("a&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_TRUE(
-      IsQueryMatch("alt&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
-  EXPECT_FALSE(
-      IsQueryMatch("alt&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo1&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo1&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_TRUE(IsQueryMatch(
+      "a&b=foo&a=bar", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_TRUE(IsQueryMatch(
+      "alt&b=foo&a=bar", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
+  EXPECT_FALSE(IsQueryMatch(
+      "alt&b=foo&a=bar", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_FIRST));
 
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_FALSE(
-      IsQueryMatch("a=foo1&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_TRUE(
-      IsQueryMatch("a=foo1&b=foo&a=bar1",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE,
-                   "bar",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_FALSE(
-      IsQueryMatch("a&b=foo&a=bar",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_TRUE(
-      IsQueryMatch("b=foo&alt",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
-  EXPECT_FALSE(
-      IsQueryMatch("b=foo&alt",
-                   "a",
-                   URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
-                   "foo",
-                   URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
-                   URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_FALSE(IsQueryMatch(
+      "a=foo1&b=foo&a=bar", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "foo",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_TRUE(IsQueryMatch(
+      "a=foo1&b=foo&a=bar1", "a",
+      URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE, "bar",
+      URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_FALSE(IsQueryMatch(
+      "a&b=foo&a=bar", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_TRUE(IsQueryMatch(
+      "b=foo&alt", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_PREFIX,
+      URLQueryElementMatcherCondition::MATCH_LAST));
+  EXPECT_FALSE(IsQueryMatch(
+      "b=foo&alt", "a", URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY,
+      "foo", URLQueryElementMatcherCondition::QUERY_VALUE_MATCH_EXACT,
+      URLQueryElementMatcherCondition::MATCH_LAST));
 }
 
 //
@@ -846,8 +784,8 @@ TEST(URLMatcherTest, FullTest) {
   EXPECT_EQ(1u, matcher.MatchURL(url2).size());
 
   // This should be the cached singleton.
-  int patternId1 = factory->CreateHostSuffixCondition(
-      "example.com").string_pattern()->id();
+  int patternId1 =
+      factory->CreateHostSuffixCondition("example.com").string_pattern()->id();
 
   // Third insert.
   URLMatcherConditionSet::Conditions conditions3;
@@ -887,8 +825,8 @@ TEST(URLMatcherTest, FullTest) {
 
   // The cached singleton in matcher.condition_factory_ should be destroyed to
   // free memory.
-  int patternId2 = factory->CreateHostSuffixCondition(
-      "example.com").string_pattern()->id();
+  int patternId2 =
+      factory->CreateHostSuffixCondition("example.com").string_pattern()->id();
   // If patternId1 and patternId2 are different that indicates that
   // matcher.condition_factory_ does not leak memory by holding onto
   // unused patterns.

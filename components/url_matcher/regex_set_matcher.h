@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "components/url_matcher/string_pattern.h"
-#include "components/url_matcher/substring_set_matcher.h"
+#include "base/substring_set_matcher/string_pattern.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "components/url_matcher/url_matcher_export.h"
 
 namespace re2 {
@@ -34,7 +34,7 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // the FilteredRE2 matcher; thus, for efficiency, prefer adding multiple
   // patterns at once.
   // Ownership of the patterns remains with the caller.
-  void AddPatterns(const std::vector<const StringPattern*>& regex_list);
+  void AddPatterns(const std::vector<const base::StringPattern*>& regex_list);
 
   // Removes all regex patterns.
   void ClearPatterns();
@@ -42,14 +42,15 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   // Appends the IDs of regular expressions in our set that match the |text|
   // to |matches|.
   bool Match(const std::string& text,
-             std::set<StringPattern::ID>* matches) const;
+             std::set<base::StringPattern::ID>* matches) const;
 
   bool IsEmpty() const;
 
  private:
   typedef int RE2ID;
-  typedef std::map<StringPattern::ID, const StringPattern*> RegexMap;
-  typedef std::vector<StringPattern::ID> RE2IDMap;
+  typedef std::map<base::StringPattern::ID, const base::StringPattern*>
+      RegexMap;
+  typedef std::vector<base::StringPattern::ID> RE2IDMap;
 
   // Use Aho-Corasick SubstringSetMatcher to find which literal patterns
   // match the |text|.
@@ -68,7 +69,7 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
   RE2IDMap re2_id_map_;
 
   std::unique_ptr<re2::FilteredRE2> filtered_re2_;
-  std::unique_ptr<SubstringSetMatcher> substring_matcher_;
+  std::unique_ptr<base::SubstringSetMatcher> substring_matcher_;
 };
 
 }  // namespace url_matcher

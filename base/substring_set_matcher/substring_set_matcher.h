@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_URL_MATCHER_SUBSTRING_SET_MATCHER_H_
-#define COMPONENTS_URL_MATCHER_SUBSTRING_SET_MATCHER_H_
+#ifndef BASE_SUBSTRING_SET_MATCHER_SUBSTRING_SET_MATCHER_H_
+#define BASE_SUBSTRING_SET_MATCHER_SUBSTRING_SET_MATCHER_H_
 
 #include <stdint.h>
 
@@ -12,15 +12,15 @@
 #include <string>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/check_op.h"
-#include "components/url_matcher/string_pattern.h"
-#include "components/url_matcher/url_matcher_export.h"
+#include "base/substring_set_matcher/string_pattern.h"
 
-namespace url_matcher {
+namespace base {
 
 // Class that store a set of string patterns and can find for a string S,
 // which string patterns occur in S.
-class URL_MATCHER_EXPORT SubstringSetMatcher {
+class BASE_EXPORT SubstringSetMatcher {
  public:
   SubstringSetMatcher() = default;
   SubstringSetMatcher(const SubstringSetMatcher&) = delete;
@@ -318,6 +318,6 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   bool is_empty_ = true;
 };
 
-}  // namespace url_matcher
+}  // namespace base
 
-#endif  // COMPONENTS_URL_MATCHER_SUBSTRING_SET_MATCHER_H_
+#endif  // BASE_SUBSTRING_SET_MATCHER_SUBSTRING_SET_MATCHER_H_

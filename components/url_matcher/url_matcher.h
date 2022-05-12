@@ -13,8 +13,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "components/url_matcher/regex_set_matcher.h"
-#include "components/url_matcher/substring_set_matcher.h"
 #include "components/url_matcher/url_matcher_export.h"
 
 class GURL;
@@ -58,15 +58,13 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   URLMatcherCondition();
   ~URLMatcherCondition();
   URLMatcherCondition(Criterion criterion,
-                      const StringPattern* substring_pattern);
+                      const base::StringPattern* substring_pattern);
   URLMatcherCondition(const URLMatcherCondition& rhs);
   URLMatcherCondition& operator=(const URLMatcherCondition& rhs);
   bool operator<(const URLMatcherCondition& rhs) const;
 
   Criterion criterion() const { return criterion_; }
-  const StringPattern* string_pattern() const {
-    return string_pattern_;
-  }
+  const base::StringPattern* string_pattern() const { return string_pattern_; }
 
   // Returns whether this URLMatcherCondition needs to be executed on a
   // full URL rather than the individual components (see
@@ -83,7 +81,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
 
   // Returns whether this condition is fulfilled according to
   // |matching_patterns| and |url|.
-  bool IsMatch(const std::set<StringPattern::ID>& matching_patterns,
+  bool IsMatch(const std::set<base::StringPattern::ID>& matching_patterns,
                const GURL& url) const;
 
  private:
@@ -92,7 +90,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   Criterion criterion_;
 
   // This is the StringPattern that is used in a SubstringSetMatcher.
-  raw_ptr<const StringPattern> string_pattern_;
+  raw_ptr<const base::StringPattern> string_pattern_;
 };
 
 // Class to map the problem of finding {host, path, query} {prefixes, suffixes,
@@ -181,7 +179,7 @@ class URL_MATCHER_EXPORT URLMatcherConditionFactory {
   // |used_patterns|. These patterns are not referenced any more and get
   // freed.
   void ForgetUnusedPatterns(
-      const std::set<StringPattern::ID>& used_patterns);
+      const std::set<base::StringPattern::ID>& used_patterns);
 
   // Returns true if this object retains no allocated data. Only for debugging.
   bool IsEmpty() const;
@@ -215,12 +213,12 @@ class URL_MATCHER_EXPORT URLMatcherConditionFactory {
   // This comparison considers only the pattern() value of the
   // StringPatterns.
   struct StringPatternPointerCompare {
-    bool operator()(StringPattern* lhs, StringPattern* rhs) const;
+    bool operator()(base::StringPattern* lhs, base::StringPattern* rhs) const;
   };
   // Set to ensure that we generate only one StringPattern for each content
   // of StringPattern::pattern().
-  using PatternSingletons = std::map<StringPattern*,
-                                     std::unique_ptr<StringPattern>,
+  using PatternSingletons = std::map<base::StringPattern*,
+                                     std::unique_ptr<base::StringPattern>,
                                      StringPatternPointerCompare>;
   PatternSingletons substring_pattern_singletons_;
   PatternSingletons regex_pattern_singletons_;
@@ -264,7 +262,7 @@ class URL_MATCHER_EXPORT URLQueryElementMatcherCondition {
   // Returns whether the URL query satisfies the key value constraint.
   bool IsMatch(const std::string& canonical_url_query) const;
 
-  const StringPattern* string_pattern() const { return string_pattern_; }
+  const base::StringPattern* string_pattern() const { return string_pattern_; }
 
  private:
   Type match_type_;
@@ -272,7 +270,7 @@ class URL_MATCHER_EXPORT URLQueryElementMatcherCondition {
   std::string value_;
   size_t key_length_;
   size_t value_length_;
-  raw_ptr<const StringPattern> string_pattern_;
+  raw_ptr<const base::StringPattern> string_pattern_;
 };
 
 // This class represents a filter for the URL scheme to be hooked up into a
@@ -354,10 +352,10 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   const Conditions& conditions() const { return conditions_; }
   const QueryConditions& query_conditions() const { return query_conditions_; }
 
-  bool IsMatch(const std::set<StringPattern::ID>& matching_patterns,
+  bool IsMatch(const std::set<base::StringPattern::ID>& matching_patterns,
                const GURL& url) const;
 
-  bool IsMatch(const std::set<StringPattern::ID>& matching_patterns,
+  bool IsMatch(const std::set<base::StringPattern::ID>& matching_patterns,
                const GURL& url,
                const std::string& url_for_component_searches) const;
 
@@ -428,12 +426,13 @@ class URL_MATCHER_EXPORT URLMatcher {
 
   // Maps a StringPattern ID to the URLMatcherConditions that need to
   // be triggered in case of a StringPattern match.
-  typedef std::map<StringPattern::ID, std::set<URLMatcherConditionSet::ID> >
+  typedef std::map<base::StringPattern::ID,
+                   std::set<URLMatcherConditionSet::ID>>
       StringPatternTriggers;
   StringPatternTriggers substring_match_triggers_;
 
-  std::unique_ptr<SubstringSetMatcher> full_url_matcher_;
-  std::unique_ptr<SubstringSetMatcher> url_component_matcher_;
+  std::unique_ptr<base::SubstringSetMatcher> full_url_matcher_;
+  std::unique_ptr<base::SubstringSetMatcher> url_component_matcher_;
   RegexSetMatcher regex_set_matcher_;
   RegexSetMatcher origin_and_path_regex_set_matcher_;
 };

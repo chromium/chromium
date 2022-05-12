@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_URL_MATCHER_STRING_PATTERN_H_
-#define COMPONENTS_URL_MATCHER_STRING_PATTERN_H_
+#ifndef BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_
+#define BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_
 
 #include <string>
 
-#include "components/url_matcher/url_matcher_export.h"
+#include "base/base_export.h"
 
-namespace url_matcher {
+namespace base {
 
 // An individual pattern of a substring or regex matcher. A pattern consists of
 // a string (interpreted as individual bytes, no character encoding) and an
@@ -18,7 +18,7 @@ namespace url_matcher {
 // RegexMatcher::MatchURL() to help the caller to figure out what
 // patterns matched a string. All patterns registered to a matcher
 // need to contain unique IDs.
-class URL_MATCHER_EXPORT StringPattern {
+class BASE_EXPORT StringPattern {
  public:
   typedef int ID;
 
@@ -43,6 +43,6 @@ class URL_MATCHER_EXPORT StringPattern {
   ID id_;
 };
 
-}  // namespace url_matcher
+}  // namespace base
 
-#endif  // COMPONENTS_URL_MATCHER_STRING_PATTERN_H_
+#endif  // BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_

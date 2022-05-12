@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_matcher/string_pattern.h"
+#include "base/substring_set_matcher/string_pattern.h"
 
 #include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
 
-namespace url_matcher {
+namespace base {
 
 StringPattern::StringPattern(std::string pattern, StringPattern::ID id)
     : pattern_(std::move(pattern)), id_(id) {
@@ -25,4 +25,4 @@ bool StringPattern::operator<(const StringPattern& rhs) const {
   return std::tie(id_, pattern_) < std::tie(rhs.id_, rhs.pattern_);
 }
 
-}  // namespace url_matcher
+}  // namespace base

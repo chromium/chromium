@@ -11,10 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/substring_set_matcher/string_pattern.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
-#include "components/url_matcher/string_pattern.h"
 #include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 namespace feed {
@@ -168,8 +168,8 @@ class EntrySet {
 
   // Members that just hold on to memory used in matchers.
   url_matcher::URLMatcherConditionFactory condition_factory_;
-  std::vector<url_matcher::StringPattern> host_match_patterns_;
-  std::vector<url_matcher::StringPattern> path_match_patterns_;
+  std::vector<base::StringPattern> host_match_patterns_;
+  std::vector<base::StringPattern> path_match_patterns_;
 
   // List of `MultiConditionSet`. Each one knows how to aggregate match IDs
   // reported from matchers below into a WebFeed match.
@@ -363,9 +363,9 @@ class EntrySetBuilder {
     return true;
   }
 
-  static std::vector<const url_matcher::StringPattern*> MakeVectorOfPointers(
-      const std::vector<url_matcher::StringPattern>& patterns) {
-    std::vector<const url_matcher::StringPattern*> result(patterns.size());
+  static std::vector<const base::StringPattern*> MakeVectorOfPointers(
+      const std::vector<base::StringPattern>& patterns) {
+    std::vector<const base::StringPattern*> result(patterns.size());
     for (size_t i = 0; i < patterns.size(); ++i) {
       result[i] = &patterns[i];
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_matcher/substring_set_matcher.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 
 #include <limits>
 #include <string>
@@ -12,11 +12,11 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace url_matcher {
+namespace base {
 
 namespace {
 
@@ -83,4 +83,4 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
 
 }  // namespace
 
-}  // namespace url_matcher
+}  // namespace base

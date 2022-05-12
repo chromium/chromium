@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_matcher/string_pattern.h"
+#include "base/substring_set_matcher/string_pattern.h"
 
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace url_matcher {
+namespace base {
 
 TEST(StringPatternTest, StringPattern) {
   StringPattern r1("Test", 2);
@@ -22,4 +22,4 @@ TEST(StringPatternTest, StringPattern) {
   EXPECT_TRUE(r1 < r3);
 }
 
-}  // namespace url_matcher
+}  // namespace base

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/url_matcher/substring_set_matcher.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 #include "third_party/re2/src/re2/filtered_re2.h"
 
@@ -115,7 +115,7 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   // candidate strings, returns the sub-set of candidate strings that are a
   // substring of S. Uses the Aho-Corasick algorithm internally. Will be null
   // iff IsEmpty() returns false.
-  std::unique_ptr<url_matcher::SubstringSetMatcher> substring_matcher_;
+  std::unique_ptr<base::SubstringSetMatcher> substring_matcher_;
 };
 
 }  // namespace declarative_net_request
