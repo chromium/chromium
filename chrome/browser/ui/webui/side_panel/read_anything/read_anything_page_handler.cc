@@ -10,7 +10,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<Page> page,
@@ -22,27 +22,35 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
   browser_ = chrome::FindLastActive();
   if (!browser_)
     return;
-  ReadAnythingCoordinator::FromBrowser(browser_)->AddModelObserver(this);
-  delegate_ =
-      ReadAnythingCoordinator::FromBrowser(browser_)->GetPageHandlerDelegate();
+
+  coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
+  coordinator_->AddObserver(this);
+  model_ = coordinator_->GetModel();
+  model_->AddObserver(this);
+  delegate_ = static_cast<ReadAnythingPageHandler::Delegate*>(
+      coordinator_->GetController());
 }
 
 ReadAnythingPageHandler::~ReadAnythingPageHandler() {
-  // Remove |this| from the observer list of |ReadAnythingModel|.
-  if (browser_) {
-    ReadAnythingCoordinator* coordinator =
-        ReadAnythingCoordinator::FromBrowser(browser_);
+  // If |this| is destroyed before the |ReadAnythingCoordinator|, then remove
+  // |this| from the observer lists. In the cases where the coordinator is
+  // destroyed first, these will have been destroyed before this call.
+  if (model_)
+    model_->RemoveObserver(this);
 
-    // `Browser` is guaranteed to live as long as the ReadAnythingCoordinator
-    // since it is BrowserUserData (due to how UserData works - Browser owns
-    // this UserData).
-    DCHECK(coordinator);
-    coordinator->RemoveModelObserver(this);
-  }
+  if (coordinator_)
+    coordinator_->RemoveObserver(this);
 }
 
 void ReadAnythingPageHandler::OnUIReady() {
-  delegate_->OnUIReady();
+  if (delegate_)
+    delegate_->OnUIReady();
+}
+
+void ReadAnythingPageHandler::OnCoordinatorDestroyed() {
+  coordinator_ = nullptr;
+  model_ = nullptr;
+  delegate_ = nullptr;
 }
 
 void ReadAnythingPageHandler::OnContentUpdated(

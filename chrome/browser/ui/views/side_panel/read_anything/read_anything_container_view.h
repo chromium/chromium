@@ -24,7 +24,7 @@ class ReadAnythingUI;
 //
 class ReadAnythingContainerView : public views::View {
  public:
-  explicit ReadAnythingContainerView(
+  ReadAnythingContainerView(
       std::unique_ptr<ReadAnythingToolbarView> toolbar,
       std::unique_ptr<SidePanelWebUIViewT<ReadAnythingUI>> content);
   ReadAnythingContainerView(const ReadAnythingContainerView&) = delete;

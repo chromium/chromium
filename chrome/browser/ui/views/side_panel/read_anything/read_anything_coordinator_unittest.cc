@@ -13,7 +13,28 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
+
+using testing::_;
+
+class MockReadAnythingCoordinatorObserver
+    : public ReadAnythingCoordinator::Observer {
+ public:
+  MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
+};
+
+class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnFontNameUpdated,
+              (const std::string& new_font_name),
+              (override));
+  MOCK_METHOD(void,
+              OnContentUpdated,
+              (const std::vector<ContentNodePtr>& content),
+              (override));
+};
 
 class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
@@ -31,14 +52,21 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     read_anything_coordinator_->CreateAndRegisterEntry(side_panel_registry_);
   }
 
-  ReadAnythingModel* GetModel() {
-    return read_anything_coordinator_->model_.get();
-  }
+  // Wrapper methods around the ReadAnythingCoordinator. These do nothing more
+  // than keep the below tests less verbose (simple pass-throughs).
 
   ReadAnythingController* GetController() {
-    return read_anything_coordinator_->controller_.get();
+    return read_anything_coordinator_->GetController();
   }
-
+  ReadAnythingModel* GetModel() {
+    return read_anything_coordinator_->GetModel();
+  }
+  void AddObserver(ReadAnythingCoordinator::Observer* observer) {
+    read_anything_coordinator_->AddObserver(observer);
+  }
+  void RemoveObserver(ReadAnythingCoordinator::Observer* observer) {
+    read_anything_coordinator_->RemoveObserver(observer);
+  }
   std::unique_ptr<views::View> CreateContainerView() {
     return read_anything_coordinator_->CreateContainerView();
   }
@@ -47,6 +75,9 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;
   raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
+
+  MockReadAnythingCoordinatorObserver coordinator_observer_;
+  MockReadAnythingModelObserver model_observer_;
 };
 
 TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
@@ -65,8 +96,25 @@ TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
   EXPECT_NE(nullptr, GetController());
 }
 
-TEST_F(ReadAnythingCoordinatorTest, CreateContainerViewReturnsNewView) {
+TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
   auto view1 = CreateContainerView();
   auto view2 = CreateContainerView();
   EXPECT_NE(view1, view2);
+}
+
+TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
+  AddObserver(&coordinator_observer_);
+  EXPECT_CALL(coordinator_observer_, OnCoordinatorDestroyed()).Times(1);
+}
+
+TEST_F(ReadAnythingCoordinatorTest, ModelObserversReceiveNotifications) {
+  GetModel()->AddObserver(&model_observer_);
+
+  EXPECT_CALL(model_observer_, OnFontNameUpdated(_)).Times(1);
+  EXPECT_CALL(model_observer_, OnContentUpdated(_)).Times(1);
+
+  GetModel()->SetSelectedFontIndex(3);
+  GetModel()->SetContent(std::vector<ContentNodePtr>());
+
+  GetModel()->RemoveObserver(&model_observer_);
 }

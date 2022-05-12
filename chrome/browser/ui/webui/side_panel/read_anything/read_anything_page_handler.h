@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,15 +31,16 @@ using read_anything::mojom::PageHandler;
 //  as the Side Panel view.
 //
 class ReadAnythingPageHandler : public PageHandler,
-                                public ReadAnythingModel::Observer {
+                                public ReadAnythingModel::Observer,
+                                public ReadAnythingCoordinator::Observer {
  public:
   class Delegate {
    public:
     virtual void OnUIReady() = 0;
   };
 
-  explicit ReadAnythingPageHandler(mojo::PendingRemote<Page> page,
-                                   mojo::PendingReceiver<PageHandler> receiver);
+  ReadAnythingPageHandler(mojo::PendingRemote<Page> page,
+                          mojo::PendingReceiver<PageHandler> receiver);
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
@@ -51,9 +53,12 @@ class ReadAnythingPageHandler : public PageHandler,
   void OnContentUpdated(
       const std::vector<ContentNodePtr>& content_nodes) override;
 
+  // ReadAnythingCoordinator::Observer:
+  void OnCoordinatorDestroyed() override;
+
  private:
-  // ReadAnythingPageHandler::Delegate is owned by ReadAnythingCoordinator which
-  // is a browser user data, so |delegate_| has the same lifetime as |browser_|.
+  raw_ptr<ReadAnythingCoordinator> coordinator_;
+  raw_ptr<ReadAnythingModel> model_;
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
   Browser* browser_;

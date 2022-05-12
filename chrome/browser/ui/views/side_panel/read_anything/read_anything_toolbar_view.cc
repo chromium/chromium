@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -20,9 +21,12 @@
 #include "ui/views/layout/layout_types.h"
 
 ReadAnythingToolbarView::ReadAnythingToolbarView(
-    ReadAnythingToolbarView::Delegate* delegate,
-    ui::ComboboxModel* model) {
-  delegate_ = delegate;
+    ReadAnythingCoordinator* coordinator)
+    : coordinator_(std::move(coordinator)) {
+  coordinator_->AddObserver(this);
+  delegate_ = static_cast<ReadAnythingToolbarView::Delegate*>(
+      coordinator_->GetController());
+  auto* font_model = coordinator_->GetModel()->GetFontModel();
 
   // Create and set a BoxLayout LayoutManager for this view.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -42,14 +46,28 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   combobox->SetSizeToLargestLabel(true);
   // TODO(1266555): This is placeholder text, remove for final UI.
   combobox->SetTooltipTextAndAccessibleName(u"Font Choice");
-  combobox->SetModel(model);
+  combobox->SetModel(font_model);
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
 }
 
 void ReadAnythingToolbarView::FontNameChangedCallback() {
-  delegate_->OnFontChoiceChanged(font_combobox_->GetSelectedIndex());
+  if (delegate_)
+    delegate_->OnFontChoiceChanged(font_combobox_->GetSelectedIndex());
 }
 
-ReadAnythingToolbarView::~ReadAnythingToolbarView() = default;
+void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
+  // When the coordinator that created |this| is destroyed, clean up pointers.
+  coordinator_ = nullptr;
+  delegate_ = nullptr;
+  font_combobox_->SetModel(nullptr);
+}
+
+ReadAnythingToolbarView::~ReadAnythingToolbarView() {
+  // If |this| is being destroyed before the associated coordinator, then
+  // remove |this| as an observer.
+  if (coordinator_) {
+    coordinator_->RemoveObserver(this);
+  }
+}

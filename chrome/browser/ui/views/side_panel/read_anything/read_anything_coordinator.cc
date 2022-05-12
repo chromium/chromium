@@ -28,7 +28,12 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
   controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
 }
 
-ReadAnythingCoordinator::~ReadAnythingCoordinator() = default;
+ReadAnythingCoordinator::~ReadAnythingCoordinator() {
+  // Inform observers when |this| is destroyed so they can do their own cleanup.
+  for (Observer& obs : observers_) {
+    obs.OnCoordinatorDestroyed();
+  }
+}
 
 void ReadAnythingCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
@@ -40,24 +45,26 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
                           base::Unretained(this))));
 }
 
-ReadAnythingPageHandler::Delegate*
-ReadAnythingCoordinator::GetPageHandlerDelegate() {
+ReadAnythingController* ReadAnythingCoordinator::GetController() {
   return controller_.get();
 }
 
-void ReadAnythingCoordinator::AddModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  model_->AddObserver(observer);
+ReadAnythingModel* ReadAnythingCoordinator::GetModel() {
+  return model_.get();
 }
-void ReadAnythingCoordinator::RemoveModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  model_->RemoveObserver(observer);
+
+void ReadAnythingCoordinator::AddObserver(
+    ReadAnythingCoordinator::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+void ReadAnythingCoordinator::RemoveObserver(
+    ReadAnythingCoordinator::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
   // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      controller_.get(), model_.get()->GetFontModel());
+  auto toolbar = std::make_unique<ReadAnythingToolbarView>(this);
 
   Browser* browser = &GetBrowser();
   auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
