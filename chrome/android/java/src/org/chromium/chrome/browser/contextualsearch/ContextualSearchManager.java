@@ -1559,8 +1559,8 @@ public class ContextualSearchManager
     }
 
     /** Shows the Unhandled Tap UI.  Called by {@link ContextualSearchTabHelper}. */
-    void onShowUnhandledTapUIIfNeeded(int x, int y, int fontSizeDips, int textRunLength) {
-        mSelectionController.handleShowUnhandledTapUIIfNeeded(x, y, fontSizeDips, textRunLength);
+    void onShowUnhandledTapUIIfNeeded(int x, int y) {
+        mSelectionController.handleShowUnhandledTapUIIfNeeded(x, y);
     }
 
     // ============================================================================================

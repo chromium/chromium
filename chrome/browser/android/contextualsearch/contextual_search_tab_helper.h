@@ -43,10 +43,7 @@ class ContextualSearchTabHelper {
   // Call when an unhandled tap needs to show the UI for a tap at the given
   // position, with the given |font_size_dips|, and |text_run_length| of the
   // enclosing element.
-  void OnShowUnhandledTapUIIfNeeded(int x_px,
-                                    int y_px,
-                                    int font_size_dips,
-                                    int text_run_length);
+  void OnShowUnhandledTapUIIfNeeded(int x_px, int y_px);
 
   JavaObjectWeakGlobalRef weak_java_ref_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

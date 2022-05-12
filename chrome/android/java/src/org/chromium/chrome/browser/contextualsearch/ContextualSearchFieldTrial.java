@@ -131,9 +131,15 @@ public class ContextualSearchFieldTrial {
         int IS_NOT_AN_ENTITY_SUPPRESSION_ENABLED = 10;
         /** Whether triggering is suppressed due to lack of engagement with the feature. */
         int IS_ENGAGEMENT_SUPPRESSION_ENABLED = 11;
-        /** Whether triggering is suppressed for a tap that has a short element run-length. */
+        /**
+         * @deprecated
+         * Whether triggering is suppressed for a tap that has a short element run-length.
+         */
         int IS_SHORT_TEXT_RUN_SUPPRESSION_ENABLED = 12;
-        /** Whether triggering is suppressed for a tap on small-looking text. */
+        /**
+         * @deprecated
+         * Whether triggering is suppressed for a tap on small-looking text.
+         */
         int IS_SMALL_TEXT_SUPPRESSION_ENABLED = 13;
         /**
          * Whether to disable auto-promotion of clicks in the AMP carousel into a

@@ -96,10 +96,6 @@ public class ContextualSearchSelectionController {
     private float mX;
     private float mY;
 
-    // Additional tap info from Mojo.
-    int mFontSizeDips;
-    int mTextRunLength;
-
     // The time of the most last scroll activity, or 0 if none.
     private long mLastScrollTimeNs;
 
@@ -403,8 +399,6 @@ public class ContextualSearchSelectionController {
         mLastScrollTimeNs = 0;
         mTapTimeNanoseconds = 0;
         mDidExpandSelection = false;
-        mFontSizeDips = 0;
-        mTextRunLength = 0;
     }
 
     /**
@@ -432,10 +426,8 @@ public class ContextualSearchSelectionController {
      * Handles an unhandled tap gesture.
      * @param x The x coordinate in px.
      * @param y The y coordinate in px.
-     * @param fontSizeDips The font size in DPs.
-     * @param textRunLength The run-length of the text of the tapped element.
      */
-    void handleShowUnhandledTapUIIfNeeded(int x, int y, int fontSizeDips, int textRunLength) {
+    void handleShowUnhandledTapUIIfNeeded(int x, int y) {
         mWasTapGestureDetected = false;
         // TODO(donnd): refactor to avoid needing a new handler API method as suggested by Pedro.
         if (mSelectionType != SelectionType.LONG_PRESS && !mAreSelectionHandlesShown
@@ -445,8 +437,6 @@ public class ContextualSearchSelectionController {
             mSelectionType = SelectionType.TAP;
             mX = x;
             mY = y;
-            mFontSizeDips = fontSizeDips;
-            mTextRunLength = textRunLength;
             mHandler.handleValidTap();
         } else {
             // Long press, or long-press selection handles shown; reset last tap state.
@@ -469,9 +459,8 @@ public class ContextualSearchSelectionController {
         int x = (int) mX;
         int y = (int) mY;
 
-        TapSuppressionHeuristics tapHeuristics =
-                new TapSuppressionHeuristics(this, mLastTapState, x, y, contextualSearchContext,
-                        mWasSelectionEmptyBeforeTap, mFontSizeDips, mTextRunLength);
+        TapSuppressionHeuristics tapHeuristics = new TapSuppressionHeuristics(
+                this, mLastTapState, x, y, contextualSearchContext, mWasSelectionEmptyBeforeTap);
         // TODO(donnd): Move to be called when the panel closes to work with states that change.
         tapHeuristics.logConditionState();
 

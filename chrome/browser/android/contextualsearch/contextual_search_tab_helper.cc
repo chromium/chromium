@@ -48,15 +48,12 @@ void ContextualSearchTabHelper::OnContextualSearchPrefChanged() {
   Java_ContextualSearchTabHelper_onContextualSearchPrefChanged(env, jobj);
 }
 
-void ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded(
-    int x_px,
-    int y_px,
-    int font_size_dips,
-    int text_run_length) {
+void ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded(int x_px,
+                                                             int y_px) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = weak_java_ref_.get(env);
-  Java_ContextualSearchTabHelper_onShowUnhandledTapUIIfNeeded(
-      env, jobj, x_px, y_px, font_size_dips, text_run_length);
+  Java_ContextualSearchTabHelper_onShowUnhandledTapUIIfNeeded(env, jobj, x_px,
+                                                              y_px);
 }
 
 void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(

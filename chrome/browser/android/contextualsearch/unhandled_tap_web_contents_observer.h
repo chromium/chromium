@@ -9,9 +9,7 @@
 
 namespace contextual_search {
 
-typedef base::RepeatingCallback<
-    void(int x_px, int y_px, int font_size_dips, int text_run_length)>
-    UnhandledTapCallback;
+typedef base::RepeatingCallback<void(int x_px, int y_px)> UnhandledTapCallback;
 
 // Binds a Mojo unhandled-tap notifier message-handler to the frame host
 // observed by this observer.
