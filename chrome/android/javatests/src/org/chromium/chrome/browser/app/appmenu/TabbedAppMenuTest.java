@@ -25,7 +25,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -56,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -289,7 +289,6 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
-    @DisabledTest(message = "https://crbug.com/1322581")
     public void testRequestDesktopSiteMenuItem() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
@@ -299,8 +298,21 @@ public class TabbedAppMenuTest {
         int requestDesktopSiteIndex =
                 findIndexOfMenuItemById(R.id.request_desktop_site_row_menu_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
-        mRenderTestRule.render(
-                getListView().getChildAt(requestDesktopSiteIndex), "request_desktop_site");
+
+        Callable<Boolean> isVisible = () -> {
+            int visibleStart = getListView().getFirstVisiblePosition();
+            int visibleEnd = visibleStart + getListView().getChildCount() - 1;
+            return requestDesktopSiteIndex >= visibleStart && requestDesktopSiteIndex <= visibleEnd;
+        };
+        CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
+        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
+            CriteriaHelper.pollUiThread(isVisible);
+        }
+        mRenderTestRule.render(getListView().getChildAt(requestDesktopSiteIndex
+                                       - getListView().getFirstVisiblePosition()),
+                "request_desktop_site");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -315,8 +327,15 @@ public class TabbedAppMenuTest {
         showAppMenuAndAssertMenuShown();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        mRenderTestRule.render(
-                getListView().getChildAt(requestDesktopSiteIndex), "request_mobile_site");
+        CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
+        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
+            CriteriaHelper.pollUiThread(isVisible);
+        }
+        mRenderTestRule.render(getListView().getChildAt(requestDesktopSiteIndex
+                                       - getListView().getFirstVisiblePosition()),
+                "request_mobile_site");
     }
 
     @Test
@@ -324,7 +343,6 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @DisableFeatures(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION)
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1322581")
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
@@ -334,8 +352,21 @@ public class TabbedAppMenuTest {
         int requestDesktopSiteIndex =
                 findIndexOfMenuItemById(R.id.request_desktop_site_row_menu_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
-        mRenderTestRule.render(
-                getListView().getChildAt(requestDesktopSiteIndex), "request_desktop_site_uncheck");
+
+        Callable<Boolean> isVisible = () -> {
+            int visibleStart = getListView().getFirstVisiblePosition();
+            int visibleEnd = visibleStart + getListView().getChildCount() - 1;
+            return requestDesktopSiteIndex >= visibleStart && requestDesktopSiteIndex <= visibleEnd;
+        };
+        CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
+        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
+            CriteriaHelper.pollUiThread(isVisible);
+        }
+        mRenderTestRule.render(getListView().getChildAt(requestDesktopSiteIndex
+                                       - getListView().getFirstVisiblePosition()),
+                "request_desktop_site_uncheck");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -350,8 +381,15 @@ public class TabbedAppMenuTest {
         showAppMenuAndAssertMenuShown();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        mRenderTestRule.render(
-                getListView().getChildAt(requestDesktopSiteIndex), "request_mobile_site_check");
+        CriteriaHelper.pollUiThread(() -> getListView().getChildAt(0) != null);
+        if (!TestThreadUtils.runOnUiThreadBlockingNoException(isVisible)) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> getListView().smoothScrollToPosition(requestDesktopSiteIndex));
+            CriteriaHelper.pollUiThread(isVisible);
+        }
+        mRenderTestRule.render(getListView().getChildAt(requestDesktopSiteIndex
+                                       - getListView().getFirstVisiblePosition()),
+                "request_mobile_site_check");
     }
 
     @Test
