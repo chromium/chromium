@@ -597,6 +597,25 @@ try_.builder(
 try_.gpu.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder",
+        ),
+        build_gs_bucket = "chromium-gpu-fyi-archive",
+    ),
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     check_for_flakiness = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
