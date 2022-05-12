@@ -22,14 +22,14 @@
       android:layout_marginBottom="8dp"
       android:importantForAccessibility="no" />
 
-  <org.chromium.ui.widget.TextViewWithLeading
+  <androidx.appcompat.widget.DialogTitle
       android:id="@+id/touch_to_fill_sheet_title"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
-      android:textAppearance="@style/TextAppearance.Headline.Primary" />
+      android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 
   <org.chromium.ui.widget.TextViewWithLeading
       android:id="@+id/touch_to_fill_sheet_subtitle"
