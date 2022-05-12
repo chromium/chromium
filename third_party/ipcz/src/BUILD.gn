@@ -161,6 +161,7 @@ ipcz_source_set("impl") {
   visibility = [ ":*" ]
   public = [
     "ipcz/api_object.h",
+    "ipcz/block_allocator.h",
     "ipcz/driver_memory.h",
     "ipcz/driver_memory_mapping.h",
     "ipcz/driver_object.h",
@@ -184,6 +185,7 @@ ipcz_source_set("impl") {
   ]
   sources = [
     "ipcz/api_object.cc",
+    "ipcz/block_allocator.cc",
     "ipcz/driver_memory.cc",
     "ipcz/driver_memory_mapping.cc",
     "ipcz/driver_object.cc",
@@ -252,6 +254,7 @@ ipcz_source_set("ipcz_tests_sources") {
   sources = [
     "api_test.cc",
     "connect_test.cc",
+    "ipcz/block_allocator_test.cc",
     "ipcz/driver_memory_test.cc",
     "ipcz/driver_object_test.cc",
     "ipcz/driver_transport_test.cc",
