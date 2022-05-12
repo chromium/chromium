@@ -203,12 +203,12 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
   return names;
 }
 
-base::Value PolicyUIHandler::GetPolicyValues() const {
+base::Value::List PolicyUIHandler::GetPolicyValues() const {
   auto client = std::make_unique<PolicyConversionsClientIOS>(
       ChromeBrowserState::FromWebUIIOS(web_ui()));
   return policy::ArrayPolicyConversions(std::move(client))
       .EnableConvertValues(true)
-      .ToValue();
+      .ToValueList();
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
@@ -223,7 +223,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 
 void PolicyUIHandler::SendPolicies() {
   base::Value names = GetPolicyNames();
-  base::Value values = GetPolicyValues();
+  base::Value values = base::Value(GetPolicyValues());
   std::vector<const base::Value*> args;
   args.push_back(&names);
   args.push_back(&values);
