@@ -30,8 +30,12 @@
 
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
+#include <memory>
 #include <type_traits>
+#include <vector>
 
+#include "base/substring_set_matcher/substring_set_matcher.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
@@ -43,6 +47,9 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+
+using base::StringPattern;
+using base::SubstringSetMatcher;
 
 namespace blink {
 
@@ -154,6 +161,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
                                   AtomicString& id,
                                   AtomicString& class_name,
                                   AtomicString& attr_name,
+                                  AtomicString& attr_value,
                                   AtomicString& custom_pseudo_element_name,
                                   AtomicString& tag_name,
                                   AtomicString& part_name,
@@ -206,9 +214,9 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           // like a normal selector (save for specificity), and we can put it
           // into a bucket based on that selector.
           if (selector_list->HasOneSelector()) {
-            ExtractSelectorValues(selector_list->First(), id, class_name,
-                                  attr_name, custom_pseudo_element_name,
-                                  tag_name, part_name, pseudo_type);
+            ExtractSelectorValues(
+                selector_list->First(), id, class_name, attr_name, attr_value,
+                custom_pseudo_element_name, tag_name, part_name, pseudo_type);
           }
         } break;
         default:
@@ -223,10 +231,40 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kAttributeBegin:
     case CSSSelector::kAttributeEnd:
       attr_name = selector->Attribute().LocalName();
+      attr_value = selector->Value();
       break;
     default:
       break;
   }
+}
+
+// For a (possibly compound) selector, extract the values used for determining
+// its buckets (e.g. for “.foo[baz]”, will return foo for class_name and
+// baz for attr_name). Returns the last subselector in the group, which is also
+// the one given the highest priority.
+static const CSSSelector* ExtractBestSelectorValues(
+    const CSSSelector& component,
+    AtomicString& id,
+    AtomicString& class_name,
+    AtomicString& attr_name,
+    AtomicString& attr_value,
+    AtomicString& custom_pseudo_element_name,
+    AtomicString& tag_name,
+    AtomicString& part_name,
+    CSSSelector::PseudoType& pseudo_type) {
+  const CSSSelector* it = &component;
+  for (; it && it->Relation() == CSSSelector::kSubSelector;
+       it = it->TagHistory()) {
+    ExtractSelectorValues(it, id, class_name, attr_name, attr_value,
+                          custom_pseudo_element_name, tag_name, part_name,
+                          pseudo_type);
+  }
+  if (it) {
+    ExtractSelectorValues(it, id, class_name, attr_name, attr_value,
+                          custom_pseudo_element_name, tag_name, part_name,
+                          pseudo_type);
+  }
+  return it;
 }
 
 bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
@@ -234,6 +272,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   AtomicString id;
   AtomicString class_name;
   AtomicString attr_name;
+  AtomicString attr_value;  // Unused.
   AtomicString custom_pseudo_element_name;
   AtomicString tag_name;
   AtomicString part_name;
@@ -243,18 +282,9 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   all_rules_.push_back(rule_data);
 #endif
 
-  const CSSSelector* it = &component;
-  for (; it && it->Relation() == CSSSelector::kSubSelector;
-       it = it->TagHistory()) {
-    ExtractSelectorValues(it, id, class_name, attr_name,
-                          custom_pseudo_element_name, tag_name, part_name,
-                          pseudo_type);
-  }
-  if (it) {
-    ExtractSelectorValues(it, id, class_name, attr_name,
-                          custom_pseudo_element_name, tag_name, part_name,
-                          pseudo_type);
-  }
+  const CSSSelector* it = ExtractBestSelectorValues(
+      component, id, class_name, attr_name, attr_value,
+      custom_pseudo_element_name, tag_name, part_name, pseudo_type);
 
   // Prefer rule sets in order of most likely to apply infrequently.
   if (!id.IsEmpty()) {
@@ -613,12 +643,113 @@ void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
   }
 }
 
+static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {
+  // It's not worth going through the Aho-Corasick matcher unless we can
+  // reject a reasonable number of rules in one go. Practical ad-hoc testing
+  // suggests the break-even point between using the tree and just testing
+  // all of the rules individually lies somewhere around 20–40 rules
+  // (depending a bit on e.g. how hot the tree is in the cache, the length
+  // of the value that we match against, and of course whether we actually
+  // have a match). We add a little bit of margin to compensate for the fact
+  // that we also need to spend time building the tree, and the extra memory
+  // in use.
+  //
+  // TODO(sesse): When the Finch experiment finishes, lock this to 50.
+  return base::FeatureList::IsEnabled(
+             blink::features::kSubstringSetTreeForAttributeBuckets)
+             ? 50
+             : std::numeric_limits<wtf_size_t>::max();
+}
+
+bool RuleSet::CanIgnoreEntireList(
+    const HeapVector<Member<const RuleData>>* list,
+    const AtomicString& key,
+    const AtomicString& value) const {
+  DCHECK(!pending_rules_);
+  DCHECK_EQ(attr_rules_.find(key)->value, list);
+  if (list->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
+    // Too small to build up a tree, so always check.
+    DCHECK_EQ(attr_substring_matchers_.find(key),
+              attr_substring_matchers_.end());
+    return false;
+  }
+
+  // See CreateSubstringMatchers().
+  if (value.IsEmpty()) {
+    return false;
+  }
+
+  auto it = attr_substring_matchers_.find(key);
+  if (it == attr_substring_matchers_.end()) {
+    // Building the tree failed, so always check.
+    return false;
+  }
+  return !it->value->AnyMatch(value.LowerASCII().Utf8());
+}
+
+void RuleSet::CreateSubstringMatchers(
+    CompactRuleMap& attr_map,
+    RuleSet::SubstringMatcherMap& substring_matcher_map) {
+  for (const auto& [/*AtomicString*/ attr, /*Member<RuleSet>*/ ruleset] :
+       attr_map) {
+    if (ruleset->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
+      continue;
+    }
+    std::vector<StringPattern> patterns;
+    int rule_index = 0;
+    for (const Member<const RuleData>& rule : *ruleset) {
+      AtomicString id;
+      AtomicString class_name;
+      AtomicString attr_name;
+      AtomicString attr_value;
+      AtomicString custom_pseudo_element_name;
+      AtomicString tag_name;
+      AtomicString part_name;
+      CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
+      ExtractBestSelectorValues(rule->Selector(), id, class_name, attr_name,
+                                attr_value, custom_pseudo_element_name,
+                                tag_name, part_name, pseudo_type);
+      DCHECK(!attr_name.IsEmpty());
+
+      if (attr_value.IsEmpty()) {
+        // The empty string would make the entire tree useless (it is
+        // a substring of every possible value), so as a special case,
+        // we ignore it, and have a separate check in CanIgnoreEntireList().
+        continue;
+      }
+
+      std::string pattern = attr_value.LowerASCII().Utf8();
+
+      // SubstringSetMatcher doesn't like duplicates, and since we only
+      // use the tree for true/false information anyway, we can remove them.
+      bool already_exists =
+          any_of(patterns.begin(), patterns.end(),
+                 [&pattern](const StringPattern& existing_pattern) {
+                   return existing_pattern.pattern() == pattern;
+                 });
+      if (!already_exists) {
+        patterns.emplace_back(pattern, rule_index);
+      }
+      ++rule_index;
+    }
+
+    auto substring_matcher = std::make_unique<SubstringSetMatcher>();
+    if (!substring_matcher->Build(patterns)) {
+      // Should never really happen unless there are megabytes and megabytes
+      // of such classes, so we just drop out to the slow path.
+    } else {
+      substring_matcher_map.insert(attr, std::move(substring_matcher));
+    }
+  }
+}
+
 void RuleSet::CompactRules() {
   DCHECK(pending_rules_);
   PendingRuleMaps* pending_rules = pending_rules_.Release();
   CompactPendingRules(pending_rules->id_rules, id_rules_);
   CompactPendingRules(pending_rules->class_rules, class_rules_);
   CompactPendingRules(pending_rules->attr_rules, attr_rules_);
+  CreateSubstringMatchers(attr_rules_, attr_substring_matchers_);
   CompactPendingRules(pending_rules->tag_rules, tag_rules_);
   CompactPendingRules(pending_rules->ua_shadow_pseudo_element_rules,
                       ua_shadow_pseudo_element_rules_);

@@ -11,6 +11,7 @@ include_rules = [
     "+base/memory/scoped_refptr.h",
     "+base/profiler/sample_metadata.h",
     "+base/strings/stringprintf.h",
+    "+base/substring_set_matcher/substring_set_matcher.h",
     "+base/task/sequence_manager/task_time_observer.h",
     "+base/test/bind.h",
     "+base/test/simple_test_tick_clock.h",

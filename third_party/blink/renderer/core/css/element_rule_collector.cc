@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
 #include "base/containers/span.h"
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -597,10 +598,15 @@ void ElementRuleCollector::CollectMatchingRules(
               : attribute_name;
       for (const auto bundle : match_request.AllRuleSets()) {
         if (bundle.rule_set->HasAnyAttrRules()) {
-          CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
-                                      match_request, bundle.rule_set,
-                                      bundle.style_sheet,
-                                      bundle.style_sheet_index, checker);
+          const HeapVector<Member<const RuleData>>* list =
+              bundle.rule_set->AttrRules(lower_name);
+          if (list && !bundle.rule_set->CanIgnoreEntireList(
+                          list, lower_name, attributes[attr_idx].Value())) {
+            CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
+                                        match_request, bundle.rule_set,
+                                        bundle.style_sheet,
+                                        bundle.style_sheet_index, checker);
+          }
         }
       }
 

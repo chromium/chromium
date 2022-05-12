@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
+#include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
@@ -260,6 +261,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     auto it = attr_rules_.find(key);
     return it != attr_rules_.end() ? it->value : nullptr;
   }
+  bool CanIgnoreEntireList(const HeapVector<Member<const RuleData>>* list,
+                           const AtomicString& key,
+                           const AtomicString& value) const;
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
@@ -404,6 +408,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                   Member<HeapLinkedStack<Member<const RuleData>>>>;
   using CompactRuleMap =
       HeapHashMap<AtomicString, Member<HeapVector<Member<const RuleData>>>>;
+  using SubstringMatcherMap =
+      HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
 
   void AddToRuleSet(const AtomicString& key, PendingRuleMap&, const RuleData*);
   void AddPageRule(StyleRulePage*);
@@ -435,6 +441,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   void CompactRules();
   static void CompactPendingRules(PendingRuleMap&, CompactRuleMap&);
+  static void CreateSubstringMatchers(
+      CompactRuleMap& attr_map,
+      SubstringMatcherMap& substring_matcher_map);
 
   class PendingRuleMaps : public GarbageCollected<PendingRuleMaps> {
    public:
@@ -475,6 +484,28 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
   CompactRuleMap attr_rules_;
+  // A structure for quickly rejecting an entire attribute rule set
+  // (from attr_rules_). If we have many rules in the same bucket,
+  // we build up a case-insensitive substring-matching structure of all
+  // the values we can match on (all attribute selectors are either substring,
+  // or something stricter than substring). We can then use that structure
+  // to see in linear time (of the length of the attribute value in the DOM)
+  // whether we can have any matches at all.
+  //
+  // If we find any matches, we need to recheck each rule, because the rule in
+  // question may actually be case-sensitive, or we might want e.g. a prefix
+  // match instead of a substring match. (We could solve prefix/suffix by
+  // means of inserting special start-of-string and end-of-string tokens,
+  // but we keep it simple for now.) Also, the way we use the
+  // SubstringSetMatcher, we don't actually get back which rules matched.
+  //
+  // This element does not exist, if there are few enough rules that we don't
+  // deem this step worth it, or if the build of the tree failed. (In
+  // particular, if there is only a single rule in this bucket, it's
+  // pointless to run the entire Aho-Corasick algorithm instead of just
+  // doing a simple match.) Check GetMinimumRulesetSizeForSubstringMatcher()
+  // before looking up for a cheaper test.
+  SubstringMatcherMap attr_substring_matchers_;
   CompactRuleMap tag_rules_;
   CompactRuleMap ua_shadow_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;

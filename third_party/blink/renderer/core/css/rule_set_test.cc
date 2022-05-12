@@ -29,7 +29,9 @@
 
 #include "third_party/blink/renderer/core/css/rule_set.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -328,6 +330,68 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
   const HeapVector<Member<const RuleData>>* rules = rule_set.UniversalRules();
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
+}
+
+TEST(RuleSetTest, LargeNumberOfAttributeRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::
+                                kSubstringSetTreeForAttributeBuckets},
+      /*disabled_features=*/{});
+
+  css_test_helpers::TestStyleSheet sheet;
+
+  // Create more than 50 rules, in order to trigger building the Aho-Corasick
+  // tree.
+  for (int i = 0; i < 100; ++i) {
+    char buf[256];
+    snprintf(buf, sizeof(buf), "[attr=\"value%d\"] {}", i);
+    sheet.AddCSSRules(buf);
+  }
+  sheet.AddCSSRules("[otherattr=\"value\"] {}");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* list = rule_set.AttrRules("attr");
+  ASSERT_NE(nullptr, list);
+
+  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "value20"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "VALUE20"));
+
+  // A false positive that we expect (value20 is a substring, even though
+  // the rule said = and not =*, so we need to check the entire set).
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "--value20--"));
+
+  // One rule is not enough to build a tree, so we will not mass-reject
+  // anything on otherattr.
+  const HeapVector<Member<const RuleData>>* list2 =
+      rule_set.AttrRules("otherattr");
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list2, "otherattr", "notfound"));
+}
+
+TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::
+                                kSubstringSetTreeForAttributeBuckets},
+      /*disabled_features=*/{});
+
+  css_test_helpers::TestStyleSheet sheet;
+
+  // Create more than 50 rules, in order to trigger building the Aho-Corasick
+  // tree.
+  for (int i = 0; i < 100; ++i) {
+    char buf[256];
+    snprintf(buf, sizeof(buf), "[attr=\"value%d\"] {}", i);
+    sheet.AddCSSRules(buf);
+  }
+  sheet.AddCSSRules("[attr=\"\"] {}");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<Member<const RuleData>>* list = rule_set.AttrRules("attr");
+  ASSERT_NE(nullptr, list);
+  EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
 }
 
 TEST(RuleSetTest, SelectorIndexLimit) {

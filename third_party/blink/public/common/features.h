@@ -750,6 +750,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kDispatchPopstateSync;
 // If enabled, expose non-standard stats in the WebRTC getStats API.
 BLINK_COMMON_EXPORT extern const base::Feature kWebRtcExposeNonStandardStats;
 
+// If enabled, CSS rulesets with many different rules on the same attribute
+// will be attempted accelerated with a substring set tree.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kSubstringSetTreeForAttributeBuckets;
+
 }  // namespace features
 }  // namespace blink
 

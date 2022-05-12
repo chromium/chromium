@@ -1462,5 +1462,8 @@ const base::Feature kDispatchPopstateSync{"DispatchPopstateSync",
 const base::Feature kWebRtcExposeNonStandardStats{
     "WebRtc-ExposeNonStandardStats", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSubstringSetTreeForAttributeBuckets{
+    "SubstringSetTreeForAttributeBuckets", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
