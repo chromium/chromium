@@ -41,6 +41,10 @@ class FormStructureTestApi {
     DCHECK(form_structure_);
   }
 
+  const std::vector<std::unique_ptr<AutofillField>>& fields() {
+    return form_structure_->fields_;
+  }
+
   void IdentifySections(bool has_author_specified_sections) {
     form_structure_->IdentifySections(has_author_specified_sections);
   }
@@ -48,6 +52,11 @@ class FormStructureTestApi {
   bool phone_rationalized(const std::string& section) const {
     auto it = form_structure_->phone_rationalized_.find(section);
     return it != form_structure_->phone_rationalized_.end() && it->second;
+  }
+
+  void ParseFieldTypesWithPatterns(PatternSource pattern_source) {
+    return form_structure_->ParseFieldTypesWithPatterns(pattern_source,
+                                                        nullptr);
   }
 
  private:

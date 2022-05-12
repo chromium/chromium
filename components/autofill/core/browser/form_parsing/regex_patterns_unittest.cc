@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
@@ -24,7 +23,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Contains;
 using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsSupersetOf;
 using ::testing::Not;
@@ -34,6 +35,8 @@ namespace autofill {
 
 class MatchPatternRefTestApi {
  public:
+  using UnderlyingType = MatchPatternRef::UnderlyingType;
+
   explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
 
   absl::optional<MatchPatternRef> MakeSupplementary() const {
@@ -42,11 +45,9 @@ class MatchPatternRefTestApi {
     return MatchPatternRef(true, index());
   }
 
-  MatchPatternRef::UnderlyingType is_supplementary() const {
-    return p_.is_supplementary();
-  }
+  UnderlyingType is_supplementary() const { return p_.is_supplementary(); }
 
-  MatchPatternRef::UnderlyingType index() const { return p_.index(); }
+  UnderlyingType index() const { return p_.index(); }
 
  private:
   MatchPatternRef p_;
@@ -93,8 +94,12 @@ bool IsEmpty(const char* s) {
 }  // namespace
 
 bool operator==(MatchPatternRef a, MatchPatternRef b) {
-  return test_api(a).is_supplementary() == test_api(b).is_supplementary() ||
+  return test_api(a).is_supplementary() == test_api(b).is_supplementary() &&
          test_api(a).index() == test_api(b).index();
+}
+
+bool operator!=(MatchPatternRef a, MatchPatternRef b) {
+  return !(a == b);
 }
 
 void PrintTo(MatchPatternRef p, std::ostream* os) {
@@ -120,6 +125,51 @@ INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
                              PatternSource::kNextGen
 #endif
                              ));
+
+// The parameter is the index of a MatchPatternRef.
+class MatchPatternRefInternalsTest
+    : public ::testing::TestWithParam<MatchPatternRefTestApi::UnderlyingType> {
+ public:
+  MatchPatternRefTestApi::UnderlyingType index() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
+                         MatchPatternRefInternalsTest,
+                         ::testing::Values(0, 1, 2, 123, 1000, 2000));
+
+// Tests MatchPatternRef's index() and is_supplementary().
+TEST_P(MatchPatternRefInternalsTest, MatchPatternRef) {
+  MatchPatternRef a = MakeMatchPatternRef(false, index());
+  MatchPatternRef b = MakeMatchPatternRef(true, index());
+  EXPECT_EQ(a, a);
+  EXPECT_EQ(b, b);
+  EXPECT_NE(a, b);
+  EXPECT_EQ(test_api(a).index(), index());
+  EXPECT_EQ(test_api(b).index(), index());
+  EXPECT_FALSE(test_api(a).is_supplementary());
+  EXPECT_TRUE(test_api(b).is_supplementary());
+}
+
+// Tests MatchPatternRef's dereference operator.
+//
+// Since we want to test that supplementary patterns only contain
+// MatchAttribute::kName, choose `index` such that `kPatterns[0]` contains
+// MatchAttribute::kLabel.
+TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
+  MatchPatternRefTestApi::UnderlyingType index = 0;
+  ASSERT_TRUE(
+      kPatterns[0].match_field_attributes.contains(MatchAttribute::kLabel));
+  MatchPatternRef a = MakeMatchPatternRef(false, index);
+  MatchPatternRef b = MakeMatchPatternRef(true, index);
+  EXPECT_TRUE((*a).positive_pattern);
+  EXPECT_TRUE((*a).negative_pattern);
+  EXPECT_EQ((*a).positive_pattern, (*b).positive_pattern);
+  EXPECT_EQ((*a).negative_pattern, (*b).negative_pattern);
+  EXPECT_EQ((*a).positive_score, (*b).positive_score);
+  EXPECT_EQ((*a).match_field_input_types, (*b).match_field_input_types);
+  EXPECT_THAT((*a).match_field_attributes, Contains(MatchAttribute::kLabel));
+  EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));
+}
 
 // Tests that for a given pattern name, the pseudo-language-code "" contains the
 // patterns of all real languages.
