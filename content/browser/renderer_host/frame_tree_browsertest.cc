@@ -2607,9 +2607,14 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
 
   // Since the fenced frame is not yet navigated, it's specific controller
-  // should have an entry count of 0.
+  // should have no entries, or should be on the initial NavigationEntry.
   if (GetParam() == blink::features::FencedFramesImplementationType::kMPArch) {
-    EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_TRUE(
+        !fenced_frame->navigator().controller().GetLastCommittedEntry() ||
+        fenced_frame->navigator()
+            .controller()
+            .GetLastCommittedEntry()
+            ->IsInitialEntry());
   }
 
   TestFrameNavigationObserver observer(fenced_frame);
@@ -2673,7 +2678,12 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   } else {
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_TRUE(
+        !fenced_frame->navigator().controller().GetLastCommittedEntry() ||
+        fenced_frame->navigator()
+            .controller()
+            .GetLastCommittedEntry()
+            ->IsInitialEntry());
   }
 }
 
@@ -2776,8 +2786,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
     // restored. Therefore we will only have the initial fenced frame without
     // any navigation.
     ASSERT_EQ(0U, new_entry->root_node()->children.size());
-    EXPECT_EQ(0,
-              restored_fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_TRUE(!restored_fenced_frame->navigator()
+                     .controller()
+                     .GetLastCommittedEntry() ||
+                restored_fenced_frame->navigator()
+                    .controller()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
   }
 }
 
