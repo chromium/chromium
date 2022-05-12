@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.test.runner.lifecycle.Stage;
@@ -81,6 +82,7 @@ import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -805,6 +807,23 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testNativePolicyAndChildStatusLoadMetricRecordedOnlyOnce() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
+
+        // Changing the activity orientation will create SigninFirstRunCoordinator again and call
+        // SigninFirstRunFragment.notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded()
+        ActivityTestUtils.rotateActivityToOrientation(
+                mChromeActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+
+        // The histogram should not be recorded again. The call count should be the same as before
+        // as mockito does not reset invocation counts between consecutive verify calls.
+        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWithTosDialogBehaviorPolicy() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -937,7 +956,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
+        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         final DisplayableProfileData profileData =
                 new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName);
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
@@ -974,7 +993,7 @@ public class SigninFirstRunFragmentTest {
     private void checkFragmentWithChildAccount() {
         CriteriaHelper.pollUiThread(
                 mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
+        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         Assert.assertFalse(
@@ -995,7 +1014,7 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
         });
-        verify(mFirstRunPageDelegateMock).recordNativeAndPoliciesLoadedHistogram();
+        verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
         onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(isDisplayed()));
         onView(withText(R.string.continue_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
