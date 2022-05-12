@@ -10,6 +10,9 @@ def handle_headers(frame, request, response):
 
     response.status = 200
     response.headers[b"content-type"] = "text/html"
+    if b"x-frame-options" in request.GET:
+        x_frame_options = request.GET.first(b"x-frame-options").decode()
+        response.headers[b"x-frame-options"] = x_frame_options
     response.write_status_headers()
 
 
