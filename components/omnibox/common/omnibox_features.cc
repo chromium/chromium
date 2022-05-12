@@ -108,9 +108,9 @@ const base::Feature kClobberTriggersSRPZeroSuggest{
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
-// default value of 7 days is used. If enabled, the age threshold is determined
-// by this feature's companion parameter,
-// OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
+// default value of 60 days for Desktop and 7 days for Android and iOS is used.
+// If enabled, the age threshold is determined by this feature's companion
+// parameter, OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
 
