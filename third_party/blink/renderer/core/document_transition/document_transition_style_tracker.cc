@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 namespace {
@@ -57,6 +58,53 @@ const String& AnimationUAStyles() {
       String, kAnimationUAStyles,
       (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS)));
   return kAnimationUAStyles;
+}
+
+absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
+                                              const gfx::Rect& target_rect,
+                                              float device_pixel_ratio) {
+  if (reference_rect.IsEmpty()) {
+    DCHECK(target_rect.IsEmpty());
+    return absl::nullopt;
+  }
+
+  // Reference rect is given to us in layout space, but target_rect is in css
+  // space. Note that this currently relies on the fact that object-view-box
+  // scales its parameters from CSS to layout space. However, that's a bug.
+  // TODO(crbug.com/1324618): Fix this when the object-view-box bug is fixed.
+  gfx::Rect reference_bounding_rect = gfx::ToEnclosingRect(gfx::ScaleRect(
+      static_cast<gfx::RectF>(reference_rect), 1.0 / device_pixel_ratio));
+
+  if (reference_bounding_rect == target_rect)
+    return absl::nullopt;
+
+  int top_offset = target_rect.y() - reference_bounding_rect.y();
+  int right_offset = reference_bounding_rect.right() - target_rect.right();
+  int bottom_offset = reference_bounding_rect.bottom() - target_rect.bottom();
+  int left_offset = target_rect.x() - reference_bounding_rect.x();
+
+  DCHECK_GE(top_offset, 0);
+  DCHECK_GE(right_offset, 0);
+  DCHECK_GE(bottom_offset, 0);
+  DCHECK_GE(left_offset, 0);
+
+  return String::Format("inset(%dpx %dpx %dpx %dpx)", top_offset, right_offset,
+                        bottom_offset, left_offset);
+}
+
+// TODO(vmpstr): This could be optimized by caching values for individual layout
+// boxes. However, it's unclear when the cache should be cleared.
+PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
+  PhysicalRect result;
+  for (auto* child = box->Layer()->FirstChild(); child;
+       child = child->NextSibling()) {
+    auto* child_box = child->GetLayoutBox();
+    PhysicalRect overflow_rect = ComputeVisualOverflowRect(child_box);
+    child_box->MapToVisualRectInAncestorSpace(box, overflow_rect);
+    result.Unite(overflow_rect);
+  }
+  result.Unite(box->PhysicalVisualOverflowRectIncludingFilters());
+  return result;
 }
 
 }  // namespace
@@ -334,9 +382,12 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     element_data->target_element = nullptr;
-    element_data->cached_border_box_size = element_data->border_box_size;
+    element_data->cached_border_box_size_in_css_space =
+        element_data->border_box_size_in_css_space;
     element_data->cached_viewport_matrix = element_data->viewport_matrix;
     element_data->cached_device_pixel_ratio = element_data->device_pixel_ratio;
+    element_data->cached_visual_overflow_rect_in_layout_space =
+        element_data->visual_overflow_rect_in_layout_space;
     element_data->effect_node = nullptr;
   }
   root_effect_node_ = nullptr;
@@ -577,22 +628,31 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     auto* resize_observer_entry =
         MakeGarbageCollected<ResizeObserverEntry>(element_data->target_element);
     auto entry_size = resize_observer_entry->borderBoxSize()[0];
-    LayoutSize border_box_size =
+    LayoutSize border_box_size_in_css_space =
         layout_object->IsHorizontalWritingMode()
             ? LayoutSize(LayoutUnit(entry_size->inlineSize()),
                          LayoutUnit(entry_size->blockSize()))
             : LayoutSize(LayoutUnit(entry_size->blockSize()),
                          LayoutUnit(entry_size->inlineSize()));
 
+    PhysicalRect visual_overflow_rect_in_layout_space;
+    if (auto* box = DynamicTo<LayoutBox>(layout_object))
+      visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(box);
+
     if (viewport_matrix == element_data->viewport_matrix &&
-        border_box_size == element_data->border_box_size &&
-        device_pixel_ratio == element_data->device_pixel_ratio) {
+        border_box_size_in_css_space ==
+            element_data->border_box_size_in_css_space &&
+        device_pixel_ratio == element_data->device_pixel_ratio &&
+        visual_overflow_rect_in_layout_space ==
+            element_data->visual_overflow_rect_in_layout_space) {
       continue;
     }
 
     element_data->viewport_matrix = viewport_matrix;
-    element_data->border_box_size = border_box_size;
+    element_data->border_box_size_in_css_space = border_box_size_in_css_space;
     element_data->device_pixel_ratio = device_pixel_ratio;
+    element_data->visual_overflow_rect_in_layout_space =
+        visual_overflow_rect_in_layout_space;
 
     PseudoId live_content_element = HasLiveNewContent()
                                         ? kPseudoIdPageTransitionIncomingImage
@@ -797,6 +857,13 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
     auto document_transition_tag = entry.key.GetString().Utf8();
     auto& element_data = entry.value;
 
+    gfx::Rect border_box_in_css_space = gfx::Rect(
+        gfx::Size(element_data->border_box_size_in_css_space.Width().ToInt(),
+                  element_data->border_box_size_in_css_space.Height().ToInt()));
+    gfx::Rect cached_border_box_in_css_space = gfx::Rect(gfx::Size(
+        element_data->cached_border_box_size_in_css_space.Width().ToInt(),
+        element_data->cached_border_box_size_in_css_space.Height().ToInt()));
+
     // ::page-transition-container styles using computed properties for each
     // element.
     builder.AppendFormat(
@@ -807,14 +874,40 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           transform: %s;
         }
         )CSS",
-        document_transition_tag.c_str(),
-        element_data->border_box_size.Width().ToInt(),
-        element_data->border_box_size.Height().ToInt(),
+        document_transition_tag.c_str(), border_box_in_css_space.width(),
+        border_box_in_css_space.height(),
         ComputedStyleUtils::ValueForTransformationMatrix(
             element_data->viewport_matrix, 1, false)
             ->CssText()
             .Utf8()
             .c_str());
+
+    float device_pixel_ratio = document_->DevicePixelRatio();
+    absl::optional<String> incoming_inset = ComputeInsetDifference(
+        element_data->visual_overflow_rect_in_layout_space,
+        border_box_in_css_space, device_pixel_ratio);
+    if (incoming_inset) {
+      builder.AppendFormat(
+          R"CSS(
+          html::page-transition-incoming-image(%s) {
+            object-view-box: %s;
+          }
+          )CSS",
+          document_transition_tag.c_str(), incoming_inset->Utf8().c_str());
+    }
+
+    absl::optional<String> outgoing_inset = ComputeInsetDifference(
+        element_data->cached_visual_overflow_rect_in_layout_space,
+        cached_border_box_in_css_space, device_pixel_ratio);
+    if (outgoing_inset) {
+      builder.AppendFormat(
+          R"CSS(
+          html::page-transition-outgoing-image(%s) {
+            object-view-box: %s;
+          }
+          )CSS",
+          document_transition_tag.c_str(), outgoing_inset->Utf8().c_str());
+    }
 
     // TODO(khushalsagar) : We'll need to retarget the animation if the final
     // value changes during the start phase.
@@ -836,8 +929,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
               ->CssText()
               .Utf8()
               .c_str(),
-          element_data->cached_border_box_size.Width().ToInt(),
-          element_data->cached_border_box_size.Height().ToInt());
+          element_data->cached_border_box_size_in_css_space.Width().ToInt(),
+          element_data->cached_border_box_size_in_css_space.Height().ToInt());
 
       // TODO(khushalsagar) : The duration/delay in the UA stylesheet will need
       // to be the duration from TransitionConfig. See crbug.com/1275727.
@@ -870,14 +963,15 @@ void DocumentTransitionStyleTracker::ElementData::Trace(
   visitor->Trace(target_element);
 }
 
+// TODO(vmpstr): We need to write tests for the following:
+// * A local transform on the shared element.
+// * A transform on an ancestor which changes its screen space transform.
 LayoutSize DocumentTransitionStyleTracker::ElementData::GetIntrinsicSize(
     bool use_cached_data) {
   LayoutSize box_size =
-      use_cached_data ? cached_border_box_size : border_box_size;
-  float ratio =
-      use_cached_data ? cached_device_pixel_ratio : device_pixel_ratio;
-
-  box_size.Scale(ratio);
+      use_cached_data
+          ? cached_visual_overflow_rect_in_layout_space.size.ToLayoutSize()
+          : visual_overflow_rect_in_layout_space.size.ToLayoutSize();
   return box_size;
 }
 

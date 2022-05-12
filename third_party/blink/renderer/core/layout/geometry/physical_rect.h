@@ -209,6 +209,11 @@ struct CORE_EXPORT PhysicalRect {
     return LayoutRect::InfiniteIntRect();
   }
 
+  void Scale(float s) {
+    offset.Scale(s);
+    size.Scale(s);
+  }
+
   String ToString() const;
 };
 

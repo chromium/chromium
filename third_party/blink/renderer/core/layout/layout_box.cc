@@ -7389,8 +7389,9 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
 
   const LayoutRect& self_visual_overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
-  if (HasMask())
+  if (HasMask()) {
     return self_visual_overflow_rect;
+  }
 
   const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
   if (ShouldApplyOverflowClipMargin()) {

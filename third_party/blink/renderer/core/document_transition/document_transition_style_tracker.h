@@ -8,6 +8,7 @@
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -136,12 +137,12 @@ class DocumentTransitionStyleTracker
 
     // Computed info for each element participating in the transition for the
     // |target_element|. This information is mirrored into the UA stylesheet.
-    LayoutSize border_box_size;
+    LayoutSize border_box_size_in_css_space;
     TransformationMatrix viewport_matrix;
     float device_pixel_ratio = 1.f;
 
     // Computed info cached before the DOM switches to the new state.
-    LayoutSize cached_border_box_size;
+    LayoutSize cached_border_box_size_in_css_space;
     TransformationMatrix cached_viewport_matrix;
     float cached_device_pixel_ratio = 1.f;
 
@@ -157,6 +158,12 @@ class DocumentTransitionStyleTracker
 
     // Index to add to the document transition shared element id.
     int element_index;
+
+    // The visual overflow rect for this element. This is used to compute
+    // object-view-box if needed.
+    // This rect is in layout space.
+    PhysicalRect visual_overflow_rect_in_layout_space;
+    PhysicalRect cached_visual_overflow_rect_in_layout_space;
   };
 
   void InvalidateStyle();
