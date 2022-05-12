@@ -167,16 +167,20 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
     const gfx::Point& location_in_screen,
     aura::Window* new_window) {
   auto is_lacros = IsLacrosWindow(source_window_);
-  if (!new_window && is_lacros &&
-      !crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
-    LOG(ERROR)
-        << "New browser window creation for tab detaching failed.\n"
-        << "Check whether about:flags#lacros-primary is enabled or "
-        << "--enable-features=LacrosPrimary is passed in when launching Ash";
+
+  // https://crbug.com/1286203:
+  // It's possible new window is created when the dragged WebContents
+  // closes itself during the drag session.
+  if (!new_window) {
+    if (is_lacros && !crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
+      LOG(ERROR)
+          << "New browser window creation for tab detaching failed.\n"
+          << "Check whether about:flags#lacros-primary is enabled or "
+          << "--enable-features=LacrosPrimary is passed in when launching Ash";
+    }
     return;
   }
 
-  DCHECK(new_window) << "New browser window creation for tab detaching failed.";
   const gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window_);

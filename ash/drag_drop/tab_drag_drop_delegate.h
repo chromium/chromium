@@ -61,6 +61,8 @@ class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
                          const ui::OSExchangeData& drop_data);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TabDragDropDelegateTest, DropWithoutNewWindow);
+
   // Scales or transforms the source window if appropriate for this drag.
   // |candidate_snap_position| is where the dragged tab will be snapped
   // if dropped immediately.
