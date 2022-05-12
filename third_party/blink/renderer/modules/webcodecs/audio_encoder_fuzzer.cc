@@ -4,7 +4,15 @@
 
 #include "base/at_exit.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
+#include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/audio_encoder.mojom.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/services/mojo_audio_encoder_service.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
@@ -29,6 +37,115 @@
 
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "base/win/scoped_com_initializer.h"
+#include "media/gpu/windows/mf_audio_encoder.h"
+#define HAS_AAC_ENCODER 1
+#endif
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/filters/mac/audio_toolbox_audio_encoder.h"
+#define HAS_AAC_ENCODER 1
+#endif
+
+#if HAS_AAC_ENCODER
+namespace {
+
+// Other end of remote InterfaceFactory requested by AudioEncoder. Used
+// to create real media::mojom::AudioEncoders.
+class TestInterfaceFactory : public media::mojom::InterfaceFactory {
+ public:
+  TestInterfaceFactory() = default;
+  ~TestInterfaceFactory() override = default;
+
+  void BindRequest(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory>(
+        std::move(handle)));
+
+    // Each AudioEncoder instance will try to open a connection to this
+    // factory, so we must clean up after each one is destroyed.
+    receiver_.set_disconnect_handler(WTF::Bind(
+        &TestInterfaceFactory::OnConnectionError, base::Unretained(this)));
+  }
+
+  void OnConnectionError() { receiver_.reset(); }
+
+  // Implement this one interface from mojom::InterfaceFactory.
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) override {
+    // While we'd like to use the real GpuMojoMediaFactory here, it requires
+    // quite a bit more of scaffolding to setup and isn't really needed.
+#if BUILDFLAG(IS_MAC)
+    auto platform_audio_encoder =
+        std::make_unique<media::AudioToolboxAudioEncoder>();
+#elif BUILDFLAG(IS_WIN)
+    CHECK(com_initializer_.Succeeded());
+    auto platform_audio_encoder = std::make_unique<media::MFAudioEncoder>(
+        base::SequencedTaskRunnerHandle::Get());
+#else
+#error "Unknown platform encoder."
+#endif
+    audio_encoder_receivers_.Add(
+        std::make_unique<media::MojoAudioEncoderService>(
+            std::move(platform_audio_encoder)),
+        std::move(receiver));
+  }
+
+  // Stub out other mojom::InterfaceFactory interfaces.
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) override {}
+  void CreateAudioDecoder(
+      mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) override {}
+  void CreateDefaultRenderer(
+      const std::string& audio_device_id,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  void CreateCastRenderer(
+      const base::UnguessableToken& overlay_plane_id,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  void CreateMediaPlayerRenderer(
+      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
+          client_extension_remote,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
+          renderer_extension_receiver) override {}
+  void CreateFlingingRenderer(
+      const std::string& presentation_id,
+      mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
+          client_extension,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}
+#endif  // BUILDFLAG(IS_ANDROID)
+  void CreateCdm(const media::CdmConfig& cdm_config,
+                 CreateCdmCallback callback) override {
+    std::move(callback).Run(mojo::NullRemote(), nullptr, "CDM not supported");
+  }
+
+#if BUILDFLAG(IS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver,
+      mojo::PendingRemote<
+          ::media::mojom::MediaFoundationRendererClientExtension>
+          client_extension_remote) override {}
+#endif  // BUILDFLAG(IS_WIN)
+ private:
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif  // BUILDFLAG(IS_WIN)
+  // media::MojoCdmServiceContext cdm_service_context_;
+  mojo::Receiver<media::mojom::InterfaceFactory> receiver_{this};
+  mojo::UniqueReceiverSet<media::mojom::AudioEncoder> audio_encoder_receivers_;
+};
+
+}  // namespace
+#endif  // HAS_AAC_ENCODER
+
 namespace blink {
 
 DEFINE_TEXT_PROTO_FUZZER(
@@ -39,6 +156,20 @@ DEFINE_TEXT_PROTO_FUZZER(
     page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
     return page_holder.release();
   }();
+
+#if HAS_AAC_ENCODER
+  base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);
+  static const bool kSetTestBinder = []() {
+    auto interface_factory = std::make_unique<TestInterfaceFactory>();
+    return Platform::Current()
+        ->GetBrowserInterfaceBroker()
+        ->SetBinderForTesting(
+            media::mojom::InterfaceFactory::Name_,
+            WTF::BindRepeating(&TestInterfaceFactory::BindRequest,
+                               base::Owned(std::move(interface_factory))));
+  }();
+  CHECK(kSetTestBinder) << "Failed to register media interface binder.";
+#endif
 
   // Some Image related classes that use base::Singleton will expect this to
   // exist for registering exit callbacks (e.g. DarkModeImageClassifier).

@@ -69,7 +69,7 @@ void GenerateOutputFormat(const AudioEncoder::Options& options,
   // https://developer.apple.com/documentation/coreaudiotypes/coreaudiotype_constants/mpeg-4_audio_object_type_constants
   // TODO(crbug.com/1317402): Implement support for other AAC profiles.
   output_format.mFormatID = kAudioFormatMPEG4AAC;
-  output_format.mFormatFlags = 2;  // AAC-LC
+  output_format.mFormatFlags = kMPEG4Object_AAC_LC;
 }
 
 bool GenerateCodecDescription(AudioCodec codec,

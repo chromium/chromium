@@ -42,6 +42,10 @@ specific_include_rules = {
     "+base/run_loop.h",
     "+base/files/file_util.h",
   ],
+  "audio_encoder_fuzzer\.cc": [
+    "+base/win/scoped_com_initializer.h",
+    "+media/gpu/windows/mf_audio_encoder.h",
+  ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
