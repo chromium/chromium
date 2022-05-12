@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './tab_group_shared_vars.js';
+import './tab_group_shared_vars.css.js';
 
 import {Color} from './tab_group_types.mojom-webui.js';
 
