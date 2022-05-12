@@ -809,6 +809,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Status.Csp" enum="FedCmCspStatus"
+    expires_after="M120">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>Records the result of CSP checks in the FedCM API.</summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Status.RequestIdToken"
     enum="FedCmRequestIdTokenStatus" expires_after="M110">
   <owner>yigu@chromium.org</owner>

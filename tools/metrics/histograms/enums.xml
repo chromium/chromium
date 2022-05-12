@@ -40241,6 +40241,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FedCmCspStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedPathButPassedOrigin"/>
+  <int value="2" label="FailedOrigin"/>
+</enum>
+
 <enum name="FedCmRequestIdTokenStatus">
   <int value="0" label="Success"/>
   <int value="1" label="TooManyRequests"/>

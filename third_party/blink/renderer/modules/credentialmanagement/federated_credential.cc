@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
@@ -32,6 +33,15 @@ using mojom::blink::RequestIdTokenStatus;
 using mojom::blink::RevokeStatus;
 
 constexpr char kFederatedCredentialType[] = "federated";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FedCmCspStatus {
+  kSuccess = 0,
+  kFailedPathButPassedOrigin = 1,
+  kFailedOrigin = 2,
+  kMaxValue = kFailedOrigin
+};
 
 // Abort an ongoing FederatedCredential login() operation.
 void AbortFederatedCredentialRequest(ScriptState* script_state) {
@@ -172,9 +182,29 @@ bool FederatedCredential::IsRejectingPromiseDueToCSP(
     ScriptPromiseResolver* resolver,
     const KURL& provider_url) {
   if (policy->AllowConnectToSource(provider_url, provider_url,
-                                   RedirectStatus::kNoRedirect)) {
+                                   RedirectStatus::kNoRedirect,
+                                   ReportingDisposition::kSuppressReporting)) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
+                              FedCmCspStatus::kSuccess);
     return false;
   }
+
+  // kFollowedRedirect means that the path will not be checked, which is
+  // what we want -- at least one high-profile site has specific paths
+  // in its existing connect-src policy which do not work with FedCM, breaking
+  // the "no RP changes required" promise of FedCM.
+  // (note that we disable redirects for FedCM requests on the browser side)
+  // TODO(cbiesinger): Once the two known websites are fixed, make this
+  // codepath metrics-only and move kSuppressReporting here. crbug.com/1320724
+  if (policy->AllowConnectToSource(provider_url, provider_url,
+                                   RedirectStatus::kFollowedRedirect)) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
+                              FedCmCspStatus::kFailedPathButPassedOrigin);
+    return false;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Csp",
+                            FedCmCspStatus::kFailedOrigin);
 
   WTF::String error =
       "Refused to connect to '" + provider_url.ElidedString() +
