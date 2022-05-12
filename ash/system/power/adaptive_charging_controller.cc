@@ -39,8 +39,13 @@ void AdaptiveChargingController::PowerChanged(
 
   is_adaptive_delaying_charge_ = proto.adaptive_delaying_charge();
 
-  if (!is_adaptive_delaying_charge_)
+  // Nudge and notification should be shown only if heuristic is enabled for
+  // this user and the adaptive charging is actually active.
+  if (!proto.has_adaptive_charging_heuristic_enabled() ||
+      !proto.adaptive_charging_heuristic_enabled() ||
+      !is_adaptive_delaying_charge_) {
     return;
+  }
 
   // The nudge will only be shown alongside the notification once.
   nudge_controller_->ShowNudge();
