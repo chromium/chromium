@@ -115,6 +115,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       self.clients[instance_name].RunPowershell(cmd)
 
   def InstallWebDriver(self, instance_name):
+    self.EnsurePythonInstalled(instance_name)
     self.InstallPipPackagesLatest(instance_name,
                                   ['selenium', 'absl-py', 'pywin32'])
 
@@ -143,8 +144,6 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
 
     Returns:
       the output."""
-    self.EnsurePythonInstalled(instance_name)
-
     # upload the test
     file_name = self.UploadFile(instance_name, test_file, r'c:\temp')
 
@@ -166,8 +165,6 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
 
     Returns:
       the output."""
-    self.EnsurePythonInstalled(instance_name)
-
     # upload the test
     file_name = self.UploadFile(instance_name, test_file, r'c:\temp')
 
