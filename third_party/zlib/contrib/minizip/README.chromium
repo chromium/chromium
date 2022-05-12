@@ -12,4 +12,4 @@ files. See minizip.md for chromium build instructions.
 Local Modifications:
 - Add parsing of the 'Info-ZIP Unicode Path Extra Field' as described in
   https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT section 4.6.9.
-  (see crrev.com/3641742)
+  (see crrev.com/1002476)
