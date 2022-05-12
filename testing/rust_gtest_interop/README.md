@@ -142,36 +142,81 @@ src/
 
 ### Specifying a C++ TestSuite class
 
-In C++, a chosen TestSuite, which subclasses `testing::Test`, can be specified
+In C++, a specific TestSuite, which subclasses `testing::Test`, can be specified
 with the `TEST_F()` macro. For example `TEST_F(SomeSubclassOfTestingTest,
-Gadgets)`. The same can be done in Rust, albeit with a slight bit more
-indirection. The `#[gtest_suite]` macro can be specified on the test function,
-after the `#[gtest]` macro, in order to chose the TestSuite class. The macro
-takes an argument which is the name of a C++ function that returns the output of
-`rust_gtest_interop::rust_gtest_factory_for_subclass<T>()` where `T` is the
-class to use as the TestSuite. For example:
+Gadgets)`. The same can be done in Rust, by specifying a Rust wrapper around a
+C++ class with the `#[gtest_suite]` macro. This macro is specified on the test
+function, and comes after the `#[gtest]` macro. The macro takes an argument
+which is the path to a Rust type that stands in for the C++ subclass of
+ `::testing::Test`.
 
-In a C++ file:
+To connect the C++ and Rust sides together:
+1) On the C++ side, the class must subclass `testing::Test`, just as it would
+   for the `TEST_F()` macro.
+2) Also on the C++ side, the implementation of the class (with name `ClassName`)
+   must include the use of the macro `RUST_GTEST_TEST_SUITE_FACTORY(ClassName)`,
+   which generates the factory function for Gtest.
+3) On the Rust side, the C++-wrapper type must implement the unsafe
+   `rust_gtest_interop::TestSuite` trait. It should be implemented by using the
+   `#[extern_test_suite()]` macro, with the macro receiving as input the full
+   path of the C++ class which the Rust type is wrapping. For example
+   `#[extern_test_suite("some::ClassName")]`.
+
+A full example:
+
+
 ```cpp
-class ChosenClass: public testing::Test {};
+// C++ header file for a TestSuite class.
+namespace custom {
 
-/// This function can be used in #[gtest_suite].
-extern "C" testing::Test* chosen_class_gtest_factory(void(*f)()) {
-  return rust_gtest_interop::rust_gtest_factory_for_subclass<ChosenClass>(f);
+class CustomTestSuite: public testing::Test {};
+  CustomTestSuite();
 }
 ```
 
-In Rust tests:
+```cpp
+// C++ implementation file for a TestSuite class.
+namespace custom {
+
+CustomTestSuite::CustomTestSuite() = default;
+
+RUST_GTEST_TEST_SUITE_FACTORY(CustomTestSuite);
+
+}
+```
+
 ```rs
-use rust_gtest_interop::*;
+// Rust wrapper around the TestSuite class.
+use rust_gtest_interop::prelude::*;
 
-#[gtest(ChosenClassTest, Gadgets)]
-#[gtest_suite(chosen_class_gtest_factory)]
-fn test() {
-  // This test uses ChosenClass as its TestSuite.
+// Defines the Rust ffi::CustomTestSuite type that maps to the C++ class.
+#[cxx::bridge]
+mod ffi {
+  unsafe extern "C++" {
+    include!("path/to/custom_test_suite.h")
+    #[namespace="custom"]
+    type CustomTestSuite;
+  }
+}
+// Mark the CustomTestSuite type as being a Gtest TestSuite, which means it
+// must subclass `testing::Test`.
+#[extern_test_suite("custom::CustomTestSuite")]
+unsafe impl rust_gtest_interop::TestSuite for ffi::CustomTestSuite {}
+```
+
+```rs
+// Rust unittests.
+use rust_gtest_interop::prelude::*;
+
+#[gtest(CustomTest, Gadgets)]
+#[gtest_suite(ffi::CustomTestSuite)]
+fn test(ts: Pin<&mut ffi::CustomTestSuite>) {
+  // This test uses CustomTestSuite as its TestSuite, and can access any exposed
+  // methods through its `ts` argument.
 }
 ```
 
-Then the `ChosenClassTest.Gadgets` test will run with `ChosenClass` as its
-TestSuite class. Note that the C++ function must be marked `extern "C"` at this
-time, until we can generate access to C++-mangled functions from Rust.
+Then the `CustomTest.Gadgets` test will run with `CustomTestSuite` as its
+TestSuite class. Since the cxx generator is used here, the rust file containing
+the `#[cxx::bridge]` must also be added to the GN `cxx_bindings` variable (in
+addition to `rs_sources`).

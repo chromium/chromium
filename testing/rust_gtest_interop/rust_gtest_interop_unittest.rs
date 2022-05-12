@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use rust_gtest_interop::prelude::*;
+use std::pin::Pin;
 
 #[gtest(Test, InTopModule)]
 fn test() {
@@ -62,7 +63,7 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-// This test fails due to returning Err, and displays the message "uhoh."
+// This test intentionally fails due to returning Err, and displays the message "uhoh."
 #[gtest(Test, DISABLED_WithError)]
 fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
     expect_true!(true);
@@ -85,13 +86,12 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
 //     unsafe { COUNTER += 1 };
 // }
 
-extern "C" {
-    fn num_subclass_created() -> usize; // In test/test_factory.h.
-}
-
 #[gtest(Test, WithTestSubclassAsTestSuite)]
-#[gtest_suite(test_subclass_factory)]
-fn test() {
-    // TODO(danakj): Make the factory accessible to the test body.
-    expect_eq!(1, unsafe { num_subclass_created() });
+#[gtest_suite(rust_gtest_interop_test_support::TestSubclass)]
+fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclass>) {
+    expect_eq!(0, suite.as_ref().num_calls());
+    expect_true!(suite.as_mut().get_true());
+    expect_eq!(1, suite.as_ref().num_calls());
+    expect_false!(suite.as_mut().get_false());
+    expect_eq!(2, suite.as_ref().num_calls());
 }

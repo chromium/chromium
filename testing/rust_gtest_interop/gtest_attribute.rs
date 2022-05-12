@@ -1,17 +1,9 @@
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use syn::spanned::Spanned;
 
-// The C++ mangled name for rust_gtest_interop::rust_gtest_default_factory(). This comes from
-// `objdump -t` on the C++ object file.
-//
-// TODO(danakj): We do this by hand because cxx doesn't support function pointers
-// (https://github.com/dtolnay/cxx/issues/1011). We could wrap the function pointer in a struct,
-// but then we have to pass it in UniquePtr a function pointer with 'static lifetime. We do this
-// instead of introducing multiple levels of extra abstractions (a struct, unique_ptr) and
-// leaking heap memory.
-const RUST_GTEST_DEFAULT_FACTORY_CPP_MANGLED: &str =
-    "_ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvvE";
+/// The prefix attached to a Gtest factory function by the RUST_GTEST_TEST_SUITE_FACTORY() macro.
+const RUST_GTEST_FACTORY_PREFIX: &str = "RustGtestFactory_";
 
 /// The `gtest` macro can be placed on a function to make it into a Gtest unit test, when linked
 /// into a C++ binary that invokes Gtest.
@@ -95,12 +87,7 @@ pub fn gtest(
             }
         }
     }
-
-    /// Parses `#[gtest_suite(path::to::function)]` and returns `path::to::function`.
-    ///
-    /// TODO(danakj): In the future could we replace this macro with
-    /// `#[gtest_suite(path::to::CppClass)]` and inject a call to a templated function instead? We
-    /// would need the definition of the CppClass available however.
+    /// Parses `#[gtest_suite(path::to::RustType)]` and returns `path::to::RustType`.
     fn parse_gtest_suite(attr: &syn::Attribute) -> Result<TokenStream, TokenStream> {
         let parsed = match attr.parse_meta() {
             Ok(syn::Meta::List(list)) if list.nested.len() == 1 => match &list.nested[0] {
@@ -114,7 +101,7 @@ pub fn gtest(
             Err(quote_spanned! { span =>
                 compile_error!(
                     "invalid syntax for gtest_suite macro, \
-                    expected `#[gtest_suite(path::to::cpp_factory_fn)]`");
+                    expected `#[gtest_suite(path::to:RustType)]`");
             })
         })
     }
@@ -122,11 +109,12 @@ pub fn gtest(
     let args = syn::parse_macro_input!(arg_stream as syn::AttributeArgs);
     let mut input_fn = syn::parse_macro_input!(input as syn::ItemFn);
 
-    let default_factory_fn =
-        syn::Ident::new(RUST_GTEST_DEFAULT_FACTORY_CPP_MANGLED, Span::call_site());
-
-    // The name of a C++ function which acts as the Gtest factory.
-    let mut gtest_factory_fn = quote! {#default_factory_fn};
+    // Populated data from the #[gtest_suite] macro arguments.
+    //
+    // The Rust type wrapping a C++ TestSuite (subclass of `testing::Test`), which is created and
+    // returned by a C++ factory function. If no type is specified, then this is left as None, and
+    // the default C++ factory function will be used to make a `testing::Test` directly.
+    let mut gtest_test_suite_wrapper_type: Option<TokenStream> = None;
 
     // Look through other attributes on the test function, parse the ones related to Gtests, and put
     // the rest back into `attrs`.
@@ -134,14 +122,11 @@ pub fn gtest(
         let mut keep = Vec::new();
         for attr in std::mem::take(&mut input_fn.attrs) {
             if attr.path.is_ident("gtest_suite") {
-                let cpp_fn_name = match parse_gtest_suite(&attr) {
+                let rust_type_name = match parse_gtest_suite(&attr) {
                     Ok(tokens) => tokens,
                     Err(error_tokens) => return error_tokens.into(),
                 };
-                // TODO(danakj): We should generate a C++ mangled name here, then we don't require
-                // the function to be `extern "C"` (or have the author write the mangled name
-                // themselves).
-                gtest_factory_fn = quote! {#cpp_fn_name};
+                gtest_test_suite_wrapper_type = Some(rust_type_name);
             } else {
                 keep.push(attr)
             }
@@ -151,7 +136,7 @@ pub fn gtest(
 
     // No longer mut.
     let input_fn = input_fn;
-    let gtest_factory_fn = gtest_factory_fn;
+    let gtest_test_suite_wrapper_type = gtest_test_suite_wrapper_type;
 
     if let Some(asyncness) = input_fn.sig.asyncness {
         // TODO(crbug.com/1288947): We can support async functions once we have block_on() support
@@ -207,8 +192,6 @@ pub fn gtest(
     //
     // Note that an adversary could still produce a bug here by placing two equal Gtest suite and
     // names in a single .rs file but in separate inline submodules.
-    //
-    // TODO(danakj): Build a repro and file upstream bug to refer to.
     let mangled_function_name = |f: &syn::ItemFn| -> syn::Ident {
         let file_name = file!().replace(|c: char| !c.is_ascii_alphanumeric(), "_");
         format_ident!("{}_{}_{}_{}", file_name, test_suite_name, test_name, f.sig.ident)
@@ -253,20 +236,37 @@ pub fn gtest(
     let test_name_c_bytes = CStringLiteral(&test_name);
     let file_c_bytes = CStringLiteral(file!());
 
-    let gtest_factory_fn_signature = quote! {
-        fn #gtest_factory_fn(f: extern "C" fn()) -> ::rust_gtest_interop::GtestSuitePtr;
+    let gtest_factory_fn = match &gtest_test_suite_wrapper_type {
+        Some(rust_type) => {
+            // Get the Gtest factory function pointer from the the TestSuite trait.
+            quote! { <#rust_type as ::rust_gtest_interop::TestSuite>::gtest_factory_fn_ptr() }
+        }
+        None => {
+            // If the #[gtest] macros didn't specify a test suite, then we use
+            // `rust_gtest_interop::rust_gtest_default_factory() which makes a TestSuite with
+            // `testing::Test` directly.
+            quote! { ::rust_gtest_interop::__private::rust_gtest_default_factory }
+        }
+    };
+    let test_fn_call = match &gtest_test_suite_wrapper_type {
+        Some(_rust_type) => {
+            // SAFETY: Our lambda casts the `suite` reference and does not move from it, and the
+            // resulting type is not Unpin.
+            quote! {
+                let p = unsafe {
+                    suite.map_unchecked_mut(|suite: &mut ::rust_gtest_interop::OpaqueTestingTest| {
+                        suite.as_mut()
+                    })
+                };
+                #test_fn(p)
+            }
+        }
+        None => quote! { #test_fn() },
     };
 
     let output = quote! {
         mod #test_mod {
             use super::*;
-            use std::error::Error;
-            use std::fmt::Display;
-            use std::result::Result;
-
-            extern "C" {
-                #gtest_factory_fn_signature
-            }
 
             #[::rust_gtest_interop::small_ctor::ctor]
             unsafe fn register_test() {
@@ -292,8 +292,12 @@ pub fn gtest(
             // is fixed in https://github.com/rust-lang/rust/issues/47384, this may also be
             // resolved as well.
             #[no_mangle]
-            extern "C" fn #run_test_fn() {
-                let catch_result = std::panic::catch_unwind(|| #test_fn());
+            extern "C" fn #run_test_fn(
+                suite: std::pin::Pin<&mut ::rust_gtest_interop::OpaqueTestingTest>
+            ) {
+                let catch_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    #test_fn_call
+                }));
                 use ::rust_gtest_interop::TestResult;
                 let err_message: Option<String> = match catch_result {
                     Ok(fn_result) => TestResult::into_error_message(fn_result),
@@ -305,6 +309,118 @@ pub fn gtest(
             }
 
             #input_fn
+        }
+    };
+    output.into()
+}
+
+/// The `#[extern_test_suite()]` macro is used to implement the unsafe `TestSuite` trait.
+///
+/// The `TestSuite` trait is used to mark a Rust type as being a wrapper of a C++ subclass of
+/// `testing::Test`. This makes it valid to cast from a `*mut testing::Test` to a pointer of the
+/// marked Rust type.
+///
+/// It also marks a promise that on the C++, there exists an instantiation of the
+/// RUST_GTEST_TEST_SUITE_FACTORY() macro for the C++ subclass type which will be linked with the
+/// Rust crate.
+///
+/// The macro takes a single parameter which is the fully specified C++ typename of the C++ subclass
+/// for which the implementing Rust type is a wrapper. It expects the body of the trait
+/// implementation to be empty, as it will fill in the required implementation.
+///
+/// # Example
+/// If in C++ we have:
+/// ```cpp
+/// class GoatTestSuite : public testing::Test {}
+/// RUST_GTEST_TEST_SUITE_FACTORY(GoatTestSuite);
+/// ```
+///
+/// And in Rust we have a `ffi::GoatTestSuite` type generated to wrap the C++ type. The the type can
+/// be marked as a valid TestSuite with the `#[extern_test_suite]` macro:
+/// ```rs
+/// #[extern_test_suite("GoatTestSuite")]
+/// unsafe impl rust_gtest_interop::TestSuite for ffi::GoatTestSuite {}
+/// ```
+#[proc_macro_attribute]
+pub fn extern_test_suite(
+    arg_stream: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+    let args = syn::parse_macro_input!(arg_stream as syn::AttributeArgs);
+
+    // TODO(b/229791967): With CXX it is not possible to get the C++ typename and path from the Rust
+    // wrapper type, so we require specifying it by hand in the macro. It would be nice to remove
+    // this opportunity for mistakes.
+    let cpp_type = match if args.len() == 1 { Some(&args[0]) } else { None } {
+        Some(syn::NestedMeta::Lit(syn::Lit::Str(lit_str))) => {
+            // TODO(danakj): This code drops the C++ namespaces, because we can't produce a mangled
+            // name and can't generate bindings involving fn pointers, so we require the C++
+            // function to be `extern "C"` which means it has no namespace. Eventually we should
+            // drop the `extern "C"` on the C++ side and use the full path here.
+            let string = lit_str.value();
+            let class_name = string.split("::").last();
+            match class_name {
+                Some(name) => format_ident!("{}", name).into_token_stream(),
+                None => {
+                    return quote_spanned! {lit_str.span() => compile_error!(
+                        "invalid C++ class name"
+                    )}
+                    .into();
+                }
+            }
+        }
+        _ => {
+            return quote! {compiler_error!(
+                "expected C++ type as argument to extern_test_suite"
+            )}
+            .into();
+        }
+    };
+
+    let trait_impl = syn::parse_macro_input!(input as syn::ItemImpl);
+    if !trait_impl.items.is_empty() {
+        return quote_spanned! {trait_impl.items[0].span() => compile_error!(
+            "expected empty trait impl"
+        )}
+        .into();
+    }
+    let trait_name = match &trait_impl.trait_ {
+        Some((_, path, _)) => path,
+        None => {
+            return quote! {compile_error!(
+                "expected impl rust_gtest_interop::TestSuite trait"
+            )}
+            .into();
+        }
+    };
+    let rust_type = match &*trait_impl.self_ty {
+        syn::Type::Path(type_path) => type_path,
+        _ => {
+            return quote_spanned! {trait_impl.self_ty.span() => compile_error!(
+                "expected type that wraps C++ subclass of `testing::Test`"
+            )}
+            .into();
+        }
+    };
+
+    // TODO(danakj): We should generate a C++ mangled name here, then we don't require
+    // the function to be `extern "C"` (or have the author write the mangled name
+    // themselves).
+    let cpp_fn_name =
+        format_ident!("{}{}", RUST_GTEST_FACTORY_PREFIX, cpp_type.into_token_stream().to_string());
+
+    let output = quote! {
+        unsafe impl #trait_name for #rust_type {
+            fn gtest_factory_fn_ptr() -> rust_gtest_interop::GtestFactoryFunction {
+                extern "C" {
+                    fn #cpp_fn_name(
+                        f: extern "C" fn(
+                            test_body: ::std::pin::Pin<&mut ::rust_gtest_interop::OpaqueTestingTest>
+                        )
+                    ) -> ::std::pin::Pin<&'static mut ::rust_gtest_interop::OpaqueTestingTest>;
+                }
+                #cpp_fn_name
+            }
         }
     };
     output.into()

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/rust_gtest_interop/test/test_factory.h"
+#include "testing/rust_gtest_interop/test/test_subclass.h"
 
 namespace {
 size_t g_num_subclass_created = 0;
@@ -14,9 +14,6 @@ TestSubclass::TestSubclass() {
   ++g_num_subclass_created;
 }
 
-// static
-size_t TestSubclass::num_created() {
-  return g_num_subclass_created;
-}
+RUST_GTEST_TEST_SUITE_FACTORY(TestSubclass);
 
 }  // namespace rust_gtest_interop

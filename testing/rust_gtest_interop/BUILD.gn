@@ -51,11 +51,17 @@ if (enable_rust) {
   }
 
   mixed_static_library("test_support") {
+    rs_crate_name = "rust_gtest_interop_test_support"
+
     testonly = true
     sources = [
-      "test/test_factory.cc",
-      "test/test_factory.h",
+      "test/test_subclass.cc",
+      "test/test_subclass.h",
     ]
+    rs_crate_root = "test/test_subclass.rs"
+    rs_sources = [ "test/test_subclass.rs" ]
+    rs_cxx_bindings = [ "test/test_subclass.rs" ]
+    rs_deps = [ ":rust_gtest_interop" ]
     public_deps = [
       ":rust_gtest_interop",
       "//testing/gtest",
@@ -71,6 +77,7 @@ if (enable_rust) {
       "//testing/gtest",
     ]
 
+    rs_deps = [ ":test_support" ]
     rs_sources = [ "rust_gtest_interop_unittest.rs" ]
   }
 }
