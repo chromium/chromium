@@ -743,7 +743,7 @@
 <translation id="3261488570342242926">వర్చువల్ కార్డ్‌ల గురించి తెలుసుకోండి</translation>
 <translation id="3264837738038045344">'Chrome సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Chrome సెట్టింగ్‌లకు వెళ్లడానికి Enterను నొక్కండి</translation>
 <translation id="3266793032086590337">విలువ (వైరుధ్యం)</translation>
-<translation id="3268451620468152448">ఓపెన్ టాబ్‌లు</translation>
+<translation id="3268451620468152448">ఓపెన్ ట్యాబ్‌లు</translation>
 <translation id="3270847123878663523">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="3274521967729236597">పా-కాయ్</translation>
@@ -1240,7 +1240,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{పాప్-అప్ బ్లాక్ చేయబడింది}other{# పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="4780366598804516005">మెయిల్‌బాక్స్ 1</translation>
 <translation id="4785376858512657294">Google ఖాతాను మేనేజ్ చేయండి</translation>
-<translation id="4785689107224900852">ఈ టాబ్‌కు మారండి</translation>
+<translation id="4785689107224900852">ఈ ట్యాబ్‌కు మారండి</translation>
 <translation id="4791134497475588553">ఇన్‌స్టాల్ చేయబడిన Linux యాప్‌లు మరియు వాటిని చివరిగా ఎప్పుడు ఉపయోగించినది తెలిపే వివరాలు</translation>
 <translation id="4792686369684665359">మీరు సమర్పించబోయే సమాచారం సురక్షితమైనది కాదు</translation>
 <translation id="4796594887379589189">జాబ్ ఖాతా ID</translation>
@@ -2456,7 +2456,7 @@
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌ల నుండి Chromeని అప్‌డేట్ చేయడానికి 'Tab' నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
-<translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="882338992931677877">మాన్యువల్ స్లాట్</translation>
 <translation id="8834380158646307944">'అజ్ఞాత విండోలను మూసివేయండి' బటన్, ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="883848425547221593">ఇతర బుక్‌మార్క్‌లు:</translation>
