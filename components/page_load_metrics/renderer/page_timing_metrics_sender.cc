@@ -125,7 +125,7 @@ void PageTimingMetricsSender::DidObserveMobileFriendlinessChanged(
 }
 
 void PageTimingMetricsSender::DidStartResponse(
-    const GURL& response_url,
+    const url::SchemeHostPort& final_response_url,
     int resource_id,
     const network::mojom::URLResponseHead& response_head,
     network::mojom::RequestDestination request_destination) {
@@ -135,7 +135,7 @@ void PageTimingMetricsSender::DidStartResponse(
       std::piecewise_construct, std::forward_as_tuple(resource_id),
       std::forward_as_tuple(std::make_unique<PageResourceDataUse>()));
   resource_it.first->second->DidStartResponse(
-      response_url, resource_id, response_head, request_destination);
+      final_response_url, resource_id, response_head, request_destination);
 }
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(

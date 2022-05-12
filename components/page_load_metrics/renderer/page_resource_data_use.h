@@ -15,6 +15,10 @@ namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
+namespace url {
+class SchemeHostPort;
+}  // namespace url
+
 namespace page_load_metrics {
 
 // PageResourceDataUse contains the data use information of one resource. Data
@@ -28,7 +32,7 @@ class PageResourceDataUse {
 
   ~PageResourceDataUse();
 
-  void DidStartResponse(const GURL& response_url,
+  void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int resource_id,
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination);

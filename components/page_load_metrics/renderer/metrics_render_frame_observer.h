@@ -63,7 +63,7 @@ class MetricsRenderFrameObserver
                           uint32_t all_call_count,
                           uint32_t ng_call_count) override;
   void DidStartResponse(
-      const GURL& response_url,
+      const url::SchemeHostPort& final_response_url,
       int request_id,
       const network::mojom::URLResponseHead& response_head,
       network::mojom::RequestDestination request_destination) override;

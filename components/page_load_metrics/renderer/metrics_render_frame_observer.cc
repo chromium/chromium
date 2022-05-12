@@ -157,7 +157,7 @@ void MetricsRenderFrameObserver::DidObserveLayoutNg(uint32_t all_block_count,
 }
 
 void MetricsRenderFrameObserver::DidStartResponse(
-    const GURL& response_url,
+    const url::SchemeHostPort& final_response_url,
     int request_id,
     const network::mojom::URLResponseHead& response_head,
     network::mojom::RequestDestination request_destination) {
@@ -168,10 +168,10 @@ void MetricsRenderFrameObserver::DidStartResponse(
     // case. There should be a guarantee that DidStartProvisionalLoad be called
     // before DidStartResponse for the frame request.
     provisional_frame_resource_data_use_->DidStartResponse(
-        response_url, request_id, response_head, request_destination);
+        final_response_url, request_id, response_head, request_destination);
   } else if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->DidStartResponse(
-        response_url, request_id, response_head, request_destination);
+        final_response_url, request_id, response_head, request_destination);
     UpdateResourceMetadata(request_id);
   }
 }

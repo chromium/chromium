@@ -2523,11 +2523,11 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
   if (!blink::IsRequestDestinationFrame(request_destination)) {
-    GetFrameHost()->SubresourceResponseStarted(response_url,
-                                               response_head->cert_status);
+    GetFrameHost()->SubresourceResponseStarted(
+        url::SchemeHostPort(response_url), response_head->cert_status);
   }
-  DidStartResponse(response_url, request_id, std::move(response_head),
-                   request_destination);
+  DidStartResponse(url::SchemeHostPort(response_url), request_id,
+                   std::move(response_head), request_destination);
 }
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
@@ -4395,12 +4395,12 @@ void RenderFrameImpl::DidLoadResourceFromMemoryCache(
 }
 
 void RenderFrameImpl::DidStartResponse(
-    const GURL& response_url,
+    const url::SchemeHostPort& final_response_url,
     int request_id,
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
   for (auto& observer : observers_) {
-    observer.DidStartResponse(response_url, request_id, *response_head,
+    observer.DidStartResponse(final_response_url, request_id, *response_head,
                               request_destination);
   }
 }

@@ -7426,12 +7426,13 @@ void RenderFrameHostImpl::BeginNavigation(
 }
 
 void RenderFrameHostImpl::SubresourceResponseStarted(
-    const GURL& url,
+    const url::SchemeHostPort& final_response_url,
     net::CertStatus cert_status) {
-  OPTIONAL_TRACE_EVENT1(
-      "content", "RenderFrameHostImpl::SubresourceResponseStarted", "url", url);
+  OPTIONAL_TRACE_EVENT1("content",
+                        "RenderFrameHostImpl::SubresourceResponseStarted",
+                        "url", final_response_url.GetURL());
   frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
-      url, cert_status);
+      final_response_url, cert_status);
 }
 
 void RenderFrameHostImpl::ResourceLoadComplete(

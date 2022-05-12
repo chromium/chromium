@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 class SSLInfo;
@@ -67,7 +68,8 @@ class SSLManager {
   NavigationControllerImpl* controller() { return controller_; }
 
   void DidCommitProvisionalLoad(const LoadCommittedDetails& details);
-  void DidStartResourceResponse(const GURL& url, bool has_certificate_errors);
+  void DidStartResourceResponse(const url::SchemeHostPort& final_response_url,
+                                bool has_certificate_errors);
 
   // The following methods are called when a page includes insecure
   // content. These methods update the SSLStatus on the NavigationEntry

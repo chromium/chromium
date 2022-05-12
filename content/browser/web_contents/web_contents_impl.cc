@@ -5568,7 +5568,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
         ->controller()
         .ssl_manager()
         ->DidStartResourceResponse(
-            navigation_handle->GetURL(),
+            url::SchemeHostPort(navigation_handle->GetURL()),
             navigation_handle->GetSSLInfo().has_value()
                 ? net::IsCertStatusError(
                       navigation_handle->GetSSLInfo()->cert_status)

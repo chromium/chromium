@@ -190,7 +190,7 @@ class MockFrameHost : public mojom::FrameHost {
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>)
       override {}
 
-  void SubresourceResponseStarted(const GURL& url,
+  void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,
                                   net::CertStatus cert_status) override {}
 
   void ResourceLoadComplete(

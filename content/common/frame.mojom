@@ -58,7 +58,7 @@ import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/origin.mojom";
+import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
 
 [Native]
@@ -780,9 +780,17 @@ interface FrameHost {
           initiator_policy_container_keep_alive_handle);
 
   // Sent when a subresource response has started.
+  //
+  // |final_response_url| is the final (after all redirects) URL of the
+  // subresource response.  The full URL is not available, because in some
+  // cases the path and query may be sanitized away
+  // - see https://crbug.com/973885.
+  //
   // |cert_status| is the bitmask of status info of the SSL certificate. (see
   // net/cert/cert_status_flags.h).
-  SubresourceResponseStarted(url.mojom.Url url, uint32 cert_status);
+  SubresourceResponseStarted(
+      url.mojom.SchemeHostPort final_response_url,
+      uint32 cert_status);
 
   // Sent when a resource load finished, successfully or not.
   ResourceLoadComplete(blink.mojom.ResourceLoadInfo url_load_info);

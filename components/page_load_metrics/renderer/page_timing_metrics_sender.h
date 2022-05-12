@@ -58,7 +58,7 @@ class PageTimingMetricsSender {
                           uint32_t ng_call_count);
   void DidObserveMobileFriendlinessChanged(const blink::MobileFriendliness&);
 
-  void DidStartResponse(const GURL& response_url,
+  void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int resource_id,
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination);

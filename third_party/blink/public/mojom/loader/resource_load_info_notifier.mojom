@@ -19,6 +19,8 @@ interface ResourceLoadInfoNotifier {
                                  network.mojom.URLResponseHead redirect_response);
 
   // Called to notify the response has been received.
+  // TODO(crbug.com/973885): make |response_url| as url.mojom.SchemeHostPort
+  // instead of url.mojom.Url if applicable.
   NotifyResourceResponseReceived(int64 request_id,
                                  url.mojom.Url response_url,
                                  network.mojom.URLResponseHead head,

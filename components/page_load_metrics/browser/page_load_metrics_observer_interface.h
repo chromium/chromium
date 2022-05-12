@@ -64,7 +64,8 @@ struct ExtraRequestCompleteInfo {
   // The origin of the final URL for the request (final = after redirects).
   //
   // The full URL is not available, because in some cases the path and query
-  // be sanitized away - see https://crbug.com/973885.
+  // may be sanitized away - see https://crbug.com/973885.
+  // TODO(crbug.com/973885): use url::SchemeHostPort if applicable.
   const url::Origin origin_of_final_url;
 
   // The host (IP address) and port for the request.

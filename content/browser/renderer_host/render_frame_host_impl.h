@@ -2738,7 +2738,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_host_keep_alive_handle) override;
-  void SubresourceResponseStarted(const GURL& url,
+  void SubresourceResponseStarted(const url::SchemeHostPort& final_response_url,
                                   net::CertStatus cert_status) override;
   void ResourceLoadComplete(
       blink::mojom::ResourceLoadInfoPtr resource_load_info) override;

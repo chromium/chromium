@@ -52,6 +52,10 @@ namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
+namespace url {
+class SchemeHostPort;
+}  // namespace url
+
 namespace content {
 
 class RendererPpapiHost;
@@ -238,7 +242,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
   virtual void DidStartResponse(
-      const GURL& response_url,
+      const url::SchemeHostPort& final_response_url,
       int request_id,
       const network::mojom::URLResponseHead& response_head,
       network::mojom::RequestDestination request_destination) {}

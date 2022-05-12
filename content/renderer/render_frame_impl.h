@@ -147,6 +147,7 @@ class MediaPermission;
 
 namespace url {
 class Origin;
+class SchemeHostPort;
 }
 
 namespace content {
@@ -736,7 +737,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // browser.
   void OnDroppedNavigation();
 
-  void DidStartResponse(const GURL& response_url,
+  void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,
                         network::mojom::URLResponseHeadPtr response_head,
                         network::mojom::RequestDestination request_destination);
