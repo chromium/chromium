@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -300,8 +301,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
-                SuggestionsMetrics.TimingMetric metric =
-                        SuggestionsMetrics.recordSuggestionListMeasureTime()) {
+                TimingMetric metric = SuggestionsMetrics.recordSuggestionListMeasureTime()) {
             int anchorBottomRelativeToContent = calculateAnchorBottomRelativeToContent();
             maybeUpdateLayoutParams(anchorBottomRelativeToContent);
 
@@ -399,8 +399,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Layout");
-                SuggestionsMetrics.TimingMetric metric =
-                        SuggestionsMetrics.recordSuggestionListLayoutTime()) {
+                TimingMetric metric = SuggestionsMetrics.recordSuggestionListLayoutTime()) {
             super.onLayout(changed, l, t, r, b);
         }
     }

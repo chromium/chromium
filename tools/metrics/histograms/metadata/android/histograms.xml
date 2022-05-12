@@ -2327,6 +2327,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime"
     units="microseconds" expires_after="2022-10-23">
+  <obsolete>
+    Retired with M103. Please refer to .CreateTime2
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2352,8 +2355,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionList.LayoutTime2"
+    units="microseconds" expires_after="2023-01-31">
+  <owner>ender@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Records time spent on positioning all suggestions on screen. This histogram
+    is recorded every time a new suggestion list is received.
+
+    Values recorded here should generally aim to be small, likely below 2ms
+    range. Higher values are an indicator of a performance problem.
+
+    Layout operation should take place just once when suggestion view is shown
+    for the first time.
+
+    This metric is reported for all users and uses 100microsecond granularity.
+
+    When comparing Durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are laid out and how the overall
+    time spent performing layout operation changed.
+
+    This histogram is related to Android.Omnibox.SuggestionView.Reused,
+    Android.Omnibox.SuggestionList.MeasureTime2,
+    Android.Omnibox.SuggestionView.CreateTime2.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime"
     units="microseconds" expires_after="2022-06-19">
+  <obsolete>
+    Retired with M103. Please refer to .MeasureTime2
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2380,6 +2413,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionList.MeasureTime2"
+    units="microseconds" expires_after="2023-01-31">
+  <owner>ender@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Records time spent on measuring all suggestions ahead of positioning them on
+    screen. This histogram is recorded every time a new suggestion list is
+    received.
+
+    Values recorded here should generally aim to be small, likely below 2ms
+    range. Higher values are an indicator of a performance problem.
+
+    Measure operation should take place just once when suggestion view is shown
+    for the first time.
+
+    This metric is reported for all users and uses 100microsecond granularity.
+
+    When comparing Durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are measured and how the overall
+    time spent measuring views changed.
+
+    This histogram is related to Android.Omnibox.SuggestionView.Reused,
+    Android.Omnibox.SuggestionList.LayoutTime2,
+    Android.Omnibox.SuggestionView.CreateTime2.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
     enum="Boolean" expires_after="2023-01-31">
   <owner>ender@chromium.org</owner>
@@ -2402,6 +2463,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime"
     units="microseconds" expires_after="2022-06-19">
+  <obsolete>
+    Retired with M103. Please refer to .CreateTime2
+  </obsolete>
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2423,8 +2487,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionView.CreateTime2"
+    units="microseconds" expires_after="2023-01-31">
+  <owner>ender@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    Records time spent creating a single suggestion.
+
+    Values recorded here should generally aim to be small, below 1ms range.
+    Higher values may be an indicator of a performance problem.
+
+    This metric is reported for all users and uses 100microsecond granularity.
+
+    When comparing Durations measured here, also compare Total Counts for a
+    correct indication of how frequently views are created and how the overall
+    time spent creating views changed.
+
+    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
+    Android.Omnibox.SuggestionList.MeasureTime2,
+    Android.Omnibox.SuggestionView.Reused.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionView.Reused" enum="BooleanReused"
-    expires_after="2022-06-19">
+    expires_after="2023-01-31">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2448,9 +2535,9 @@ chromium-metrics-reviews@google.com.
     * If this metric decreased, while the Total Count increased, then the change
     has a negative effect (fewer reuses, more time spent creating views)
 
-    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime,
-    Android.Omnibox.SuggestionList.MeasureTime,
-    Android.Omnibox.SuggestionView.CreateTime.
+    This histogram is related to Android.Omnibox.SuggestionList.LayoutTime2,
+    Android.Omnibox.SuggestionList.MeasureTime2,
+    Android.Omnibox.SuggestionView.CreateTime2.
   </summary>
 </histogram>
 
