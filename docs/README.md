@@ -406,7 +406,7 @@ used when committed.
 
 ### Speed
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.
-*   [Chrome Speed Metrics](speed_metrics/README.md) - Documentation about user experience metrics in the web and their JavaScript APIs.
+*   [Chrome Speed Metrics](speed_metrics/README.md) - Documentation about user experience metrics on the web and their JavaScript APIs.
 
 ### Probably Obsolete
 *   [TPM Quick Reference](tpm_quick_ref.md) - Trusted Platform Module notes.
