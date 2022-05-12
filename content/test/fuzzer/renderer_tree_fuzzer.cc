@@ -125,7 +125,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
   std::unique_ptr<base::Value> ToJson() const {
     std::unique_ptr<base::ListValue> result(new base::ListValue());
     for (const auto& node : *this) {
-      result->Append(node->ToJson());
+      result->GetList().Append(base::Value::FromUniquePtrValue(node->ToJson()));
     }
     return std::move(result);
   }
