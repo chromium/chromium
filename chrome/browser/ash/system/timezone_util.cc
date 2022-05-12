@@ -222,10 +222,10 @@ std::unique_ptr<base::ListValue> GetTimezoneList() {
   const auto& timezones = TimezoneSettings::GetInstance()->GetTimezoneList();
   auto timezone_list = std::make_unique<base::ListValue>();
   for (const auto& timezone : timezones) {
-    auto option = std::make_unique<base::ListValue>();
-    option->Append(TimezoneSettings::GetTimezoneID(*timezone));
-    option->Append(GetTimezoneName(*timezone));
-    timezone_list->Append(std::move(option));
+    base::Value::List option;
+    option.Append(TimezoneSettings::GetTimezoneID(*timezone));
+    option.Append(GetTimezoneName(*timezone));
+    timezone_list->GetList().Append(std::move(option));
   }
   return timezone_list;
 }
