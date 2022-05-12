@@ -28,21 +28,6 @@
       "use_remoteexec": true
     }
   },
-  "ChromeOS FYI Release (amd64-generic) (reclient shadow)": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_chromeos_device": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_platform_headless": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "ChromeOS FYI Release (kevin)": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
@@ -323,21 +308,6 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_goma": true
-    }
-  },
-  "gpu-fyi-chromeos-octopus-exp (reclient shadow)": {
-    "args_file": "//build/args/chromeos/octopus.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_chromeos_device": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_platform_headless": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_rbe": true,
-      "use_remoteexec": true
     }
   },
   "gpu-fyi-chromeos-zork-exp": {

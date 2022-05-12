@@ -146,22 +146,16 @@
 
     'chromium.chromiumos': {
       'Linux ChromiumOS Full': 'chromeos_with_codecs_release_bot_reclient',
-      'Linux ChromiumOS Full (reclient shadow)': 'chromeos_with_codecs_release_bot_reclient',
 
       'chromeos-amd64-generic-asan-rel': 'chromeos_amd64-generic_asan_reclient',
-      'chromeos-amd64-generic-asan-rel (reclient shadow)': 'chromeos_amd64-generic_asan_reclient',
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
-      'chromeos-amd64-generic-cfi-thin-lto-rel (reclient shadow)': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
-      'chromeos-amd64-generic-dbg (reclient shadow)': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-lacros-dbg': 'chromeos_amd64-generic_lacros_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
-      'chromeos-arm-generic-dbg (reclient shadow)': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_reclient',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-kevin-rel': 'chromeos_kevin_dchecks_reclient',
-      'chromeos-kevin-rel (reclient shadow)': 'chromeos_kevin_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
@@ -274,7 +268,6 @@
       'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot_reclient',
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
-      'ChromiumOS ASAN Release (reclient shadow)': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot_reclient',
       'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot_reclient',
@@ -517,7 +510,6 @@
       # These all use the 'trybot' mixins to ensure that dcheck is on.
       'ANGLE GPU Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
-      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
@@ -539,7 +531,6 @@
       'Optional Android Release (Pixel 4)': 'gpu_tests_android_release_trybot',
       'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'gpu-fyi-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
-      'gpu-fyi-chromeos-octopus-exp (reclient shadow)': 'gpu_tests_chromeos_octopus_release_trybot_reclient',
       'gpu-fyi-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
     },
 
@@ -2553,10 +2544,6 @@
 
     'gpu_tests_chromeos_octopus_release_trybot': [
       'gpu_tests', 'chromeos_device', 'octopus', 'release_trybot',
-    ],
-
-    'gpu_tests_chromeos_octopus_release_trybot_reclient': [
-      'gpu_tests', 'chromeos_device_reclient', 'octopus', 'release_trybot_reclient',
     ],
 
     'gpu_tests_chromeos_zork_release_trybot': [

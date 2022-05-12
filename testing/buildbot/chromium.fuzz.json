@@ -36,11 +36,6 @@
       "chromium_builder_asan"
     ]
   },
-  "ChromiumOS ASAN Release (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
   "MSAN Release (chained origins)": {
     "additional_compile_targets": [
       "chromium_builder_asan"

@@ -1891,13 +1891,6 @@
           '--expected-device-id', '1050',
         ],
       },
-      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': {
-        'args': [
-          # Swarming does not report a GPU since tests are run in a VM, but
-          # the VM does report that a GPU is present.
-          '--expected-device-id', '1050',
-        ],
-      },
       'fuchsia-fyi-x64-rel': {
         'args': [
           # Swarming does not report a GPU since tests are run in a VM, but
@@ -1915,16 +1908,6 @@
     },
     'replacements': {
       'ChromeOS FYI Release (amd64-generic)': {
-        'args': {
-          # Swarming does not report a GPU since tests are run in a VM, but
-          # the VM does report that a GPU is present.
-          '--expected-vendor-id': '1af4',
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the expected device ID above.
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': None,
-        },
-      },
-      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': {
         'args': {
           # Swarming does not report a GPU since tests are run in a VM, but
           # the VM does report that a GPU is present.
@@ -3402,11 +3385,6 @@
           'shards': 30,
         },
       },
-      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': {
-        'swarming': {
-          'shards': 30,
-        },
-      },
     },
   },
   'webgl2_conformance_metal_passthrough_tests': {
@@ -3465,15 +3443,6 @@
       # TODO(crbug.com/1223550): Remove this if the configuration can be sped
       # up.
       'ChromeOS FYI Release (amd64-generic)': {
-        'swarming': {
-          'shards': 30,
-        },
-        # This configuration is tested with the passthrough decoder as well,
-        # which will be shipped in the nearish future, so any failures that
-        # show up with the validating decoder are just an FYI.
-        'experiment_percentage': 100,
-      },
-      'ChromeOS FYI Release (amd64-generic) (reclient shadow)': {
         'swarming': {
           'shards': 30,
         },

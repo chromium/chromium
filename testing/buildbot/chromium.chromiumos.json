@@ -38,27 +38,12 @@
       "chromiumos_preflight"
     ]
   },
-  "chromeos-amd64-generic-asan-rel (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
   "chromeos-amd64-generic-cfi-thin-lto-rel": {
     "additional_compile_targets": [
       "chromiumos_preflight"
     ]
   },
-  "chromeos-amd64-generic-cfi-thin-lto-rel (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
   "chromeos-amd64-generic-dbg": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
-  "chromeos-amd64-generic-dbg (reclient shadow)": {
     "additional_compile_targets": [
       "chromiumos_preflight"
     ]
@@ -1266,11 +1251,6 @@
       "chromiumos_preflight"
     ]
   },
-  "chromeos-arm-generic-dbg (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
   "chromeos-arm-generic-rel": {
     "additional_compile_targets": [
       "chromiumos_preflight"
@@ -1380,11 +1360,6 @@
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }
       }
-    ]
-  },
-  "chromeos-kevin-rel (reclient shadow)": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
     ]
   },
   "lacros-amd64-generic-binary-size-rel": {
