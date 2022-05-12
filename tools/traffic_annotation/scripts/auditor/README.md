@@ -40,3 +40,16 @@ Here are the exception types:
   CreateMutableNetworkTrafficAnnotationTag() function.
 * `test_annotation`: Files and paths in this category can use the
   TRAFFIC_ANNOTATION_FOR_TESTS tag.
+
+## hashes.py
+
+In logs from chrome://net-export, there is a `traffic_annotation` field, which
+contains the ***hash code** of the network annotation. Since this hash code is
+not recorded in annotations.xml, it is non-trivial to map it to its annotation.
+
+Running this scripts print a list of all annotations from `annotations.xml`,
+along with their hash codes. This makes it easier to look up the annotation.
+
+```
+vpython3 ./tools/traffic_annotation/scripts/auditor/hashes.py
+```
