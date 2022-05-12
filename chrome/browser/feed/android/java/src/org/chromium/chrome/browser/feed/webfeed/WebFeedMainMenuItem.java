@@ -92,7 +92,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mFollowingChipView.getPrimaryTextView().setTextColor(textColor);
             mFollowChipView.getPrimaryTextView().setTextColor(textColor);
             final ColorStateList backgroundColor = AppCompatResources.getColorStateList(
-                    mContext, R.color.menu_footer_chip_background);
+                    mContext, R.color.menu_footer_chip_background_list);
             mFollowChipView.setBackgroundTintList(backgroundColor);
         }
     }
