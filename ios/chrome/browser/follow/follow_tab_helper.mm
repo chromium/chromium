@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -133,27 +134,21 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
       ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
           web_page_urls);
 
-  NSString* title = nil;
   std::string domainName =
       web::GetMainFrame(web_state_)->GetSecurityOrigin().host();
   if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
     domainName =
         domainName.substr(kRemovablePrefix.length(), domainName.length());
   }
-  if (!status) {
-    title = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
-                                    base::UTF8ToUTF16(domainName));
-  } else {
-    title = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_UNFOLLOW,
-                                    base::UTF8ToUTF16(domainName));
-  }
 
   bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
 
-  [follow_menu_updater_ updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
-                                                           status:status
-                                                            title:title
-                                                          enabled:enabled];
+  [follow_menu_updater_
+      updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
+                                         status:status
+                                     domainName:base::SysUTF8ToNSString(
+                                                    domainName)
+                                        enabled:enabled];
   should_update_follow_item_ = false;
 }
 

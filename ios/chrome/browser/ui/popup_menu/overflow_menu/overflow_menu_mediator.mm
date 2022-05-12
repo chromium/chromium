@@ -1150,11 +1150,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)updateFollowMenuItemWithFollowWebPageURLs:
             (FollowWebPageURLs*)webPageURLs
                                            status:(BOOL)status
-                                            title:(NSString*)title
+                                       domainName:(NSString*)domainName
                                           enabled:(BOOL)enable {
   DCHECK(IsWebChannelsEnabled());
   self.followAction.enabled = enable;
-  self.followAction.name = title;
+  self.followAction.name =
+      status ? l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_UNFOLLOW,
+                                       base::SysNSStringToUTF16(domainName))
+             : l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
+                                       base::SysNSStringToUTF16(domainName));
   self.followAction.uiImage = [UIImage
       imageNamed:status ? @"popup_menu_unfollow" : @"popup_menu_follow"];
   __weak __typeof(self) weakSelf = self;

@@ -683,13 +683,17 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 - (void)updateFollowMenuItemWithFollowWebPageURLs:
             (FollowWebPageURLs*)webPageURLs
                                            status:(BOOL)status
-                                            title:(NSString*)title
+                                       domainName:(NSString*)domainName
                                           enabled:(BOOL)enabled {
   DCHECK(IsWebChannelsEnabled());
   self.webPageURLs = webPageURLs;
   self.followStatus = status;
   self.followItem.enabled = enabled;
-  self.followItem.title = title;
+  self.followItem.title =
+      status ? l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_UNFOLLOW,
+                                       base::SysNSStringToUTF16(@""))
+             : l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
+                                       base::SysNSStringToUTF16(@""));
   self.followItem.image =
       [[UIImage imageNamed:self.followStatus ? @"popup_menu_unfollow"
                                              : @"popup_menu_follow"]
