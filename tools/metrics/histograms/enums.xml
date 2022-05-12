@@ -65095,6 +65095,12 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Unknown"/>
 </enum>
 
+<enum name="MultitouchEvent">
+  <int value="0" label="Released"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Held"/>
+</enum>
+
 <enum name="NaClAppTypeEnum">
   <int value="0" label="PNaCl Open Web"/>
   <int value="1" label="PNaCl Hosted App"/>
