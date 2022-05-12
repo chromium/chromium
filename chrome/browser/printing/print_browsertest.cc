@@ -123,8 +123,8 @@ using OnDidDocumentDoneCallback =
 using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
 using OnStopCallback = base::RepeatingCallback<void()>;
 
-// Overriding callbacks for `TestPrintJobWorker` is broken into the following
-// steps:
+// Overriding callbacks for `TestPrintJobWorkerOop` is broken into the
+// following steps:
 //   1.  Error case processing.  Call `error_check_callback` to reset any
 //       triggers that were primed to cause errors in the testing context.
 //   2.  Run the base class callback for normal handling.  If there was an
@@ -134,7 +134,7 @@ using OnStopCallback = base::RepeatingCallback<void()>;
 //       `did_start_printing_callback` when in `OnDidStartPrinting()`) to note
 //       the callback was observed and completed.  This ensures all base class
 //       processing was done before possibly quitting the test run loop.
-struct TestPrintCallbacks {
+struct TestPrintOopCallbacks {
   ErrorCheckCallback error_check_callback;
   OnDidUseDefaultSettingsCallback did_use_default_settings_callback;
 #if BUILDFLAG(IS_WIN)
@@ -2300,16 +2300,16 @@ INSTANTIATE_TEST_SUITE_P(
 #if !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-class TestPrintJobWorker : public PrintJobWorkerOop {
+class TestPrintJobWorkerOop : public PrintJobWorkerOop {
  public:
-  TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
-                     bool simulate_spooling_memory_errors,
-                     TestPrintCallbacks* callbacks)
+  TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
+                        bool simulate_spooling_memory_errors,
+                        TestPrintOopCallbacks* callbacks)
       : PrintJobWorkerOop(rfh_id, simulate_spooling_memory_errors),
         callbacks_(callbacks) {}
-  TestPrintJobWorker(const TestPrintJobWorker&) = delete;
-  TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
-  ~TestPrintJobWorker() override = default;
+  TestPrintJobWorkerOop(const TestPrintJobWorkerOop&) = delete;
+  TestPrintJobWorkerOop& operator=(const TestPrintJobWorkerOop&) = delete;
+  ~TestPrintJobWorkerOop() override = default;
 
  private:
   void OnDidUseDefaultSettings(
@@ -2383,7 +2383,7 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
     callbacks_->did_stop_callback.Run();
   }
 
-  raw_ptr<TestPrintCallbacks> callbacks_;
+  raw_ptr<TestPrintOopCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2408,40 +2408,42 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 
       // Safe to use `base::Unretained(this)` since this testing class
       // necessarily must outlive all interactions from the tests which will
-      // run through `TestPrintJobWorker`, the user of these callbacks.
-      test_print_callbacks_.error_check_callback =
+      // run through `TestPrintJobWorkerOop`, the user of these callbacks.
+      test_print_oop_callbacks_.error_check_callback =
           base::BindRepeating(&PrintBackendPrintBrowserTestBase::ErrorCheck,
                               base::Unretained(this));
-      test_print_callbacks_.did_use_default_settings_callback =
+      test_print_oop_callbacks_.did_use_default_settings_callback =
           base::BindRepeating(
               &PrintBackendPrintBrowserTestBase::OnDidUseDefaultSettings,
               base::Unretained(this));
 #if BUILDFLAG(IS_WIN)
-      test_print_callbacks_.did_ask_user_for_settings_callback =
+      test_print_oop_callbacks_.did_ask_user_for_settings_callback =
           base::BindRepeating(
               &PrintBackendPrintBrowserTestBase::OnDidAskUserForSettings,
               base::Unretained(this));
 #endif
-      test_print_callbacks_.did_start_printing_callback = base::BindRepeating(
-          &PrintBackendPrintBrowserTestBase::OnDidStartPrinting,
-          base::Unretained(this));
+      test_print_oop_callbacks_.did_start_printing_callback =
+          base::BindRepeating(
+              &PrintBackendPrintBrowserTestBase::OnDidStartPrinting,
+              base::Unretained(this));
 #if BUILDFLAG(IS_WIN)
-      test_print_callbacks_.did_render_printed_page_callback =
+      test_print_oop_callbacks_.did_render_printed_page_callback =
           base::BindRepeating(
               &PrintBackendPrintBrowserTestBase::OnDidRenderPrintedPage,
               base::Unretained(this));
 #endif
-      test_print_callbacks_.did_render_printed_document_callback =
+      test_print_oop_callbacks_.did_render_printed_document_callback =
           base::BindRepeating(
               &PrintBackendPrintBrowserTestBase::OnDidRenderPrintedDocument,
               base::Unretained(this));
-      test_print_callbacks_.did_document_done_callback = base::BindRepeating(
-          &PrintBackendPrintBrowserTestBase::OnDidDocumentDone,
-          base::Unretained(this));
-      test_print_callbacks_.did_show_error_dialog = base::BindRepeating(
+      test_print_oop_callbacks_.did_document_done_callback =
+          base::BindRepeating(
+              &PrintBackendPrintBrowserTestBase::OnDidDocumentDone,
+              base::Unretained(this));
+      test_print_oop_callbacks_.did_show_error_dialog = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidShowErrorDialog,
           base::Unretained(this));
-      test_print_callbacks_.did_stop_callback = base::BindRepeating(
+      test_print_oop_callbacks_.did_stop_callback = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidStop, base::Unretained(this));
       test_create_print_job_worker_callback_ = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::CreatePrintJobWorker,
@@ -2707,8 +2709,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
       content::GlobalRenderFrameHostId rfh_id) {
-    return std::make_unique<TestPrintJobWorker>(
-        rfh_id, simulate_spooling_memory_errors_, &test_print_callbacks_);
+    return std::make_unique<TestPrintJobWorkerOop>(
+        rfh_id, simulate_spooling_memory_errors_, &test_print_oop_callbacks_);
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2788,7 +2790,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   TestPrintingContextDelegate test_printing_context_delegate_;
   PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  TestPrintCallbacks test_print_callbacks_;
+  TestPrintOopCallbacks test_print_oop_callbacks_;
   CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
   bool simulate_spooling_memory_errors_ = false;
   mojo::Remote<mojom::PrintBackendService> test_remote_;
