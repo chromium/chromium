@@ -68,7 +68,9 @@ TEST_F(DarkLightModeNudgeControllerTest, NudgeShownCount) {
   EXPECT_EQ(0, DarkLightModeNudgeController::GetRemainingShownCount());
 }
 
-TEST_F(DarkLightModeNudgeControllerTest, NoNudgeAfterColorModeToggled) {
+// Flaky. https://crbug.com/1325224
+TEST_F(DarkLightModeNudgeControllerTest,
+       DISABLED_NoNudgeAfterColorModeToggled) {
   SimulateUserLogin(account_id);
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
