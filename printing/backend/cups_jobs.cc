@@ -518,7 +518,8 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
       http.get(), printer_uri, resource, kPrinterInfoAndStatus.size(),
       kPrinterInfoAndStatus.data(), &status);
   if (StatusError(status) || response.get() == nullptr) {
-    LOG(WARNING) << "Get attributes failure: " << status;
+    LOG(WARNING) << "Get attributes failure: "
+                 << base::StringPrintf("0x%04x", status);
     return PrinterQueryResult::kUnknownFailure;
   }
 
