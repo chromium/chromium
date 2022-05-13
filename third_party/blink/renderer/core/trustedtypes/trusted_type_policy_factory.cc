@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/trustedtypes/event_handler_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy.h"
@@ -194,10 +193,7 @@ const struct {
      true},
     {"*", "innerHTML", nullptr, SpecificTrustedType::kHTML, false, true},
     {"*", "outerHTML", nullptr, SpecificTrustedType::kHTML, false, true},
-#define FOREACH_EVENT_HANDLER(name) \
-  {"*", #name, nullptr, SpecificTrustedType::kScript, true, false},
-    EVENT_HANDLER_LIST(FOREACH_EVENT_HANDLER)
-#undef FOREACH_EVENT_HANDLER
+    {"*", "on*", nullptr, SpecificTrustedType::kScript, true, false},
 };
 
 // Does a type table entry match a property?
@@ -208,20 +204,22 @@ bool EqualsProperty(decltype(*kTypeTable)& left,
                     const String& ns) {
   DCHECK_EQ(tag.LowerASCII(), tag);
   return (left.element == tag || !strcmp(left.element, "*")) &&
-         left.property == attr && left.element_namespace == ns &&
-         !left.is_not_property;
+         (left.property == attr ||
+          (!strcmp(left.property, "on*") && attr.StartsWith("on"))) &&
+         left.element_namespace == ns && !left.is_not_property;
 }
 
 // Does a type table entry match an attribute?
 // (Attributes get queried by calling acecssor methods on the DOM. These are
-//  case-insensitive, because DOM.)
+//  case-insensitivem, because DOM.)
 bool EqualsAttribute(decltype(*kTypeTable)& left,
                      const String& tag,
                      const String& attr,
                      const String& ns) {
   DCHECK_EQ(tag.LowerASCII(), tag);
   return (left.element == tag || !strcmp(left.element, "*")) &&
-         CodeUnitCompareIgnoringASCIICase(attr, left.property) == 0 &&
+         (String(left.property).LowerASCII() == attr.LowerASCII() ||
+          (!strcmp(left.property, "on*") && attr.StartsWith("on"))) &&
          left.element_namespace == ns && !left.is_not_attribute;
 }
 
@@ -243,10 +241,10 @@ typedef bool (*PropertyEqualsFn)(decltype(*kTypeTable)&,
                                  const String&,
                                  const String&);
 
-SpecificTrustedType FindTypeInTypeTable(const String& tagName,
-                                        const String& propertyName,
-                                        const String& elementNS,
-                                        PropertyEqualsFn equals) {
+String FindTypeInTypeTable(const String& tagName,
+                           const String& propertyName,
+                           const String& elementNS,
+                           PropertyEqualsFn equals) {
   SpecificTrustedType type = SpecificTrustedType::kNone;
   for (auto* it = std::cbegin(kTypeTable); it != std::cend(kTypeTable); it++) {
     if ((*equals)(*it, tagName, propertyName, elementNS)) {
@@ -254,23 +252,15 @@ SpecificTrustedType FindTypeInTypeTable(const String& tagName,
       break;
     }
   }
-  return type;
-}
-
-String FindTypeNameInTypeTable(const String& tagName,
-                               const String& propertyName,
-                               const String& elementNS,
-                               PropertyEqualsFn equals) {
-  return getTrustedTypeName(
-      FindTypeInTypeTable(tagName, propertyName, elementNS, equals));
+  return getTrustedTypeName(type);
 }
 
 String TrustedTypePolicyFactory::getPropertyType(
     const String& tagName,
     const String& propertyName,
     const String& elementNS) const {
-  return FindTypeNameInTypeTable(tagName.LowerASCII(), propertyName, elementNS,
-                                 &EqualsProperty);
+  return FindTypeInTypeTable(tagName.LowerASCII(), propertyName, elementNS,
+                             &EqualsProperty);
 }
 
 String TrustedTypePolicyFactory::getAttributeType(
@@ -278,8 +268,8 @@ String TrustedTypePolicyFactory::getAttributeType(
     const String& attributeName,
     const String& tagNS,
     const String& attributeNS) const {
-  return FindTypeNameInTypeTable(tagName.LowerASCII(), attributeName, tagNS,
-                                 &EqualsAttribute);
+  return FindTypeInTypeTable(tagName.LowerASCII(), attributeName, tagNS,
+                             &EqualsAttribute);
 }
 
 String TrustedTypePolicyFactory::getPropertyType(
@@ -380,22 +370,6 @@ void TrustedTypePolicyFactory::Trace(Visitor* visitor) const {
   visitor->Trace(empty_html_);
   visitor->Trace(empty_script_);
   visitor->Trace(policy_map_);
-}
-
-inline bool FindEventHandlerAttributeInTable(
-    const AtomicString& attributeName) {
-  return SpecificTrustedType::kScript ==
-         FindTypeInTypeTable("*", attributeName, String(), &EqualsAttribute);
-}
-
-bool TrustedTypePolicyFactory::IsEventHandlerAttributeName(
-    const AtomicString& attributeName) {
-  // Check that the "on" prefix indeed filters out only non-event handlers.
-  DCHECK(!FindEventHandlerAttributeInTable(attributeName) ||
-         attributeName.StartsWithIgnoringASCIICase("on"));
-
-  return attributeName.StartsWithIgnoringASCIICase("on") &&
-         FindEventHandlerAttributeInTable(attributeName);
 }
 
 }  // namespace blink

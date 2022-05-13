@@ -599,10 +599,4 @@ String TrustedTypesCheckForExecCommand(
   return TrustedTypesCheckForHTML(html, execution_context, exception_state);
 }
 
-bool IsTrustedTypesEventHandlerAttribute(const QualifiedName& q_name) {
-  return q_name.NamespaceURI().IsNull() &&
-         TrustedTypePolicyFactory::IsEventHandlerAttributeName(
-             q_name.LocalName());
-}
-
 }  // namespace blink
