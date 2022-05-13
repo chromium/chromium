@@ -5,8 +5,6 @@
 blink_core_sources_loader = [
   "alternate_signed_exchange_resource_info.cc",
   "alternate_signed_exchange_resource_info.h",
-  "anchor_element_listener.cc",
-  "anchor_element_listener.h",
   "anchor_element_interaction_tracker.cc",
   "anchor_element_interaction_tracker.h",
   "back_forward_cache_loader_helper_impl.cc",

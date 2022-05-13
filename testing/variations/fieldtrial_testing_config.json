@@ -62,6 +62,26 @@
             ]
         }
     ],
+    "AnchorElementInteractionPreloader": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220428",
+                    "enable_features": [
+                        "AnchorElementInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidContextualSearchM95": [
         {
             "platforms": [
