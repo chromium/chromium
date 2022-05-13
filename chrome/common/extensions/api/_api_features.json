@@ -287,17 +287,13 @@
     "dependencies": ["permission:cryptotokenPrivate"],
     "contexts": ["blessed_extension"]
   },
-  "dashboardPrivate": [{
-    "channel": "stable",
-    "contexts": ["blessed_web_page", "web_page"],
-    "matches": ["https://chrome.google.com/webstore/*"]
-  }, {
+  "dashboardPrivate": {
     "channel": "stable",
     "contexts": ["blessed_extension"],
     "allowlist": [
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
-  }],
+  },
   "debugger": {
     "dependencies": ["permission:debugger"],
     "contexts": ["blessed_extension"],
