@@ -348,9 +348,8 @@ void InitializeZygoteSandboxForBrowserProcess(
   ZygoteHandle generic_zygote =
       CreateGenericZygote(base::BindOnce(LaunchZygoteHelper));
 
-  // TODO(kerrnel): Investigate doing this without the ZygoteHostImpl as a
-  // proxy. It is currently done this way due to concerns about race
-  // conditions.
+  // This operation is done through the ZygoteHostImpl as a proxy because of
+  // race condition concerns.
   ZygoteHostImpl::GetInstance()->SetRendererSandboxStatus(
       generic_zygote->GetSandboxStatus());
 }

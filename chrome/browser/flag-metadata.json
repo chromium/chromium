@@ -3972,7 +3972,7 @@
   },
   {
     "name": "mac-syscall-sandbox",
-    "owners": [ "kerrnel@google.com" ],
+    "owners": [ "rsesek@google.com" ],
     "expiry_milestone": 88
   },
   {

@@ -66,7 +66,7 @@ void ExtractSignatureInfo(const base::FilePath& path,
                           ClientDownloadRequest_SignatureInfo* signature) {
   scoped_refptr<BinaryFeatureExtractor> bfe = new BinaryFeatureExtractor();
 
-  // TODO(kerrnel): if Chrome ever opts into the OS X "kill" semantics, this
+  // If Chrome ever opts into the OS X "kill" semantics, this
   // call has to change. `ExtractImageFeatures` maps the file, which will
   // cause Chrome to be killed before it can report on the invalid file.
   // This call will need to read(2) the binary into a buffer.

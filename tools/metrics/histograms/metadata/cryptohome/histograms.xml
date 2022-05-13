@@ -304,7 +304,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.LegacyCodePathUsage.{Location}"
     enum="BooleanCodePathUsage" expires_after="2022-01-09">
   <owner>hardikgoyal@chromium.org</owner>
-  <owner>kerrnel@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     This will report usage of {Location} paths to see if it is actually being
@@ -495,9 +494,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeSessionUnlock" units="ms"
-    expires_after="2022-04-03">
-  <owner>kerrnel@chromium.org</owner>
-  <owner>mnissler@chromium.org</owner>
+    expires_after="2023-04-03">
+  <owner>hardikgoyal@google.com</owner>
+  <owner>betuls@google.com</owner>
   <summary>
     The amount of time (ms) for Chrome OS cryptohome daemon to verify the user's
     password during an unlock operation.
