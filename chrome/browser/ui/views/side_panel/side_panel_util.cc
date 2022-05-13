@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
@@ -29,7 +30,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
       ->CreateAndRegisterEntry(global_registry);
 
   // Add history clusters.
-  if (base::FeatureList::IsEnabled(features::kSidePanelJourneys)) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelJourneys) &&
+      !browser->profile()->IsIncognitoProfile()) {
     HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
         ->CreateAndRegisterEntry(global_registry);
   }
