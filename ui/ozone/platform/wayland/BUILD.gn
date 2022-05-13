@@ -218,6 +218,7 @@ source_set("wayland") {
     "//mojo/public/cpp/system",
     "//skia",
     "//third_party/libsync",
+    "//third_party/re2",
     "//third_party/wayland:wayland_util",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",

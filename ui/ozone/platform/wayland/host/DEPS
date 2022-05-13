@@ -9,4 +9,5 @@ include_rules = [
   "+components/crash/core/common",
   "+dbus",
   "+ui/base/linux",
+  "+third_party/re2",
 ]
