@@ -47,7 +47,7 @@ def _CheckTestharnessResults(input_api, output_api):
     files_per_command = 25 if input_api.is_windows else 1000
     results = []
     for i in range(0, len(baseline_files), files_per_command):
-        args = [input_api.python_executable, checker_path]
+        args = [input_api.python3_executable, checker_path]
         args.extend(baseline_files[i:i + files_per_command])
         _, errs = input_api.subprocess.Popen(
             args,
