@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
-#include "chrome/browser/ui/startup/first_run_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chrome/browser/ui/views/session_crashed_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"

@@ -108,7 +108,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/startup/first_run_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -664,11 +664,13 @@ void StartupBrowserCreator::LaunchBrowser(
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (ShouldOpenPrimaryProfileFirstRun(profile)) {
+    auto* fre_service =
+        LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
+    if (fre_service && fre_service->ShouldOpenFirstRun()) {
       // Show the FRE and let `OpenNewWindowForFirstRun()` handle the browser
       // launch. This `StartupBrowserCreator` will get destroyed when the method
       // returns so the relevant data is copied over and passed to the callback.
-      OpenPrimaryProfileFirstRunIfNeeded(
+      fre_service->OpenFirstRunIfNeeded(
           base::BindOnce(&OpenNewWindowForFirstRun, command_line, profile,
                          cur_dir, first_run_tabs_, process_startup,
                          is_first_run, std::move(launch_mode_recorder)));

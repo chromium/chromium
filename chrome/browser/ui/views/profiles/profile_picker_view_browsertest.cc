@@ -97,7 +97,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/startup/first_run_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"

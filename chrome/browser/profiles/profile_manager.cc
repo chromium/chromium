@@ -166,7 +166,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/ui/startup/first_run_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -1644,15 +1644,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
     browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
         /*keep_browser_alive=*/false);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Check if we should turn Sync on from the background and skip the FRE.
-  if (ShouldOpenPrimaryProfileFirstRun(profile)) {
-    // If we don't manage to set it, we will just have to defer silent or visual
-    // handling of the FRE to when the user attempts to open a browser UI.
-    TryMarkFirstRunAlreadyFinished(profile);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ProfileManager::DoFinalInitForServices(Profile* profile,

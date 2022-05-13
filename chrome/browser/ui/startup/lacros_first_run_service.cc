@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/first_run_lacros.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -21,12 +21,29 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
+
+bool IsFirstRunEligibleProfile(Profile* profile) {
+  // Having secondary profiles implies that the user already used Chrome and so
+  // should not have to see the FRE. So we never want to run it for these.
+  if (!profile->IsMainProfile())
+    return false;
+
+  // Don't show the FRE if we are in a Guest user pod or in a Guest profile.
+  if (profile->IsGuestSession())
+    return false;
+
+  if (profile->IsOffTheRecord())
+    return false;
+
+  return true;
+}
 
 void SetFirstRunFinished() {
   PrefService* local_state = g_browser_process->local_state();
@@ -59,7 +76,15 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
 
 }  // namespace
 
-bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
+// LacrosFirstRunService -------------------------------------------------------
+
+LacrosFirstRunService::LacrosFirstRunService(Profile* profile)
+    : profile_(profile) {}
+LacrosFirstRunService::~LacrosFirstRunService() = default;
+
+bool LacrosFirstRunService::ShouldOpenFirstRun() const {
+  DCHECK(IsFirstRunEligibleProfile(profile_));
+
   if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
     // Sync is already always forced, no point showing the FRE to ask the user
     // to sync.
@@ -71,16 +96,8 @@ bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
   if (command_line->HasSwitch(switches::kNoFirstRun))
     return false;
 
-  if (profiles::IsKioskSession() || profiles::IsPublicSession())
-    return false;
-
-  // Having secondary profiles implies that the user already used Chrome and so
-  // should not have to see the FRE. So we never want to run it for these.
-  if (!profile->IsMainProfile())
-    return false;
-
-  // Don't show the FRE if we are in a Guest user pod or in a Guest profile.
-  if (profile->IsGuestSession())
+  // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
+  if (!profiles::SessionHasGaiaAccount())
     return false;
 
   const PrefService* const pref_service = g_browser_process->local_state();
@@ -88,11 +105,11 @@ bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
       lacros_prefs::kPrimaryProfileFirstRunFinished);
 }
 
-bool TryMarkFirstRunAlreadyFinished(Profile* profile) {
-  DCHECK(ShouldOpenPrimaryProfileFirstRun(profile));  // Caller should check.
+bool LacrosFirstRunService::TryMarkFirstRunAlreadyFinished() {
+  DCHECK(ShouldOpenFirstRun());  // Caller should check.
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(profile_);
 
   // Handle sessions migrated from Ash or from Lacros without the feature. These
   // always had Sync on and don't need the FRE.
@@ -114,18 +131,68 @@ bool TryMarkFirstRunAlreadyFinished(Profile* profile) {
   return false;
 }
 
-void OpenPrimaryProfileFirstRunIfNeeded(ResumeTaskCallback callback) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-
-  Profile* primary_profile = profile_manager->GetProfileByPath(
-      profile_manager->GetPrimaryUserProfilePath());
-  DCHECK(primary_profile);
-
-  if (TryMarkFirstRunAlreadyFinished(primary_profile)) {
+void LacrosFirstRunService::OpenFirstRunIfNeeded(ResumeTaskCallback callback) {
+  if (TryMarkFirstRunAlreadyFinished()) {
     std::move(callback).Run(/*proceed=*/true);
     return;
   }
 
   ProfilePicker::Show(ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(
       base::BindOnce(&OnFirstRunHasExited, std::move(callback))));
+}
+
+// LacrosFirstRunServiceFactory ------------------------------------------------
+
+LacrosFirstRunServiceFactory::LacrosFirstRunServiceFactory()
+    : BrowserContextKeyedServiceFactory(
+          "LacrosFirstRunServiceFactory",
+          BrowserContextDependencyManager::GetInstance()) {
+  // Used for checking Sync consent level.
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
+
+LacrosFirstRunServiceFactory::~LacrosFirstRunServiceFactory() = default;
+
+// static
+LacrosFirstRunServiceFactory* LacrosFirstRunServiceFactory::GetInstance() {
+  static base::NoDestructor<LacrosFirstRunServiceFactory> factory;
+  return factory.get();
+}
+
+// static
+LacrosFirstRunService* LacrosFirstRunServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<LacrosFirstRunService*>(
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
+}
+
+KeyedService* LacrosFirstRunServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!IsFirstRunEligibleProfile(profile))
+    return nullptr;
+
+  auto* instance = new LacrosFirstRunService(profile);
+
+  // Check if we should turn Sync on from the background and skip the FRE.
+  // TODO(dgn): maybe post task? For example see
+  // //chrome/browser/permissions/permission_auditing_service_factory.cc
+  if (instance->ShouldOpenFirstRun()) {
+    // If we don't manage to set it, we will just have to defer silent or visual
+    // handling of the FRE to when the user attempts to open a browser UI.
+    instance->TryMarkFirstRunAlreadyFinished();
+  }
+
+  return instance;
+}
+
+bool LacrosFirstRunServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+// Helpers ---------------------------------------------------------------------
+
+bool ShouldOpenPrimaryProfileFirstRun(Profile* profile) {
+  auto* instance = LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
+  return instance && instance->ShouldOpenFirstRun();
 }

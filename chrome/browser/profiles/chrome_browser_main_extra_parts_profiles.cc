@@ -231,6 +231,7 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
+#include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -376,6 +377,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   InMemoryURLIndexFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LacrosFirstRunServiceFactory::GetInstance();
 #endif
   LanguageModelManagerFactory::GetInstance();
   if (base::FeatureList::IsEnabled(
