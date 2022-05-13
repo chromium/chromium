@@ -63,7 +63,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
 
  private:
   friend class PrerenderBrowserTest;
-  friend class PrerenderTest;
+  friend class NoStatePrefetchTest;
   // WebViewTest.NoPrerenderer needs to access the private IsEmpty() method.
   FRIEND_TEST_ALL_PREFIXES(::WebViewTest, NoPrerenderer);
 
