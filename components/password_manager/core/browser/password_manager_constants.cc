@@ -22,4 +22,8 @@ const char kPasswordManagerHelpCenteriOSURL[] =
 const char kPasswordManagerHelpCenterSmartLock[] =
     "https://support.google.com/accounts?p=smart_lock_chrome";
 
+const char kManageMyPasswordsURL[] = "https://passwords.google.com/native";
+
+const char kReferrerURL[] = "https://passwords.google/";
+
 }  // namespace password_manager

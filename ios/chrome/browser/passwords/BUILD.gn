@@ -196,6 +196,7 @@ source_set("unit_tests") {
     "ios_chrome_password_manager_client_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
+    "password_tab_helper_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
