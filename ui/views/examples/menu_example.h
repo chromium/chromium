@@ -7,7 +7,8 @@
 
 #include "ui/views/examples/example_base.h"
 
-namespace views::examples {
+namespace views {
+namespace examples {
 
 // MenuExample demonstrates how to use the MenuModelAdapter and MenuRunner
 // classes.
@@ -24,6 +25,7 @@ class VIEWS_EXAMPLES_EXPORT MenuExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 };
 
-}  // namespace views::examples
+}  // namespace examples
+}  // namespace views
 
 #endif  // UI_VIEWS_EXAMPLES_MENU_EXAMPLE_H_

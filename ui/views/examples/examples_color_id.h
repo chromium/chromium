@@ -32,7 +32,6 @@
   E_CPONLY(kColorLabelExampleCustomBackground) \
   E_CPONLY(kColorLabelExampleCustomBorder) \
   E_CPONLY(kColorLabelExampleThickBorder) \
-  E_CPONLY(kColorMenuButtonExampleBorder) \
   E_CPONLY(kColorMultilineExampleBorder) \
   E_CPONLY(kColorMultilineExampleColorRange) \
   E_CPONLY(kColorMultilineExampleForeground) \
