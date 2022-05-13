@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property hyphenate-character value 'auto' assert_true: hyphenate-character doesn't seem to be supported in the computed style expected true got false
-FAIL Property hyphenate-character value '"="' assert_true: hyphenate-character doesn't seem to be supported in the computed style expected true got false
-FAIL Property hyphenate-character value '"/-/"' assert_true: hyphenate-character doesn't seem to be supported in the computed style expected true got false
-FAIL Property hyphenate-character value '"\1400"' assert_true: hyphenate-character doesn't seem to be supported in the computed style expected true got false
-FAIL Property hyphenate-character value '""' assert_true: hyphenate-character doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

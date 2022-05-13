@@ -39,6 +39,15 @@ class BaselineOptimizer(object):
     def __init__(self, host, default_port, port_names):
         self._filesystem = host.filesystem
         self._default_port = default_port
+        # To ensure the flag-specific baselines join the fallback graph in the
+        # same location each time the optimizer runs, we create a separate port
+        # fixed to Linux. Flag-specific suites only run on Linux builders at
+        # this time.
+        # TODO(crbug/1291020): Allow non-Linux flag-specific suites. We can do
+        # this by reading 'builders.json'.
+        self._flag_spec_port = host.port_factory.get('linux-trusty')
+        self._flag_spec_port.set_option_default(
+            'flag_specific', self._default_port.flag_specific_config_name())
         self._ports = {}
         for port_name in port_names:
             self._ports[port_name] = host.port_factory.get(port_name)
@@ -89,9 +98,79 @@ class BaselineOptimizer(object):
                                             non_virtual_baseline_name)
         self._remove_extra_result_at_root(test_name, non_virtual_baseline_name)
 
+        flag_specific = self._flag_spec_port.flag_specific_config_name()
+        if flag_specific:
+            self._optimize_flag_specific_baselines(test_name, extension)
+
         if not succeeded:
             _log.error('Heuristics failed to optimize %s', baseline_name)
         return succeeded
+
+    def _optimize_flag_specific_baselines(self, test_name, extension):
+        """Optimize flag-specific baselines."""
+        flag_specific = self._flag_spec_port.flag_specific_config_name()
+        non_virtual_test_name = self._virtual_base(test_name)
+        if non_virtual_test_name:
+            _log.debug(
+                'Optimizing flag-specific virtual fallback path '
+                'for "%s".', flag_specific)
+            self._optimize_single_baseline(test_name, extension,
+                                           self._flag_spec_port)
+        else:
+            non_virtual_test_name = test_name
+        _log.debug(
+            'Optimizing flag-specific non-virtual fallback path '
+            'for "%s".', flag_specific)
+        self._optimize_single_baseline(non_virtual_test_name, extension,
+                                       self._flag_spec_port)
+
+    def _get_baseline_paths(self, test_name, extension, port):
+        """Get paths to baselines that the provided port would search.
+
+        Returns:
+            list[str]: A list of absolute paths (symbolically generated, may
+                not actually exist on disk).
+        """
+        baselines = port.expected_baselines(test_name,
+                                            extension,
+                                            all_baselines=True)
+        non_virtual_test_name = self._virtual_base(test_name)
+        if non_virtual_test_name:
+            baselines.extend(
+                port.expected_baselines(non_virtual_test_name,
+                                        extension,
+                                        all_baselines=True))
+        # `baseline_dir` is `None` when the search path is empty and the generic
+        # baseline is also missing.
+        baseline_paths = [
+            self._filesystem.join(baseline_dir, baseline_filename)
+            for baseline_dir, baseline_filename in baselines if baseline_dir
+        ]
+        return baseline_paths
+
+    def _optimize_single_baseline(self, test_name, extension, port):
+        """Optimize a baseline directly by simulating the fallback algorithm."""
+        baseline_paths = self._get_baseline_paths(test_name, extension, port)
+        if not baseline_paths:
+            # The baseline for this test does not exist.
+            return
+        baseline_to_optimize = baseline_paths[0]
+        basename = self._filesystem.basename(baseline_to_optimize)
+        if len(baseline_paths) < 2:
+            _log.debug('  %s: (no baselines found)', basename)
+            return
+        fallback_baseline = baseline_paths[1]
+        is_reftest = self._is_reftest(test_name)
+        target_digest = ResultDigest(self._filesystem, baseline_to_optimize,
+                                     is_reftest)
+        fallback_digest = ResultDigest(self._filesystem, fallback_baseline,
+                                       is_reftest)
+        if target_digest == fallback_digest:
+            _log.debug('  %s:', basename)
+            _log.debug('    Deleting (file system): %s', baseline_to_optimize)
+            self._filesystem.remove(baseline_to_optimize)
+        else:
+            _log.debug('  %s: (already optimal)', basename)
 
     def write_by_directory(self, results_by_directory, writer, indent):
         """Logs results_by_directory in a pretty format."""

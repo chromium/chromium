@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import optparse
 import unittest
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer, ResultDigest
@@ -104,7 +105,8 @@ class BaselineOptimizerTest(unittest.TestCase):
                              results_by_directory,
                              directory_to_new_results,
                              baseline_dirname='',
-                             suffix='txt'):
+                             suffix='txt',
+                             options=None):
         web_tests_dir = PathFinder(self.fs).web_tests_dir()
         test_name = 'mock-test.html'
         baseline_name = 'mock-test-expected.' + suffix
@@ -112,13 +114,19 @@ class BaselineOptimizerTest(unittest.TestCase):
             self.fs.join(web_tests_dir, 'VirtualTestSuites'),
             '[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
             '"bases": ["fast/canvas"], "args": ["--foo"]}]')
+        self.fs.write_text_file(
+            self.fs.join(web_tests_dir, 'FlagSpecificConfig'),
+            '[{"name": "highdpi", "args": ["--force-device-scale-factor=1.5"]}]'
+        )
 
         for dirname, contents in results_by_directory.items():
             self.fs.write_text_file(
                 self.fs.join(web_tests_dir, dirname, baseline_name), contents)
 
+        if options:
+            options = optparse.Values(options)
         baseline_optimizer = BaselineOptimizer(
-            self.host, self.host.port_factory.get(),
+            self.host, self.host.port_factory.get(options=options),
             self.host.port_factory.all_port_names())
         self.assertTrue(
             baseline_optimizer.optimize(
@@ -507,6 +515,57 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             test_path='fast/canvas',
             baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_flag_specific_falls_back_to_base(self):
+        self._assert_optimization(
+            {
+                'platform/generic/fast/canvas': '1',
+                'flag-specific/highdpi/fast/canvas': '1',
+            }, {
+                'platform/generic/fast/canvas': '1',
+            },
+            baseline_dirname='fast/canvas',
+            options={'flag_specific': 'highdpi'})
+
+    def test_flag_specific_virtual_falls_back_to_virtual_base(self):
+        self._assert_optimization(
+            {
+                'platform/generic/fast/canvas': '1',
+                'platform/generic/virtual/gpu/fast/canvas': '2',
+                'flag-specific/highdpi/fast/canvas': '3',
+                'flag-specific/highdpi/virtual/gpu/fast/canvas': '2',
+            }, {
+                'platform/generic/fast/canvas': '1',
+                'platform/generic/virtual/gpu/fast/canvas': '2',
+                'flag-specific/highdpi/fast/canvas': '3',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas',
+            options={'flag_specific': 'highdpi'})
+
+    def test_flag_specific_virtual_falls_back_to_flag_specific(self):
+        self._assert_optimization(
+            {
+                'platform/generic/fast/canvas': '1',
+                'flag-specific/highdpi/fast/canvas': '2',
+                'flag-specific/highdpi/virtual/gpu/fast/canvas': '2',
+            }, {
+                'platform/generic/fast/canvas': '1',
+                'flag-specific/highdpi/fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas',
+            options={'flag_specific': 'highdpi'})
+
+    def test_both_flag_specific_falls_back_to_base(self):
+        self._assert_optimization(
+            {
+                'platform/generic/fast/canvas': '1',
+                'flag-specific/highdpi/fast/canvas': '1',
+                'flag-specific/highdpi/virtual/gpu/fast/canvas': '1',
+            }, {
+                'platform/generic/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas',
+            options={'flag_specific': 'highdpi'})
 
     # Tests for protected methods - pylint: disable=protected-access
 

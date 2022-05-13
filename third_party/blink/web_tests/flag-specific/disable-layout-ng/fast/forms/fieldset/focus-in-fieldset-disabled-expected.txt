@@ -1,8 +1,0 @@
-A form control in a disabled fieldset is not focusable:
-PASS input1.focus(); document.activeElement is document.body
-It becomes focusable if the fieldset is enabled:
-PASS input1.focus(); document.activeElement is input1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

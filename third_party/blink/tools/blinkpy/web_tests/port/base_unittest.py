@@ -239,7 +239,9 @@ class PortTest(LoggingTestCase):
         port.FALLBACK_PATHS = {'': ['foo']}
         test_file = 'fast/test.html'
         port.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
+            MOCK_WEB_TESTS + 'VirtualTestSuites',
+            '[{ "prefix": "bar", "platforms": ["Linux", "Mac", "Win"],'
+            ' "bases": ["fast"], "args": ["--bar"]}]')
 
         # pylint: disable=protected-access
         port._options.additional_platform_directory = []
@@ -273,6 +275,30 @@ class PortTest(LoggingTestCase):
         self.assertEqual(
             port.fallback_expected_filename(test_file, '.txt'),
             MOCK_WEB_TESTS + 'platform/foo/fast/test-expected.txt')
+
+        # Before the flag-specific and virtual baseline exists, fall back to
+        # the flag-specific but nonvirtual baseline.
+        fs = port.host.filesystem
+        self.assertEqual(
+            port.expected_filename('virtual/bar/fast/test.html', '.txt'),
+            fs.join(MOCK_WEB_TESTS,
+                    'flag-specific/special-flag/fast/test-expected.txt'))
+        fs.write_text_file(
+            fs.join(
+                MOCK_WEB_TESTS,
+                'flag-specific/special-flag/virtual/bar/fast/test-expected.txt'
+            ), 'foo')
+        # Switch to the most specific baseline.
+        self.assertEqual(
+            port.expected_filename('virtual/bar/fast/test.html', '.txt'),
+            fs.join(
+                MOCK_WEB_TESTS,
+                'flag-specific/special-flag/virtual/bar/fast/test-expected.txt'
+            ))
+        self.assertEqual(
+            port.expected_baselines('virtual/bar/fast/test.html', '.txt'),
+            [(fs.join(MOCK_WEB_TESTS, 'flag-specific/special-flag'),
+              'virtual/bar/fast/test-expected.txt')])
 
         # Flag-specific platform-specific baseline
         port.host.filesystem.write_text_file(

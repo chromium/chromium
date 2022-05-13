@@ -94,7 +94,10 @@ class AbstractRebaseliningCommand(Command):
     flag_specific_option = optparse.make_option(
         '--flag-specific',
         # TODO: build the list from builders.json
-        choices=["disable-layout-ng", "highdpi"],
+        choices=[
+            "disable-layout-ng", "disable-site-isolation-trials", "highdpi",
+            "skia-vulkan-swiftshader"
+        ],
         default=None,
         action='store',
         help=(
