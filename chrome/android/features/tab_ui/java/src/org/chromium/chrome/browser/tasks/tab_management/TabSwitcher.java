@@ -58,28 +58,29 @@ public interface TabSwitcher {
             DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager);
 
-    // TODO(960196): Remove the following interfaces when the associated bug is resolved.
+    // TODO(1322733): Remove the following interfaces when we find a better way to notify the layout
+    // that the GTS animation is finished.
     /**
      * An observer that is notified when the TabSwitcher view state changes.
      */
-    interface OverviewModeObserver {
+    interface TabSwitcherViewObserver {
         /**
-         * Called when overview mode starts showing.
+         * Called when tab switcher starts showing.
          */
         void startedShowing();
 
         /**
-         * Called when overview mode finishes showing.
+         * Called when tab switcher finishes showing.
          */
         void finishedShowing();
 
         /**
-         * Called when overview mode starts hiding.
+         * Called when tab switcher starts hiding.
          */
         void startedHiding();
 
         /**
-         * Called when overview mode finishes hiding.
+         * Called when tab switcher finishes hiding.
          */
         void finishedHiding();
     }
@@ -91,29 +92,32 @@ public interface TabSwitcher {
         /**
          * @return Whether or not the overview {@link Layout} is visible.
          */
+        // TODO(crbug.com/1315676): Remove this method after removing the usage in
+        // StartSurfaceMediator.
+        @Deprecated // This method will be removed, please do not use.
         boolean overviewVisible();
 
         /**
-         * @param listener Registers {@code listener} for overview mode status changes.
+         * @param listener Registers {@code listener} for tab switcher status changes.
          */
-        void addOverviewModeObserver(OverviewModeObserver listener);
+        void addTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
         /**
-         * @param listener Unregisters {@code listener} for overview mode status changes.
+         * @param listener Unregisters {@code listener} for tab switcher status changes.
          */
-        void removeOverviewModeObserver(OverviewModeObserver listener);
+        void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
         /**
-         * Hide the overview.
+         * Hide the tab switcher view.
          * @param animate Whether we should animate while hiding.
          */
-        void hideOverview(boolean animate);
+        void hideTabSwitcherView(boolean animate);
 
         /**
-         * Show the overview.
+         * Show the tab switcher view.
          * @param animate Whether we should animate while showing.
          */
-        void showOverview(boolean animate);
+        void showTabSwitcherView(boolean animate);
 
         /**
          * Called by the StartSurfaceLayout when the system back button is pressed.
@@ -185,16 +189,16 @@ public interface TabSwitcher {
         long getLastDirtyTime();
 
         /**
-         * Before calling {@link Controller#showOverview} to start showing the
+         * Before calling {@link Controller#showTabSwitcherView} to start showing the
          * TabSwitcher {@link TabListRecyclerView}, call this to populate it without making it
          * visible.
          * @return Whether the {@link TabListRecyclerView} can be shown quickly.
          */
-        boolean prepareOverview();
+        boolean prepareTabSwitcherView();
 
         /**
          * This is called after the compositor animation is done, for potential clean-up work.
-         * {@link OverviewModeObserver#finishedHiding} happens after
+         * {@link TabSwitcherViewObserver#finishedHiding} happens after
          * the Android View animation, but before the compositor animation.
          */
         void postHiding();

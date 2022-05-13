@@ -66,7 +66,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Tests for the {@link StartSurfaceLayout}, mainly for animation performance. */
+/** Tests for the {@link TabSwitcherAndStartSurfaceLayout}, mainly for animation performance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -76,7 +76,7 @@ import java.util.concurrent.TimeoutException;
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-public class StartSurfaceLayoutPerfTest {
+public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     // clang-format on
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS = "force-fieldtrial-params="
@@ -91,7 +91,7 @@ public class StartSurfaceLayoutPerfTest {
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
-    private StartSurfaceLayout mStartSurfaceLayout;
+    private TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout;
     private String mUrl;
     private int mRepeat;
     private long mWaitingTime;
@@ -103,8 +103,8 @@ public class StartSurfaceLayoutPerfTest {
         mActivityTestRule.startMainActivityFromLauncher();
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
-        mStartSurfaceLayout = (StartSurfaceLayout) layout;
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
         mWaitingTime = 0;
@@ -279,10 +279,10 @@ public class StartSurfaceLayoutPerfTest {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
         List<Float> dirtySpans = new LinkedList<>();
-        StartSurfaceLayout.PerfListener collector =
+        TabSwitcherAndStartSurfaceLayout.PerfListener collector =
                 (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
-            assertTrue(elapsedMs
-                    >= StartSurfaceLayout.ZOOMING_DURATION * CompositorAnimator.sDurationScale);
+            assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
+                            * CompositorAnimator.sDurationScale);
             float fps = 1000.f * frameRendered / elapsedMs;
             frameRates.add(fps);
             frameInterval.add((float) maxFrameInterval);
@@ -292,9 +292,9 @@ public class StartSurfaceLayoutPerfTest {
         mActivityTestRule.loadUrl(fromUrl);
         Thread.sleep(mWaitingTime);
 
-        StartSurface startSurface = mStartSurfaceLayout.getStartSurfaceForTesting();
+        StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
         for (int i = 0; i < mRepeat; i++) {
-            mStartSurfaceLayout.setPerfListenerForTesting(collector);
+            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             TestThreadUtils.runOnUiThreadBlocking(
                     ()
@@ -308,7 +308,7 @@ public class StartSurfaceLayoutPerfTest {
             assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                     LayoutType.TAB_SWITCHER));
 
-            mStartSurfaceLayout.setPerfListenerForTesting(null);
+            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(null);
             // Make sure the fading animation is done.
             Thread.sleep(1000);
             TestThreadUtils.runOnUiThreadBlocking(
@@ -373,10 +373,10 @@ public class StartSurfaceLayoutPerfTest {
             String description) throws InterruptedException {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
-        StartSurfaceLayout.PerfListener collector =
+        TabSwitcherAndStartSurfaceLayout.PerfListener collector =
                 (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
-            assertTrue(elapsedMs
-                    >= StartSurfaceLayout.ZOOMING_DURATION * CompositorAnimator.sDurationScale);
+            assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
+                            * CompositorAnimator.sDurationScale);
             float fps = 1000.f * frameRendered / elapsedMs;
             frameRates.add(fps);
             frameInterval.add((float) maxFrameInterval);
@@ -384,7 +384,7 @@ public class StartSurfaceLayoutPerfTest {
         Thread.sleep(mWaitingTime);
 
         for (int i = 0; i < mRepeat; i++) {
-            mStartSurfaceLayout.setPerfListenerForTesting(null);
+            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(null);
             LayoutTestUtils.startShowingAndWaitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER,
                     true);
@@ -398,7 +398,7 @@ public class StartSurfaceLayoutPerfTest {
                 Thread.sleep(1000);
             }
 
-            mStartSurfaceLayout.setPerfListenerForTesting(collector);
+            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             Espresso.onView(allOf(withParent(withId(
                                           org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),

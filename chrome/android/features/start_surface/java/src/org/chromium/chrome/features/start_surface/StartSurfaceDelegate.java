@@ -39,21 +39,22 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 /** StartSurfaceDelegate. */
 public class StartSurfaceDelegate {
     /**
-     * Create the {@link StartSurfaceLayout}.
+     * Create the {@link TabSwitcherAndStartSurfaceLayout}.
      * @param context The current Android's context.
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
      * @param startSurface The {@link StartSurface} the layout should own.
-     * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
+     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
-     * @return The {@link StartSurfaceLayout}.
+     * @return The {@link TabSwitcherAndStartSurfaceLayout}.
      */
-    public static Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker,
-            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
-        return new StartSurfaceLayout(context, updateHost, renderHost, startSurface, jankTracker,
-                startSurfaceScrimAnchor, scrimCoordinator);
+    public static Layout createTabSwitcherAndStartSurfaceLayout(Context context,
+            LayoutUpdateHost updateHost, LayoutRenderHost renderHost, StartSurface startSurface,
+            JankTracker jankTracker, ViewGroup tabSwitcherScrimAnchor,
+            ScrimCoordinator scrimCoordinator) {
+        return new TabSwitcherAndStartSurfaceLayout(context, updateHost, renderHost, startSurface,
+                jankTracker, tabSwitcherScrimAnchor, scrimCoordinator);
     }
 
     /**

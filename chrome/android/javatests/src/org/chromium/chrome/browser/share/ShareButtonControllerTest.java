@@ -144,7 +144,7 @@ public final class ShareButtonControllerTest {
                         -> mActivityTestRule.getActivity()
                                    .getStartSurface()
                                    .getController()
-                                   .setOverviewState(StartSurfaceState.SHOWING_START));
+                                   .setStartSurfaceState(StartSurfaceState.SHOWING_START));
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 

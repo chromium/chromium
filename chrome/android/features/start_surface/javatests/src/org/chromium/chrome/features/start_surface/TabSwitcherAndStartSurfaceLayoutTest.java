@@ -158,7 +158,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 // clang-format off
-/** Tests for the {@link StartSurfaceLayout} */
+/** Tests for the {@link TabSwitcherAndStartSurfaceLayout} */
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
@@ -166,7 +166,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-public class StartSurfaceLayoutTest {
+public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
@@ -189,7 +189,7 @@ public class StartSurfaceLayoutTest {
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
-    private StartSurfaceLayout mStartSurfaceLayout;
+    private TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout;
     private String mUrl;
     private int mRepeat;
     private List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
@@ -205,12 +205,13 @@ public class StartSurfaceLayoutTest {
         mActivityTestRule.startMainActivityFromLauncher();
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
-        mStartSurfaceLayout = (StartSurfaceLayout) layout;
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
 
-        mTabListDelegate = mStartSurfaceLayout.getStartSurfaceForTesting().getGridTabListDelegate();
+        mTabListDelegate = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
+                                   .getGridTabListDelegate();
         mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting());
 
@@ -335,6 +336,7 @@ public class StartSurfaceLayoutTest {
 
         ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
         enterTabSwitcher(cta);
+        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_list_view));
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_incognito_web_tabs");
     }
 
@@ -659,8 +661,8 @@ public class StartSurfaceLayoutTest {
         assertEquals(3, mActivityTestRule.tabsCount(false));
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
-        mStartSurfaceLayout = (StartSurfaceLayout) layout;
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
     }
 
@@ -1921,7 +1923,7 @@ public class StartSurfaceLayoutTest {
                 ApplicationTestUtils.recreateActivity(mActivityTestRule.getActivity());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        mStartSurfaceLayout = null;
+        mTabSwitcherAndStartSurfaceLayout = null;
         mTabListDelegate = null;
         mActivityTestRule.setActivity(activity);
 
@@ -2252,7 +2254,7 @@ public class StartSurfaceLayoutTest {
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                 LayoutType.TAB_SWITCHER));
 
-        StartSurface startSurface = mStartSurfaceLayout.getStartSurfaceForTesting();
+        StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { startSurface.getController().onBackPressed(); });
         // TODO(wychen): using default timeout or even converting to

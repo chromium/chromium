@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
 import org.chromium.chrome.features.tasks.TasksSurface;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -67,7 +68,7 @@ import java.util.Locale;
 /**
  * A {@link Layout} that shows all tabs in one grid or carousel view.
  */
-public class StartSurfaceLayout extends Layout {
+public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private static final String TAG = "SSLayout";
 
     // Duration of the transition animation
@@ -88,7 +89,7 @@ public class StartSurfaceLayout extends Layout {
     private final StartSurface mStartSurface;
     private final JankTracker mJankTracker;
     private final StartSurface.Controller mController;
-    private final StartSurface.OverviewModeObserver mStartSurfaceObserver;
+    private final TabSwitcherViewObserver mTabSwitcherObserver;
     @Nullable
     private final ViewGroup mScrimAnchor;
     @Nullable
@@ -123,9 +124,9 @@ public class StartSurfaceLayout extends Layout {
 
     private PerfListener mPerfListenerForTesting;
 
-    public StartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
+    public TabSwitcherAndStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, StartSurface startSurface, JankTracker jankTracker,
-            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
         mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false);
         mDummyLayoutTab.setShowToolbar(true);
@@ -133,10 +134,10 @@ public class StartSurfaceLayout extends Layout {
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mController = mStartSurface.getController();
         mJankTracker = jankTracker;
-        mScrimAnchor = startSurfaceScrimAnchor;
+        mScrimAnchor = tabSwitcherScrimAnchor;
         mScrimCoordinator = scrimCoordinator;
 
-        mStartSurfaceObserver = new StartSurface.OverviewModeObserver() {
+        mTabSwitcherObserver = new TabSwitcherViewObserver() {
             @Override
             public void startedShowing() {
                 mAndroidViewFinishedShowing = false;
@@ -189,7 +190,7 @@ public class StartSurfaceLayout extends Layout {
             }
         };
 
-        mController.addOverviewModeObserver(mStartSurfaceObserver);
+        mController.addTabSwitcherViewObserver(mTabSwitcherObserver);
     }
 
     @Override
@@ -219,7 +220,7 @@ public class StartSurfaceLayout extends Layout {
     @Override
     public void destroy() {
         if (mController != null) {
-            mController.removeOverviewModeObserver(mStartSurfaceObserver);
+            mController.removeTabSwitcherViewObserver(mTabSwitcherObserver);
         }
     }
 
@@ -269,9 +270,9 @@ public class StartSurfaceLayout extends Layout {
         // If start surface homepage is showing, carousel or single tab switcher is used.
         // Otherwise grid tab switcher is used.
         if (isShowingStartSurfaceHomepage) {
-            quick = getCarouselOrSingleTabListDelegate().prepareOverview();
+            quick = getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
         } else {
-            quick = getGridTabListDelegate().prepareOverview();
+            quick = getGridTabListDelegate().prepareTabSwitcherView();
         }
 
         // Skip animation when there is no tab in current tab model or If it's showing
@@ -368,7 +369,7 @@ public class StartSurfaceLayout extends Layout {
         if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
             translateDown();
         } else {
-            mController.hideOverview(!isTabGtsAnimationEnabled());
+            mController.hideTabSwitcherView(!isTabGtsAnimationEnabled());
         }
     }
 
@@ -663,7 +664,7 @@ public class StartSurfaceLayout extends Layout {
                 mTabToSwitcherAnimation = null;
 
                 // Skip fade-out  for tab switcher view, since it will translate out instead.
-                mController.hideOverview(false);
+                mController.hideTabSwitcherView(false);
                 mController.getTabSwitcherContainer().setVisibility(View.GONE);
 
                 reportTabletAnimationPerf(false);

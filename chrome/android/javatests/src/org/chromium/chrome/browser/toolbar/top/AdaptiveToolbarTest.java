@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -80,7 +80,7 @@ public class AdaptiveToolbarTest {
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -103,7 +103,7 @@ public class AdaptiveToolbarTest {
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
@@ -131,7 +131,7 @@ public class AdaptiveToolbarTest {
         setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
 

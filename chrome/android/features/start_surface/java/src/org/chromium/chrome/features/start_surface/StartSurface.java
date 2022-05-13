@@ -42,19 +42,16 @@ public interface StartSurface {
 
     /**
      * An observer that is notified when the start surface internal state, excluding
-     * the states notified in {@link OverviewModeObserver}, is changed.
-     *
-     * TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
-     * two different things, let's audit the usage of this observer.
+     * the states notified in {@link TabSwitcherViewObserver}, is changed.
      */
     interface StateObserver {
         /**
          * Called when the internal state is changed.
-         * @param overviewModeState the {@link StartSurfaceState}.
+         * @param startSurfaceState the {@link StartSurfaceState}.
          * @param shouldShowTabSwitcherToolbar Whether or not should show the Tab switcher toolbar.
          */
         void onStateChanged(
-                @StartSurfaceState int overviewModeState, boolean shouldShowTabSwitcherToolbar);
+                @StartSurfaceState int startSurfaceState, boolean shouldShowTabSwitcherToolbar);
     }
 
     /**
@@ -98,26 +95,26 @@ public interface StartSurface {
     void initWithNative();
 
     /**
-     * An observer that is notified when the StartSurface view state changes.
+     * An observer that is notified when the tab switcher view state changes.
      */
-    interface OverviewModeObserver {
+    interface TabSwitcherViewObserver {
         /**
-         * Called when overview mode starts showing.
+         * Called when tab switcher starts showing.
          */
         void startedShowing();
 
         /**
-         * Called when overview mode finishes showing.
+         * Called when tab switcher finishes showing.
          */
         void finishedShowing();
 
         /**
-         * Called when overview mode starts hiding.
+         * Called when tab switcher starts hiding.
          */
         void startedHiding();
 
         /**
-         * Called when overview mode finishes hiding.
+         * Called when tab switcher finishes hiding.
          */
         void finishedHiding();
     }
@@ -127,30 +124,26 @@ public interface StartSurface {
      */
     interface Controller {
         /**
-         * @return Whether or not the overview {@link Layout} is visible.
+         * @param listener Registers {@code listener} for tab switcher status changes.
          */
-        boolean overviewVisible();
+        void addTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
         /**
-         * @param listener Registers {@code listener} for overview mode status changes.
+         * @param listener Unregisters {@code listener} for tab switcher status changes.
          */
-        void addOverviewModeObserver(OverviewModeObserver listener);
+        void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
         /**
-         * @param listener Unregisters {@code listener} for overview mode status changes.
-         */
-        void removeOverviewModeObserver(OverviewModeObserver listener);
-
-        /**
-         * Hide the overview.
+         * Hide the tab switcher view.
          * @param animate Whether we should animate while hiding.
          */
-        void hideOverview(boolean animate);
+        void hideTabSwitcherView(boolean animate);
 
         /**
          * Show the overview.
          * @param animate Whether we should animate while showing.
          */
+        // TODO(crbug.com/1315676): Decouple Start surface layout and Grid tab switcher layout.
         void showOverview(boolean animate);
 
         /**
@@ -159,7 +152,7 @@ public interface StartSurface {
          * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
          *         start surface.
          */
-        void setOverviewState(
+        void setStartSurfaceState(
                 @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
 
         /**
@@ -167,7 +160,7 @@ public interface StartSurface {
          * NewTabPageLaunchOrigin}.
          * @param state The {@link StartSurfaceState} to show.
          */
-        void setOverviewState(@StartSurfaceState int state);
+        void setStartSurfaceState(@StartSurfaceState int state);
 
         /**
          * Called by the TabSwitcherLayout when the system back button is pressed.

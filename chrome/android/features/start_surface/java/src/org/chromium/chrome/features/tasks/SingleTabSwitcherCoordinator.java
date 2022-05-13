@@ -109,7 +109,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
-            public boolean prepareOverview() {
+            public boolean prepareTabSwitcherView() {
                 return true;
             }
 

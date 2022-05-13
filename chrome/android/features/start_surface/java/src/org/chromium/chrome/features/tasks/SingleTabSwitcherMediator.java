@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -49,7 +50,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @VisibleForTesting
     public static final String SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA = "SingleTabTitleAvailableTime";
 
-    private final ObserverList<TabSwitcher.OverviewModeObserver> mObservers = new ObserverList<>();
+    private final ObserverList<TabSwitcherViewObserver> mObservers = new ObserverList<>();
     private final TabModelSelector mTabModelSelector;
     private final PropertyModel mPropertyModel;
     private final TabListFaviconProvider mTabListFaviconProvider;
@@ -172,17 +173,17 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public void addOverviewModeObserver(TabSwitcher.OverviewModeObserver observer) {
+    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
     }
 
     @Override
-    public void removeOverviewModeObserver(TabSwitcher.OverviewModeObserver observer) {
+    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.removeObserver(observer);
     }
 
     @Override
-    public void hideOverview(boolean animate) {
+    public void hideTabSwitcherView(boolean animate) {
         mShouldIgnoreNextSelect = false;
         mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
                 mNormalTabModelObserver);
@@ -192,16 +193,16 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
         mPropertyModel.set(TITLE, "");
 
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
         }
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedHiding();
         }
     }
 
     @Override
-    public void showOverview(boolean animate) {
+    public void showTabSwitcherView(boolean animate) {
         mSelectedTabDidNotChangedAfterShown = true;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -235,10 +236,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         }
         mPropertyModel.set(IS_VISIBLE, true);
 
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedShowing();
         }
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();
         }
     }

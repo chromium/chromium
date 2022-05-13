@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
@@ -79,7 +80,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
-class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.OverviewModeObserver,
+class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.TabSwitcherViewObserver,
                                       View.OnClickListener, StartSurface.OnTabSelectingListener,
                                       BackPressHandler {
     /** Interface to initialize a secondary tasks surface for more tabs. */
@@ -102,7 +103,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         boolean isFinishingOrDestroyed();
     }
 
-    private final ObserverList<StartSurface.OverviewModeObserver> mObservers = new ObserverList<>();
+    private final ObserverList<TabSwitcherViewObserver> mObservers = new ObserverList<>();
     private final TabSwitcher.Controller mController;
     private final TabModelSelector mTabModelSelector;
     @Nullable
@@ -342,7 +343,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                     resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
         }
 
-        mController.addOverviewModeObserver(this);
+        mController.addTabSwitcherViewObserver(this);
         mPreviousStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
@@ -407,16 +408,11 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     }
 
     // Implements StartSurface.Controller
-    @Override
-    public boolean overviewVisible() {
-        return mController.overviewVisible();
-    }
-
     // TODO(crbug.com/1115757): After crrev.com/c/2315823, Overview state and Startsurface state are
     // two different things, audit the wording usage and see if we can rename this method to
     // setStartSurfaceState.
     @Override
-    public void setOverviewState(
+    public void setStartSurfaceState(
             @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin) {
         // TODO(crbug.com/1039691): Refactor into state and trigger to separate SHOWING and SHOWN
         // states.
@@ -473,8 +469,8 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     }
 
     @Override
-    public void setOverviewState(@StartSurfaceState int state) {
-        setOverviewState(state, mLaunchOrigin);
+    public void setStartSurfaceState(@StartSurfaceState int state) {
+        setStartSurfaceState(state, mLaunchOrigin);
     }
 
     private void setLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
@@ -604,18 +600,18 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     }
 
     @Override
-    public void addOverviewModeObserver(StartSurface.OverviewModeObserver observer) {
+    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
     }
 
     @Override
-    public void removeOverviewModeObserver(StartSurface.OverviewModeObserver observer) {
+    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.removeObserver(observer);
     }
 
     @Override
-    public void hideOverview(boolean animate) {
-        mController.hideOverview(animate);
+    public void hideTabSwitcherView(boolean animate) {
+        mController.hideTabSwitcherView(animate);
     }
 
     @Override
@@ -638,7 +634,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             @StartSurfaceState
             int shownState = computeOverviewStateShown();
             assert (isShownState(shownState));
-            setOverviewState(shownState);
+            setStartSurfaceState(shownState);
 
             // Make sure ExploreSurfaceCoordinator is built before the explore surface is showing
             // by default.
@@ -662,7 +658,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             }
         }
 
-        mController.showOverview(animate);
+        mController.showTabSwitcherView(animate);
     }
 
     @Override
@@ -687,7 +683,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                 // Secondary tasks surface is used as the main surface in incognito mode.
                 // If we reached Tab switcher from HomePage, and there isn't any dialog shown,
                 // updates the state, and ChromeTabbedActivity will handle the back button.
-                setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+                setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
                 return true;
             } else {
                 return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
@@ -753,14 +749,14 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     // Implements TabSwitcher.OverviewModeObserver.
     @Override
     public void startedShowing() {
-        for (StartSurface.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedShowing();
         }
     }
 
     @Override
     public void finishedShowing() {
-        for (StartSurface.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();
         }
 
@@ -792,17 +788,17 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             if (mBrowserControlsObserver != null) {
                 mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
             }
-            setOverviewState(StartSurfaceState.NOT_SHOWN);
+            setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
             RecordUserAction.record("StartSurface.Hidden");
         }
-        for (StartSurface.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
         }
     }
 
     @Override
     public void finishedHiding() {
-        for (StartSurface.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedHiding();
         }
     }
@@ -828,7 +824,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         }
 
         RecordUserAction.record("StartSurface.SinglePane.MoreTabs");
-        setOverviewState(StartSurfaceState.SHOWN_TABSWITCHER);
+        setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
     }
 
     // StartSurface.OnTabSelectingListener
@@ -921,11 +917,11 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                 mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
             }
             if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
-                mSecondaryTasksSurfaceController.showOverview(/* animate = */ true);
+                mSecondaryTasksSurfaceController.showTabSwitcherView(/* animate = */ true);
             }
         } else {
             if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
-                mSecondaryTasksSurfaceController.hideOverview(/* animate = */ false);
+                mSecondaryTasksSurfaceController.hideTabSwitcherView(/* animate = */ false);
             }
         }
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, isVisible);

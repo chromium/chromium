@@ -221,7 +221,7 @@ public class TabSwitcherCoordinator
         mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                 mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
-        mMediator.addOverviewModeObserver(new OverviewModeObserver() {
+        mMediator.addTabSwitcherViewObserver(new TabSwitcherViewObserver() {
             @Override
             public void startedShowing() {
                 if (mMode == TabListMode.GRID) sIsGridTabSwitcherShowing = true;
@@ -241,7 +241,7 @@ public class TabSwitcherCoordinator
 
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()
                 && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
-            mMediator.addOverviewModeObserver(new OverviewModeObserver() {
+            mMediator.addTabSwitcherViewObserver(new TabSwitcherViewObserver() {
                 @Override
                 public void startedShowing() {}
 
@@ -483,9 +483,9 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public boolean prepareOverview() {
-        boolean quick = mMediator.prepareOverview();
-        mTabListCoordinator.prepareOverview();
+    public boolean prepareTabSwitcherView() {
+        boolean quick = mMediator.prepareTabSwitcherView();
+        mTabListCoordinator.prepareTabSwitcherView();
         return quick;
     }
 

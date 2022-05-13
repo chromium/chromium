@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -120,7 +121,7 @@ public class TabSwitcherMediatorUnitTest {
     @Mock
     PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock
-    TabSwitcher.OverviewModeObserver mOverviewModeObserver;
+    TabSwitcherViewObserver mTabSwitcherViewObserver;
     @Mock
     CompositorViewHolder mCompositorViewHolder;
     @Mock
@@ -221,7 +222,7 @@ public class TabSwitcherMediatorUnitTest {
                 TabListCoordinator.TabListMode.GRID);
 
         mMediator.initWithNative(controller);
-        mMediator.addOverviewModeObserver(mOverviewModeObserver);
+        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
     }
 
@@ -233,7 +234,7 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void showsWithAnimation() {
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
 
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
@@ -245,7 +246,7 @@ public class TabSwitcherMediatorUnitTest {
     public void showsWithoutAnimation() {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         initAndAssertAllProperties();
-        mMediator.showOverview(false);
+        mMediator.showTabSwitcherView(false);
 
         InOrder inOrder = inOrder(mPropertyObserver, mPropertyObserver);
         inOrder.verify(mPropertyObserver)
@@ -274,7 +275,7 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
         initAndAssertAllProperties();
-        mMediator.showOverview(false);
+        mMediator.showTabSwitcherView(false);
 
         InOrder inOrder = inOrder(mPropertyObserver, mPropertyObserver);
         inOrder.verify(mPropertyObserver)
@@ -301,13 +302,13 @@ public class TabSwitcherMediatorUnitTest {
     public void hidesWithAnimation() {
         initAndAssertAllProperties();
         mMediator.setTabGridDialogController(mTabGridDialogController);
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
 
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
-        mMediator.hideOverview(true);
+        mMediator.hideTabSwitcherView(true);
 
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
@@ -320,13 +321,13 @@ public class TabSwitcherMediatorUnitTest {
     public void hidesWithoutAnimation() {
         initAndAssertAllProperties();
         mMediator.setTabGridDialogController(mTabGridDialogController);
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
 
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
-        mMediator.hideOverview(false);
+        mMediator.hideTabSwitcherView(false);
 
         InOrder inOrder = inOrder(mPropertyObserver, mPropertyObserver);
         inOrder.verify(mPropertyObserver)
@@ -347,28 +348,28 @@ public class TabSwitcherMediatorUnitTest {
     public void startedShowingPropagatesToObservers() {
         initAndAssertAllProperties();
         mModel.get(TabListContainerProperties.VISIBILITY_LISTENER).startedShowing(true);
-        verify(mOverviewModeObserver).startedShowing();
+        verify(mTabSwitcherViewObserver).startedShowing();
     }
 
     @Test
     public void finishedShowingPropagatesToObservers() {
         initAndAssertAllProperties();
         mModel.get(TabListContainerProperties.VISIBILITY_LISTENER).finishedShowing();
-        verify(mOverviewModeObserver).finishedShowing();
+        verify(mTabSwitcherViewObserver).finishedShowing();
     }
 
     @Test
     public void startedHidingPropagatesToObservers() {
         initAndAssertAllProperties();
         mModel.get(TabListContainerProperties.VISIBILITY_LISTENER).startedHiding(true);
-        verify(mOverviewModeObserver).startedHiding();
+        verify(mTabSwitcherViewObserver).startedHiding();
     }
 
     @Test
     public void finishedHidingPropagatesToObservers() {
         initAndAssertAllProperties();
         mModel.get(TabListContainerProperties.VISIBILITY_LISTENER).finishedHiding();
-        verify(mOverviewModeObserver).finishedHiding();
+        verify(mTabSwitcherViewObserver).finishedHiding();
     }
 
     @Test
@@ -503,7 +504,7 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void hidesWhenATabIsSelected() {
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
@@ -516,7 +517,7 @@ public class TabSwitcherMediatorUnitTest {
     public void doesNotHideWhenSelectedTabChangedDueToTabClosure() {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
         doReturn(true).when(mTab3).isClosing();
@@ -532,7 +533,7 @@ public class TabSwitcherMediatorUnitTest {
     public void doesNotHideWhenSelectedTabChangedDueToUndoTabClosure() {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
         doReturn(true).when(mTab3).isClosing();
@@ -547,7 +548,7 @@ public class TabSwitcherMediatorUnitTest {
     public void doesNotHideWhenSelectedTabChangedDueToModelChange() {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
@@ -561,7 +562,7 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void updatesResetHandlerOnRestoreCompleted() {
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
         mTabModelObserverCaptor.getValue().restoreCompleted();
@@ -573,7 +574,7 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void setInitialScrollIndexOnRestoreCompleted() {
         initAndAssertAllProperties();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
 
         mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1);
@@ -672,7 +673,7 @@ public class TabSwitcherMediatorUnitTest {
     public void showOverviewDoesNotUpdateResetHandlerBeforeRestoreCompleted() {
         initAndAssertAllProperties();
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
 
         // MRU will be false unless the start surface is enabled.
         verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, true, false);
@@ -682,7 +683,7 @@ public class TabSwitcherMediatorUnitTest {
     public void prepareOverviewDoesNotUpdateResetHandlerBeforeRestoreCompleted() {
         initAndAssertAllProperties();
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
-        mMediator.prepareOverview();
+        mMediator.prepareTabSwitcherView();
 
         // MRU will be false unless the start surface is enabled.
         verify(mResetHandler, never()).resetWithTabList(mTabModelFilter, false, false);
@@ -693,7 +694,7 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
-        mMediator.showOverview(true);
+        mMediator.showTabSwitcherView(true);
 
         // MRU will be false unless the start surface is enabled.
         verify(mResetHandler).resetWithTabList(mTabModelFilter, true, false);
@@ -704,7 +705,7 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
 
-        mMediator.prepareOverview();
+        mMediator.prepareTabSwitcherView();
 
         // MRU will be false unless the start surface is enabled.
         verify(mResetHandler).resetWithTabList(mTabModelFilter, false, false);
@@ -717,7 +718,7 @@ public class TabSwitcherMediatorUnitTest {
 
         mModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, 1);
 
-        mMediator.prepareOverview();
+        mMediator.prepareTabSwitcherView();
         assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
     }
 

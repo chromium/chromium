@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceLayout.ZOOMING_DURATION;
+import static org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -169,7 +169,7 @@ class TabListRecyclerView
         mListener = listener;
     }
 
-    void prepareOverview() {
+    void prepareTabSwitcherView() {
         endAllAnimations();
 
         registerDynamicView();

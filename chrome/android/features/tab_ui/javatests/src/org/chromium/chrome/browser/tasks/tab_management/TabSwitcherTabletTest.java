@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTopToolbar;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
-import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -103,10 +103,12 @@ public class TabSwitcherTabletTest {
                                             .get()::isTabStateInitialized);
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof StartSurfaceLayout);
-        StartSurfaceLayout mStartSurfaceLayout = (StartSurfaceLayout) layout;
+        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout =
+                (TabSwitcherAndStartSurfaceLayout) layout;
 
-        mTabListDelegate = mStartSurfaceLayout.getStartSurfaceForTesting().getGridTabListDelegate();
+        mTabListDelegate = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
+                                   .getGridTabListDelegate();
         Callback<Bitmap> mBitmapListener = (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
         mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
 

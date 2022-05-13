@@ -77,7 +77,7 @@ public class LayoutManagerChrome
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
+     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
@@ -85,7 +85,7 @@ public class LayoutManagerChrome
             boolean createOverviewLayout, @Nullable StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
-            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator) {
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         Context context = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -109,9 +109,9 @@ public class LayoutManagerChrome
             if (startSurface != null) {
                 assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
 
-                mOverviewLayout = StartSurfaceDelegate.createStartSurfaceLayout(context, this,
-                        renderHost, startSurface, jankTracker, startSurfaceScrimAnchor,
-                        scrimCoordinator);
+                mOverviewLayout = StartSurfaceDelegate.createTabSwitcherAndStartSurfaceLayout(
+                        context, this, renderHost, startSurface, jankTracker,
+                        tabSwitcherScrimAnchor, scrimCoordinator);
 
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(context)) {
                     mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {

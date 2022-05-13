@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -101,7 +102,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
-    private final ObserverList<TabSwitcher.OverviewModeObserver> mObservers = new ObserverList<>();
+    private final ObserverList<TabSwitcherViewObserver> mObservers = new ObserverList<>();
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final ViewGroup mContainerView;
@@ -613,17 +614,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void addOverviewModeObserver(TabSwitcher.OverviewModeObserver observer) {
+    public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
     }
 
     @Override
-    public void removeOverviewModeObserver(TabSwitcher.OverviewModeObserver observer) {
+    public void removeTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.removeObserver(observer);
     }
 
     @Override
-    public void hideOverview(boolean animate) {
+    public void hideTabSwitcherView(boolean animate) {
         if (!animate) mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
         setVisibility(false);
         mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
@@ -663,7 +664,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mFirstMeaningfulPaintRecorder = null;
     }
 
-    boolean prepareOverview() {
+    boolean prepareTabSwitcherView() {
         mHandler.removeCallbacks(mSoftClearTabListRunnable);
         mHandler.removeCallbacks(mClearTabListRunnable);
         boolean quick = false;
@@ -691,7 +692,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void showOverview(boolean animate) {
+    public void showTabSwitcherView(boolean animate) {
         mHandler.removeCallbacks(mSoftClearTabListRunnable);
         mHandler.removeCallbacks(mClearTabListRunnable);
         if (mTabModelSelector.isTabStateInitialized()) {
@@ -721,28 +722,28 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void startedShowing(boolean isAnimating) {
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedShowing();
         }
     }
 
     @Override
     public void finishedShowing() {
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();
         }
     }
 
     @Override
     public void startedHiding(boolean isAnimating) {
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
         }
     }
 
     @Override
     public void finishedHiding() {
-        for (TabSwitcher.OverviewModeObserver observer : mObservers) {
+        for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedHiding();
         }
     }

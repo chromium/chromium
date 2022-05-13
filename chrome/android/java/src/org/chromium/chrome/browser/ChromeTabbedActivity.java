@@ -889,7 +889,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (ReturnToChromeUtil.isStartSurfaceEnabled(this) && getCurrentTabModel().getCount() > 0
                 && !isTablet() && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
                 && mStartSurfaceSupplier.get() != null) {
-            mStartSurfaceSupplier.get().getController().setOverviewState(
+            mStartSurfaceSupplier.get().getController().setStartSurfaceState(
                     StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
         }
     }
@@ -2416,7 +2416,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     || !HomepageManager.isHomepageEnabled()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
-            mStartSurfaceSupplier.get().getController().setOverviewState(state, launchOrigin);
+            mStartSurfaceSupplier.get().getController().setStartSurfaceState(state, launchOrigin);
         }
 
         if (mLayoutManager == null) return;

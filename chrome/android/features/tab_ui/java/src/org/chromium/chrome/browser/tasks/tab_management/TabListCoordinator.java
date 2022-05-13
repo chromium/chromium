@@ -405,9 +405,9 @@ public class TabListCoordinator
         mMediator.softCleanup();
     }
 
-    void prepareOverview() {
-        mRecyclerView.prepareOverview();
-        mMediator.prepareOverview();
+    void prepareTabSwitcherView() {
+        mRecyclerView.prepareTabSwitcherView();
+        mMediator.prepareTabSwitcherView();
     }
 
     void postHiding() {

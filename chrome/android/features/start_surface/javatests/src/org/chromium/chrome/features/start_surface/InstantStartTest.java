@@ -199,7 +199,7 @@ public class InstantStartTest {
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
         assertThat(cta.getLayoutManager().getOverviewLayout())
-                .isInstanceOf(StartSurfaceLayout.class);
+                .isInstanceOf(TabSwitcherAndStartSurfaceLayout.class);
     }
 
     @Test
@@ -226,7 +226,7 @@ public class InstantStartTest {
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
         assertThat(cta.getLayoutManager().getOverviewLayout())
-                .isInstanceOf(StartSurfaceLayout.class);
+                .isInstanceOf(TabSwitcherAndStartSurfaceLayout.class);
 
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
@@ -235,7 +235,7 @@ public class InstantStartTest {
         Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            startSurfaceCoordinator.getController().setOverviewState(
+            startSurfaceCoordinator.getController().setStartSurfaceState(
                     StartSurfaceState.SHOWN_TABSWITCHER);
         });
         CriteriaHelper.pollUiThread(startSurfaceCoordinator::isSecondaryTaskInitPendingForTesting);

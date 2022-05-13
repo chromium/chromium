@@ -42,7 +42,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param startSurfaceScrimAnchor {@link ViewGroup} used by start surface layout to show scrim
+     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *         when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      */
@@ -50,12 +50,12 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker,
-            ViewGroup startSurfaceScrimAnchor, ScrimCoordinator scrimCoordinator,
+            ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(host, contentContainer,
                 TabUiFeatureUtilities.isGridTabSwitcherEnabled(host.getContext()), startSurface,
                 tabContentManagerSupplier, topUiThemeColorProvider, jankTracker,
-                startSurfaceScrimAnchor, scrimCoordinator);
+                tabSwitcherScrimAnchor, scrimCoordinator);
 
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), this,
                 mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);

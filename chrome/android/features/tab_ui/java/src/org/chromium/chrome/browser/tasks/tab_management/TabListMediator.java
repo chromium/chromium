@@ -1078,7 +1078,7 @@ class TabListMediator {
      * Hide the blue border for selected tab for the Tab-to-Grid resizing stage.
      * The selected border should re-appear in the final fading-in stage.
      */
-    void prepareOverview() {
+    void prepareTabSwitcherView() {
         if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
                 || !mTabModelSelector.isTabStateInitialized()) {
             return;
