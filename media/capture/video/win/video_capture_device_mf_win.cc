@@ -999,12 +999,22 @@ void VideoCaptureDeviceMFWin::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::AutoLock lock(lock_);
-  return AllocateAndStartLocked(params, std::move(client));
+  bool success = false;
+  {
+    base::AutoLock lock(lock_);
+    success = AllocateAndStartLocked(params, std::move(client));
+  }
+  // Do not hold the lock while waiting.
+  if (success) {
+    HRESULT hr = WaitOnCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STARTED);
+    if (SUCCEEDED(hr)) {
+      base::AutoLock lock(lock_);
+      is_started_ = true;
+    }
+  }
 }
 
-void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
+bool VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   params_ = params;
@@ -1014,7 +1024,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (!engine_) {
     OnError(VideoCaptureError::kWinMediaFoundationEngineIsNull, FROM_HERE,
             E_FAIL);
-    return;
+    return false;
   }
 
   ComPtr<IMFCaptureSource> source;
@@ -1022,14 +1032,14 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationEngineGetSourceFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   hr = FillCapabilities(source.Get(), true, &photo_capabilities_);
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationFillPhotoCapabilitiesFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   if (!photo_capabilities_.empty()) {
@@ -1042,13 +1052,13 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationFillVideoCapabilitiesFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   if (video_capabilities.empty()) {
     OnError(VideoCaptureError::kWinMediaFoundationNoVideoCapabilityFound,
             FROM_HERE, "No video capability found");
-    return;
+    return false;
   }
 
   const CapabilityWin best_match_video_capability =
@@ -1061,7 +1071,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     OnError(
         VideoCaptureError::kWinMediaFoundationGetAvailableDeviceMediaTypeFailed,
         FROM_HERE, hr);
-    return;
+    return false;
   }
 
   hr = source->SetCurrentDeviceMediaType(
@@ -1070,7 +1080,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     OnError(
         VideoCaptureError::kWinMediaFoundationSetCurrentDeviceMediaTypeFailed,
         FROM_HERE, hr);
-    return;
+    return false;
   }
 
   ComPtr<IMFCaptureSink> sink;
@@ -1078,7 +1088,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationEngineGetSinkFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   ComPtr<IMFCapturePreviewSink> preview_sink;
@@ -1087,14 +1097,14 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     OnError(VideoCaptureError::
                 kWinMediaFoundationSinkQueryCapturePreviewInterfaceFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   hr = preview_sink->RemoveAllStreams();
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationSinkRemoveAllStreamsFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   ComPtr<IMFMediaType> sink_video_media_type;
@@ -1103,7 +1113,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     OnError(
         VideoCaptureError::kWinMediaFoundationCreateSinkVideoMediaTypeFailed,
         FROM_HERE, hr);
-    return;
+    return false;
   }
 
   hr = ConvertToVideoSinkMediaType(
@@ -1114,7 +1124,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
     OnError(
         VideoCaptureError::kWinMediaFoundationConvertToVideoSinkMediaTypeFailed,
         FROM_HERE, hr);
-    return;
+    return false;
   }
 
   DWORD dw_sink_stream_index = 0;
@@ -1124,7 +1134,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationSinkAddStreamFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   hr = preview_sink->SetSampleCallback(dw_sink_stream_index,
@@ -1132,7 +1142,7 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationSinkSetSampleCallbackFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   // Note, that it is not sufficient to wait for
@@ -1143,18 +1153,18 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
   // event. For the lack of any other events indicating success, we have to wait
   // for the first video frame to arrive before sending our |OnStarted| event to
   // |client_|.
+  // We still need to wait for MF_CAPTURE_ENGINE_PREVIEW_STARTED event to ensure
+  // that we won't call StopPreview before the preview is started.
   has_sent_on_started_to_client_ = false;
   hr = engine_->StartPreview();
   if (FAILED(hr)) {
     OnError(VideoCaptureError::kWinMediaFoundationEngineStartPreviewFailed,
             FROM_HERE, hr);
-    return;
+    return false;
   }
 
   selected_video_capability_ =
       std::make_unique<CapabilityWin>(best_match_video_capability);
-
-  is_started_ = true;
 
   base::UmaHistogramEnumeration(
       "Media.VideoCapture.Win.Device.InternalPixelFormat",
@@ -1168,17 +1178,31 @@ void VideoCaptureDeviceMFWin::AllocateAndStartLocked(
       "Media.VideoCapture.Win.Device.RequestedPixelFormat",
       params.requested_format.pixel_format,
       media::VideoPixelFormat::PIXEL_FORMAT_MAX);
+
+  return true;
 }
 
 void VideoCaptureDeviceMFWin::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock lock(lock_);
+  HRESULT hr = E_FAIL;
+  {
+    base::AutoLock lock(lock_);
 
-  if (is_started_ && engine_)
-    engine_->StopPreview();
-  is_started_ = false;
+    if (is_started_ && engine_) {
+      hr = engine_->StopPreview();
+    }
+  }
 
-  client_.reset();
+  // Do not hold the lock while waiting.
+  if (SUCCEEDED(hr)) {
+    WaitOnCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STOPPED);
+  }
+
+  {
+    base::AutoLock lock(lock_);
+    is_started_ = false;
+    client_.reset();
+  }
 }
 
 void VideoCaptureDeviceMFWin::TakePhoto(TakePhotoCallback callback) {
@@ -1759,21 +1783,24 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
   media_event->GetStatus(&hr);
   media_event->GetExtendedType(&capture_event_guid);
 
-  // TODO(http://crbug.com/1093521): Add cases for Start
-  // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
   // When MF_CAPTURE_ENGINE_ERROR is returned the captureengine object is no
   // longer valid.
   if (capture_event_guid == MF_CAPTURE_ENGINE_ERROR || FAILED(hr)) {
+    last_error_hr_ = hr;
     capture_error_.Signal();
     // There should always be a valid error
     hr = SUCCEEDED(hr) ? E_UNEXPECTED : hr;
-  } else if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
-    capture_initialize_.Signal();
+  } else {
+    if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
+      capture_initialize_.Signal();
+    } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
+      capture_stopped_.Signal();
+    } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
+      capture_started_.Signal();
+    }
+    return;
   }
 
-  // Lock is taken after events are signalled, because if the capture
-  // is being restarted, lock is currently owned by another thread running
-  // OnEvent().
   base::AutoLock lock(lock_);
 
   if (hr == DXGI_ERROR_DEVICE_REMOVED && dxgi_device_manager_ != nullptr) {
@@ -1804,6 +1831,12 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
       // If AllocateAndStart fails somehow, OnError() will be called
       // internally. Therefore, it's safe to always override |hr| here.
       hr = S_OK;
+      // Ideally we should wait for MF_CAPTURE_ENGINE_PREVIEW_STARTED.
+      // However introducing that wait here could deadlocks in case if
+      // the same thread is used by MFCaptureEngine to signal events to
+      // the client.
+      // So we mark |is_started_| speculatevly here.
+      is_started_ = true;
       ++num_restarts_;
     } else {
       LOG(ERROR) << "Failed to re-initialize.";
@@ -1845,10 +1878,12 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
   HRESULT hr = S_OK;
   HANDLE events[] = {nullptr, capture_error_.handle()};
 
-  // TODO(http://crbug.com/1093521): Add cases for Start
-  // MF_CAPTURE_ENGINE_PREVIEW_STARTED and MF_CAPTURE_ENGINE_PREVIEW_STOPPED
   if (capture_event_guid == MF_CAPTURE_ENGINE_INITIALIZED) {
     events[0] = capture_initialize_.handle();
+  } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STOPPED) {
+    events[0] = capture_stopped_.handle();
+  } else if (capture_event_guid == MF_CAPTURE_ENGINE_PREVIEW_STARTED) {
+    events[0] = capture_started_.handle();
   } else {
     // no registered event handle for the event requested
     hr = E_NOTIMPL;
@@ -1866,7 +1901,10 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
       LogError(FROM_HERE, hr);
       break;
     default:
-      hr = E_UNEXPECTED;
+      hr = last_error_hr_;
+      if (SUCCEEDED(hr)) {
+        hr = MF_E_UNEXPECTED;
+      }
       LogError(FROM_HERE, hr);
       break;
   }

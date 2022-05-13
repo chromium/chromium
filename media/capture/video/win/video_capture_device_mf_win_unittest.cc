@@ -575,6 +575,7 @@ class MockMFCaptureEngine : public MockInterface<IMFCaptureEngine> {
 
   IFACEMETHODIMP StartPreview(void) override {
     OnStartPreview();
+    FireCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STARTED, S_OK);
     return S_OK;
   }
 
@@ -582,6 +583,7 @@ class MockMFCaptureEngine : public MockInterface<IMFCaptureEngine> {
 
   IFACEMETHODIMP StopPreview(void) override {
     OnStopPreview();
+    FireCaptureEvent(MF_CAPTURE_ENGINE_PREVIEW_STOPPED, S_OK);
     return S_OK;
   }
 
