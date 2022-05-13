@@ -53,6 +53,12 @@ int CountFiles(const base::FilePath& dir, bool* some_files_empty = nullptr) {
   return file_count;
 }
 
+base::FilePath GetFirstFilePath(const base::FilePath& dir) {
+  base::FileEnumerator file_enumerator(dir, /*recursive=*/true,
+                                       base::FileEnumerator::FILES);
+  return file_enumerator.Next();
+}
+
 class UnzipTest : public testing::Test {
  public:
   UnzipTest() = default;
@@ -243,6 +249,13 @@ TEST_F(UnzipTest, DetectEncodingSjis) {
     EXPECT_EQ(Encoding::JAPANESE_SHIFT_JIS,
               DoDetectEncoding(GetArchivePath(name)));
   }
+}
+
+TEST_F(UnzipTest, DecodeExtendedHeader) {
+  EXPECT_TRUE(DoUnzip(GetArchivePath("bug953599.zip"), unzip_dir_));
+
+  base::FilePath fileName = GetFirstFilePath(unzip_dir_);
+  EXPECT_EQ(FILE_PATH_LITERAL("새 문서.txt"), fileName.BaseName().value());
 }
 
 TEST_F(UnzipTest, GetExtractedSize) {
