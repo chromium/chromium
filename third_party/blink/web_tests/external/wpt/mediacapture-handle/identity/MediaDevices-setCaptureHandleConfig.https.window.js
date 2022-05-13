@@ -1,10 +1,12 @@
 'use strict';
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig);
   navigator.mediaDevices.setCaptureHandleConfig({handle: 'X'.repeat(1024)});
 }, 'setCaptureHandleConfig does not throw if handle length is 1024.');
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig);
   assert_throws_js(
       TypeError,
       () => navigator.mediaDevices.setCaptureHandleConfig(
@@ -12,12 +14,13 @@ test(() => {
       'handle length must be 1024 characters or less');
 }, 'setCaptureHandleConfig raises TypeError if handle is invalid.');
 
-test(
-    () => {navigator.mediaDevices.setCaptureHandleConfig(
-        {permittedOrigins: ['*']})},
-    'setCaptureHandleConfig does not throw if asterisk character appears only once.');
+test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig);
+  navigator.mediaDevices.setCaptureHandleConfig({permittedOrigins: ['*']});
+}, 'setCaptureHandleConfig does not throw if asterisk character appears only once.');
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig);
   assert_throws_dom(
       'NotSupportedError',
       () => navigator.mediaDevices.setCaptureHandleConfig(
@@ -39,6 +42,7 @@ test(() => {
 
 
 test(() => {
+  assert_true(!!navigator.mediaDevices.setCaptureHandleConfig);
   const iframe = document.createElement('iframe');
   document.body.appendChild(iframe);
   const mediaDevices = iframe.contentWindow.navigator.mediaDevices;
