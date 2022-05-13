@@ -91,7 +91,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     window_info->window_state_type =
         window_state->IsFullscreen()
             ? chromeos::ToWindowStateType(
-                  window->GetProperty(aura::client::kPreFullscreenShowStateKey))
+                  window->GetProperty(aura::client::kRestoreShowStateKey))
             : window_state->GetStateType();
   }
 

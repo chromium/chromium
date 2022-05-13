@@ -206,8 +206,7 @@ ChromeNativeAppWindowViewsAuraAsh::GetRestoredState() const {
       // Restore windows which were previously in immersive fullscreen to their
       // pre-fullscreen state. Restoring the window to a different fullscreen
       // type makes for a bad experience.
-      return GetNativeWindow()->GetProperty(
-          aura::client::kPreFullscreenShowStateKey);
+      return GetNativeWindow()->GetProperty(aura::client::kRestoreShowStateKey);
     }
     return ui::SHOW_STATE_FULLSCREEN;
   }

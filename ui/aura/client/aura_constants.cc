@@ -68,9 +68,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(gfx::NativeViewAccessible,
                              kParentNativeViewAccessibleKey,
                              nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kPreferredSize, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
-                             kPreFullscreenShowStateKey,
-                             ui::SHOW_STATE_DEFAULT)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kResizeBehaviorKey, kResizeBehaviorCanResize)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,

@@ -166,17 +166,13 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
     switch (window_state->GetStateType()) {
       case chromeos::WindowStateType::kDefault:
       case chromeos::WindowStateType::kNormal:
-        window->SetProperty(aura::client::kPreFullscreenShowStateKey,
-                            ui::SHOW_STATE_NORMAL);
         next_state = chromeos::WindowStateType::kFullscreen;
         break;
       case chromeos::WindowStateType::kMaximized:
-        window->SetProperty(aura::client::kPreFullscreenShowStateKey,
-                            ui::SHOW_STATE_MAXIMIZED);
         next_state = chromeos::WindowStateType::kFullscreen;
         break;
       case chromeos::WindowStateType::kFullscreen:
-        switch (window->GetProperty(aura::client::kPreFullscreenShowStateKey)) {
+        switch (window->GetProperty(aura::client::kRestoreShowStateKey)) {
           case ui::SHOW_STATE_DEFAULT:
           case ui::SHOW_STATE_NORMAL:
             next_state = chromeos::WindowStateType::kNormal;
@@ -192,17 +188,11 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
           case ui::SHOW_STATE_END:
             NOTREACHED() << " unknown state :"
                          << window->GetProperty(
-                                aura::client::kPreFullscreenShowStateKey);
+                                aura::client::kRestoreShowStateKey);
             return false;
         }
         break;
       case chromeos::WindowStateType::kMinimized: {
-        ui::WindowShowState pre_full_state =
-            window->GetProperty(aura::client::kRestoreShowStateKey);
-        if (pre_full_state != ui::SHOW_STATE_FULLSCREEN) {
-          window->SetProperty(aura::client::kPreFullscreenShowStateKey,
-                              pre_full_state);
-        }
         next_state = chromeos::WindowStateType::kFullscreen;
         break;
       }

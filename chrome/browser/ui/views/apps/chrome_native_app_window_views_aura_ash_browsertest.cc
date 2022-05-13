@@ -203,12 +203,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   ASSERT_TRUE(window());
 
   app_window_->OSFullscreen();
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, window()->GetRestoredState());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, window()->GetRestoredState());
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   EXPECT_TRUE(window()->IsFullscreen());
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, window()->GetRestoredState());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, window()->GetRestoredState());
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, window()->GetRestoredState());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, window()->GetRestoredState());
 
   CloseAppWindow(app_window_);
 }
@@ -255,12 +255,12 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   // fullscreen.
   EXPECT_FALSE(window()->IsFullscreen());
   app_window_->OSFullscreen();
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, window()->GetRestoredState());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, window()->GetRestoredState());
   EXPECT_TRUE(window()->IsFullscreen());
   EXPECT_TRUE(IsImmersiveActive());
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   EXPECT_TRUE(window()->IsFullscreen());
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, window()->GetRestoredState());
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, window()->GetRestoredState());
 
   window()->Restore();
   // Restoring a window inside tablet mode should deactivate fullscreen, but not
