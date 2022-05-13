@@ -1108,8 +1108,7 @@ id<GREYMatcher> AddBookmarkButton() {
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
 }
 
-// TODO(crbug.com/1321550): Test is failing consistently.
-- (void)DISABLED_testBookmarksSyncInMultiwindow {
+- (void)testBookmarksSyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 

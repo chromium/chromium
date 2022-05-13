@@ -1044,8 +1044,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt, when there are multiple windows
 // opened, can be shown on dynamic policy update when on the tab switcher.
-// TODO(crbug.com/1320268): Test fails.
-- (void)DISABLED_testSignInScreenOnTabSwitcherWithMultiWindows {
+- (void)testSignInScreenOnTabSwitcherWithMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
@@ -1090,8 +1089,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 // opened, can be shown on dynamic policy update after cancelling the regular
 // sign-in prompt. The policy is applied while the regular sign-in prompt is
 // shown.
-// TODO(crbug.com/1320268): Test fails.
-- (void)DISABLED_testSignInScreenOnRegularSigninPromptMultiWindows {
+- (void)testSignInScreenOnRegularSigninPromptMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
@@ -1144,8 +1142,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when a browser modal is displayed on top of the browser view when there are
 // multiple windows.
-// TODO(crbug.com/1320268): Test fails.
-- (void)DISABLED_testSignInScreenOnModalMultiWindows {
+- (void)testSignInScreenOnModalMultiWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 

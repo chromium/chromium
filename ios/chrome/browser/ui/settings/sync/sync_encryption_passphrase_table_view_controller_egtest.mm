@@ -60,8 +60,7 @@ NSString* const kPassphrase = @"hello";
 
 // Tests opening the sync passphrase view, then a new window and check that
 // enter passphrase message appears.
-// TODO(crbug.com/1320270): Test fails.
-- (void)DISABLED_testShowSyncPassphraseInNewWindowAndDismiss {
+- (void)testShowSyncPassphraseInNewWindowAndDismiss {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
