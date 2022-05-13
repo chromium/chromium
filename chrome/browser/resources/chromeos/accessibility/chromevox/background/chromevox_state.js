@@ -38,20 +38,7 @@ ChromeVoxState = function() {
   if (ChromeVoxState.instance) {
     throw 'Trying to create two instances of singleton ChromeVoxState.';
   }
-  const backgroundWindow = chrome.extension.getBackgroundPage();
-  // Only install the singleton instance if we are within the background page
-  // context. Otherwise, take the instance from the background page (e.g. for
-  // the panel page).
-  if (backgroundWindow === window) {
-    ChromeVoxState.instance = this;
-  } else {
-    Object.defineProperty(ChromeVoxState, 'instance', {
-      get: () => {
-        return backgroundWindow.ChromeVoxState.instance;
-      }
-    });
-    return;
-  }
+  ChromeVoxState.instance = this;
 
   /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   this.focusBounds_ = [];
