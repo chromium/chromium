@@ -385,12 +385,14 @@ void ChromeOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   // values (kHitFinished, kUnused, kCancelled) are recorded in
   // PrerenderManager.
   content::WebContents* web_contents = controller_->GetWebContents();
-  auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-  if (!prerender_manager ||
-      !prerender_manager->HasSearchResultPagePrerendered()) {
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
-        PrerenderPredictionStatus::kNotStarted);
+  if (web_contents) {
+    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+    if (!prerender_manager ||
+        !prerender_manager->HasSearchResultPagePrerendered()) {
+      base::UmaHistogramEnumeration(
+          internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+          PrerenderPredictionStatus::kNotStarted);
+    }
   }
 
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
