@@ -268,8 +268,6 @@ static_library("common_lib") {
 
   if (enable_extensions) {
     sources += [
-      "extensions/api/commands/commands_handler.cc",
-      "extensions/api/commands/commands_handler.h",
       "extensions/api/file_browser_handlers/file_browser_handler.cc",
       "extensions/api/file_browser_handlers/file_browser_handler.h",
       "extensions/api/notifications/notification_style.cc",

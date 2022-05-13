@@ -192,6 +192,8 @@ static_library("common") {
     "api/bluetooth/bluetooth_manifest_handler.h",
     "api/bluetooth/bluetooth_manifest_permission.cc",
     "api/bluetooth/bluetooth_manifest_permission.h",
+    "api/commands/commands_handler.cc",
+    "api/commands/commands_handler.h",
     "api/declarative/declarative_constants.cc",
     "api/declarative/declarative_constants.h",
     "api/declarative/declarative_manifest_data.cc",
@@ -539,6 +541,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "api/commands/commands_manifest_unittest.cc",
     "api/declarative/declarative_manifest_unittest.cc",
     "api/declarative_net_request/dnr_manifest_unittest.cc",
     "api/printer_provider/usb_printer_manifest_unittest.cc",

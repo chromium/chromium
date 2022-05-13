@@ -7644,7 +7644,6 @@ test("unit_tests") {
       "../browser/sync_file_system/syncable_file_system_util_unittest.cc",
       "../browser/ui/webui/extensions/extensions_internals_unittest.cc",
       "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
-      "../common/extensions/api/commands/commands_manifest_unittest.cc",
       "../common/extensions/api/common_extension_api_unittest.cc",
       "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
       "../common/extensions/api/extension_action/page_action_manifest_unittest.cc",

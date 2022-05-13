@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
-
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/extensions/api/commands/commands_handler.h"
+#include "extensions/common/api/commands/commands_handler.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace errors = manifest_errors;
 
-class CommandsManifestTest : public ChromeManifestTest {
-};
+using CommandsManifestTest = ManifestTest;
 
 TEST_F(CommandsManifestTest, CommandManifestSimple) {
 #if BUILDFLAG(IS_MAC)
@@ -60,8 +57,7 @@ TEST_F(CommandsManifestTest, CommandManifestSimple) {
   const Command* page_action =
       CommandsInfo::GetPageActionCommand(extension.get());
   ASSERT_TRUE(NULL != page_action);
-  ASSERT_STREQ("_execute_page_action",
-      page_action->command_name().c_str());
+  ASSERT_STREQ("_execute_page_action", page_action->command_name().c_str());
   ASSERT_STREQ("", base::UTF16ToASCII(page_action->description()).c_str());
   ASSERT_EQ(ctrl_f, page_action->accelerator());
 }
@@ -83,7 +79,7 @@ TEST_F(CommandsManifestTest, CommandManifestAllowNumbers) {
 
 TEST_F(CommandsManifestTest, CommandManifestRejectJustShift) {
   LoadAndExpectError("command_reject_just_shift.json",
-      errors::kInvalidKeyBinding);
+                     errors::kInvalidKeyBinding);
 }
 
 TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {

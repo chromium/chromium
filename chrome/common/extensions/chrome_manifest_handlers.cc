@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/extensions/api/commands/commands_handler.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/api/storage/storage_schema_manifest_handler.h"
@@ -45,7 +44,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
   registry->RegisterHandler(std::make_unique<AppIsolationHandler>());
   registry->RegisterHandler(std::make_unique<AppLaunchManifestHandler>());
-  registry->RegisterHandler(std::make_unique<CommandsHandler>());
   registry->RegisterHandler(std::make_unique<DevToolsPageHandler>());
   registry->RegisterHandler(std::make_unique<HomepageURLHandler>());
   registry->RegisterHandler(std::make_unique<LinkedAppIconsHandler>());

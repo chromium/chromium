@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/commands/commands_handler.h"
+#include "extensions/common/api/commands/commands_handler.h"
 
 #include <memory>
 #include <utility>
@@ -26,46 +26,40 @@ namespace {
 const int kMaxCommandsWithKeybindingPerExtension = 4;
 }  // namespace
 
-CommandsInfo::CommandsInfo() {
-}
-
-CommandsInfo::~CommandsInfo() {
-}
+CommandsInfo::CommandsInfo() = default;
+CommandsInfo::~CommandsInfo() = default;
 
 // static
 const Command* CommandsInfo::GetBrowserActionCommand(
     const Extension* extension) {
-  CommandsInfo* info = static_cast<CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  auto* info =
+      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
   return info ? info->browser_action_command.get() : NULL;
 }
 
 // static
 const Command* CommandsInfo::GetPageActionCommand(const Extension* extension) {
-  CommandsInfo* info = static_cast<CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  auto* info =
+      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
   return info ? info->page_action_command.get() : NULL;
 }
 
 // static
 const Command* CommandsInfo::GetActionCommand(const Extension* extension) {
-  CommandsInfo* info =
+  auto* info =
       static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
   return info ? info->action_command.get() : nullptr;
 }
 
 // static
 const CommandMap* CommandsInfo::GetNamedCommands(const Extension* extension) {
-  CommandsInfo* info = static_cast<CommandsInfo*>(
-      extension->GetManifestData(keys::kCommands));
+  auto* info =
+      static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
   return info ? &info->named_commands : NULL;
 }
 
-CommandsHandler::CommandsHandler() {
-}
-
-CommandsHandler::~CommandsHandler() {
-}
+CommandsHandler::CommandsHandler() = default;
+CommandsHandler::~CommandsHandler() = default;
 
 bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->FindKey(keys::kCommands)) {
@@ -121,8 +115,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     std::string command_name = binding->command_name();
     if (command_name == manifest_values::kBrowserActionCommandEvent) {
       commands_info->browser_action_command = std::move(binding);
-    } else if (command_name ==
-                   manifest_values::kPageActionCommandEvent) {
+    } else if (command_name == manifest_values::kPageActionCommandEvent) {
       commands_info->page_action_command = std::move(binding);
     } else if (command_name == manifest_values::kActionCommandEvent) {
       commands_info->action_command = std::move(binding);
@@ -140,8 +133,8 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
 
 bool CommandsHandler::AlwaysParseForType(Manifest::Type type) const {
   return type == Manifest::TYPE_EXTENSION ||
-      type == Manifest::TYPE_LEGACY_PACKAGED_APP ||
-      type == Manifest::TYPE_PLATFORM_APP;
+         type == Manifest::TYPE_LEGACY_PACKAGED_APP ||
+         type == Manifest::TYPE_PLATFORM_APP;
 }
 
 void CommandsHandler::MaybeSetBrowserActionDefault(const Extension* extension,
