@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -16,16 +17,12 @@ namespace ash {
 class DeviceDisabledScreen : public BaseScreen,
                              public system::DeviceDisablingManager::Observer {
  public:
-  explicit DeviceDisabledScreen(DeviceDisabledScreenView* view);
+  explicit DeviceDisabledScreen(base::WeakPtr<DeviceDisabledScreenView> view);
 
   DeviceDisabledScreen(const DeviceDisabledScreen&) = delete;
   DeviceDisabledScreen& operator=(const DeviceDisabledScreen&) = delete;
 
   ~DeviceDisabledScreen() override;
-
-  // Called when the view is being destroyed. Note that if the Delegate is
-  // destroyed first, it must call SetDelegate(nullptr).
-  void OnViewDestroyed(DeviceDisabledScreenView* view);
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
@@ -35,7 +32,7 @@ class DeviceDisabledScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
 
-  DeviceDisabledScreenView* view_;
+  base::WeakPtr<DeviceDisabledScreenView> view_;
 };
 
 }  // namespace ash

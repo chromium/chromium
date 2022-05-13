@@ -643,7 +643,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<DeviceDisabledScreen>(
-      oobe_ui->GetView<DeviceDisabledScreenHandler>()));
+      oobe_ui->GetView<DeviceDisabledScreenHandler>()->AsWeakPtr()));
   append(std::make_unique<EncryptionMigrationScreen>(
       oobe_ui->GetView<EncryptionMigrationScreenHandler>()));
   append(std::make_unique<ManagementTransitionScreen>(

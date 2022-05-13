@@ -15,19 +15,11 @@ class MockDeviceDisabledScreenView : public DeviceDisabledScreenView {
   MockDeviceDisabledScreenView();
   ~MockDeviceDisabledScreenView() override;
 
-  void Bind(DeviceDisabledScreen* screen) override;
-
   MOCK_METHOD3(Show,
                void(const std::string&,
                     const std::string&,
                     const std::string&));
-  MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(UpdateMessage, void(const std::string& message));
-
- private:
-  MOCK_METHOD1(MockBind, void(DeviceDisabledScreen* delegate));
-
-  DeviceDisabledScreen* screen_;
 };
 
 }  // namespace ash

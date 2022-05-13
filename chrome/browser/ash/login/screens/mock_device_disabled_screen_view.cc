@@ -4,28 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/mock_device_disabled_screen_view.h"
 
-#include "chrome/browser/ash/login/screens/device_disabled_screen.h"
-
-using ::testing::AtLeast;
-using ::testing::AtMost;
-using ::testing::NotNull;
-
 namespace ash {
 
-MockDeviceDisabledScreenView::MockDeviceDisabledScreenView()
-    : screen_(nullptr) {
-  EXPECT_CALL(*this, MockBind(NotNull())).Times(AtLeast(1));
-  EXPECT_CALL(*this, MockBind(nullptr)).Times(AtMost(1));
-}
+MockDeviceDisabledScreenView::MockDeviceDisabledScreenView() = default;
 
-MockDeviceDisabledScreenView::~MockDeviceDisabledScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void MockDeviceDisabledScreenView::Bind(DeviceDisabledScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
+MockDeviceDisabledScreenView::~MockDeviceDisabledScreenView() = default;
 
 }  // namespace ash

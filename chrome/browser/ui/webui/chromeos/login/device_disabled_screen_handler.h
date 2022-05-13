@@ -5,26 +5,23 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEVICE_DISABLED_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_DEVICE_DISABLED_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class DeviceDisabledScreen;
-}
 
 namespace chromeos {
 
 // Interface between the device disabled screen and its representation.
-class DeviceDisabledScreenView {
+class DeviceDisabledScreenView
+    : public base::SupportsWeakPtr<DeviceDisabledScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"device-disabled"};
+  inline constexpr static StaticOobeScreenId kScreenId{"device-disabled",
+                                                       "DeviceDisabledScreen"};
 
-  virtual ~DeviceDisabledScreenView() {}
+  virtual ~DeviceDisabledScreenView() = default;
 
   virtual void Show(const std::string& serial,
                     const std::string& domain,
                     const std::string& message) = 0;
-  virtual void Hide() = 0;
-  virtual void Bind(ash::DeviceDisabledScreen* screen) = 0;
   virtual void UpdateMessage(const std::string& message) = 0;
 };
 
@@ -42,24 +39,15 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
 
   ~DeviceDisabledScreenHandler() override;
 
-  // DeviceDisabledScreenActor:
+  // DeviceDisabledScreenView:
   void Show(const std::string& serial,
             const std::string& domain,
             const std::string& message) override;
-  void Hide() override;
-  void Bind(ash::DeviceDisabledScreen* screen) override;
   void UpdateMessage(const std::string& message) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
- private:
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
-
-  ash::DeviceDisabledScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
