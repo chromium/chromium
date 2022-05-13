@@ -316309,7 +316309,7 @@
        []
       ],
       "html-with-early-hints.h2.py": [
-       "4746191c7b049c4d8b8061bc4de0ef14e72f81a3",
+       "fc7ed0ffee410ca0aa39a5da2f13c676083e3928",
        []
       ],
       "invalid-headers-in-early-hints.h2.py": [
@@ -326196,6 +326196,14 @@
       ],
       "web-usb.https.html": [
        "555825a81c530fe3f3e948c432412d22a7718ffc",
+       []
+      ],
+      "web-xr-immersive-vr-session.https.html": [
+       "d043c88cdb56b4d9a6cf4eefcfaae2d6951eb958",
+       []
+      ],
+      "web-xr-inline-session.https.html": [
+       "8f3e01134affd6e3ef19208205d58efb9c896a14",
        []
       ],
       "window-move.html": [
@@ -381351,6 +381359,13 @@
        {}
       ]
      ],
+     "scroll-on-large-element-not-covering-snapport.tentative.html": [
+      "2db00d414acea1b9eb46d55523260a24ae00ce2d",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-padding-and-margin.html": [
       "97d30c702dedb5bd64d446851bc0e8cecdf341b7",
       [
@@ -396208,6 +396223,13 @@
       ],
       "is.html": [
        "8490f096976340bc970ed2c6156fb60f433768e9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "link-pseudo-in-has.html": [
+       "0ff879768b7da2e052fc916f16f25eba01496a10",
        [
         null,
         {}
@@ -481798,6 +481820,24 @@
        }
       ]
      ],
+     "iframe-x-frame-options-deny.h2.window.js": [
+      "b3a114f7c64bd2e7518325432fadec162ee36455",
+      [
+       "loading/early-hints/iframe-x-frame-options-deny.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "invalid-headers-in-early-hints.h2.window.js": [
       "6c5161dc8bf72d193c843860f24024f753075314",
       [
@@ -519313,6 +519353,24 @@
        }
       ]
      ],
+     "restriction-web-xr-immersive-vr-session.https.html": [
+      "b864718ccd6f3a4d440d848e1bfe21bcaf56624e",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-web-xr-inline-session.https.html": [
+      "4f308a7543bfc22a97d655bcfceb2b61e53b3175",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-window-move.html": [
       "e8011311f61ac1c39192ea193b395493a82fddbd",
       [
@@ -528564,6 +528622,13 @@
     ],
     "trusted-types-eval-reporting.tentative.html": [
      "73bb011349405bbee430cfcb9b0eb966b7faf8fa",
+     [
+      null,
+      {}
+     ]
+    ],
+    "trusted-types-event-handlers.tentative.html": [
+     "57f8d3d90c4162949832ec0b48f62c0511007c93",
      [
       null,
       {}
