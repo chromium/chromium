@@ -218,7 +218,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTIMPLEMENTED();
     return false;
   }
-  bool WasContextLostByRobustnessExtension() const override { return false; }
+  bool WasContextLostByRobustnessExtension() const override {
+    return false;
+  }
   void MarkContextLost(error::ContextLostReason reason) override {
     NOTIMPLEMENTED();
   }
