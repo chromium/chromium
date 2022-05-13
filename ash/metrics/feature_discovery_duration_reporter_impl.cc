@@ -5,6 +5,7 @@
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 
 #include "ash/public/cpp/feature_discovery_metric_util.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,16 +28,25 @@ constexpr int kTimeMetricsBucketCount = 100;
 // key-value mapping is added to the dictionary when the observation on a
 // feature starts. The entries of the dictionary are never deleted after
 // addition. It helps to avoid duplicate recordings on the same feature.
+// NOTE: since it is a pref service key, do not change its value.
 constexpr char kObservedFeatures[] = "FeatureDiscoveryReporterObservedFeatures";
 
 // Observation data dictionary keys --------------------------------------------
 
 // The key to the cumulated time duration since the onbservation starts. This
 // key and its paired value get cleared when the observation finishes.
+// NOTE: since it is a pref service key, do not change its value.
 constexpr char kCumulatedDuration[] = "cumulative_duration";
 
 // The key to the boolean value that indicates whether the observation finishes.
+// NOTE: since it is a pref service key, do not change its value.
 constexpr char kIsObservationFinished[] = "is_observation_finished";
+
+// The key to the boolean value that is true if the observation starts in
+// tablet. This key should only be used when the metrics data collected from a
+// tracked feature should be split by tablet mode.
+// NOTE: since it is a pref service key, do not change its value.
+constexpr char kActivatedInTablet[] = "activated_in_tablet";
 
 // Helper functions ------------------------------------------------------------
 
@@ -61,9 +71,20 @@ const char* FindMappedName(feature_discovery::TrackableFeature feature) {
   return FindMappedFeatureInfo(feature).name;
 }
 
-// Returns the histogram mapped by `feature`.
-const char* FindMappedHistogram(feature_discovery::TrackableFeature feature) {
-  return FindMappedFeatureInfo(feature).histogram;
+// Calculates the histogram for metric reporting. `feature` specifies a
+// trackable feature. `in_tablet` is true if the observation on `feature` is
+// activated in tablet.
+// NOTE: if the metric reporting for `feature` is not separated by tablet mode,
+// `in_tablet` is null.
+const char* CalculateHistogram(feature_discovery::TrackableFeature feature,
+                               absl::optional<bool> in_tablet) {
+  const feature_discovery::TrackableFeatureInfo& info =
+      FindMappedFeatureInfo(feature);
+  if (!info.split_by_tablet_mode)
+    return info.histogram;
+
+  DCHECK(in_tablet);
+  return *in_tablet ? info.histogram_tablet : info.histogram_clamshell;
 }
 
 }  // namespace
@@ -98,7 +119,9 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
   // TODO(https://crbug.com/1311344): implement the option that allows the
   // observation start time gets reset by the subsequent observation
   // activation callings.
-  const char* feature_name = FindMappedName(feature);
+  const feature_discovery::TrackableFeatureInfo& info =
+      FindMappedFeatureInfo(feature);
+  const char* feature_name = info.name;
   if (observed_features->GetDict().Find(feature_name))
     return;
 
@@ -107,6 +130,13 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
   observed_feature_data.Set(kCumulatedDuration,
                             base::TimeDeltaToValue(base::TimeDelta()));
   observed_feature_data.Set(kIsObservationFinished, false);
+  if (info.split_by_tablet_mode) {
+    // Record the current tablet mode if `feature`'s discovery duration data
+    // should be separated by tablet mode.
+    observed_feature_data.Set(kActivatedInTablet,
+                              TabletMode::Get()->IsInTabletMode());
+  }
+
   DictionaryPrefUpdate update(active_pref_service_, kObservedFeatures);
   update->GetDict().Set(feature_name,
                         base::Value(std::move(observed_feature_data)));
@@ -137,18 +167,47 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
   const absl::optional<base::TimeDelta> accumulated_duration =
       base::ValueToTimeDelta(feature_pref_data->Find(kCumulatedDuration));
   DCHECK(accumulated_duration);
-  ReportFeatureDiscoveryDuration(
-      FindMappedHistogram(feature),
-      *accumulated_duration + base::TimeTicks::Now() - iter->second);
+
+  bool skip_report = false;
+
+  // Get the boolean that indicates under which mode (clamshell or tablet) the
+  // observation is activated. If the metric data should not be separated, the
+  // value is null.
+  absl::optional<bool> activated_in_tablet;
+  if (FindMappedFeatureInfo(feature).split_by_tablet_mode) {
+    activated_in_tablet = feature_pref_data->FindBool(kActivatedInTablet);
+    DCHECK(activated_in_tablet);
+
+    // It is abnormal to miss `activated_in_tablet`. Handle this case for
+    // safety. Skip metric reporting if `activated_in_tablet` is missing when
+    // the metric data should be split by tablet mode. One reason leading to
+    // this case is that a feature switches from non-split to tablet-mode-split
+    // due to later code changes.
+    if (!activated_in_tablet) {
+      LOG(ERROR) << "Cannot find the tablet mode state under which the feature "
+                    "observation starts for "
+                 << FindMappedName(feature);
+      skip_report = true;
+    }
+  }
+
+  // Report metric data if there is no errors.
+  if (!skip_report) {
+    ReportFeatureDiscoveryDuration(
+        CalculateHistogram(feature, activated_in_tablet),
+        *accumulated_duration + base::TimeTicks::Now() - iter->second);
+  }
 
   // Update the observed feature pref data by:
   // 1. Clearing the cumulated duration
   // 2. Marking that the observation finishes
+  // 3. Erasing the saved tablet state if any
   DictionaryPrefUpdate update(active_pref_service_, kObservedFeatures);
   base::Value::Dict* mutable_feature_pref_data =
       update->GetDict().FindDict(feature_name);
   mutable_feature_pref_data->Remove(kCumulatedDuration);
   mutable_feature_pref_data->Set(kIsObservationFinished, true);
+  mutable_feature_pref_data->Remove(kActivatedInTablet);
 
   active_time_recordings_.erase(iter);
 }
