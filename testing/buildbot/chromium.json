@@ -21,6 +21,12 @@
       "all"
     ]
   },
+  "lacros-arm-archive-rel": {
+    "additional_compile_targets": [
+      "chrome",
+      "lacros_version_metadata"
+    ]
+  },
   "lacros64-archive-rel": {
     "additional_compile_targets": [
       "chrome",

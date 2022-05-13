@@ -55,6 +55,7 @@
       'android-archive-rel': 'android_without_codecs_release_bot_minimal_symbols_reclient',
       'android-official': 'android_official_optimize_reclient',
       'fuchsia-official': 'fuchsia_official_optimize_goma',
+      'lacros-arm-archive-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-rel': 'release_bot_reclient',

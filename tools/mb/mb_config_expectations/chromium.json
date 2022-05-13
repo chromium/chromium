@@ -36,6 +36,19 @@
       "use_goma": true
     }
   },
+  "lacros-arm-archive-rel": {
+    "args_file": "//build/args/chromeos/arm-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "is_debug": false,
+      "ozone_platform_headless": true,
+      "target_os": "chromeos",
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "lacros64-archive-rel": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
