@@ -74150,7 +74150,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Password not submitted"/>
   <int value="3" label="Generated password overridden by a non-generated one"/>
   <int value="4" label="Password used"/>
-  <int value="5" label="Generated password submission would have failed"/>
+  <int value="5" label="Generated password submission failed"/>
 </enum>
 
 <enum name="PasswordSuggestionType">
