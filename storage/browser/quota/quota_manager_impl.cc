@@ -201,14 +201,12 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
         base::BindOnce(&UsageAndQuotaInfoGatherer::OnBarrierComplete,
                        weak_factory_.GetWeakPtr()));
 
-    const std::string& host = storage_key_.origin().host();
-
     manager()->GetQuotaSettings(
         base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotSettings,
                        weak_factory_.GetWeakPtr(), barrier));
-    manager()->GetHostUsageWithBreakdown(
-        host, type_,
-        base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotHostUsage,
+    manager()->GetStorageKeyUsageWithBreakdown(
+        storage_key_, type_,
+        base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotStorageKeyUsage,
                        weak_factory_.GetWeakPtr(), barrier));
 
     // Determine host_quota differently depending on type.
@@ -216,15 +214,17 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
       manager()->GetStorageCapacity(
           base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotCapacity,
                          weak_factory_.GetWeakPtr(), barrier));
-      SetDesiredHostQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
-                          kNoLimit);
+      SetDesiredStorageKeyQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
+                                kNoLimit);
     } else if (type_ == StorageType::kSyncable) {
-      SetDesiredHostQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
-                          kSyncableStorageDefaultHostQuota);
+      SetDesiredStorageKeyQuota(barrier, blink::mojom::QuotaStatusCode::kOk,
+                                kSyncableStorageDefaultHostQuota);
     } else if (type_ == StorageType::kPersistent) {
+      const std::string& host = storage_key_.origin().host();
       manager()->GetPersistentHostQuota(
-          host, base::BindOnce(&UsageAndQuotaInfoGatherer::SetDesiredHostQuota,
-                               weak_factory_.GetWeakPtr(), barrier));
+          host,
+          base::BindOnce(&UsageAndQuotaInfoGatherer::SetDesiredStorageKeyQuota,
+                         weak_factory_.GetWeakPtr(), barrier));
     } else {
       DCHECK_EQ(StorageType::kTemporary, type_);
       // For temporary storage,  OnGotSettings will set the host quota.
@@ -246,30 +246,33 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     weak_factory_.InvalidateWeakPtrs();
 
-    int64_t host_quota = quota_override_size_.has_value()
-                             ? quota_override_size_.value()
-                             : desired_host_quota_;
+    int64_t storage_key_quota = quota_override_size_.has_value()
+                                    ? quota_override_size_.value()
+                                    : desired_storage_key_quota_;
 
     if (is_unlimited_) {
       int64_t temp_pool_free_space =
           std::max(static_cast<int64_t>(0),
                    available_space_ - settings_.must_remain_available);
-      // Constrain the desired |host_quota| to something that fits.
-      if (host_quota > temp_pool_free_space) {
-        host_quota = available_space_ + host_usage_;
+      // Constrain the desired |storage_key_quota| to something that fits.
+      if (storage_key_quota > temp_pool_free_space) {
+        storage_key_quota = available_space_ + storage_key_usage_;
       }
     }
 
-    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk, host_usage_,
-                             host_quota, is_override_enabled_,
-                             std::move(host_usage_breakdown_));
+    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk,
+                             storage_key_usage_, storage_key_quota,
+                             is_override_enabled_,
+                             std::move(storage_key_usage_breakdown_));
     if (type_ == StorageType::kTemporary && !is_incognito_ &&
         !is_unlimited_) {
-      UMA_HISTOGRAM_MBYTES("Quota.QuotaForOrigin", host_quota);
-      UMA_HISTOGRAM_MBYTES("Quota.UsageByOrigin", host_usage_);
-      if (host_quota > 0) {
-        UMA_HISTOGRAM_PERCENTAGE("Quota.PercentUsedByOrigin",
-            std::min(100, static_cast<int>((host_usage_ * 100) / host_quota)));
+      UMA_HISTOGRAM_MBYTES("Quota.QuotaForOrigin", storage_key_quota);
+      UMA_HISTOGRAM_MBYTES("Quota.UsageByOrigin", storage_key_usage_);
+      if (storage_key_quota > 0) {
+        UMA_HISTOGRAM_PERCENTAGE(
+            "Quota.PercentUsedByOrigin",
+            std::min(100, static_cast<int>((storage_key_usage_ * 100) /
+                                           storage_key_quota)));
       }
     }
     DeleteSoon();
@@ -289,11 +292,12 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     settings_ = settings;
     barrier_closure.Run();
     if (type_ == StorageType::kTemporary && !is_unlimited_) {
-      int64_t host_quota = is_session_only_
-                               ? settings.session_only_per_host_quota
-                               : settings.per_host_quota;
-      SetDesiredHostQuota(std::move(barrier_closure),
-                          blink::mojom::QuotaStatusCode::kOk, host_quota);
+      int64_t storage_key_quota = is_session_only_
+                                      ? settings.session_only_per_host_quota
+                                      : settings.per_host_quota;
+      SetDesiredStorageKeyQuota(std::move(barrier_closure),
+                                blink::mojom::QuotaStatusCode::kOk,
+                                storage_key_quota);
     }
   }
 
@@ -310,9 +314,9 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     std::move(barrier_closure).Run();
   }
 
-  void OnGotHostUsage(base::OnceClosure barrier_closure,
-                      int64_t usage,
-                      blink::mojom::UsageBreakdownPtr usage_breakdown) {
+  void OnGotStorageKeyUsage(base::OnceClosure barrier_closure,
+                            int64_t usage,
+                            blink::mojom::UsageBreakdownPtr usage_breakdown) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(barrier_closure);
     DCHECK_GE(usage, -1);
@@ -324,19 +328,19 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK_GE(usage_breakdown->serviceWorkerCache, 0);
     DCHECK_GE(usage_breakdown->webSql, 0);
 
-    host_usage_ = usage;
-    host_usage_breakdown_ = std::move(usage_breakdown);
+    storage_key_usage_ = usage;
+    storage_key_usage_breakdown_ = std::move(usage_breakdown);
     std::move(barrier_closure).Run();
   }
 
-  void SetDesiredHostQuota(base::OnceClosure barrier_closure,
-                           blink::mojom::QuotaStatusCode status,
-                           int64_t quota) {
+  void SetDesiredStorageKeyQuota(base::OnceClosure barrier_closure,
+                                 blink::mojom::QuotaStatusCode status,
+                                 int64_t quota) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(barrier_closure);
     DCHECK_GE(quota, 0);
 
-    desired_host_quota_ = quota;
+    desired_storage_key_quota_ = quota;
     std::move(barrier_closure).Run();
   }
 
@@ -350,11 +354,11 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   const bool is_incognito_;
   int64_t available_space_ = 0;
   int64_t total_space_ = 0;
-  int64_t desired_host_quota_ = 0;
-  int64_t host_usage_ = 0;
+  int64_t desired_storage_key_quota_ = 0;
+  int64_t storage_key_usage_ = 0;
   const bool is_override_enabled_;
   absl::optional<int64_t> quota_override_size_;
-  blink::mojom::UsageBreakdownPtr host_usage_breakdown_;
+  blink::mojom::UsageBreakdownPtr storage_key_usage_breakdown_;
   QuotaSettings settings_;
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -1654,6 +1658,19 @@ void QuotaManagerImpl::GetHostUsageWithBreakdown(
   UsageTracker* usage_tracker = GetUsageTracker(type);
   DCHECK(usage_tracker);
   usage_tracker->GetHostUsageWithBreakdown(host, std::move(callback));
+}
+
+void QuotaManagerImpl::GetStorageKeyUsageWithBreakdown(
+    const blink::StorageKey& storage_key,
+    StorageType type,
+    UsageWithBreakdownCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  UsageTracker* usage_tracker = GetUsageTracker(type);
+  DCHECK(usage_tracker);
+  usage_tracker->GetStorageKeyUsageWithBreakdown(storage_key,
+                                                 std::move(callback));
 }
 
 void QuotaManagerImpl::GetBucketUsageWithBreakdown(
