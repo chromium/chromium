@@ -5594,7 +5594,7 @@
   {
     "name": "subframe-shutdown-delay",
     "owners": [ "jessemckenna@google.com", "olivierli" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "suggestions-scrolling-ipad",
