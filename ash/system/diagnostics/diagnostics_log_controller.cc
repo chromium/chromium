@@ -17,6 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "components/session_manager/session_manager_types.h"
 
 namespace ash {
@@ -70,8 +72,16 @@ bool DiagnosticsLogController::IsInitialized() {
 void DiagnosticsLogController::Initialize(
     std::unique_ptr<DiagnosticsBrowserDelegate> delegate) {
   DCHECK(g_instance);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
   g_instance->delegate_ = std::move(delegate);
   g_instance->ResetAndInitializeLogWriters();
+
+  // Schedule removal of log directory.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DiagnosticsLogController::RemoveDirectory,
+                     g_instance->weak_ptr_factory_.GetWeakPtr(),
+                     g_instance->log_base_path_));
 }
 
 bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
@@ -135,7 +145,15 @@ void DiagnosticsLogController::OnLoginStatusChanged(LoginStatus login_status) {
     return;
   }
 
-  g_instance->ResetLogBasePath();
+  g_instance->ResetAndInitializeLogWriters();
+}
+
+void DiagnosticsLogController::RemoveDirectory(const base::FilePath& path) {
+  DCHECK(!path.empty());
+
+  if (base::PathExists(path)) {
+    base::DeletePathRecursively(path);
+  }
 }
 
 }  // namespace diagnostics

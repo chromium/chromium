@@ -11,6 +11,8 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 
 namespace ash {
 namespace diagnostics {
@@ -65,11 +67,18 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   // Ensure log_base_path_ set based on current session and ash::LoginStatus.
   void ResetLogBasePath();
 
+  // Removes directory at |path|.
+  void RemoveDirectory(const base::FilePath& path);
+
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
   base::FilePath log_base_path_;
   std::unique_ptr<NetworkingLog> networking_log_;
   std::unique_ptr<RoutineLog> routine_log_;
   std::unique_ptr<TelemetryLog> telemetry_log_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Must be last.
+  base::WeakPtrFactory<DiagnosticsLogController> weak_ptr_factory_{this};
 };
 
 }  // namespace diagnostics

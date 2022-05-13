@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
+#include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/test/ash_test_base.h"
@@ -237,6 +238,34 @@ TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
       "diagnostics_routines_network.log")));
   EXPECT_TRUE(base::PathExists(
       expected_diagnostics_log_path.Append("diagnostics_routines_system.log")));
+}
+
+TEST_F(DiagnosticsLogControllerTest, ClearLogDirectoryOnInitialize) {
+  base::ScopedTempDir scoped_dir;
+  EXPECT_TRUE(scoped_dir.CreateUniqueTempDir());
+  const base::FilePath expected_path_regular_user =
+      base::FilePath(scoped_dir.GetPath().Append("fake-user"));
+  const base::FilePath expected_diagnostics_log_path =
+      expected_path_regular_user.Append(kDiangosticsDirName);
+  EXPECT_TRUE(base::CreateDirectory(expected_diagnostics_log_path));
+  EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
+  SimulateUserLogin(kTestUserEmail);
+  DiagnosticsLogController::Initialize(
+      std::make_unique<FakeDiagnosticsBrowserDelegate>(
+          expected_path_regular_user));
+
+  // Wait for delete to complete.
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(expected_diagnostics_log_path));
+
+  // Before routines updated log file does not exist.
+  RoutineLog* routine_log = DiagnosticsLogController::Get()->GetRoutineLog();
+  routine_log->LogRoutineCancelled(mojom::RoutineType::kDnsResolution);
+
+  // Wait for append to write logs.
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(expected_diagnostics_log_path, log_base_path());
+  EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path));
 }
 
 }  // namespace diagnostics
