@@ -89,13 +89,8 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   }
 
   // The resubmit data action cannot be presented as the view was not
-  // yet added to the window. Retry after |kDelayBetweenAttemptsNanoSecs|.
-  // TODO(crbug.com/227868): The strategy to poll until the resubmit data action
-  // sheet can be presented is a temporary workaround. This needs to be
-  // refactored to match the Chromium implementation:
-  // * web_controller should notify/ the BVC once an action sheet should be
-  //   shown.
-  // * BVC should present the action sheet and then trigger the reload
+  // yet added to the window or another VC is being presented. Retry after
+  // |kDelayBetweenAttemptsNanoSecs|.
   const NSUInteger kMaximumNumberAttempts = 10;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;
