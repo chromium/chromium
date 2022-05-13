@@ -421,8 +421,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 // Verify that a sad frame shown when its parent frame is loading is logged
 // with appropriate metrics, namely as kShownWhileAncestorIsLoading rather than
 // kShownAfterCrashing. See https://crbug.com/1132938.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
-                       CrashedFencedframeVisibilityMetricsDuringParentLoad) {
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTestWithSadFrameTabReload,
+    // TODO(crbug.com/1325478): Re-enable this test
+    DISABLED_CrashedFencedframeVisibilityMetricsDuringParentLoad) {
   // Since Fenced Frames should create a renderer per fenced frame, we
   // do not need to explicitly change the site.
   GURL main_url(
