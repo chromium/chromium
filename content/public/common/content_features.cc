@@ -582,7 +582,7 @@ const base::Feature kNavigationThreadingOptimizations{
 
 // If the network service is enabled, runs it in process.
 const base::Feature kNetworkServiceInProcess {
-  "NetworkServiceInProcess",
+  "NetworkServiceInProcess2",
 #if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
