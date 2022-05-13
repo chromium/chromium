@@ -1275,5 +1275,57 @@ suite('network-config', function() {
         });
       });
     });
+
+    test('WiFi PEAP No Certs', async function() {
+      setNetworkType(
+          chromeos.networkConfig.mojom.NetworkType.kWiFi,
+          chromeos.networkConfig.mojom.SecurityType.kWpaEap);
+      setAuthenticated();
+      initNetworkConfig();
+      networkConfig.shareNetwork_ = false;
+      networkConfig.set('eapProperties_.outer', 'PEAP');
+      await mojoApi_.whenCalled('getNetworkCertificates');
+      await flushAsync();
+      const outer = networkConfig.$$('#outer');
+      assertEquals('PEAP', outer.value);
+      // 'default' Server CA should be selected in case of no certificates
+      assertEquals('default', networkConfig.selectedServerCaHash_);
+      // 'no-user-cert' is selected as user certificate because a
+      // user certificate is not needed for PEAP
+      assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
+    });
+
+    test('WiFi PEAP Certs', async function() {
+      setNetworkType(
+          chromeos.networkConfig.mojom.NetworkType.kWiFi,
+          chromeos.networkConfig.mojom.SecurityType.kWpaEap);
+      setAuthenticated();
+      mojoApi_.setCertificatesForTest(
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [{
+            hash: kUserHash1,
+            pemOrId: kUserCertId,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: false
+          }]);
+      initNetworkConfig();
+      networkConfig.shareNetwork_ = false;
+      networkConfig.set('eapProperties_.outer', 'PEAP');
+      await mojoApi_.whenCalled('getNetworkCertificates');
+      await flushAsync();
+      const outer = networkConfig.$$('#outer');
+      assertEquals('PEAP', outer.value);
+      // The first Server CA should be selected.
+      assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
+      // 'no-user-cert' is selected as user certificate because a
+      // user certificate is not needed for PEAP
+      assertEquals('no-user-cert', networkConfig.selectedUserCertHash_);
+    });
   });
 });

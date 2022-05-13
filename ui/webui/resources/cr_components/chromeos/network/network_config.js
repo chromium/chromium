@@ -421,10 +421,11 @@ Polymer({
     'updateHiddenNetworkWarning_(autoConnect_)',
     'updateConfigProperties_(mojoType_, managedProperties_)',
     'updateSecurity_(configProperties_, securityType_)',
+    'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_, ' +
+        'securityType_, eapProperties_.outer)',
     'updateEapOuter_(eapProperties_.outer)',
     'updateEapCerts_(eapProperties_.*, serverCaCerts_, userCerts_)',
     'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
-    'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_)',
     'updateVpnType_(configProperties_, vpnType_, ipsecAuthType_)',
     'updateVpnIPsecAuthTypeItems_(vpnType_)',
     'updateVpnIPsecCerts_(vpnType_, ipsecAuthType_,' +
@@ -1107,6 +1108,12 @@ Polymer({
     } else {
       this.set('eapProperties_.inner', undefined);
     }
+
+    if (eap.outer !== 'EAP-TLS') {
+      this.set('eapProperties_.clientCertType', 'None');
+      this.set('eapProperties_.clientCertPkcs11Id', '');
+      this.selectedUserCertHash_ = NO_USER_CERT_HASH;
+    }
   },
 
   /** @private */
@@ -1303,8 +1310,15 @@ Polymer({
         cert.hash = '';
       }  // Clear the hash to invalidate the certificate.
     });
-    if (isOpenVpn) {
-      // OpenVPN allows but does not require a user certificate.
+
+    const isEap = this.securityType_ === mojom.SecurityType.kWpaEap;
+    const isEapTls = isEap && this.eapProperties_.outer === 'EAP-TLS';
+
+    // User certificate is allowed but not required for OpenVPN and
+    // EAP protocols except EAP-TLS (required for EAP-TLS)
+    const isUserCertOptional = isOpenVpn || (isEap && !isEapTls);
+
+    if (isUserCertOptional) {
       userCerts.unshift(this.getDefaultCert_(
           chromeos.networkConfig.mojom.CertificateType.kUserCert,
           this.i18n('networkNoUserCert'), NO_USER_CERT_HASH));
