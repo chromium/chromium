@@ -230,17 +230,7 @@
 <script>
   setup(() => {
     assert_implements_container_queries();
-
-    // Fallback for browsers not supporting declarative Shadow DOM
-    (function attachShadowRoots(root) {
-      root.querySelectorAll("template[shadowroot]").forEach(template => {
-        const mode = template.getAttribute("shadowroot");
-        const shadowRoot = template.parentNode.attachShadow({ mode });
-        shadowRoot.appendChild(template.content);
-        template.remove();
-        attachShadowRoots(shadowRoot);
-      });
-    })(document);
+    polyfill_declarative_shadow_dom(document);
   });
 
   const green = "rgb(0, 128, 0)";

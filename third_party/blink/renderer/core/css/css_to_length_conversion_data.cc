@@ -53,7 +53,7 @@ PhysicalAxes SupportedAxes(const ComputedStyle& style) {
 absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axes,
                                                 Element* nearest_container) {
   for (Element* element = nearest_container; element;
-       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+       element = element->ParentOrShadowHostElement()) {
     auto* evaluator = element->GetContainerQueryEvaluator();
     if (!evaluator)
       continue;
