@@ -311,7 +311,8 @@ TEST_F(ActionFactoryTest, SaveImageAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = [UIImage imageNamed:@"download"];
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
+                                                      kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE);
 
@@ -361,7 +362,8 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = [UIImage imageNamed:@"select"];
+  UIImage* expectedImage = DefaultSymbolWithPointSize(
+      kCheckMarkCircleFillSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 

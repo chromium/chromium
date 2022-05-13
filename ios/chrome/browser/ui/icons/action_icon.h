@@ -28,5 +28,6 @@ extern NSString* kRequestDesktopActionSymbol;
 extern NSString* kRequestMobileActionSymbol;
 extern NSString* kFindInPageActionSymbol;
 extern NSString* kZoomTextActionSymbol;
+extern NSString* kSaveImageActionSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_ACTION_ICON_H_
