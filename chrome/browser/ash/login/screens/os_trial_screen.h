@@ -24,21 +24,19 @@ class OsTrialScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  OsTrialScreen(OsTrialScreenView* view,
+  OsTrialScreen(base::WeakPtr<OsTrialScreenView> view,
                 const ScreenExitCallback& exit_callback);
   OsTrialScreen(const OsTrialScreen&) = delete;
   OsTrialScreen& operator=(const OsTrialScreen&) = delete;
   ~OsTrialScreen() override;
 
-  void OnViewDestroyed(OsTrialScreenView* view);
-
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  OsTrialScreenView* view_ = nullptr;
+  base::WeakPtr<OsTrialScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 

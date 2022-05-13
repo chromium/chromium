@@ -762,7 +762,7 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnOsInstallScreenExit,
                             weak_factory_.GetWeakPtr())));
     append(std::make_unique<OsTrialScreen>(
-        oobe_ui->GetView<OsTrialScreenHandler>(),
+        oobe_ui->GetView<OsTrialScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnOsTrialScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
