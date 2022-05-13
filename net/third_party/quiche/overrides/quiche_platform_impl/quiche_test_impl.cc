@@ -15,7 +15,8 @@ namespace test {
 
 std::string QuicheGetCommonSourcePathImpl() {
   base::FilePath net_path = net::GetTestNetDirectory();
-  return net_path.AppendASCII("third_party/quiche/common").MaybeAsASCII();
+  return net_path.AppendASCII("third_party/quiche/src/quiche/common")
+      .MaybeAsASCII();
 }
 
 }  // namespace test
