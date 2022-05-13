@@ -481,7 +481,7 @@ Examples:
     options.root = os.path.abspath(options.root)
 
   if options.files:
-    errors = list(check_files(options.root, options.files))
+    errors = check_files(options.root, options.files)
   elif options.file_list:
     with open(options.file_list) as file_list:
       files = file_list.read().splitlines()
@@ -494,6 +494,9 @@ Examples:
     if not options.bare:
       print('Processed %s files, %d files where tested for shebang/ELF/Mach-O '
             'header' % (api.count, api.count_read_header))
+
+  # Convert to an actual list.
+  errors = list(errors)
 
   if options.json:
     with open(options.json, 'w') as f:

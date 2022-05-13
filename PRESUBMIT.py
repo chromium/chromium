@@ -1593,7 +1593,7 @@ def CheckValidHostsInDEPSOnUpload(input_api, output_api):
                                               'third_party', 'depot_tools',
                                               'gclient.py')
         input_api.subprocess.check_output(
-            [input_api.python_executable, gclient_path, 'verify'],
+            [input_api.python3_executable, gclient_path, 'verify'],
             stderr=input_api.subprocess.STDOUT)
         return []
     except input_api.subprocess.CalledProcessError as error:
@@ -1903,7 +1903,7 @@ def CheckFilePermissions(input_api, output_api):
                                              'tools', 'checkperms',
                                              'checkperms.py')
     args = [
-        input_api.python_executable, checkperms_tool, '--root',
+        input_api.python3_executable, checkperms_tool, '--root',
         input_api.change.RepositoryRoot()
     ]
     with input_api.CreateTemporaryFile() as file_list:
