@@ -94,10 +94,12 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
         break;
       case VideoFrameBufferHandleType::kGpuMemoryBufferHandle:
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
         // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
         // used by both hardware and software paths.
         // https://crbug.com/1125879
+        // On Windows, GMBs might be passed by the capture process even if
+        // the acceleration disabled during the capture.
         CHECK(media_task_runner_);
 #endif
         InitializeFromGpuMemoryBufferHandle(
@@ -125,7 +127,7 @@ struct VideoCaptureImpl::BufferContext
   }
 
   gfx::GpuMemoryBufferHandle TakeGpuMemoryBufferHandle() {
-#if BUILDFLAG(IS_MAC) or BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // The same GpuMemoryBuffersHandles will be reused repeatedly by the
     // unaccelerated macOS path. Each of these uses will call this function.
     // Ensure that this function doesn't invalidate the GpuMemoryBufferHandle
