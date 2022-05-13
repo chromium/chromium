@@ -47,8 +47,14 @@ const Feature kPartitionAllocLargeThreadCacheSize{
 const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing{
     "PartitionAllocLargeEmptySlotSpanRing", FEATURE_DISABLED_BY_DEFAULT};
 
-const Feature kPartitionAllocBackupRefPtr{"PartitionAllocBackupRefPtr",
-                                          FEATURE_DISABLED_BY_DEFAULT};
+const Feature kPartitionAllocBackupRefPtr {
+  "PartitionAllocBackupRefPtr",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+      FEATURE_ENABLED_BY_DEFAULT
+#else
+      FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
