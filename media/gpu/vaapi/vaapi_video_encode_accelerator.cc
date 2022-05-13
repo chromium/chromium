@@ -853,7 +853,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
   TRACE_EVENT1("media,gpu", "VAVEA::EncodePendingInputs",
                "pending input frames", input_queue_.size());
   while (state_ == kEncoding && !input_queue_.empty()) {
-    const std::unique_ptr<InputFrameRef>& input_frame = input_queue_.front();
+    std::unique_ptr<InputFrameRef>& input_frame = input_queue_.front();
     if (!input_frame) {
       // If this is a flush (null) frame, don't create/submit a new encode
       // result for it, but forward a null result to the
@@ -911,6 +911,17 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       }
     }
 
+    // Invalidates |input_frame| here; it notifies a client |input_frame->frame|
+    // can be reused for the future encoding.
+    // If the frame is copied (|native_input_mode_| == false), it is clearly
+    // safe to release |input_frame|. If the frame is imported
+    // (|native_input_mode_| == true), the write operation to the frame is
+    // blocked on DMA_BUF_IOCTL_SYNC because a VA-API driver protects the buffer
+    // through a DRM driver until encoding is complete, that is, vaMapBuffer()
+    // on a coded buffer returns.
+    input_frame.reset();
+    input_queue_.pop();
+
     for (auto&& job : jobs) {
       TRACE_EVENT0("media,gpu", "VAVEA::GetEncodeResult");
       std::unique_ptr<EncodeResult> result =
@@ -924,7 +935,6 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     }
 
     TryToReturnBitstreamBuffers();
-    input_queue_.pop();
   }
 }
 
