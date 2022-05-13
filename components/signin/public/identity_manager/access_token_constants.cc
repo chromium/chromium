@@ -46,6 +46,7 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
 
       // Required by cloud policy.
       GaiaConstants::kDeviceManagementServiceOAuth,
+      GaiaConstants::kSecureConnectOAuth2Scope,
 
       // Required by Permission Request Creator.
       GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
