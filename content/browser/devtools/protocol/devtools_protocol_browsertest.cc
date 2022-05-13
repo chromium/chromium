@@ -1148,12 +1148,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
 }
 
 // TODO(crbug.com/1280746): Flaky on MacOS.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossSiteNavigation DISABLED_CrossSiteNavigation
-#else
-#define MAYBE_CrossSiteNavigation CrossSiteNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_CrossSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_CrossSiteNavigation) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
 
