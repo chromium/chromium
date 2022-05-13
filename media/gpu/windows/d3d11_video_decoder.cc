@@ -191,7 +191,7 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
         profile_, config.color_space_info());
   } else if (config.codec() == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-    DCHECK(base::FeatureList::IsEnabled(kD3D11HEVCDecoding));
+    DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
         std::make_unique<D3D11H265Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),

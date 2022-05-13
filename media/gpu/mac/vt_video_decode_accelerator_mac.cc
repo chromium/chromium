@@ -395,7 +395,7 @@ bool InitializeVideoToolboxInternal() {
   }
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-  if (base::FeatureList::IsEnabled(media::kVideoToolboxHEVCDecoding)) {
+  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
     // Only macOS >= 11.0 will support hevc if we use
     // CMVideoFormatDescriptionCreateFromHEVCParameterSets
     // API to create video format
@@ -2348,7 +2348,7 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         supported_profile == HEVCPROFILE_REXT) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
       if (!workarounds.disable_accelerated_hevc_decode &&
-          base::FeatureList::IsEnabled(kVideoToolboxHEVCDecoding)) {
+          base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
         if (__builtin_available(macOS 11.0, *)) {
           // Success! We have HEVC hardware decoding (or software
           // decoding if the hardware is not good enough) support too.

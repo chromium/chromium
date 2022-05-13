@@ -329,10 +329,10 @@ TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   DONT_RUN_ON_WIN_7();
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   EnableDecoders({D3D11_DECODER_PROFILE_HEVC_VLD_MAIN});
   base::test::ScopedFeatureList scoped_feature_list;
 
@@ -343,8 +343,8 @@ TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   ASSERT_EQ(3u, no_feature_resolutions.size());
 
   // enable the feature and try again
-  scoped_feature_list.InitAndEnableFeature(kD3D11HEVCDecoding);
   SetMaxResolution(D3D11_DECODER_PROFILE_HEVC_VLD_MAIN, kSquare8k);
+  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCDecoderSupport);
   const auto resolutions_for_feature = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
   ASSERT_EQ(4u, resolutions_for_feature.size());
@@ -352,19 +352,7 @@ TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   ASSERT_NE(it, resolutions_for_feature.end());
   ASSERT_EQ(it->second.max_landscape_resolution, kSquare8k);
   ASSERT_EQ(it->second.max_portrait_resolution, kSquare8k);
-#else
-  {
-    // Even with the flag enabled and decoder supported, we shouldn't support
-    // HEVC unless the buildflag is enabled.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kD3D11HEVCDecoding);
-    EnableDecoders({D3D11_DECODER_PROFILE_HEVC_VLD_MAIN});
-    const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
-        mock_d3d11_device_, gpu_workarounds_);
-    // H264 always is supported, and it adds three profile entries.
-    ASSERT_EQ(3u, supported_resolutions.size());
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 
 }  // namespace media

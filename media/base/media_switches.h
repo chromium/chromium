@@ -161,9 +161,6 @@ MEDIA_EXPORT extern const base::Feature kLowDelayVideoRenderingOnLiveStream;
 MEDIA_EXPORT extern const base::Feature kMediaCapabilitiesQueryGpuFactories;
 MEDIA_EXPORT extern const base::Feature kMediaCapabilitiesWithParameters;
 MEDIA_EXPORT extern const base::Feature kMediaCastOverlayButton;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
-MEDIA_EXPORT extern const base::Feature kMediaCodecHEVC;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT extern const base::Feature kMediaEngagementBypassAutoplayPolicies;
 MEDIA_EXPORT extern const base::Feature kMediaEngagementHTTPSOnly;
 MEDIA_EXPORT extern const base::Feature kMediaLearningExperiment;
@@ -177,6 +174,12 @@ MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoCaptureSharedImages;
 MEDIA_EXPORT extern const base::Feature kOverlayFullscreenVideo;
 MEDIA_EXPORT extern const base::Feature kPictureInPicture;
 MEDIA_EXPORT extern const base::Feature kPlatformAudioEncoder;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                                       \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+MEDIA_EXPORT extern const base::Feature kPlatformHEVCDecoderSupport;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
+        // || IS_MAC || IS_LINUX)
 MEDIA_EXPORT extern const base::Feature kPlaybackSpeedButton;
 MEDIA_EXPORT extern const base::Feature kPreloadMediaEngagementData;
 MEDIA_EXPORT extern const base::Feature kPreloadMetadataLazyLoad;
@@ -249,9 +252,6 @@ MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_MAC)
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-MEDIA_EXPORT extern const base::Feature kVideoToolboxHEVCDecoding;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -277,7 +277,6 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
 MEDIA_EXPORT extern const base::Feature kAllowMediaFoundationFrameServerMode;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
-MEDIA_EXPORT extern const base::Feature kD3D11HEVCDecoding;
 MEDIA_EXPORT extern const base::Feature kD3D11Vp9kSVCHWDecoding;
 
 // Strategy affecting how Media Foundation Renderer determines its rendering

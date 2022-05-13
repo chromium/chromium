@@ -252,12 +252,6 @@ const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
 
 namespace media {
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
-// Enables android HW decoding of HEVC content.
-const base::Feature kMediaCodecHEVC{"MediaCodecHEVC",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
-
 // Prefer FFmpeg to LibVPX for Vp8 decoding with opaque alpha mode.
 const base::Feature kFFmpegDecodeOpaqueVP8{"FFmpegDecodeOpaqueVP8",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
@@ -279,6 +273,15 @@ const base::Feature kPictureInPicture {
       base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 };
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                                       \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+// Enables HEVC hardware accelerated decoding.
+const base::Feature kPlatformHEVCDecoderSupport{
+    "PlatformHEVCDecoderSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
+        // || IS_MAC || IS_LINUX)
 
 // Only decode preload=metadata elements upon visibility.
 // TODO(crbug.com/879406): Remove this after M76 ships to stable
@@ -800,12 +803,6 @@ const base::Feature kUseAlternateVideoDecoderImplementation{
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-const base::Feature kVideoToolboxHEVCDecoding{
-    "VideoToolboxHEVCDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-
 // Enable binding multiple shared images to a single GpuMemoryBuffer for
 // accelerated video decode using VideoToolbox.
 const base::Feature kMultiPlaneVideoToolboxSharedImages{
@@ -870,10 +867,6 @@ const base::Feature kMediaFoundationClearPlayback{
 // https://docs.microsoft.com/en-us/windows/win32/api/audioclient/ne-audioclient-audclnt_streamoptions
 const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
     "WASAPIRawAudioCapture", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables HEVC hardware accelerated decoding.
-const base::Feature kD3D11HEVCDecoding{"D3D11HEVCDecoding",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
 const base::Feature kD3D11Vp9kSVCHWDecoding{"D3D11Vp9kSVCHWDecoding",
