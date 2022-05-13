@@ -7,13 +7,13 @@
 'use strict';
 
 promise_test(() => {
-  return sharedStorage.runOperation("operation1");
-}, 'runOperation');
+  return sharedStorage.run("operation1");
+}, 'run()');
 
 promise_test(() => {
-  return sharedStorage.runOperation("operation1",
+  return sharedStorage.run("operation1",
     {data: {'custom-key': 'custom-value'}});
-}, 'runOperation with custom data');
+}, 'run() with custom data');
 
 </script>
 </body>

@@ -51,23 +51,21 @@ class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
 
   ScriptPromise clear(ScriptState*, ExceptionState&);
 
-  ScriptPromise runURLSelectionOperation(ScriptState*,
-                                         const String& name,
-                                         const Vector<String>& urls,
-                                         ExceptionState&);
-  ScriptPromise runURLSelectionOperation(
-      ScriptState*,
-      const String& name,
-      const Vector<String>& urls,
-      const SharedStorageRunOperationMethodOptions* options,
-      ExceptionState&);
+  ScriptPromise selectURL(ScriptState*,
+                          const String& name,
+                          const Vector<String>& urls,
+                          ExceptionState&);
+  ScriptPromise selectURL(ScriptState*,
+                          const String& name,
+                          const Vector<String>& urls,
+                          const SharedStorageRunOperationMethodOptions* options,
+                          ExceptionState&);
 
-  ScriptPromise runOperation(ScriptState*, const String& name, ExceptionState&);
-  ScriptPromise runOperation(
-      ScriptState*,
-      const String& name,
-      const SharedStorageRunOperationMethodOptions* options,
-      ExceptionState&);
+  ScriptPromise run(ScriptState*, const String& name, ExceptionState&);
+  ScriptPromise run(ScriptState*,
+                    const String& name,
+                    const SharedStorageRunOperationMethodOptions* options,
+                    ExceptionState&);
 
   SharedStorageWorklet* worklet(ScriptState*, ExceptionState&);
 

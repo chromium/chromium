@@ -96,9 +96,10 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   v8::Local<v8::Object> global = context->Global();
 
   url_selection_operation_handler_ =
-      std::make_unique<UrlSelectionOperationHandler>();
+      std::make_unique<UrlSelectionOperationHandler>(operation_definition_map_);
 
-  unnamed_operation_handler_ = std::make_unique<UnnamedOperationHandler>();
+  unnamed_operation_handler_ =
+      std::make_unique<UnnamedOperationHandler>(operation_definition_map_);
 
   console_ = std::make_unique<Console>(client);
   global
@@ -107,24 +108,11 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
       .Check();
 
   global
-      ->Set(
-          context,
-          gin::StringToSymbol(Isolate(), "registerURLSelectionOperation"),
-          gin::CreateFunctionTemplate(
-              Isolate(), base::BindRepeating(&SharedStorageWorkletGlobalScope::
-                                                 RegisterURLSelectionOperation,
-                                             weak_ptr_factory_.GetWeakPtr()))
-              ->GetFunction(context)
-              .ToLocalChecked())
-      .Check();
-
-  global
-      ->Set(context, gin::StringToSymbol(Isolate(), "registerOperation"),
+      ->Set(context, gin::StringToSymbol(Isolate(), "register"),
             gin::CreateFunctionTemplate(
                 Isolate(),
-                base::BindRepeating(
-                    &SharedStorageWorkletGlobalScope::RegisterOperation,
-                    weak_ptr_factory_.GetWeakPtr()))
+                base::BindRepeating(&SharedStorageWorkletGlobalScope::Register,
+                                    weak_ptr_factory_.GetWeakPtr()))
                 ->GetFunction(context)
                 .ToLocalChecked())
       .Check();
@@ -149,15 +137,6 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
       .Check();
 
   std::move(callback).Run(true, {});
-}
-
-void SharedStorageWorkletGlobalScope::RegisterURLSelectionOperation(
-    gin::Arguments* args) {
-  url_selection_operation_handler_->RegisterOperation(args);
-}
-
-void SharedStorageWorkletGlobalScope::RegisterOperation(gin::Arguments* args) {
-  unnamed_operation_handler_->RegisterOperation(args);
 }
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
@@ -199,6 +178,56 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   WorkletV8Helper::HandleScope scope(Isolate());
   unnamed_operation_handler_->RunOperation(
       LocalContext(), name, serialized_data, std::move(callback));
+}
+
+void SharedStorageWorkletGlobalScope::Register(gin::Arguments* args) {
+  std::string name;
+  if (!args->GetNext(&name)) {
+    args->ThrowTypeError("Missing \"name\" argument in operation registration");
+    return;
+  }
+
+  if (name.empty()) {
+    args->ThrowTypeError("Operation name cannot be empty");
+    return;
+  }
+
+  if (operation_definition_map_.count(name)) {
+    args->ThrowTypeError("Operation name already registered");
+    return;
+  }
+
+  v8::Local<v8::Object> class_definition;
+  if (!args->GetNext(&class_definition)) {
+    args->ThrowTypeError(
+        "Missing class name argument in operation registration");
+    return;
+  }
+
+  if (!class_definition->IsConstructor()) {
+    args->ThrowTypeError("Unexpected class argument: not a constructor");
+    return;
+  }
+
+  v8::Isolate* isolate = args->isolate();
+  v8::Local<v8::Context> context = args->GetHolderCreationContext();
+
+  v8::Local<v8::Value> class_prototype =
+      class_definition->Get(context, gin::StringToV8(isolate, "prototype"))
+          .ToLocalChecked();
+
+  v8::Local<v8::Value> run_function =
+      class_prototype.As<v8::Object>()
+          ->Get(context, gin::StringToV8(isolate, "run"))
+          .ToLocalChecked();
+
+  if (run_function->IsUndefined() || !run_function->IsFunction()) {
+    args->ThrowTypeError("Missing \"run()\" function in the class");
+    return;
+  }
+
+  operation_definition_map_.emplace(
+      name, v8::Global<v8::Function>(isolate, run_function.As<v8::Function>()));
 }
 
 v8::Isolate* SharedStorageWorkletGlobalScope::Isolate() {

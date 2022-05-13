@@ -27,8 +27,7 @@ class TestURLSelectionOperation {
   }
 }
 
-registerOperation("test-operation", TestOperation);
-registerURLSelectionOperation(
-  "test-url-selection-operation", TestURLSelectionOperation);
+register("test-operation", TestOperation);
+register("test-url-selection-operation", TestURLSelectionOperation);
 
 console.log('Finish executing simple_module.js')

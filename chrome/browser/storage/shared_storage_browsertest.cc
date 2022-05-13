@@ -184,12 +184,11 @@ class SharedStorageChromeBrowserTest
                   "/shared_storage/customizable_module.js",
                   run_function_body_replacement));
 
-    // We allow Shared Storage for `addModule()` and `runOperation()`, but any
-    // operations nested within the script run by `runOperation()` will have
-    // preferences applied according to test parameters. When the latter
-    // disallow Shared Storage, it siumlates the situation where preferences
-    // are updated to block Shared Storage during the course of a previously
-    // allowed `runOperation()` call.
+    // We allow Shared Storage for `addModule()` and `run()`, but any operations
+    // nested within the script run by `run()` will have preferences applied
+    // according to test parameters. When the latter disallow Shared Storage, it
+    // siumlates the situation where preferences are updated to block Shared
+    // Storage during the course of a previously allowed `run()` call.
     content::SetBypassIsSharedStorageAllowed(/*allow=*/true);
 
     EXPECT_TRUE(content::ExecJs(
@@ -214,7 +213,7 @@ class SharedStorageChromeBrowserTest
         {last_script_message, content::GetSharedStorageDisabledMessage()}));
 
     content::EvalJsResult result = content::EvalJs(execution_target, R"(
-        sharedStorage.runOperation('test-operation');
+        sharedStorage.run('test-operation');
       )");
 
     script_console_observer.Wait();
@@ -291,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, RunOperation) {
 
   content::EvalJsResult run_op_result =
       content::EvalJs(GetActiveWebContents(), R"(
-      sharedStorage.runOperation(
+      sharedStorage.run(
           'test-operation', {data: {'customKey': 'customValue'}});
     )");
 
@@ -326,7 +325,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 
   content::EvalJsResult run_url_op_result =
       content::EvalJs(GetActiveWebContents(), R"(
-      sharedStorage.runURLSelectionOperation(
+      sharedStorage.selectURL(
           'test-url-selection-operation',
           ["fenced_frames/title0.html", "fenced_frames/title1.html",
           "fenced_frames/title2.html"], {data: {'mockResult': 1}});

@@ -39,7 +39,7 @@ async function generateURN(href, keylist = []) {
   }
 
   const full_url = generateURL(href, keylist);
-  return await sharedStorage.runURLSelectionOperation(
+  return await sharedStorage.selectURL(
       "test-url-selection-operation", [full_url], {data: {'mockResult': 0}}
   );
 }

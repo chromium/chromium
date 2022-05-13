@@ -8,4 +8,4 @@ class TestOperation {
   }
 }
 
-registerOperation("test-operation", TestOperation);
+register("test-operation", TestOperation);
