@@ -138,11 +138,9 @@ crbug.com/1099955 [ angle-swiftshader no-swiftshader-gl linux ] WebglExtension_E
 crbug.com/1099955 [ angle-swiftshader no-swiftshader-gl win   ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 
 # Extensions not available under D3D9
-[ win angle-d3d9 no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
 [ win amd angle-d3d9 ] WebglExtension_WEBGL_depth_texture [ Skip ]
 [ win angle-d3d9 ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-[ win angle-d3d9 ] WebglExtension_OES_fbo_render_mipmap [ Skip ]
 [ win angle-d3d9 ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 [ win angle-d3d9 no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 
@@ -441,10 +439,6 @@ crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.h
 
 # Mark ANGLE's OpenGL as flaky on Windows Nvidia
 crbug.com/582083 [ win nvidia angle-opengl ] conformance/* [ RetryOnFailure ]
-
-# D3D9 / Passthrough command decoder
-crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 
 # D3D9 / AMD RX 5500 XT / Passthrough command decoder
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/uniformOutOfBounds.html [ RetryOnFailure ]
