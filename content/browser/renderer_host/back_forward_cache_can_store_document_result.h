@@ -62,8 +62,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToAXEvents(const std::vector<ui::AXEvent>& events);
   void RecordAXEvent(ax::mojom::Event event_type);
 
+  // The conditions for storing and restoring the pages are different in that
+  // pages with cache-control:no-store can enter back/forward cache depending on
+  // the experiment flag, but can never be restored.
   bool CanStore() const;
-  operator bool() const { return CanStore(); }
+  bool CanRestore() const;
 
   const NotRestoredReasons& not_restored_reasons() const {
     return not_restored_reasons_;

@@ -752,12 +752,14 @@ void RenderFrameHostManager::UnloadOldFrame(
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
 
-    BackForwardCacheCanStoreDocumentResultWithTree can_store =
-        back_forward_cache.CanStorePageNow(old_render_frame_host.get());
+    BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
+        back_forward_cache.GetCurrentBackForwardCacheEligibility(
+            old_render_frame_host.get());
     TRACE_EVENT("navigation", "BackForwardCache_MaybeStorePage",
-                "old_render_frame_host", old_render_frame_host, "can_store",
-                can_store.flattened_reasons.ToString());
-    if (can_store) {
+                "old_render_frame_host", old_render_frame_host,
+                "bfcache_eligibility",
+                bfcache_eligibility.flattened_reasons.ToString());
+    if (bfcache_eligibility.CanStore()) {
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
@@ -770,7 +772,8 @@ void RenderFrameHostManager::UnloadOldFrame(
     }
 
     if (old_page_back_forward_cache_metrics) {
-      old_page_back_forward_cache_metrics->SetNotRestoredReasons(can_store);
+      old_page_back_forward_cache_metrics->SetNotRestoredReasons(
+          bfcache_eligibility);
     }
   }
 
@@ -1793,23 +1796,24 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   NavigationControllerImpl& controller =
       render_frame_host_->frame_tree_node()->navigator().controller();
 
-  auto can_store =
-      controller.GetBackForwardCache().CanPotentiallyStorePageLater(
-          render_frame_host_.get());
-  if (can_store) {
+  auto bfcache_eligibility = controller.GetBackForwardCache()
+                                 .GetFutureBackForwardCacheEligibilityPotential(
+                                     render_frame_host_.get());
+  if (bfcache_eligibility.CanStore()) {
     if (is_same_site) {
       return ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap;
     } else {
       return ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap;
     }
   } else {
-    // As CanPotentiallyStorePageLater is used instead of CanStorePageNow, non-
-    // sticky reasons are not recorded here. This is intentional because it is
-    // impossible to get correct non-sticky reasons at this timing.
+    // As GetFutureBackForwardCacheEligibilityPotential is used instead of
+    // GetCurrentBackForwardCacheEligibility, non- sticky reasons are not
+    // recorded here. This is intentional because it is impossible to get
+    // correct non-sticky reasons at this timing.
     BackForwardCacheMetrics* back_forward_cache_metrics =
         render_frame_host_->GetBackForwardCacheMetrics();
     if (back_forward_cache_metrics) {
-      back_forward_cache_metrics->SetNotRestoredReasons(can_store);
+      back_forward_cache_metrics->SetNotRestoredReasons(bfcache_eligibility);
     }
     return ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache;
   }
