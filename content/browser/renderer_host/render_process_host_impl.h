@@ -18,6 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -214,6 +215,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   BrowserContext* GetBrowserContext() override;
   bool InSameStoragePartition(StoragePartition* partition) override;
   int GetID() const override;
+  base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
   void SetBlocked(bool blocked) override;
   bool IsBlocked() override;
@@ -1197,6 +1199,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost
   // is recycled.
   base::WeakPtrFactory<RenderProcessHostImpl> instance_weak_factory_{this};
+
+  // A WeakPtrFactory that doesn't get reset, unlike |instance_weak_factory_|
+  // above. This is used to create SafeRefs.
+  base::WeakPtrFactory<RenderProcessHostImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

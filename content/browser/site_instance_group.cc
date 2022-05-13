@@ -5,6 +5,8 @@
 #include "content/browser/site_instance_group.h"
 
 #include "base/observer_list.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace content {
@@ -16,19 +18,16 @@ SiteInstanceGroupId::Generator site_instance_group_id_generator;
 SiteInstanceGroup::SiteInstanceGroup(BrowsingInstanceId browsing_instance_id,
                                      RenderProcessHost* process)
     : id_(site_instance_group_id_generator.GenerateNextId()),
-      browsing_instance_id_(browsing_instance_id) {
-  SetProcessAndAgentSchedulingGroup(process);
+      browsing_instance_id_(browsing_instance_id),
+      process_(process->GetSafeRef()),
+      agent_scheduling_group_(
+          AgentSchedulingGroupHost::GetOrCreate(*this, *process)
+              ->GetSafeRef()) {
+  process->AddObserver(this);
 }
 
 SiteInstanceGroup::~SiteInstanceGroup() {
-  if (!process_)
-    return;
-
   process_->RemoveObserver(this);
-
-  // Ensure the RenderProcessHost gets deleted if this SiteInstanceGroup
-  // created a process which was never used by any listeners.
-  process_->Cleanup();
 }
 
 SiteInstanceGroupId SiteInstanceGroup::GetId() const {
@@ -47,6 +46,16 @@ void SiteInstanceGroup::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void SiteInstanceGroup::AddSiteInstance(SiteInstanceImpl* site_instance) {
+  site_instances_.insert(site_instance);
+}
+
+void SiteInstanceGroup::RemoveSiteInstance(SiteInstanceImpl* site_instance) {
+  site_instances_.erase(site_instance);
+  if (site_instances_.empty())
+    process_->Cleanup();
+}
+
 void SiteInstanceGroup::IncrementActiveFrameCount() {
   active_frame_count_++;
 }
@@ -58,23 +67,15 @@ void SiteInstanceGroup::DecrementActiveFrameCount() {
   }
 }
 
-void SiteInstanceGroup::SetProcessAndAgentSchedulingGroup(
-    RenderProcessHost* process) {
-  // It is never safe to change |process_| without going through
-  // RenderProcessHostDestroyed first to set it to null. Otherwise, same-site
-  // frames will end up in different processes and everything will get confused.
-  CHECK(!process_);
-  process->AddObserver(this);
-  process_ = process;
-  agent_scheduling_group_ =
-      AgentSchedulingGroupHost::GetOrCreate(*this, *process);
-}
-
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  DCHECK_EQ(process_, host);
+  DCHECK_EQ(process_->GetID(), host->GetID());
   process_->RemoveObserver(this);
-  process_ = nullptr;
-  agent_scheduling_group_ = nullptr;
+
+  // Remove references to `this` from all SiteInstances in this group. That will
+  // cause `this` to be destructed, to enforce the invariant that a
+  // SiteInstanceGroup must have a RenderProcessHost.
+  for (auto* instance : site_instances_)
+    instance->ResetSiteInstanceGroup();
 }
 
 void SiteInstanceGroup::RenderProcessExited(

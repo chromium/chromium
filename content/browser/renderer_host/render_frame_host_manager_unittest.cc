@@ -1982,11 +1982,9 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   EXPECT_TRUE(delete_watcher1.deleted());
   EXPECT_TRUE(delete_watcher2.deleted());
 
-  EXPECT_EQ(0U, site_instance->group()->active_frame_count());
-  EXPECT_EQ(nullptr, root_manager->current_frame_host()
-                         ->browsing_context_state()
-                         ->GetRenderFrameProxyHost(site_instance->group()))
-      << "Proxies should have been cleaned up";
+  // |site_instance| should no longer have a group, which means there are no
+  // active frames left, or any proxies for its group.
+  EXPECT_FALSE(site_instance->group());
   EXPECT_TRUE(site_instance->HasOneRef())
       << "This SiteInstance should be destroyable now.";
 }

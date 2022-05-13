@@ -111,6 +111,11 @@ SiteInstanceImpl::~SiteInstanceImpl() {
   // (within the same BrowsingInstance) can safely create a new SiteInstance.
   if (has_site_)
     browsing_instance_->UnregisterSiteInstance(this);
+
+  if (has_group()) {
+    group()->RemoveSiteInstance(this);
+    ResetSiteInstanceGroup();
+  }
 }
 
 // static
@@ -288,7 +293,7 @@ BrowsingInstanceId SiteInstanceImpl::NextBrowsingInstanceId() {
 }
 
 bool SiteInstanceImpl::HasProcess() {
-  if (site_instance_group_ && site_instance_group_->has_process())
+  if (has_group())
     return true;
 
   // If we would use process-per-site for this site, also check if there is an
@@ -303,15 +308,12 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // Create a new process if our group's went away or was reused.
+  // Create a new SiteInstanceGroup and RenderProcessHost is there isn't one.
   // All SiteInstances within a SiteInstanceGroup share a process and
-  // AgentSchedulingGroupHost. The process and AgentSchedulingGroupHost may go
-  // away if the SiteInstanceGroup outlives all of its documents and workers. If
-  // needed, make sure the SiteInstanceGroup, process, and
-  // AgentSchedulingGroupHost exist.
-  // TODO(crbug.com/1294045): Update checks and comments when a
-  // SiteInstanceGroup must have a RenderProcessHost and AgentSchedulingGroup.
-  if (!site_instance_group_ || !site_instance_group_->has_process()) {
+  // AgentSchedulingGroupHost. A group must have a process. If the process gets
+  // destructed, `site_instance_group_` will get cleared, and another one with a
+  // new process will be assigned the next time GetProcess() gets called.
+  if (!has_group()) {
     // Check if the ProcessReusePolicy should be updated.
     if (ShouldUseProcessPerSite()) {
       process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
@@ -322,8 +324,6 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
         RenderProcessHostImpl::GetProcessHostForSiteInstance(this));
   }
   DCHECK(site_instance_group_);
-  DCHECK(site_instance_group_->has_process());
-  DCHECK(site_instance_group_->has_agent_scheduling_group());
 
   return site_instance_group_->process();
 }
@@ -364,14 +364,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
     site_instance_group_ =
         browsing_instance_->site_instance_group_manager()
             .GetOrCreateGroupForNewSiteInstance(this, process);
-  } else if (!site_instance_group_->process()) {
-    // TODO(crbug.com/1261963): Remove this clause once the lifetime of
-    // SiteInstanceGroup  is tied to that of `process`.
-    site_instance_group_->SetProcessAndAgentSchedulingGroup(process);
   }
-
-  DCHECK(site_instance_group_->has_process());
-  DCHECK(site_instance_group_->has_agent_scheduling_group());
 
   LockProcessIfNeeded();
 
@@ -511,9 +504,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   if (should_use_process_per_site)
     process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
 
-  bool has_process =
-      site_instance_group_ && site_instance_group_->has_process();
-  if (has_process) {
+  if (has_group()) {
     LockProcessIfNeeded();
 
     // Ensure the process is registered for this site if necessary.
@@ -527,7 +518,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // SiteInstance. This must be called after LockProcessIfNeeded() because
   // the SiteInstanceGroupManager does suitability checks that use the lock.
   browsing_instance_->site_instance_group_manager().OnSiteInfoSet(this,
-                                                                  has_process);
+                                                                  has_group());
 }
 
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
@@ -639,12 +630,14 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
 }
 
 AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
-  if (!site_instance_group_ ||
-      !site_instance_group_->has_agent_scheduling_group()) {
+  if (!site_instance_group_)
     GetProcess();
-  }
 
   return site_instance_group_->agent_scheduling_group();
+}
+
+void SiteInstanceImpl::ResetSiteInstanceGroup() {
+  site_instance_group_.reset();
 }
 
 bool SiteInstanceImpl::IsRelatedSiteInstance(const SiteInstance* instance) {

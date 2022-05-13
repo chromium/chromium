@@ -275,6 +275,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // This will never return ChildProcessHost::kInvalidUniqueID.
   virtual int GetID() const = 0;
 
+  // Returns a SafeRef to `this`. It should only be used in non-owning cases,
+  // where the caller is not expected to outlive `this`.
+  // This method is public so that it can be called from within //content, and
+  // used by MockRenderProcessHost. It isn't meant to be called outside of
+  // //content.
+  virtual base::SafeRef<RenderProcessHost> GetSafeRef() const = 0;
+
   // Returns true iff the Init() was called and the process hasn't died yet.
   //
   // Note that even if IsInitializedAndNotDead() returns true, then (for a short

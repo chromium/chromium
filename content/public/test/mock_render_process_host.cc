@@ -276,6 +276,10 @@ int MockRenderProcessHost::GetID() const {
   return id_;
 }
 
+base::SafeRef<RenderProcessHost> MockRenderProcessHost::GetSafeRef() const {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 bool MockRenderProcessHost::IsInitializedAndNotDead() {
   return has_connection_;
 }

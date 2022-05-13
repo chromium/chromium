@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/id_map.h"
+#include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
@@ -83,6 +84,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.
   // Returns |false| if any part of the initialization failed.
   bool Init();
+
+  // Returns a SafeRef to `this`.
+  base::SafeRef<AgentSchedulingGroupHost> GetSafeRef() const;
 
   int32_t id_for_debugging() const { return id_for_debugging_; }
 
@@ -229,6 +233,9 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       associated_interface_provider_receivers_;
 
   LifecycleState state_{LifecycleState::kNewborn};
+
+  // This is used to create SafeRefs, and as a result, cannot be reset.
+  base::WeakPtrFactory<AgentSchedulingGroupHost> weak_ptr_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& os,

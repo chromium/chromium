@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/types/id_type.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -23,6 +24,7 @@ class SiteInstanceGroup;
 namespace content {
 
 class SiteInstance;
+class SiteInstanceImpl;
 struct ChildProcessTerminationInfo;
 
 using SiteInstanceGroupId = base::IdType32<class SiteInstanceGroupIdTag>;
@@ -51,9 +53,15 @@ using SiteInstanceGroupId = base::IdType32<class SiteInstanceGroupIdTag>;
 // The browser process coordinates activities across groups to produce a full
 // web page.
 //
+// A SiteInstanceGroup always has a RenderProcessHost. If the RenderProcessHost
+// itself (and not just the renderer process) goes away, then all
+// RenderFrameHosts, RenderFrameProxyHosts, and workers using it are gone, and
+// the SiteInstanceGroup itself goes away as well. SiteInstances in the group
+// may outlive this (e.g., when kept alive by NavigationEntry), in which case
+// they will get a new SiteInstanceGroup the next time one is needed.
 // SiteInstanceGroups are refcounted by the SiteInstances using them, allowing
-// for flexible policies.  Currently, each SiteInstanceGroup has exactly one
-// SiteInstance.  See crbug.com/1195535.
+// for flexible policies. Currently, each SiteInstanceGroup has exactly one
+// SiteInstance. See crbug.com/1195535.
 class CONTENT_EXPORT SiteInstanceGroup
     : public base::RefCounted<SiteInstanceGroup>,
       public RenderProcessHostObserver {
@@ -62,12 +70,13 @@ class CONTENT_EXPORT SiteInstanceGroup
    public:
     // Called when this SiteInstanceGroup transitions to having no active
     // frames, as measured by active_frame_count().
-    virtual void ActiveFrameCountIsZero(SiteInstanceGroup* site_instance) {}
+    virtual void ActiveFrameCountIsZero(
+        SiteInstanceGroup* site_instance_group) {}
 
     // Called when the renderer process of this SiteInstanceGroup has exited.
     // Note that GetProcess() still returns the same RenderProcessHost instance.
     // You can reinitialize it by a call to SiteInstance::GetProcess()->Init().
-    virtual void RenderProcessGone(SiteInstanceGroup* site_instance,
+    virtual void RenderProcessGone(SiteInstanceGroup* site_instance_group,
                                    const ChildProcessTerminationInfo& info) {}
   };
 
@@ -84,6 +93,12 @@ class CONTENT_EXPORT SiteInstanceGroup
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Used to keep track of the SiteInstances that belong in this group, so they
+  // can be notified to clear their references to `this` when it gets
+  // destructed.
+  void AddSiteInstance(SiteInstanceImpl* site_instance);
+  void RemoveSiteInstance(SiteInstanceImpl* site_instance);
+
   // Increase the number of active frames in this SiteInstanceGroup. This is
   // increased when a frame is created.
   void IncrementActiveFrameCount();
@@ -98,26 +113,15 @@ class CONTENT_EXPORT SiteInstanceGroup
   // be safely discarded.
   size_t active_frame_count() const { return active_frame_count_; }
 
-  // `process_` and `agent_scheduling_group_` have to be set together. See
-  // `process_` for more details.
-  // TODO(crbug.com/1294045): Remove once `this` has the same lifetime as
-  // `process`.
-  void SetProcessAndAgentSchedulingGroup(RenderProcessHost* process);
-
-  RenderProcessHost* process() const { return process_; }
-  bool has_process() const { return process_ != nullptr; }
+  RenderProcessHost* process() const { return &*process_; }
 
   BrowsingInstanceId browsing_instance_id() const {
     return browsing_instance_id_;
   }
 
   AgentSchedulingGroupHost& agent_scheduling_group() {
-    DCHECK(agent_scheduling_group_);
-    DCHECK_EQ(agent_scheduling_group_->GetProcess(), process_);
+    DCHECK_EQ(agent_scheduling_group_->GetProcess(), &*process_);
     return *agent_scheduling_group_;
-  }
-  bool has_agent_scheduling_group() {
-    return agent_scheduling_group_ != nullptr;
   }
 
   using TraceProto = perfetto::protos::pbzero::SiteInstanceGroup;
@@ -144,15 +148,18 @@ class CONTENT_EXPORT SiteInstanceGroup
 
   // Current RenderProcessHost that is rendering pages for this
   // SiteInstanceGroup, and AgentSchedulingGroupHost (within the process) this
-  // SiteInstanceGroup belongs to. Since AgentSchedulingGroupHost is associated
-  // with a specific RenderProcessHost, these *must be* changed together to
-  // avoid UAF!
-  // The |process_| pointer (and hence the |agent_scheduling_group_| pointer as
-  // well) will only change once the RenderProcessHost is destructed. They will
-  // still remain the same even if the process crashes, since in that scenario
-  // the RenderProcessHost remains the same.
-  raw_ptr<RenderProcessHost> process_ = nullptr;
-  raw_ptr<AgentSchedulingGroupHost> agent_scheduling_group_ = nullptr;
+  // SiteInstanceGroup belongs to.
+  // If the RenderProcessHost gets destroyed, `this` will also be destructed.
+  // Any SiteInstances in the group will get a new process and group the next
+  // time they need a process. If the process crashes, `this` will not be
+  // destructed as long as the RenderProcessHost is still alive.
+  const base::SafeRef<RenderProcessHost> process_;
+  const base::SafeRef<AgentSchedulingGroupHost> agent_scheduling_group_;
+
+  // List of SiteInstanceImpls that belong in this group. When any SiteInstance
+  // in the set goes away, it must also be removed from `site_instances_` to
+  // prevent UaF.
+  base::flat_set<SiteInstanceImpl*> site_instances_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 

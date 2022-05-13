@@ -499,6 +499,8 @@ class CONTENT_EXPORT FrameTree {
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
   FRIEND_TEST_ALL_PREFIXES(PortalBrowserTest, NodesForIsLoading);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, NodesForIsLoading);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest,
+                           CreateRenderViewAfterProcessKillAndClosedProxy);
 
   // Returns a range to iterate over all FrameTreeNodes in the frame tree in
   // breadth-first traversal order, skipping the subtree rooted at

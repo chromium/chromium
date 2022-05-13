@@ -265,6 +265,11 @@ bool AgentSchedulingGroupHost::Init() {
   return process_.Init();
 }
 
+base::SafeRef<AgentSchedulingGroupHost> AgentSchedulingGroupHost::GetSafeRef()
+    const {
+  return weak_ptr_factory_.GetSafeRef();
+}
+
 ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
   DCHECK_EQ(state_, LifecycleState::kBound);
 
