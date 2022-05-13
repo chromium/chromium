@@ -87,7 +87,9 @@ void CrostiniUpgraderPageHandler::Cancel() {
 }
 
 void CrostiniUpgraderPageHandler::Launch() {
-  std::move(launch_callback_).Run(restart_required_);
+  if (launch_callback_) {
+    std::move(launch_callback_).Run(restart_required_);
+  }
 }
 
 void CrostiniUpgraderPageHandler::CancelBeforeStart() {
@@ -95,16 +97,13 @@ void CrostiniUpgraderPageHandler::CancelBeforeStart() {
       crostini::UpgradeDialogEvent::kNotStarted);
   restart_required_ = false;
   upgrader_ui_delegate_->CancelBeforeStart();
-  if (launch_callback_) {
-    // Running launch closure - no upgrade wanted, no need to restart crostini.
-    Launch();
-  }
+
+  // Running launch closure - no upgrade wanted, no need to restart crostini.
+  Launch();
 }
 
 void CrostiniUpgraderPageHandler::OnPageClosed() {
-  if (launch_callback_) {
-    Launch();
-  }
+  Launch();
   if (on_page_closed_) {
     std::move(on_page_closed_).Run();
   }
