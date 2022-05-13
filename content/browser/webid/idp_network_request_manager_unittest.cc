@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/layout.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -533,6 +534,10 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingSelectBestSize) {
+  // Selected icon depends on OS supported scale factors.
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_supported_scale_factors({ui::k100Percent});
+
   const char test_json[] = R"({
   "branding" : {
     "icons": [

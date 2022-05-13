@@ -19,15 +19,11 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 
 // static
 int AccountSelectionView::GetBrandIconMinimumSize() {
-  // TODO(crbug.com/1311482): check that this hardcoded value makes sense even
-  // on high-dpi desktops.
   return 20;
 }
 
 // static
 int AccountSelectionView::GetBrandIconIdealSize() {
-  // TODO(crbug.com/1311482): check that this hardcoded value makes sense even
-  // on high-dpi desktops.
   return 20;
 }
 
