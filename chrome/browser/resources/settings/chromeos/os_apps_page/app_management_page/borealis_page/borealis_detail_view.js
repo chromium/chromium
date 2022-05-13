@@ -4,12 +4,12 @@
 
 import '../pin_to_shelf_item.js';
 import '../shared_style.js';
-import '//resources/cr_components/app_management/icons.js';
-import '//resources/cr_components/app_management/permission_item.js';
-import '//resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_components/app_management/icons.js';
+import 'chrome://resources/cr_components/app_management/permission_item.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.js';

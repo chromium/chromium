@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import './app_details_item.js';
-import '//resources/cr_components/app_management/more_permissions_item.js';
+import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import './pin_to_shelf_item.js';
 import './shared_style.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';

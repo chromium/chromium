@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 import './shared_style.js';
 import './shared_vars.js';
-import '//resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from '//resources/cr_components/app_management/constants.js';
-import {getAppIcon} from '//resources/cr_components/app_management/util.js';
-import {assertNotReached} from '//resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
+import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
 import {openAppDetailPage} from './util.js';

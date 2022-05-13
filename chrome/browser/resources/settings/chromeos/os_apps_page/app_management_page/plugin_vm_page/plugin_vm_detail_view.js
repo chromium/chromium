@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 import '../pin_to_shelf_item.js';
-import '//resources/cr_components/app_management/icons.js';
-import '//resources/cr_components/app_management/permission_item.js';
+import 'chrome://resources/cr_components/app_management/icons.js';
+import 'chrome://resources/cr_components/app_management/permission_item.js';
 import '../shared_style.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 
-import {assertNotReached} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.js';

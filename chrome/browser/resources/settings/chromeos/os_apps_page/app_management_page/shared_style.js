@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/chromeos/cros_color_overrides.m.js';
-import '//resources/cr_components/app_management/shared_style.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.m.js';
+import 'chrome://resources/cr_components/app_management/shared_style.js';
 
 const template = document.createElement('template');
 template.innerHTML = `

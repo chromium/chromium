@@ -4,13 +4,13 @@
 
 import './app_item.js';
 import './shared_style.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {assert} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route} from '../../../router.js';
 import {routes} from '../../os_route.js';

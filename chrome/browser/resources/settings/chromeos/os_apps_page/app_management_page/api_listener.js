@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {createInitialState} from '//resources/cr_components/app_management/util.js';
+import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 

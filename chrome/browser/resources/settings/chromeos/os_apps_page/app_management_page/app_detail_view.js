@@ -10,10 +10,10 @@ import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
 import '../../../settings_shared_css.js';
 
-import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
-import {getSelectedApp, recordAppManagementUserAction} from '//resources/cr_components/app_management/util.js';
-import {assertNotReached} from '//resources/js/assert.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
+import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.js';

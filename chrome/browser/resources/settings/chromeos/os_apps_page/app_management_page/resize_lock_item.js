@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/app_management/toggle_row.js';
+import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
-import {AppManagementUserAction} from '//resources/cr_components/app_management/constants.js';
-import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../../metrics_recorder.js';
 
