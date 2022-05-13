@@ -462,16 +462,14 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &frame_trackers_);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_ui = settings.is_layer_tree_for_ui;
   if (is_ui) {
-    compositor_frame_reporting_controller_->set_event_latency_tracker(this);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     dropped_frame_counter_.EnableReporForUI();
     compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
         FrameInfo::SmoothEffectDrivingThread::kMain, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   frame_trackers_.set_custom_tracker_results_added_callback(
@@ -2232,11 +2230,6 @@ void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
   finished_transition_request_sequence_ids_.push_back(sequence_id);
   SetNeedsCommit();
-}
-
-void LayerTreeHostImpl::ReportEventLatency(
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  client_->ReportEventLatency(std::move(latencies));
 }
 
 void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {

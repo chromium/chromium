@@ -442,11 +442,6 @@ void ProxyMain::DidObserveFirstScrollDelay(
                                                first_scroll_timestamp);
 }
 
-void ProxyMain::ReportEventLatency(
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  layer_tree_host_->ReportEventLatency(std::move(latencies));
-}
-
 bool ProxyMain::IsStarted() const {
   DCHECK(IsMainThread());
   return started_;

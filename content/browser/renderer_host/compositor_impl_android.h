@@ -164,8 +164,6 @@ class CONTENT_EXPORT CompositorImpl
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
-  void ReportEventLatency(
-      std::vector<cc::EventLatencyTracker::LatencyData> latencies) override {}
 
   // LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;

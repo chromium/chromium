@@ -6,12 +6,10 @@
 #define CC_TREES_LAYER_TREE_HOST_CLIENT_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
@@ -190,8 +188,6 @@ class LayerTreeHostClient {
   // RecordEndOfFrameMetrics.
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() = 0;
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
-  virtual void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
 
   // Should only be implemented by Blink.
   virtual std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() = 0;

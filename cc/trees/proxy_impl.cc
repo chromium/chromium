@@ -311,14 +311,6 @@ void ProxyImpl::FrameSinksToThrottleUpdated(
   NOTREACHED();
 }
 
-void ProxyImpl::ReportEventLatency(
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  DCHECK(IsImplThread());
-  MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::ReportEventLatency,
-                                proxy_main_weak_ptr_, std::move(latencies)));
-}
-
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,

@@ -487,9 +487,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
 
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
-
  private:
   explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)
       : test_hooks_(test_hooks) {}

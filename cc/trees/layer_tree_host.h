@@ -716,8 +716,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void NotifyTransitionRequestsFinished(
       const std::vector<uint32_t>& sequence_ids);
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies);
 
   LayerTreeHostClient* client() {
     DCHECK(IsMainThread());

@@ -184,8 +184,6 @@ cc_component("cc") {
     "metrics/dropped_frame_counter.h",
     "metrics/event_latency_tracing_recorder.cc",
     "metrics/event_latency_tracing_recorder.h",
-    "metrics/event_latency_tracker.cc",
-    "metrics/event_latency_tracker.h",
     "metrics/event_metrics.cc",
     "metrics/event_metrics.h",
     "metrics/events_metrics_manager.cc",

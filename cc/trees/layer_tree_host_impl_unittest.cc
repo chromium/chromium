@@ -277,8 +277,6 @@ class LayerTreeHostImplTest : public testing::Test,
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
-  void ReportEventLatency(
-      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 
   void DidObserveFirstScrollDelay(
       base::TimeDelta first_scroll_delay,
