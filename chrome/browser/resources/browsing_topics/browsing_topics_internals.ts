@@ -233,13 +233,6 @@ async function asyncClassifyHosts(hosts: string[], sequenceNumber: Number) {
     return;
   }
 
-  const table = document.querySelector('#hosts-classification-result-table')! as
-      HTMLTableElement;
-
-  while (table.rows[1]) {
-    table.deleteRow(1);
-  }
-
   for (let i = 0; i < hosts.length; i++) {
     const host = hosts[i] as string;
     const topics = topicsForHosts![i] as WebUITopic[];
@@ -250,6 +243,23 @@ async function asyncClassifyHosts(hosts: string[], sequenceNumber: Number) {
 
   setElementVisible('hosts-classification-loader-div', false);
   setElementVisible('hosts-classification-result-table-wrapper', true);
+}
+
+function clearHostsClassificationResult() {
+  const table = document.querySelector('#hosts-classification-result-table')! as
+      HTMLTableElement;
+
+  while (table.rows[1]) {
+    table.deleteRow(1);
+  }
+
+  const div = document.querySelector<HTMLElement>(
+      '#hosts-classification-input-validation-error');
+  div!.innerHTML = '';
+
+  setElementVisible('hosts-classification-loader-div', false);
+  setElementVisible('hosts-classification-input-validation-error', false);
+  setElementVisible('hosts-classification-result-table-wrapper', false);
 }
 
 async function asyncGetModelInfo() {
@@ -277,6 +287,8 @@ async function asyncGetModelInfo() {
 
   document.querySelector(
               '#hosts-classification-button')!.addEventListener('click', () => {
+    clearHostsClassificationResult();
+
     const input = (document.querySelector('#input-hosts-textarea')! as
                    HTMLTextAreaElement)
                       .value;
@@ -292,9 +304,30 @@ async function asyncGetModelInfo() {
       preprocessedHosts.push(trimmedHost);
     });
 
-    setElementVisible('hosts-classification-loader-div', true);
-    setElementVisible('hosts-classification-result-table-wrapper', false);
-    asyncClassifyHosts(preprocessedHosts, ++hostsClassificationSequenceNumber);
+    const inputValidationErrors = [] as string[];
+    preprocessedHosts.forEach((host) => {
+      if (host.includes('/')) {
+        inputValidationErrors.push(
+            'Host \"' + host + '" contains invalid character: "\/"');
+      }
+    });
+
+    ++hostsClassificationSequenceNumber;
+
+    if (inputValidationErrors.length > 0) {
+      const errorsDiv = document.querySelector<HTMLElement>(
+          '#hosts-classification-input-validation-error');
+      inputValidationErrors.forEach((error) => {
+        const errorDiv = document.createElement('div');
+        errorDiv.textContent = error;
+        errorsDiv!.appendChild(errorDiv);
+      });
+
+      setElementVisible('hosts-classification-input-validation-error', true);
+    } else {
+      setElementVisible('hosts-classification-loader-div', true);
+      asyncClassifyHosts(preprocessedHosts, hostsClassificationSequenceNumber);
+    }
   });
 }
 
@@ -308,6 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setElementVisible('model-info-div', false);
   setElementVisible('hosts-classification-input-area-div', false);
   setElementVisible('hosts-classification-loader-div', false);
+  setElementVisible('hosts-classification-input-validation-error', false);
   setElementVisible('hosts-classification-result-table-wrapper', false);
 
   asyncGetBrowsingTopicsConfiguration();
