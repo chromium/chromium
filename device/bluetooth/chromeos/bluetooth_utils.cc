@@ -4,8 +4,8 @@
 
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -150,6 +151,23 @@ std::string GetTransportName(BluetoothTransport transport) {
   }
 }
 
+bool IsPolyDevicePairingAllowed() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::IsPolyDevicePairingAllowed();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+bool IsPolyDevice(const device::BluetoothDevice* device) {
+  // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
+  // https://standards-oui.ieee.org/.
+  constexpr auto kPolyOuis = base::MakeFixedFlatSet<base::StringPiece>(
+      {"64:16:7F", "48:25:67", "00:04:F2"});
+
+  return base::Contains(kPolyOuis, device->GetOuiPortionOfBluetoothAddress());
+}
+
 }  // namespace
 
 device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
@@ -181,6 +199,12 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Never filter out Poly devices; this requires a special case since these
+  // devices often identify themselves as phones, which are disallowed below.
+  // See b/228118615.
+  if (IsPolyDevicePairingAllowed() && IsPolyDevice(device))
+    return false;
 
   // Always filter out laptops, etc. There is no intended use case or
   // Bluetooth profile in this context.

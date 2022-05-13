@@ -267,6 +267,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // a unique key to identify the device and copied where needed.
   virtual std::string GetAddress() const = 0;
 
+  // Returns the OUI portion of the Bluetooth address, which refers to the
+  // device's vendor.
+  std::string GetOuiPortionOfBluetoothAddress() const;
+
   // Returns the Bluetooth address type of the device. Currently available on
   // Linux and Chrome OS.
   virtual AddressType GetAddressType() const = 0;

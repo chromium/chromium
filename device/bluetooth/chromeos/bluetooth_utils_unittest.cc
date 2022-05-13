@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -16,6 +17,10 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
@@ -30,6 +35,14 @@ constexpr char kTestBluetoothDeviceAddress[] = "01:02:03:04:05:06";
 constexpr char kHIDServiceUUID[] = "1812";
 constexpr char kSecurityKeyServiceUUID[] = "FFFD";
 constexpr char kUnexpectedServiceUUID[] = "1234";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Note: The first 3 hex bytes represent the OUI portion of the address, which
+// indicates the device vendor. In this case, "64:16:7F:**:**:**" represents a
+// device manufactured by Poly.
+constexpr char kFakePolyDeviceAddress[] = "64:16:7F:12:34:56";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 const size_t kMaxDevicesForFilter = 5;
 
 }  // namespace
@@ -62,6 +75,19 @@ class BluetoothUtilsTest : public testing::Test {
     adapter_->AddMockDevice(std::move(mock_bluetooth_device));
     return mock_bluetooth_device_ptr;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void AddMockPolyDeviceToAdapter() {
+    MockBluetoothDevice* mock_bluetooth_device =
+        AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
+    ON_CALL(*mock_bluetooth_device, GetName)
+        .WillByDefault(testing::Return(absl::nullopt));
+    ON_CALL(*mock_bluetooth_device, GetDeviceType)
+        .WillByDefault(testing::Return(BluetoothDeviceType::UNKNOWN));
+    ON_CALL(*mock_bluetooth_device, GetAddress)
+        .WillByDefault(testing::Return(kFakePolyDeviceAddress));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   MockBluetoothAdapter* adapter() { return adapter_.get(); }
 
@@ -146,6 +172,29 @@ TEST_F(BluetoothUtilsTest,
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   1u /* num_expected_remaining_devices */);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(BluetoothUtilsTest, ShowPolyDevice_PolyFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ash::features::kAllowPolyDevicePairing);
+
+  AddMockPolyDeviceToAdapter();
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+}
+
+// Regression test for b/228118615.
+TEST_F(BluetoothUtilsTest, ShowPolyDevice_PolyFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      ash::features::kAllowPolyDevicePairing};
+
+  // Poly devices should not be filtered out, regardless of device type.
+  AddMockPolyDeviceToAdapter();
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  1u /* num_expected_remaining_devices */);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(
     BluetoothUtilsTest,
