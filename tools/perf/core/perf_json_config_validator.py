@@ -26,6 +26,7 @@ _VALID_PERF_POOLS = {
     'android-builder-perf': {'chrome.tests'},
     'android_arm64-builder-perf': {'chrome.tests'},
     'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
+    'android-pixel4a_power-perf-pgo': {'chrome.tests.pinpoint'},
     'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
@@ -136,9 +137,12 @@ def _ValidateBrowserType(builder_name, test_config):
     if browser_options.browser != 'lacros-chrome':
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
-  elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf',
+  elif builder_name in ('win-10-perf', 'win-10-perf-pgo',
+                        'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf', 'win-10_amd_laptop-perf'):
+                        'win-10_laptop_low_end-perf',
+                        'win-10_laptop_low_end-perf-pgo',
+                        'win-10_amd_laptop-perf', 'win-10_amd_laptop-perf-pgo'):
     if browser_options.browser != 'release_x64':
       raise ValueError("%s must use 'release_x64' browser type" %
                        builder_name)

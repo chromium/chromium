@@ -1,0 +1,23 @@
+{
+    "0": {
+        "benchmarks": {
+            "power.desktop": {
+                "abridged": false
+            },
+            "rendering.desktop": {
+                "abridged": false
+            },
+            "system_health.common_desktop": {
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 398,
+        "predicted_min_shard_time": 6300.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 6300.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 6300.0
+    }
+}
