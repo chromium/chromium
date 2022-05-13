@@ -24,22 +24,6 @@ rust_unit_tests_group("mojo_rust_tests") {
   }
 }
 
-source_set("c_support_header") {
-  sources = [ "support.h" ]
-  deps = [ "//mojo/public/c/system:headers" ]
-  visibility = [ ":*" ]
-}
-
-static_library("c_support") {
-  sources = [ "support.cc" ]
-  deps = [
-    ":c_support_header",
-    "//mojo/public/c/system",
-    "//mojo/public/cpp/system",
-  ]
-  visibility = [ ":*" ]
-}
-
 static_library("c_test_support") {
   testonly = true
   sources = [ "test_support.cc" ]
@@ -53,10 +37,7 @@ static_library("c_test_support") {
 
 source_set("mojo_c_system_wrapper") {
   sources = [ "system/wrapper.h" ]
-  deps = [
-    ":c_support_header",
-    "//mojo/public/c/system:headers",
-  ]
+  deps = [ "//mojo/public/c/system:headers" ]
   visibility = [ ":*" ]
 }
 
@@ -98,7 +79,6 @@ rust_static_library("mojo_rust") {
   ]
 
   deps = [
-    ":c_support",
     ":mojo_c_system_binding",
     ":mojo_c_system_wrapper",
   ]

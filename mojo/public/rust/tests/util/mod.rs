@@ -16,7 +16,7 @@ use std::vec::Vec;
 /// This macro sets up tests by adding in Mojo embedder
 /// initialization.
 macro_rules! tests {
-    ( $( $( #[ $attr:meta ] )* fn $i:ident() $b:block)* ) => {
+    { $( $( #[ $attr:meta ] )* fn $i:ident() $b:block)* } => {
         $(
             #[test]
             $(

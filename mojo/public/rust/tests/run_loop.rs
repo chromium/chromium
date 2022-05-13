@@ -44,7 +44,9 @@ impl Handler for HandlerExpectTimeout {
     }
 }
 
-struct HandlerExpectError {}
+struct HandlerExpectError {
+    was_called: Rc<Cell<bool>>,
+}
 
 impl Handler for HandlerExpectError {
     fn on_ready(&mut self, _runloop: &mut RunLoop, _token: Token) {
@@ -56,6 +58,7 @@ impl Handler for HandlerExpectError {
     fn on_error(&mut self, runloop: &mut RunLoop, token: Token, error: WaitError) {
         assert_eq!(error, WaitError::Unsatisfiable);
         runloop.deregister(token);
+        self.was_called.set(true);
     }
 }
 
@@ -68,8 +71,8 @@ impl Handler for HandlerQuit {
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
         panic!("Timed-out when expected error");
     }
-    fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+    fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, error: WaitError) {
+        assert_eq!(error, WaitError::HandleClosed);
     }
 }
 
@@ -214,7 +217,6 @@ impl Handler for NestedTasks {
         let _ = runloop.post_task(
             move |runloop| {
                 let r2 = r.clone();
-                let tk = token.clone();
                 if (*r).get() < 10 {
                     let _ = runloop.post_task(
                         move |_runloop| {
@@ -227,7 +229,7 @@ impl Handler for NestedTasks {
                     if quit {
                         runloop.quit();
                     } else {
-                        runloop.deregister(tk);
+                        runloop.deregister(token);
                     }
                 }
             },
@@ -237,8 +239,8 @@ impl Handler for NestedTasks {
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
         panic!("Timed-out when expected error");
     }
-    fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+    fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, error: WaitError) {
+        assert_eq!(error, WaitError::HandleClosed);
     }
 }
 
@@ -258,10 +260,10 @@ tests! {
 
     // Verifies that generated tokens are unique.
     fn tokens() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         let mut vec = Vec::new();
         run_loop::with_current(|runloop| {
             for _ in 0..10 {
+                let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
                 vec.push(runloop.register(&endpt1, signals!(Signals::None), 0, HandlerExpectReady {}));
             }
             for i in 0..10 {
@@ -288,12 +290,18 @@ tests! {
         // Drop the first endpoint immediately
         let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerExpectError {});
+            let was_called = Rc::new(Cell::new(false));
+            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0,
+                HandlerExpectError {
+                    was_called: was_called.clone(),
+            });
             runloop.run();
+            assert!(was_called.get(), "on_error was not called");
         });
     }
 
-    // Verifies that the handler's "on_ready" function is called which only quits.
+    // Verifies that the handler's "on_ready" function is called which only
+    // quits.
     fn notify_ready_quit() {
         let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         run_loop::with_current(|runloop| {
@@ -345,11 +353,28 @@ tests! {
     // Tests adding a simple task that adds a handler.
     fn simple_task() {
         run_loop::with_current(|runloop| {
-            let _ = runloop.post_task(|runloop| {
-                let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-                let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerExpectError {});
-            }, 0);
+            let was_called = Rc::new(Cell::new(false));
+            // The inner closure cannot take `was_called` by reference since we
+            // cannot prove it lives long enough to the borrow checker. It must
+            // be cloned first.
+            let was_called_clone = was_called.clone();
+            let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+            // If `endpt1` is moved into the task closure, it is dropped at the
+            // end of its call. This means we won't get the signal we're looking
+            // for: we'll just get a notification that the handle was closed.
+            // Make it live longer by wrapping it in an Rc.
+            let endpt1 = Rc::new(endpt1);
+            let endpt1_clone = endpt1.clone();
+            let _ = runloop.post_task(move |runloop: &mut RunLoop| {
+                let _ = runloop.register(&*endpt1_clone, signals!(Signals::Readable), 0,
+                    HandlerExpectError {
+                        was_called: was_called_clone,
+                    });
+            }, 0).unwrap();
             runloop.run();
+
+            // Ensure we got the `on_error` call for the unsatisfiable signal.
+            assert!(was_called.get(), "on_error was not called");
         });
     }
 
@@ -376,6 +401,11 @@ tests! {
     }
 
     // Tests using a handler that adds a bunch of tasks.
+    //
+    // This test is disabled because it posts tasks which call `RunLoop::quit`,
+    // some of which get left on the `RunLoop` after the test ends. These
+    // interfere with later tests on the same thread.
+    #[ignore]
     fn nested_tasks_quit() {
         let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         let r = Rc::new(Cell::new(0));
@@ -384,5 +414,39 @@ tests! {
             runloop.run();
             assert!((*r).get() >= 10);
         });
+    }
+
+    fn close_handle() {
+        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        run_loop::with_current(|runloop| {
+            let _ = runloop.register(&endpt1, signals!(Signals::Writable), 0, HandlerQuit {});
+            drop(endpt1);
+            runloop.run();
+        })
+    }
+
+    // Tests that `RunLoop::run` will run posted tasks even if there's no
+    // handles to wait on.
+    fn post_tasks_without_handles() {
+        let outer_called = Rc::new(Cell::new(false));
+        let outer_called_clone = outer_called.clone();
+        let inner_called = Rc::new(Cell::new(false));
+        let inner_called_clone = inner_called.clone();
+
+        run_loop::with_current(move |runloop| {
+            // Post a task, and then post another task from within the first.
+            // This is to check RunLoop will run all the tasks it can before
+            // quitting.
+            runloop.post_task(move |runloop| {
+                outer_called_clone.set(true);
+                runloop.post_task(move |_| {
+                    inner_called_clone.set(true);
+                }, 0).unwrap();
+            }, 0).unwrap();
+            runloop.run();
+        });
+
+        assert!(outer_called.get());
+        assert!(inner_called.get());
     }
 }

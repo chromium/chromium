@@ -23,6 +23,7 @@ tests! {
         // Client and server handles
         let client = IntegrationTestInterfaceClient::new(endpt0);
         let server = IntegrationTestInterfaceServer::with_version(endpt1, 0);
+
         // Client thread
         let handle = thread::spawn(move || {
             // Send request

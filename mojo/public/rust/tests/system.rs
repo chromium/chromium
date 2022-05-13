@@ -190,15 +190,16 @@ tests! {
     }
 
     fn wait_set() {
-        let mut set = wait_set::WaitSet::new(wsflags!(Create::None)).unwrap();
+        let mut set = wait_set::WaitSet::new().unwrap();
         let (endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let cookie1 = wait_set::WaitSetCookie(245);
+        let cookie2 = wait_set::WaitSetCookie(123);
         let signals = signals!(Signals::Readable);
-        let flags = wsflags!(Add::None);
-        assert_eq!(set.add(&endpt0, signals, 245, flags), mojo::MojoResult::Okay);
-        assert_eq!(set.add(&endpt0, signals, 245, flags), mojo::MojoResult::AlreadyExists);
-        assert_eq!(set.remove(245), mojo::MojoResult::Okay);
-        assert_eq!(set.remove(245), mojo::MojoResult::NotFound);
-        assert_eq!(set.add(&endpt0, signals, 123, flags), mojo::MojoResult::Okay);
+        assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::Okay);
+        assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::AlreadyExists);
+        assert_eq!(set.remove(cookie1), mojo::MojoResult::Okay);
+        assert_eq!(set.remove(cookie1), mojo::MojoResult::NotFound);
+        assert_eq!(set.add(&endpt0, signals, cookie2), mojo::MojoResult::Okay);
         thread::spawn(move || {
             let hello = "hello".to_string().into_bytes();
             let write_result = endpt1.write(&hello, Vec::new(), mpflags!(Write::None));
@@ -208,9 +209,9 @@ tests! {
         let result = set.wait_on_set(&mut output);
         assert_eq!(result, mojo::MojoResult::Okay);
         assert_eq!(output.len(), 1);
-        assert_eq!(output[0].cookie(), 123);
-        assert_eq!(output[0].result(), mojo::MojoResult::Okay);
-        assert!(output[0].state().satisfied().is_readable());
+        assert_eq!(output[0].cookie, cookie2);
+        assert_eq!(output[0].wait_result, mojo::MojoResult::Okay);
+        assert!(output[0].signals_state.satisfied().is_readable());
     }
 
     fn trap_signals_on_readable_unwritable() {

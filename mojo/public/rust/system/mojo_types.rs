@@ -14,7 +14,6 @@
 //! a whole because it is intended to be used that way. It contains
 //! all of the basic types needed by all system-level Mojo bindings.
 
-use crate::system::ffi::raw_ffi;
 use crate::system::ffi::types::{self, *};
 use std::fmt;
 use std::u64;
@@ -22,7 +21,6 @@ use std::u64;
 pub use types::MojoHandle;
 pub use types::MojoMessageHandle;
 pub use types::MojoTimeTicks;
-pub use types::MojoWaitSetHandle;
 
 /// Represents a deadline for wait() calls.
 pub type MojoDeadline = u64;
@@ -38,6 +36,8 @@ pub type CreateMessageFlags = u32;
 pub type AppendMessageFlags = u32;
 pub type GetMessageFlags = u32;
 pub type AddFlags = u32;
+
+pub use crate::system::wait_set::WaitSetResult;
 
 /// MojoResult represents anything that can happen
 /// as a result of performing some operation in Mojo.
@@ -234,34 +234,4 @@ pub enum Signals {
 
     // ???
     QuotaExceeded = 1 << 5,
-}
-
-/// The result struct used by the wait_set module
-/// to return wait result information. Should remain
-/// semantically identical to the implementation of
-/// this struct in wait_set.h in the C bindings.
-///
-/// This struct should never be constructed by anything
-/// but the Mojo system in MojoWaitSetWait.
-#[repr(transparent)]
-pub struct WaitSetResult(raw_ffi::MojoWaitSetResult);
-
-impl WaitSetResult {
-    /// Getter for the cookie corresponding to the handle
-    /// which just finished waiting.
-    pub fn cookie(&self) -> u64 {
-        self.0.cookie
-    }
-
-    /// Getter for the wait result.
-    pub fn result(&self) -> MojoResult {
-        MojoResult::from_code(self.0.wait_result)
-    }
-
-    /// Getter for the signals state that comes with any
-    /// wait result.
-    pub fn state<'a>(&'a self) -> &'a SignalsState {
-        // SAFETY: `SignalsState` is a repr(transparent) wrapper for `MojoHandleSignalsState`.
-        unsafe { &*(&self.0.signals_state as *const MojoHandleSignalsState as *const SignalsState) }
-    }
 }

@@ -96,26 +96,6 @@ mod macros {
         }}
     }
 
-    /// This macro assists in generating flags for
-    /// functions and methods found in mojo::system::wait_set.
-    ///
-    /// See mojo::system::wait_set for the available flags
-    /// that may be passed.
-    ///
-    /// # Examples
-    ///
-    /// # wsflags!(Create::None);
-    /// # wsflags!(Add::None);
-    #[macro_export]
-    macro_rules! wsflags {
-        ( $( $flag:path ),* ) => {{
-            use $crate::system::wait_set::*;
-            $(
-                ($flag as u32)
-            )|*
-        }}
-    }
-
     /// This macro assists in generating MojoSignals to be
     /// used in wait() and wait_many(), part of mojo::system::core.
     ///

@@ -24,7 +24,6 @@ use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::i64;
-use std::u32;
 use std::vec::Vec;
 
 use crate::system;
@@ -49,13 +48,13 @@ thread_local!(static TL_RUN_LOOP: RefCell<RunLoop<'static, 'static>> = RefCell::
 
 /// Token representing handle/callback to wait on for this thread only. This
 /// token only has meaning on the thread in which the handle was registered.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Token(u64);
 
 impl Token {
     /// Get the wait token's "cookie" form, suitable for use in a wait set.
-    fn as_cookie(&self) -> u64 {
-        self.0
+    fn to_cookie(self) -> wait_set::WaitSetCookie {
+        wait_set::WaitSetCookie(self.0)
     }
 }
 
@@ -65,9 +64,6 @@ impl Token {
 pub enum WaitError {
     /// The handle has been closed or is otherwise no longer valid.
     HandleClosed,
-
-    /// The handle is currently busy in some transaction.
-    HandleBusy,
 
     /// It has been determined that the signals provided will never
     /// be satisfied for this handle.
@@ -111,38 +107,11 @@ struct HandlerInfo<'h> {
     deadline: system::MojoTimeTicks,
 }
 
-impl<'h> HandlerInfo<'h> {
-    /// Take the handler out of its Option type.
-    pub fn take(&mut self) -> Option<Box<dyn Handler + 'h>> {
-        self.handler.take()
-    }
-
-    /// Put a new handler into the Option type.
-    pub fn give(&mut self, handler: Box<dyn Handler + 'h>) {
-        self.handler = Some(handler);
-    }
-
-    /// Getter for the system::MojoHandle held inside.
-    pub fn handle(&self) -> system::MojoHandle {
-        self.handle
-    }
-
-    /// Getter for the current absolute deadline held inside.
-    pub fn deadline(&self) -> system::MojoTimeTicks {
-        self.deadline
-    }
-
-    /// Setter to update the current absolute deadline.
-    pub fn set_deadline(&mut self, deadline: system::MojoTimeTicks) {
-        self.deadline = deadline
-    }
-}
-
 /// A wrapper struct for carrying the task as well as some information about
 /// it.
 struct TaskInfo<'t> {
     /// The task, boxed up.
-    closure: Box<dyn FnMut(&mut RunLoop) + 't>,
+    closure: Box<dyn FnOnce(&mut RunLoop) + 't>,
 
     /// An absolute deadline in terms of time ticks.
     ///
@@ -155,8 +124,8 @@ struct TaskInfo<'t> {
 impl<'t> TaskInfo<'t> {
     /// Executes the task within the info object, consuming it
     /// in the process.
-    pub fn execute_task(mut self, run_loop: &mut RunLoop) {
-        (*self.closure)(run_loop);
+    pub fn execute_task(self, run_loop: &mut RunLoop) {
+        (self.closure)(run_loop);
     }
 
     /// Getter for the current absolute deadline held inside.
@@ -309,7 +278,7 @@ impl<'h, 't> RunLoop<'h, 't> {
             handlers: HashMap::new(),
             tasks: BinaryHeap::new(),
             deadlines: BinaryHeap::new(),
-            handle_set: wait_set::WaitSet::new(wsflags!(Create::None)).unwrap(),
+            handle_set: wait_set::WaitSet::new().unwrap(),
             should_quit: false,
             running: false,
         }
@@ -334,9 +303,10 @@ impl<'h, 't> RunLoop<'h, 't> {
     {
         let token = self.generate_token();
         let abs_deadline = absolute_deadline(deadline);
-        self.handle_set.add(handle, signals, token.as_cookie(), wsflags!(Add::None));
+        let result = self.handle_set.add(handle, signals, token.to_cookie());
+        assert_eq!(result, MojoResult::Okay);
         self.deadlines.push(DeadlineInfo { token: token.clone(), deadline: abs_deadline });
-        debug_assert!(!self.handlers.contains_key(&token));
+        assert!(!self.handlers.contains_key(&token));
         self.handlers.insert(
             token.clone(),
             HandlerInfo {
@@ -361,12 +331,12 @@ impl<'h, 't> RunLoop<'h, 't> {
     ) -> bool {
         match self.handlers.get_mut(&token) {
             Some(info) => {
-                let _result = self.handle_set.remove(token.as_cookie());
-                debug_assert_eq!(_result, MojoResult::Okay);
+                let result = self.handle_set.remove(token.to_cookie());
+                assert_eq!(result, MojoResult::Okay);
                 let abs_deadline = absolute_deadline(deadline);
                 // Update what deadline we should be looking for, rendering
                 // all previously set deadlines "stale".
-                info.set_deadline(abs_deadline);
+                info.deadline = abs_deadline;
                 // Add a new deadline
                 self.deadlines.push(DeadlineInfo { token: token.clone(), deadline: abs_deadline });
                 // Acquire the raw handle held by the HandlerInfo in order to
@@ -376,8 +346,9 @@ impl<'h, 't> RunLoop<'h, 't> {
                 // It's perfectly okay for the handle to be invalid, so although this
                 // is all unsafe, the whole system should just call the handler with an
                 // error.
-                let mut dummy = unsafe { system::acquire(info.handle()) };
-                self.handle_set.add(&dummy, signals, token.as_cookie(), wsflags!(Add::None));
+                let mut dummy = unsafe { system::acquire(info.handle) };
+                let result = self.handle_set.add(&dummy, signals, token.to_cookie());
+                assert_eq!(result, MojoResult::Okay);
                 dummy.invalidate();
                 true
             }
@@ -393,9 +364,9 @@ impl<'h, 't> RunLoop<'h, 't> {
     pub fn deregister(&mut self, token: Token) -> bool {
         match self.handlers.remove(&token) {
             Some(_) => {
-                let _result = self.handle_set.remove(token.as_cookie());
+                let result = self.handle_set.remove(token.to_cookie());
                 // Handles are auto-removed if they are closed. Ignore this error.
-                debug_assert!(_result == MojoResult::Okay || _result == MojoResult::NotFound);
+                assert!(result == MojoResult::Okay || result == MojoResult::NotFound);
                 true
             }
             None => false,
@@ -407,7 +378,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// Returns a token if the delay is valid, otherwise returns None.
     pub fn post_task<F>(&mut self, task: F, delay: system::MojoTimeTicks) -> Result<(), ()>
     where
-        F: FnMut(&mut RunLoop) + 't,
+        F: FnOnce(&mut RunLoop) + 't,
     {
         let now = core::get_time_ticks_now();
         if delay > i64::MAX - now {
@@ -446,69 +417,54 @@ impl<'h, 't> RunLoop<'h, 't> {
         }
     }
 
-    /// Gets a handler by token to be manipulated in a consistent environment.
-    ///
-    /// This method provides a method of accessing a handler in order to manipulate
-    /// it in a manner that avoids a borrow cycle, that is, it take()s the handler
-    /// out of the HashMap, and returns it when manipulation has completed.
-    fn get_handler_with<F>(&mut self, token: &Token, invoker: F)
-    where
-        F: FnOnce(&mut Self, &mut Box<dyn Handler + 'h>, Token, system::MojoTimeTicks),
-    {
-        // Logic for pulling out the handler as well as its current deadline.
-        //
-        // Unfortunately, pulling out the handler value here and "onto the stack"
-        // (it probably won't actually end up on the stack thanks to optimizations)
-        // is necessary since otherwise the borrow checker complains that we pass
-        // a mutable reference to the RunLoop and the handler (as &mut self) to
-        // the callbacks at the same time. This is understandably unsafe since
-        // modifying the hashmap with register and deregister can invalidate the
-        // reference to self in the callback. In the C++ bindings and in other Rust
-        // event loops this is exactly what happens, but I avoided this. The downside
-        // is that we can no longer nest event loop run() calls. Once we put a handler
-        // onto the stack here, we can no longer call its callback in a nested manner
-        // from the RunLoop. I could just enable nesting with this one restriction, that
-        // the handler calling run() will always be ignored, but this is unintuitive.
-        let (mut handler, deadline) = match self.handlers.get_mut(&token) {
-            Some(ref_info) => (
-                match ref_info.take() {
-                    Some(handler) => handler,
-                    None => return,
-                },
-                ref_info.deadline(),
-            ),
-            None => return,
-        };
-        // Call the closure that will invoke the callbacks.
-        invoker(self, &mut handler, token.clone(), deadline);
-        // Restore the handler to its location in the HashMap
-        if let Some(ref_info) = self.handlers.get_mut(&token) {
-            ref_info.give(handler);
-        }
-    }
-
     /// For all the results we received, we notify the respective handle
     /// owners of the results by calling their given callbacks.
     ///
     /// We do NOT dequeue notified handles.
-    fn notify_of_results(&mut self, results: &Vec<system::WaitSetResult>) {
-        debug_assert!(!self.handlers.is_empty());
-        for wsr in results.iter() {
-            let token = Token(wsr.cookie());
-            self.get_handler_with(&token, move |runloop, boxed_handler, token, _dl| {
-                let handler = boxed_handler.as_mut();
-                match wsr.result() {
-                    MojoResult::Okay => handler.on_ready(runloop, token),
-                    MojoResult::Cancelled => {
-                        handler.on_error(runloop, token, WaitError::HandleClosed)
+    fn notify_of_results(&mut self, results: &[system::WaitSetResult]) {
+        assert!(!self.handlers.is_empty());
+        for wait_set_result in results {
+            let token = Token(wait_set_result.cookie.0);
+            let handler_info: &mut HandlerInfo = match self.handlers.get_mut(&token) {
+                Some(h) => h,
+                None => continue,
+            };
+
+            // The handler is mutable, and we need to pass `&mut self` to it as
+            // an argument. To avoid a mutable reference cycle we take the
+            // handler out then restore it afterward.
+            let mut handler: Option<Box<dyn Handler>> = handler_info.handler.take();
+            if let Some(ref mut handler) = handler {
+                match wait_set_result.wait_result {
+                    MojoResult::Okay => {
+                        handler.on_ready(self, token);
                     }
-                    MojoResult::Busy => handler.on_error(runloop, token, WaitError::HandleBusy),
+                    MojoResult::Cancelled => {
+                        handler.on_error(self, token, WaitError::HandleClosed);
+                    }
                     MojoResult::FailedPrecondition => {
-                        handler.on_error(runloop, token, WaitError::Unsatisfiable)
+                        handler.on_error(self, token, WaitError::Unsatisfiable);
                     }
                     other => panic!("Unexpected result received after waiting: {}", other),
                 }
-            });
+            }
+
+            // Replace the handler function, or remove the `HandlerInfo` entry
+            // entirely if the handle closed.
+            if wait_set_result.wait_result != MojoResult::Cancelled {
+                // Restore the handler. Note that the handler may have removed
+                // itself, in which case the `handler_info` entry no longer
+                // exists. The borrow checker rightfully complains if we use the
+                // old `handler_info` here: the mutable borrow of `self` for the
+                // handler call consumes the original borrow of `handler_info`.
+                // We re-fetch the entry to restore the handler Fn.
+                if let Some(handler_info) = self.handlers.get_mut(&token) {
+                    handler_info.handler = handler;
+                }
+            } else {
+                self.handlers.remove(&token);
+            }
+
             // In order to quit as soon as possible, we should check to quit after every
             // potential handler call, as any of them could have signaled to quit.
             if self.should_quit {
@@ -522,22 +478,36 @@ impl<'h, 't> RunLoop<'h, 't> {
     ///
     /// We do NOT dequeue notified handles.
     fn notify_of_expired(&mut self, expired_deadline: system::MojoTimeTicks) {
-        debug_assert!(!self.handlers.is_empty());
+        assert!(!self.handlers.is_empty());
         let mut top = match self.deadlines.peek() {
             Some(info) => info.clone(),
             None => panic!("Should not be in notify_of_expired without at least one deadline!"),
         };
         while expired_deadline >= top.deadline() {
             let next_deadline = top.deadline();
-            self.get_handler_with(
-                top.token(),
-                move |runloop, boxed_handler, token, expected_dl| {
-                    let handler = boxed_handler.as_mut();
-                    if next_deadline == expected_dl {
-                        handler.on_timeout(runloop, token);
+
+            // The handler is mutable, and we need to pass `&mut self` to it as
+            // an argument. To avoid a mutable reference cycle we take the
+            // handler out then restore it afterward.
+            if let Some(handler_info) = self.handlers.get_mut(top.token()) {
+                let mut maybe_handler = handler_info.handler.take();
+                if next_deadline == handler_info.deadline {
+                    if let Some(ref mut handler) = maybe_handler {
+                        handler.on_timeout(self, *top.token());
                     }
-                },
-            );
+                }
+
+                // Restore the handler. Note that the handler may have removed
+                // itself, in which case the `handler_info` entry no longer
+                // exists. The borrow checker rightfully complains if we use the
+                // old `handler_info` here: the mutable borrow of `self` for the
+                // handler call consumes the original borrow of `handler_info`.
+                // We re-fetch the entry to restore the handler Fn.
+                if let Some(handler_info) = self.handlers.get_mut(top.token()) {
+                    handler_info.handler = maybe_handler;
+                }
+            }
+
             // In order to quit as soon as possible, we should check to quit after every
             // potential handler call, as any of them could have signaled to quit.
             if self.should_quit {
@@ -585,7 +555,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// soon as any one handle has its signals satisfied, fails to ever have its
     /// signals satisfied, or reaches its deadline.
     fn wait(&mut self, results_buffer: &mut Vec<system::WaitSetResult>) {
-        debug_assert!(!self.handlers.is_empty());
+        assert!(!(self.handlers.is_empty() && self.tasks.is_empty()));
         self.execute_ready_tasks();
         // If after executing a task we quit or there are no handles,
         // we have no reason to continue.
@@ -612,10 +582,22 @@ impl<'h, 't> RunLoop<'h, 't> {
                     results_buffer.reserve(capacity);
                 }
             }
-            result => {
-                assert_eq!(result, MojoResult::DeadlineExceeded);
+            MojoResult::DeadlineExceeded => {
                 self.notify_of_expired(deadline);
             }
+            MojoResult::NotFound => {
+                // The WaitSet has no handles. If we have anything in
+                // `handlers`, we're in an inconsistent state and there's a bug
+                // in our implementation: they should always be in the WaitSet.
+                assert!(
+                    self.handlers.is_empty(),
+                    "handle in `handlers` not present in `handle_set`. Maybe it was closed?"
+                );
+
+                // If we truly have nothing to wait on, return.
+                ()
+            }
+            e => panic!("unexpected Mojo error {:?}", e),
         }
     }
 
@@ -629,8 +611,9 @@ impl<'h, 't> RunLoop<'h, 't> {
         self.should_quit = false;
         let mut buffer: Vec<system::WaitSetResult> =
             Vec::with_capacity(INITIAL_WAIT_SET_NUM_RESULTS);
-        // Loop while we haven't been signaled to quit, and there's something to wait on.
-        while !self.should_quit && !self.handlers.is_empty() {
+        // Loop while we haven't been signaled to quit, and there's something to
+        // run or wait on.
+        while !self.should_quit && !(self.handlers.is_empty() && self.tasks.is_empty()) {
             self.wait(&mut buffer)
         }
         self.running = false;
