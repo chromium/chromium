@@ -107,6 +107,10 @@ group("common") {
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("common_lib") {
+  visibility = [
+    ":*",
+    "//chrome/common/win:eventlog_messages",
+  ]
   sources = [
     "all_messages.h",
     "child_process_host_flags.h",
