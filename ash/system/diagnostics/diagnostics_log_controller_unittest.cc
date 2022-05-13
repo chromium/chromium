@@ -310,8 +310,12 @@ TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
   // Wait for Append tasks which create the logs to complete.
   task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(routine_log->GetContentsForCategory("network").empty());
-  EXPECT_FALSE(routine_log->GetContentsForCategory("system").empty());
+  EXPECT_FALSE(
+      routine_log->GetContentsForCategory(RoutineLog::RoutineCategory::kNetwork)
+          .empty());
+  EXPECT_FALSE(
+      routine_log->GetContentsForCategory(RoutineLog::RoutineCategory::kSystem)
+          .empty());
   EXPECT_TRUE(base::PathExists(
       expected_diagnostics_log_path.Append("network_events.log")));
   EXPECT_TRUE(base::PathExists(expected_diagnostics_log_path.Append(

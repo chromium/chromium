@@ -114,8 +114,8 @@ bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
   }
 
   // Fetch system routines from RoutineLog.
-  const std::string system_routines =
-      routine_log_->GetContentsForCategory("system");
+  const std::string system_routines = routine_log_->GetContentsForCategory(
+      RoutineLog::RoutineCategory::kSystem);
   // Add the routine section for the system category.
   log_pieces.push_back(GetRoutineResultsString(system_routines));
 
@@ -127,8 +127,8 @@ bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
     log_pieces.push_back(networking_log_->GetNetworkInfo());
 
     // Add the routine section for the network category.
-    const std::string network_routines =
-        routine_log_->GetContentsForCategory("network");
+    const std::string network_routines = routine_log_->GetContentsForCategory(
+        RoutineLog::RoutineCategory::kNetwork);
     log_pieces.push_back(GetRoutineResultsString(network_routines));
 
     // Add the network events section.

@@ -161,10 +161,10 @@ void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
 
 bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
   // Fetch Routine logs
-  const std::string system_routines =
-      routine_log_->GetContentsForCategory("system");
-  const std::string network_routines =
-      routine_log_->GetContentsForCategory("network");
+  const std::string system_routines = routine_log_->GetContentsForCategory(
+      RoutineLog::RoutineCategory::kSystem);
+  const std::string network_routines = routine_log_->GetContentsForCategory(
+      RoutineLog::RoutineCategory::kNetwork);
 
   // Fetch system data from TelemetryLog.
   const std::string system_log_contents = telemetry_log_->GetContents();

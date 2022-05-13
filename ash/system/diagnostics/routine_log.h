@@ -24,6 +24,11 @@ namespace diagnostics {
 // "diagnostics_routines_{category_name}.log".
 class ASH_EXPORT RoutineLog {
  public:
+  enum class RoutineCategory {
+    kNetwork = 0,
+    kSystem = 1,
+  };
+
   explicit RoutineLog(const base::FilePath& log_base_path);
   ~RoutineLog();
 
@@ -39,20 +44,20 @@ class ASH_EXPORT RoutineLog {
   void LogRoutineCancelled(mojom::RoutineType type);
 
   // Returns the current RoutineLog as a string.
-  std::string GetContentsForCategory(const std::string& category) const;
+  std::string GetContentsForCategory(const RoutineCategory category) const;
 
  private:
   // Append `text` to the category corresponding to `type`.
   void Append(mojom::RoutineType type, const std::string& text);
 
   // Get the path to the log file for `category`.
-  base::FilePath GetCategoryLogFilePath(const std::string& category);
+  base::FilePath GetCategoryLogFilePath(const RoutineCategory category);
 
   // The base directory for storing logs.
   const base::FilePath log_base_path_;
 
   // A map of log files where the key is the category.
-  base::flat_map<std::string, std::unique_ptr<AsyncLog>> logs_;
+  base::flat_map<RoutineCategory, std::unique_ptr<AsyncLog>> logs_;
 };
 
 }  // namespace diagnostics

@@ -49,7 +49,8 @@ TEST_F(RoutineLogTest, Empty) {
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(base::PathExists(log_path_));
-  EXPECT_TRUE(log.GetContentsForCategory("all").empty());
+  EXPECT_TRUE(
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kSystem).empty());
 }
 
 TEST_F(RoutineLogTest, Basic) {
@@ -62,7 +63,8 @@ TEST_F(RoutineLogTest, Basic) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("system");
+  const std::string contents =
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kSystem);
   const std::string first_line = GetLogLines(contents)[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);
@@ -84,7 +86,8 @@ TEST_F(RoutineLogTest, TwoLine) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("system");
+  const std::string contents =
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kSystem);
   const std::vector<std::string> log_lines = GetLogLines(contents);
   const std::string first_line = log_lines[0];
   const std::vector<std::string> first_line_contents =
@@ -114,7 +117,8 @@ TEST_F(RoutineLogTest, Cancelled) {
 
   EXPECT_TRUE(base::PathExists(log_path_));
 
-  const std::string contents = log.GetContentsForCategory("system");
+  const std::string contents =
+      log.GetContentsForCategory(RoutineLog::RoutineCategory::kSystem);
   LOG(ERROR) << contents;
   const std::vector<std::string> log_lines = GetLogLines(contents);
 

@@ -26,6 +26,15 @@ std::string GetCurrentDateTimeAsString() {
   return base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(base::Time::Now()));
 }
 
+std::string GetRoutineLogCategoryString(RoutineLog::RoutineCategory category) {
+  switch (category) {
+    case RoutineLog::RoutineCategory::kNetwork:
+      return "network";
+    case RoutineLog::RoutineCategory::kSystem:
+      return "system";
+  }
+}
+
 std::string getRoutineResultString(mojom::StandardRoutineResult result) {
   switch (result) {
     case mojom::StandardRoutineResult::kTestPassed:
@@ -51,7 +60,7 @@ std::string getRoutineTypeString(mojom::RoutineType type) {
 }
 
 // Get the category for the routine `type`.
-std::string GetRoutineCategory(mojom::RoutineType type) {
+RoutineLog::RoutineCategory GetRoutineCategory(mojom::RoutineType type) {
   switch (type) {
     case mojom::RoutineType::kBatteryCharge:
     case mojom::RoutineType::kBatteryDischarge:
@@ -60,7 +69,7 @@ std::string GetRoutineCategory(mojom::RoutineType type) {
     case mojom::RoutineType::kCpuFloatingPoint:
     case mojom::RoutineType::kCpuPrime:
     case mojom::RoutineType::kMemory:
-      return "system";
+      return RoutineLog::RoutineCategory::kSystem;
     case mojom::RoutineType::kLanConnectivity:
     case mojom::RoutineType::kSignalStrength:
     case mojom::RoutineType::kGatewayCanBePinged:
@@ -75,7 +84,7 @@ std::string GetRoutineCategory(mojom::RoutineType type) {
     case mojom::RoutineType::kArcHttp:
     case mojom::RoutineType::kArcPing:
     case mojom::RoutineType::kArcDnsResolution:
-      return "network";
+      return RoutineLog::RoutineCategory::kNetwork;
   };
 }
 
@@ -111,7 +120,7 @@ void RoutineLog::LogRoutineCancelled(mojom::RoutineType type) {
 }
 
 std::string RoutineLog::GetContentsForCategory(
-    const std::string& category) const {
+    const RoutineCategory category) const {
   const auto iter = logs_.find(category);
   if (iter == logs_.end()) {
     return "";
@@ -121,7 +130,7 @@ std::string RoutineLog::GetContentsForCategory(
 }
 
 void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
-  std::string category = GetRoutineCategory(type);
+  RoutineCategory category = GetRoutineCategory(type);
 
   // Insert a new log if it doesn't exist then append to it.
   base::FilePath log_path = GetCategoryLogFilePath(category);
@@ -133,8 +142,10 @@ void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
   iter->second->Append(text);
 }
 
-base::FilePath RoutineLog::GetCategoryLogFilePath(const std::string& category) {
-  std::string name = "diagnostics_routines_" + category + ".log";
+base::FilePath RoutineLog::GetCategoryLogFilePath(
+    const RoutineCategory category) {
+  std::string name =
+      "diagnostics_routines_" + GetRoutineLogCategoryString(category) + ".log";
   return log_base_path_.Append(name);
 }
 
