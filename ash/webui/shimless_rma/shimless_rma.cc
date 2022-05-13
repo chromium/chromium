@@ -73,11 +73,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"shimlessSplashRemembering", IDS_SHIMLESS_RMA_SPLASH_REMEMBERING},
       {"shimlessSplashLoading", IDS_SHIMLESS_RMA_SPLASH_LOADING},
       // Common buttons
-      {"cancelButtonLabel", IDS_SHIMLESS_RMA_CANCEL_BUTTON},
+      {"exitButtonLabel", IDS_SHIMLESS_RMA_EXIT_BUTTON},
       {"backButtonLabel", IDS_SHIMLESS_RMA_BACK_BUTTON},
       {"nextButtonLabel", IDS_SHIMLESS_RMA_NEXT_BUTTON},
       {"skipButtonLabel", IDS_SHIMLESS_RMA_SKIP_BUTTON},
       {"okButtonLabel", IDS_SHIMLESS_RMA_OK_BUTTON},
+      {"cancelButtonLabel", IDS_SHIMLESS_RMA_CANCEL_BUTTON},
       {"retryButtonLabel", IDS_SHIMLESS_RMA_RETRY_BUTTON},
       // Landing page
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},

@@ -740,7 +740,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     return this.i18n(
         this.currentPage_.buttonCancelLabelKey ?
             this.currentPage_.buttonCancelLabelKey :
-            'cancelButtonLabel');
+            'exitButtonLabel');
   }
 }
 

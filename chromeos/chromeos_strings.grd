@@ -2711,8 +2711,8 @@ Try tapping the mic to ask me anything.
         Loading state... may last ~10 seconds
       </message>
       <!-- Common buttons -->
-      <message name="IDS_SHIMLESS_RMA_CANCEL_BUTTON" desc="Button used to cancel RMA finalization, when allowed.">
-        Cancel
+      <message name="IDS_SHIMLESS_RMA_EXIT_BUTTON" desc="Button used to exit RMA finalization, when allowed.">
+        Exit
       </message>
       <message name="IDS_SHIMLESS_RMA_BACK_BUTTON" desc="Button used to go back to the previous step of RMA finalization, when allowed.">
         Back
@@ -2725,6 +2725,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_OK_BUTTON" desc="Default text for OK button used to acknowledge and close dialogs.">
         OK
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CANCEL_BUTTON" desc="Button used to cancel and close dialogs.">
+        Cancel
       </message>
       <message name="IDS_SHIMLESS_RMA_RETRY_BUTTON" desc="Default text for Retry button used to retry an action.">
         Retry
