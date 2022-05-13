@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -70,11 +71,10 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
     if (selected_theme == SelectedTheme::kAuto) {
       profile->GetPrefs()->SetInteger(
           prefs::kDarkModeScheduleType,
-          static_cast<int>(ScheduledFeature::ScheduleType::kSunsetToSunrise));
+          static_cast<int>(ScheduleType::kSunsetToSunrise));
     } else {
-      profile->GetPrefs()->SetInteger(
-          prefs::kDarkModeScheduleType,
-          static_cast<int>(ScheduledFeature::ScheduleType::kNone));
+      profile->GetPrefs()->SetInteger(prefs::kDarkModeScheduleType,
+                                      static_cast<int>(ScheduleType::kNone));
     }
 
   } else if (action_id == kUserActionNext) {

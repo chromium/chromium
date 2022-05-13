@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/style/dark_light_mode_nudge_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -43,22 +44,22 @@ DarkModeController* DarkModeController::Get() {
 void DarkModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kDarkModeScheduleType,
-      static_cast<int>(ScheduledFeature::ScheduleType::kSunsetToSunrise));
+      static_cast<int>(ScheduleType::kSunsetToSunrise));
 
   registry->RegisterIntegerPref(prefs::kDarkLightModeNudge,
                                 kDarkLightModeNudgeMaxShownCount);
 }
 
 void DarkModeController::SetAutoScheduleEnabled(bool enabled) {
-  SetScheduleType(enabled ? ScheduledFeature::ScheduleType::kSunsetToSunrise
-                          : ScheduledFeature::ScheduleType::kNone);
+  SetScheduleType(enabled ? ScheduleType::kSunsetToSunrise
+                          : ScheduleType::kNone);
 }
 
 bool DarkModeController::GetAutoScheduleEnabled() const {
-  ScheduledFeature::ScheduleType type = GetScheduleType();
+  const ScheduleType type = GetScheduleType();
   // `DarkModeController` does not support the custom scheduling.
-  DCHECK_NE(ScheduledFeature::ScheduleType::kCustom, type);
-  return type == ScheduledFeature::ScheduleType::kSunsetToSunrise;
+  DCHECK_NE(type, ScheduleType::kCustom);
+  return type == ScheduleType::kSunsetToSunrise;
 }
 
 void DarkModeController::ToggledByUser() {

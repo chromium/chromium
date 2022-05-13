@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/time/time_of_day.h"
@@ -34,24 +35,6 @@ class ASH_EXPORT ScheduledFeature
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
-  // These values are written to logs. New enum values can be added, but
-  // existing enums must never be renumbered or deleted and reused.
-  enum ScheduleType {
-    // Automatic toggling of ScheduledFeature is turned off.
-    kNone = 0,
-
-    // Turned automatically on at the user's local sunset time, and off at the
-    // user's local sunrise time.
-    kSunsetToSunrise = 1,
-
-    // Toggled automatically based on the custom set start and end times
-    // selected by the user from the system settings.
-    kCustom = 2,
-
-    // kMaxValue is required for UMA_HISTOGRAM_ENUMERATION.
-    kMaxValue = kCustom,
-  };
-
   // `prefs_path_custom_start_time` and `prefs_path_custom_end_time` can be
   // empty strings. Supplying only one of the custom time prefs is invalid,
   // while supplying both of them enables the custom scheduling support.

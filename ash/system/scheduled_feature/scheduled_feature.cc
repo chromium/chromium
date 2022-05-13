@@ -69,7 +69,7 @@ bool ScheduledFeature::GetEnabled() const {
          active_user_pref_service_->GetBoolean(prefs_path_enabled_);
 }
 
-ScheduledFeature::ScheduleType ScheduledFeature::GetScheduleType() const {
+ScheduleType ScheduledFeature::GetScheduleType() const {
   if (active_user_pref_service_) {
     return static_cast<ScheduleType>(
         active_user_pref_service_->GetInteger(prefs_path_schedule_type_));
@@ -242,14 +242,13 @@ void ScheduledFeature::OnEnabledPrefChanged() {
 
 void ScheduledFeature::OnScheduleTypePrefChanged(
     bool keep_manual_toggles_during_schedules) {
-  const ScheduledFeature::ScheduleType schedule_type = GetScheduleType();
+  const ScheduleType schedule_type = GetScheduleType();
   // To prevent adding (or removing) an observer twice in a row when switching
   // between different users, we need to check `is_observing_geolocation_`.
-  if (schedule_type == ScheduledFeature::ScheduleType::kNone &&
-      is_observing_geolocation_) {
+  if (schedule_type == ScheduleType::kNone && is_observing_geolocation_) {
     geolocation_controller_->RemoveObserver(this);
     is_observing_geolocation_ = false;
-  } else if (schedule_type != ScheduledFeature::ScheduleType::kNone &&
+  } else if (schedule_type != ScheduleType::kNone &&
              !is_observing_geolocation_) {
     geolocation_controller_->AddObserver(this);
     is_observing_geolocation_ = true;

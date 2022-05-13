@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -156,14 +157,10 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
   }
 
   bool GetEnabled() { return feature_->GetEnabled(); }
-  ScheduledFeature::ScheduleType GetScheduleType() {
-    return feature_->GetScheduleType();
-  }
+  ScheduleType GetScheduleType() { return feature_->GetScheduleType(); }
 
   void SetFeatureEnabled(bool enabled) { feature_->SetEnabled(enabled); }
-  void SetScheduleType(ScheduledFeature::ScheduleType type) {
-    feature_->SetScheduleType(type);
-  }
+  void SetScheduleType(ScheduleType type) { feature_->SetScheduleType(type); }
 
   // Convenience function for constructing a TimeOfDay object for exact hours
   // during the day. |hour| is between 1 and 12.
@@ -221,23 +218,21 @@ class ScheduledFeatureTest : public NoSessionAshTestBase {
 TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   // Start with user1 logged in and update to sunset-to-sunrise schedule type.
   const std::string kScheduleTypePrefString = prefs::kNightLightScheduleType;
-  ScheduledFeature::ScheduleType user1_schedule_type =
-      ScheduledFeature::ScheduleType::kSunsetToSunrise;
+  const ScheduleType user1_schedule_type = ScheduleType::kSunsetToSunrise;
   feature()->SetScheduleType(user1_schedule_type);
   EXPECT_EQ(user1_schedule_type, GetScheduleType());
-  EXPECT_EQ(user1_schedule_type,
-            user1_pref_service()->GetInteger(kScheduleTypePrefString));
+  EXPECT_EQ(user1_pref_service()->GetInteger(kScheduleTypePrefString),
+            static_cast<int>(user1_schedule_type));
 
   // Switch to user 2, and set to custom schedule type.
   SwitchActiveUser(kUser2Email);
 
-  ScheduledFeature::ScheduleType user2_schedule_type =
-      ScheduledFeature::ScheduleType::kCustom;
+  const ScheduleType user2_schedule_type = ScheduleType::kCustom;
   user2_pref_service()->SetInteger(kScheduleTypePrefString,
-                                   user2_schedule_type);
+                                   static_cast<int>(user2_schedule_type));
   EXPECT_EQ(user2_schedule_type, GetScheduleType());
-  EXPECT_EQ(user1_schedule_type,
-            user1_pref_service()->GetInteger(kScheduleTypePrefString));
+  EXPECT_EQ(user2_pref_service()->GetInteger(kScheduleTypePrefString),
+            static_cast<int>(user2_schedule_type));
 
   // Switch back to user 1, to find feature schedule type is restored to
   // sunset-to-sunrise.
@@ -250,18 +245,16 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
 TEST_F(ScheduledFeatureTest, InitScheduleTypeFromUserPrefs) {
   // Start with user1 logged in with the default disabled scheduler, `kNone`.
   const std::string kScheduleTypePrefString = prefs::kNightLightScheduleType;
-  const ScheduledFeature::ScheduleType user1_schedule_type =
-      ScheduledFeature::ScheduleType::kNone;
+  const ScheduleType user1_schedule_type = ScheduleType::kNone;
   EXPECT_EQ(user1_schedule_type, GetScheduleType());
   // Check that the feature does not observe the geoposition when the schedule
   // type is `kNone`.
   EXPECT_FALSE(IsFeatureObservingGeoposition());
 
   // Update user2's schedule type pref to sunset-to-sunrise.
-  const ScheduledFeature::ScheduleType user2_schedule_type =
-      ScheduledFeature::ScheduleType::kSunsetToSunrise;
+  const ScheduleType user2_schedule_type = ScheduleType::kSunsetToSunrise;
   user2_pref_service()->SetInteger(kScheduleTypePrefString,
-                                   user2_schedule_type);
+                                   static_cast<int>(user2_schedule_type));
   // Switching to user2 should update the schedule type to sunset-to-sunrise.
   SwitchActiveUser(kUser2Email);
   EXPECT_EQ(user2_schedule_type, GetScheduleType());
@@ -272,7 +265,7 @@ TEST_F(ScheduledFeatureTest, InitScheduleTypeFromUserPrefs) {
   // Set custom schedule to test that once we switch to the user1 with `kNone`
   // schedule type, the feature should remove itself from a geolocation
   // observer.
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(IsFeatureObservingGeoposition());
   // Make sure that switching back to user1 makes it remove itself from the
   // geoposition observer.
@@ -287,7 +280,7 @@ TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // Now is 6:00 PM.
   test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
   SetFeatureEnabled(false);
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kNone);
+  feature()->SetScheduleType(ScheduleType::kNone);
   // Start time is at 3:00 PM and end time is at 8:00 PM.
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
@@ -304,14 +297,14 @@ TEST_F(ScheduledFeatureTest, ScheduleNoneToCustomTransition) {
   // Now change the schedule type to custom, the feature should turn on
   // immediately, and the timer should be running with a delay of exactly 2
   // hours scheduling the end.
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
   EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
 
   // If the user changes the schedule type to "none", the feature status
   // should not change, but the timer should not be running.
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kNone);
+  feature()->SetScheduleType(ScheduleType::kNone);
   EXPECT_TRUE(GetEnabled());
   EXPECT_FALSE(feature()->timer()->IsRunning());
 }
@@ -322,7 +315,7 @@ TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
   test_clock()->SetNow(MakeTimeOfDay(6, AmPm::kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_TRUE(GetEnabled());
 
   // Simulate reaching the end time by triggering the timer's user task. Make
@@ -356,7 +349,7 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   test_clock()->SetNow(MakeTimeOfDay(11, AmPm::kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, AmPm::kPM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_FALSE(GetEnabled());
 
   // What happens if the user manually turns the feature on while the schedule
@@ -390,14 +383,14 @@ TEST_F(ScheduledFeatureTest, ChangingStartTimesThatDontChangeTheStatus) {
   //
   test_clock()->SetNow(MakeTimeOfDay(4, AmPm::kPM).ToTimeToday());  // 4:00 PM.
   SetFeatureEnabled(false);
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kNone);
+  feature()->SetScheduleType(ScheduleType::kNone);
   feature()->SetCustomStartTime(MakeTimeOfDay(6, AmPm::kPM));  // 6:00 PM.
   feature()->SetCustomEndTime(MakeTimeOfDay(10, AmPm::kPM));   // 10:00 PM.
 
   // Since now is outside the feature interval, changing the schedule type
   // to kCustom, shouldn't affect the status. Validate the timer is running
   // with a 2-hour delay.
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_FALSE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
   EXPECT_EQ(base::Hours(2), feature()->timer()->GetCurrentDelay());
@@ -426,7 +419,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   base::Time current_time = MakeTimeOfDay(10, AmPm::kAM).ToTimeToday();
   test_clock()->SetNow(current_time);
   EXPECT_FALSE(feature()->timer()->IsRunning());
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kSunsetToSunrise);
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
   EXPECT_EQ(geolocation_controller()->GetSunsetTime() - current_time,
@@ -494,7 +487,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   EXPECT_FALSE(feature()->GetEnabled());
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kSunsetToSunrise);
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(feature()->GetEnabled());
   EXPECT_TRUE(IsFeatureObservingGeoposition());
   EXPECT_TRUE(feature()->timer()->IsRunning());
@@ -572,7 +565,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   //
   feature()->SetCustomStartTime(MakeTimeOfDay(6, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(10, AmPm::kPM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_FALSE(feature()->GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
@@ -609,7 +602,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase1) {
   //
   feature()->SetCustomStartTime(MakeTimeOfDay(9, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(6, AmPm::kAM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
@@ -631,7 +624,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase2) {
   //
   feature()->SetCustomStartTime(MakeTimeOfDay(9, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(4, AmPm::kAM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_FALSE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
@@ -653,7 +646,7 @@ TEST_F(ScheduledFeatureTest, CustomScheduleInvertedStartAndEndTimesCase3) {
   //
   feature()->SetCustomStartTime(MakeTimeOfDay(9, AmPm::kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(4, AmPm::kAM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
 
   EXPECT_TRUE(GetEnabled());
   EXPECT_TRUE(feature()->timer()->IsRunning());
@@ -684,9 +677,9 @@ TEST_F(ScheduledFeatureTest, MultiUserManualStatusToggleWithSchedules) {
   test_clock()->SetNow(MakeTimeOfDay(2, kPM).ToTimeToday());
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   SwitchActiveUser(kUser2Email);
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kSunsetToSunrise);
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   SwitchActiveUser(kUser1Email);
 
   struct {
@@ -757,7 +750,7 @@ TEST_F(ScheduledFeatureTest,
 
   feature()->SetCustomStartTime(MakeTimeOfDay(3, kPM));
   feature()->SetCustomEndTime(MakeTimeOfDay(8, kPM));
-  feature()->SetScheduleType(ScheduledFeature::ScheduleType::kCustom);
+  feature()->SetScheduleType(ScheduleType::kCustom);
   EXPECT_FALSE(feature()->GetEnabled());
 
   // Toggle the status manually and expect that the feature is scheduled to
