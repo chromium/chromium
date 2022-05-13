@@ -116,12 +116,21 @@ class CORE_EXPORT CSSToLengthConversionData {
   };
 
   class CORE_EXPORT ContainerSizes {
-    STACK_ALLOCATED();
+    DISALLOW_NEW();
 
    public:
     ContainerSizes() = default;
     explicit ContainerSizes(Element* nearest_container)
         : nearest_container_(nearest_container) {}
+
+    // ContainerSizes::Width/Height is normally computed lazily by looking
+    // the ancestor chain of `nearest_container_`. This function allows the
+    // sizes to be fetched eagerly instead. This is useful for situations where
+    // we don't have enough context to fetch the information lazily (e.g.
+    // generated images).
+    ContainerSizes PreCachedCopy() const;
+
+    void Trace(Visitor*) const;
 
     absl::optional<double> Width() const;
     absl::optional<double> Height() const;
@@ -129,7 +138,7 @@ class CORE_EXPORT CSSToLengthConversionData {
    private:
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
-    Element* nearest_container_{nullptr};
+    Member<Element> nearest_container_;
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;
@@ -145,7 +154,7 @@ class CORE_EXPORT CSSToLengthConversionData {
   CSSToLengthConversionData(const ComputedStyle* curr_style,
                             const ComputedStyle* root_style,
                             const LayoutView*,
-                            Element* nearest_container,
+                            const ContainerSizes&,
                             float zoom);
 
   float Zoom() const { return zoom_; }
@@ -196,9 +205,8 @@ class CORE_EXPORT CSSToLengthConversionData {
     DCHECK_GT(zoom, 0);
     zoom_ = zoom;
   }
-  void SetContainerSizes(const ContainerSizes& container_sizes) {
-    container_sizes_ = container_sizes;
-  }
+
+  const ContainerSizes& GetContainerSizes() const { return container_sizes_; }
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
     return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,

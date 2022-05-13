@@ -120,7 +120,10 @@ scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
 void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       Style(), RootElementStyle(), GetDocument().GetLayoutView(),
-      nearest_container_, Style()->EffectiveZoom());
+      CSSToLengthConversionData::ContainerSizes(nearest_container_),
+      Style()->EffectiveZoom());
+  element_style_resources_.UpdateLengthConversionData(
+      &css_to_length_conversion_data_);
 }
 
 CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(

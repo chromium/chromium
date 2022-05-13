@@ -117,6 +117,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
     const ImageResourceObserver& client,
     const Document& document,
     const ComputedStyle& style,
+    const ContainerSizes& container_sizes,
     const gfx::SizeF& size) const {
   if (size.IsEmpty())
     return nullptr;
@@ -132,10 +133,9 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
   // We need to create an image.
   const ComputedStyle* root_style =
       document.documentElement()->GetComputedStyle();
-  // TOOD(crbug.com/1223030): Handle container relative units.
   CSSToLengthConversionData conversion_data(
-      &style, root_style, document.GetLayoutView(),
-      /* nearest_container */ nullptr, style.EffectiveZoom());
+      &style, root_style, document.GetLayoutView(), container_sizes,
+      style.EffectiveZoom());
 
   scoped_refptr<Gradient> gradient;
   switch (GetClassType()) {

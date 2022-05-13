@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -127,6 +128,22 @@ CSSToLengthConversionData::ViewportSize::ViewportSize(
   }
 }
 
+CSSToLengthConversionData::ContainerSizes
+CSSToLengthConversionData::ContainerSizes::PreCachedCopy() const {
+  ContainerSizes copy = *this;
+  copy.Width();
+  copy.Height();
+  DCHECK(!copy.nearest_container_ || copy.cached_width_.has_value());
+  DCHECK(!copy.nearest_container_ || copy.cached_height_.has_value());
+  // We don't need to keep the container since we eagerly fetched both values.
+  copy.nearest_container_ = nullptr;
+  return copy;
+}
+
+void CSSToLengthConversionData::ContainerSizes::Trace(Visitor* visitor) const {
+  visitor->Trace(nearest_container_);
+}
+
 absl::optional<double> CSSToLengthConversionData::ContainerSizes::Width()
     const {
   CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisHorizontal), cached_width_);
@@ -166,13 +183,13 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* style,
     const ComputedStyle* root_style,
     const LayoutView* layout_view,
-    Element* nearest_container,
+    const ContainerSizes& container_sizes,
     float zoom)
     : CSSToLengthConversionData(style,
                                 style->GetWritingMode(),
                                 FontSizes(style, root_style),
                                 ViewportSize(layout_view),
-                                ContainerSizes(nearest_container),
+                                container_sizes,
                                 zoom) {}
 
 double CSSToLengthConversionData::ViewportWidthPercent() const {

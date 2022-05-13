@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_GENERATED_IMAGE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -41,7 +42,10 @@ class ImageResourceObserver;
 // function. Use only for images that have no intrinsic dimensions.
 class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
  public:
-  explicit StyleGeneratedImage(const CSSImageGeneratorValue&);
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
+  explicit StyleGeneratedImage(const CSSImageGeneratorValue&,
+                               const ContainerSizes&);
 
   WrappedImagePtr Data() const override { return image_generator_value_.Get(); }
 
@@ -76,6 +80,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   // TODO(sashab): Replace this with <const CSSImageGeneratorValue> once
   // Member<> supports const types.
   Member<CSSImageGeneratorValue> image_generator_value_;
+  ContainerSizes container_sizes_;
 };
 
 template <>

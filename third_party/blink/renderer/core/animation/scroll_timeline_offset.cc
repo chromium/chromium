@@ -128,7 +128,8 @@ absl::optional<double> ScrollTimelineOffset::ResolveOffset(
     // TOOD(crbug.com/1223030): Handle container relative units.
     CSSToLengthConversionData conversion_data = CSSToLengthConversionData(
         &computed_style, root_style, document.GetLayoutView(),
-        /* nearest_container */ nullptr, computed_style.EffectiveZoom());
+        CSSToLengthConversionData::ContainerSizes(),
+        computed_style.EffectiveZoom());
     double resolved = FloatValueForLength(
         length_based_offset_->ConvertToLength(conversion_data), max_offset);
 

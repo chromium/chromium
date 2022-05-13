@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -86,6 +87,8 @@ using ClientSizeCountMap =
 
 class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
  public:
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
   ~CSSImageGeneratorValue();
 
   void AddClient(const ImageResourceObserver*);
@@ -96,6 +99,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
+                                const ContainerSizes&,
                                 const gfx::SizeF& target_size);
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;

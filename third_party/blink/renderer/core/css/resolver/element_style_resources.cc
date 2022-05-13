@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -63,11 +65,15 @@ class StyleImageLoader {
   STACK_ALLOCATED();
 
  public:
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
   StyleImageLoader(Document& document,
                    ComputedStyle& style,
+                   const PreCachedContainerSizes& pre_cached_container_sizes,
                    float device_scale_factor)
       : document_(document),
         style_(style),
+        pre_cached_container_sizes_(pre_cached_container_sizes),
         device_scale_factor_(device_scale_factor) {}
 
   StyleImage* Load(
@@ -80,6 +86,7 @@ class StyleImageLoader {
 
   Document& document_;
   ComputedStyle& style_;
+  const PreCachedContainerSizes& pre_cached_container_sizes_;
   const float device_scale_factor_;
 };
 
@@ -93,7 +100,8 @@ StyleImage* StyleImageLoader::Load(
   }
 
   if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
+    auto* image = MakeGarbageCollected<StyleGeneratedImage>(
+        *paint_value, pre_cached_container_sizes_.Get());
     style_.AddPaintImage(image);
     return image;
   }
@@ -107,7 +115,8 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value);
+    return MakeGarbageCollected<StyleGeneratedImage>(
+        *image_gradient_value, pre_cached_container_sizes_.Get());
   }
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
@@ -137,6 +146,24 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
 }
 
 }  // namespace
+
+const PreCachedContainerSizes::ContainerSizes& PreCachedContainerSizes::Get()
+    const {
+  if (!cache_) {
+    // Finding container sizes eagerly means traversing the entire
+    // ancestor chain (in the worse case). Avoid if CSSContainerRelativeUnits
+    // is not enabled.
+    //
+    // TODO(crbug.com/1324901): Avoid based on units within CSSValue instead.
+    if (RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled() &&
+        conversion_data_) {
+      cache_ = conversion_data_->GetContainerSizes().PreCachedCopy();
+    } else {
+      cache_ = ContainerSizes();
+    }
+  }
+  return *cache_;
+}
 
 ElementStyleResources::ElementStyleResources(Element& element,
                                              float device_scale_factor,
@@ -179,8 +206,10 @@ StyleImage* ElementStyleResources::CachedStyleImage(
   }
 
   // Gradient functions are never pending (but don't cache StyleImages).
-  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value))
-    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value);
+  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value)) {
+    return MakeGarbageCollected<StyleGeneratedImage>(
+        *gradient_value, pre_cached_container_sizes_.Get());
+  }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))
     return img_set_value->CachedImage(device_scale_factor_);
@@ -278,7 +307,8 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
   // If we eagerly loaded the images we'd fetch a.png, even though it's not
   // used. If we didn't null check below we'd crash since the none actually
   // removed all background images.
-  StyleImageLoader loader(element_.GetDocument(), style, device_scale_factor_);
+  StyleImageLoader loader(element_.GetDocument(), style,
+                          pre_cached_container_sizes_, device_scale_factor_);
   for (CSSPropertyID property : pending_image_properties_) {
     switch (property) {
       case CSSPropertyID::kBackgroundImage: {
@@ -380,6 +410,11 @@ void ElementStyleResources::LoadPendingResources(
     ComputedStyle& computed_style) {
   LoadPendingImages(computed_style);
   LoadPendingSVGResources(computed_style);
+}
+
+void ElementStyleResources::UpdateLengthConversionData(
+    const CSSToLengthConversionData* conversion_data) {
+  pre_cached_container_sizes_ = PreCachedContainerSizes(conversion_data);
 }
 
 }  // namespace blink

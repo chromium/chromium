@@ -731,8 +731,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("foopainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
   paint_value->CreateGeneratorForTesting(GetDocument());
-  StyleGeneratedImage* style_image =
-      MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
+  StyleGeneratedImage* style_image = MakeGarbageCollected<StyleGeneratedImage>(
+      *paint_value, StyleGeneratedImage::ContainerSizes());
   style->AddPaintImage(style_image);
   element_->GetLayoutObject()->SetStyle(style);
   // The image is added for testing off-thread paint worklet supporting

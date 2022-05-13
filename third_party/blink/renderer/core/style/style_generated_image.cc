@@ -32,8 +32,10 @@
 
 namespace blink {
 
-StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value)
-    : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)) {
+StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value,
+                                         const ContainerSizes& container_sizes)
+    : image_generator_value_(const_cast<CSSImageGeneratorValue*>(&value)),
+      container_sizes_(container_sizes) {
   is_generated_image_ = true;
   if (value.IsPaintValue())
     is_paint_image_ = true;
@@ -92,7 +94,7 @@ scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
   return image_generator_value_->GetImage(observer, document, style,
-                                          target_size);
+                                          container_sizes_, target_size);
 }
 
 bool StyleGeneratedImage::KnownToBeOpaque(const Document& document,
@@ -102,6 +104,7 @@ bool StyleGeneratedImage::KnownToBeOpaque(const Document& document,
 
 void StyleGeneratedImage::Trace(Visitor* visitor) const {
   visitor->Trace(image_generator_value_);
+  visitor->Trace(container_sizes_);
   StyleImage::Trace(visitor);
 }
 

@@ -94,9 +94,12 @@ namespace cssvalue {
 
 class CSSGradientValue : public CSSImageGeneratorValue {
  public:
+  using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
+                                const ContainerSizes&,
                                 const gfx::SizeF&) const;
 
   void AddStop(const CSSGradientColorStop& stop) {
