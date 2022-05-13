@@ -666,6 +666,7 @@ void CompositorTimingHistory::DidCommit() {
                                         commit_start_time_);
 
   if (enabled_ && duration_estimates_enabled_) {
+    // TODO(szager): This omits commit queueing time
     bmf_start_to_activate_duration_ +=
         begin_main_frame_end_time - commit_start_time_;
   }
@@ -788,7 +789,13 @@ void CompositorTimingHistory::DidActivate() {
     activate_duration_history_.InsertSample(activate_duration);
 
     if (duration_estimates_enabled_) {
+      // TODO(szager): MFBA means begin_main_frame_on_critical_path_ may have
+      // been overwritten by a call to WillBeginMainFrame().
       if (begin_main_frame_on_critical_path_) {
+        // TODO(szager): MFBA means bmf_start_to_activate_duration_ may have
+        // been overwritten by a call to NotifyReadyToCommit().
+        // TODO(szager): MFBA means begin_main_frame_queue_duration_ may have
+        // been overwritten by a call to BeginMainFrameAborted().
         bmf_queue_to_activate_critical_history_.InsertSample(
             bmf_start_to_activate_duration_ + activate_duration +
             begin_main_frame_queue_duration_);
