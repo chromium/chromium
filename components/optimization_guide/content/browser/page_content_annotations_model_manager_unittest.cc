@@ -246,13 +246,8 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
 }
 
-// TODO(crbug.com/1286473): Flaky on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PageTopics DISABLED_PageTopics
-#else
-#define MAYBE_PageTopics PageTopics
-#endif
-TEST_F(PageContentAnnotationsModelManagerTest, MAYBE_PageTopics) {
+// TODO(crbug.com/1286473): Flaky on Chrome OS and MSAN.
+TEST_F(PageContentAnnotationsModelManagerTest, DISABLED_PageTopics) {
   SetupPageTopicsV2ModelExecutor();
 
   // Running the actual model can take a while.
