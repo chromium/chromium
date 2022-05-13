@@ -31,9 +31,9 @@ PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
 
 void PrivacySandboxDialogHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "dialogActionOccurred",
+      "promptActionOccurred",
       base::BindRepeating(
-          &PrivacySandboxDialogHandler::HandleDialogActionOccurred,
+          &PrivacySandboxDialogHandler::HandlePromptActionOccurred,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "resizeDialog",
@@ -59,32 +59,32 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 
   // If user hasn't made a decision, notify the service.
   if (prompt_type_ == PrivacySandboxService::PromptType::kConsent) {
-    NotifyServiceAboutDialogAction(
-        PrivacySandboxService::DialogAction::kConsentClosedNoDecision);
+    NotifyServiceAboutPromptAction(
+        PrivacySandboxService::PromptAction::kConsentClosedNoDecision);
   } else {
-    NotifyServiceAboutDialogAction(
-        PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction);
+    NotifyServiceAboutPromptAction(
+        PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction);
   }
 }
 
-void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
+void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
     const base::Value::List& args) {
   if (!IsJavascriptAllowed())
     return;
 
   CHECK_EQ(1U, args.size());
   auto action =
-      static_cast<PrivacySandboxService::DialogAction>(args[0].GetInt());
+      static_cast<PrivacySandboxService::PromptAction>(args[0].GetInt());
 
-  if (action == PrivacySandboxService::DialogAction::kNoticeOpenSettings)
+  if (action == PrivacySandboxService::PromptAction::kNoticeOpenSettings)
     std::move(open_settings_callback_).Run();
 
   switch (action) {
-    case PrivacySandboxService::DialogAction::kNoticeAcknowledge:
-    case PrivacySandboxService::DialogAction::kNoticeDismiss:
-    case PrivacySandboxService::DialogAction::kNoticeOpenSettings:
-    case PrivacySandboxService::DialogAction::kConsentAccepted:
-    case PrivacySandboxService::DialogAction::kConsentDeclined: {
+    case PrivacySandboxService::PromptAction::kNoticeAcknowledge:
+    case PrivacySandboxService::PromptAction::kNoticeDismiss:
+    case PrivacySandboxService::PromptAction::kNoticeOpenSettings:
+    case PrivacySandboxService::PromptAction::kConsentAccepted:
+    case PrivacySandboxService::PromptAction::kConsentDeclined: {
       did_user_make_decision_ = true;
       DisallowJavascript();
       std::move(close_callback_).Run();
@@ -94,7 +94,7 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
       break;
   }
 
-  NotifyServiceAboutDialogAction(action);
+  NotifyServiceAboutPromptAction(action);
 }
 
 void PrivacySandboxDialogHandler::HandleResizeDialog(
@@ -116,19 +116,19 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
   // Notify the service that the DOM was loaded and the dialog was shown to
   // user.
   if (prompt_type_ == PrivacySandboxService::PromptType::kConsent) {
-    NotifyServiceAboutDialogAction(
-        PrivacySandboxService::DialogAction::kConsentShown);
+    NotifyServiceAboutPromptAction(
+        PrivacySandboxService::PromptAction::kConsentShown);
   } else {
-    NotifyServiceAboutDialogAction(
-        PrivacySandboxService::DialogAction::kNoticeShown);
+    NotifyServiceAboutPromptAction(
+        PrivacySandboxService::PromptAction::kNoticeShown);
   }
 
   DCHECK(show_dialog_callback_);
   std::move(show_dialog_callback_).Run();
 }
 
-void PrivacySandboxDialogHandler::NotifyServiceAboutDialogAction(
-    PrivacySandboxService::DialogAction action) {
+void PrivacySandboxDialogHandler::NotifyServiceAboutPromptAction(
+    PrivacySandboxService::PromptAction action) {
   DCHECK(privacy_sandbox_service_);
-  privacy_sandbox_service_->DialogActionOccurred(action);
+  privacy_sandbox_service_->PromptActionOccurred(action);
 }

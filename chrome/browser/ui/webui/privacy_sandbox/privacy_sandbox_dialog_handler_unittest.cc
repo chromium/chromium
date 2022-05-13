@@ -28,8 +28,8 @@ class MockPrivacySandboxDialogView {
 class MockPrivacySandboxService : public PrivacySandboxService {
  public:
   MOCK_METHOD(void,
-              DialogActionOccurred,
-              (PrivacySandboxService::DialogAction),
+              PromptActionOccurred,
+              (PrivacySandboxService::PromptAction),
               (override));
 };
 
@@ -67,19 +67,19 @@ class PrivacySandboxDialogHandlerTest : public testing::Test {
     web_ui_.reset();
   }
 
-  void ShowDialog(PrivacySandboxService::DialogAction expected_action) {
+  void ShowDialog(PrivacySandboxService::PromptAction expected_action) {
     EXPECT_CALL(*dialog_mock(), ShowNativeView());
     EXPECT_CALL(*mock_privacy_sandbox_service(),
-                DialogActionOccurred(expected_action));
+                PromptActionOccurred(expected_action));
     base::Value args(base::Value::Type::LIST);
     handler()->HandleShowDialog(args.GetList());
   }
 
-  void IdempotentDialogActionOccurred(const base::Value::List& args) {
-    // Inform the handler multiple times that a dialog action occurred. The test
+  void IdempotentPromptActionOccurred(const base::Value::List& args) {
+    // Inform the handler multiple times that a prompt action occurred. The test
     // using this function expects the call to be idempotent.
-    handler()->HandleDialogActionOccurred(args);
-    handler()->HandleDialogActionOccurred(args);
+    handler()->HandlePromptActionOccurred(args);
+    handler()->HandlePromptActionOccurred(args);
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
@@ -129,8 +129,8 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
   EXPECT_CALL(*dialog_mock(), ResizeNativeView(kDefaultDialogHeight));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
@@ -146,78 +146,78 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleShowDialog) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
 
-  ShowDialog(PrivacySandboxService::DialogAction::kConsentShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickLearnMore) {
-  ShowDialog(PrivacySandboxService::DialogAction::kConsentShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kConsentMoreInfoOpened));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentMoreInfoOpened));
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kConsentMoreInfoClosed));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentMoreInfoClosed));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
 
   base::Value more_info_opened_args(base::Value::Type::LIST);
   more_info_opened_args.Append(static_cast<int>(
-      PrivacySandboxService::DialogAction::kConsentMoreInfoOpened));
-  handler()->HandleDialogActionOccurred(more_info_opened_args.GetList());
+      PrivacySandboxService::PromptAction::kConsentMoreInfoOpened));
+  handler()->HandlePromptActionOccurred(more_info_opened_args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 
   base::Value more_info_closed_args(base::Value::Type::LIST);
   more_info_closed_args.Append(static_cast<int>(
-      PrivacySandboxService::DialogAction::kConsentMoreInfoClosed));
-  handler()->HandleDialogActionOccurred(more_info_closed_args.GetList());
+      PrivacySandboxService::PromptAction::kConsentMoreInfoClosed));
+  handler()->HandlePromptActionOccurred(more_info_closed_args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
-  ShowDialog(PrivacySandboxService::DialogAction::kConsentShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kConsentAccepted));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentAccepted));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision))
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
       .Times(0);
 
   base::Value args(base::Value::Type::LIST);
   args.Append(
-      static_cast<int>(PrivacySandboxService::DialogAction::kConsentAccepted));
-  IdempotentDialogActionOccurred(args.GetList());
+      static_cast<int>(PrivacySandboxService::PromptAction::kConsentAccepted));
+  IdempotentPromptActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
 TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
-  ShowDialog(PrivacySandboxService::DialogAction::kConsentShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kConsentShown);
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kConsentDeclined));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentDeclined));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kConsentClosedNoDecision))
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kConsentClosedNoDecision))
       .Times(0);
 
   base::Value args(base::Value::Type::LIST);
   args.Append(
-      static_cast<int>(PrivacySandboxService::DialogAction::kConsentDeclined));
-  IdempotentDialogActionOccurred(args.GetList());
+      static_cast<int>(PrivacySandboxService::PromptAction::kConsentDeclined));
+  IdempotentPromptActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -244,8 +244,8 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
   EXPECT_CALL(*dialog_mock(), ResizeNativeView(kDefaultDialogHeight));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction));
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
@@ -261,50 +261,50 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleShowDialog) {
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction));
-  ShowDialog(PrivacySandboxService::DialogAction::kNoticeShown);
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
+  ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
-  ShowDialog(PrivacySandboxService::DialogAction::kNoticeShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
   EXPECT_CALL(*dialog_mock(), OpenPrivacySandboxSettings());
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kNoticeOpenSettings));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kNoticeOpenSettings));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction))
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
       .Times(0);
 
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
-      PrivacySandboxService::DialogAction::kNoticeOpenSettings));
-  IdempotentDialogActionOccurred(args.GetList());
+      PrivacySandboxService::PromptAction::kNoticeOpenSettings));
+  IdempotentPromptActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
 
 TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
-  ShowDialog(PrivacySandboxService::DialogAction::kNoticeShown);
+  ShowDialog(PrivacySandboxService::PromptAction::kNoticeShown);
   EXPECT_CALL(*dialog_mock(), Close());
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogActionOccurred(
-                  PrivacySandboxService::DialogAction::kNoticeAcknowledge));
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kNoticeAcknowledge));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      DialogActionOccurred(
-          PrivacySandboxService::DialogAction::kNoticeClosedNoInteraction))
+      PromptActionOccurred(
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
       .Times(0);
 
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
-      PrivacySandboxService::DialogAction::kNoticeAcknowledge));
-  IdempotentDialogActionOccurred(args.GetList());
+      PrivacySandboxService::PromptAction::kNoticeAcknowledge));
+  IdempotentPromptActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }

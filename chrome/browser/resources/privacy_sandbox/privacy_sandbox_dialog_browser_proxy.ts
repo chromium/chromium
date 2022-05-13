@@ -7,10 +7,10 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 // All actions related to showing & interacting with the privacy sandbox
-// dialog. Includes actions which do not impact consent / notice state.
+// prompt. Includes actions which do not impact consent / notice state.
 // Must be kept in sync with the enum of the same name in
 // privacy_sandbox_service.h.
-export enum PrivacySandboxDialogAction {
+export enum PrivacySandboxPromptAction {
   NOTICE_SHOWN = 0,
   NOTICE_OPEN_SETTINGS = 1,
   NOTICE_ACKNOWLEDGE = 2,
@@ -22,11 +22,12 @@ export enum PrivacySandboxDialogAction {
   CONSENT_MORE_INFO_OPENED = 8,
   CONSENT_MORE_INFO_CLOSED = 9,
   CONSENT_CLOSED_NO_DECISION = 10,
+  NOTICE_LEARN_MORE = 11,
 }
 
 export class PrivacySandboxDialogBrowserProxy {
-  dialogActionOccurred(action: PrivacySandboxDialogAction) {
-    chrome.send('dialogActionOccurred', [action]);
+  promptActionOccurred(action: PrivacySandboxPromptAction) {
+    chrome.send('promptActionOccurred', [action]);
   }
 
   resizeDialog(height: number) {
