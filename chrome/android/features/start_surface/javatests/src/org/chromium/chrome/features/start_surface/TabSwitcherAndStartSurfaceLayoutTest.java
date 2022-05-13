@@ -1712,6 +1712,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1324021")
     // clang-format off
     // Disable TAB_TO_GTS_ANIMATION to make it less flaky.
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
