@@ -172,7 +172,10 @@ js_library("context_menu_handler") {
 }
 
 js_library("dialogs") {
-  deps = [ "../..:cr" ]
+  deps = [
+    "../..:cr",
+    "../..:util",
+  ]
 }
 
 js_library("focus_manager") {

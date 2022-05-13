@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {isRTL} from 'chrome://resources/js/util.m.js'
+
 cr.define('cr.ui.dialogs', function() {
   /**
    * @constructor
@@ -135,14 +137,21 @@ cr.define('cr.ui.dialogs', function() {
 
   /** @protected */
   BaseDialog.prototype.onContainerKeyDown = function(event) {
-    // Handle Escape.
-    if (event.keyCode === 27 && !this.cancelButton.disabled) {
+    // 0=cancel, 1=ok.
+    const focus = i => [this.cancelButton, this.okButton][i].focus();
+
+    if (event.key === 'Escape' && !this.cancelButton.disabled) {
       this.onCancelClick_(event);
-      event.stopPropagation();
-      // Prevent the event from being handled by the container of the dialog.
-      // e.g. Prevent the parent container from closing at the same time.
-      event.preventDefault();
+    } else if (event.key === 'ArrowLeft') {
+      focus(isRTL() ? 1 : 0);
+    } else if (event.key === 'ArrowRight') {
+      focus(isRTL() ? 0 : 1);
+    } else {
+      // Not handled, so return and allow event to propagate.
+      return;
     }
+    event.stopPropagation();
+    event.preventDefault();
   };
 
   /** @private */
