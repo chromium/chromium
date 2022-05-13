@@ -12,6 +12,7 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,8 +39,8 @@ const int kSeparatorHeight = 16;
 
 AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                                      FloatingMenuPosition position) {
-  int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
-  int separator_spacing = (total_height - kSeparatorHeight) / 2;
+  const int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
+  const int separator_spacing = (total_height - kSeparatorHeight) / 2;
   views::Builder<AutoclickMenuView>(this)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kEnd)
       .AddChildren(
@@ -107,8 +108,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                                    base::Unretained(this),
                                    base::Unretained(pause_button_)))),
           views::Builder<views::Separator>()
-              .SetColor(AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kSeparatorColor))
+              .CopyAddressTo(&separator_)
               .SetPreferredHeight(kSeparatorHeight)
               .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
@@ -168,6 +168,12 @@ void AutoclickMenuView::UpdatePosition(FloatingMenuPosition position) {
                                           : kAutoclickPositionBottomRightIcon);
       return;
   }
+}
+
+void AutoclickMenuView::OnThemeChanged() {
+  views::BoxLayoutView::OnThemeChanged();
+  separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
 }
 
 void AutoclickMenuView::OnAutoclickButtonPressed(views::Button* sender) {
