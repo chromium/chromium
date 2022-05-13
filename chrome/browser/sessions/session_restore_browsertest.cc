@@ -1332,7 +1332,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
       tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWebUI) {
+// TODO(crbug.com/1325235): Re-enable this test
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreWebUI) {
   const GURL webui_url(chrome::kChromeUIOmniboxURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
   content::WebContents* old_tab =
