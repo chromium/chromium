@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Use the <code>chrome.os.diagnostics</code> API to get telemetry data.
+// Use the <code>chrome.os.diagnostics</code> API to run diagnostic routines.
 //
 // Many types defined here map with Mojo structs defined in
 // chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
