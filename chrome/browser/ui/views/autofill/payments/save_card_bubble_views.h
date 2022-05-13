@@ -46,7 +46,6 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
 
   // Returns the footnote view, so it can be searched for clickable views.
   // Exists for testing (specifically, browsertests).
@@ -81,9 +80,6 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
   raw_ptr<views::View> footnote_view_ = nullptr;
 
   raw_ptr<SaveCardBubbleController> controller_;  // Weak reference.
-
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
 };
 
 }  // namespace autofill

@@ -51,7 +51,7 @@ class VirtualCardManualFallbackBubbleViews
   ui::ImageModel GetWindowIcon() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // Creates a button for the |field|. If the button is pressed, the text of it
   // will be copied to the clipboard.
@@ -68,9 +68,6 @@ class VirtualCardManualFallbackBubbleViews
   void LearnMoreLinkClicked();
 
   raw_ptr<VirtualCardManualFallbackBubbleController> controller_;
-
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
 
   // The map keeping the references to each button with card information text in
   // the bubble.

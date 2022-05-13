@@ -67,8 +67,8 @@ class LegalMessageView : public views::BoxLayoutView {
   ~LegalMessageView() override;
 };
 
-PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-    views::Widget::ClosedReason reason);
+PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
+    const views::Widget* widget);
 
 // TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
 // Creates a progress bar with an explanatory text below.

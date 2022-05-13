@@ -42,7 +42,7 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -54,9 +54,6 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
-
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
 
   raw_ptr<LocalCardMigrationBubbleController> controller_;
 };

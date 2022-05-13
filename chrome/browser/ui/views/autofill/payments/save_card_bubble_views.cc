@@ -64,9 +64,10 @@ void SaveCardBubbleViews::Hide() {
   // do that here. This will clear out |controller_|'s reference to |this|. Note
   // that WindowClosing() happens only after the _asynchronous_ Close() task
   // posted in CloseBubble() completes, but we need to fix references sooner.
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
-
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
@@ -100,15 +101,10 @@ std::u16string SaveCardBubbleViews::GetWindowTitle() const {
 
 void SaveCardBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
-}
-
-void SaveCardBubbleViews::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 views::View* SaveCardBubbleViews::GetFootnoteViewForTesting() {

@@ -48,7 +48,7 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void InitWithCardLinkedOfferContent();
   void InitWithPromoCodeOfferContent();
@@ -58,9 +58,6 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   void OnPromoCodeButtonClicked();
 
   void UpdateButtonTooltipsAndAccessibleNames();
-
-  PaymentsBubbleClosedReason closed_reason_ =
-      PaymentsBubbleClosedReason::kUnknown;
 
   raw_ptr<OfferNotificationBubbleController> controller_;
 

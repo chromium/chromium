@@ -46,8 +46,10 @@ OfferNotificationBubbleViews::~OfferNotificationBubbleViews() {
 
 void OfferNotificationBubbleViews::Hide() {
   CloseBubble();
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
@@ -89,17 +91,18 @@ std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {
 
 void OfferNotificationBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
 
-void OfferNotificationBubbleViews::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
+void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
+  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  if (!widget->IsClosed())
+    return;
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {

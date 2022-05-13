@@ -65,8 +65,10 @@ VirtualCardManualFallbackBubbleViews::~VirtualCardManualFallbackBubbleViews() {
 
 void VirtualCardManualFallbackBubbleViews::Hide() {
   CloseBubble();
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
@@ -186,20 +188,21 @@ std::u16string VirtualCardManualFallbackBubbleViews::GetWindowTitle() const {
 
 void VirtualCardManualFallbackBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
 
-void VirtualCardManualFallbackBubbleViews::OnWidgetClosing(
+void VirtualCardManualFallbackBubbleViews::OnWidgetDestroying(
     views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
+  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  if (!widget->IsClosed())
+    return;
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kAcceptButtonClicked);
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 std::unique_ptr<views::MdTextButton>

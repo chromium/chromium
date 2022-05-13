@@ -80,9 +80,10 @@ void LocalCardMigrationBubbleViews::Hide() {
   // posted in CloseBubble() completes, but we need to fix references sooner.
   CloseBubble();
 
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
-
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
@@ -145,17 +146,18 @@ std::u16string LocalCardMigrationBubbleViews::GetWindowTitle() const {
 
 void LocalCardMigrationBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
 
-void LocalCardMigrationBubbleViews::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
+void LocalCardMigrationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
+  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
+  if (!widget->IsClosed())
+    return;
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 LocalCardMigrationBubbleViews::~LocalCardMigrationBubbleViews() = default;

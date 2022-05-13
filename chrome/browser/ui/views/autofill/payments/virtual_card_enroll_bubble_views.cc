@@ -62,8 +62,10 @@ void VirtualCardEnrollBubbleViews::Show(DisplayReason reason) {
 
 void VirtualCardEnrollBubbleViews::Hide() {
   CloseBubble();
-  if (controller_)
-    controller_->OnBubbleClosed(closed_reason_);
+  if (controller_) {
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+  }
   controller_ = nullptr;
 }
 
@@ -105,15 +107,10 @@ std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
 
 void VirtualCardEnrollBubbleViews::WindowClosing() {
   if (controller_) {
-    controller_->OnBubbleClosed(closed_reason_);
+    controller_->OnBubbleClosed(
+        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
-}
-
-void VirtualCardEnrollBubbleViews::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
-  closed_reason_ = GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-      widget->closed_reason());
 }
 
 void VirtualCardEnrollBubbleViews::Init() {

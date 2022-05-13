@@ -184,9 +184,13 @@ LegalMessageView::~LegalMessageView() = default;
 BEGIN_METADATA(LegalMessageView, views::View)
 END_METADATA
 
-PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
-    views::Widget::ClosedReason reason) {
-  switch (reason) {
+PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
+    const views::Widget* widget) {
+  DCHECK(widget);
+  if (!widget->IsClosed())
+    return PaymentsBubbleClosedReason::kUnknown;
+
+  switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
       return PaymentsBubbleClosedReason::kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
