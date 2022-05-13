@@ -17,7 +17,7 @@
 
             <path
                 android:name="arrow_grey"
-                android:fillColor="@color/icon_animated_faded_color"
+                android:fillColor="@color/icon_animated_faded_color_list"
                 android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
                 android:strokeColor="@android:color/transparent"/>
 
@@ -36,7 +36,7 @@
             <path
                 android:name="bar_grey"
                 android:pathData="M12,54 L60,54"
-                android:strokeColor="@color/icon_animated_faded_color"
+                android:strokeColor="@color/icon_animated_faded_color_list"
                 android:strokeWidth="6"/>
 
             <path

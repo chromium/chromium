@@ -11,7 +11,7 @@
 
     <path
         android:name="circle"
-        android:fillColor="@color/icon_animated_faded_color"
+        android:fillColor="@color/icon_animated_faded_color_list"
         android:fillAlpha="0"
         android:pathData="M 0,12 C 0,6 6,0 12,0 C 18,0 24,6 24,12 C 24,18 18,24 12,24 C 6,24 0,18 0,12"/>
 
