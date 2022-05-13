@@ -11,13 +11,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_menu_model_adapter.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
@@ -270,8 +276,35 @@ UserNoteView::UserNoteView(user_notes::UserNoteInstance* user_note_instance,
 UserNoteView::~UserNoteView() = default;
 
 void UserNoteView::OnOpenMenu() {
-  // TODO(cheickcisse): Implement context menu that will allow users to remove,
-  // edit and learn more about the user note.
+  auto* user_note_menu_button = user_note_header_->children().at(1);
+
+  dialog_model_ = std::make_unique<ui::DialogModelMenuModelAdapter>(
+      ui::DialogModel::Builder()
+          .AddMenuItem(ui::ImageModel(), l10n_util::GetStringUTF16(IDS_EDIT),
+                       base::BindRepeating(&UserNoteView::OnEditUserNote,
+                                           base::Unretained(this)))
+          .AddMenuItem(ui::ImageModel(), l10n_util::GetStringUTF16(IDS_DELETE),
+                       base::BindRepeating(&UserNoteView::OnDeleteUserNote,
+                                           base::Unretained(this)))
+          .AddMenuItem(ui::ImageModel(),
+                       l10n_util::GetStringUTF16(IDS_LEARN_MORE_USER_NOTE),
+                       base::BindRepeating(&UserNoteView::OnLearnUserNote,
+                                           base::Unretained(this)))
+          .Build());
+
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      dialog_model_.get(),
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
+      base::BindRepeating(&UserNoteView::OnMenuClosed, base::Unretained(this)));
+  menu_runner_->RunMenuAt(user_note_menu_button->GetWidget(), nullptr,
+                          user_note_menu_button->GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kTopLeft,
+                          ui::MenuSourceType::MENU_SOURCE_MOUSE);
+}
+
+void UserNoteView::OnMenuClosed() {
+  menu_runner_.reset();
+  dialog_model_ = nullptr;
 }
 
 void UserNoteView::OnCancelNewUserNote() {
@@ -280,4 +313,16 @@ void UserNoteView::OnCancelNewUserNote() {
 
 void UserNoteView::OnAddUserNote() {
   // TODO(cheickcisse): Add a new note.
+}
+
+void UserNoteView::OnEditUserNote(int event_flags) {
+  // TODO(cheickcisse): Edit existing note.
+}
+
+void UserNoteView::OnDeleteUserNote(int event_flags) {
+  // TODO(cheickcisse): Delete existing note.
+}
+
+void UserNoteView::OnLearnUserNote(int event_flags) {
+  // TODO(cheickcisse): Learn more about user note.
 }

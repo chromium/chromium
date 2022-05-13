@@ -5,9 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_
 
+#include <memory>
+
 #include "components/user_notes/browser/user_note_instance.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/view.h"
+
+namespace views {
+class MenuRunner;
+}
+
+namespace ui {
+class MenuModel;
+}
 
 // View of a user note in the side panel in multiple states. The view in the
 // default state draws a label with a date, a menu button, and a label with a
@@ -48,8 +58,11 @@ class UserNoteView : public views::View {
  private:
   void OnCancelNewUserNote();
   void OnAddUserNote();
-
+  void OnEditUserNote(int event_flags);
+  void OnDeleteUserNote(int event_flags);
+  void OnLearnUserNote(int event_flags);
   void OnOpenMenu();
+  void OnMenuClosed();
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
   raw_ptr<views::Textarea> text_area_;
@@ -57,6 +70,8 @@ class UserNoteView : public views::View {
   raw_ptr<views::Label> user_note_body_;
   raw_ptr<views::View> user_note_header_;
   raw_ptr<views::View> user_note_quote_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+  std::unique_ptr<ui::MenuModel> dialog_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_

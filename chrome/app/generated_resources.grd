@@ -6879,6 +6879,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT" desc="Placeholder for textarea, where users can add a new user note.">
         Add note...
       </message>
+      <message name="IDS_LEARN_MORE_USER_NOTE" desc="User note menu label, which allows users to learn more about the user note feature.">
+        Learn more
+      </message>
 
       <!-- Feed button and menu -->
       <message name="IDS_FEED_TITLE" desc="Title of the feed menu">
