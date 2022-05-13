@@ -17,6 +17,7 @@ struct Feature;
 
 namespace features {
 
+extern const BASE_EXPORT Feature kPartitionAllocDanglingPtrRecord;
 #if defined(PA_ALLOW_PCSCAN)
 extern const BASE_EXPORT Feature kPartitionAllocPCScan;
 #endif  // defined(PA_ALLOW_PCSCAN)
