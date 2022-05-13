@@ -52,9 +52,6 @@ declare_args() {
   # It is enableable separately to facilitate testing.
   enable_hangout_services_extension = is_chrome_branded
 
-  enable_one_click_signin = is_win || is_mac || is_fuchsia ||
-                            ((is_linux && !is_castos) || is_chromeos_lacros)
-
   enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
   # Enables use of the session service, which is enabled by default.

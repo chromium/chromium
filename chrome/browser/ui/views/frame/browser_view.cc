@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
+#include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -141,6 +142,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
+#include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
@@ -284,10 +286,8 @@
 #undef LoadAccelerators
 #endif
 
-#if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
-#endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -2466,7 +2466,6 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   return ShowTranslateBubbleResult::SUCCESS;
 }
 
-#if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 void BrowserView::ShowOneClickSigninConfirmation(
     const std::u16string& email,
     base::OnceCallback<void(bool)> confirmed_callback) {
@@ -2476,7 +2475,6 @@ void BrowserView::ShowOneClickSigninConfirmation(
                                        GetNativeWindow(),
                                        std::move(confirmed_callback));
 }
-#endif
 
 void BrowserView::SetDownloadShelfVisible(bool visible) {
   DCHECK(download_shelf_);

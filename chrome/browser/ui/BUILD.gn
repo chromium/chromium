@@ -3366,16 +3366,6 @@ static_library("ui") {
     ]
   }
 
-  if (enable_one_click_signin) {
-    sources += [
-      "sync/one_click_signin_links_delegate.h",
-      "sync/one_click_signin_links_delegate_impl.cc",
-      "sync/one_click_signin_links_delegate_impl.h",
-      "views/sync/one_click_signin_dialog_view.cc",
-      "views/sync/one_click_signin_dialog_view.h",
-    ]
-  }
-
   if (is_win || is_mac || is_fuchsia || is_linux) {
     sources += [
       "views/web_apps/deprecated_apps_dialog_view.cc",
@@ -4043,6 +4033,9 @@ static_library("ui") {
       "side_search/side_search_tab_contents_helper.h",
       "side_search/side_search_utils.cc",
       "side_search/side_search_utils.h",
+      "sync/one_click_signin_links_delegate.h",
+      "sync/one_click_signin_links_delegate_impl.cc",
+      "sync/one_click_signin_links_delegate_impl.h",
       "translate/translate_bubble_test_utils.h",
       "views/accessibility/caption_bubble_context_views.cc",
       "views/accessibility/caption_bubble_context_views.h",
@@ -4775,6 +4768,8 @@ static_library("ui") {
       "views/status_bubble_views.h",
       "views/storage/storage_pressure_bubble_view.cc",
       "views/storage/storage_pressure_bubble_view.h",
+      "views/sync/one_click_signin_dialog_view.cc",
+      "views/sync/one_click_signin_dialog_view.h",
       "views/tab_contents/chrome_web_contents_view_focus_helper.cc",
       "views/tab_contents/chrome_web_contents_view_focus_helper.h",
       "views/tab_dialogs_views.cc",

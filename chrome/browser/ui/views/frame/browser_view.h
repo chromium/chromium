@@ -514,11 +514,9 @@ class BrowserView : public BrowserWindow,
       const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       bool is_user_gesture) override;
-#if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
   void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override;
-#endif
   // TODO(beng): Not an override, move somewhere else.
   void SetDownloadShelfVisible(bool visible);
   bool IsDownloadShelfVisible() const override;

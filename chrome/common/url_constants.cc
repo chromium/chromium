@@ -461,10 +461,8 @@ const char kWindowsXPVistaDeprecationURL[] =
     "https://chrome.blogspot.com/2015/11/updates-to-chrome-platform-support.html";
 #endif
 
-#if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 const char kChromeSyncLearnMoreURL[] =
     "https://support.google.com/chrome/answer/165139";
-#endif  // BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 const char kOutdatedPluginLearnMoreURL[] =
