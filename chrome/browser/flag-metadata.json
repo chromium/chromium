@@ -525,6 +525,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "autofill-remove-card-expiry-from-downstream-suggestion",
+    "owners": [ "siyua", "siashah" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82

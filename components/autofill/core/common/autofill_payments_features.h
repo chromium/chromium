@@ -41,6 +41,7 @@ extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::FeatureParam<int>
     kAutofillImageFetcherDiskCacheExpirationInMinutes;
 extern const base::Feature kAutofillParseMerchantPromoCodeFields;
+extern const base::Feature kAutofillRemoveCardExpiryFromDownstreamSuggestion;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;
 extern const base::Feature kAutofillSaveCardInfobarEditSupport;
 extern const base::Feature kAutofillSaveCardUiExperiment;
