@@ -41,6 +41,12 @@
         font_weight: 500,
         line_height: 28,
       },
+      display_7: {
+        font_family: '$font_family_google_sans',
+        font_size: 18,
+        font_weight: 500,
+        line_height: 24,
+      },
       annotation_2: {
         font_family: '$font_family_google_sans',
         font_size: 11,
