@@ -54,6 +54,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -671,6 +672,88 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
   EXPECT_EQ(event_interface_->response()->url, wss_url);
 }
 
+// Test that wss connections can use HostResolverEndpointResults from DNS.
+TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
+
+  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
+                               SpawnedTestServer::SSLOptions(base::FilePath(
+                                   FILE_PATH_LITERAL("test_names.pem"))),
+                               GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(wss_server.Start());
+
+  uint16_t port = wss_server.host_port_pair().port();
+  GURL wss_url("wss://a.test:" + base::NumberToString(port) + "/" +
+               kEchoServer);
+
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  MockHostResolverBase::RuleResolver::RuleKey resolve_key;
+  // The DNS query itself is made with the https scheme rather than wss.
+  resolve_key.scheme = url::kHttpsScheme;
+  resolve_key.hostname_pattern = "a.test";
+  resolve_key.port = port;
+  HostResolverEndpointResult result;
+  result.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), port)};
+  result.metadata.supported_protocol_alpns = {"http/1.1"};
+  host_resolver->rules()->AddRule(std::move(resolve_key), std::vector{result});
+  context_builder_->set_host_resolver(std::move(host_resolver));
+
+  EXPECT_TRUE(ConnectAndWait(wss_url));
+
+  // Expect request to have reached the server using the upgraded URL.
+  EXPECT_EQ(event_interface_->response()->url, wss_url);
+}
+
+// Test that wss connections can use EncryptedClientHello.
+TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kUseDnsHttpsSvcb, features::kEncryptedClientHello}, {});
+
+  // SpawnedTestServer does not support ECH, while EmbeddedTestServer does not
+  // support WebSockets (https://crbug.com/1281277). Until that is fixed, test
+  // ECH by configuring a non-WebSockets HTTPS server. The WebSockets handshake
+  // will fail, but getting that far tests that ECH worked.
+
+  // Configure a test server that speaks ECH.
+  static constexpr char kRealName[] = "secret.example";
+  static constexpr char kPublicName[] = "public.example";
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealName};
+  SSLServerConfig ssl_server_config;
+  std::vector<uint8_t> ech_config_list;
+  ssl_server_config.ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ssl_server_config.ech_keys);
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  ASSERT_TRUE(test_server.Start());
+
+  GURL https_url = test_server.GetURL(kRealName, "/");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWssScheme);
+  GURL wss_url = https_url.ReplaceComponents(replacements);
+
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  MockHostResolverBase::RuleResolver::RuleKey resolve_key;
+  // The DNS query itself is made with the https scheme rather than wss.
+  resolve_key.scheme = url::kHttpsScheme;
+  resolve_key.hostname_pattern = wss_url.host();
+  resolve_key.port = wss_url.IntPort();
+  HostResolverEndpointResult result;
+  result.ip_endpoints = {
+      IPEndPoint(IPAddress::IPv4Localhost(), wss_url.IntPort())};
+  result.metadata.supported_protocol_alpns = {"http/1.1"};
+  result.metadata.ech_config_list = ech_config_list;
+  host_resolver->rules()->AddRule(std::move(resolve_key), std::vector{result});
+  context_builder_->set_host_resolver(std::move(host_resolver));
+
+  EXPECT_FALSE(ConnectAndWait(wss_url));
+  EXPECT_EQ("Error during WebSocket handshake: Unexpected response code: 404",
+            event_interface_->failure_message());
+}
 }  // namespace
 
 }  // namespace net

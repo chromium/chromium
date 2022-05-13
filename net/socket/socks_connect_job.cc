@@ -156,9 +156,9 @@ int SOCKSConnectJob::DoTransportConnect() {
   DCHECK(!transport_connect_job_);
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  transport_connect_job_ = TransportConnectJob::CreateTransportConnectJob(
-      socks_params_->transport_params(), priority(), socket_tag(),
-      common_connect_job_params(), this, &net_log());
+  transport_connect_job_ = std::make_unique<TransportConnectJob>(
+      priority(), socket_tag(), common_connect_job_params(),
+      socks_params_->transport_params(), this, &net_log());
   return transport_connect_job_->Connect();
 }
 

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_SOCKET_WEBSOCKET_TRANSPORT_CONNECT_SUB_JOB_H_
-#define NET_SOCKET_WEBSOCKET_TRANSPORT_CONNECT_SUB_JOB_H_
+#ifndef NET_SOCKET_TRANSPORT_CONNECT_SUB_JOB_H_
+#define NET_SOCKET_TRANSPORT_CONNECT_SUB_JOB_H_
 
 #include <stddef.h>
 
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/address_list.h"
 #include "net/base/load_states.h"
+#include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
-#include "net/socket/websocket_transport_connect_job.h"
 
 namespace net {
 
@@ -23,24 +23,21 @@ class IPEndPoint;
 class StreamSocket;
 
 // Attempts to connect to a subset of the addresses required by a
-// WebSocketTransportConnectJob, specifically either the IPv4 or IPv6
-// addresses. Each address is tried in turn, and parent_job->OnSubJobComplete()
-// is called when the first address succeeds or the last address fails.
-class WebSocketTransportConnectSubJob
-    : public WebSocketEndpointLockManager::Waiter {
+// TransportConnectJob, specifically either the IPv4 or IPv6 addresses. Each
+// address is tried in turn, and parent_job->OnSubJobComplete() is called when
+// the first address succeeds or the last address fails.
+class TransportConnectSubJob : public WebSocketEndpointLockManager::Waiter {
  public:
-  typedef WebSocketTransportConnectJob::SubJobType SubJobType;
+  using SubJobType = TransportConnectJob::SubJobType;
 
-  WebSocketTransportConnectSubJob(const AddressList& addresses,
-                                  WebSocketTransportConnectJob* parent_job,
-                                  SubJobType type);
+  TransportConnectSubJob(std::vector<IPEndPoint> addresses,
+                         TransportConnectJob* parent_job,
+                         SubJobType type);
 
-  WebSocketTransportConnectSubJob(const WebSocketTransportConnectSubJob&) =
-      delete;
-  WebSocketTransportConnectSubJob& operator=(
-      const WebSocketTransportConnectSubJob&) = delete;
+  TransportConnectSubJob(const TransportConnectSubJob&) = delete;
+  TransportConnectSubJob& operator=(const TransportConnectSubJob&) = delete;
 
-  ~WebSocketTransportConnectSubJob() override;
+  ~TransportConnectSubJob() override;
 
   // Start connecting.
   int Start();
@@ -75,9 +72,9 @@ class WebSocketTransportConnectSubJob
   int DoEndpointLockComplete();
   int DoTransportConnectComplete(int result);
 
-  const raw_ptr<WebSocketTransportConnectJob> parent_job_;
+  const raw_ptr<TransportConnectJob> parent_job_;
 
-  const AddressList addresses_;
+  std::vector<IPEndPoint> addresses_;
   size_t current_address_index_;
 
   State next_state_;
@@ -88,4 +85,4 @@ class WebSocketTransportConnectSubJob
 
 }  // namespace net
 
-#endif  // NET_SOCKET_WEBSOCKET_TRANSPORT_CONNECT_SUB_JOB_H_
+#endif  // NET_SOCKET_TRANSPORT_CONNECT_SUB_JOB_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/socket/websocket_transport_connect_sub_job.h"
+#include "net/socket/transport_connect_sub_job.h"
 
 #include <set>
 #include <string>
@@ -116,32 +116,32 @@ class WebSocketStreamSocket final : public StreamSocket {
 
 }  // namespace
 
-WebSocketTransportConnectSubJob::WebSocketTransportConnectSubJob(
-    const AddressList& addresses,
-    WebSocketTransportConnectJob* parent_job,
+TransportConnectSubJob::TransportConnectSubJob(
+    std::vector<IPEndPoint> addresses,
+    TransportConnectJob* parent_job,
     SubJobType type)
     : parent_job_(parent_job),
-      addresses_(addresses),
+      addresses_(std::move(addresses)),
       current_address_index_(0),
       next_state_(STATE_NONE),
       type_(type) {}
 
-WebSocketTransportConnectSubJob::~WebSocketTransportConnectSubJob() = default;
+TransportConnectSubJob::~TransportConnectSubJob() = default;
 
 // Start connecting.
-int WebSocketTransportConnectSubJob::Start() {
+int TransportConnectSubJob::Start() {
   DCHECK_EQ(STATE_NONE, next_state_);
   next_state_ = STATE_OBTAIN_LOCK;
   return DoLoop(OK);
 }
 
 // Called by WebSocketEndpointLockManager when the lock becomes available.
-void WebSocketTransportConnectSubJob::GotEndpointLock() {
+void TransportConnectSubJob::GotEndpointLock() {
   DCHECK_EQ(STATE_OBTAIN_LOCK_COMPLETE, next_state_);
   OnIOComplete(OK);
 }
 
-LoadState WebSocketTransportConnectSubJob::GetLoadState() const {
+LoadState TransportConnectSubJob::GetLoadState() const {
   switch (next_state_) {
     case STATE_OBTAIN_LOCK:
     case STATE_OBTAIN_LOCK_COMPLETE:
@@ -157,18 +157,18 @@ LoadState WebSocketTransportConnectSubJob::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-const IPEndPoint& WebSocketTransportConnectSubJob::CurrentAddress() const {
+const IPEndPoint& TransportConnectSubJob::CurrentAddress() const {
   DCHECK_LT(current_address_index_, addresses_.size());
   return addresses_[current_address_index_];
 }
 
-void WebSocketTransportConnectSubJob::OnIOComplete(int result) {
+void TransportConnectSubJob::OnIOComplete(int result) {
   int rv = DoLoop(result);
   if (rv != ERR_IO_PENDING)
     parent_job_->OnSubJobComplete(rv, this);  // |this| deleted
 }
 
-int WebSocketTransportConnectSubJob::DoLoop(int result) {
+int TransportConnectSubJob::DoLoop(int result) {
   DCHECK_NE(next_state_, STATE_NONE);
 
   int rv = result;
@@ -198,14 +198,16 @@ int WebSocketTransportConnectSubJob::DoLoop(int result) {
   return rv;
 }
 
-int WebSocketTransportConnectSubJob::DoEndpointLock() {
-  int rv = parent_job_->websocket_endpoint_lock_manager()->LockEndpoint(
-      CurrentAddress(), this);
+int TransportConnectSubJob::DoEndpointLock() {
   next_state_ = STATE_OBTAIN_LOCK_COMPLETE;
-  return rv;
+  if (!parent_job_->websocket_endpoint_lock_manager()) {
+    return OK;
+  }
+  return parent_job_->websocket_endpoint_lock_manager()->LockEndpoint(
+      CurrentAddress(), this);
 }
 
-int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
+int TransportConnectSubJob::DoEndpointLockComplete() {
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   AddressList one_address(CurrentAddress());
 
@@ -217,31 +219,35 @@ int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
         SocketPerformanceWatcherFactory::PROTOCOL_TCP, one_address);
   }
 
-  // This class now owns an endpoint lock. Wrap `socket` in a
-  // `WebSocketStreamSocket` to take ownership of the lock and release it when
-  // the socket goes out of scope.
   const NetLogWithSource& net_log = parent_job_->net_log();
-  std::unique_ptr<StreamSocket> socket =
+  transport_socket_ =
       parent_job_->client_socket_factory()->CreateTransportClientSocket(
           one_address, std::move(socket_performance_watcher),
           parent_job_->network_quality_estimator(), net_log.net_log(),
           net_log.source());
-  transport_socket_ = std::make_unique<WebSocketStreamSocket>(
-      std::move(socket), parent_job_->websocket_endpoint_lock_manager(),
-      CurrentAddress());
+
+  // If `websocket_endpoint_lock_manager_` is non-null, this class now owns an
+  // endpoint lock. Wrap `socket` in a `WebSocketStreamSocket` to take ownership
+  // of the lock and release it when the socket goes out of scope. This must
+  // happen before any early returns in this method.
+  if (parent_job_->websocket_endpoint_lock_manager()) {
+    transport_socket_ = std::make_unique<WebSocketStreamSocket>(
+        std::move(transport_socket_),
+        parent_job_->websocket_endpoint_lock_manager(), CurrentAddress());
+  }
 
   transport_socket_->ApplySocketTag(parent_job_->socket_tag());
 
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.
   return transport_socket_->Connect(base::BindOnce(
-      &WebSocketTransportConnectSubJob::OnIOComplete, base::Unretained(this)));
+      &TransportConnectSubJob::OnIOComplete, base::Unretained(this)));
 }
 
-int WebSocketTransportConnectSubJob::DoTransportConnectComplete(int result) {
+int TransportConnectSubJob::DoTransportConnectComplete(int result) {
   next_state_ = STATE_DONE;
   if (result != OK) {
-    // Drop the socket to release the endpoint lock.
+    // Drop the socket to release the endpoint lock, if any.
     transport_socket_.reset();
 
     parent_job_->connection_attempts_.push_back(

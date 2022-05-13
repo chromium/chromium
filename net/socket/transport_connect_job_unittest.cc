@@ -90,75 +90,6 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   const CommonConnectJobParams common_connect_job_params_;
 };
 
-TEST_F(TransportConnectJobTest, MakeAddrListStartWithIPv4) {
-  IPEndPoint addrlist_v4_1(IPAddress(192, 168, 1, 1), 80);
-  IPEndPoint addrlist_v4_2(IPAddress(192, 168, 1, 2), 80);
-  IPAddress ip_address;
-  ASSERT_TRUE(ip_address.AssignFromIPLiteral("2001:4860:b006::64"));
-  IPEndPoint addrlist_v6_1(ip_address, 80);
-  ASSERT_TRUE(ip_address.AssignFromIPLiteral("2001:4860:b006::66"));
-  IPEndPoint addrlist_v6_2(ip_address, 80);
-
-  AddressList addrlist;
-
-  // Test 1: IPv4 only.  Expect no change.
-  addrlist.clear();
-  addrlist.push_back(addrlist_v4_1);
-  addrlist.push_back(addrlist_v4_2);
-  TransportConnectJob::MakeAddressListStartWithIPv4(&addrlist);
-  ASSERT_EQ(2u, addrlist.size());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[0].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[1].GetFamily());
-
-  // Test 2: IPv6 only.  Expect no change.
-  addrlist.clear();
-  addrlist.push_back(addrlist_v6_1);
-  addrlist.push_back(addrlist_v6_2);
-  TransportConnectJob::MakeAddressListStartWithIPv4(&addrlist);
-  ASSERT_EQ(2u, addrlist.size());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[0].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[1].GetFamily());
-
-  // Test 3: IPv4 then IPv6.  Expect no change.
-  addrlist.clear();
-  addrlist.push_back(addrlist_v4_1);
-  addrlist.push_back(addrlist_v4_2);
-  addrlist.push_back(addrlist_v6_1);
-  addrlist.push_back(addrlist_v6_2);
-  TransportConnectJob::MakeAddressListStartWithIPv4(&addrlist);
-  ASSERT_EQ(4u, addrlist.size());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[0].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[1].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[2].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[3].GetFamily());
-
-  // Test 4: IPv6, IPv4, IPv6, IPv4.  Expect first IPv6 moved to the end.
-  addrlist.clear();
-  addrlist.push_back(addrlist_v6_1);
-  addrlist.push_back(addrlist_v4_1);
-  addrlist.push_back(addrlist_v6_2);
-  addrlist.push_back(addrlist_v4_2);
-  TransportConnectJob::MakeAddressListStartWithIPv4(&addrlist);
-  ASSERT_EQ(4u, addrlist.size());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[0].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[1].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[2].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[3].GetFamily());
-
-  // Test 5: IPv6, IPv6, IPv4, IPv4.  Expect first two IPv6's moved to the end.
-  addrlist.clear();
-  addrlist.push_back(addrlist_v6_1);
-  addrlist.push_back(addrlist_v6_2);
-  addrlist.push_back(addrlist_v4_1);
-  addrlist.push_back(addrlist_v4_2);
-  TransportConnectJob::MakeAddressListStartWithIPv4(&addrlist);
-  ASSERT_EQ(4u, addrlist.size());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[0].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV4, addrlist[1].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[2].GetFamily());
-  EXPECT_EQ(ADDRESS_FAMILY_IPV6, addrlist[3].GetFamily());
-}
-
 TEST_F(TransportConnectJobTest, HostResolutionFailure) {
   host_resolver_.rules()->AddSimulatedTimeoutFailure(kHostName);
 
@@ -281,6 +212,34 @@ TEST_F(TransportConnectJobTest, ConnectionSuccess) {
   }
 }
 
+TEST_F(TransportConnectJobTest, LoadState) {
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kStalled);
+  host_resolver_.set_ondemand_mode(true);
+  host_resolver_.rules()->AddIPLiteralRule(kHostName, "1:abcd::3:4:ff,1.1.1.1",
+                                           std::string());
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultParams(), &test_delegate, /*net_log=*/nullptr);
+  EXPECT_THAT(transport_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
+
+  // The job is initially waiting on DNS.
+  EXPECT_EQ(transport_connect_job.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // Complete DNS. It is now waiting on a TCP connection.
+  host_resolver_.ResolveOnlyRequestNow();
+  RunUntilIdle();
+  EXPECT_EQ(transport_connect_job.GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // Wait for the IPv4 job to start. The job is still waiting on a TCP
+  // connection.
+  FastForwardBy(TransportConnectJob::kIPv6FallbackTime +
+                base::Milliseconds(50));
+  EXPECT_EQ(transport_connect_job.GetLoadState(), LOAD_STATE_CONNECTING);
+}
+
 // TODO(crbug.com/1206799): Set up `host_resolver_` to require the expected
 // scheme.
 TEST_F(TransportConnectJobTest, HandlesHttpsEndpoint) {
@@ -334,23 +293,24 @@ TEST_F(TransportConnectJobTest, SecureDnsPolicy) {
 // socket which finishes first.
 TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
   MockTransportClientSocketFactory::Rule rules[] = {
-      // This is the IPv6-preferring socket. It stalls, but presents one failed
-      // connection attempt on GetConnectionAttempts.
+      // The first IPv6 attempt fails.
       MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kStalledFailing,
-          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80),
-                      IPEndPoint(ParseIP("2.2.2.2"), 80)}),
-      // This is the IPv4-preferring socket.
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80)}),
+      // The second IPv6 attempt stalls.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled,
+          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)}),
+      // After a timeout, we try the IPv4 address.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kPending,
-          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80),
-                      IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)})};
+          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80)})};
 
   client_socket_factory_.SetRules(rules);
 
-  // Resolve an AddressList with a IPv6 address first and then a IPv4 address.
-  host_resolver_.rules()->AddIPLiteralRule(kHostName, "2:abcd::3:4:ff,2.2.2.2",
-                                           std::string());
+  // Resolve an AddressList with two IPv6 addresses and then a IPv4 address.
+  host_resolver_.rules()->AddIPLiteralRule(
+      kHostName, "1:abcd::3:4:ff,2:abcd::3:4:ff,2.2.2.2", std::string());
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -363,13 +323,13 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
   test_delegate.socket()->GetLocalAddress(&endpoint);
   EXPECT_TRUE(endpoint.address().IsIPv4());
 
-  // Check that the failed connection attempt on the main socket is collected.
+  // Check that the failed connection attempt is collected.
   ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
-  EXPECT_TRUE(attempts[0].endpoint.address().IsIPv6());
+  EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80));
 
-  EXPECT_EQ(2, client_socket_factory_.allocation_count());
+  EXPECT_EQ(3, client_socket_factory_.allocation_count());
 }
 
 // Test the case of the IPv6 address being slow, thus falling back to trying to
@@ -377,25 +337,26 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
 // finish first.
 TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
   MockTransportClientSocketFactory::Rule rules[] = {
-      // This is the IPv6 socket.
+      // The first IPv6 attempt ultimately succeeds, but is delayed.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kDelayed,
-          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80),
-                      IPEndPoint(ParseIP("2.2.2.2"), 80)}),
-      // This is the IPv4 socket. It stalls, but presents one failed connection
-      // attempt on GetConnectionAttempts.
+          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)}),
+      // The first IPv4 attempt fails.
       MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kStalledFailing,
-          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80),
-                      IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)})};
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80)}),
+      // The second IPv4 attempt stalls.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled,
+          std::vector{IPEndPoint(ParseIP("3.3.3.3"), 80)})};
 
   client_socket_factory_.SetRules(rules);
   client_socket_factory_.set_delay(TransportConnectJob::kIPv6FallbackTime +
                                    base::Milliseconds(50));
 
   // Resolve an AddressList with a IPv6 address first and then a IPv4 address.
-  host_resolver_.rules()->AddIPLiteralRule(kHostName, "2:abcd::3:4:ff,2.2.2.2",
-                                           std::string());
+  host_resolver_.rules()->AddIPLiteralRule(
+      kHostName, "2:abcd::3:4:ff,2.2.2.2,3.3.3.3", std::string());
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -413,9 +374,9 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
   ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
   ASSERT_EQ(1u, attempts.size());
   EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
-  EXPECT_TRUE(attempts[0].endpoint.address().IsIPv4());
+  EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("2.2.2.2"), 80));
 
-  EXPECT_EQ(2, client_socket_factory_.allocation_count());
+  EXPECT_EQ(3, client_socket_factory_.allocation_count());
 }
 
 TEST_F(TransportConnectJobTest, IPv6NoIPv4AddressesToFallbackTo) {
@@ -520,10 +481,10 @@ TEST_F(TransportConnectJobTest, EndpointResult) {
   endpoint.metadata.supported_protocol_alpns = {"h2"};
   host_resolver_.rules()->AddRule(kHostName, std::vector{endpoint});
 
+  // The first access succeeds.
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
-      std::vector{IPEndPoint(ParseIP("1::"), 8443),
-                  IPEndPoint(ParseIP("1.1.1.1"), 8443)});
+      std::vector{IPEndPoint(ParseIP("1::"), 8443)});
   client_socket_factory_.SetRules(base::make_span(&rule, 1));
 
   TestConnectJobDelegate test_delegate;
@@ -559,15 +520,18 @@ TEST_F(TransportConnectJobTest, MultipleRoutesFallback) {
   host_resolver_.rules()->AddRule(kHostName, endpoints);
 
   MockTransportClientSocketFactory::Rule rules[] = {
-      // `endpoints[0]`'s IPv6-prefering socket.
+      // `endpoints[0]`'s addresses each fail.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          endpoints[0].ip_endpoints),
+          std::vector{endpoints[0].ip_endpoints[0]}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{endpoints[0].ip_endpoints[1]}),
       // `endpoints[1]` is skipped because the ALPN is not compatible.
-      // `endpoints[2]`'s IPv6-preferring socket.
+      // `endpoints[2]`'s first address succeeds.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kSynchronous,
-          endpoints[2].ip_endpoints),
+          std::vector{endpoints[2].ip_endpoints[0]}),
   };
 
   client_socket_factory_.SetRules(rules);
@@ -608,33 +572,36 @@ TEST_F(TransportConnectJobTest, MultipleRoutesIPV4Fallback) {
                                   std::vector{endpoint1, endpoint2, endpoint3});
 
   MockTransportClientSocketFactory::Rule rules[] = {
-      // `endpoint1`'s IPv6-prefering socket.
+      // `endpoint1`'s IPv6 address fails, but takes long enough that the IPv4
+      // fallback runs.
+      //
+      // TODO(davidben): If the network is such that IPv6 connection attempts
+      // always stall, we will never try `endpoint2`. Should Happy Eyeballs
+      // logic happen before HTTPS RR. Or perhaps we should implement a more
+      // Happy-Eyeballs-v2-like strategy.
       MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kStalled,
-          std::vector{IPEndPoint(ParseIP("1::"), 8441),
-                      IPEndPoint(ParseIP("1.1.1.1"), 8441)}),
+          MockTransportClientSocketFactory::Type::kDelayedFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
 
-      // `endpoint1`'s IPv4-prefering socket.
+      // `endpoint1`'s IPv4 address fails immediately.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          std::vector{IPEndPoint(ParseIP("1.1.1.1"), 8441),
-                      IPEndPoint(ParseIP("1::"), 8441)}),
+          std::vector{IPEndPoint(ParseIP("1.1.1.1"), 8441)}),
 
       // `endpoint2` is skipped because the ALPN is not compatible.
 
-      // `endpoint3`'s IPv6-preferring socket.
+      // `endpoint3`'s IPv6 address never completes.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kStalled,
-          std::vector{IPEndPoint(ParseIP("3::"), 443),
-                      IPEndPoint(ParseIP("3.3.3.3"), 443)}),
-      // `endpoint3`'s IPv4-preferring socket.
+          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
+      // `endpoint3`'s IPv4 address succeeds.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kSynchronous,
-          std::vector{IPEndPoint(ParseIP("3.3.3.3"), 443),
-                      IPEndPoint(ParseIP("3::"), 443)}),
+          std::vector{IPEndPoint(ParseIP("3.3.3.3"), 443)}),
   };
-
   client_socket_factory_.SetRules(rules);
+  client_socket_factory_.set_delay(TransportConnectJob::kIPv6FallbackTime +
+                                   base::Milliseconds(50));
 
   TestConnectJobDelegate test_delegate;
   TransportConnectJob transport_connect_job(
@@ -702,10 +669,10 @@ TEST_F(TransportConnectJobTest, NoAlpnProtocols) {
                                IPEndPoint(ParseIP("3.3.3.3"), 80)};
   host_resolver_.rules()->AddRule(kHostName, endpoints);
 
-  // `endpoints[2]`'s IPv6-preferring socket.
+  // `endpoints[2]`'s first address succeeds.
   MockTransportClientSocketFactory::Rule rule(
       MockTransportClientSocketFactory::Type::kSynchronous,
-      endpoints[2].ip_endpoints);
+      std::vector{endpoints[2].ip_endpoints[0]});
   client_socket_factory_.SetRules(base::make_span(&rule, 1));
 
   // Use `DefaultParams()`, an http scheme. That it is http is not very
@@ -741,15 +708,21 @@ TEST_F(TransportConnectJobTest, MultipleRoutesAllFailed) {
   host_resolver_.rules()->AddRule(kHostName, endpoints);
 
   MockTransportClientSocketFactory::Rule rules[] = {
-      // `endpoints[0]`'s IPv6-prefering socket.
+      // `endpoints[0]`'s addresses each fail.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          endpoints[0].ip_endpoints),
+          std::vector{endpoints[0].ip_endpoints[0]}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{endpoints[0].ip_endpoints[1]}),
       // `endpoints[1]` is skipped because the ALPN is not compatible.
-      // `endpoints[2]`'s IPv6-preferring socket.
+      // `endpoints[2]`'s addresses each fail.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          endpoints[2].ip_endpoints),
+          std::vector{endpoints[2].ip_endpoints[0]}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{endpoints[2].ip_endpoints[1]}),
   };
 
   client_socket_factory_.SetRules(rules);
@@ -813,10 +786,13 @@ TEST_F(TransportConnectJobTest, LastRouteUnusable) {
   host_resolver_.rules()->AddRule(kHostName, endpoints);
 
   MockTransportClientSocketFactory::Rule rules[] = {
-      // `endpoints[0]`'s IPv6-prefering socket.
+      // `endpoints[0]`'s addresses each fail.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          endpoints[0].ip_endpoints),
+          std::vector{endpoints[0].ip_endpoints[0]}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{endpoints[0].ip_endpoints[1]}),
       // `endpoints[1]` is skipped because the ALPN is not compatible.
   };
 
@@ -1073,21 +1049,28 @@ TEST_F(TransportConnectJobTest, DedupIPEndPoints) {
   host_resolver_.rules()->AddRule(kHostName, endpoints);
 
   MockTransportClientSocketFactory::Rule rules[] = {
-      // `endpoints[0]`'s IPv6-prefering socket.
+      // First, try `endpoints[0]`'s addresses.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          endpoints[0].ip_endpoints),
+          std::vector{IPEndPoint(ParseIP("1::"), 443)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1.1.1.1"), 443)}),
 
       // `endpoints[1]` is unusable, so it is ignored, including for purposes of
       // duplicate endpoints.
 
       // Only new IP endpoints from `endpoints[2]` should be considered. Note
-      // different ports count as different.
+      // different ports count as different endpoints.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
-          std::vector{IPEndPoint(ParseIP("1::"), 444),
-                      IPEndPoint(ParseIP("2::"), 443),
-                      IPEndPoint(ParseIP("2.2.2.2"), 443)}),
+          std::vector{IPEndPoint(ParseIP("1::"), 444)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 443)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 443)}),
 
       // `endpoints[3]` only contains duplicate IP endpoints and should be
       // skipped.

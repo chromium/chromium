@@ -30,7 +30,6 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_connect_job.h"
-#include "net/socket/websocket_transport_connect_job.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
@@ -276,26 +275,18 @@ int SSLConnectJob::DoTransportConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  if (!common_connect_job_params()->websocket_endpoint_lock_manager) {
-    // If this is an ECH retry, connect to the same server as before.
-    absl::optional<TransportConnectJob::EndpointResultOverride>
-        endpoint_result_override;
-    if (ech_retry_configs_) {
-      DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
-      DCHECK(endpoint_result_);
-      endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
-    }
-    nested_connect_job_ = std::make_unique<TransportConnectJob>(
-        priority(), socket_tag(), common_connect_job_params(),
-        params_->GetDirectConnectionParams(), this, &net_log(),
-        std::move(endpoint_result_override));
-  } else {
-    // TODO(https://crbug.com/1291352): Support ECH for WebSockets.
-    DCHECK(!ech_retry_configs_);
-    nested_connect_job_ = std::make_unique<WebSocketTransportConnectJob>(
-        priority(), socket_tag(), common_connect_job_params(),
-        params_->GetDirectConnectionParams(), this, &net_log());
+  // If this is an ECH retry, connect to the same server as before.
+  absl::optional<TransportConnectJob::EndpointResultOverride>
+      endpoint_result_override;
+  if (ech_retry_configs_) {
+    DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
+    DCHECK(endpoint_result_);
+    endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
+  nested_connect_job_ = std::make_unique<TransportConnectJob>(
+      priority(), socket_tag(), common_connect_job_params(),
+      params_->GetDirectConnectionParams(), this, &net_log(),
+      std::move(endpoint_result_override));
   return nested_connect_job_->Connect();
 }
 
@@ -412,8 +403,6 @@ int SSLConnectJob::DoSSLConnect() {
       // Overriding the DNS lookup only works for direct connections. We
       // currently do not support ECH with other connection types.
       DCHECK_EQ(params_->GetConnectionType(), SSLSocketParams::DIRECT);
-      // TODO(https://crbug.com/1291352): Support ECH for WebSockets.
-      DCHECK(!common_connect_job_params()->websocket_endpoint_lock_manager);
     }
   }
 

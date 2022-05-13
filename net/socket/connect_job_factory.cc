@@ -23,7 +23,6 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
-#include "net/socket/websocket_transport_connect_job.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,9 +91,7 @@ ConnectJobFactory::ConnectJobFactory(
         http_proxy_connect_job_factory,
     std::unique_ptr<SOCKSConnectJob::Factory> socks_connect_job_factory,
     std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory,
-    std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory,
-    std::unique_ptr<WebSocketTransportConnectJob::Factory>
-        websocket_transport_connect_job_factory)
+    std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory)
     : http_proxy_connect_job_factory_(
           CreateFactoryIfNull(std::move(http_proxy_connect_job_factory))),
       socks_connect_job_factory_(
@@ -102,9 +99,7 @@ ConnectJobFactory::ConnectJobFactory(
       ssl_connect_job_factory_(
           CreateFactoryIfNull(std::move(ssl_connect_job_factory))),
       transport_connect_job_factory_(
-          CreateFactoryIfNull(std::move(transport_connect_job_factory))),
-      websocket_transport_connect_job_factory_(CreateFactoryIfNull(
-          std::move(websocket_transport_connect_job_factory))) {}
+          CreateFactoryIfNull(std::move(transport_connect_job_factory))) {}
 
 ConnectJobFactory::~ConnectJobFactory() = default;
 
@@ -253,13 +248,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
       ToTransportEndpoint(endpoint), network_isolation_key, secure_dns_policy,
       resolution_callback, no_alpn_protocols);
-  if (!common_connect_job_params->websocket_endpoint_lock_manager) {
-    return transport_connect_job_factory_->Create(
-        request_priority, socket_tag, common_connect_job_params, tcp_params,
-        delegate, /*net_log=*/nullptr);
-  }
-
-  return websocket_transport_connect_job_factory_->Create(
+  return transport_connect_job_factory_->Create(
       request_priority, socket_tag, common_connect_job_params, tcp_params,
       delegate, /*net_log=*/nullptr);
 }

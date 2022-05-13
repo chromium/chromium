@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
@@ -26,7 +25,6 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
-#include "net/socket/socket_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
@@ -35,7 +33,7 @@ namespace net {
 
 class NetLogWithSource;
 class SocketTag;
-class TransportClientSocket;
+class TransportConnectSubJob;
 
 class NET_EXPORT_PRIVATE TransportSocketParams
     : public base::RefCounted<TransportSocketParams> {
@@ -117,26 +115,14 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // they don't synchronize.
   static constexpr base::TimeDelta kIPv6FallbackTime = base::Milliseconds(300);
 
-  // Creates a TransportConnectJob or WebSocketTransportConnectJob, depending on
-  // whether or not |common_connect_job_params.web_socket_endpoint_lock_manager|
-  // is nullptr.
-  // TODO(mmenke): Merge those two ConnectJob classes, and remove this method.
-  static std::unique_ptr<ConnectJob> CreateTransportConnectJob(
-      scoped_refptr<TransportSocketParams> transport_client_params,
-      RequestPriority priority,
-      const SocketTag& socket_tag,
-      const CommonConnectJobParams* common_connect_job_params,
-      ConnectJob::Delegate* delegate,
-      const NetLogWithSource* net_log);
-
   struct NET_EXPORT_PRIVATE EndpointResultOverride {
     EndpointResultOverride(HostResolverEndpointResult result,
                            std::set<std::string> dns_aliases);
     EndpointResultOverride(EndpointResultOverride&&);
     EndpointResultOverride(const EndpointResultOverride&);
     ~EndpointResultOverride();
-    EndpointResultOverride& operator=(EndpointResultOverride&&);
-    EndpointResultOverride& operator=(const EndpointResultOverride&);
+    EndpointResultOverride& operator=(EndpointResultOverride&&) = default;
+    EndpointResultOverride& operator=(const EndpointResultOverride&) = default;
 
     HostResolverEndpointResult result;
     std::set<std::string> dns_aliases;
@@ -164,32 +150,23 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   absl::optional<HostResolverEndpointResult> GetHostResolverEndpointResult()
       const override;
 
-  // Skips DNS resolution and instead connects to `endpoint_result`, reporting
-  // `dns_aliases` as the list of DNS aliases. Must be called before `Connect`.
-  void SetDnsResultOverride(const HostResolverEndpointResult& endpoint_result,
-                            const std::set<std::string>& dns_aliases);
-
-  // Rolls |addrlist| forward until the first IPv4 address, if any.
-  // WARNING: this method should only be used to implement the prefer-IPv4 hack.
-  static void MakeAddressListStartWithIPv4(AddressList* addrlist);
-
-  // Record the histograms Net.DNS_Resolution_And_TCP_Connection_Latency2 and
-  // Net.TCP_Connection_Latency and return the connect duration.
-  static void HistogramDuration(
-      const LoadTimingInfo::ConnectTiming& connect_timing);
-
   static base::TimeDelta ConnectionTimeout();
 
  private:
+  friend class TransportConnectSubJob;
+
   enum State {
     STATE_RESOLVE_HOST,
     STATE_RESOLVE_HOST_COMPLETE,
     STATE_RESOLVE_HOST_CALLBACK_COMPLETE,
     STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
-    STATE_FALLBACK_CONNECT_COMPLETE,
     STATE_NONE,
   };
+
+  // Although it is not strictly necessary, it makes the code simpler if each
+  // subjob knows what type it is.
+  enum SubJobType { SUB_JOB_IPV4, SUB_JOB_IPV6 };
 
   void OnIOComplete(int result);
   int DoLoop(int result);
@@ -198,19 +175,26 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   int DoResolveHostComplete(int result);
   int DoResolveHostCallbackComplete();
   int DoTransportConnect();
-  int DoTransportConnectComplete(bool is_fallback, int result);
+  int DoTransportConnectComplete(int result);
 
-  // Not part of the state machine.
-  void OnIPv6FallbackTimerComplete();
-  void OnIPv6FallbackConnectComplete(int rv);
+  // Helper method called called when a SubJob completes, synchronously
+  // or asynchronously. Returns `ERR_IO_PENDING` if there is more work to
+  // do and another error if completed. It's up to the caller to manage
+  // advancing `DoLoop` if a value other than `ERR_IO_PENDING` is returned.
+  int HandleSubJobComplete(int result, TransportConnectSubJob* job);
+  // Called back from a SubJob when it completes. Invokes `OnIOComplete`,
+  // re-entering `DoLoop`, if there is no more work to do. Must not
+  // be called from within `DoLoop`.
+  void OnSubJobComplete(int result, TransportConnectSubJob* job);
+
+  // Called from |fallback_timer_|.
+  void StartIPv4JobAsync();
 
   // Begins the host resolution and the TCP connect.  Returns OK on success
   // and ERR_IO_PENDING if it cannot immediately service the request.
   // Otherwise, it returns a net error code.
   int ConnectInternal() override;
 
-  // If host resolution is currently underway, change the priority of the host
-  // resolver request.
   void ChangePriorityInternal(RequestPriority priority) override;
 
   // Returns whether the client should be SVCB-optional when connecting to
@@ -223,13 +207,8 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   bool IsEndpointResultUsable(const HostResolverEndpointResult& result,
                               bool svcb_optional) const;
 
-  // Returns an `AddressList` containing the IP endpoints for the current route.
-  // May only be called if the current route is usable for this connection.
-  AddressList GetCurrentAddressList() const;
-
-  // Appends connection attempts from `socket` to `connection_attempts_`. Should
-  // be called when discarding a failed socket.
-  void SaveConnectionAttempts(const TransportClientSocket& socket);
+  // Returns the `HostResolverEndpointResult` for the current subjobs.
+  const HostResolverEndpointResult& GetEndpointResultForCurrentSubJobs() const;
 
   scoped_refptr<TransportSocketParams> params_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
@@ -240,19 +219,17 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   State next_state_;
 
-  std::unique_ptr<TransportClientSocket> transport_socket_;
+  // The addresses are divided into IPv4 and IPv6, which are performed partially
+  // in parallel. If the list of IPv6 addresses is non-empty, then the IPv6 jobs
+  // go first, followed after `kIPv6FallbackTime` by the IPv4 addresses. The
+  // first sub-job to establish a connection wins. If one sub-job fails, the
+  // other one is launched if needed, and we wait for it to complete.
+  std::unique_ptr<TransportConnectSubJob> ipv4_job_;
+  std::unique_ptr<TransportConnectSubJob> ipv6_job_;
 
-  std::unique_ptr<TransportClientSocket> fallback_transport_socket_;
-  base::TimeTicks fallback_connect_start_time_;
   base::OneShotTimer fallback_timer_;
 
   ResolveErrorInfo resolve_error_info_;
-
-  // Used in the failure case to save connection attempts made on the main and
-  // fallback sockets and pass them on in |GetAdditionalErrorState|. (In the
-  // success case, connection attempts are passed through the returned socket;
-  // attempts are copied from the other socket, if one exists, into it before
-  // it is returned.)
   ConnectionAttempts connection_attempts_;
 
   base::WeakPtrFactory<TransportConnectJob> weak_ptr_factory_{this};

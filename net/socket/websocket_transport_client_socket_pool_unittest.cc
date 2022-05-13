@@ -41,7 +41,6 @@
 #include "net/socket/transport_client_socket_pool_test_util.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
-#include "net/socket/websocket_transport_connect_job.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -182,8 +181,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, Basic) {
   TestLoadTimingInfoConnectedNotReused(handle);
 }
 
-// Make sure that WebSocketTransportConnectJob passes on its priority to its
-// HostResolver request on Init.
+// Make sure that the ConnectJob passes on its priority to its HostResolver
+// request on Init.
 TEST_F(WebSocketTransportClientSocketPoolTest, SetResolvePriorityOnInit) {
   for (int i = MINIMUM_PRIORITY; i <= MAXIMUM_PRIORITY; ++i) {
     RequestPriority priority = static_cast<RequestPriority>(i);
@@ -1276,7 +1275,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkIsolationKey) {
 }
 
 TEST_F(WebSocketTransportClientSocketPoolTest,
-       WebSocketTransportConnectJobWithDnsAliases) {
+       TransportConnectJobWithDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kSynchronous);
@@ -1294,7 +1293,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
           SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
-  WebSocketTransportConnectJob transport_connect_job(
+  TransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
       &test_delegate, nullptr /* net_log */);
 
@@ -1308,7 +1307,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 }
 
 TEST_F(WebSocketTransportClientSocketPoolTest,
-       WebSocketTransportConnectJobWithNoAdditionalDnsAliases) {
+       TransportConnectJobWithNoAdditionalDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kSynchronous);
@@ -1327,7 +1326,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
           SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
-  WebSocketTransportConnectJob transport_connect_job(
+  TransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
       &test_delegate, nullptr /* net_log */);
 
@@ -1337,6 +1336,59 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   // Verify that the alias list only contains kHostName.
   EXPECT_THAT(test_delegate.socket()->GetDnsAliases(),
               testing::ElementsAre(kHostName));
+}
+
+TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
+  host_resolver_->rules()->AddRule("v6-only.test", "1:abcd::3:4:ff");
+  host_resolver_->rules()->AddRule("v6-and-v4.test", "1:abcd::3:4:ff,2.2.2.2");
+  host_resolver_->set_ondemand_mode(true);
+
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kDelayedFailing);
+
+  auto params_v6_only = base::MakeRefCounted<TransportSocketParams>(
+      HostPortPair("v6-only.test", 80), NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+      /*supported_alpns=*/base::flat_set<std::string>());
+  auto params_v6_and_v4 = base::MakeRefCounted<TransportSocketParams>(
+      HostPortPair("v6-and-v4.test", 80), NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+      /*supported_alpns=*/base::flat_set<std::string>());
+
+  // v6-only.test will first block on DNS.
+  TestConnectJobDelegate test_delegate_v6_only;
+  TransportConnectJob connect_job_v6_only(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      params_v6_only, &test_delegate_v6_only, /*net_log=*/nullptr);
+  EXPECT_THAT(connect_job_v6_only.Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(connect_job_v6_only.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // When DNS is resolved, it should block on making a connection.
+  host_resolver_->ResolveOnlyRequestNow();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(connect_job_v6_only.GetLoadState(), LOAD_STATE_CONNECTING);
+
+  // v6-and-v4.test will also first block on DNS.
+  TestConnectJobDelegate test_delegate_v6_and_v4;
+  TransportConnectJob connect_job_v6_and_v4(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      params_v6_and_v4, &test_delegate_v6_and_v4, /*net_log=*/nullptr);
+  EXPECT_THAT(connect_job_v6_and_v4.Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+
+  // When DNS is resolved, it should attempt to connect to the IPv6 address, but
+  // `connect_job_v6_only` holds the lock.
+  host_resolver_->ResolveOnlyRequestNow();
+  RunUntilIdle();
+  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(),
+              LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET);
+
+  // After the IPv6 fallback timeout, it should attempt to connect to the IPv4
+  // address. This lock is available, so `GetLoadState` should report it is now
+  // actively connecting.
+  RunLoopForTimePeriod(TransportConnectJob::kIPv6FallbackTime +
+                       base::Milliseconds(50));
+  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_CONNECTING);
 }
 
 }  // namespace

@@ -28,7 +28,6 @@ namespace net {
 
 struct CommonConnectJobParams;
 struct NetworkTrafficAnnotationTag;
-class WebSocketTransportConnectJob;
 
 class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     : public ClientSocketPool {
@@ -174,8 +173,8 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
       StalledRequestMap;
 
   // Tries to hand out the socket connected by |job|. |result| must be (async)
-  // result of WebSocketTransportConnectJob::Connect(). Returns true iff it has
-  // handed out a socket.
+  // result of TransportConnectJob::Connect(). Returns true iff it has handed
+  // out a socket.
   bool TryHandOutSocket(int result, ConnectJobDelegate* connect_job_delegate);
   void OnConnectJobComplete(int result,
                             ConnectJobDelegate* connect_job_delegate);

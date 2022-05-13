@@ -18,7 +18,6 @@
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
-#include "net/socket/websocket_transport_connect_job.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
@@ -53,9 +52,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
           nullptr,
       std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory = nullptr,
       std::unique_ptr<TransportConnectJob::Factory>
-          transport_connect_job_factory = nullptr,
-      std::unique_ptr<WebSocketTransportConnectJob::Factory>
-          websocket_transport_connect_job_factory = nullptr);
+          transport_connect_job_factory = nullptr);
 
   // Not copyable/movable. Intended for polymorphic use via pointer.
   ConnectJobFactory(const ConnectJobFactory&) = delete;
@@ -121,8 +118,6 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<SOCKSConnectJob::Factory> socks_connect_job_factory_;
   std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory_;
   std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory_;
-  std::unique_ptr<WebSocketTransportConnectJob::Factory>
-      websocket_transport_connect_job_factory_;
 
   // Use a single NetworkIsolationKey for looking up proxy hostnames. Proxies
   // are typically used across sites, but cached proxy IP addresses don't

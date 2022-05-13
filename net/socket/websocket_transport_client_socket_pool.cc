@@ -24,7 +24,6 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_factory.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
-#include "net/socket/websocket_transport_connect_job.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {

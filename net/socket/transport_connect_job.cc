@@ -4,19 +4,20 @@
 
 #include "net/socket/transport_connect_job.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/features.h"
@@ -26,16 +27,10 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_source_type.h"
-#include "net/log/net_log_with_source.h"
-#include "net/socket/client_socket_factory.h"
-#include "net/socket/client_socket_handle.h"
-#include "net/socket/socket_performance_watcher.h"
-#include "net/socket/socket_performance_watcher_factory.h"
-#include "net/socket/tcp_client_socket.h"
-#include "net/socket/websocket_transport_connect_job.h"
+#include "net/log/net_log_source.h"
+#include "net/socket/socket_tag.h"
+#include "net/socket/transport_connect_sub_job.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -43,16 +38,6 @@
 namespace net {
 
 namespace {
-
-// Returns true iff all addresses in |list| are in the IPv6 family.
-bool AddressListOnlyContainsIPv6(const AddressList& list) {
-  DCHECK(!list.empty());
-  for (auto iter = list.begin(); iter != list.end(); ++iter) {
-    if (iter->GetFamily() != ADDRESS_FAMILY_IPV6)
-      return false;
-  }
-  return true;
-}
 
 // TODO(crbug.com/1206799): Delete once endpoint usage is converted to using
 // url::SchemeHostPort when available.
@@ -120,24 +105,6 @@ std::unique_ptr<TransportConnectJob> TransportConnectJob::Factory::Create(
                                                params, delegate, net_log);
 }
 
-std::unique_ptr<ConnectJob> TransportConnectJob::CreateTransportConnectJob(
-    scoped_refptr<TransportSocketParams> transport_client_params,
-    RequestPriority priority,
-    const SocketTag& socket_tag,
-    const CommonConnectJobParams* common_connect_job_params,
-    ConnectJob::Delegate* delegate,
-    const NetLogWithSource* net_log) {
-  if (!common_connect_job_params->websocket_endpoint_lock_manager) {
-    return std::make_unique<TransportConnectJob>(
-        priority, socket_tag, common_connect_job_params,
-        transport_client_params, delegate, net_log);
-  }
-
-  return std::make_unique<WebSocketTransportConnectJob>(
-      priority, socket_tag, common_connect_job_params, transport_client_params,
-      delegate, net_log);
-}
-
 TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
     HostResolverEndpointResult result,
     std::set<std::string> dns_aliases)
@@ -148,12 +115,6 @@ TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
     const EndpointResultOverride&) = default;
 TransportConnectJob::EndpointResultOverride::~EndpointResultOverride() =
     default;
-TransportConnectJob::EndpointResultOverride&
-TransportConnectJob::EndpointResultOverride::operator=(
-    EndpointResultOverride&&) = default;
-TransportConnectJob::EndpointResultOverride&
-TransportConnectJob::EndpointResultOverride::operator=(
-    const EndpointResultOverride&) = default;
 
 TransportConnectJob::TransportConnectJob(
     RequestPriority priority,
@@ -173,9 +134,6 @@ TransportConnectJob::TransportConnectJob(
                  NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
       params_(params),
       next_state_(STATE_NONE) {
-  // This is only set for WebSockets.
-  DCHECK(!common_connect_job_params->websocket_endpoint_lock_manager);
-
   if (endpoint_result_override) {
     has_dns_override_ = true;
     endpoint_results_ = {std::move(endpoint_result_override->result)};
@@ -187,24 +145,33 @@ TransportConnectJob::TransportConnectJob(
 }
 
 // We don't worry about cancelling the host resolution and TCP connect, since
-// ~HostResolver::Request and ~StreamSocket will take care of it.
+// ~HostResolver::Request and ~TransportConnectSubJob will take care of it.
 TransportConnectJob::~TransportConnectJob() = default;
 
 LoadState TransportConnectJob::GetLoadState() const {
   switch (next_state_) {
     case STATE_RESOLVE_HOST:
     case STATE_RESOLVE_HOST_COMPLETE:
-      return LOAD_STATE_RESOLVING_HOST;
     case STATE_RESOLVE_HOST_CALLBACK_COMPLETE:
+      return LOAD_STATE_RESOLVING_HOST;
     case STATE_TRANSPORT_CONNECT:
-    case STATE_TRANSPORT_CONNECT_COMPLETE:
-    case STATE_FALLBACK_CONNECT_COMPLETE:
-      return LOAD_STATE_CONNECTING;
+    case STATE_TRANSPORT_CONNECT_COMPLETE: {
+      LoadState load_state = LOAD_STATE_IDLE;
+      if (ipv6_job_ && ipv6_job_->started()) {
+        load_state = ipv6_job_->GetLoadState();
+      }
+      // This method should return LOAD_STATE_CONNECTING in preference to
+      // LOAD_STATE_WAITING_FOR_AVAILABLE_SOCKET when possible because "waiting
+      // for available socket" implies that nothing is happening.
+      if (ipv4_job_ && ipv4_job_->started() &&
+          load_state != LOAD_STATE_CONNECTING) {
+        load_state = ipv4_job_->GetLoadState();
+      }
+      return load_state;
+    }
     case STATE_NONE:
       return LOAD_STATE_IDLE;
   }
-  NOTREACHED();
-  return LOAD_STATE_IDLE;
 }
 
 bool TransportConnectJob::HasEstablishedConnection() const {
@@ -227,33 +194,6 @@ TransportConnectJob::GetHostResolverEndpointResult() const {
   return endpoint_results_[current_endpoint_result_];
 }
 
-// static
-void TransportConnectJob::MakeAddressListStartWithIPv4(AddressList* list) {
-  for (auto i = list->begin(); i != list->end(); ++i) {
-    if (i->GetFamily() == ADDRESS_FAMILY_IPV4) {
-      std::rotate(list->begin(), i, list->end());
-      break;
-    }
-  }
-}
-
-// static
-void TransportConnectJob::HistogramDuration(
-    const LoadTimingInfo::ConnectTiming& connect_timing) {
-  DCHECK(!connect_timing.connect_start.is_null());
-  DCHECK(!connect_timing.dns_start.is_null());
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta total_duration = now - connect_timing.dns_start;
-  UMA_HISTOGRAM_CUSTOM_TIMES("Net.DNS_Resolution_And_TCP_Connection_Latency2",
-                             total_duration, base::Milliseconds(1),
-                             base::Minutes(10), 100);
-
-  base::TimeDelta connect_duration = now - connect_timing.connect_start;
-  UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency", connect_duration,
-                             base::Milliseconds(1), base::Minutes(10), 100);
-}
-
-// static
 base::TimeDelta TransportConnectJob::ConnectionTimeout() {
   // TODO(eroman): The use of this constant needs to be re-evaluated. The time
   // needed for TCPClientSocketXXX::Connect() can be arbitrarily long, since
@@ -294,10 +234,7 @@ int TransportConnectJob::DoLoop(int result) {
         rv = DoTransportConnect();
         break;
       case STATE_TRANSPORT_CONNECT_COMPLETE:
-        rv = DoTransportConnectComplete(/*is_fallback=*/false, rv);
-        break;
-      case STATE_FALLBACK_CONNECT_COMPLETE:
-        rv = DoTransportConnectComplete(/*is_fallback=*/true, rv);
+        rv = DoTransportConnectComplete(rv);
         break;
       default:
         NOTREACHED();
@@ -423,65 +360,77 @@ int TransportConnectJob::DoResolveHostCallbackComplete() {
 
 int TransportConnectJob::DoTransportConnect() {
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  AddressList addresses = GetCurrentAddressList();
 
-  // Create a |SocketPerformanceWatcher|, and pass the ownership.
-  std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
-  if (socket_performance_watcher_factory()) {
-    socket_performance_watcher =
-        socket_performance_watcher_factory()->CreateSocketPerformanceWatcher(
-            SocketPerformanceWatcherFactory::PROTOCOL_TCP, addresses);
+  const HostResolverEndpointResult& endpoint =
+      GetEndpointResultForCurrentSubJobs();
+  std::vector<IPEndPoint> ipv4_addresses, ipv6_addresses;
+  for (const auto& ip_endpoint : endpoint.ip_endpoints) {
+    switch (ip_endpoint.GetFamily()) {
+      case ADDRESS_FAMILY_IPV4:
+        ipv4_addresses.push_back(ip_endpoint);
+        break;
+
+      case ADDRESS_FAMILY_IPV6:
+        ipv6_addresses.push_back(ip_endpoint);
+        break;
+
+      default:
+        DVLOG(1) << "Unexpected ADDRESS_FAMILY: " << ip_endpoint.GetFamily();
+        break;
+    }
   }
-  transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
-      addresses, std::move(socket_performance_watcher),
-      network_quality_estimator(), net_log().net_log(), net_log().source());
 
-  // If the list contains IPv6 and IPv4 addresses, and the first address
-  // is IPv6, the IPv4 addresses will be tried as fallback addresses, per
-  // "Happy Eyeballs" (RFC 6555).
-  bool try_ipv6_connect_with_ipv4_fallback =
-      addresses.front().GetFamily() == ADDRESS_FAMILY_IPV6 &&
-      !AddressListOnlyContainsIPv6(addresses);
-
-  transport_socket_->ApplySocketTag(socket_tag());
-
-  int rv = transport_socket_->Connect(base::BindOnce(
-      &TransportConnectJob::OnIOComplete, base::Unretained(this)));
-  if (rv == ERR_IO_PENDING && try_ipv6_connect_with_ipv4_fallback) {
-    fallback_timer_.Start(FROM_HERE, kIPv6FallbackTime, this,
-                          &TransportConnectJob::OnIPv6FallbackTimerComplete);
+  if (!ipv4_addresses.empty()) {
+    ipv4_job_ = std::make_unique<TransportConnectSubJob>(
+        std::move(ipv4_addresses), this, SUB_JOB_IPV4);
   }
-  return rv;
+
+  if (!ipv6_addresses.empty()) {
+    ipv6_job_ = std::make_unique<TransportConnectSubJob>(
+        std::move(ipv6_addresses), this, SUB_JOB_IPV6);
+    int result = ipv6_job_->Start();
+    if (result != ERR_IO_PENDING)
+      return HandleSubJobComplete(result, ipv6_job_.get());
+    if (ipv4_job_) {
+      // This use of base::Unretained is safe because |fallback_timer_| is
+      // owned by this object.
+      fallback_timer_.Start(
+          FROM_HERE, kIPv6FallbackTime,
+          base::BindOnce(&TransportConnectJob::StartIPv4JobAsync,
+                         base::Unretained(this)));
+    }
+    return ERR_IO_PENDING;
+  }
+
+  DCHECK(!ipv6_job_);
+  DCHECK(ipv4_job_);
+  int result = ipv4_job_->Start();
+  if (result != ERR_IO_PENDING)
+    return HandleSubJobComplete(result, ipv4_job_.get());
+  return ERR_IO_PENDING;
 }
 
-int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
-                                                    int result) {
-  // Either the main socket or the fallback one completed.
-  std::unique_ptr<TransportClientSocket>& completed_socket =
-      is_fallback ? fallback_transport_socket_ : transport_socket_;
-  std::unique_ptr<TransportClientSocket>& other_socket =
-      is_fallback ? transport_socket_ : fallback_transport_socket_;
-  DCHECK(completed_socket);
-  // Save the connection attempts from each socket. On failure, these will be
-  // returned via |GetAdditionalErrorState|.
-  SaveConnectionAttempts(*completed_socket);
-  if (other_socket) {
-    SaveConnectionAttempts(*other_socket);
-  }
-  if (is_fallback) {
-    connect_timing_.connect_start = fallback_connect_start_time_;
-  }
-
-  // Cancel any completion events from the callback timer and other socket.
+int TransportConnectJob::DoTransportConnectComplete(int result) {
+  // Make sure nothing else calls back into this object.
+  ipv4_job_.reset();
+  ipv6_job_.reset();
   fallback_timer_.Stop();
-  other_socket.reset();
 
   if (result == OK) {
-    HistogramDuration(connect_timing_);
-    SetSocket(std::move(completed_socket), dns_aliases_);
-  } else {
-    completed_socket.reset();
+    DCHECK(!connect_timing_.connect_start.is_null());
+    DCHECK(!connect_timing_.dns_start.is_null());
+    // `HandleSubJobComplete` should have called `SetSocket`.
+    DCHECK(socket());
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta total_duration = now - connect_timing_.dns_start;
+    UMA_HISTOGRAM_CUSTOM_TIMES("Net.DNS_Resolution_And_TCP_Connection_Latency2",
+                               total_duration, base::Milliseconds(1),
+                               base::Minutes(10), 100);
 
+    base::TimeDelta connect_duration = now - connect_timing_.connect_start;
+    UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency", connect_duration,
+                               base::Milliseconds(1), base::Minutes(10), 100);
+  } else {
     // Don't try the next route if entering suspend mode.
     if (result != ERR_NETWORK_IO_SUSPENDED) {
       // If there is another endpoint available, try it.
@@ -496,49 +445,58 @@ int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
   return result;
 }
 
-void TransportConnectJob::OnIPv6FallbackTimerComplete() {
-  // The timer should only fire while we're waiting for the main connect to
-  // succeed.
-  if (next_state_ != STATE_TRANSPORT_CONNECT_COMPLETE) {
-    NOTREACHED();
-    return;
+int TransportConnectJob::HandleSubJobComplete(int result,
+                                              TransportConnectSubJob* job) {
+  DCHECK_NE(result, ERR_IO_PENDING);
+  if (result == OK) {
+    SetSocket(job->PassSocket(), dns_aliases_);
+    return result;
   }
 
-  DCHECK(!fallback_transport_socket_.get());
-
-  AddressList fallback_addresses = GetCurrentAddressList();
-  MakeAddressListStartWithIPv4(&fallback_addresses);
-
-  // Create a |SocketPerformanceWatcher|, and pass the ownership.
-  std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
-  if (socket_performance_watcher_factory()) {
-    socket_performance_watcher =
-        socket_performance_watcher_factory()->CreateSocketPerformanceWatcher(
-            SocketPerformanceWatcherFactory::PROTOCOL_TCP, fallback_addresses);
+  if (result == ERR_NETWORK_IO_SUSPENDED) {
+    // Don't try other jobs if entering suspend mode.
+    return result;
   }
 
-  fallback_transport_socket_ =
-      client_socket_factory()->CreateTransportClientSocket(
-          fallback_addresses, std::move(socket_performance_watcher),
-          network_quality_estimator(), net_log().net_log(), net_log().source());
-  fallback_connect_start_time_ = base::TimeTicks::Now();
-  fallback_transport_socket_->ApplySocketTag(socket_tag());
-  int rv = fallback_transport_socket_->Connect(base::BindOnce(
-      base::BindOnce(&TransportConnectJob::OnIPv6FallbackConnectComplete,
-                     base::Unretained(this))));
-  if (rv != ERR_IO_PENDING)
-    OnIPv6FallbackConnectComplete(rv);
+  switch (job->type()) {
+    case SUB_JOB_IPV4:
+      ipv4_job_.reset();
+      break;
+
+    case SUB_JOB_IPV6:
+      ipv6_job_.reset();
+      // Start the other job, rather than wait for the fallback timer.
+      if (ipv4_job_ && !ipv4_job_->started()) {
+        fallback_timer_.Stop();
+        result = ipv4_job_->Start();
+        if (result != ERR_IO_PENDING) {
+          return HandleSubJobComplete(result, ipv4_job_.get());
+        }
+      }
+      break;
+  }
+
+  if (ipv4_job_ || ipv6_job_) {
+    // Wait for the other job to complete, rather than reporting |result|.
+    return ERR_IO_PENDING;
+  }
+
+  return result;
 }
 
-void TransportConnectJob::OnIPv6FallbackConnectComplete(int result) {
-  // This should only happen when we're waiting for the main connect to succeed.
-  if (next_state_ != STATE_TRANSPORT_CONNECT_COMPLETE) {
-    NOTREACHED();
-    return;
+void TransportConnectJob::OnSubJobComplete(int result,
+                                           TransportConnectSubJob* job) {
+  result = HandleSubJobComplete(result, job);
+  if (result != ERR_IO_PENDING) {
+    OnIOComplete(result);
   }
+}
 
-  next_state_ = STATE_FALLBACK_CONNECT_COMPLETE;
-  OnIOComplete(result);
+void TransportConnectJob::StartIPv4JobAsync() {
+  DCHECK(ipv4_job_);
+  int result = ipv4_job_->Start();
+  if (result != ERR_IO_PENDING)
+    OnSubJobComplete(result, ipv4_job_.get());
 }
 
 int TransportConnectJob::ConnectInternal() {
@@ -605,23 +563,10 @@ bool TransportConnectJob::IsEndpointResultUsable(
   return false;
 }
 
-AddressList TransportConnectJob::GetCurrentAddressList() const {
+const HostResolverEndpointResult&
+TransportConnectJob::GetEndpointResultForCurrentSubJobs() const {
   CHECK_LT(current_endpoint_result_, endpoint_results_.size());
-  const HostResolverEndpointResult& endpoint_result =
-      endpoint_results_[current_endpoint_result_];
-  // TODO(crbug.com/126134): `HostResolverEndpointResult` has a
-  // `vector<IPEndPoint>`, while all these classes expect an `AddressList`.
-  // Align these after DNS aliases are fully moved out of `AddressList`.
-  // https://crbug.com/1291352 will also likely move the `AddressList` iteration
-  // out of `TCPClientSocket`, which will also avoid the conversion.
-  return AddressList(endpoint_result.ip_endpoints);
-}
-
-void TransportConnectJob::SaveConnectionAttempts(
-    const TransportClientSocket& socket) {
-  ConnectionAttempts attempts = socket.GetConnectionAttempts();
-  connection_attempts_.insert(connection_attempts_.end(), attempts.begin(),
-                              attempts.end());
+  return endpoint_results_[current_endpoint_result_];
 }
 
 }  // namespace net
