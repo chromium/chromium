@@ -391,6 +391,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableUrlHandlers;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppManifestLockScreen;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebAppBorderless;
+
 BLINK_COMMON_EXPORT extern const base::Feature kLoadingTasksUnfreezable;
 
 BLINK_COMMON_EXPORT extern const base::Feature kTargetBlankImpliesNoOpener;

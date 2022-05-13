@@ -40117,6 +40117,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4225" label="FedCmLogout"/>
   <int value="4226" label="FedCmLogoutRps"/>
   <int value="4227" label="V8Navigator_DeprecatedReplaceInURN_Method"/>
+  <int value="4228" label="WebAppBorderless"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -58064,6 +58065,7 @@ from previous Chrome versions.
   <int value="282165459" label="ForceMinorVersion100InUserAgent:enabled"/>
   <int value="282582564" label="DisableCameraFrameRotationAtSource:enabled"/>
   <int value="282636212" label="VideoPlayerNativeControls:disabled"/>
+  <int value="282647662" label="WebAppBorderless:enabled"/>
   <int value="282692100" label="SubframeShutdownDelay:disabled"/>
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
@@ -58484,6 +58486,7 @@ from previous Chrome versions.
   <int value="549483647" label="EnableUnifiedMultiDeviceSettings:disabled"/>
   <int value="550378029" label="reset-app-list-install-state"/>
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
+  <int value="550741462" label="WebAppBorderless:disabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
   <int value="555959995" label="ChromeSharingHub:enabled"/>

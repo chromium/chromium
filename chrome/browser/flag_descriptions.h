@@ -522,6 +522,9 @@ extern const char kDesktopPWAsWebBundlesDescription[];
 extern const char kDesktopPWAsWindowControlsOverlayName[];
 extern const char kDesktopPWAsWindowControlsOverlayDescription[];
 
+extern const char kDesktopPWAsBorderlessName[];
+extern const char kDesktopPWAsBorderlessDescription[];
+
 extern const char kDeviceForceScheduledRebootName[];
 extern const char kDeviceForceScheduledRebootDescription[];
 

@@ -920,6 +920,11 @@ const char kDesktopPWAsWindowControlsOverlayDescription[] =
     "override. Prototype implementation of: "
     "https://github.com/WICG/window-controls-overlay/blob/main/explainer.md";
 
+const char kDesktopPWAsBorderlessName[] = "Desktop PWA Borderless";
+const char kDesktopPWAsBorderlessDescription[] =
+    "Enable web app manifests to declare borderless mode as a display "
+    "override. Prototype implementation of: go/borderless-mode.";
+
 const char kDesktopPWAsWebBundlesName[] = "Desktop PWAs Web Bundles";
 const char kDesktopPWAsWebBundlesDescription[] =
     "Adds support for web bundles, making web apps able to be launched "
