@@ -27,6 +27,10 @@ class AudioManagerPowerUser {
     return audio_manager_->GetDefaultOutputDeviceID();
   }
 
+  std::string GetCommunicationsOutputDeviceID() {
+    return audio_manager_->GetCommunicationsOutputDeviceID();
+  }
+
   media::AudioParameters GetOutputStreamParameters(
       const std::string& device_id) {
     return media::AudioDeviceDescription::IsDefaultDevice(device_id)
