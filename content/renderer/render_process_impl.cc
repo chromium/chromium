@@ -132,9 +132,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
                        "--wasm-staging");
 
-  SetV8FlagIfHasSwitch(switches::kEnableUnsafeFastJSCalls,
-                       "--turbo-fast-api-calls");
-
   SetV8FlagIfFeature(features::kV8VmFuture, "--future");
   SetV8FlagIfNotFeature(features::kV8VmFuture, "--no-future");
 

@@ -157,7 +157,6 @@ CONTENT_EXPORT extern const char kIsolatedAppOrigins[];
 CONTENT_EXPORT extern const char kIsolateOrigins[];
 CONTENT_EXPORT extern const char kIsolationByDefault[];
 CONTENT_EXPORT extern const char kJavaScriptHarmony[];
-CONTENT_EXPORT extern const char kEnableUnsafeFastJSCalls[];
 CONTENT_EXPORT extern const char kLaunchAsBrowser[];
 CONTENT_EXPORT extern const char kLogGpuControlListDecisions[];
 CONTENT_EXPORT extern const char kLoggingLevel[];

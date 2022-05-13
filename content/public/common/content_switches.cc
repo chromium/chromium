@@ -521,9 +521,6 @@ const char kDisableJavaScriptHarmonyShipping[] =
 // Enables experimental Harmony (ECMAScript 6) features.
 const char kJavaScriptHarmony[]             = "javascript-harmony";
 
-// Enables unsafe fast JS calls between Blink and V8.
-const char kEnableUnsafeFastJSCalls[] = "enable-unsafe-fast-js-calls";
-
 // Flag to launch tests in the browser process.
 const char kLaunchAsBrowser[] = "as-browser";
 

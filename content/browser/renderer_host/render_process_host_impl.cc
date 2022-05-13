@@ -3234,7 +3234,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kEnableSkiaBenchmarking,
     switches::kEnableThreadedCompositing,
     switches::kEnableTouchDragDrop,
-    switches::kEnableUnsafeFastJSCalls,
     switches::kEnableUnsafeWebGPU,
     switches::kEnableViewport,
     switches::kEnableVtune,

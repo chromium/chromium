@@ -3580,22 +3580,6 @@
       },
     },
 
-    'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests': {
-      'webgl_conformance_fast_call': {
-        'telemetry_test_name': 'webgl_conformance',
-        'args': [
-          # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--enable-unsafe-fast-js-calls --enable-fake-no-alloc-direct-call-for-testing --use-gl=angle --use-cmd-decoder=passthrough --force_high_performance_gpu',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
       'webgl_conformance_gl_passthrough': {
         'telemetry_test_name': 'webgl_conformance',
@@ -6662,7 +6646,6 @@
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
@@ -6707,7 +6690,6 @@
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
@@ -7747,11 +7729,6 @@
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
         'variants': [
           'WIN10_INTEL_HD_630_STABLE',
-          'WIN10_NVIDIA_GTX_1660_STABLE',
-        ],
-      },
-      'gpu_webgl_conformance_fast_call_passthrough_telemetry_tests': {
-        'variants': [
           'WIN10_NVIDIA_GTX_1660_STABLE',
         ],
       },
