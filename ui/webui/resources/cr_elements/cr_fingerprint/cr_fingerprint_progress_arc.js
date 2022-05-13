@@ -399,6 +399,7 @@ Polymer({
     const scanningAnimation =
         /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
     scanningAnimation.singleLoop = true;
+    scanningAnimation.autoplay = true;
     scanningAnimation.classList.remove('translucent');
     this.updateAnimationAsset_();
     this.resizeCheckMark_(scanningAnimation);
