@@ -4,10 +4,13 @@
 
 #include "ash/wm/desks/templates/save_desk_template_button.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -50,6 +53,15 @@ void SaveDeskTemplateButton::OnThemeChanged() {
   SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80));
   UpdateBorderState();
+}
+
+void SaveDeskTemplateButton::OnPaintBorder(gfx::Canvas* canvas) {
+  if (features::IsDarkLightModeEnabled()) {
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(kCornerRadius),
+        views::HighlightBorder::Type::kHighlightBorder2,
+        /*use_light_colors=*/false);
+  }
 }
 
 void SaveDeskTemplateButton::UpdateBorderState() {

@@ -47,6 +47,7 @@ class ASH_EXPORT SaveDeskTemplateButton : public PillButton,
 
   // PillButton:
   void OnThemeChanged() override;
+  void OnPaintBorder(gfx::Canvas* canvas) override;
 
   void UpdateBorderState();
 
