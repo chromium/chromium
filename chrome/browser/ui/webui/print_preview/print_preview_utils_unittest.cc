@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,7 @@ base::Value::Dict GetCapabilitiesFull() {
   base::Value::List pages_per_sheet;
   for (int i = 1; i <= 8; i *= 2) {
     base::Value::Dict option;
-    option.Set(kDisplayName, std::to_string(i));
+    option.Set(kDisplayName, base::NumberToString(i));
     option.Set(kValue, i);
     if (i == 1)
       option.Set(kIsDefault, true);
@@ -294,7 +295,7 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
       continue;
     }
     base::Value::Dict option;
-    option.Set(kDisplayName, std::to_string(i));
+    option.Set(kDisplayName, base::NumberToString(i));
     option.Set(kValue, i);
     if (i == 1)
       option.Set(kIsDefault, true);
