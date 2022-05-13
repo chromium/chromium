@@ -1,0 +1,44 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.password_manager;
+
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.url.GURL;
+
+/**
+ * Class handling the communication with the C++ part of the password change
+ * success tracker feature. It forwards messages to and from its C++
+ * counterpart.
+ */
+public class PasswordChangeSuccessTrackerBridge {
+    /**
+     * Register the start of an automated password change flow. Notifies the
+     * password change success tracker.
+     * @param url The URL associated with the credential that is to be changed.
+     * @param username The username of the credential that is to be changed.
+     */
+    public static void onAutomatedPasswordChangeStarted(GURL url, String username) {
+        PasswordChangeSuccessTrackerBridgeJni.get().onAutomatedPasswordChangeStarted(url, username);
+    }
+
+    /**
+     * Register the start of a manual password change flow. Notifies the
+     * password change success tracker.
+     * @param url The URL associated with the credential that is to be changed.
+     * @param username The username of the credential that is to be changed.
+     */
+    public static void onManualPasswordChangeStarted(GURL url, String username) {
+        PasswordChangeSuccessTrackerBridgeJni.get().onManualPasswordChangeStarted(url, username);
+    }
+
+    /**
+     * C++ method signatures.
+     */
+    @NativeMethods
+    interface Natives {
+        void onAutomatedPasswordChangeStarted(GURL url, String username);
+        void onManualPasswordChangeStarted(GURL url, String username);
+    }
+}

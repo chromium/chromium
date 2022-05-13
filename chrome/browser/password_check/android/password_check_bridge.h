@@ -11,10 +11,6 @@
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-namespace password_manager {
-class PasswordChangeSuccessTracker;
-}  // namespace password_manager
-
 // C++ counterpart of |PasswordCheckBridge.java|. Used to mediate the
 // communication between the UI and the password check logic.
 class PasswordCheckBridge : public PasswordCheckManager::Observer {
@@ -97,22 +93,7 @@ class PasswordCheckBridge : public PasswordCheckManager::Observer {
   void OnPasswordCheckProgressChanged(int already_processed,
                                       int remaining_in_queue) override;
 
-  // Called by Java to register the start of an automated password change flow.
-  void OnAutomatedPasswordChangeStarted(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
-
-  // Called by Java to register the start of a manual password change flow.
-  void OnManualPasswordChangeStarted(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
-
  private:
-  // Wraps the call to the factory function to obtain the |KeyedService|
-  // instance for |PasswordChangeSuccessTracker|.
-  password_manager::PasswordChangeSuccessTracker*
-  GetPasswordChangeSuccessTracker();
-
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 

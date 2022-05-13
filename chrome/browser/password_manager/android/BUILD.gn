@@ -118,6 +118,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordChangeSuccessTrackerBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtil.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
@@ -144,6 +145,7 @@ generate_jni("jni_headers") {
     "//chrome/browser",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordChangeSuccessTrackerBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterBridge.java",

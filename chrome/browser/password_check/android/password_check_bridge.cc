@@ -8,14 +8,11 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
 #include "chrome/browser/password_check/android/jni_headers/PasswordCheckBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
@@ -209,31 +206,4 @@ void PasswordCheckBridge::OnPasswordCheckProgressChanged(
   Java_PasswordCheckBridge_onPasswordCheckProgressChanged(
       base::android::AttachCurrentThread(), java_bridge_, already_processed,
       remaining_in_queue);
-}
-
-void PasswordCheckBridge::OnAutomatedPasswordChangeStarted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& credential) {
-  password_manager::CredentialView credential_view =
-      ConvertJavaObjectToCredentialView(env, credential);
-  GetPasswordChangeSuccessTracker()->OnChangePasswordFlowStarted(
-      credential_view.url, base::UTF16ToUTF8(credential_view.username),
-      PasswordChangeSuccessTracker::StartEvent::kAutomatedFlow,
-      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
-}
-
-void PasswordCheckBridge::OnManualPasswordChangeStarted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& credential) {
-  password_manager::CredentialView credential_view =
-      ConvertJavaObjectToCredentialView(env, credential);
-  GetPasswordChangeSuccessTracker()->OnManualChangePasswordFlowStarted(
-      credential_view.url, base::UTF16ToUTF8(credential_view.username),
-      PasswordChangeSuccessTracker::EntryPoint::kLeakCheckInSettings);
-}
-
-password_manager::PasswordChangeSuccessTracker*
-PasswordCheckBridge::GetPasswordChangeSuccessTracker() {
-  return password_manager::PasswordChangeSuccessTrackerFactory::GetInstance()
-      ->GetForBrowserContext(ProfileManager::GetLastUsedProfile());
 }
