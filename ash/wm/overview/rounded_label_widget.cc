@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
@@ -16,6 +17,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -32,6 +34,7 @@ class RoundedLabelView : public views::Label {
                    int message_id)
       : views::Label(l10n_util::GetStringUTF16(message_id),
                      views::style::CONTEXT_LABEL),
+        rounding_dp_(rounding_dp),
         preferred_height_(preferred_height) {
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(vertical_padding, horizontal_padding)));
@@ -66,7 +69,17 @@ class RoundedLabelView : public views::Label {
         ColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
+  void OnPaintBorder(gfx::Canvas* canvas) override {
+    if (features::IsDarkLightModeEnabled()) {
+      views::HighlightBorder::PaintBorderToCanvas(
+          canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
+          views::HighlightBorder::Type::kHighlightBorder2,
+          /*use_light_colors=*/false);
+    }
+  }
+
  private:
+  const int rounding_dp_;
   const int preferred_height_;
 };
 
