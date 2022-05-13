@@ -390,8 +390,9 @@ class SplitCacheRegistrableDomainContentBrowserTest
     : public SplitCacheContentBrowserTest {
  public:
   SplitCacheRegistrableDomainContentBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSplitCacheByNetworkIsolationKey);
+    feature_list_.InitWithFeatures(
+        {net::features::kSplitCacheByNetworkIsolationKey},
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
   }
 
  private:
@@ -406,13 +407,16 @@ class SplitCacheContentBrowserTestEnabled
     std::vector<base::Feature> enabled_features;
     enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
 
+    std::vector<base::Feature> disabled_features;
+    disabled_features.push_back(
+        net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+
     // When the test parameter is true, we test the split cache with
     // PlzDedicatedWorker enabled.
     if (GetParam())
       enabled_features.push_back(blink::features::kPlzDedicatedWorker);
 
-    feature_list_.InitWithFeatures(enabled_features,
-                                   {} /* disabled_features */);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:

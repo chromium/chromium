@@ -130,7 +130,9 @@ class WebBundleElementBrowserTest : public ContentBrowserTest {
  public:
  protected:
   WebBundleElementBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
+    feature_list_.InitWithFeatures(
+        {features::kSubresourceWebBundles},
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
   }
   ~WebBundleElementBrowserTest() override = default;
 

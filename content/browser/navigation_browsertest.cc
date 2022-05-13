@@ -4501,8 +4501,9 @@ class NetworkIsolationSplitCacheAppendIframeOrigin
     : public NavigationBaseBrowserTest {
  public:
   NetworkIsolationSplitCacheAppendIframeOrigin() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSplitCacheByNetworkIsolationKey);
+    feature_list_.InitWithFeatures(
+        {net::features::kSplitCacheByNetworkIsolationKey},
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
   }
 
  private:

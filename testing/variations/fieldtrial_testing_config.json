@@ -5670,7 +5670,7 @@
             ]
         }
     ],
-    "PartitionConnectionsByNetworkIsolationKey": [
+    "PartitionNetworkStateByDoubleKey": [
         {
             "platforms": [
                 "android",
@@ -5683,8 +5683,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled5",
+                    "name": "Enabled2",
                     "enable_features": [
+                        "ForceIsolationInfoFrameOriginToTopLevelFrame",
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
                         "PartitionExpectCTStateByNetworkIsolationKey",
