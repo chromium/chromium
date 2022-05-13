@@ -47,16 +47,28 @@ PrerenderAttributes GeneratePrerenderAttributes(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     RenderFrameHostImpl* rfh) {
-  return PrerenderAttributes(
-      url, trigger_type, embedder_histogram_suffix, Referrer(),
-      rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-      rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetFrameTreeNodeId(),
-      trigger_type == PrerenderTriggerType::kSpeculationRule
-          ? rfh->GetPageUkmSourceId()
-          : ukm::kInvalidSourceId,
-      ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt);
+  if (trigger_type == PrerenderTriggerType::kSpeculationRule) {
+    return PrerenderAttributes(
+        url, trigger_type, embedder_histogram_suffix, Referrer(),
+        rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
+        rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
+        rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+        ui::PAGE_TRANSITION_LINK,
+        /*url_match_predicate=*/absl::nullopt);
+  } else {
+    // TODO(https://crbug.com/1325211): remove initiator_origin and
+    // initiator_frame_token after fixing prerendering activation for
+    // embedder-triggered prerendering in unittests.
+    return PrerenderAttributes(
+        url, trigger_type, embedder_histogram_suffix, Referrer(),
+        /*initiator_origin=*/rfh->GetLastCommittedOrigin(),
+        rfh->GetLastCommittedURL(),
+        /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
+        /*initiator_frame_token=*/rfh->GetFrameToken(),
+        /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
+        /*initiator_ukm_id=*/ukm::kInvalidSourceId, ui::PAGE_TRANSITION_LINK,
+        /*url_match_predicate=*/absl::nullopt);
+  }
 }
 
 // This definition is needed because this constant is odr-used in gtest macros.
