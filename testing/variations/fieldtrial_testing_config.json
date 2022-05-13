@@ -5313,6 +5313,21 @@
             ]
         }
     ],
+    "OneCopyCanvasCaptureWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OneCopyCanvasCapture"
+                    ]
+                }
+            ]
+        }
+    ],
     "OneTimeGeolocationPermission": [
         {
             "platforms": [
