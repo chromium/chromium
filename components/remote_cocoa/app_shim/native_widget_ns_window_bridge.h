@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/cocoa/command_dispatcher.h"
@@ -338,7 +339,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
-  bool is_headless_mode_window_ = false;
   id key_down_event_monitor_ = nil;
 
   // Intended for PWAs with window controls overlay display override. These two
@@ -385,11 +385,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // currently hidden due to having a hidden parent.
   bool wants_to_be_visible_ = false;
 
-  // This tracks headless window visibility state. In headless mode
-  // the platform window is always hidden, so we use this boolean
-  // to track the window's requested visibility state.
-  bool headless_window_visibility_state_ = false;
-
   // If true, then ignore interactions with CATransactionCoordinator until the
   // first frame arrives.
   bool ca_transaction_sync_suppressed_ = false;
@@ -401,6 +396,21 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // A blob representing the window's saved state, which is applied and cleared
   // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
+
+  // A structure to hold a headless mode window state. This is present iff the
+  // window has been created in headless mode.
+  struct HeadlessModeWindow {
+    // This tracks headless window visibility state. In headless mode
+    // the platform window is always hidden, so we use this boolean
+    // to track the window's expected visibility state.
+    bool visibility_state = false;
+    // This tracks headless window fullscreen state. In headless mode the
+    // platform window is never made fullscreen because AppKit implicitly
+    // makes fullscreen windows visible.
+    bool fullscreen_state = false;
+  };
+
+  absl::optional<HeadlessModeWindow> headless_mode_window_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

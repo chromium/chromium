@@ -438,8 +438,10 @@ void NativeWidgetNSWindowBridge::InitWindow(
     mojom::NativeWidgetNSWindowInitParamsPtr params) {
   modal_type_ = params->modal_type;
   is_translucent_window_ = params->is_translucent;
-  is_headless_mode_window_ = params->is_headless_mode_window;
   pending_restoration_data_ = params->state_restoration_data;
+
+  if (params->is_headless_mode_window)
+    headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
 
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is
@@ -675,10 +677,10 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // changing its visibility state just maintain a local flag to track the
   // expected visibility state and lie to the upper layer pretending the
   // window did change its visibility state.
-  if (is_headless_mode_window_) {
-    headless_window_visibility_state_ =
+  if (headless_mode_window_) {
+    headless_mode_window_->visibility_state =
         new_state != WindowVisibilityState::kHideWindow;
-    host_->OnVisibilityChanged(headless_window_visibility_state_);
+    host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
     return;
   }
 
@@ -1226,6 +1228,23 @@ void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
+  // AppKit implicitly makes the fullscreen window visible, so avoid going
+  // fullscreen in headless mode. Instead, toggle the expected fullscreen state
+  // and fake the relevant callbacks for the fullscreen controller to
+  // believe the fullscreen state was toggled.
+  if (headless_mode_window_) {
+    headless_mode_window_->fullscreen_state =
+        !headless_mode_window_->fullscreen_state;
+    if (headless_mode_window_->fullscreen_state) {
+      fullscreen_controller_.OnWindowWillEnterFullscreen();
+      fullscreen_controller_.OnWindowDidEnterFullscreen();
+    } else {
+      fullscreen_controller_.OnWindowWillExitFullscreen();
+      fullscreen_controller_.OnWindowDidExitFullscreen();
+    }
+    return;
+  }
+
   [window_ toggleFullScreen:nil];
 }
 
@@ -1621,8 +1640,8 @@ bool NativeWidgetNSWindowBridge::window_visible() const {
   // returning the actual platform window visibility state tracked by
   // OnVisibilityChanged() callback, return the expected visibility state
   // maintained by SetVisibilityState() call.
-  return is_headless_mode_window_ ? headless_window_visibility_state_
-                                  : window_visible_;
+  return headless_mode_window_ ? headless_mode_window_->visibility_state
+                               : window_visible_;
 }
 
 }  // namespace remote_cocoa

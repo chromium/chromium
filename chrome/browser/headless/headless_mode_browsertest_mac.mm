@@ -11,7 +11,13 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
+                         HeadlessModeBrowserTestWithStartWindowMode,
+                         testing::Values(kStartWindowNormal,
+                                         kStartWindowMaximized,
+                                         kStartWindowFullscreen));
+
+IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
                        BrowserDesktopWindowVisibility) {
   // On Mac, the Native Headless Chrome browser window exists and is
   // visible, while the underlying platform window is hidden.
