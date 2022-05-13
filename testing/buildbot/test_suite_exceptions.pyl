@@ -597,12 +597,13 @@
         ],
       },
       'Linux ChromiumOS MSan Tests': {
-        # These are very slow on the Chrome OS MSAN trybot for some reason.
+        # These are very slow on the Chrome OS MSAN trybot, most likely because browser_tests on cros has ~40% more tests. Also, these tests
+        # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
         # crbug.com/865455
         'swarming': {
-          # This should be reverted to 48 before end of April 2022, when the slowdown is fixed.
+          # Fully MSAN instrumented ANGLE + SwiftShader Vulkan libraries offer more thorough coverage, at the cost of further slowdowns
           # crbug.com/1313907
-          'shards': 72,
+          'shards': 60,
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
