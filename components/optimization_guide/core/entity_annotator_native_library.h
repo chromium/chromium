@@ -185,8 +185,15 @@ class EntityAnnotatorNativeLibrary {
       entity_metadata_get_human_readable_aliases_count_func_ = nullptr;
   using EntityMetadataGetHumanReadableAliasAtIndexFunc =
       const char* (*)(const void*, int32_t);
-  EntityMetadataGetHumanReadableCategoryNameAtIndexFunc
+  EntityMetadataGetHumanReadableAliasAtIndexFunc
       entity_metadata_get_human_readable_alias_at_index_func_ = nullptr;
+  using EntityMetadataGetCollectionsCountFunc = int32_t (*)(const void*);
+  EntityMetadataGetCollectionsCountFunc
+      entity_metadata_get_collections_count_func_ = nullptr;
+  using EntityMetadataGetCollectionAtIndexFunc = const char* (*)(const void*,
+                                                                 int32_t);
+  EntityMetadataGetCollectionAtIndexFunc
+      entity_metadata_get_collection_at_index_func_ = nullptr;
 };
 
 }  // namespace optimization_guide

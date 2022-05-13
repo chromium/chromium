@@ -20,7 +20,8 @@ struct EntityMetadata {
       const std::string& entity_id,
       const std::string& human_readable_name,
       const base::flat_map<std::string, float>& human_readable_categories,
-      const std::vector<std::string>& human_readable_aliases = {});
+      const std::vector<std::string>& human_readable_aliases = {},
+      const std::vector<std::string>& collections = {});
   EntityMetadata(const EntityMetadata&);
   ~EntityMetadata();
 
@@ -37,6 +38,9 @@ struct EntityMetadata {
 
   // The ordered set of aliases for this entity in the user's locale.
   std::vector<std::string> human_readable_aliases;
+
+  // A vector of collections of the entity. Will contain the top 5 collections.
+  std::vector<std::string> collections;
 
   std::string ToString() const;
 

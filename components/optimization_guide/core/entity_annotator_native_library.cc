@@ -245,6 +245,16 @@ void EntityAnnotatorNativeLibrary::LoadFunctions() {
           base::GetFunctionPointerFromNativeLibrary(
               native_library_,
               "OptimizationGuideEntityMetadataGetHumanReadableAliasAtIndex"));
+  entity_metadata_get_collections_count_func_ =
+      reinterpret_cast<EntityMetadataGetCollectionsCountFunc>(
+          base::GetFunctionPointerFromNativeLibrary(
+              native_library_,
+              "OptimizationGuideEntityMetadataGetCollectionsCount"));
+  entity_metadata_get_collection_at_index_func_ =
+      reinterpret_cast<EntityMetadataGetCollectionAtIndexFunc>(
+          base::GetFunctionPointerFromNativeLibrary(
+              native_library_,
+              "OptimizationGuideEntityMetadataGetCollectionAtIndex"));
 }
 
 DISABLE_CFI_ICALL
@@ -267,7 +277,9 @@ bool EntityAnnotatorNativeLibrary::IsValid() const {
          entity_metadata_get_human_readable_category_name_at_index_func_ &&
          entity_metadata_get_human_readable_category_score_at_index_func_ &&
          entity_metadata_get_human_readable_aliases_count_func_ &&
-         entity_metadata_get_human_readable_alias_at_index_func_;
+         entity_metadata_get_human_readable_alias_at_index_func_ &&
+         entity_metadata_get_collections_count_func_ &&
+         entity_metadata_get_collection_at_index_func_;
 }
 
 DISABLE_CFI_ICALL
@@ -507,6 +519,7 @@ EntityMetadata EntityAnnotatorNativeLibrary::
             og_entity_metadata, i);
     entity_metadata.human_readable_categories[category_name] = category_score;
   }
+
   int32_t human_readable_aliases_count =
       entity_metadata_get_human_readable_aliases_count_func_(
           og_entity_metadata);
@@ -514,6 +527,14 @@ EntityMetadata EntityAnnotatorNativeLibrary::
     entity_metadata.human_readable_aliases.push_back(
         entity_metadata_get_human_readable_alias_at_index_func_(
             og_entity_metadata, i));
+  }
+
+  int32_t collections_count =
+      entity_metadata_get_collections_count_func_(og_entity_metadata);
+  for (int32_t i = 0; i < collections_count; i++) {
+    std::string collection =
+        entity_metadata_get_collection_at_index_func_(og_entity_metadata, i);
+    entity_metadata.collections.push_back(collection);
   }
   return entity_metadata;
 }
