@@ -4301,6 +4301,7 @@ struct Element::AffectedByPseudoStateChange {
             element.AncestorsOrSiblingsAffectedByActiveInHas();
         break;
 
+      case CSSSelector::kPseudoAnyLink:
       case CSSSelector::kPseudoChecked:
       case CSSSelector::kPseudoDefault:
       case CSSSelector::kPseudoDisabled:
@@ -4308,12 +4309,14 @@ struct Element::AffectedByPseudoStateChange {
       case CSSSelector::kPseudoIndeterminate:
       case CSSSelector::kPseudoInRange:
       case CSSSelector::kPseudoInvalid:
+      case CSSSelector::kPseudoLink:
       case CSSSelector::kPseudoOutOfRange:
       case CSSSelector::kPseudoOptional:
       case CSSSelector::kPseudoPlaceholderShown:
       case CSSSelector::kPseudoReadOnly:
       case CSSSelector::kPseudoReadWrite:
       case CSSSelector::kPseudoRequired:
+      case CSSSelector::kPseudoTarget:
       case CSSSelector::kPseudoValid:
         ancestors_or_siblings = true;
         break;

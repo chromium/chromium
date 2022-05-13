@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSS Selectors Invalidation: target pseudo in :has() argument assert_equals: parent should be yellowgreen on fragment click expected "rgb(154, 205, 50)" but got "rgb(0, 128, 0)"
-Harness: the test ran to completion.
-
