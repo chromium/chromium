@@ -173,25 +173,12 @@ base::Value DiceWebSigninInterceptHandler::GetAccountInfoValue(
 }
 
 base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
-  bool is_switch =
-      bubble_parameters_.interception_type ==
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
-  int confirmButtonStringID =
-      is_switch
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL;
-  int cancelButtonStringID =
-      is_switch
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL;
   base::Value parameters(base::Value::Type::DICTIONARY);
   parameters.SetStringKey("headerText", GetHeaderText());
   parameters.SetStringKey("bodyTitle", GetBodyTitle());
   parameters.SetStringKey("bodyText", GetBodyText());
-  parameters.SetStringKey("confirmButtonLabel",
-                          l10n_util::GetStringUTF8(confirmButtonStringID));
-  parameters.SetStringKey("cancelButtonLabel",
-                          l10n_util::GetStringUTF8(cancelButtonStringID));
+  parameters.SetStringKey("confirmButtonLabel", GetConfirmButtonLabel());
+  parameters.SetStringKey("cancelButtonLabel", GetCancelButtonLabel());
   parameters.SetBoolKey("showGuestOption",
                         bubble_parameters_.show_guest_option);
   parameters.SetKey("interceptedAccount",
@@ -204,9 +191,7 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
       "primaryProfileColor",
       color_utils::SkColorToRgbaString(
           GetProfileHighlightColor(Profile::FromWebUI(web_ui()))));
-  parameters.SetBoolKey("useV2Design",
-                        !is_switch && base::FeatureList::IsEnabled(
-                                          kSyncPromoAfterSigninIntercept));
+  parameters.SetBoolKey("useV2Design", GetShouldUseV2Design());
 
   parameters.SetStringKey(
       "headerTextColor",
@@ -233,21 +218,21 @@ bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() {
 }
 
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {
-  switch (bubble_parameters_.interception_type) {
-    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      return IsManaged(intercepted_account())
-                 ? intercepted_account().hosted_domain
-                 : intercepted_account().given_name;
-    case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
-    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      return intercepted_account().given_name;
-    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
-    case DiceWebSigninInterceptor::SigninInterceptionType::
-        kEnterpriseAcceptManagement:
-    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
-      NOTREACHED() << "This interception type is not handled by a bubble";
-      return std::string();
+  if (bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return intercepted_account().given_name;
   }
+
+  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2))
+    return std::string();
+
+  if (bubble_parameters_.interception_type ==
+          DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise &&
+      IsManaged(intercepted_account())) {
+    return intercepted_account().hosted_domain;
+  }
+
+  return intercepted_account().given_name;
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
@@ -256,11 +241,28 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
     return l10n_util::GetStringUTF8(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE);
   }
+
+  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2);
+  }
+
   return l10n_util::GetStringUTF8(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
+  if (bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
+  }
+
+  if (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2);
+  }
+
   switch (bubble_parameters_.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
       return ShouldShowManagedDeviceVersion()
@@ -280,8 +282,7 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
                        IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
                        base::UTF8ToUTF16(primary_account().given_name));
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      return l10n_util::GetStringUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
+      // Already handled.
     case DiceWebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement:
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
@@ -289,4 +290,33 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
       NOTREACHED() << "This interception type is not handled by a bubble";
       return std::string();
   }
+}
+
+std::string DiceWebSigninInterceptHandler::GetConfirmButtonLabel() {
+  if (bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL);
+  }
+
+  return l10n_util::GetStringUTF8(
+      base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL_V2
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
+}
+
+std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {
+  return l10n_util::GetStringUTF8(
+      bubble_parameters_.interception_type ==
+              DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch
+          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL
+          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL);
+}
+
+bool DiceWebSigninInterceptHandler::GetShouldUseV2Design() {
+  if (bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch)
+    return false;
+
+  return base::FeatureList::IsEnabled(kSigninInterceptBubbleV2);
 }
