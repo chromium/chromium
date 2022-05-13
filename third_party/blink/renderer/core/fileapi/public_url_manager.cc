@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
@@ -75,6 +77,19 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
   const KURL& url = BlobURL::CreatePublicURL(origin);
   DCHECK(!url.IsEmpty());
   const String& url_string = url.GetString();
+
+  // Collect metrics on how frequently a worker context that makes use of the
+  // Blob URL API was created from a data URL. Note that we ignore service
+  // workers for this since they can't be created from data URLs.
+  if (GetExecutionContext()->IsWorkerGlobalScope()) {
+    WorkerGlobalScope* worker_global_scope =
+        DynamicTo<WorkerGlobalScope>(GetExecutionContext());
+    if (worker_global_scope->IsDedicatedWorkerGlobalScope() ||
+        worker_global_scope->IsSharedWorkerGlobalScope()) {
+      base::UmaHistogramBoolean("Storage.Blob.DataURLWorkerRegister",
+                                worker_global_scope->Url().ProtocolIsData());
+    }
+  }
 
   if (registrable->IsMojoBlob()) {
     // Measure how much jank the following synchronous IPC introduces.
@@ -143,6 +158,25 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
+
+  // Collect metrics on how frequently a worker context that makes use of the
+  // Blob URL API was created from a data URL. Note that we ignore service
+  // workers for this since they can't be created from data URLs.
+  if (GetExecutionContext()->IsWorkerGlobalScope()) {
+    WorkerGlobalScope* worker_global_scope =
+        DynamicTo<WorkerGlobalScope>(GetExecutionContext());
+    // Note that for module workers created from blob URLs, this gets called
+    // before the worker global scope has been initialized. Thus, no valid URL
+    // is available.
+    if (worker_global_scope->IsUrlValid() &&
+        (worker_global_scope->IsDedicatedWorkerGlobalScope() ||
+         worker_global_scope->IsSharedWorkerGlobalScope())) {
+      base::UmaHistogramBoolean(
+          "Storage.Blob.DataURLWorkerResolveAsURLLoaderFactory",
+          worker_global_scope->Url().ProtocolIsData());
+    }
+  }
+
   url_store_->ResolveAsURLLoaderFactory(
       url, std::move(factory_receiver),
       WTF::Bind(
@@ -198,6 +232,24 @@ void PublicURLManager::Resolve(
     return;
 
   DCHECK(url.ProtocolIs("blob"));
+
+  // Collect metrics on how frequently a worker context that makes use of the
+  // Blob URL API was created from a data URL. Note that we ignore service
+  // workers for this since they can't be created from data URLs.
+  if (GetExecutionContext()->IsWorkerGlobalScope()) {
+    WorkerGlobalScope* worker_global_scope =
+        DynamicTo<WorkerGlobalScope>(GetExecutionContext());
+    // Note that the URL validity check here is not known to be needed but
+    // adding it just in case!
+    if (worker_global_scope->IsUrlValid() &&
+        (worker_global_scope->IsDedicatedWorkerGlobalScope() ||
+         worker_global_scope->IsSharedWorkerGlobalScope())) {
+      base::UmaHistogramBoolean(
+          "Storage.Blob.DataURLWorkerResolveForNavigation",
+          worker_global_scope->Url().ProtocolIsData());
+    }
+  }
+
   url_store_->ResolveForNavigation(
       url, std::move(token_receiver),
       WTF::Bind(
