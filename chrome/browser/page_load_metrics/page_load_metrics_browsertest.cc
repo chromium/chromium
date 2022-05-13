@@ -2543,8 +2543,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(0);
 }
 
+// Flaky. https://crbug.com/1325208
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       SingleTabSessionRestore) {
+                       DISABLED_SingleTabSessionRestore) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   SessionRestorePaintWaiter session_restore_paint_waiter;
@@ -2554,8 +2555,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(1);
 }
 
+// Flaky. https://crbug.com/1325208
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       MultipleTabsSessionRestore) {
+                       DISABLED_MultipleTabsSessionRestore) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -2590,8 +2592,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(0);
 }
 
+// Flaky. https://crbug.com/1325208
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       LoadingAfterSessionRestore) {
+                       DISABLED_LoadingAfterSessionRestore) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   Browser* new_browser = nullptr;
@@ -2642,8 +2645,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(0);
 }
 
+// Flaky. https://crbug.com/1325208
 IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
-                       MultipleSessionRestores) {
+                       DISABLED_MultipleSessionRestores) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   Browser* current_browser = browser();
