@@ -61,11 +61,9 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       const base::flat_map<std::string, optimization_guide::EntityMetadata>&
           entity_metadata_map);
 
-  // ProcessBatchOfVisits is called repeatedly to process the visits in batches.
-  void ProcessBatchOfVisits(
+  // ProcessVisits is called process the visits.
+  void ProcessVisits(
       ClusteringRequestSource clustering_request_source,
-      size_t num_batches_processed_so_far,
-      size_t index_to_process,
       std::vector<history::ClusterVisit> cluster_visits,
       optimization_guide::BatchEntityMetadataTask* completed_task,
       std::vector<history::AnnotatedVisit> annotated_visits,
@@ -77,15 +75,18 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // Called when all visits have been processed.
   void OnAllVisitsFinishedProcessing(
       ClusteringRequestSource clustering_request_source,
-      size_t num_batches_processed,
       optimization_guide::BatchEntityMetadataTask* completed_task,
       std::vector<history::ClusterVisit> cluster_visits,
+      base::flat_map<std::string, optimization_guide::EntityMetadata>
+          human_readable_entity_name_to_entity_metadata_map,
       ClustersCallback callback);
 
   // Clusters |visits| on background thread.
   static std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
       bool engagement_score_provider_is_valid,
-      std::vector<history::ClusterVisit> visits);
+      std::vector<history::ClusterVisit> visits,
+      base::flat_map<std::string, optimization_guide::EntityMetadata>
+          human_readable_entity_name_to_entity_metadata_map);
 
   // The object to fetch entity metadata from. Not owned. Must outlive |this|.
   optimization_guide::EntityMetadataProvider* entity_metadata_provider_ =

@@ -690,7 +690,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumBatchesProcessedForVisits"
-    units="number of batches" expires_after="2022-09-18">
+    units="number of batches" expires_after="2022-05-11">
+  <obsolete>
+    Obsolete as of 05/2022.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
@@ -743,7 +746,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ProcessBatchOfVisits.BatchSize"
-    units="number visits" expires_after="2022-09-18">
+    units="number visits" expires_after="2022-05-11">
+  <obsolete>
+    Obsolete as of 05/2022.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <summary>
