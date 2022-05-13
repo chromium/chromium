@@ -28,12 +28,12 @@ IntentChipButton::IntentChipButton(Browser* browser,
                                             base::Unretained(this)),
                         vector_icons::kOpenInNewIcon,
                         vector_icons::kOpenInNewIcon,
-                        l10n_util::GetStringUTF16(IDS_INTENT_CHIP_LABEL),
+                        l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP),
                         true),
       browser_(browser),
       delegate_(delegate) {
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_LABEL));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
 }
 

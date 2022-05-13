@@ -225,6 +225,10 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   raw_ptr<views::Checkbox> remember_selection_checkbox_ = nullptr;
 
+  // When true, enables an alternate layout which presents apps as a grid
+  // instead of a list.
+  const bool use_grid_view_;
+
   // Tells whether 'Stay in Chrome' button should be shown or hidden.
   const bool show_stay_in_chrome_;
 

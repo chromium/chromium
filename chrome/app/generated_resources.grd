@@ -5636,7 +5636,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Use Strong Password
         </message>
       </if>
-      
+
        <message name="IDS_PASSWORD_GENERATION_EDITING_SUGGESTION" desc="Notification text next to the generated password assuring the user that the password has been saved.">
         Saved password
       </message>
@@ -7003,7 +7003,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_INTENT_PICKER_BUBBLE_VIEW_INITIATING_ORIGIN" desc="The label for the initiating origin of the intent picker.">
           From <ph name="ORIGIN">$1<ex>https://google.com</ex></ph>
         </message>
-        <message name="IDS_INTENT_CHIP_LABEL" desc="The label of a button to open the current webpage in an installed app.">
+        <message name="IDS_INTENT_CHIP_OPEN_IN_APP" desc="The label of a button or dialog to open the current webpage in an installed app.">
           Open in app
         </message>
         <message name="IDS_INTENT_CHIP_IPH" desc="The text for the In-Product Help bubble for the Intent Chip.">
@@ -7011,12 +7011,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
 
         <if expr="chromeos_ash or chromeos_lacros">
-          <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_MESSAGE" desc="The text of an infobar asking if the user wants to open web links supported by a particular app (e.g. https://www.youtube.com) in that app.">
-            Always use the <ph name="APP">$1<ex>YouTube</ex></ph> app to open supported web links?
-          </message>
-          <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_OK_LABEL" desc="The label of a confirm button for an infobar asking if the user wants to open web links in an app. If clicked, the selected app will always be opened when clicking supported web links.">
-            Always use
-          </message>
+          <then>
+            <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_MESSAGE" desc="The text of an infobar asking if the user wants to open web links supported by a particular app (e.g. https://www.youtube.com) in that app.">
+              Always use the <ph name="APP">$1<ex>YouTube</ex></ph> app to open supported web links?
+            </message>
+            <message name="IDR_INTENT_PICKER_SUPPORTED_LINKS_INFOBAR_OK_LABEL" desc="The label of a confirm button for an infobar asking if the user wants to open web links in an app. If clicked, the selected app will always be opened when clicking supported web links.">
+              Always use
+            </message>
+            <message name="IDS_INTENT_PICKER_SELECT_AN_APP_SUBTITLE" desc="The subtitle of a dialog containing a list of installed applications. The dialog allows the user to select an app to open a web link.">
+              Select an app on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to open this link
+            </message>
+          </then>
+          <else>
+            <message name="IDS_INTENT_PICKER_SELECT_AN_APP_GENERIC_SUBTITLE" desc="The subtitle of a dialog containing a list of installed applications. The dialog allows the user to select an app to open a web link.">
+              Select an app on your device to open this link
+            </message>
+          </else>
         </if>
       </if>
 

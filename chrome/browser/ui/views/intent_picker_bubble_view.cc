@@ -12,8 +12,10 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -45,6 +47,10 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/chromeos/devicetype_utils.h"
+#endif
 
 namespace {
 
@@ -189,7 +195,9 @@ std::u16string IntentPickerBubbleView::GetWindowTitle() const {
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL);
   }
 
-  return l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN_WITH);
+  return l10n_util::GetStringUTF16(
+      use_grid_view_ ? IDS_INTENT_CHIP_OPEN_IN_APP
+                     : IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN_WITH);
 }
 
 IntentPickerBubbleView::IntentPickerBubbleView(
@@ -204,7 +212,9 @@ IntentPickerBubbleView::IntentPickerBubbleView(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       intent_picker_cb_(std::move(intent_picker_cb)),
       app_info_(std::move(app_info)),
-      show_stay_in_chrome_(show_stay_in_chrome),
+      use_grid_view_(apps::features::LinkCapturingUiUpdateEnabled() &&
+                     bubble_type == BubbleType::kLinkCapturing),
+      show_stay_in_chrome_(show_stay_in_chrome && !use_grid_view_),
       show_remember_selection_(show_remember_selection),
       bubble_type_(bubble_type),
       initiating_origin_(initiating_origin) {
@@ -321,17 +331,41 @@ void IntentPickerBubbleView::Initialize() {
       !initiating_origin_->IsSameOriginWith(
           web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 
+  auto leading_content_type = use_grid_view_
+                                  ? views::DialogContentType::kText
+                                  : views::DialogContentType::kControl;
+  auto trailing_content_type = (show_origin && !show_remember_selection_)
+                                   ? views::DialogContentType::kText
+                                   : views::DialogContentType::kControl;
   const auto* provider = ChromeLayoutProvider::Get();
-  auto insets = provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl,
-      (show_origin && !show_remember_selection_)
-          ? views::DialogContentType::kText
-          : views::DialogContentType::kControl);
+  auto insets = provider->GetDialogInsetsForContentType(leading_content_type,
+                                                        trailing_content_type);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   insets = gfx::Insets::TLBR(0, insets.left(), 0, insets.right());
+
+  const int kMaxDialogWidth =
+      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+
+  if (use_grid_view_) {
+#if BUILDFLAG(IS_CHROMEOS)
+    auto subtitle_string = ui::SubstituteChromeOSDeviceType(
+        IDS_INTENT_PICKER_SELECT_AN_APP_SUBTITLE);
+#else
+    auto subtitle_string = l10n_util::GetStringUTF16(
+        IDS_INTENT_PICKER_SELECT_AN_APP_GENERIC_SUBTITLE);
+#endif
+    auto* subtitle = AddChildView(std::make_unique<views::Label>(
+        subtitle_string, views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_PRIMARY));
+    subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle->SetAllowCharacterBreak(true);
+    subtitle->SetMultiLine(true);
+    subtitle->SetProperty(views::kMarginsKey, insets);
+    subtitle->SetMaximumWidth(kMaxDialogWidth - insets.width());
+  }
 
   scroll_view_ = AddChildView(std::move(scroll_view));
 
@@ -347,13 +381,14 @@ void IntentPickerBubbleView::Initialize() {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetAllowCharacterBreak(true);
     label->SetMultiLine(true);
-    constexpr int kMaxDialogWidth = 320;
     label->SetMaximumWidth(kMaxDialogWidth - insets.width());
     label->SetProperty(views::kMarginsKey, insets);
   }
 
   if (show_remember_selection_) {
-    AddChildView(std::make_unique<views::Separator>());
+    if (!use_grid_view_) {
+      AddChildView(std::make_unique<views::Separator>());
+    }
 
     remember_selection_checkbox_ = AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
