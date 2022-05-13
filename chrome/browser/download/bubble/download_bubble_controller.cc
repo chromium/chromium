@@ -28,6 +28,7 @@ using DownloadCreationType = ::download::DownloadItem::DownloadCreationType;
 
 namespace {
 constexpr int kShowDownloadsInBubbleForNumDays = 1;
+constexpr int kMaxDownloadsToShow = 100;
 
 bool FindOfflineItemByContentId(const ContentId& to_find,
                                 const OfflineItem& candidate) {
@@ -271,6 +272,10 @@ DownloadBubbleUIController::GetAllItemsToDisplay() {
     if (model->ShouldShowInBubble() &&
         DownloadUIModelIsRecent(model, cutoff_time)) {
       models_aggregate.push_back(std::move(model));
+      // Show up to kMaxDownloadsToShow number of downloads, to address OOM
+      // crashes.
+      if (models_aggregate.size() >= kMaxDownloadsToShow)
+        return models_aggregate;
     }
   }
   std::vector<download::DownloadItem*> download_items;
@@ -284,6 +289,10 @@ DownloadBubbleUIController::GetAllItemsToDisplay() {
     if (model->ShouldShowInBubble() &&
         DownloadUIModelIsRecent(model, cutoff_time)) {
       models_aggregate.push_back(std::move(model));
+      // Show up to kMaxDownloadsToShow number of downloads, to address OOM
+      // crashes.
+      if (models_aggregate.size() >= kMaxDownloadsToShow)
+        return models_aggregate;
     }
   }
 
