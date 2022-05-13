@@ -20,17 +20,14 @@ CrostiniExpiredContainerWarningView* g_crostini_expired_container_warning_view =
 
 }  // namespace
 
-void CrostiniExpiredContainerWarningView::Show(
-    Profile* profile,
-    std::vector<base::OnceClosure> callbacks) {
+void CrostiniExpiredContainerWarningView::Show(Profile* profile,
+                                               base::OnceClosure callback) {
   if (g_crostini_expired_container_warning_view) {
-    for (auto&& callback : callbacks) {
-      g_crostini_expired_container_warning_view->callbacks_.push_back(
-          std::move(callback));
-    }
+    g_crostini_expired_container_warning_view->callbacks_.push_back(
+        std::move(callback));
   } else {
     g_crostini_expired_container_warning_view =
-        new CrostiniExpiredContainerWarningView(profile, std::move(callbacks));
+        new CrostiniExpiredContainerWarningView(profile, std::move(callback));
     CreateDialogWidget(g_crostini_expired_container_warning_view, nullptr,
                        nullptr);
   }
@@ -41,10 +38,10 @@ void CrostiniExpiredContainerWarningView::Show(
 
 CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
     Profile* profile,
-    std::vector<base::OnceClosure> callbacks)
-    : profile_(profile),
-      callbacks_(std::move(callbacks)),
-      weak_ptr_factory_(this) {
+    base::OnceClosure callback)
+    : profile_(profile), weak_ptr_factory_(this) {
+  callbacks_.push_back(std::move(callback));
+
   // Make the dialog modal to force the user to make a decision.
   SetModalType(ui::MODAL_TYPE_SYSTEM);
 
