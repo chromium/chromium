@@ -3330,6 +3330,12 @@ const char kMessagesForAndroidUpdatePasswordName[] =
 const char kMessagesForAndroidUpdatePasswordDescription[] =
     "When enabled, update password prompt will use the new Messages UI.";
 
+const char kNetworkServiceInProcessName[] =
+    "Run the network service on the browser process";
+const char kNetworkServiceInProcessDescription[] =
+    "When enabled, the network service runs on the browser process. Otherwise, "
+    "it runs on a dedicated process.";
+
 const char kNewWindowAppMenuName[] = "Show a menu item 'New Window'";
 const char kNewWindowAppMenuDescription[] =
     "Show a new menu item 'New Window' on tablet-sized screen when Chrome "

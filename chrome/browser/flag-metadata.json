@@ -4224,6 +4224,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "network-service-in-process",
+    "owners": [ "yhirano", "network-service-dev" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "new-canvas-2d-api",
     "owners": [ "aaronhk", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100

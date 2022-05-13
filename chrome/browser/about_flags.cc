@@ -8573,6 +8573,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kForce60Hz)},
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"network-service-in-process",
+     flag_descriptions::kNetworkServiceInProcessName,
+     flag_descriptions::kNetworkServiceInProcessDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kNetworkServiceInProcess)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

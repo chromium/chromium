@@ -1891,6 +1891,9 @@ extern const char kMessagesForAndroidSyncErrorDescription[];
 extern const char kMessagesForAndroidUpdatePasswordName[];
 extern const char kMessagesForAndroidUpdatePasswordDescription[];
 
+extern const char kNetworkServiceInProcessName[];
+extern const char kNetworkServiceInProcessDescription[];
+
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 
