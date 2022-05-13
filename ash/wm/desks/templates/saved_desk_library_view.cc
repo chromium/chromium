@@ -26,9 +26,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -108,16 +110,26 @@ class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
   // aura::WindowTargeter:
   bool SubtreeShouldBeExploredForEvent(aura::Window* window,
                                        const ui::LocatedEvent& event) override {
-    // Process the event only if it intersects with grid items or it is for
-    // scrolling.
-    if (!owner_->IntersectsWithUi(event.location()) &&
-        !event.IsMouseWheelEvent()) {
-      return false;
-    }
+    // Process the event it is for scrolling.
+    if (event.IsMouseWheelEvent())
+      return true;
 
-    // None of the libary's children will handle the event, so `window` won't
+    // Check if the located event intersects with the library's children.
+    // Convert to screen coordinate.
+    gfx::Point screen_location;
+    if (event.target()) {
+      screen_location = event.target()->GetScreenLocation(event);
+    } else {
+      screen_location = event.root_location();
+      wm::ConvertPointToScreen(window->GetRootWindow(), &screen_location);
+    }
+    // Process the event if it intersects with grid items.
+    if (owner_->IntersectsWithUi(screen_location))
+      return true;
+
+    // None of the library's children will handle the event, so `window` won't
     // handle the event and it will fall through to the wallpaper.
-    return aura::WindowTargeter::SubtreeShouldBeExploredForEvent(window, event);
+    return false;
   }
 
  private:
@@ -330,16 +342,16 @@ bool SavedDeskLibraryView::IsAnimating() {
   return false;
 }
 
-bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& location) {
+bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& screen_location) {
   // Check saved desk items.
   for (auto* grid : grid_views()) {
     for (auto* item : grid->grid_items()) {
-      if (item->GetBoundsInScreen().Contains(location))
+      if (item->GetBoundsInScreen().Contains(screen_location))
         return true;
     }
   }
   // Check feedback button.
-  return feedback_button_->GetBoundsInScreen().Contains(location);
+  return feedback_button_->GetBoundsInScreen().Contains(screen_location);
 }
 
 aura::Window* SavedDeskLibraryView::GetWidgetWindow() {
