@@ -34,6 +34,7 @@ class WallpaperBaseView : public views::View {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  protected:
   virtual void DrawWallpaper(const gfx::ImageSkia& wallpaper,

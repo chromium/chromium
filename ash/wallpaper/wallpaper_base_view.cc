@@ -106,6 +106,11 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
     canvas->FillRect(GetLocalBounds(), GetWallpaperShieldColor());
 }
 
+void WallpaperBaseView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SchedulePaint();
+}
+
 void WallpaperBaseView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
                                       const gfx::Rect& src,
                                       const gfx::Rect& dst,
