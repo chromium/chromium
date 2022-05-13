@@ -43,5 +43,9 @@ bool IsHardwareMirrorModeEnabled() {
   return base::FeatureList::IsEnabled(kEnableHardwareMirrorMode);
 }
 
+#if BUILDFLAG(IS_MAC)
+const base::Feature kForce60Hz{"Force60Hz", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace display

@@ -4284,7 +4284,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsLacros | kOsMac,
      FEATURE_VALUE_TYPE(
          password_manager::features::kSkipUndecryptablePasswords)},
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VR)
@@ -8523,6 +8522,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableVirtualCardFidoEnrollment)},
+
+#if BUILDFLAG(IS_MAC)
+    {"force-60hz", flag_descriptions::kForce60HzName,
+     flag_descriptions::kForce60HzDescription, kOsMac,
+     FEATURE_VALUE_TYPE(display::features::kForce60Hz)},
+#endif  // BUILDFLAG(IS_MAC)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
