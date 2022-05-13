@@ -493,7 +493,8 @@ TEST_F(WindowAnimationsTest, ResetAnimationAfterDismissingArcPip) {
 // opacity of the new layer, but only the opacity of the old layer. The old
 // layer transform is updated manually when the animation ticks so that it
 // has the same visible bounds as the new layer.
-TEST_F(WindowAnimationsTest, CrossFadeAnimateNewLayerOnly) {
+// Flaky on Chrome OS. https://crbug.com/1113901
+TEST_F(WindowAnimationsTest, DISABLED_CrossFadeAnimateNewLayerOnly) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
