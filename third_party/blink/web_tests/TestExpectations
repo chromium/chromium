@@ -3270,7 +3270,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/split-http-cache/external/wpt/signed-excha
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/Create-extensions-empty.any.html?wpt_flags=h2 [ Skip Timeout ]
 crbug.com/626703 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Failure Skip Timeout ]
-crbug.com/626703 [ Mac10.12 ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
 crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Skip ]
@@ -6692,7 +6691,7 @@ crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/c
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
 
 # Sheriff 2022-03-18
-crbug.com/1290040 [ Linux ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
+crbug.com/1290040 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
 
 # WebAudio flaky timeout (crbug.com/1307741)
 crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
