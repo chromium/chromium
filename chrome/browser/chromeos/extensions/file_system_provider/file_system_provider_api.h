@@ -6,11 +6,18 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
+#include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
 
-class FileSystemProviderMountFunction : public ExtensionFunction {
+class FileSystemProviderBase : public ExtensionFunction {
+ protected:
+  ~FileSystemProviderBase() override {}
+  void RespondWithError(const std::string& error);
+};
+
+class FileSystemProviderMountFunction : public FileSystemProviderBase {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.mount",
                              FILESYSTEMPROVIDER_MOUNT)
@@ -20,7 +27,7 @@ class FileSystemProviderMountFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderUnmountFunction : public ExtensionFunction {
+class FileSystemProviderUnmountFunction : public FileSystemProviderBase {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.unmount",
                              FILESYSTEMPROVIDER_UNMOUNT)
@@ -36,6 +43,7 @@ class FileSystemProviderGetAllFunction : public ExtensionFunction {
                              FILESYSTEMPROVIDER_GETALL)
 
  protected:
+  void RespondWithInfos(std::vector<crosapi::mojom::FileSystemInfoPtr>);
   ~FileSystemProviderGetAllFunction() override {}
   ResponseAction Run() override;
 };
@@ -45,11 +53,12 @@ class FileSystemProviderGetFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.get", FILESYSTEMPROVIDER_GET)
 
  protected:
+  void RespondWithInfo(crosapi::mojom::FileSystemInfoPtr info);
   ~FileSystemProviderGetFunction() override {}
   ResponseAction Run() override;
 };
 
-class FileSystemProviderNotifyFunction : public ExtensionFunction {
+class FileSystemProviderNotifyFunction : public FileSystemProviderBase {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.notify",
                              FILESYSTEMPROVIDER_NOTIFY)

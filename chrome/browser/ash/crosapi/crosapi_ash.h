@@ -49,6 +49,7 @@ class ExtensionInfoPrivateAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
+class FileSystemProviderServiceAsh;
 class ForceInstalledTrackerAsh;
 class GeolocationServiceAsh;
 class IdentityManagerAsh;
@@ -313,6 +314,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
 
+  FileSystemProviderServiceAsh* file_system_provider_service_ash() {
+    return file_system_provider_service_ash_.get();
+  }
+
   LoginAsh* login_ash() { return login_ash_.get(); }
 
   LoginScreenStorageAsh* login_screen_storage_ash() {
@@ -357,6 +362,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
+  std::unique_ptr<FileSystemProviderServiceAsh>
+      file_system_provider_service_ash_;
   std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;

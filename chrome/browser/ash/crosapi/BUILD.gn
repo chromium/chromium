@@ -100,6 +100,8 @@ source_set("crosapi") {
     "field_trial_service_ash.h",
     "file_manager_ash.cc",
     "file_manager_ash.h",
+    "file_system_provider_service_ash.cc",
+    "file_system_provider_service_ash.h",
     "files_app_launcher.cc",
     "files_app_launcher.h",
     "force_installed_tracker_ash.cc",
