@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/browser/share",
   "+chrome/updater",
   "+components/cdm/common",
+  "+components/feed",
   "+components/live_caption",
   "+components/soda",
   "+media/cdm",

@@ -283,6 +283,22 @@ TEST(ProtoUtilTest, ReadLaterDisabled) {
               Not(Contains((feedwire::Capability::READ_LATER))));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST(ProtoUtilTest, CrowButtonEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kShareCrowButton}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::THANK_CREATOR));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kInfoCardAcknowledgementTracking}, {});

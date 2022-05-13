@@ -162,6 +162,13 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::DOWNLOAD_LINK);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Note that the Crow feature is referenced as THANK_CREATOR within the feed.
+  if (base::FeatureList::IsEnabled(kShareCrowButton)) {
+    feed_request.add_client_capability(Capability::THANK_CREATOR);
+  }
+#endif
+
   if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
     feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);
   }
