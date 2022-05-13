@@ -284,13 +284,9 @@ void PasswordGenerationPopupControllerImpl::WebContentsDestroyed() {
   HideImpl();
 }
 
-void PasswordGenerationPopupControllerImpl::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->HasCommitted() &&
-      navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    HideImpl();
-  }
+void PasswordGenerationPopupControllerImpl::PrimaryPageChanged(
+    content::Page& page) {
+  HideImpl();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
