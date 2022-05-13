@@ -30,6 +30,8 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
   // views::View:
   const char* GetClassName() const override;
 
+  const views::Label* label() { return label_; }
+
  private:
   views::Label* const label_;
 };
