@@ -14,6 +14,6 @@
   "builder_group": "chromium.gpu",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

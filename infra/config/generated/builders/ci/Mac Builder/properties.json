@@ -212,39 +212,6 @@
                 "project": "chromium"
               }
             }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "mac-osxbeta-rel",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "goma_use_local"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "legacy_test_results_config": {
-                "config": "staging_server"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "Mac Builder",
-                "project": "chromium"
-              }
-            }
           }
         ]
       },
@@ -285,52 +252,11 @@
           "bucket": "ci",
           "builder": "Mac11 Tests",
           "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "mac-osxbeta-rel",
-          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "mac-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac-osxbeta-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
           "builder": "mac-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_10.11_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_10.12_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_10.13_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_10.14_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_10.15_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_11.0_rel_ng",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "mac_chromium_compile_rel_ng",
           "group": "tryserver.chromium.mac"
         }
       ]
@@ -351,6 +277,6 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

@@ -38,12 +38,6 @@
           "builder": "linux-lacros-dbg",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-lacros-dbg",
-          "group": "tryserver.chromium.chromiumos"
-        }
       ]
     }
   },
@@ -62,6 +56,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
