@@ -1126,8 +1126,6 @@ uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
     uLong crc2;
     z_off64_t len2;
 {
-    int n;
-
 #ifdef DYNAMIC_CRC_TABLE
     once(&made, make_crc_table);
 #endif /* DYNAMIC_CRC_TABLE */
