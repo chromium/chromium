@@ -159,7 +159,8 @@ export class BrailleBackground {
 BrailleBackground.instance_ = null;
 
 BridgeHelper.registerHandler(
-    BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.BACK_TRANSLATE,
+    BridgeConstants.BrailleBackground.TARGET,
+    BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE,
     (cells) => new Promise(resolve => {
       BrailleBackground.instance.getTranslatorManager()
           .getDefaultTranslator()
@@ -167,6 +168,7 @@ BridgeHelper.registerHandler(
     }));
 
 BridgeHelper.registerHandler(
-    BridgeTarget.BRAILLE_BACKGROUND, BridgeAction.REFRESH_BRAILLE_TABLE,
+    BridgeConstants.BrailleBackground.TARGET,
+    BridgeConstants.BrailleBackground.Action.REFRESH_BRAILLE_TABLE,
     (brailleTable) => BrailleBackground.instance.getTranslatorManager().refresh(
         brailleTable));

@@ -36,54 +36,55 @@ export class PanelBackground {
     PanelBackground.stateObserver_ = new PanelStateObserver();
 
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND,
-        BridgeAction.CREATE_ALL_NODE_MENU_BACKGROUNDS,
+        BridgeTargets.PANEL_BACKGROUND,
+        BridgeActions.CREATE_ALL_NODE_MENU_BACKGROUNDS,
         (opt_activateMenuTitle) =>
             PanelBackground.instance.createAllNodeMenuBackgrounds_(
                 opt_activateMenuTitle));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.CREATE_NEW_I_SEARCH,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.CREATE_NEW_I_SEARCH,
         () => PanelBackground.instance.createNewISearch_());
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.DESTROY_I_SEARCH,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.DESTROY_I_SEARCH,
         () => PanelBackground.instance.destroyISearch_());
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.FOCUS_TAB,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.FOCUS_TAB,
         ({windowId, tabId}) =>
             PanelTabMenuBackground.focusTab(windowId, tabId));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND,
-        BridgeAction.GET_ACTIONS_FOR_CURRENT_NODE,
+        BridgeTargets.PANEL_BACKGROUND,
+        BridgeActions.GET_ACTIONS_FOR_CURRENT_NODE,
         () => PanelBackground.instance.getActionsForCurrentNode_());
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.GET_TAB_MENU_DATA,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.GET_TAB_MENU_DATA,
         () => PanelTabMenuBackground.getTabMenuData());
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.INCREMENTAL_SEARCH,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.INCREMENTAL_SEARCH,
         ({searchStr, dir, opt_nextObject}) =>
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.NODE_MENU_CALLBACK,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.NODE_MENU_CALLBACK,
         (callbackNodeIndex) =>
             PanelNodeMenuBackground.focusNodeCallback(callbackNodeIndex));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND,
-        BridgeAction.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
+        BridgeTargets.PANEL_BACKGROUND,
+        BridgeActions.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
         (actionId) =>
             PanelBackground.instance.performCustomActionOnCurrentNode_(
                 actionId));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND,
-        BridgeAction.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
+        BridgeTargets.PANEL_BACKGROUND,
+        BridgeActions.PERFORM_STANDARD_ACTION_ON_CURRENT_NODE,
         (action) =>
             PanelBackground.instance.performStandardActionOnCurrentNode_(
                 action));
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.SET_RANGE_TO_I_SEARCH_NODE,
+        BridgeTargets.PANEL_BACKGROUND,
+        BridgeActions.SET_RANGE_TO_I_SEARCH_NODE,
         () => PanelBackground.instance.setRangeToISearchNode_());
     BridgeHelper.registerHandler(
-        BridgeTarget.PANEL_BACKGROUND, BridgeAction.WAIT_FOR_PANEL_COLLAPSE,
+        BridgeTargets.PANEL_BACKGROUND, BridgeActions.WAIT_FOR_PANEL_COLLAPSE,
         () => PanelBackground.instance.waitForPanelCollapse_());
   }
 

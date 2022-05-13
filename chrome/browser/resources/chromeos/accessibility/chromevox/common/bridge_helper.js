@@ -54,8 +54,8 @@ BridgeHelper.registerHandler = (target, action, handler) => {
   }
 
   if (BridgeHelper.handlers_[target][action]) {
-    throw 'Error: Re-assigning handlers for a specific target/action ' +
-        'is not permitted';
+    throw 'Error: Re-assigning handlers for a specific target/action (' +
+        target + '.' + action + ') is not permitted';
   }
 
   BridgeHelper.handlers_[target][action] = handler;

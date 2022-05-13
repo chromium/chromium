@@ -174,8 +174,8 @@ ChromeVoxState.removeObserver = function(observer) {
 };
 
 BridgeHelper.registerHandler(
-    BridgeTarget.CHROMEVOX_STATE, BridgeAction.CLEAR_CURRENT_RANGE,
+    BridgeTargets.CHROMEVOX_STATE, BridgeActions.CLEAR_CURRENT_RANGE,
     () => ChromeVoxState.instance.setCurrentRange(null));
 BridgeHelper.registerHandler(
-    BridgeTarget.CHROMEVOX_STATE, BridgeAction.UPDATE_PUNCTUATION_ECHO,
+    BridgeTargets.CHROMEVOX_STATE, BridgeActions.UPDATE_PUNCTUATION_ECHO,
     (echo) => ChromeVoxState.backgroundTts.updatePunctuationEcho(echo));

@@ -6,15 +6,15 @@
  * @fileoverview Enums for BridgeHelper functions.
  */
 goog.provide('BridgeAction');
+goog.provide('BridgeActions');
+goog.provide('BridgeConstants');
 goog.provide('BridgeTarget');
+goog.provide('BridgeTargets');
 
-/**
- * The class that a message is being sent to.
- * @enum {string}
- */
-BridgeTarget = {
-  BRAILLE_BACKGROUND: 'BrailleBackground',
+/** @enum {string} */
+BridgeTargets = {
   BRAILLE_COMMAND_HANDLER: 'BrailleCommandHandler',
+  CHROMEVOX_BACKGROUND: 'ChromeVoxBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
   COMMAND_HANDLER: 'CommandHandler',
@@ -26,14 +26,29 @@ BridgeTarget = {
   PANEL_BACKGROUND: 'PanelBackground',
   USER_ACTION_MONITOR: 'UserActionMonitor',
 };
+/**
+ * The class that a message is being sent to.
+ * @typedef {BridgeTargets|string}
+ */
+BridgeTarget;
+
+BridgeConstants = {
+  BrailleBackground: {
+    /** @public {BridgeTarget} */
+    TARGET: 'BrailleBackground',
+    /** @enum {string} */
+    Action: {
+      BACK_TRANSLATE: 'backTranslate',
+      REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
+    },
+  },
+};
 
 /**
- * The action that the message is requesting be performed.
  * @enum {string}
  */
-BridgeAction = {
+BridgeActions = {
   ADD_MENU_ITEM: 'addMenuItem',
-  BACK_TRANSLATE: 'backTranslate',
   CLEAR_CURRENT_RANGE: 'clearCurrentRange',
   CLEAR_LOG: 'clearLog',
   CREATE: 'create',
@@ -44,6 +59,7 @@ BridgeAction = {
   FOCUS_TAB: 'focusTab',
   GET: 'get',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
+  GET_CURRENT_VOICE: 'getCurrentVoice',
   GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
   GET_TAB_MENU_DATA: 'getTabMenuData',
@@ -54,7 +70,6 @@ BridgeAction = {
   ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
-  REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
   SET_ENABLED: 'setEnabled',
   SET_LOGGING_PREFS: 'setLoggingPrefs',
   SET_PREF: 'setPref',
@@ -62,3 +77,9 @@ BridgeAction = {
   UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
   WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
 };
+
+/**
+ * The action that the message is requesting be performed.
+ * @typedef {BridgeActions|BridgeConstants.BrailleBackground.Action}
+ */
+BridgeAction;

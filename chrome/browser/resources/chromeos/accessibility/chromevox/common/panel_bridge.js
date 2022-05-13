@@ -18,12 +18,12 @@ PanelBridge = {
    */
   addMenuItem(itemData) {
     return BridgeHelper.sendMessage(
-        BridgeTarget.PANEL, BridgeAction.ADD_MENU_ITEM, itemData);
+        BridgeTargets.PANEL, BridgeActions.ADD_MENU_ITEM, itemData);
   },
 
   /** @return {!Promise} */
   async onCurrentRangeChanged() {
     return BridgeHelper.sendMessage(
-        BridgeTarget.PANEL, BridgeAction.ON_CURRENT_RANGE_CHANGED);
+        BridgeTargets.PANEL, BridgeActions.ON_CURRENT_RANGE_CHANGED);
   },
 };
