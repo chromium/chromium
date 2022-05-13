@@ -8734,6 +8734,21 @@
             ]
         }
     ],
+    "WebViewNewInvalidateHeuristic": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewNewInvalidateHeuristic"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewOriginTrials": [
         {
             "platforms": [

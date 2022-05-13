@@ -469,10 +469,9 @@ class InvalidateTest
     Sync();
     DrawOnRT(bf_args, /*invalidated=*/true);
 
-    // This draw must always succeed.
-    ASSERT_EQ(child_client_timings_.size(), 1u);
-    ASSERT_FALSE(
-        child_client_timings_.begin()->second.presentation_feedback.failed());
+    // Note, that client is always one frame behind, so there is no client
+    // timings yet.
+    ASSERT_EQ(child_client_timings_.size(), 0u);
   }
 
   viz::BeginFrameArgs NextBeginFrameArgs() {
@@ -547,23 +546,25 @@ class InvalidateTest
       UpdateFrameTimingDetails();
     }
 
-    // Draw one more frame without client submitting to make sure all
-    // presentation feedback was processed.
-    auto args = NextBeginFrameArgs();
-    bool invalidate = BeginFrame(args);
+    // Draw two more frame without client submitting to make sure all
+    // frames are drawns and presentation feedback was processed.
+    for (int i = 0; i < 2; i++) {
+      auto args = NextBeginFrameArgs();
+      bool invalidate = BeginFrame(args);
 
-    // Finish draw if it's still pending
-    if (delayed_draw_args.IsValid()) {
-      DrawOnRT(delayed_draw_args, delayed_draw_invalidate);
+      // Finish draw if it's still pending
+      if (delayed_draw_args.IsValid()) {
+        DrawOnRT(delayed_draw_args, delayed_draw_invalidate);
+      }
+
+      if (invalidate) {
+        DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
+      }
+
+      Sync();
+
+      DrawOnRT(args, invalidate);
     }
-
-    if (invalidate) {
-      DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
-    }
-
-    Sync();
-
-    DrawOnRT(args, invalidate);
 
     // Make sure we received all presentation feedback.
     ASSERT_EQ(client_->frames_submitted(), child_client_timings_.size());
@@ -651,19 +652,8 @@ INSTANTIATE_TEST_SUITE_P(
     TestParamToString);
 
 TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
-  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
-
-  // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
-    GTEST_SKIP();
-  }
-
-  // If client is faster than hwui, it runs ahead of hwui.
-  if (client_slow.IsNever() && !hwui_slow.IsNever()) {
-    GTEST_SKIP();
-  }
 
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/30);
   DrawLoop(client_slow, hwui_slow);
@@ -672,27 +662,13 @@ TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
   // of 30. Total 30 counting frame from first draw.
   ASSERT_EQ(child_client_timings_.size(), 30u);
   EXPECT_EQ(CountDroppedFrames(), 0);
-
-  // If either client or hwui slow we currently invalidate more than we need.
-  if (client_slow.IsNever() || hwui_slow.IsNever())
-    EXPECT_LE(invalidate_count_, 31);
+  EXPECT_LE(invalidate_count_, 31);
 }
 
 // Currently we can't reach 60fps with max pending frames 1.
-TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
-  auto always_draw = testing::get<2>(GetParam());
+TEST_P(InvalidateTest, HighFpsWithMaxFrame1) {
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
-
-  // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
-    GTEST_SKIP();
-  }
-
-  // If client is faster than hwui, it runs ahead of hwui.
-  if (client_slow.IsNever() && !hwui_slow.IsNever()) {
-    GTEST_SKIP();
-  }
 
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/60);
   DrawLoop(client_slow, hwui_slow);
@@ -703,45 +679,20 @@ TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
 }
 
 TEST_P(InvalidateTest, HighFpsWithMaxFrame2) {
-  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
-
-  // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
-    GTEST_SKIP();
-  }
-
-  // If client is faster than hwui, it runs ahead of hwui.
-  if (client_slow.IsNever() && !hwui_slow.IsNever()) {
-    GTEST_SKIP();
-  }
 
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/2, /*frame_rate=*/60);
   DrawLoop(client_slow, hwui_slow);
 
   // We should have submitted 60 frames + 1 from initial draw.
   ASSERT_EQ(child_client_timings_.size(), 61u);
-
-  // Except the case when client is slower than hwui we currently drop first
-  // frame always.
-  EXPECT_LE(CountDroppedFrames(), 1);
+  EXPECT_EQ(CountDroppedFrames(), 0);
 }
 
 TEST_P(InvalidateTest, LastFrameNotLost) {
-  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
-
-  // Always draw case is broken because viz runs ahead of hwui.
-  if (always_draw == AlwaysDrawType::kAlwaysDraw) {
-    GTEST_SKIP();
-  }
-
-  // If client is faster than hwui, it runs ahead of hwui.
-  if (client_slow.IsNever() && !hwui_slow.IsNever()) {
-    GTEST_SKIP();
-  }
 
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/30);
   DrawLoop(client_slow, hwui_slow, /*stop_submitting_after_frames=*/30);
@@ -749,13 +700,11 @@ TEST_P(InvalidateTest, LastFrameNotLost) {
   ASSERT_EQ(child_client_timings_.size(), 16u);
   EXPECT_EQ(CountDroppedFrames(), 0);
 
-  // With AlwaysInvalidate we currently trigger more BeginFrames than we need.
-
-  // Note, that client unsubscribes at frame 30 leading to 31 BF + 1 from
-  // initial draw + 1 extra to deliver presentation feedback if we didn't fetch
-  // it right after draw.
-  if (always_draw != AlwaysDrawType::kAlwaysInvalidate)
-    EXPECT_LE(root_begin_frames_count_, 33);
+  // Note, that client unsubscribes at frame 30 leading to 31 BF + 4 from:
+  // initial draw, one for presentation feedback delivery, one because client is
+  // always behind and one because we keep BF until we don't have anything to
+  // draw.
+  EXPECT_LE(root_begin_frames_count_, 35);
 }
 
 TEST_P(InvalidateTest, VeryLateFrame) {

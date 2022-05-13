@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
   command_line->AppendSwitch(switches::kSingleProcess);
   command_line->AppendSwitchASCII(switches::kDisableFeatures, ",Vulkan");
   command_line->AppendSwitchASCII(switches::kEnableFeatures,
-                                  ",UseSkiaRenderer");
+                                  ",WebViewNewInvalidateHeuristic");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
   base::TestSuite test_suite(argc, argv);
