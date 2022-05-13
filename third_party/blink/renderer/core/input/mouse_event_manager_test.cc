@@ -50,7 +50,8 @@ class MouseEventManagerTest : public SimTest {
   }
 };
 
-TEST_F(MouseEventManagerTest, MousePressNodeRemoved) {
+// TODO(crbug.com/1325058): Re-enable this test
+TEST_F(MouseEventManagerTest, DISABLED_MousePressNodeRemoved) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
