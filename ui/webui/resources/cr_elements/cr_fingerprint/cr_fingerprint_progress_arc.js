@@ -19,12 +19,12 @@
     'cr-fingerprint-icon:fingerprint-scanned-light';
 
 /** @type {string} */
-/* #export */ const FINGERPRINT_TICK_DARK_URL =
-    'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK_DARK';
+/* #export */ const FINGERPRINT_CHECK_DARK_URL =
+    'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_DARK';
 
 /** @type {string} */
-/* #export */ const FINGERPRINT_TICK_LIGHT_URL =
-    'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK';
+/* #export */ const FINGERPRINT_CHECK_LIGHT_URL =
+    'chrome://theme/IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT';
 
 /**
  * The dark-mode color of the progress circle background: Google Grey 700.
@@ -90,7 +90,7 @@ const ICON_HEIGHT = 118;
 const ICON_WIDTH = 106;
 
 /**
- * The default size of the checkmark located in the left bottom corner of the
+ * The default size of the check mark located in the bottom-right corner of the
  * fingerprint progress circle.
  * @type {number}
  */
@@ -133,7 +133,7 @@ Polymer({
     /**
      * Scale factor based the configured radius (circleRadius) vs the default
      * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
-     * This will affect the size of icons and checkmark.
+     * This will affect the size of icons and check mark.
      * @type {number}
      * @private
      */
@@ -354,8 +354,8 @@ Polymer({
         /** @type {CrLottieElement} */ (this.$.scanningAnimation);
     if (this.isComplete_) {
       scanningAnimation.animationUrl = this.isDarkModeActive_ ?
-          FINGERPRINT_TICK_DARK_URL :
-          FINGERPRINT_TICK_LIGHT_URL;
+          FINGERPRINT_CHECK_DARK_URL :
+          FINGERPRINT_CHECK_LIGHT_URL;
       return;
     }
     scanningAnimation.animationUrl = this.isDarkModeActive_ ?
@@ -458,17 +458,17 @@ Polymer({
   },
 
   /**
-   * Resize the checkmark based on the scale and place it in the left bottom
-   * corner of fingerprint progress circle.
+   * Resize the check mark based on the scale and place it in the bottom-right
+   * corner of the fingerprint progress circle.
    * @param {!HTMLElement} target
    * @private
    */
   resizeCheckMark_(target) {
-    // Resize checkmark based on the default size and scale.
+    // Resize check mark based on the default size and scale.
     target.style.width = CHECK_MARK_SIZE * this.scale_ + 'px';
     target.style.height = CHECK_MARK_SIZE * this.scale_ + 'px';
 
-    // Place it in the left bottom corner of fingerprint progress circle.
+    // Place it in the bottom-right corner of the fingerprint progress circle.
     const top = this.$.canvas.height / 2 + this.circleRadius -
         CHECK_MARK_SIZE * this.scale_;
     const left = this.$.canvas.width / 2 + this.circleRadius -

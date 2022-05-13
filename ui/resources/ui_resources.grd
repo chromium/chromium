@@ -105,8 +105,8 @@
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_64" file="common/default_favicon_64.png" />
         <structure type="chrome_scaled_image" name="IDR_DEFAULT_FAVICON_DARK_64" file="common/default_favicon_dark_64.png" />
         <if expr="not is_android">
-          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_TICK" file="vector/common/tick.json" compress="gzip" />
-          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_TICK_DARK" file="vector/common/tick_dark.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_DARK" file="vector/common/check_dark.json" compress="gzip" />
+          <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT" file="vector/common/check_light.json" compress="gzip" />
           <structure type="chrome_html" name="IDR_FINGERPRINT_ICON_ANIMATION_DARK" file="vector/common/fingerprint_enrollment_dark.json" compress="gzip" />
           <structure type="chrome_html" name="IDR_FINGERPRINT_ICON_ANIMATION_LIGHT" file="vector/common/fingerprint_enrollment_light.json" compress="gzip" />
         </if>
