@@ -209,6 +209,11 @@ def _add_run_args(parser):
                       default='',
                       type=str,
                       help='Location of "pipe: file')
+  parser.add_argument('-w',
+                      '--wpr_verbose',
+                      dest='wpr_verbose',
+                      action='store_true',
+                      help='Also include verbose WPR output.')
 
 
 def _add_shared_args(parser):
@@ -358,6 +363,9 @@ def _launch_test(options, forward_args, gtest_filter_autofill,
 
   if options.add_break_on_failure:
     command_args.append(_RUN_DEBUGGING_TESTS)
+
+  if options.wpr_verbose:
+    command_args.append('--wpr_verbose')
 
   if options.retry_count > 0:
     command_args.append('--test-launcher-retry-limit=%d' % options.retry_count)

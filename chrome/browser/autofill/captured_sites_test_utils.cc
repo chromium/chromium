@@ -63,6 +63,9 @@ namespace {
 // The command-line flag to specify the command file flag.
 const char kCommandFileFlag[] = "command_file";
 
+// The command line flag to turn on verbose WPR logging.
+const char kWebPageReplayVerboseFlag[] = "wpr_verbose";
+
 // The maximum amount of time to wait for Chrome to finish autofilling a form.
 const base::TimeDelta kAutofillActionWaitForVisualUpdateTimeout =
     base::Seconds(3);
@@ -89,6 +92,12 @@ const char kWebPageReplayCertSPKI[] =
 
 const char kClockNotSetMessage[] =
     "No AutofillClock override set from wpr archive: ";
+
+// Check and return that the caller wants verbose WPR output (off by default).
+bool IsVerboseWprLoggingEnabled() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line && command_line->HasSwitch(kWebPageReplayVerboseFlag);
+}
 
 void PrintDebugInstructions(const base::FilePath& command_file_path) {
   const char msg[] = R"(
@@ -575,8 +584,9 @@ bool WebPageReplayServerWrapper::Start(
     args.push_back("--serve_response_in_chronological_sequence");
     // Start WPR in quiet mode, removing the extra verbose ServeHTTP
     // interactions that are for the the overwhelming majority unhelpful, but
-    // for extra debugging of a test case, this might make sense to comment out.
-    args.push_back("--quiet_mode");
+    // for extra debugging of a test case, include 'wpr_verbose' in command.
+    if (!IsVerboseWprLoggingEnabled())
+      args.push_back("--quiet_mode");
   }
   args.push_back(base::StringPrintf(
       "--inject_scripts=%s,%s",
