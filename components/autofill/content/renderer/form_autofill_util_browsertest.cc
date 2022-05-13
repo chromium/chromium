@@ -549,26 +549,6 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   EXPECT_TRUE(FindFormByUniqueRendererId(doc, non_existing_id).IsNull());
 }
 
-// Tests FindFormControlElementByUniqueRendererId().
-// TODO(crbug/1201875): Delete once
-// `features::kAutofillUseUnassociatedListedElements` is enabled.
-TEST_F(FormAutofillUtilsTest,
-       FindFormControlElementByUniqueRendererId_WithoutFeature) {
-  LoadHTML(
-      "<body><form id='form1'><input id='i1'></form><input id='i2'></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto input1 = GetFormControlElementById(doc, "i1");
-  auto input2 = GetFormControlElementById(doc, "i2");
-  FieldRendererId non_existing_id(input2.UniqueRendererFormControlId() + 1000);
-
-  EXPECT_EQ(input1, FindFormControlElementByUniqueRendererId(
-                        doc, GetFieldRendererId(input1)));
-  EXPECT_EQ(input2, FindFormControlElementByUniqueRendererId(
-                        doc, GetFieldRendererId(input2)));
-  EXPECT_TRUE(
-      FindFormControlElementByUniqueRendererId(doc, non_existing_id).IsNull());
-}
-
 // Used in ParameterizedFindFormControlByRendererIdTest.
 struct FindFormControlTestParam {
   std::string queried_field;
@@ -576,20 +556,10 @@ struct FindFormControlTestParam {
   bool expectation;
 };
 
-// Tests FindFormControlElementByUniqueRendererId() with
-// `features::kAutofillUseUnassociatedListedElements` enabled.
+// Tests FindFormControlElementByUniqueRendererId().
 class ParameterizedFindFormControlByRendererIdTest
     : public FormAutofillUtilsTest,
-      public testing::WithParamInterface<FindFormControlTestParam> {
- public:
-  ParameterizedFindFormControlByRendererIdTest() {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillUseUnassociatedListedElements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
+      public testing::WithParamInterface<FindFormControlTestParam> {};
 
 TEST_P(ParameterizedFindFormControlByRendererIdTest,
        FindFormControlElementByUniqueRendererId) {
@@ -1215,29 +1185,10 @@ class FieldFramesTest
   ~FieldFramesTest() override = default;
 };
 
-// Test getting the unowned form control elements from the WebDocument with the
-// old or the new version of GetUnownedFormFieldElements().
-// TODO(crbug.com/1201875): Remove when the
-// kAutofillUseUnassociatedListedElements feature is deleted.
-class FormAutofillUtilsTestUnownedFormFields
-    : public FormAutofillUtilsTest,
-      public testing::WithParamInterface<bool> {
- public:
-  FormAutofillUtilsTestUnownedFormFields() {
-    bool use_new_get_unowned_form_field_elements = GetParam();
-    scoped_features_.InitWithFeatureState(
-        features::kAutofillUseUnassociatedListedElements,
-        use_new_get_unowned_form_field_elements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 // Check if the unowned form control elements are properly extracted.
 // Form control elements are button, fieldset, input, textarea, output and
 // select elements.
-TEST_P(FormAutofillUtilsTestUnownedFormFields, GetUnownedFormFieldElements) {
+TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
   LoadHTML(R"(
     <button id='unowned_button'>Unowned button</button>
     <fieldset id='unowned_fieldset'>
@@ -1283,10 +1234,6 @@ TEST_P(FormAutofillUtilsTestUnownedFormFields, GetUnownedFormFieldElements) {
   EXPECT_THAT(unowned_fieldsets,
               ElementsAre(GetFormControlElementById(doc, "unowned_fieldset")));
 }
-
-INSTANTIATE_TEST_SUITE_P(FormAutofillUtilsTest,
-                         FormAutofillUtilsTestUnownedFormFields,
-                         testing::Bool());
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
 // and in the correct relative order.

@@ -177,8 +177,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENFORCE_DELAYS_IN_STRIKE_DATABASE,
                     "Enforce delay between offering Autofill opportunities in the "
                             + "strike database."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_USE_UNASSOCIATED_LISTED_ELEMENTS,
-                    "Caches unowned listed elements in the document."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
                     "Enables Autofill to use its new method to retrieve parsing patterns."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,

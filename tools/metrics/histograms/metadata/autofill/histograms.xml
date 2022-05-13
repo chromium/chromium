@@ -1253,6 +1253,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
     units="microseconds" expires_after="2022-10-30">
+  <obsolete>
+    The experiment has been launched in 05/2022.
+  </obsolete>
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1268,6 +1271,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.FindFormControlElementsByUniqueRendererIdDuration"
     units="microseconds" expires_after="2022-10-30">
+  <obsolete>
+    The experiment has been launched in 05/2022.
+  </obsolete>
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1541,6 +1547,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.GetUnownedFormFieldsDuration" units="microseconds"
     expires_after="2022-10-04">
+  <obsolete>
+    The experiment has been launched in 05/2022.
+  </obsolete>
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1556,6 +1565,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.HasPasswordFieldDuration" units="microseconds"
     expires_after="2022-10-30">
+  <obsolete>
+    The experiment has been launched in 05/2022.
+  </obsolete>
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1679,6 +1691,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.IsSomeControlElementVisibleDuration"
     units="microseconds" expires_after="2022-10-30">
+  <obsolete>
+    The experiment has been launched in 05/2022.
+  </obsolete>
   <owner>evih@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

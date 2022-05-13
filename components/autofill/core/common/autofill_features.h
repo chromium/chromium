@@ -182,8 +182,6 @@ extern const base::Feature kAutofillUseNewSectioningMethod;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseConsistentPopupSettingsIcons;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillUseUnassociatedListedElements;
-COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillVisualImprovementsForSuggestionUi;
 
 COMPONENT_EXPORT(AUTOFILL)

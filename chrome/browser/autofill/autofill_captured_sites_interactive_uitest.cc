@@ -254,8 +254,7 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillShowTypePredictions,
-                              features::kAutofillUseUnassociatedListedElements},
+                              features::kAutofillShowTypePredictions},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");

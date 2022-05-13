@@ -216,9 +216,7 @@ class CapturedSitesPasswordManagerBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{autofill::features::kAutofillShowTypePredictions,
-                              features::kUsernameFirstFlow,
-                              autofill::features::
-                                  kAutofillUseUnassociatedListedElements},
+                              features::kUsernameFirstFlow},
         {});
     command_line->AppendSwitch(autofill::switches::kShowAutofillSignatures);
     captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(

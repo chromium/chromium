@@ -304,36 +304,17 @@ void AnnotateFieldsWithSignatures(
 // Instead, we can iterate through the fields of the forms and the unowned
 // fields, both of which are cached in the Document.
 bool HasPasswordField(const WebLocalFrame& frame) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Autofill.HasPasswordFieldDuration");
+  static base::NoDestructor<WebString> kPassword("password");
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseUnassociatedListedElements)) {
-    static base::NoDestructor<WebString> kPassword("password");
+  auto ContainsPasswordField = [&](const auto& fields) {
+    return base::Contains(fields, *kPassword,
+                          &WebFormControlElement::FormControlTypeForAutofill);
+  };
 
-    auto ContainsPasswordField = [&](const auto& fields) {
-      return base::Contains(fields, *kPassword,
-                            &WebFormControlElement::FormControlTypeForAutofill);
-    };
-
-    WebDocument doc = frame.GetDocument();
-    return base::ranges::any_of(doc.Forms(), ContainsPasswordField,
-                                &WebFormElement::GetFormControlElements) ||
-           ContainsPasswordField(doc.UnassociatedFormControls());
-  } else {
-    static base::NoDestructor<WebString> kPassword("password");
-
-    const WebElementCollection elements = frame.GetDocument().All();
-    for (WebElement element = elements.FirstItem(); !element.IsNull();
-         element = elements.NextItem()) {
-      if (element.IsFormControlElement()) {
-        const WebFormControlElement& control =
-            element.To<WebFormControlElement>();
-        if (control.FormControlTypeForAutofill() == *kPassword)
-          return true;
-      }
-    }
-    return false;
-  }
+  WebDocument doc = frame.GetDocument();
+  return base::ranges::any_of(doc.Forms(), ContainsPasswordField,
+                              &WebFormElement::GetFormControlElements) ||
+         ContainsPasswordField(doc.UnassociatedFormControls());
 }
 
 // Returns the closest visible autocompletable non-password text element

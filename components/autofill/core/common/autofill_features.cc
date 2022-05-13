@@ -502,13 +502,6 @@ const base::Feature kAutofillUseConsistentPopupSettingsIcons{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, to get the unowned control elements we call
-// Document::UnassociatedListedElements(). This way we can reduce the number of
-// DOM traversals.
-// TODO(crbug/1201875): Remove once experiment is finished.
-const base::Feature kAutofillUseUnassociatedListedElements{
-    "AutofillUseUnassociatedListedElements", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Introduces various visual improvements of the Autofill suggestion UI that is
 // also used for the password manager.
 const base::Feature kAutofillVisualImprovementsForSuggestionUi{
