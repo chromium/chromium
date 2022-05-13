@@ -119,10 +119,6 @@ Polymer({
         'authDomainChange', () => void this.onAuthDomainChange_());
     this.authenticator_.addEventListener(
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
-    this.authenticator_.confirmPasswordCallback = (email, password) =>
-        void this.onAuthConfirmPassword_(email, password);
-    this.authenticator_.noPasswordCallback = (email) =>
-        void this.onAuthNoPassword_(email);
     chrome.send('initialize');
   },
 
@@ -231,8 +227,8 @@ Polymer({
     const credentials = e.detail;
     chrome.send('completeAuthentication', [
       credentials.gaiaId, credentials.email, credentials.password,
-      credentials.usingSAML, credentials.services,
-      credentials.passwordAttributes
+      credentials.scrapedSAMLPasswords, credentials.usingSAML,
+      credentials.services, credentials.passwordAttributes
     ]);
   },
 
@@ -240,56 +236,19 @@ Polymer({
    * Invoked when the user has successfully authenticated via SAML,
    * the Chrome Credentials Passing API was not used and the authenticator needs
    * the user to confirm the scraped password.
-   * @param {string} email The authenticated user's e-mail.
    * @param {number} passwordCount The number of passwords that were scraped.
-   * @private
    */
-  onAuthConfirmPassword_(email, passwordCount) {
+  showSamlConfirmPassword(passwordCount) {
     this.resetState_();
     /** This statement override resetState_ calls.
      * Thus have to be AFTER resetState_. */
     this.isConfirmPassword_ = true;
+    this.isManualInput_ = (passwordCount === 0);
     if (this.passwordConfirmAttempt_ > 0) {
       this.$.passwordInput.value = '';
       this.$.passwordInput.invalid = true;
     }
-  },
-
-  /**
-   * Invoked when the user has successfully authenticated via SAML, the
-   * Chrome Credentials Passing API was not used and no passwords
-   * could be scraped.
-   * The user will be asked to pick a manual password for the device.
-   * @param {string} email The authenticated user's e-mail.
-   * @private
-   */
-  onAuthNoPassword_(email) {
-    this.resetState_();
-    /** These two statement override resetState_ calls.
-     * Thus have to be AFTER resetState_. */
-    this.isConfirmPassword_ = true;
-    this.isManualInput_ = true;
-  },
-
-  /**
-   * Invoked when the dialog where the user enters a manual password for the
-   * device, when password scraping fails.
-   * @param {string} password The password the user entered. Not necessarily
-   *     the same as their SAML password.
-   * @private
-   */
-  onManualPasswordCollected(password) {
-    this.authenticator_.completeAuthWithManualPassword(password);
-  },
-
-  /**
-   * Invoked when the confirm password screen is dismissed.
-   * @param {string} password The password entered at the confirm screen.
-   * @private
-   */
-  onConfirmPasswordCollected(password) {
     this.passwordConfirmAttempt_++;
-    this.authenticator_.verifyConfirmedPassword(password);
   },
 
   /**
@@ -337,11 +296,7 @@ Polymer({
       }
     }
 
-    if (this.isManualInput_) {
-      this.onManualPasswordCollected(this.$.passwordInput.value);
-    } else {
-      this.onConfirmPasswordCollected(this.$.passwordInput.value);
-    }
+    chrome.send('onPasswordTyped', [this.$.passwordInput.value]);
   },
 
   /** @private */
