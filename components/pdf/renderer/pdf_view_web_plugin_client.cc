@@ -13,9 +13,11 @@
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "net/cookies/site_for_cookies.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
@@ -72,11 +74,19 @@ blink::WebPluginContainer* PdfViewWebPluginClient::PluginContainer() {
   return plugin_container_;
 }
 
+net::SiteForCookies PdfViewWebPluginClient::SiteForCookies() const {
+  return plugin_container_->GetDocument().SiteForCookies();
+}
+
+blink::WebURL PdfViewWebPluginClient::CompleteURL(
+    const blink::WebString& partial_url) const {
+  return plugin_container_->GetDocument().CompleteURL(partial_url);
+}
+
 void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
   v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
-  v8::Local<v8::Context> context =
-      plugin_container_->GetDocument().GetFrame()->MainWorldScriptContext();
+  v8::Local<v8::Context> context = GetFrame()->MainWorldScriptContext();
   DCHECK_EQ(isolate_, context->GetIsolate());
   v8::Context::Scope context_scope(context);
 
@@ -206,7 +216,11 @@ std::string PdfViewWebPluginClient::GetEmbedderOriginString() {
   return GURL(parent_frame->GetSecurityOrigin().ToString().Utf8()).spec();
 }
 
-blink::WebLocalFrame* PdfViewWebPluginClient::GetFrame() {
+bool PdfViewWebPluginClient::HasFrame() const {
+  return plugin_container_ && GetFrame();
+}
+
+blink::WebLocalFrame* PdfViewWebPluginClient::GetFrame() const {
   return plugin_container_->GetDocument().GetFrame();
 }
 
@@ -214,7 +228,8 @@ blink::WebLocalFrameClient* PdfViewWebPluginClient::GetWebLocalFrameClient() {
   return GetFrame()->Client();
 }
 
-void PdfViewWebPluginClient::Print(const blink::WebElement& element) {
+void PdfViewWebPluginClient::Print() {
+  blink::WebElement element = plugin_container_->GetElement();
   DCHECK(!element.IsNull());
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintRenderFrameHelper::Get(render_frame_)->PrintNode(element);

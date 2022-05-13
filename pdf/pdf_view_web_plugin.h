@@ -32,8 +32,6 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
-class WebElement;
-class WebLocalFrame;
 class WebLocalFrameClient;
 class WebURL;
 class WebURLRequest;
@@ -45,6 +43,10 @@ class PointF;
 class Range;
 class Rect;
 }  // namespace gfx
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace printing {
 class MetafileSkia;
@@ -77,6 +79,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
     // Returns the plugin container set by `SetPluginContainer()`.
     virtual blink::WebPluginContainer* PluginContainer() = 0;
+
+    // Returrns the document's site for cookies.
+    virtual net::SiteForCookies SiteForCookies() const = 0;
+
+    // Resolves `partial_url` relative to the document's base URL.
+    virtual blink::WebURL CompleteURL(
+        const blink::WebString& partial_url) const = 0;
 
     // Enqueues a "message" event carrying `message` to the plugin embedder.
     virtual void PostMessage(base::Value::Dict message) {}
@@ -144,15 +153,15 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Gets the embedder's origin as a serialized string.
     virtual std::string GetEmbedderOriginString() = 0;
 
-    // Returns the local frame to which the web plugin container belongs.
-    virtual blink::WebLocalFrame* GetFrame() = 0;
+    // Returns whether the plugin container's frame exists.
+    virtual bool HasFrame() const = 0;
 
     // Returns the local frame's client (render frame). May be null in unit
     // tests.
     virtual blink::WebLocalFrameClient* GetWebLocalFrameClient() = 0;
 
-    // Prints the given `element`.
-    virtual void Print(const blink::WebElement& element) {}
+    // Prints the plugin element.
+    virtual void Print() {}
 
     // Sends over a string to be recorded by user metrics as a computed action.
     // When you use this, you need to also update the rules for extracting known

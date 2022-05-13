@@ -22,6 +22,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "net/cookies/site_for_cookies.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -172,6 +174,13 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (override));
   MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
 
+  MOCK_METHOD(net::SiteForCookies, SiteForCookies, (), (const override));
+
+  MOCK_METHOD(blink::WebURL,
+              CompleteURL,
+              (const blink::WebString&),
+              (const override));
+
   MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
 
   MOCK_METHOD(void, Invalidate, (), (override));
@@ -228,7 +237,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
     return "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
   }
 
-  blink::WebLocalFrame* GetFrame() override { return nullptr; }
+  MOCK_METHOD(bool, HasFrame, (), (const override));
 
   blink::WebLocalFrameClient* GetWebLocalFrameClient() override {
     return nullptr;

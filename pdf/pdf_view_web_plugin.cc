@@ -676,18 +676,18 @@ void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
 }
 
 bool PdfViewWebPlugin::IsValid() const {
-  return client_->PluginContainer() && client_->GetFrame();
+  return client_->HasFrame();
 }
 
 blink::WebURL PdfViewWebPlugin::CompleteURL(
     const blink::WebString& partial_url) const {
   DCHECK(IsValid());
-  return Container()->GetDocument().CompleteURL(partial_url);
+  return client_->CompleteURL(partial_url);
 }
 
 net::SiteForCookies PdfViewWebPlugin::SiteForCookies() const {
   DCHECK(IsValid());
-  return Container()->GetDocument().SiteForCookies();
+  return client_->SiteForCookies();
 }
 
 void PdfViewWebPlugin::SetReferrerForRequest(
@@ -960,7 +960,7 @@ void PdfViewWebPlugin::HandleImeCommit(const blink::WebString& text) {
 }
 
 void PdfViewWebPlugin::OnInvokePrintDialog() {
-  client_->Print(Container()->GetElement());
+  client_->Print();
 }
 
 void PdfViewWebPlugin::OnSetAccessibilityDocInfo(
