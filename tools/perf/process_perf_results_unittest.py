@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import json
 import os
 import shutil
@@ -136,7 +137,7 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
         filename[UUID_SIZE:]: os.stat(os.path.join(
             output_results_dir, filename)).st_size
         for filename in os.listdir(output_results_dir)}
-    self.assertEquals(32, len(output_results))
+    self.assertEqual(32, len(output_results))
 
     self.assertLess(10 << 10, output_results["power.desktop.reference"])
     self.assertLess(10 << 10, output_results["blink_perf.image_decoder"])
@@ -179,41 +180,43 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
     self.assertLess(10 << 10, output_results["octane"])
     self.assertLess(10 << 10, output_results["speedometer.reference"])
 
-    self.assertEquals(return_code, 1)
-    self.assertEquals(benchmark_upload_result_map,
+    self.assertEqual(return_code, 1)
+    self.assertEqual(
+        benchmark_upload_result_map,
         {
-          "power.desktop.reference": True,
-          "blink_perf.image_decoder": True,
-          "octane.reference": True,
-          "power.desktop": True,
-          "speedometer-future": True,
-          "blink_perf.owp_storage": True,
-          "memory.desktop": True,
-          "wasm": True,
-          "dummy_benchmark.histogram_benchmark_1": True,
-          "dummy_benchmark.histogram_benchmark_1.reference": True,
-          "wasm.reference": True,
-          "speedometer": True,
-          "memory.long_running_idle_gmail_tbmv2": True,
-          "v8.runtime_stats.top_25": True,
-          "dummy_benchmark.noisy_benchmark_1": True,
-          "blink_perf.svg": True,
-          "v8.runtime_stats.top_25.reference": True,
-          "jetstream.reference": True,
-          "jetstream": True,
-          "speedometer2-future.reference": True,
-          "speedometer2-future": False,  # Only this fails due to malformed data
-          "blink_perf.svg.reference": True,
-          "blink_perf.image_decoder.reference": True,
-          "power.idle_platform.reference": True,
-          "power.idle_platform": True,
-          "dummy_benchmark.noisy_benchmark_1.reference": True,
-          "speedometer-future.reference": True,
-          "memory.long_running_idle_gmail_tbmv2.reference": True,
-          "memory.desktop.reference": True,
-          "blink_perf.owp_storage.reference": True,
-          "octane": True,
-          "speedometer.reference": True
+            "power.desktop.reference": True,
+            "blink_perf.image_decoder": True,
+            "octane.reference": True,
+            "power.desktop": True,
+            "speedometer-future": True,
+            "blink_perf.owp_storage": True,
+            "memory.desktop": True,
+            "wasm": True,
+            "dummy_benchmark.histogram_benchmark_1": True,
+            "dummy_benchmark.histogram_benchmark_1.reference": True,
+            "wasm.reference": True,
+            "speedometer": True,
+            "memory.long_running_idle_gmail_tbmv2": True,
+            "v8.runtime_stats.top_25": True,
+            "dummy_benchmark.noisy_benchmark_1": True,
+            "blink_perf.svg": True,
+            "v8.runtime_stats.top_25.reference": True,
+            "jetstream.reference": True,
+            "jetstream": True,
+            "speedometer2-future.reference": True,
+            "speedometer2-future":
+            False,  # Only this fails due to malformed data
+            "blink_perf.svg.reference": True,
+            "blink_perf.image_decoder.reference": True,
+            "power.idle_platform.reference": True,
+            "power.idle_platform": True,
+            "dummy_benchmark.noisy_benchmark_1.reference": True,
+            "speedometer-future.reference": True,
+            "memory.long_running_idle_gmail_tbmv2.reference": True,
+            "memory.desktop.reference": True,
+            "blink_perf.owp_storage.reference": True,
+            "octane": True,
+            "speedometer.reference": True
         })
 
 
