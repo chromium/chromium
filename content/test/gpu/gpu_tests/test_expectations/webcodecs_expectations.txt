@@ -87,6 +87,9 @@ crbug.com/1288914 [ android android-pixel-6 ] WebCodecs_TexImage2d_camera [ Fail
 
 crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
+# Remove when Apple M1 FYI bot passes these tests
+crbug.com/1312735 [ mac apple-apple-m1 ] WebCodecs_* [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
