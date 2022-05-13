@@ -112,7 +112,7 @@ The following is the recommended thresholds for different code coverage levels:
 * >level 3(commendable): 75%
 * >level 4(exemplary): 90%
 
-Go to [code coverage dashboard](https://analysis.chromium.org/p/chromium/coverage) to check the code coverage for your project.
+Go to [code coverage dashboard](https://analysis.chromium.org/coverage/p/chromium) to check the code coverage for your project.
 
 
 ## How to write new tests
