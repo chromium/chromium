@@ -25,7 +25,7 @@ try_.defaults.set(
 
 def ios_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", False)
-    kwargs.setdefault("os", os.MAC_11)
+    kwargs.setdefault("os", os.MAC_DEFAULT)
     kwargs.setdefault("ssd", None)
     kwargs.setdefault("xcode", xcode.x13main)
     return try_.builder(name = name, **kwargs)
@@ -42,7 +42,7 @@ try_.builder(
     ],
     builderless = False,
     cpu = cpu.ARM64,
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
 )
 
 try_.builder(
@@ -131,7 +131,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac11-arm64-rel-compilator",
     main_list_view = "try",
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
 )
@@ -284,14 +284,14 @@ ios_builder(
 ios_builder(
     name = "ios-m1-simulator",
     mirrors = ["ci/ios-m1-simulator"],
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
 ios_builder(
     name = "ios-m1-simulator-cronet",
     mirrors = ["ci/ios-m1-simulator-cronet"],
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
