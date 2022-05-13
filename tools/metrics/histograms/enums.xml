@@ -95235,8 +95235,8 @@ Full version information for the fingerprint enum values:
 
 <enum name="UtilityProcessNameHash">
   <summary>
-    The hash of a utility process name generated using metrics::HashName. Update
-    these using sheet available at http://bit.ly/2sKxPdR.
+    The hash of a utility process name generated using `variations::HashName()`.
+    Update these using sheet available at http://bit.ly/2sKxPdR.
   </summary>
   <int value="-2128940758" label="sharing.mojom.Sharing"/>
   <int value="-2115497279" label="network"/>
@@ -95273,9 +95273,11 @@ Full version information for the fingerprint enum values:
   <int value="-254080081" label="cdm"/>
   <int value="-2816355" label="profile_import"/>
   <int value="69152809" label="font_service"/>
+  <int value="239791233" label="media.mojom.CdmServiceBroker"/>
   <int value="281581793" label="printing.mojom.PrintingService"/>
   <int value="331504207" label="data_decoder.mojom.DataDecoderService"/>
   <int value="357224138" label="user_id"/>
+  <int value="369422744" label="media.mojom.MediaFoundationServiceBroker"/>
   <int value="498331100" label="preferences"/>
   <int value="573935755" label="removable_storage_writer"/>
   <int value="622813541" label="chrome.mojom.ProfileImport"/>
