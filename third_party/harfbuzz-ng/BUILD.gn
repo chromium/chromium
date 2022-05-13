@@ -346,7 +346,9 @@ if (use_system_harfbuzz) {
       defines += [ "HAVE_PTHREAD" ]
     }
 
-    if (enable_paint_preview) {
+    # TODO(https://crbug.com/1316699): Re-enable CFF subsetting on Android when
+    # the cause for this issue has been identified.
+    if (enable_paint_preview && !is_android) {
       # Paint Previews make use of CFF subsetting. However, enabling this is
       # expensive for binary size so only compile it when Paint Previews are
       # compiled.
