@@ -68,7 +68,7 @@ public class TranslateIntentTest {
      * the changes to make the translate service mockable and remove the internet requirement.
      */
     private boolean shouldSkipDueToNetworkService() {
-        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess");
+        return !ChromeFeatureList.isEnabled("NetworkServiceInProcess2");
     }
 
     /**
