@@ -287,36 +287,30 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   // Queue the typical events at the beginning of a new swipe gesture. The
   // ordering and values were determined by recording real swipe events.
   void QueueBeginningEvents(int dx, int dy) {
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture, NSMouseEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture,
+               NSEventSubtypeMouseEvent, NO);
     QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, YES);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSMouseEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeMouseEvent, NO);
 
     QueueTrackpadScroll(dx, dy, NSEventPhaseBegan, NO);
     QueueGestureBegin();
-    QueueTouch(DEPLOYMENT_TOUCHES_MOVED,
-               NSEventTypeBeginGesture,
-               NSTouchEventSubtype,
-               NO);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, YES);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeBeginGesture,
+               NSEventSubtypeTouch, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, YES);
     UpdateTouchLocationFromTrackpadScroll(dx, dy);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, NO);
   }
 
   // Queue the typical events at the end of a new swipe gesture. The ordering
   // and values were determined by recording real swipe events.
   void QueueEndEvents() {
-    QueueTouch(DEPLOYMENT_TOUCHES_MOVED,
-               NSEventTypeEndGesture,
-               NSMouseEventSubtype,
-               NO);
-    QueueTouch(DEPLOYMENT_TOUCHES_ENDED,
-               NSEventTypeEndGesture,
-               NSMouseEventSubtype,
-               NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+               NSEventSubtypeMouseEvent, NO);
+    QueueTouch(DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+               NSEventSubtypeMouseEvent, NO);
     QueueGestureEnd();
     QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
   }
@@ -325,8 +319,8 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
   void QueueScrollAndTouchMoved(int dx, int dy) {
     QueueTrackpadScroll(dx, dy, NSEventPhaseChanged, NO);
     UpdateTouchLocationFromTrackpadScroll(dx, dy);
-    QueueTouch(
-        DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture, NSTouchEventSubtype, YES);
+    QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+               NSEventSubtypeTouch, YES);
   }
 
   // Queues a touch event with the stored touch coordinates.
@@ -409,227 +403,107 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   if (!IsHistorySwipingSupported())
     return;
 
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_BEGAN,
-             NSEventTypeGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, YES);
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeMouseEvent, NO);
 
   QueueTrackpadScroll(1, 0, NSEventPhaseBegan, NO);
   QueueGestureBegin();
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeBeginGesture,
-             NSTouchEventSubtype,
-             NO);
-  QueueTouch(0.510681,
-             0.444672,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED,
+             NSEventTypeBeginGesture, NSEventSubtypeTouch, NO);
+  QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
-  QueueTouch(0.507019,
-             0.444092,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             NO);
+  QueueTouch(0.507019, 0.444092, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, NO);
   QueueTrackpadScroll(3, 0, NSEventPhaseChanged, YES);
 
   QueueTrackpadScroll(3, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.502861,
-             0.443512,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.502861, 0.443512, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.497002,
-             0.44294,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.497002, 0.44294, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(5, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.487236,
-             0.44149,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.487236, 0.44149, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(8, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.480392,
-             0.440628,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             NO);
-  QueueTouch(0.475266,
-             0.440338,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.480392, 0.440628, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, NO);
+  QueueTouch(0.475266, 0.440338, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
   QueueTrackpadScroll(10, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.467934,
-             0.439758,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.467934, 0.439758, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.462807,
-             0.439186,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.462807, 0.439186, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(12, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.454018,
-             0.438316,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.454018, 0.438316, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.449623,
-             0.438026,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.449623, 0.438026, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(9, 0, NSEventPhaseChanged, NO);
-  QueueTouch(0.443275,
-             0.437744,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.437164,
-             0.437164,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.443275, 0.437744, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.437164, 0.437164, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(9, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.431305,
-             0.436874,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.431305, 0.436874, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(8, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.425926,
-             0.436295,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.425926, 0.436295, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.420311,
-             0.43573,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.420311, 0.43573, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.415184,
-             0.43544,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.415184, 0.43544, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(6, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.410057,
-             0.43457,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.40493,
-             0.43399,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.410057, 0.43457, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.40493, 0.43399, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(7, -1, NSEventPhaseChanged, YES);
   QueueTrackpadScroll(3, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.402489,
-             0.433701,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.402489, 0.433701, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(5, 0, NSEventPhaseChanged, NO);
-  QueueTouch(0.398094,
-             0.433418,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.398094, 0.433418, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   QueueTrackpadScroll(4, -1, NSEventPhaseChanged, NO);
-  QueueTouch(0.394669,
-             0.433128,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.391006,
-             0.432549,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.394669, 0.433128, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.391006, 0.432549, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
   QueueTrackpadScroll(4, -1, NSEventPhaseChanged, NO);
   QueueTrackpadScroll(5, 0, NSEventPhaseChanged, YES);
-  QueueTouch(0.386848,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeGesture,
-             NSTouchEventSubtype,
-             YES);
+  QueueTouch(0.386848, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeGesture,
+             NSEventSubtypeTouch, YES);
 
   // Skipped a bunch of events. The data on the gesture end events are fudged.
 
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_MOVED,
-             NSEventTypeEndGesture,
-             NSMouseEventSubtype,
-             NO);
-  QueueTouch(0.38343,
-             0.432259,
-             DEPLOYMENT_TOUCHES_ENDED,
-             NSEventTypeEndGesture,
-             NSMouseEventSubtype,
-             NO);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
+  QueueTouch(0.38343, 0.432259, DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueGestureEnd();
   QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
 
@@ -789,11 +663,11 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   for (int i = 0; i < 150; ++i)
     QueueScrollAndTouchMoved(1, 0);
 
-  QueueTouch(
-      DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture, NSMouseEventSubtype, NO);
+  QueueTouch(DEPLOYMENT_TOUCHES_MOVED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueGestureEnd();
-  QueueTouch(
-      DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture, NSMouseEventSubtype, NO);
+  QueueTouch(DEPLOYMENT_TOUCHES_ENDED, NSEventTypeEndGesture,
+             NSEventSubtypeMouseEvent, NO);
   QueueTrackpadScroll(0, 0, NSEventPhaseEnded, YES);
 
   RunQueuedEvents();
