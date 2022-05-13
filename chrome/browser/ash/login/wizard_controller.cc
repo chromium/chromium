@@ -775,7 +775,7 @@ WizardController::CreateScreens() {
   }
 
   append(std::make_unique<SmartPrivacyProtectionScreen>(
-      oobe_ui->GetView<SmartPrivacyProtectionScreenHandler>(),
+      oobe_ui->GetView<SmartPrivacyProtectionScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnSmartPrivacyProtectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 

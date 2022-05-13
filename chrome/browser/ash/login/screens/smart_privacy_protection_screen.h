@@ -28,7 +28,7 @@ class SmartPrivacyProtectionScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  SmartPrivacyProtectionScreen(SmartPrivacyProtectionView* view,
+  SmartPrivacyProtectionScreen(base::WeakPtr<SmartPrivacyProtectionView> view,
                                const ScreenExitCallback& exit_callback);
 
   SmartPrivacyProtectionScreen(const SmartPrivacyProtectionScreen&) = delete;
@@ -36,9 +36,6 @@ class SmartPrivacyProtectionScreen : public BaseScreen {
       delete;
 
   ~SmartPrivacyProtectionScreen() override;
-
-  // This method is called, when view is being destroyed.
-  void OnViewDestroyed(SmartPrivacyProtectionView* view);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
@@ -49,9 +46,9 @@ class SmartPrivacyProtectionScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  SmartPrivacyProtectionView* view_;
+  base::WeakPtr<SmartPrivacyProtectionView> view_;
 
   ScreenExitCallback exit_callback_;
 };

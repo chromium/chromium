@@ -32,27 +32,14 @@ std::string SmartPrivacyProtectionScreen::GetResultString(Result result) {
 }
 
 SmartPrivacyProtectionScreen::SmartPrivacyProtectionScreen(
-    SmartPrivacyProtectionView* view,
+    base::WeakPtr<SmartPrivacyProtectionView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(SmartPrivacyProtectionView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  DCHECK(view);
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-SmartPrivacyProtectionScreen::~SmartPrivacyProtectionScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void SmartPrivacyProtectionScreen::OnViewDestroyed(
-    SmartPrivacyProtectionView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+SmartPrivacyProtectionScreen::~SmartPrivacyProtectionScreen() = default;
 
 bool SmartPrivacyProtectionScreen::MaybeSkip(WizardContext* context) {
   // SmartPrivacyProtectionScreen lets user set two settings simultaneously:
@@ -72,13 +59,10 @@ void SmartPrivacyProtectionScreen::ShowImpl() {
     view_->Show();
 }
 
-void SmartPrivacyProtectionScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void SmartPrivacyProtectionScreen::HideImpl() {}
 
-void SmartPrivacyProtectionScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void SmartPrivacyProtectionScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionFeatureTurnOn) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     profile->GetPrefs()->SetBoolean(
@@ -95,7 +79,7 @@ void SmartPrivacyProtectionScreen::OnUserActionDeprecated(
   } else if (action_id == kUserActionShowLearnMore) {
     // TODO(crbug.com/1293320): add p-link once available
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

@@ -16,18 +16,16 @@ class SmartPrivacyProtectionScreen;
 namespace chromeos {
 
 // Interface between SmartPrivacyProtection screen and its representation,
-// either WebUI or Views one. Note, do not forget to call OnViewDestroyed in the
-// dtor.
-class SmartPrivacyProtectionView {
+// either WebUI or Views one.
+class SmartPrivacyProtectionView
+    : public base::SupportsWeakPtr<SmartPrivacyProtectionView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"smart-privacy-protection"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "smart-privacy-protection", "SmartPrivacyProtectionScreen"};
 
   virtual ~SmartPrivacyProtectionView() {}
 
   virtual void Show() = 0;
-  virtual void Hide() = 0;
-  virtual void Bind(ash::SmartPrivacyProtectionScreen* screen) = 0;
-  virtual void Unbind() = 0;
 };
 
 // WebUI implementation of SmartPrivacyProtectionView. It is used to interact
@@ -48,21 +46,11 @@ class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
 
   // SmartPrivacyProtectionView implementation:
   void Show() override;
-  void Hide() override;
-  void Bind(ash::SmartPrivacyProtectionScreen* screen) override;
-  void Unbind() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-  void InitializeDeprecated() override;
-
- private:
-  ash::SmartPrivacyProtectionScreen* screen_ = nullptr;
-
-  // Keeps whether screen should be shown right after initialization.
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos
