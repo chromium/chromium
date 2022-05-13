@@ -833,13 +833,15 @@ void UiController::HandleShippingAddressChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      UserDataEventField::SHIPPING_EVENT, event_type);
+
   if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::SHIPPING_EVENT, event_type);
     return;
   }
 
-  collect_user_data_options_->selected_user_data_changed_callback.Run(
-      UserDataEventField::SHIPPING_EVENT, event_type);
   DCHECK(!collect_user_data_options_->shipping_address_name.empty());
   SetProfile(collect_user_data_options_->shipping_address_name,
              UserDataFieldChange::SHIPPING_ADDRESS, std::move(address));
@@ -851,13 +853,15 @@ void UiController::HandleContactInfoChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      UserDataEventField::CONTACT_EVENT, event_type);
+
   if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
     return;
   }
 
-  collect_user_data_options_->selected_user_data_changed_callback.Run(
-      UserDataEventField::CONTACT_EVENT, event_type);
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
   SetProfile(collect_user_data_options_->contact_details_name,
              UserDataFieldChange::CONTACT_PROFILE, std::move(profile));
@@ -869,13 +873,14 @@ void UiController::HandlePhoneNumberChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      UserDataEventField::PHONE_NUMBER_EVENT, event_type);
+
   if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::PHONE_NUMBER_EVENT, event_type);
     return;
   }
-
-  // We don't notify the UserDataEvent in this case since we currently don't log
-  // metrics for the phone number.
 
   GetUserData()->SetSelectedPhoneNumber(std::move(profile));
   execution_delegate_->NotifyUserDataChange(UserDataFieldChange::PHONE_NUMBER);
@@ -888,13 +893,15 @@ void UiController::HandleCreditCardChange(
   if (collect_user_data_options_ == nullptr) {
     return;
   }
+
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      UserDataEventField::CREDIT_CARD_EVENT, event_type);
+
   if (ShouldReloadData(*collect_user_data_options_, event_type)) {
     ReloadUserData(UserDataEventField::CREDIT_CARD_EVENT, event_type);
     return;
   }
 
-  collect_user_data_options_->selected_user_data_changed_callback.Run(
-      UserDataEventField::CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
   SetProfile(collect_user_data_options_->billing_address_name,
              UserDataFieldChange::BILLING_ADDRESS, std::move(billing_profile));
@@ -914,13 +921,7 @@ void UiController::SetProfile(
 
 void UiController::ReloadUserData(UserDataEventField event_field,
                                   UserDataEventType event_type) {
-  if (collect_user_data_options_ == nullptr) {
-    return;
-  }
-
-  collect_user_data_options_->selected_user_data_changed_callback.Run(
-      event_field, event_type);
-
+  DCHECK(collect_user_data_options_);
   std::move(collect_user_data_options_->reload_data_callback)
       .Run(event_field, GetUserData());
 }
