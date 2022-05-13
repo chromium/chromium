@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ResetTest, ShowAndCancelMultipleTimes) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
-IN_PROC_BROWSER_TEST_F(ResetTest, RestartBeforePowerwash) {
+IN_PROC_BROWSER_TEST_F(ResetTest, DISABLED_RestartBeforePowerwash) {
   EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   PrefService* prefs = g_browser_process->local_state();
 
