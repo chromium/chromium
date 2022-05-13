@@ -271,15 +271,6 @@ class LocalStorageImpl::StorageAreaHolder final
 
     context_->OnCommitResult(status);
   }
-
-  void OnMapLoaded(leveldb::Status status) override {
-    if (!status.ok()) {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.MapLoadError",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    }
-  }
-
   void Bind(mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
     has_bindings_ = true;
     storage_area()->Bind(std::move(receiver));

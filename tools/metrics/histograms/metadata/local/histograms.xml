@@ -371,15 +371,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.MapLoadError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason loading an initial snapshot of the localstorage data for an
-    origin failed.
-  </summary>
-</histogram>
-
 <histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
     expires_after="M87">
   <owner>mek@chromium.org</owner>
