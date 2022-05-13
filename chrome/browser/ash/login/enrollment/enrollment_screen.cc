@@ -513,6 +513,9 @@ void EnrollmentScreen::OnCancel() {
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
+  if (features::IsOobeConsolidatedConsentEnabled())
+    StartupUtils::MarkEulaAccepted();
+
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -119,6 +120,9 @@ void ConsolidatedConsentScreen::OnViewDestroyed(
 
 bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
   if (context->skip_post_login_screens_for_tests) {
+    if (features::IsOobeConsolidatedConsentEnabled())
+      StartupUtils::MarkEulaAccepted();
+
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
