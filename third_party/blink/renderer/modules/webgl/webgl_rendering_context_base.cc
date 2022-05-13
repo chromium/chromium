@@ -1342,6 +1342,13 @@ unsigned WebGLRenderingContextBase::GetWebGLVersion(
 }
 
 WebGLRenderingContextBase::~WebGLRenderingContextBase() {
+  // This resolver is non-null during a makeXRCompatible call, while waiting
+  // for a response from the browser and XR process. If the WebGL context is
+  // destroyed before we get a response, the resolver has to be rejected to
+  // be properly disposed of.
+  xr_compatible_ = false;
+  CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kInvalidStateError);
+
   // It's forbidden to refer to other GC'd objects in a GC'd object's
   // destructor. It's useful for DrawingBuffer to guarantee that it
   // calls its DrawingBufferClient during its own destruction, but if
