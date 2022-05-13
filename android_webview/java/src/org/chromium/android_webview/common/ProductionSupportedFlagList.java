@@ -331,6 +331,7 @@ public final class ProductionSupportedFlagList {
                             + "thread."),
             Flag.baseFeature(BaseFeatures.OPTIMIZE_DATA_URLS,
                     "Optimizes parsing and loading of data: URLs."),
+            Flag.baseFeature(BlinkFeatures.EVENT_PATH, "Enables the deprecated Event.path API."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

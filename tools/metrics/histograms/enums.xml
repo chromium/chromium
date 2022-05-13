@@ -55842,6 +55842,7 @@ from previous Chrome versions.
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
   <int value="-1229114522"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
+  <int value="-1228782289" label="EventPath:disabled"/>
   <int value="-1228546373"
       label="UseLookalikesForNavigationSuggestions:enabled"/>
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
@@ -57264,6 +57265,7 @@ from previous Chrome versions.
   <int value="-278347667" label="default-tile-height"/>
   <int value="-277144896" label="enable-viewport-meta"/>
   <int value="-276946251" label="AppServiceShelf:disabled"/>
+  <int value="-276907217" label="EventPath:enabled"/>
   <int value="-276260362" label="GamepadVibration:enabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
