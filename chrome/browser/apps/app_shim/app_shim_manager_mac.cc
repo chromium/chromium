@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -713,8 +714,31 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
   // Otherwise, only launch if there are no open windows.
   if (!do_launch) {
     bool had_windows = delegate_->ShowAppWindows(profile, params.app_id);
-    if (profile_state)
-      had_windows |= !profile_state->browsers.empty();
+    if (!had_windows && profile_state && !profile_state->browsers.empty()) {
+      // Try to activate the most recently used open window.
+      BrowserList* browsers = BrowserList::GetInstance();
+      Browser* browser = nullptr;
+      for (auto it = browsers->begin_browsers_ordered_by_activation();
+           it != browsers->end_browsers_ordered_by_activation(); ++it) {
+        if ((*it)->profile() != profile)
+          continue;
+        if (!(*it)->app_controller())
+          continue;
+        if ((*it)->app_controller()->app_id() != params.app_id)
+          continue;
+        browser = *it;
+        break;
+      }
+
+      // If iterating the browsers by activation order didn't find any matching
+      // windows fall back to showing an arbitrary one from our ProfileState
+      // instead.
+      if (!browser)
+        browser = *(profile_state->browsers.begin());
+
+      browser->window()->Show();
+      had_windows = true;
+    }
 
     if (!had_windows)
       do_launch = true;
