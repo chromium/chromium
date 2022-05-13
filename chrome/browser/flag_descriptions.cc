@@ -4768,11 +4768,14 @@ const char kEchePhoneHubPermissionsOnboardingDescription[] =
     "Enable the new permissions onboarding flow for Phone Hub notifications "
     "and Eche.";
 
-const char kEcheSWAName[] = "Enable Eche App SWA.";
-const char kEcheSWADescription[] = "Enable the SWA version of the Eche.";
+const char kEcheSWAName[] = "Enable Eche feature";
+const char kEcheSWADescription[] = "This is the main flag for enabling Eche.";
 
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
-const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
+const char kEcheSWADebugModeDescription[] =
+    "Enables the Debug Mode of Eche in which the window is not closed after "
+    "a failure happens in order to give the user a chance to look at the "
+    "console logs.";
 
 const char kEnableIkev2VpnName[] = "Enable IKEv2 VPN";
 const char kEnableIkev2VpnDescription[] =
