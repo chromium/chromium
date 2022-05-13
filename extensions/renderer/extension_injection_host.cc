@@ -76,7 +76,7 @@ PermissionsData::PageAccess ExtensionInjectionHost::CanExecuteOnFrame(
         nullptr /* ignore error */);
   }
   if (access == PermissionsData::PageAccess::kWithheld &&
-      (tab_id == -1 || render_frame->GetWebFrame()->Parent())) {
+      (tab_id == -1 || !render_frame->GetWebFrame()->IsOutermostMainFrame())) {
     // Note: we don't consider ACCESS_WITHHELD for child frames or for frames
     // outside of tabs because there is nowhere to surface a request.
     // TODO(devlin): We should ask for permission somehow. crbug.com/491402.

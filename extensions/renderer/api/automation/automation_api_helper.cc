@@ -16,7 +16,7 @@ namespace extensions {
 
 AutomationApiHelper::AutomationApiHelper(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
-  DCHECK(render_frame->IsMainFrame());
+  DCHECK(render_frame->GetWebFrame()->IsOutermostMainFrame());
 }
 
 AutomationApiHelper::~AutomationApiHelper() {

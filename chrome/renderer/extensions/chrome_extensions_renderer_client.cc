@@ -193,7 +193,7 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
     case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
       return true;
     case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
-      return !current_context->web_frame()->Parent();
+      return current_context->web_frame()->IsOutermostMainFrame();
   }
 }
 

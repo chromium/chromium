@@ -54,9 +54,9 @@ class ExtensionFrameHelper
       int tab_id,
       mojom::ViewType view_type);
   // Same as above, but returns a v8::Array of the v8 global objects for those
-  // frames, and only includes main frames. Note: This only returns contexts
-  // that are accessible by |context|, and |context| must be the current
-  // context.
+  // frames, and only includes outermost main frames. Note: This only returns
+  // contexts that are accessible by |context|, and |context| must be the
+  // current context.
   // Returns an empty v8::Array if no frames are found.
   static v8::Local<v8::Array> GetV8MainFrames(v8::Local<v8::Context> context,
                                               const std::string& extension_id,
