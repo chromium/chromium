@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL scope-selector assert_equals: should not match in shadow root expected 0 but got 1
-FAIL scope-selector 1 assert_equals: should not match in document fragment expected 0 but got 1
-PASS querySelector() with ":scope" should return the document element, if present in the subtree
-Harness: the test ran to completion.
-

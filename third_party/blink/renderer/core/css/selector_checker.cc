@@ -351,14 +351,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       result.has_argument_leftmost_compound_matches->push_back(context.element);
       [[fallthrough]];
     case CSSSelector::kChild: {
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
-        if (next_context.selector->IsLastInTagHistory()) {
-          if (context.element->parentNode() == context.scope &&
-              context.scope->IsDocumentFragment())
-            return kSelectorMatches;
-        }
-      }
-
       next_context.element = ParentElement(next_context);
       if (!next_context.element)
         return kSelectorFailsCompletely;
@@ -1709,11 +1701,9 @@ bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
   }
   if (!context.scope)
     return false;
-  if (context.scope == &element.GetDocument())
-    return element == element.GetDocument().documentElement();
-  if (auto* shadow_root = DynamicTo<ShadowRoot>(context.scope))
-    return element == shadow_root->host();
-  return context.scope == &element;
+  if (context.scope->IsElementNode())
+    return context.scope == &element;
+  return element == element.GetDocument().documentElement();
 }
 
 bool SelectorChecker::CheckScrollbarPseudoClass(
