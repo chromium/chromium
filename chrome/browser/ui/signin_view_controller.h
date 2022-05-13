@@ -148,6 +148,8 @@ class SigninViewController {
   // If `profile_creation_required_by_policy` is true, the wording of the dialog
   // will tell the user that an admin requires a new profile for the account,
   // otherwise the default wording will be used.
+  // When `show_link_data_option` is false, the callback is called with either
+  // SIGNIN_CHOICE_CANCEL or SIGNIN_CHOICE_NEW_PROFILE.
   void ShowModalEnterpriseConfirmationDialog(
       const AccountInfo& account_info,
       bool profile_creation_required_by_policy,

@@ -240,12 +240,19 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
           .GetProfileAttributesWithPath(browser_->profile()->GetPath());
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
       account_info, /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option*/ false, GenerateNewProfileColor(entry).color,
+      /*show_link_data_option=*/false, GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
              signin::SigninChoice choice) {
             browser->signin_view_controller()->CloseModalSignin();
-            std::move(callback).Run(choice);
+            // When `show_link_data_option` is false,
+            // `ShowModalEnterpriseConfirmationDialog()` calls back with either
+            // `SIGNIN_CHOICE_CANCEL` or `SIGNIN_CHOICE_NEW_PROFILE`.
+            // The profile is clean here, no need to create a new one.
+            std::move(callback).Run(
+                choice == signin::SigninChoice::SIGNIN_CHOICE_CANCEL
+                    ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL
+                    : signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
           },
           std::move(callback), browser_.get()));
 }
