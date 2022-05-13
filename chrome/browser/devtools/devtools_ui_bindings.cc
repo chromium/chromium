@@ -1515,8 +1515,8 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
   if (!registry)
     return;
 
-  base::ListValue results;
-  base::ListValue component_extension_origins;
+  base::Value::List results;
+  base::Value::List component_extension_origins;
   bool have_user_installed_devtools_extensions = false;
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
@@ -1540,14 +1540,12 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
         web_contents_->GetMainFrame()->GetProcess()->GetID(),
         url::Origin::Create(extension->url()));
 
-    std::unique_ptr<base::DictionaryValue> extension_info(
-        new base::DictionaryValue());
-    extension_info->SetStringKey("startPage", url.spec());
-    extension_info->SetStringKey("name", extension->name());
-    extension_info->SetBoolKey(
-        "exposeExperimentalAPIs",
-        extension->permissions_data()->HasAPIPermission(
-            extensions::mojom::APIPermissionID::kExperimental));
+    base::Value::Dict extension_info;
+    extension_info.Set("startPage", url.spec());
+    extension_info.Set("name", extension->name());
+    extension_info.Set("exposeExperimentalAPIs",
+                       extension->permissions_data()->HasAPIPermission(
+                           extensions::mojom::APIPermissionID::kExperimental));
     results.Append(std::move(extension_info));
 
     if (!(extensions::Manifest::IsPolicyLocation(extension->location()) ||
@@ -1564,8 +1562,9 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
   }
 
   CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
-                   std::move(component_extension_origins));
-  CallClientMethod("DevToolsAPI", "addExtensions", std::move(results));
+                   base::Value(std::move(component_extension_origins)));
+  CallClientMethod("DevToolsAPI", "addExtensions",
+                   base::Value(std::move(results)));
 }
 
 void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
