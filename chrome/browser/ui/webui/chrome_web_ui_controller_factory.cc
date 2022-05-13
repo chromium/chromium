@@ -122,7 +122,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
 #include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #include "components/feed/buildflags.h"
@@ -1117,9 +1116,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<WebUIJsErrorUI>;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == chrome::kChromeUIExploreSitesInternalsHost &&
-      !profile->IsOffTheRecord())
-    return &NewWebUI<explore_sites::ExploreSitesInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIOfflineInternalsHost)
     return &NewWebUI<OfflineInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISnippetsInternalsHost &&

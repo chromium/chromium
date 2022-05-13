@@ -14,6 +14,7 @@ import org.chromium.content_public.app.ZygotePreload;
  * The {@link ZygotePreload} allowing to use the ModernLinker when running Trichrome.
  */
 public class TrichromeZygotePreload extends ZygotePreload {
+
     @Override
     public void doPreload(ApplicationInfo appInfo) {
         // The ModernLinker is only needed when the App Zygote intends to create the RELRO region.

@@ -56,10 +56,8 @@ public class StartSurfaceToolbarCoordinator {
     private CallbackController mCallbackController = new CallbackController();
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
-            UserEducationHelper userEducationHelper,
-            ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
-            MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
+            UserEducationHelper userEducationHelper, ThemeColorProvider provider,
+            MenuButtonCoordinator menuButtonCoordinator, boolean isGridTabSwitcherEnabled,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
@@ -91,7 +89,7 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
+                menuButtonCoordinator,
                 homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),

@@ -2735,56 +2735,6 @@ static_library("browser") {
       "android/document/document_web_contents_delegate.h",
       "android/dom_distiller/distiller_ui_handle_android.cc",
       "android/dom_distiller/distiller_ui_handle_android.h",
-      "android/explore_sites/block_site_task.cc",
-      "android/explore_sites/block_site_task.h",
-      "android/explore_sites/catalog.cc",
-      "android/explore_sites/catalog.h",
-      "android/explore_sites/clear_activities_task.cc",
-      "android/explore_sites/clear_activities_task.h",
-      "android/explore_sites/clear_catalog_task.cc",
-      "android/explore_sites/clear_catalog_task.h",
-      "android/explore_sites/explore_sites_bridge.cc",
-      "android/explore_sites/explore_sites_bridge.h",
-      "android/explore_sites/explore_sites_bridge_experimental.cc",
-      "android/explore_sites/explore_sites_feature.cc",
-      "android/explore_sites/explore_sites_feature.h",
-      "android/explore_sites/explore_sites_fetcher.cc",
-      "android/explore_sites/explore_sites_fetcher.h",
-      "android/explore_sites/explore_sites_schema.cc",
-      "android/explore_sites/explore_sites_schema.h",
-      "android/explore_sites/explore_sites_service.h",
-      "android/explore_sites/explore_sites_service_factory.cc",
-      "android/explore_sites/explore_sites_service_factory.h",
-      "android/explore_sites/explore_sites_service_impl.cc",
-      "android/explore_sites/explore_sites_service_impl.h",
-      "android/explore_sites/explore_sites_store.cc",
-      "android/explore_sites/explore_sites_store.h",
-      "android/explore_sites/explore_sites_types.cc",
-      "android/explore_sites/explore_sites_types.h",
-      "android/explore_sites/get_catalog_task.cc",
-      "android/explore_sites/get_catalog_task.h",
-      "android/explore_sites/get_images_task.cc",
-      "android/explore_sites/get_images_task.h",
-      "android/explore_sites/get_version_task.cc",
-      "android/explore_sites/get_version_task.h",
-      "android/explore_sites/history_statistics_reporter.cc",
-      "android/explore_sites/history_statistics_reporter.h",
-      "android/explore_sites/image_helper.cc",
-      "android/explore_sites/image_helper.h",
-      "android/explore_sites/import_catalog_task.cc",
-      "android/explore_sites/import_catalog_task.h",
-      "android/explore_sites/increment_shown_count_task.cc",
-      "android/explore_sites/increment_shown_count_task.h",
-      "android/explore_sites/most_visited_client.cc",
-      "android/explore_sites/most_visited_client.h",
-      "android/explore_sites/ntp_json_fetcher.cc",
-      "android/explore_sites/ntp_json_fetcher.h",
-      "android/explore_sites/record_site_click_task.cc",
-      "android/explore_sites/record_site_click_task.h",
-      "android/explore_sites/url_util.cc",
-      "android/explore_sites/url_util.h",
-      "android/explore_sites/url_util_experimental.cc",
-      "android/explore_sites/url_util_experimental.h",
       "android/favicon_helper.cc",
       "android/favicon_helper.h",
       "android/feature_engagement/tracker_factory_android.cc",
@@ -3344,7 +3294,6 @@ static_library("browser") {
     deps += [
       ":client_discourse_context_proto",
       ":delta_file_proto",
-      ":explore_sites_proto",
       ":profile_token",
       ":usage_stats_proto",
       "//chrome/android:jni_headers",
@@ -3400,7 +3349,6 @@ static_library("browser") {
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/ui/android/layouts:android",
-      "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
       "//chrome/browser/video_tutorials/internal",
       "//chrome/common:non_code_constants",
       "//chrome/services/media_gallery_util/public/cpp",
@@ -3447,7 +3395,6 @@ static_library("browser") {
       "//components/image_fetcher:android",
       "//components/image_fetcher/core:metrics",
       "//components/infobars/android",
-      "//components/installedapp/android",
       "//components/invalidation/impl:feature_list",
       "//components/javascript_dialogs/android:jni_headers",
       "//components/language/android:language_bridge",
@@ -7400,10 +7347,6 @@ if (is_android) {
     sources = [ "android/proto/delta_file.proto" ]
   }
 
-  proto_library("explore_sites_proto") {
-    sources = [ "android/explore_sites/catalog.proto" ]
-  }
-
   proto_library("profile_token") {
     sources = [ "android/proto/profile_token.proto" ]
   }
@@ -7551,10 +7494,6 @@ grit("resources") {
     ]
   }
 
-  if (is_android) {
-    deps +=
-        [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings_js" ]
-  }
   if (!is_android) {
     deps +=
         [ "//chrome/browser/share/core/resources:make_share_targets_protobuf" ]

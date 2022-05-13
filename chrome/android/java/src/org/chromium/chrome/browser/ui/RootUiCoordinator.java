@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -66,17 +65,14 @@ import org.chromium.chrome.browser.messages.ChromeMessageAutodismissDurationProv
 import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
-import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.ShareButtonController;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
-import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
@@ -127,7 +123,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -185,7 +180,6 @@ public class RootUiCoordinator
     private ScrimCoordinator mScrimCoordinator;
     private DirectActionInitializer mDirectActionInitializer;
     private List<ButtonDataProvider> mButtonDataProviders;
-    private IdentityDiscController mIdentityDiscController;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
@@ -819,14 +813,6 @@ public class RootUiCoordinator
                 return profile == null ? null : TrackerFactory.getTrackerForProfile(profile);
             };
 
-            mIdentityDiscController = new IdentityDiscController(
-                    mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
-            ShareButtonController shareButtonController = new ShareButtonController(mActivity,
-                    AppCompatResources.getDrawable(
-                            mActivity, R.drawable.ic_toolbar_share_offset_24dp),
-                    mActivityTabProvider, mShareDelegateSupplier, trackerSupplier, new ShareUtils(),
-                    mActivityLifecycleDispatcher, mModalDialogManagerSupplier.get(),
-                    () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
             VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
                     new VoiceToolbarButtonController.VoiceSearchDelegate() {
                         @Override
@@ -856,14 +842,12 @@ public class RootUiCoordinator
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
                             mActivityLifecycleDispatcher, mTabCreatorManagerSupplier,
                             mTabModelSelectorSupplier, trackerSupplier);
-            mButtonDataProviders =
-                    Arrays.asList(mIdentityDiscController);
 
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
                     mTabObscuringHandlerSupplier.get(), mShareDelegateSupplier,
-                    mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
+                    mButtonDataProviders, mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback,
                     mProfileSupplier, mCanAnimateBrowserControls,
                     mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,

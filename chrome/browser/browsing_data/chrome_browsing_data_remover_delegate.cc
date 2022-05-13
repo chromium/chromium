@@ -142,7 +142,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
-#include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -151,7 +150,6 @@
 #include "components/feed/buildflags.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/installedapp/android/jni_headers/PackageHash_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -570,17 +568,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     device_event_log::Clear(delete_begin_, delete_end_);
 
-#if BUILDFLAG(IS_ANDROID)
-    explore_sites::ExploreSitesService* explore_sites_service =
-        explore_sites::ExploreSitesServiceFactory::GetForBrowserContext(
-            profile_);
-    if (explore_sites_service) {
-      explore_sites_service->ClearActivities(
-          delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kExploreSites));
-    }
-#endif
-
     CreateCrashUploadList()->Clear(delete_begin_, delete_end_);
 
     FindBarStateFactory::GetForBrowserContext(profile_)->SetLastSearchText(
@@ -644,11 +631,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
       MediaDeviceIDSalt::Reset(profile_->GetPrefs());
 
-#if BUILDFLAG(IS_ANDROID)
-      Java_PackageHash_onCookiesDeleted(
-          base::android::AttachCurrentThread(),
-          ProfileAndroid::FromProfile(profile_)->GetJavaObject());
-#endif
     }
 
     if (nullable_filter.is_null() ||

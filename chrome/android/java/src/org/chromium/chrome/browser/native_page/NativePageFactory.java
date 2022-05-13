@@ -17,7 +17,6 @@ import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesPage;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.management.ManagementPage;
@@ -156,12 +155,6 @@ public class NativePageFactory {
                     mToolbarSupplier);
         }
 
-        protected NativePage buildExploreSitesPage(Tab tab) {
-            return new ExploreSitesPage(mActivity,
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab,
-                    mTabModelSelector);
-        }
-
         protected NativePage buildLaunchpadPage(Tab tab) {
             return null;
         }
@@ -199,9 +192,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.NTP:
                 page = getBuilder().buildNewTabPage(tab, url);
-                break;
-            case NativePageType.EXPLORE:
-                page = getBuilder().buildExploreSitesPage(tab);
                 break;
             case NativePageType.LAUNCHPAD:
                 page = getBuilder().buildLaunchpadPage(tab);

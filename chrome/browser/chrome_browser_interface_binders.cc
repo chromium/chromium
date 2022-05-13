@@ -117,8 +117,6 @@
 #include "chrome/browser/android/contextualsearch/contextual_search_observer.h"
 #include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
-#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
-#include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_ui.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/contextual_search/content/browser/contextual_search_js_api_service_impl.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
@@ -792,9 +790,7 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  RegisterWebUIControllerInterfaceBinder<
-      explore_sites_internals::mojom::PageHandler,
-      explore_sites::ExploreSitesInternalsUI>(map);
+  // do nothing
 #else
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);

@@ -6124,7 +6124,6 @@ test("unit_tests") {
       "//chrome/android/modules/dev_ui/provider:native",
       "//chrome/browser:client_discourse_context_proto",
       "//chrome/browser:delta_file_proto",
-      "//chrome/browser:explore_sites_proto",
       "//chrome/browser:profile_token",
       "//chrome/browser:usage_stats_proto",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",

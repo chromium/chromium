@@ -211,7 +211,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
@@ -1687,25 +1686,6 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kExploreSitesExperimental = {
-    chrome::android::explore_sites::kExploreSitesVariationParameterName,
-    chrome::android::explore_sites::kExploreSitesVariationExperimental};
-const FeatureEntry::FeatureParam kExploreSitesDenseTitleBottom[] = {
-    {chrome::android::explore_sites::kExploreSitesDenseVariationParameterName,
-     chrome::android::explore_sites::
-         kExploreSitesDenseVariationDenseTitleBottom},
-};
-const FeatureEntry::FeatureParam kExploreSitesDenseTitleRight[] = {
-    {chrome::android::explore_sites::kExploreSitesDenseVariationParameterName,
-     chrome::android::explore_sites::
-         kExploreSitesDenseVariationDenseTitleRight},
-};
-const FeatureEntry::FeatureVariation kExploreSitesVariations[] = {
-    {"Experimental", &kExploreSitesExperimental, 1, nullptr},
-    {"Dense Title Bottom", kExploreSitesDenseTitleBottom,
-     std::size(kExploreSitesDenseTitleBottom), nullptr},
-    {"Dense Title Right", kExploreSitesDenseTitleRight,
-     std::size(kExploreSitesDenseTitleRight), nullptr}};
 const FeatureEntry::FeatureParam kLongpressResolvePreserveTap = {
     contextual_search::kLongpressResolveParamName,
     contextual_search::kLongpressResolvePreserveTap};
@@ -3242,11 +3222,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualTriggersSelectionSizeName,
      flag_descriptions::kContextualTriggersSelectionSizeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualTriggersSelectionSize)},
-    {"explore-sites", flag_descriptions::kExploreSitesName,
-     flag_descriptions::kExploreSitesDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kExploreSites,
-                                    kExploreSitesVariations,
-                                    "ExploreSites InitialCountries")},
     {"related-searches", flag_descriptions::kRelatedSearchesName,
      flag_descriptions::kRelatedSearchesDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearches,

@@ -5493,17 +5493,6 @@
     <issue
         id="WrongConstant"
         message="Must be one of: IdentityDiscState.NONE, IdentityDiscState.SMALL, IdentityDiscState.LARGE"
-        errorLine1="    private ProfileDataCache mProfileDataCache[] = new ProfileDataCache[IdentityDiscState.MAX];"
-        errorLine2="                                                                                          ~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java"
-            line="80"
-            column="91"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: IdentityDiscState.NONE, IdentityDiscState.SMALL, IdentityDiscState.LARGE"
         errorLine1="        for (int i = 0; i &lt; IdentityDiscState.MAX; i++) {"
         errorLine2="                                              ~~~">
         <location

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.suggestions.tile;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -20,15 +19,12 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesIPH;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -158,11 +154,6 @@ public class TileRenderer {
                 // One task to load actual icon.
                 LargeIconBridge.LargeIconCallback bridgeCallback =
                         setupDelegate.createIconLoadCallback(tile);
-                ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
-                        mDesiredIconSize,
-                        (Bitmap img)
-                                -> bridgeCallback.onLargeIconAvailable(
-                                        img, Color.BLACK, false, IconType.FAVICON));
             }
         } else {
             tileView = (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
@@ -192,10 +183,6 @@ public class TileRenderer {
 
         tileView.setOnClickListener(delegate);
         tileView.setOnCreateContextMenuListener(delegate);
-
-        if (tile.getSource() == TileSource.EXPLORE) {
-            ExploreSitesIPH.configureIPH(tileView, Profile.getLastUsedRegularProfile());
-        }
 
         return tileView;
     }

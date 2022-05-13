@@ -17,7 +17,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -112,11 +110,9 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param startSurfaceAsHomepageSupplier Supplier of whether start surface should be shown as
      *         homepage.
      * @param homepageManagedByPolicySupplier Supplier of whether the homepage is managed by policy.
-     * @param identityDiscStateSupplier Supplier of the state change of identity disc button.
      * @param invalidatorCallback Callback that will be invoked  when the toolbar attempts to
      *        invalidate the drawing surface.  This will give the object that registers as the host
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
-     * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param isProgressBarVisibleSupplier A supplier of whether the progress bar is visible.
      * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
@@ -135,7 +131,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, UserEducationHelper userEducationHelper,
             List<ButtonDataProvider> buttonDataProviders,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
@@ -145,8 +140,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
+            Callback<Runnable> invalidatorCallback,
             Supplier<ResourceManager> resourceManagerSupplier,
             ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
@@ -172,8 +166,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 }
             };
             mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
-                    userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
-                    overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
+                    userEducationHelper, overviewThemeColorProvider,
+                    overviewModeMenuButtonCoordinator,
                     isGridTabSwitcherEnabled, homepageEnabledSupplier,
                     startSurfaceAsHomepageSupplier, homepageManagedByPolicySupplier,
                     homeButtonOnClickListener, isTabGroupsAndroidContinuationEnabled,

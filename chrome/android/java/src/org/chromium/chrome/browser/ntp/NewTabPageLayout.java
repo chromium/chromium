@@ -22,7 +22,6 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -33,8 +32,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
-import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
@@ -89,11 +86,6 @@ public class NewTabPageLayout extends LinearLayout {
     private ImageView mCryptidHolder;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
-
-    @Nullable
-    private View mExploreSectionView; // View is null if explore flag is disabled.
-    @Nullable
-    private Object mExploreSection; // Null when explore sites disabled.
 
     private OnSearchBoxScrollListener mSearchBoxScrollListener;
 
@@ -154,13 +146,6 @@ public class NewTabPageLayout extends LinearLayout {
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
         mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
         insertSiteSectionView();
-
-        int variation = ExploreSitesBridge.getVariation();
-        if (ExploreSitesBridge.isExperimental(variation)) {
-            ViewStub exploreStub = findViewById(R.id.explore_sites_stub);
-            exploreStub.setLayoutResource(R.layout.experimental_explore_sites_section);
-            mExploreSectionView = exploreStub.inflate();
-        }
     }
 
     /**
@@ -317,12 +302,6 @@ public class NewTabPageLayout extends LinearLayout {
 
         mMostVisitedTilesCoordinator.initWithNative(
                 mManager, tileGroupDelegate);
-
-        int variation = ExploreSitesBridge.getVariation();
-        if (ExploreSitesBridge.isExperimental(variation)) {
-            mExploreSection = new ExperimentalExploreSitesSection(
-                    mExploreSectionView, profile, mManager.getNavigationDelegate());
-        }
     }
 
     /**
@@ -817,11 +796,6 @@ public class NewTabPageLayout extends LinearLayout {
                 measureExactly(getSearchBoxView(), width, getSearchBoxView().getMeasuredHeight());
                 measureExactly(mSearchProviderLogoView, width,
                         mSearchProviderLogoView.getMeasuredHeight());
-
-                if (mExploreSectionView != null) {
-                    measureExactly(mExploreSectionView, mMvTilesContainerLayout.getMeasuredWidth(),
-                            mExploreSectionView.getMeasuredHeight());
-                }
             } else {
                 final int exploreWidth = getMeasuredWidth() - mTileGridLayoutBleed;
                 measureExactly(
@@ -829,12 +803,6 @@ public class NewTabPageLayout extends LinearLayout {
                 measureExactly(mSearchProviderLogoView, exploreWidth,
                         mSearchProviderLogoView.getMeasuredHeight());
             }
-        } else if (mExploreSectionView != null) {
-            final int exploreWidth = mExploreSectionView.getMeasuredWidth() - mTileGridLayoutBleed;
-            measureExactly(
-                    getSearchBoxView(), exploreWidth, getSearchBoxView().getMeasuredHeight());
-            measureExactly(mSearchProviderLogoView, exploreWidth,
-                    mSearchProviderLogoView.getMeasuredHeight());
         }
     }
 

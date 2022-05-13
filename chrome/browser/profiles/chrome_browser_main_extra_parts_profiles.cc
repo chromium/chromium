@@ -130,7 +130,6 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
@@ -349,9 +348,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   BackgroundDownloadServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   ExitTypeServiceFactory::GetInstance();
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  explore_sites::ExploreSitesServiceFactory::GetInstance();
 #endif
   FaviconServiceFactory::GetInstance();
   feature_engagement::TrackerFactory::GetInstance();

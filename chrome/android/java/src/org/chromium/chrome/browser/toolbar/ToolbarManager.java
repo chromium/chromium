@@ -52,14 +52,12 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -312,7 +310,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param topUiThemeColorProvider The ThemeColorProvider object for top UI.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param shareDelegateSupplier Supplier for ShareDelegate.
-     * @param identityDiscController The controller that coordinates the state of the identity disc
      * @param buttonDataProviders The list of button data providers for the optional toolbar button
      *         in the browsing mode toolbar, given in precedence order.
      * @param tabProvider The {@link ActivityTabProvider} for accessing current activity tab.
@@ -351,7 +348,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             TopUiThemeColorProvider topUiThemeColorProvider,
             TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            IdentityDiscController identityDiscController,
             List<ButtonDataProvider> buttonDataProviders, ActivityTabProvider tabProvider,
             ScrimCoordinator scrimCoordinator, ToolbarActionModeCallback toolbarActionModeCallback,
             ObservableSupplier<Profile> profileSupplier,
@@ -523,7 +519,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 });
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, mCompositorViewHolder.getInvalidator(),
-                identityDiscController, isGridTabSwitcherEnabled, isTabletGtsPolishEnabled,
+                isGridTabSwitcherEnabled, isTabletGtsPolishEnabled,
                 isTabToGtsAnimationEnabled, mIsStartSurfaceEnabled,
                 isTabGroupsAndroidContinuationEnabled, initializeWithIncognitoColors,
                 profileSupplier, startSurfaceLogoClickedCallback);
@@ -538,11 +534,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                         new LoadUrlParams(url, transition | PageTransition.FROM_ADDRESS_BAR),
                         postDataType, postData, incognito, startSurfaceParentTabSupplier.get());
         ExploreIconProvider exploreIconProvider = (pixelSize, callback) -> {
-            if (profileSupplier.hasValue()) {
-                ExploreSitesBridge.getSummaryImage(profileSupplier.get(), pixelSize, callback);
-            } else {
-                callback.onResult(null);
-            }
+            callback.onResult(null);
         };
         // clang-format off
         LocationBarCoordinator locationBarCoordinator = new LocationBarCoordinator(
@@ -899,7 +891,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ToolbarControlContainer controlContainer, ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider, Invalidator invalidator,
-            IdentityDiscController identityDiscController, boolean isGridTabSwitcherEnabled,
+            boolean isGridTabSwitcherEnabled,
             boolean isTabletGtsPolishEnabled, boolean isTabToGtsAnimationEnabled,
             boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             boolean initializeWithIncognitoColors, ObservableSupplier<Profile> profileSupplier,
@@ -918,18 +910,18 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer,
                 tabSwitcherToolbarStub, toolbarLayout, mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
-                mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
+                browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 mHomepageManagedByPolicySupplier,
-                mIdentityDiscStateSupplier, (client) -> {
+                (client) -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);
                     } else {
                         client.run();
                     }
-                }, () -> identityDiscController.getForStartSurface(mStartSurfaceState),
+                },
                 mCompositorViewHolder::getResourceManager,
                 mIsProgressBarVisibleSupplier, IncognitoUtils::isIncognitoModeEnabled,
                 isGridTabSwitcherEnabled, isTabletGtsPolishEnabled, isTabToGtsAnimationEnabled,
@@ -971,11 +963,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
 
-        if (toolbarLayout instanceof ToolbarPhone
-                && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
-            identityDiscController.addObserver(
-                    (canShowHint) -> mIdentityDiscStateSupplier.set(canShowHint));
-        }
         HomeButton homeButton = toolbarLayout.getHomeButton();
         if (homeButton != null) {
             homeButton.init(mHomepageEnabledSupplier, HomepageManager.getInstance()::onMenuClick,

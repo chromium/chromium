@@ -4,6 +4,35 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.logo.LogoLoadHelper;
+import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.TabCountProvider;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.PropertyModel;
+
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_ENABLED_SUPPLIER;
@@ -31,43 +60,12 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
-import android.view.View;
-import android.view.View.OnClickListener;
-
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.BooleanSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.logo.LogoLoadHelper;
-import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.modelutil.PropertyModel;
-
 /** The mediator implements interacts between the views and the caller. */
 class StartSurfaceToolbarMediator {
     private final PropertyModel mPropertyModel;
     private final Callback<IPHCommandBuilder> mShowIdentityIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
     private final boolean mShouldShowTabSwitcherButtonOnHomepage;
-    private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
@@ -100,8 +98,6 @@ class StartSurfaceToolbarMediator {
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean showHomeButtonOnTabSwitcher,
             MenuButtonCoordinator menuButtonCoordinator,
-            ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Supplier<ButtonData> identityDiscButtonSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
@@ -115,18 +111,12 @@ class StartSurfaceToolbarMediator {
         mShowIdentityIPHCallback = showIdentityIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
-        mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
         mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mProfileSupplier = profileSupplier;
         mLogoClickedCallback = logoClickedCallback;
         mDefaultSearchEngineHasLogo = true;
-        identityDiscStateSupplier.addObserver((canShowHint) -> {
-            // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
-            if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
-            updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-        });
 
         mShowHomeButtonOnTabSwitcher = showHomeButtonOnTabSwitcher;
         if (mShowHomeButtonOnTabSwitcher) {
@@ -159,8 +149,6 @@ class StartSurfaceToolbarMediator {
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
-                updateIdentityDisc(mIdentityDiscButtonSupplier.get());
             }
 
             @Override
@@ -212,7 +200,6 @@ class StartSurfaceToolbarMediator {
         updateIncognitoToggleTabVisibility();
         updateNewTabViewVisibility();
         updateHomeButtonVisibility();
-        updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         updateAppMenuUpdateBadgeSuppression();
         setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateButtonsClickable(shouldShowStartSurfaceToolbar);
@@ -290,7 +277,6 @@ class StartSurfaceToolbarMediator {
 
         if (mTabModelSelector.isTabStateInitialized()) maybeInitializeIncognitoToggle();
         mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
-        updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
         mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);

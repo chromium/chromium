@@ -17,13 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesCatalogUpdateRequestSource;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
@@ -212,7 +209,6 @@ public class TileGroup implements MostVisitedSites.Observer {
     private GURL mPendingInsertionUrl;
 
     private boolean mHasReceivedData;
-    private boolean mExploreSitesLoaded;
 
     // TODO(dgn): Attempt to avoid cycling dependencies with TileRenderer. Is there a better way?
     private final TileSetupDelegate mTileSetupDelegate = new TileSetupDelegate() {
@@ -268,11 +264,6 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (suggestion.sectionType != TileSectionType.PERSONALIZED) continue;
             if (suggestion.url.equals(mPendingRemovalUrl)) removalCompleted = false;
             if (suggestion.url.equals(mPendingInsertionUrl)) insertionCompleted = true;
-            if (suggestion.source == TileSource.EXPLORE && !mExploreSitesLoaded) {
-                mExploreSitesLoaded = true;
-                ExploreSitesBridge.initializeCatalog(Profile.getLastUsedRegularProfile(),
-                        ExploreSitesCatalogUpdateRequestSource.NEW_TAB_PAGE);
-            }
         }
 
         boolean expectedChangeCompleted = false;
