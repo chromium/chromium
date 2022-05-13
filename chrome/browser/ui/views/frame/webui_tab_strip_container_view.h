@@ -118,6 +118,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   void CloseForEventOutsideTabStrip(TabStripUICloseAction reason);
 
   void InitializeWebView();
+  void DeinitializeWebView();
 
   // TabStripUIEmbedder:
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;

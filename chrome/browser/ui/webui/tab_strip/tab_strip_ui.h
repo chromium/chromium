@@ -39,10 +39,12 @@ class TabStripUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tab_strip::mojom::PageHandlerFactory> receiver);
 
-  // Initialize TabStripUI with its embedder and the Browser it's
-  // running in. Must be called exactly once. The WebUI won't work until
-  // this is called.
+  // Initialize TabStripUI with its embedder and the Browser it's running in.
+  // Must be called exactly once. The WebUI won't work until this is called.
+  // |Deinitialize| is called during |embedder|'s destructor. It release the
+  // references taken previously and release the objects depending on them.
   void Initialize(Browser* browser, TabStripUIEmbedder* embedder);
+  void Deinitialize();
 
   // The embedder should call this whenever the result of
   // Embedder::GetLayout() changes.

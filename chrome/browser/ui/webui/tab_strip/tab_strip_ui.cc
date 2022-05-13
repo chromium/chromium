@@ -128,6 +128,14 @@ void TabStripUI::Initialize(Browser* browser, TabStripUIEmbedder* embedder) {
   embedder_ = embedder;
 }
 
+void TabStripUI::Deinitialize() {
+  page_handler_.reset();
+  DCHECK(browser_);
+  DCHECK(embedder_);
+  browser_ = nullptr;
+  embedder_ = nullptr;
+}
+
 void TabStripUI::LayoutChanged() {
   if (page_handler_)
     page_handler_->NotifyLayoutChanged();
