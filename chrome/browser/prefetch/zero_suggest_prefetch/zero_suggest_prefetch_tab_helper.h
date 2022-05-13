@@ -22,8 +22,7 @@ class ZeroSuggestPrefetchTabHelper
       delete;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

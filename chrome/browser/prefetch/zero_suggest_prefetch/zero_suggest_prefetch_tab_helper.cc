@@ -49,12 +49,10 @@ ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
 
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
 
-void ZeroSuggestPrefetchTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->GetURL() != GURL(chrome::kChromeUINewTabPageURL)) {
+void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().GetLastCommittedURL() !=
+      GURL(chrome::kChromeUINewTabPageURL))
     return;
-  }
 
   // Make sure to observe the TabStripModel, if not already, in order to get
   // notified when a New Tab Page is switched to.
