@@ -638,9 +638,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (messages::IsPasswordMessagesUiEnabled()) {
-    save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
-  } else {
+  if (!messages::IsPasswordMessagesUiEnabled()) {
     HideSavePasswordInfobar(web_contents());
   }
 
