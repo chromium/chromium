@@ -275,15 +275,8 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
   }
-  bool needs_interop_factory = (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
-                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-#if BUILDFLAG(IS_ANDROID)
-  // Scanout on Android requires explicit fence synchronization which is only
-  // supported by the interop factory.
-  needs_interop_factory |= usage & SHARED_IMAGE_USAGE_SCANOUT;
-#endif
-
-  if (needs_interop_factory) {
+  if ((usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+      (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE)) {
     // return false if it needs interop factory
     return false;
   }

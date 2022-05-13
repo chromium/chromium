@@ -329,6 +329,7 @@ SharedImageFactory::SharedImageFactory(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
   if (use_gl) {
     auto gl_image_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLImage>(
@@ -338,6 +339,7 @@ SharedImageFactory::SharedImageFactory(
             /*for_shared_memory_gmbs=*/true);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
+#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // If Chrome and ANGLE are sharing the same vulkan device queue, AngleVulkan
@@ -418,6 +420,7 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // defined(USE_OZONE)
 
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(hitawala): Temporary factory that will be replaced with Ozone and
   // other backings
   if (use_gl) {
@@ -429,6 +432,7 @@ SharedImageFactory::SharedImageFactory(
             /*for_shared_memory_gmbs=*/false);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
+#endif
 }
 
 SharedImageFactory::~SharedImageFactory() {
