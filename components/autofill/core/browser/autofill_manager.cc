@@ -161,6 +161,9 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
                                       mojom::SubmissionSource source) {
   if (IsValidFormData(form))
     OnFormSubmittedImpl(form, known_success, source);
+
+  for (Observer& observer : observers_)
+    observer.OnFormSubmitted();
 }
 
 void AutofillManager::OnFormsSeen(
@@ -276,6 +279,10 @@ void AutofillManager::OnTextFieldDidChange(const FormData& form,
     return;
 
   OnTextFieldDidChangeImpl(form, field, bounding_box, timestamp);
+
+  for (Observer& observer : observers_) {
+    observer.OnTextFieldDidChange();
+  }
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
@@ -285,6 +292,9 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
     return;
 
   OnTextFieldDidScrollImpl(form, field, bounding_box);
+
+  for (Observer& observer : observers_)
+    observer.OnTextFieldDidScroll();
 }
 
 void AutofillManager::OnSelectControlDidChange(const FormData& form,
@@ -294,6 +304,9 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
     return;
 
   OnSelectControlDidChangeImpl(form, field, bounding_box);
+
+  for (Observer& observer : observers_)
+    observer.OnSelectControlDidChange();
 }
 
 void AutofillManager::OnAskForValuesToFill(int query_id,
@@ -409,8 +422,9 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
     form_structure->RetrieveFromCache(*cached_form,
                                       /*should_keep_cached_value=*/true,
                                       /*only_server_and_autofill_state=*/true);
-    if (observer_for_testing_)
-      observer_for_testing_->OnFormParsed();
+
+    for (Observer& observer : observers_)
+      observer.OnFormParsed();
 
     if (form_structure.get()->value_from_dynamic_change_form())
       value_from_dynamic_change_form_ = true;

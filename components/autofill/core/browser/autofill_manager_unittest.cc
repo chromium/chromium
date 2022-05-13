@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,6 +152,24 @@ class MockAutofillManager : public AutofillManager {
               (override));
 };
 
+class MockAutofillObserver : public AutofillManager::Observer {
+ public:
+  MockAutofillObserver() = default;
+  MockAutofillObserver(const MockAutofillObserver&) = delete;
+  MockAutofillObserver& operator=(const MockAutofillObserver&) = delete;
+  ~MockAutofillObserver() override = default;
+
+  MOCK_METHOD(void, OnFormParsed, (), (override));
+
+  MOCK_METHOD(void, OnTextFieldDidChange, (), (override));
+
+  MOCK_METHOD(void, OnTextFieldDidScroll, (), (override));
+
+  MOCK_METHOD(void, OnSelectControlDidChange, (), (override));
+
+  MOCK_METHOD(void, OnFormSubmitted, (), (override));
+};
+
 // Creates a vector of test forms which differ in their FormGlobalIds
 // and FieldGlobalIds.
 std::vector<FormData> CreateTestForms(size_t num_forms) {
@@ -278,6 +297,40 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
   std::vector<FormData> forms = CreateTestForms(9);
   OnFormsSeenWithExpectations(*manager_, forms, GetFormIds(forms), forms);
   OnFormsSeenWithExpectations(*manager_, forms, GetFormIds(forms), forms);
+}
+
+TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
+  FormData form = CreateTestForms(1).front();
+  FormFieldData field = form.fields.front();
+  gfx::RectF bounds;
+  base::TimeTicks time = AutofillTickClock::NowTicks();
+
+  MockAutofillObserver observer;
+  manager_->AddObserver(&observer);
+  // Reset the manager, the observers should stick around.
+  manager_->Reset();
+
+  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(1);
+  manager_->OnTextFieldDidChange(form, field, bounds, time);
+  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(0);
+
+  EXPECT_CALL(observer, OnTextFieldDidScroll()).Times(1);
+  manager_->OnTextFieldDidScroll(form, field, bounds);
+  EXPECT_CALL(observer, OnTextFieldDidScroll()).Times(0);
+
+  EXPECT_CALL(observer, OnSelectControlDidChange()).Times(1);
+  manager_->OnSelectControlDidChange(form, field, bounds);
+  EXPECT_CALL(observer, OnSelectControlDidChange()).Times(0);
+
+  EXPECT_CALL(observer, OnFormSubmitted()).Times(1);
+  manager_->OnFormSubmitted(form, true,
+                            mojom::SubmissionSource::FORM_SUBMISSION);
+  EXPECT_CALL(observer, OnFormSubmitted()).Times(0);
+
+  // Remove observer from manager, the observer should no longer receive pings.
+  manager_->RemoveObserver(&observer);
+  EXPECT_CALL(observer, OnTextFieldDidChange()).Times(0);
+  manager_->OnTextFieldDidChange(form, field, bounds, time);
 }
 
 }  // namespace autofill

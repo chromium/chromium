@@ -12,6 +12,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -56,9 +57,21 @@ class AutofillManager
  public:
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
-  class ObserverForTest {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual void OnFormParsed() = 0;
+    virtual void OnFormParsed(){};
+
+    // See |AutofillManager::OnTextFieldDidChange|.
+    virtual void OnTextFieldDidChange(){};
+
+    // See |AutofillManager::OnTextFieldDidScroll|.
+    virtual void OnTextFieldDidScroll(){};
+
+    // See |AutofillManager::OnSelectControlDidChange|.
+    virtual void OnSelectControlDidChange(){};
+
+    // See |AutofillManager::OnFormSubmitted|.
+    virtual void OnFormSubmitted(){};
   };
 
   using EnableDownloadManager =
@@ -214,8 +227,10 @@ class AutofillManager
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
 
-  void SetEventObserverForTesting(ObserverForTest* observer) {
-    observer_for_testing_ = observer;
+  void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
   }
 
   // Returns the present form structures seen by Autofill handler.
@@ -401,8 +416,8 @@ class AutofillManager
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
 
-  // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+  // Observers that listen to updates of this instance.
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace autofill
