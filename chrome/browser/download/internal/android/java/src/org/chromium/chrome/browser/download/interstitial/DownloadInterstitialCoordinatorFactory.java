@@ -22,7 +22,8 @@ public class DownloadInterstitialCoordinatorFactory {
     public static DownloadInterstitialCoordinator create(
             Supplier<Context> contextSupplier, String downloadUrl, WindowAndroid windowAndroid) {
         return new DownloadInterstitialCoordinatorImpl(contextSupplier, downloadUrl,
-                OfflineContentAggregatorFactory.get(), SnackbarManagerProvider.from(windowAndroid));
+                OfflineContentAggregatorFactory.get(), SnackbarManagerProvider.from(windowAndroid),
+                () -> NewDownloadTab.closeExistingNewDownloadTab(windowAndroid));
     }
 
     private DownloadInterstitialCoordinatorFactory() {}

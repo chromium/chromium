@@ -76,7 +76,8 @@ public class DownloadInterstitialMediatorTest {
         mModel.set(DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT, CANCEL_BUTTON_TEXT);
         mProvider.addItem(mItem0);
         mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
-                mItem0.originalUrl, mProvider, mSnackbarManager, sharedPrefsManager);
+                mItem0.originalUrl, mProvider, mSnackbarManager, sharedPrefsManager,
+                () -> { mMediator = null; });
         // Increment progress to trigger onItemUpdated method for OfflineContentProvider observers.
         // This attaches the OfflineItem to the mediator.
         mProvider.incrementProgress(mItem0.id);
@@ -111,7 +112,7 @@ public class DownloadInterstitialMediatorTest {
         mModel.set(DOWNLOAD_ITEM, null);
         mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
                 item1.originalUrl, mProvider, mSnackbarManager,
-                SharedPreferencesManager.getInstance());
+                SharedPreferencesManager.getInstance(), () -> { mMediator = null; });
         mProvider.incrementProgress(mItem0.id);
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
@@ -125,7 +126,7 @@ public class DownloadInterstitialMediatorTest {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
         clickButtonWithText(CANCEL_BUTTON_TEXT);
 
-        assertEquals(DownloadInterstitialProperties.State.CANCELLED, mModel.get(STATE));
+        assertEquals(DownloadInterstitialProperties.State.PENDING_REMOVAL, mModel.get(STATE));
         assertNotEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
     }
 
@@ -195,7 +196,7 @@ public class DownloadInterstitialMediatorTest {
         clickButtonWithText(DELETE_BUTTON_TEXT);
 
         assertTrue(mSnackbarShown);
-        assertEquals(DownloadInterstitialProperties.State.CANCELLED, mModel.get(STATE));
+        assertEquals(DownloadInterstitialProperties.State.PENDING_REMOVAL, mModel.get(STATE));
     }
 
     @Test

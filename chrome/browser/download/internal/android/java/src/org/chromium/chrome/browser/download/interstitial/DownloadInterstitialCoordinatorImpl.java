@@ -32,12 +32,13 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
      * @param snackbarManager Snackbar manager for the current activity.
      */
     public DownloadInterstitialCoordinatorImpl(Supplier<Context> contextSupplier,
-            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager) {
+            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager,
+            Runnable closeRunnable) {
         mView = DownloadInterstitialView.create(contextSupplier.get());
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
         mMediator = new DownloadInterstitialMediator(contextSupplier, model, downloadUrl, provider,
-                snackbarManager, SharedPreferencesManager.getInstance());
+                snackbarManager, SharedPreferencesManager.getInstance(), closeRunnable);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 model, mView, DownloadInterstitialViewBinder::bind);
     }

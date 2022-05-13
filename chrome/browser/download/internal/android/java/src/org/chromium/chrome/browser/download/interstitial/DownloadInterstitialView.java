@@ -80,7 +80,7 @@ class DownloadInterstitialView {
      */
     void updateFileInfo(OfflineItem item, PropertyModel model) {
         // TODO(alexmitra): Investigate removing code which sets the item's state directly.
-        if (model.get(STATE) == DownloadInterstitialProperties.State.CANCELLED) {
+        if (model.get(STATE) == DownloadInterstitialProperties.State.PENDING_REMOVAL) {
             item.state = OfflineItemState.CANCELLED;
         } else if (model.get(STATE) == DownloadInterstitialProperties.State.SUCCESSFUL) {
             item.state = OfflineItemState.COMPLETE;

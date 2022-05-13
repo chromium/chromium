@@ -19,7 +19,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * UI containing a download ListItem.
  */
 interface DownloadInterstitialProperties extends ListProperties {
-    @IntDef({State.UNKNOWN, State.IN_PROGRESS, State.SUCCESSFUL, State.CANCELLED, State.PAUSED})
+    @IntDef({State.UNKNOWN, State.IN_PROGRESS, State.SUCCESSFUL, State.PENDING_REMOVAL,
+            State.PAUSED})
     /**
      * Keeps track of the state of the DownloadInterstitial. This may be different to the state of
      * the offline item displayed within the UI.
@@ -28,7 +29,7 @@ interface DownloadInterstitialProperties extends ListProperties {
         int UNKNOWN = 0;
         int IN_PROGRESS = 1;
         int SUCCESSFUL = 2;
-        int CANCELLED = 3;
+        int PENDING_REMOVAL = 3;
         int PAUSED = 4;
     }
 
