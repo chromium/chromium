@@ -587,7 +587,7 @@ std::string PrintPreviewHandler::GetCallbackId(int request_id) {
 
 void PrintPreviewHandler::HandleGetPrinters(const base::Value::List& args) {
   CHECK_GE(args.size(), 2u);
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   int type = args[1].GetInt();
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
@@ -622,7 +622,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
     return;
   }
   // If we got here, we know that we have at least one string element.
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   if (args.size() < 3) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
@@ -655,14 +655,12 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
 
 void PrintPreviewHandler::HandleGetPreview(const base::Value::List& args) {
   DCHECK_EQ(2U, args.size());
-  std::string callback_id;
-  std::string json_str;
 
   // All of the conditions below should be guaranteed by the print preview
   // javascript.
-  callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
-  json_str = args[1].GetString();
+  const std::string& json_str = args[1].GetString();
   base::Value::Dict settings = GetSettingsDictionary(json_str);
   int request_id = settings.FindInt(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
@@ -726,10 +724,10 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   ReportRegeneratePreviewRequestCountBeforePrint(
       regenerate_preview_request_count_);
   CHECK(args[0].is_string());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   CHECK(args[1].is_string());
-  std::string json_str = args[1].GetString();
+  const std::string& json_str = args[1].GetString();
 
   base::Value::Dict settings = GetSettingsDictionary(json_str);
   const UserActionBuckets user_action = DetermineUserAction(settings);
@@ -855,7 +853,7 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 void PrintPreviewHandler::HandleGetInitialSettings(
     const base::Value::List& args) {
   CHECK(args[0].is_string());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
