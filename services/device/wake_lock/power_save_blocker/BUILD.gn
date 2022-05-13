@@ -12,13 +12,13 @@ if (is_android) {
 
 source_set("power_save_blocker") {
   visibility = [
-    # Crosapi power API needs to directly use the Ash PowerBlocker .
-    # TODO(b/193670013): Remove visibility after Wayland idle inhibitor replaces
-    # crosapi power service.
+    # Crosapi power API needs to directly use the Ash PowerSaveBlocker.
+    # TODO(b/193670013): Remove visibility after crosapi power service is
+    # cleaned up.
     "//chrome/browser/ash/crosapi",
 
     # Exo Wayland idle inhibit protocol needs to directly use the Ash
-    # PowerBlocker.
+    # PowerSaveBlocker.
     "//components/exo/wayland",
 
     # //remoting runs in a separate process which is outside of the context of
@@ -53,10 +53,6 @@ source_set("power_save_blocker") {
   } else if ((is_linux || is_chromeos) && use_dbus) {
     if (is_chromeos_lacros) {
       sources += [ "power_save_blocker_lacros.cc" ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
     } else {
       sources += [ "power_save_blocker_linux.cc" ]
     }

@@ -4774,10 +4774,6 @@ const char kEcheSWADescription[] = "Enable the SWA version of the Eche.";
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
 
-const char kEnableIdleInhibitName[] = "Enable Idle Inhibit Protocol";
-const char kEnableIdleInhibitDescription[] =
-    "Enables the Wayland idle-inhibit-unstable-v1 protocol";
-
 const char kEnableIkev2VpnName[] = "Enable IKEv2 VPN";
 const char kEnableIkev2VpnDescription[] =
     "Enable selecting IKEv2 as the VPN provider type when creating a VPN "

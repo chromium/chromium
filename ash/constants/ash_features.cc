@@ -540,13 +540,6 @@ const base::Feature kExtendedOpenVpnSettings{"ExtendedOpenVpnSettings",
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether the Wayland idle-inhibit-unstable-v1 protocol is enabled.
-// On Ash, it determines whether the idle inhibit manager is bound by the exo
-// Wayland server. On Lacros, it determines whether the power save blocker is
-// invoked via Ozone Wayland (if enabled) or via crosapi (if disabled).
-const base::Feature kEnableIdleInhibit{"EnableIdleInhibit",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables selecting IKEv2 as the VPN provider type when creating a VPN network.
 // This will only take effect when running a compatible kernel, see
 // crbug/1275421.
@@ -1855,10 +1848,6 @@ bool IsHostnameSettingEnabled() {
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
          ash::switches::HasHps();
-}
-
-bool IsIdleInhibitEnabled() {
-  return base::FeatureList::IsEnabled(kEnableIdleInhibit);
 }
 
 bool IsImprovedDesksKeyboardShortcutsEnabled() {

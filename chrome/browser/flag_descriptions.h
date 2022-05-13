@@ -2724,9 +2724,6 @@ extern const char kEcheSWADescription[];
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 
-extern const char kEnableIdleInhibitName[];
-extern const char kEnableIdleInhibitDescription[];
-
 extern const char kEnableIkev2VpnName[];
 extern const char kEnableIkev2VpnDescription[];
 

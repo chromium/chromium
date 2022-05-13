@@ -8152,12 +8152,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSharesheetCopyToClipboard)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-idle-inhibit", flag_descriptions::kEnableIdleInhibitName,
-     flag_descriptions::kEnableIdleInhibitDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableIdleInhibit)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
     {"context-menu-popup-style", flag_descriptions::kContextMenuPopupStyleName,
      flag_descriptions::kContextMenuPopupStyleDescription, kOsAndroid,

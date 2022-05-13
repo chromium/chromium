@@ -366,10 +366,8 @@ void Server::Initialize() {
                    display_, bind_extended_drag);
   wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface, 3,
                    display_, bind_zxdg_output_manager);
-  if (ash::features::IsIdleInhibitEnabled()) {
-    wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
-                     1, display_, bind_zwp_idle_inhibit_manager);
-  }
+  wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface, 1,
+                   display_, bind_zwp_idle_inhibit_manager);
 
   weston_test_holder_ = std::make_unique<WestonTest>(this);
 
