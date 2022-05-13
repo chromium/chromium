@@ -328,49 +328,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.DatabaseOpenError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DatabaseOpenError.Disk"
-    enum="LevelDBStatus" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage
-    on disk.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DatabaseOpenError.Memory"
-    enum="LevelDBStatus" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of a failed attempt to open a LevelDB database for LocalStorage
-    in memory.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DestroyDBResult" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of attempting to delete the LocalStorage database.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorageContext.DirectoryOpenError"
-    enum="PlatformFileError" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason opening a directory for the LevelDB database that backs
-    LocalStorage failed.
-  </summary>
-</histogram>
-
 <histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
     expires_after="M87">
   <owner>mek@chromium.org</owner>

@@ -629,18 +629,6 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   if (!status.ok()) {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
-    if (in_memory_) {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError.Memory",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DatabaseOpenError.Disk",
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-    }
     LogDatabaseOpenResult(OpenResult::DATABASE_OPEN_FAILED);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
@@ -758,9 +746,6 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
 
 void LocalStorageImpl::OnDBDestroyed(bool recreate_in_memory,
                                      leveldb::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.DestroyDBResult",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   // We're essentially ignoring the status here. Even if destroying failed we
   // still want to go ahead and try to recreate.
   InitiateConnection(recreate_in_memory);
