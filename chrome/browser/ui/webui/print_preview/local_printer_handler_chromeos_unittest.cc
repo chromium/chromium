@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -134,7 +134,7 @@ TEST_F(LocalPrinterHandlerChromeosTest, GetEulaUrlNoAsh_ProvidesDefaultValue) {
 TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
   crosapi::mojom::LocalDestinationInfo input("device_name", "printer_name",
                                              "printer_description", false);
-  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+  const base::Value kExpectedValue = base::test::ParseJson(R"({
    "cupsEnterprisePrinter": false,
    "deviceName": "device_name",
    "printerDescription": "printer_description",
@@ -146,7 +146,7 @@ TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
 TEST(LocalPrinterHandlerChromeos, PrinterToValue_ConfiguredViaPolicy) {
   crosapi::mojom::LocalDestinationInfo printer("device_name", "printer_name",
                                                "printer_description", true);
-  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+  const base::Value kExpectedValue = base::test::ParseJson(R"({
    "cupsEnterprisePrinter": true,
    "deviceName": "device_name",
    "printerDescription": "printer_description",
@@ -161,7 +161,7 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
   caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
       "device_name", "printer_name", "printer_description", false);
 
-  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+  const base::Value kExpectedValue = base::test::ParseJson(R"({
    "printer": {
       "cupsEnterprisePrinter": false,
       "deviceName": "device_name",
@@ -179,7 +179,7 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
   caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
       "device_name", "printer_name", "printer_description", true);
 
-  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+  const base::Value kExpectedValue = base::test::ParseJson(R"({
    "printer": {
       "cupsEnterprisePrinter": true,
       "deviceName": "device_name",
@@ -204,7 +204,7 @@ TEST(LocalPrinterHandlerChromeos, StatusToValue) {
   status.status_reasons.push_back(crosapi::mojom::StatusReason::New(
       crosapi::mojom::StatusReason::Reason::kOutOfInk,
       crosapi::mojom::StatusReason::Severity::kWarning));
-  const base::Value kExpectedValue = *base::JSONReader::Read(R"({
+  const base::Value kExpectedValue = base::test::ParseJson(R"({
    "printerId": "printer_id",
    "statusReasons": [ {
       "reason": 6,

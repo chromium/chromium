@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/i18n/number_formatting.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -20,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -905,39 +905,45 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDisableBackgroundGraphics) {
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeName) {
-  const char kPrintingPaperSizeDefaultName[] = R"(
-    {
-      "name": "iso_a5_148x210mm"
-    })";
   const char kExpectedInitialSettingsPolicy[] = R"(
     {
       "width": 148000,
       "height": 210000
     })";
 
-  absl::optional<base::Value> default_paper_size =
-      base::JSONReader::Read(kPrintingPaperSizeDefaultName);
-  ASSERT_TRUE(default_paper_size.has_value());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::Policies policies;
   policies.paper_size_default = gfx::Size(148000, 210000);
   SetPolicies(policies);
 #else
   // Set a pref that should take priority over StickySettings.
-  prefs()->Set(prefs::kPrintingPaperSizeDefault, default_paper_size.value());
+  const char kPrintingPaperSizeDefaultName[] = R"(
+    {
+      "name": "iso_a5_148x210mm"
+    })";
+  prefs()->Set(prefs::kPrintingPaperSizeDefault,
+               base::test::ParseJson(kPrintingPaperSizeDefaultName));
 #endif
   Initialize();
 
-  absl::optional<base::Value> expected_initial_settings_policy =
-      base::JSONReader::Read(kExpectedInitialSettingsPolicy);
-  ASSERT_TRUE(expected_initial_settings_policy.has_value());
-
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
-      std::move(expected_initial_settings_policy));
+      base::test::ParseJson(kExpectedInitialSettingsPolicy));
 }
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
+  const char kExpectedInitialSettingsPolicy[] = R"(
+    {
+      "width": 148000,
+      "height": 210000
+    })";
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.paper_size_default = gfx::Size(148000, 210000);
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
   const char kPrintingPaperSizeDefaultCustomSize[] = R"(
     {
       "name": "custom",
@@ -946,32 +952,14 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
         "height": 210000
       }
     })";
-  const char kExpectedInitialSettingsPolicy[] = R"(
-    {
-      "width": 148000,
-      "height": 210000
-    })";
-
-  absl::optional<base::Value> default_paper_size =
-      base::JSONReader::Read(kPrintingPaperSizeDefaultCustomSize);
-  ASSERT_TRUE(default_paper_size.has_value());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::Policies policies;
-  policies.paper_size_default = gfx::Size(148000, 210000);
-  SetPolicies(policies);
-#else
-  // Set a pref that should take priority over StickySettings.
-  prefs()->Set(prefs::kPrintingPaperSizeDefault, default_paper_size.value());
+  prefs()->Set(prefs::kPrintingPaperSizeDefault,
+               base::test::ParseJson(kPrintingPaperSizeDefaultCustomSize));
 #endif
   Initialize();
 
-  absl::optional<base::Value> expected_initial_settings_policy =
-      base::JSONReader::Read(kExpectedInitialSettingsPolicy);
-  ASSERT_TRUE(expected_initial_settings_policy.has_value());
-
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "mediaSize", absl::nullopt,
-      std::move(expected_initial_settings_policy));
+      base::test::ParseJson(kExpectedInitialSettingsPolicy));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
@@ -247,7 +247,7 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   args.Append("callback_id");
   web_ui()->HandleReceivedMessage("getPrintServersConfig",
                                   &base::Value::AsListValue(args));
-  const base::Value kExpectedConfig = *base::JSONReader::Read(R"({
+  const base::Value kExpectedConfig = base::test::ParseJson(R"({
     "isSingleServerFetchingMode": false,
     "printServers": [ {
       "id": "selected-print-server-id",

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/printing/test_cups_wrapper.h"
@@ -185,10 +185,8 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
-  absl::optional<base::Value> ticket_value = base::JSONReader::Read(ticket);
-  DCHECK(ticket_value.has_value());
   EXPECT_TRUE(api::printer_provider::PrintJob::Ticket::Populate(
-      ticket_value.value(), &request.job.ticket));
+      base::test::ParseJson(ticket), &request.job.ticket));
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
@@ -155,10 +155,9 @@ TEST(PrintingApiUtilsTest, PrinterToIdl) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket) {
-  absl::optional<base::Value> cjt_ticket = base::JSONReader::Read(kCjt);
-  ASSERT_TRUE(cjt_ticket);
+  base::Value cjt_ticket = base::test::ParseJson(kCjt);
   std::unique_ptr<printing::PrintSettings> settings =
-      ParsePrintTicket(std::move(*cjt_ticket));
+      ParsePrintTicket(std::move(cjt_ticket));
 
   ASSERT_TRUE(settings);
   EXPECT_EQ(printing::mojom::ColorModel::kGray, settings->color());
@@ -173,10 +172,8 @@ TEST(PrintingApiUtilsTest, ParsePrintTicket) {
 }
 
 TEST(PrintingApiUtilsTest, ParsePrintTicket_IncompleteCjt) {
-  absl::optional<base::Value> incomplete_cjt_ticket =
-      base::JSONReader::Read(kIncompleteCjt);
-  ASSERT_TRUE(incomplete_cjt_ticket);
-  EXPECT_FALSE(ParsePrintTicket(std::move(*incomplete_cjt_ticket)));
+  base::Value incomplete_cjt_ticket = base::test::ParseJson(kIncompleteCjt);
+  EXPECT_FALSE(ParsePrintTicket(std::move(incomplete_cjt_ticket)));
 }
 
 TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility) {

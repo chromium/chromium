@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -722,7 +721,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, std::move(base::JSONReader::Read(kPdfSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kPdfSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -736,7 +735,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
 
   EXPECT_EQ(kPrinterId, print_job->printer_id);
   EXPECT_EQ(title, print_job->job_title);
-  EXPECT_EQ(*base::JSONReader::Read(kEmptyPrintTicket), print_job->ticket);
+  EXPECT_EQ(base::test::ParseJson(kEmptyPrintTicket), print_job->ticket);
   EXPECT_EQ(kContentTypePDF, print_job->content_type);
   ASSERT_TRUE(print_job->document_bytes);
   EXPECT_EQ(RefCountedMemoryToString(print_data),
@@ -759,7 +758,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf_Reset) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, std::move(base::JSONReader::Read(kPdfSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kPdfSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -785,7 +784,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_All) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, std::move(base::JSONReader::Read(kAllTypesSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kAllTypesSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -800,7 +799,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_All) {
 
   EXPECT_EQ(kPrinterId, print_job->printer_id);
   EXPECT_EQ(title, print_job->job_title);
-  EXPECT_EQ(*base::JSONReader::Read(kEmptyPrintTicket), print_job->ticket);
+  EXPECT_EQ(base::test::ParseJson(kEmptyPrintTicket), print_job->ticket);
   EXPECT_EQ(kContentTypePDF, print_job->content_type);
   ASSERT_TRUE(print_job->document_bytes);
   EXPECT_EQ(RefCountedMemoryToString(print_data),
@@ -823,8 +822,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title,
-      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kSimpleRasterSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -855,7 +853,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
 
   EXPECT_EQ(kPrinterId, print_job->printer_id);
   EXPECT_EQ(title, print_job->job_title);
-  EXPECT_EQ(*base::JSONReader::Read(kEmptyPrintTicket), print_job->ticket);
+  EXPECT_EQ(base::test::ParseJson(kEmptyPrintTicket), print_job->ticket);
   EXPECT_EQ(kContentTypePWG, print_job->content_type);
   ASSERT_TRUE(print_job->document_bytes);
   EXPECT_EQ(RefCountedMemoryToString(print_data),
@@ -878,7 +876,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, std::move(base::JSONReader::Read(kDuplexSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kDuplexSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -909,7 +907,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
 
   EXPECT_EQ(kPrinterId, print_job->printer_id);
   EXPECT_EQ(title, print_job->job_title);
-  EXPECT_EQ(*base::JSONReader::Read(kPrintTicketWithDuplex), print_job->ticket);
+  EXPECT_EQ(base::test::ParseJson(kPrintTicketWithDuplex), print_job->ticket);
   EXPECT_EQ(kContentTypePWG, print_job->content_type);
   ASSERT_TRUE(print_job->document_bytes);
   EXPECT_EQ(RefCountedMemoryToString(print_data),
@@ -932,8 +930,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_Reset) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title,
-      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kSimpleRasterSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -962,7 +959,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_InvalidTicket) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title, std::move(base::JSONReader::Read(kInvalidSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kInvalidSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 
@@ -984,8 +981,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_FailedConversion) {
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
-      title,
-      std::move(base::JSONReader::Read(kSimpleRasterSettings)->GetDict()),
+      title, std::move(base::test::ParseJson(kSimpleRasterSettings).GetDict()),
       print_data,
       base::BindOnce(&RecordPrintResult, &call_count, &success, &status));
 

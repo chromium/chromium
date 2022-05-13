@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -124,10 +124,9 @@ TEST(PrintingOAuth2TestAuthorizationServerTest,
   // Check the response.
   EXPECT_EQ(GetHttpStatus(url_loader.get()),
             static_cast<int>(net::HttpStatusCode::HTTP_OK));
-  auto parsed = base::JSONReader::Read(response_payload);
-  ASSERT_TRUE(parsed);
-  ASSERT_TRUE(parsed->is_dict());
-  EXPECT_EQ(*parsed, base::Value(std::move(content)));
+  base::Value parsed = base::test::ParseJson(response_payload);
+  ASSERT_TRUE(parsed.is_dict());
+  EXPECT_EQ(parsed, base::Value(std::move(content)));
 }
 
 TEST(PrintingOAuth2TestAuthorizationServerTest,

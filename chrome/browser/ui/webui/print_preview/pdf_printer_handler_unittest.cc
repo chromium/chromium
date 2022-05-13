@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -262,12 +262,10 @@ TEST_F(PdfPrinterHandlerTest, GetFileName) {
 }
 
 TEST_F(PdfPrinterHandlerGetCapabilityTest, GetCapability) {
-  absl::optional<base::Value> expected_capability =
-      base::JSONReader::Read(kPdfPrinterCapability);
-  ASSERT_TRUE(expected_capability.has_value());
-
+  base::Value expected_capability =
+      base::test::ParseJson(kPdfPrinterCapability);
   base::Value capability = StartGetCapabilityAndWaitForResults();
-  EXPECT_EQ(expected_capability.value(), capability);
+  EXPECT_EQ(expected_capability, capability);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -281,13 +279,12 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest,
       {"printer4", "", gfx::Size(101600, 50800)},
   };
 
-  absl::optional<base::Value> expected_capability =
-      base::JSONReader::Read(kPdfPrinterCapability);
-  ASSERT_TRUE(expected_capability.has_value());
-  ASSERT_TRUE(expected_capability.value().is_dict());
+  base::Value expected_capability =
+      base::test::ParseJson(kPdfPrinterCapability);
+  ASSERT_TRUE(expected_capability.is_dict());
 
   base::Value* expected_paper_options =
-      expected_capability.value().FindListPath(kPaperOptionPath);
+      expected_capability.FindListPath(kPaperOptionPath);
   ASSERT_TRUE(expected_paper_options);
 
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : kTestPapers) {
