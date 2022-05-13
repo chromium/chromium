@@ -31,12 +31,12 @@ void AXScreenAIAnnotator::Run() {
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
-  gfx::NativeWindow native_window = web_contents->GetContentNativeView();
-  if (!native_window)
+  gfx::NativeView native_view = web_contents->GetContentNativeView();
+  if (!native_view)
     return;
 
   ui::GrabViewSnapshotAsync(
-      native_window, gfx::Rect(web_contents->GetSize()),
+      native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetMainFrame()->GetAXTreeID()));

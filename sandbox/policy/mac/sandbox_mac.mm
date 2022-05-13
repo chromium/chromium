@@ -24,6 +24,7 @@
 #include "sandbox/policy/mac/print_backend.sb.h"
 #include "sandbox/policy/mac/print_compositor.sb.h"
 #include "sandbox/policy/mac/renderer.sb.h"
+#include "sandbox/policy/mac/screen_ai.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -79,6 +80,9 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
 #endif
     case sandbox::mojom::Sandbox::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;
+      break;
+    case sandbox::mojom::Sandbox::kScreenAI:
+      profile += kSeatbeltPolicyString_screen_ai;
       break;
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;

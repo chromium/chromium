@@ -239,6 +239,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
                    << static_cast<int>(sandbox_type);
       break;
     // Setup parameters for sandbox types handled by embedders below.
+    case sandbox::mojom::Sandbox::kScreenAI:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       SetupCommonSandboxParameters(client);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(

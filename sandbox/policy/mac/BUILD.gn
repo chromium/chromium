@@ -16,6 +16,7 @@ sb_files = [
   "ppapi.sb",
   "print_compositor.sb",
   "renderer.sb",
+  "screen_ai.sb",
   "speech_recognition.sb",
   "utility.sb",
 ]

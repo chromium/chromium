@@ -20,19 +20,21 @@ source_set("screen_ai") {
   ]
 }
 
-source_set("screen_ai_sandbox_hook") {
-  sources = [
-    "sandbox/screen_ai_sandbox_hook_linux.cc",
-    "sandbox/screen_ai_sandbox_hook_linux.h",
-  ]
+if (!is_mac) {
+  source_set("screen_ai_sandbox_hook") {
+    sources = [
+      "sandbox/screen_ai_sandbox_hook_linux.cc",
+      "sandbox/screen_ai_sandbox_hook_linux.h",
+    ]
 
-  deps = [
-    "//base",
-    "//components/component_updater",
-    "//components/services/screen_ai/public/cpp:utilities",
-    "//sandbox/linux:sandbox_services",
-    "//ui/accessibility:ax_base",
-  ]
+    deps = [
+      "//base",
+      "//components/component_updater",
+      "//components/services/screen_ai/public/cpp:utilities",
+      "//sandbox/linux:sandbox_services",
+      "//ui/accessibility:ax_base",
+    ]
 
-  public_deps = [ "//sandbox/policy" ]
+    public_deps = [ "//sandbox/policy" ]
+  }
 }

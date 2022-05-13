@@ -734,7 +734,7 @@ class Browser : public TabStripModelObserver,
 
   StatusBubble* GetStatusBubbleForTesting();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void RunScreenAIAnnotator();
 #endif
 

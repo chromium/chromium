@@ -629,6 +629,10 @@
 #include "base/win/windows_h_disallowed.h"
 #endif  // defined(_WINDOWS_)
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/public/cpp/utilities.h"
+#endif
+
 using blink::mojom::EffectiveConnectionType;
 using blink::web_pref::WebPreferences;
 using content::BrowserThread;
@@ -6367,6 +6371,17 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     CHECK(client->SetParameter(sandbox::policy::kParamSodaLanguagePackPath,
                                soda_language_pack_path.value()));
     return true;
+  } else if (sandbox_type == sandbox::mojom::Sandbox::kScreenAI) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    base::FilePath screen_ai_component_path =
+        screen_ai::GetLatestLibraryFilePath();
+    if (screen_ai_component_path.empty())
+      return false;
+
+    CHECK(client->SetParameter(sandbox::policy::kParamScreenAiComponentPath,
+                               screen_ai_component_path.value()));
+    return true;
+#endif
   }
 
   return false;
