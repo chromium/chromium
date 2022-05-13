@@ -97,6 +97,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "../browser/autofill/autofill_uitest_util.cc",
+    "../browser/autofill/autofill_uitest_util.h",
     "../browser/autofill/automated_tests/cache_replayer.cc",
     "../browser/autofill/automated_tests/cache_replayer.h",
     "../browser/notifications/notification_display_service_tester.cc",
@@ -607,8 +609,6 @@ static_library("test_support") {
   if (toolkit_views) {
     public_deps += [ "//ui/views:test_support" ]
     sources += [
-      "../browser/autofill/autofill_uitest_util.cc",
-      "../browser/autofill/autofill_uitest_util.h",
       "../browser/password_manager/password_manager_uitest_util.cc",
       "../browser/password_manager/password_manager_uitest_util.h",
       "../browser/ui/chooser_bubble_testapi.h",
@@ -831,8 +831,6 @@ if (is_android) {
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
-      "../browser/autofill/autofill_uitest_util.cc",
-      "../browser/autofill/autofill_uitest_util.h",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
