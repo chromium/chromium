@@ -78,6 +78,16 @@ TEST(TimeUtilTest, GetTimeFromStringBasic) {
   EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
 }
 
+TEST(TimeUtilTest, GetDateOnlyFromStringBasic) {
+  base::Time test_time;
+  base::Time out_time;
+
+  base::Time::Exploded target_time1 = {2009, 10, 0, 23};
+  EXPECT_TRUE(GetDateOnlyFromString("2009-10-23", &test_time));
+  EXPECT_TRUE(base::Time::FromUTCExploded(target_time1, &out_time));
+  EXPECT_EQ(FormatTime(out_time), FormatTime(test_time));
+}
+
 TEST(TimeUtilTest, FormatTimeAsString) {
   base::Time::Exploded exploded_time = {2012, 7, 0, 19, 15, 59, 13, 123};
   base::Time time;

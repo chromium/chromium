@@ -108,7 +108,9 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
       "&singleEvents=true"
       "&maxAttendees=1"
       "&fields=timeZone%2Cetag%2Ckind%2Citems(id%2Ckind%"
-      "2Csummary%2CcolorId%2Cstatus%2Cstart(dateTime)%2Cend(dateTime)%"
+      "2Csummary%2CcolorId%2Cstatus%"
+      "2Cstart(date)%2Cend(date)%"
+      "2Cstart(dateTime)%2Cend(dateTime)%"
       "2ChtmlLink%2Cattendees(responseStatus%2Cself)%2CattendeesOmitted%"
       "2Ccreator(self))",
       http_request_.relative_url);

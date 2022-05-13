@@ -21,7 +21,7 @@ constexpr char kFieldsParameterName[] = "fields";
 constexpr int kMaxAttendees = 1;
 constexpr char kCalendarEventListFields[] =
     "timeZone,etag,kind,items(id,kind,summary,colorId,"
-    "status,start(dateTime),end(dateTime),htmlLink,"
+    "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
     "attendees(responseStatus,self),attendeesOmitted,creator(self))";
 
 CalendarApiGetRequest::CalendarApiGetRequest(RequestSender* sender,

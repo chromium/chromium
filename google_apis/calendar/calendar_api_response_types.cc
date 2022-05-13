@@ -34,6 +34,9 @@ constexpr char kTimeZone[] = "timeZone";
 // DateTime
 constexpr char kDateTime[] = "dateTime";
 
+// Date
+constexpr char kDate[] = "date";
+
 // CalendarEvent
 constexpr char kAttendees[] = "attendees";
 constexpr char kAttendeesOmitted[] = "attendeesOmitted";
@@ -180,6 +183,8 @@ void DateTime::RegisterJSONConverter(
     base::JSONValueConverter<DateTime>* converter) {
   converter->RegisterCustomField<base::Time>(kDateTime, &DateTime::date_time_,
                                              &util::GetTimeFromString);
+  converter->RegisterCustomField<base::Time>(kDate, &DateTime::date_time_,
+                                             &util::GetDateOnlyFromString);
 }
 
 // static

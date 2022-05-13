@@ -21,6 +21,10 @@ namespace util {
 // either '+hh:mm', '-hh:mm', 'Z' (representing UTC), or an empty string).
 bool GetTimeFromString(base::StringPiece raw_value, base::Time* time);
 
+// Parses a date string of format "yyyy-mm-dd," returning true on success. The
+// time part of `time` is 00:00 (midnight) UTC.
+bool GetDateOnlyFromString(base::StringPiece raw_value, base::Time* time);
+
 // Formats a base::Time as an RFC 3339 date/time (in UTC).
 // If |time| is null, returns "null".
 std::string FormatTimeAsString(const base::Time& time);

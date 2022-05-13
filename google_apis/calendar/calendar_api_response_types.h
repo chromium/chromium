@@ -28,7 +28,7 @@ namespace google_apis {
 
 namespace calendar {
 
-// Parses the time filed in the calendar Events.list response.
+// Parses the time field in the calendar Events.list response.
 class DateTime {
  public:
   DateTime();
