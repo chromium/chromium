@@ -8,6 +8,7 @@
 
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -37,6 +38,43 @@ void RequestSucceeded(blink::ApplyConstraintsRequest* request) {
 }
 
 }  // namespace
+
+constexpr const char kTraceCategory[] =
+    TRACE_DISABLED_BY_DEFAULT("mediastream");
+constexpr const char kVideoDeviceTraceName[] = "VideoDeviceRequest";
+
+class ScopedAsyncTrace {
+ public:
+  static std::unique_ptr<ScopedAsyncTrace> CreateIfEnabled(const char* name) {
+    bool enabled = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(kTraceCategory, &enabled);
+    return enabled ? base::WrapUnique(new ScopedAsyncTrace(name)) : nullptr;
+  }
+
+  ScopedAsyncTrace(const ScopedAsyncTrace&) = delete;
+  ScopedAsyncTrace& operator=(const ScopedAsyncTrace&) = delete;
+
+  ~ScopedAsyncTrace() {
+    TRACE_EVENT_NESTABLE_ASYNC_END0(kTraceCategory, name_, TRACE_ID_LOCAL(id_));
+  }
+
+  void AddStep(const char* step_name) {
+    step_.reset();  // Ensure previous trace step closes first.
+    step_.reset(new ScopedAsyncTrace(step_name, this));
+  }
+
+ private:
+  ScopedAsyncTrace(const char* name) : ScopedAsyncTrace(name, this) {}
+  ScopedAsyncTrace(const char* name, const void* id) : name_(name), id_(id) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kTraceCategory, name_,
+                                      TRACE_ID_LOCAL(id_));
+  }
+
+  const char* name_;
+  const void* id_;
+
+  std::unique_ptr<ScopedAsyncTrace> step_;
+};
 
 ApplyConstraintsProcessor::ApplyConstraintsProcessor(
     MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
@@ -115,6 +153,9 @@ void ApplyConstraintsProcessor::ProcessVideoRequest() {
 
 void ApplyConstraintsProcessor::ProcessVideoDeviceRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  video_device_request_trace_ =
+      ScopedAsyncTrace::CreateIfEnabled(kVideoDeviceTraceName);
+
   if (AbortIfVideoRequestStateInvalid())
     return;
 
@@ -139,6 +180,9 @@ void ApplyConstraintsProcessor::ProcessVideoDeviceRequest() {
 void ApplyConstraintsProcessor::MaybeStopSourceForRestart(
     const Vector<media::VideoCaptureFormat>& formats) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (video_device_request_trace_)
+    video_device_request_trace_->AddStep("MaybeStopSourceForRestart");
+
   if (AbortIfVideoRequestStateInvalid())
     return;
 
@@ -163,6 +207,9 @@ void ApplyConstraintsProcessor::MaybeStopSourceForRestart(
 void ApplyConstraintsProcessor::MaybeSourceStoppedForRestart(
     blink::MediaStreamVideoSource::RestartResult result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (video_device_request_trace_)
+    video_device_request_trace_->AddStep("MaybeSourceStoppedForRestart");
+
   if (AbortIfVideoRequestStateInvalid())
     return;
 
@@ -181,6 +228,9 @@ void ApplyConstraintsProcessor::MaybeSourceStoppedForRestart(
 void ApplyConstraintsProcessor::FindNewFormatAndRestart(
     const Vector<media::VideoCaptureFormat>& formats) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (video_device_request_trace_)
+    video_device_request_trace_->AddStep("FindNewFormatAndRestart");
+
   if (AbortIfVideoRequestStateInvalid())
     return;
 
@@ -198,6 +248,8 @@ void ApplyConstraintsProcessor::FindNewFormatAndRestart(
 
 void ApplyConstraintsProcessor::MaybeSourceRestarted(
     blink::MediaStreamVideoSource::RestartResult result) {
+  if (video_device_request_trace_)
+    video_device_request_trace_->AddStep("MaybeSourceRestarted");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (AbortIfVideoRequestStateInvalid())
     return;
@@ -213,6 +265,9 @@ void ApplyConstraintsProcessor::MaybeSourceRestarted(
 
 void ApplyConstraintsProcessor::FinalizeVideoRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (video_device_request_trace_)
+    video_device_request_trace_->AddStep("FinalizeVideoRequest");
+
   if (AbortIfVideoRequestStateInvalid())
     return;
 
@@ -308,7 +363,10 @@ bool ApplyConstraintsProcessor::AbortIfVideoRequestStateInvalid() {
   DCHECK_EQ(current_request_->Track()->Source()->GetType(),
             MediaStreamSource::kTypeVideo);
   DCHECK(request_completed_cb_);
+
   if (GetCurrentVideoSource() != video_source_) {
+    if (video_device_request_trace_)
+      video_device_request_trace_->AddStep("Aborted");
     CannotApplyConstraints(
         "Track stopped or source changed. ApplyConstraints not possible.");
     return true;
@@ -356,6 +414,7 @@ void ApplyConstraintsProcessor::CleanupRequest(
   std::move(user_media_request_callback).Run();
   current_request_ = nullptr;
   video_source_ = nullptr;
+  video_device_request_trace_.reset();
 }
 
 blink::mojom::blink::MediaDevicesDispatcherHost*

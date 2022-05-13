@@ -21,6 +21,7 @@
 namespace blink {
 class MediaStreamAudioSource;
 class MediaStreamVideoTrack;
+class ScopedAsyncTrace;
 
 // ApplyConstraintsProcessor is responsible for processing applyConstraints()
 // requests. Only one applyConstraints() request can be processed at a time.
@@ -87,6 +88,7 @@ class MODULES_EXPORT ApplyConstraintsProcessor final
   // |video_source_| and |request_completed_cb_| are the video source and
   // reply callback for the current request.
   Member<blink::ApplyConstraintsRequest> current_request_;
+  std::unique_ptr<ScopedAsyncTrace> video_device_request_trace_;
 
   // TODO(crbug.com/704136): Change to use Member.
   blink::MediaStreamVideoSource* video_source_ = nullptr;
