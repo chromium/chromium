@@ -308,6 +308,9 @@ bool IsAXSetter(SEL selector) {
   // On Mac OS X, the accessible name of an object is exposed as its
   // title if it comes from visible text, and as its description
   // otherwise, but never both.
+  // Note: a placeholder is often visible text, but since it aids in data entry
+  // it is similar to accessibilityValue, and thus cannot be exposed either in
+  // accessibilityTitle or in accessibilityLabel.
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
   if (nameFrom == ax::mojom::NameFrom::kCaption ||
       nameFrom == ax::mojom::NameFrom::kContents ||
@@ -1773,7 +1776,7 @@ bool IsAXSetter(SEL selector) {
     return @"";
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
-  // expose it in AXDescription.
+  // expose it in accessibilityLabel.
   if ([self titleUIElement])
     return @"";
 
@@ -1819,7 +1822,11 @@ bool IsAXSetter(SEL selector) {
 
   ax::mojom::NameFrom nameFrom = _node->GetNameFrom();
 
-  // No title if it cames from placeholder.
+  // The accessible name, which is exposed via accessibilityTitle, should not
+  // contain any placeholder text because an HTML or an ARIA placeholder refers
+  // to a sample value that is usually found in a text field and is used to aid
+  // the user in data entry. It is similar to a replacement for the value
+  // attribute, not the title.
   if (nameFrom == ax::mojom::NameFrom::kPlaceholder)
     return @"";
 
