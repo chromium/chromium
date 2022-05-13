@@ -37,6 +37,8 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 using media::VideoCaptureOracle;
@@ -108,6 +110,46 @@ CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
     default:
       NOTREACHED();
       return CopyOutputRequest::ResultFormat::RGBA;
+  }
+}
+
+bool IsCompatibleWithFormat(const gfx::Rect& rect,
+                            media::VideoPixelFormat format) {
+  DCHECK(format == media::PIXEL_FORMAT_I420 ||
+         format == media::PIXEL_FORMAT_NV12 ||
+         format == media::PIXEL_FORMAT_ARGB);
+  if (format == media::PIXEL_FORMAT_ARGB) {
+    // No special requirements:
+    return true;
+  }
+
+  return rect.origin().x() % 2 == 0 && rect.origin().y() % 2 == 0 &&
+         rect.width() % 2 == 0 && rect.height() % 2 == 0;
+}
+
+// Given a |visible_rect| representing visible rectangle of some video frame,
+// calculates a centered rectangle that fits entirely within |visible_rect| and
+// has the same aspect ratio as |source_size|, taking into account
+// |pixel_format|.
+gfx::Rect GetContentRectangle(const gfx::Rect& visible_rect,
+                              const gfx::Size& source_size,
+                              media::VideoPixelFormat pixel_format) {
+  DCHECK(pixel_format == media::PIXEL_FORMAT_I420 ||
+         pixel_format == media::PIXEL_FORMAT_NV12 ||
+         pixel_format == media::PIXEL_FORMAT_ARGB);
+
+  if (pixel_format == media::PIXEL_FORMAT_I420 ||
+      pixel_format == media::PIXEL_FORMAT_NV12) {
+    return media::ComputeLetterboxRegionForI420(visible_rect, source_size);
+  } else {
+    DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format);
+    const gfx::Rect content_rect =
+        media::ComputeLetterboxRegion(visible_rect, source_size);
+
+    // The media letterboxing computation explicitly allows for off-by-one
+    // errors due to computation, so we address those here.
+    return content_rect.ApproximatelyEqual(visible_rect, 1) ? visible_rect
+                                                            : content_rect;
   }
 }
 
@@ -307,6 +349,10 @@ void FrameSinkVideoCapturerImpl::SetResolutionConstraints(
     const gfx::Size& max_size,
     bool use_fixed_aspect_ratio) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(2) << __func__ << ": min_size=" << min_size.ToString()
+           << ", max_size=" << max_size.ToString()
+           << ", use_fixed_aspect_ratio=" << use_fixed_aspect_ratio;
 
   TRACE_EVENT_INSTANT2("gpu.capture", "SetResolutionConstraints",
                        TRACE_EVENT_SCOPE_THREAD, "min_size.width",
@@ -695,6 +741,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // TODO(https://crbug.com/1300943): we should likely just get the frame
   // region from the last aggregated surface.
   if (!compositor_frame_region.Contains(capture_region)) {
+    DVLOG(3) << __func__ << ": skipping capture!";
     MaybeScheduleRefreshFrame();
     return;
   }
@@ -707,8 +754,22 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
   // Reserve a buffer from the pool for the next frame.
   const OracleFrameNumber oracle_frame_number = oracle_->next_frame_number();
+
+  // Size of the video frames that we are supposed to produce. Depends on the
+  // pixel format and the capture size as determined by the oracle (which in
+  // turn depends on the capture constraints).
   const gfx::Size capture_size =
       AdjustSizeForPixelFormat(oracle_->capture_size());
+
+  // Size of the source that we are capturing:
+  const gfx::Size source_size = oracle_->source_size();
+  DCHECK_EQ(capture_region.size(), source_size);
+  DCHECK(!source_size.IsEmpty());
+
+  DVLOG(3) << __func__
+           << ": compositor_frame_region=" << compositor_frame_region.ToString()
+           << ", capture_region=" << capture_region.ToString()
+           << ", capture_size=" << capture_size.ToString();
 
   const bool can_resurrect_content = CanResurrectFrame(capture_size);
   scoped_refptr<VideoFrame> frame;
@@ -757,6 +818,13 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
 
+  // If frame was resurrected / allocated from the pool, its visible rectangle
+  // should match what we requested:
+  DCHECK_EQ(frame->visible_rect().size(), capture_size);
+  // The pool should return a frame with visible rectangle that is compatible
+  // with the capture format.
+  DCHECK(IsCompatibleWithFormat(frame->visible_rect(), pixel_format_));
+
   // Record a trace event if the capture pipeline is redlining, but capture will
   // still proceed.
   if (utilization >= 1.0) {
@@ -800,23 +868,24 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                            "frame_number", capture_frame_number, "trigger",
                            VideoCaptureOracle::EventAsString(event));
 
-  const gfx::Size& source_size = oracle_->source_size();
-  DCHECK(!source_size.IsEmpty());
-  gfx::Rect content_rect;
-  if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
-      pixel_format_ == media::PIXEL_FORMAT_NV12) {
-    content_rect = media::ComputeLetterboxRegionForI420(frame->visible_rect(),
-                                                        source_size);
-  } else {
-    DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format_);
-    content_rect =
-        media::ComputeLetterboxRegion(frame->visible_rect(), source_size);
-    // The media letterboxing computation explicitly allows for off-by-one
-    // errors due to computation, so we address those here.
-    if (content_rect.ApproximatelyEqual(frame->visible_rect(), 1)) {
-      content_rect = frame->visible_rect();
-    }
-  }
+  // `content_rect` is the region of the `frame` that we would like to populate.
+  // We know our source is of size `source_size`, and we have
+  // `frame->visible_rect()` to fill out - find the largest centered rectangle
+  // that will fit within the frame and maintains the aspect ratio of the
+  // source.
+  // TODO(https://crbug.com/1323342): currently, both the frame's visible
+  // rectangle and source size are controlled by oracle
+  // (`frame->visible_rect().size() == `capture_size`). Oracle also knows if we
+  // need to maintain fixed aspect ratio, so it should compute both the
+  // `capture_size` and `content_rect` for us, thus ensuring that letterboxing
+  // happens only when it needs to (i.e. when we allocate a frame and know that
+  // aspect ratio does not have to be maintained, we should use a size that we
+  // know would not require letterboxing).
+  const gfx::Rect content_rect =
+      GetContentRectangle(frame->visible_rect(), source_size, pixel_format_);
+  DVLOG(3) << __func__ << ": content_rect=" << content_rect.ToString()
+           << ", source_size=" << source_size.ToString()
+           << ", frame=" << frame->AsHumanReadableString();
 
   // Determine what rectangular region has changed since the last captured
   // frame.
@@ -900,7 +969,6 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
 
-  DCHECK(capture_region.size() == source_size);
   if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target)) {
     const float scale_factor = frame_metadata.device_scale_factor;
     metadata.region_capture_rect =
@@ -927,7 +995,12 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     std::array<gpu::MailboxHolder, 3> mailbox_holders = {
         request_properties.frame->mailbox_holder(0),
         request_properties.frame->mailbox_holder(1), gpu::MailboxHolder{}};
-    blit_request = BlitRequest(content_rect.origin(), mailbox_holders);
+
+    // TODO(https://crbug.com/775740): change the capturer to only request the
+    // parts of the frame that have changed whenever possible.
+    blit_request =
+        BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
+                    mailbox_holders);
 
     // We haven't captured the frame yet, but let's pretend that we did for the
     // sake of blend information computation. We will be asking for an entire
@@ -1021,6 +1094,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
 
   scoped_refptr<media::VideoFrame>& frame = properties.frame;
   const gfx::Rect& content_rect = properties.content_rect;
+
   if (log_to_webrtc_ && consumer_) {
     std::string format = "";
     std::string strides = "";
@@ -1131,6 +1205,13 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   }
 
   if (frame) {
+    // The result may be smaller than what was requested, if unforeseen
+    // clamping to the source boundaries occurred by the executor of the
+    // CopyOutputRequest. However, the result should never contain more than
+    // what was requested.
+    DCHECK_LE(result->size().width(), content_rect.width());
+    DCHECK_LE(result->size().height(), content_rect.height());
+
     if (!frame->HasGpuMemoryBuffer()) {
       // For GMB-backed video frames, overlays were already applied by
       // CopyOutputRequest API. For in-memory frames, apply overlays here:
@@ -1145,15 +1226,21 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       }
     }
 
-    // The result may be smaller than what was requested, if unforeseen
-    // clamping to the source boundaries occurred by the executor of the
-    // CopyOutputRequest. However, the result should never contain more than
-    // what was requested.
-    DCHECK_LE(result->size().width(), content_rect.width());
-    DCHECK_LE(result->size().height(), content_rect.height());
-    media::LetterboxVideoFrame(
-        frame.get(), gfx::Rect(content_rect.origin(),
-                               AdjustSizeForPixelFormat(result->size())));
+    const gfx::Rect result_rect =
+        gfx::Rect(content_rect.origin(), result->size());
+    DCHECK(IsCompatibleWithFormat(result_rect, pixel_format_));
+
+    DVLOG(3) << __func__ << ": result->size()=" << result->size().ToString()
+             << ", content_rect=" << content_rect.ToString()
+             << ", result_rect=" << result_rect.ToString()
+             << ", frame=" << frame->AsHumanReadableString();
+
+    if (frame->visible_rect() != result_rect && !frame->HasGpuMemoryBuffer()) {
+      // If there are parts of the frame that are visible but we have not wrote
+      // into them, letterbox them. This is not needed for GMB-backed frames as
+      // the letterboxing happens on GPU.
+      media::LetterboxVideoFrame(frame.get(), result_rect);
+    }
 
     if (ShouldMark(*frame, properties.content_version)) {
       MarkFrame(frame, properties.content_version);

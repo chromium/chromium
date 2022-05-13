@@ -107,6 +107,7 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
   DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
+  DCHECK(has_result_selection());
 
   // Destination region must start at an even offset for NV12 results:
   DCHECK_EQ(blit_request.destination_region_offset().x() % 2, 0);

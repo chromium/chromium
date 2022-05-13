@@ -84,6 +84,9 @@ MEDIA_EXPORT gfx::Rect ComputeLetterboxRegion(const gfx::Rect& bounds,
 // have color distortions around the edges in a letterboxed video frame. Note
 // that, in cases where ComputeLetterboxRegion() would return a 1x1-sized Rect,
 // this function could return either a 0x0-sized Rect or a 2x2-sized Rect.
+// Note that calling this function with `bounds` that already have the aspect
+// ratio of `content` is not guaranteed to be a no-op (for context, see
+// https://crbug.com/1323367).
 MEDIA_EXPORT gfx::Rect ComputeLetterboxRegionForI420(const gfx::Rect& bounds,
                                                      const gfx::Size& content);
 

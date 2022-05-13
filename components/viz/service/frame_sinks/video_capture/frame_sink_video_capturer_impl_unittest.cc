@@ -442,8 +442,9 @@ MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
 
   const VideoFrame& frame = *arg;
   const gfx::Rect kContentRect = content_rect;
-  const auto IsLetterboxedPlane = [&frame, kContentRect](int plane,
-                                                         uint8_t component) {
+
+  const auto IsLetterboxedPlane = [&frame, kContentRect, result_listener](
+                                      int plane, uint8_t component) {
     gfx::Rect content_rect_copy = kContentRect;
     if (plane != VideoFrame::kYPlane) {
       content_rect_copy = gfx::Rect(
@@ -455,10 +456,19 @@ MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
       for (int col = 0; col < frame.row_bytes(plane); ++col) {
         if (content_rect_copy.Contains(gfx::Point(col, row))) {
           if (p[col] != component) {
+            *result_listener << " where pixel at (" << col << ", " << row
+                             << ") should be inside content rectangle and the "
+                                "component should match 0x"
+                             << std::hex << component << " but is 0x"
+                             << std::hex << static_cast<unsigned int>(p[col]);
             return false;
           }
         } else {  // Letterbox border around content.
           if (plane == VideoFrame::kYPlane && p[col] != 0x00) {
+            *result_listener << " where pixel at (" << col << ", " << row
+                             << ") should be outside content rectangle and the "
+                                "component should match 0x00 but is 0x"
+                             << std::hex << static_cast<unsigned int>(p[col]);
             return false;
           }
         }

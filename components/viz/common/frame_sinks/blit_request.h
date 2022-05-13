@@ -53,6 +53,16 @@ class VIZ_COMMON_EXPORT BlendBitmap {
   sk_sp<SkImage> image_;
 };
 
+// Enum used to specify letteboxing behavior for a BlitRequest.
+enum class LetterboxingBehavior {
+  // No letterboxing is needed - only the destination region will be written
+  // into by the handler of CopyOutputRequest.
+  kDoNotLetterbox,
+  // Letterboxing is needed - everything outside of the destination region
+  // will be filled with black by the handler of CopyOutputRequest.
+  kLetterbox
+};
+
 // Structure describing a blit operation that can be appended to
 // `CopyOutputRequest` if the callers want to place the results of the operation
 // in textures that they own.
@@ -60,6 +70,7 @@ class VIZ_COMMON_EXPORT BlitRequest {
  public:
   explicit BlitRequest(
       const gfx::Point& destination_region_offset,
+      LetterboxingBehavior letterboxing_behavior,
       const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
           mailboxes);
 
@@ -72,6 +83,10 @@ class VIZ_COMMON_EXPORT BlitRequest {
 
   const gfx::Point& destination_region_offset() const {
     return destination_region_offset_;
+  }
+
+  LetterboxingBehavior letterboxing_behavior() const {
+    return letterboxing_behavior_;
   }
 
   const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
@@ -105,6 +120,9 @@ class VIZ_COMMON_EXPORT BlitRequest {
   // The results of the blit request will be placed at that offset in those
   // images.
   gfx::Point destination_region_offset_;
+
+  // Specifies the letterboxing behavior of this request.
+  LetterboxingBehavior letterboxing_behavior_;
 
   // Mailboxes with planes that will be populated.
   // The textures can (but don't have to be) backed by

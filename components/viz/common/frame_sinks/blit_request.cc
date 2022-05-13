@@ -31,9 +31,11 @@ std::string BlendBitmap::ToString() const {
 
 BlitRequest::BlitRequest(
     const gfx::Point& destination_region_offset,
+    LetterboxingBehavior letterboxing_behavior,
     const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
         mailboxes)
     : destination_region_offset_(destination_region_offset),
+      letterboxing_behavior_(letterboxing_behavior),
       mailboxes_(mailboxes) {}
 
 BlitRequest::BlitRequest(BlitRequest&& other) = default;

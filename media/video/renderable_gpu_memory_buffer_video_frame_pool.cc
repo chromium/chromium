@@ -179,6 +179,8 @@ bool FrameResources::Initialize() {
     return false;
   }
 
+  gpu_memory_buffer_->SetColorSpace(color_space_);
+
   // Bind SharedImages to each plane.
   constexpr size_t kNumPlanes = 2;
   constexpr gfx::BufferPlane kPlanes[kNumPlanes] = {gfx::BufferPlane::Y,
