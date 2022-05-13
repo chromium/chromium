@@ -390,12 +390,6 @@ void aom_dc_128_predictor_16x8_sse2(uint8_t* dst,
                                     const uint8_t* left);
 #define aom_dc_128_predictor_16x8 aom_dc_128_predictor_16x8_sse2
 
-void aom_dc_128_predictor_2x2_c(uint8_t* dst,
-                                ptrdiff_t y_stride,
-                                const uint8_t* above,
-                                const uint8_t* left);
-#define aom_dc_128_predictor_2x2 aom_dc_128_predictor_2x2_c
-
 void aom_dc_128_predictor_32x16_c(uint8_t* dst,
                                   ptrdiff_t y_stride,
                                   const uint8_t* above,
@@ -627,12 +621,6 @@ void aom_dc_left_predictor_16x8_sse2(uint8_t* dst,
                                      const uint8_t* above,
                                      const uint8_t* left);
 #define aom_dc_left_predictor_16x8 aom_dc_left_predictor_16x8_sse2
-
-void aom_dc_left_predictor_2x2_c(uint8_t* dst,
-                                 ptrdiff_t y_stride,
-                                 const uint8_t* above,
-                                 const uint8_t* left);
-#define aom_dc_left_predictor_2x2 aom_dc_left_predictor_2x2_c
 
 void aom_dc_left_predictor_32x16_c(uint8_t* dst,
                                    ptrdiff_t y_stride,
@@ -866,12 +854,6 @@ void aom_dc_predictor_16x8_sse2(uint8_t* dst,
                                 const uint8_t* left);
 #define aom_dc_predictor_16x8 aom_dc_predictor_16x8_sse2
 
-void aom_dc_predictor_2x2_c(uint8_t* dst,
-                            ptrdiff_t y_stride,
-                            const uint8_t* above,
-                            const uint8_t* left);
-#define aom_dc_predictor_2x2 aom_dc_predictor_2x2_c
-
 void aom_dc_predictor_32x16_c(uint8_t* dst,
                               ptrdiff_t y_stride,
                               const uint8_t* above,
@@ -1103,12 +1085,6 @@ void aom_dc_top_predictor_16x8_sse2(uint8_t* dst,
                                     const uint8_t* above,
                                     const uint8_t* left);
 #define aom_dc_top_predictor_16x8 aom_dc_top_predictor_16x8_sse2
-
-void aom_dc_top_predictor_2x2_c(uint8_t* dst,
-                                ptrdiff_t y_stride,
-                                const uint8_t* above,
-                                const uint8_t* left);
-#define aom_dc_top_predictor_2x2 aom_dc_top_predictor_2x2_c
 
 void aom_dc_top_predictor_32x16_c(uint8_t* dst,
                                   ptrdiff_t y_stride,
@@ -2324,12 +2300,6 @@ void aom_h_predictor_16x8_sse2(uint8_t* dst,
                                const uint8_t* above,
                                const uint8_t* left);
 #define aom_h_predictor_16x8 aom_h_predictor_16x8_sse2
-
-void aom_h_predictor_2x2_c(uint8_t* dst,
-                           ptrdiff_t y_stride,
-                           const uint8_t* above,
-                           const uint8_t* left);
-#define aom_h_predictor_2x2 aom_h_predictor_2x2_c
 
 void aom_h_predictor_32x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,
@@ -4735,12 +4705,6 @@ RTCD_EXTERN void (*aom_paeth_predictor_16x8)(uint8_t* dst,
                                              const uint8_t* above,
                                              const uint8_t* left);
 
-void aom_paeth_predictor_2x2_c(uint8_t* dst,
-                               ptrdiff_t y_stride,
-                               const uint8_t* above,
-                               const uint8_t* left);
-#define aom_paeth_predictor_2x2 aom_paeth_predictor_2x2_c
-
 void aom_paeth_predictor_32x16_c(uint8_t* dst,
                                  ptrdiff_t y_stride,
                                  const uint8_t* above,
@@ -6736,12 +6700,6 @@ RTCD_EXTERN void (*aom_smooth_h_predictor_16x8)(uint8_t* dst,
                                                 const uint8_t* above,
                                                 const uint8_t* left);
 
-void aom_smooth_h_predictor_2x2_c(uint8_t* dst,
-                                  ptrdiff_t y_stride,
-                                  const uint8_t* above,
-                                  const uint8_t* left);
-#define aom_smooth_h_predictor_2x2 aom_smooth_h_predictor_2x2_c
-
 void aom_smooth_h_predictor_32x16_c(uint8_t* dst,
                                     ptrdiff_t y_stride,
                                     const uint8_t* above,
@@ -6989,12 +6947,6 @@ RTCD_EXTERN void (*aom_smooth_predictor_16x8)(uint8_t* dst,
                                               const uint8_t* above,
                                               const uint8_t* left);
 
-void aom_smooth_predictor_2x2_c(uint8_t* dst,
-                                ptrdiff_t y_stride,
-                                const uint8_t* above,
-                                const uint8_t* left);
-#define aom_smooth_predictor_2x2 aom_smooth_predictor_2x2_c
-
 void aom_smooth_predictor_32x16_c(uint8_t* dst,
                                   ptrdiff_t y_stride,
                                   const uint8_t* above,
@@ -7241,12 +7193,6 @@ RTCD_EXTERN void (*aom_smooth_v_predictor_16x8)(uint8_t* dst,
                                                 ptrdiff_t y_stride,
                                                 const uint8_t* above,
                                                 const uint8_t* left);
-
-void aom_smooth_v_predictor_2x2_c(uint8_t* dst,
-                                  ptrdiff_t y_stride,
-                                  const uint8_t* above,
-                                  const uint8_t* left);
-#define aom_smooth_v_predictor_2x2 aom_smooth_v_predictor_2x2_c
 
 void aom_smooth_v_predictor_32x16_c(uint8_t* dst,
                                     ptrdiff_t y_stride,
@@ -8748,12 +8694,6 @@ void aom_v_predictor_16x8_sse2(uint8_t* dst,
                                const uint8_t* above,
                                const uint8_t* left);
 #define aom_v_predictor_16x8 aom_v_predictor_16x8_sse2
-
-void aom_v_predictor_2x2_c(uint8_t* dst,
-                           ptrdiff_t y_stride,
-                           const uint8_t* above,
-                           const uint8_t* left);
-#define aom_v_predictor_2x2 aom_v_predictor_2x2_c
 
 void aom_v_predictor_32x16_c(uint8_t* dst,
                              ptrdiff_t y_stride,
