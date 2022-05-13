@@ -5054,6 +5054,7 @@ static_library("browser") {
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",
+      "//chromeos/ash/components/dbus/concierge",
       "//chromeos/assistant:buildflags",
       "//chromeos/components/feature_usage",
       "//chromeos/components/quick_answers",
