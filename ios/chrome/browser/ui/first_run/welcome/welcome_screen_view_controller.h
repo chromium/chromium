@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_WELCOME_SCREEN_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @protocol TOSCommands;
@@ -23,7 +24,8 @@
 @end
 
 // View controller of welcome screen.
-@interface WelcomeScreenViewController : PromoStyleViewController
+@interface WelcomeScreenViewController
+    : PromoStyleViewController <WelcomeScreenConsumer>
 
 @property(nonatomic, weak) id<WelcomeScreenViewControllerDelegate> delegate;
 

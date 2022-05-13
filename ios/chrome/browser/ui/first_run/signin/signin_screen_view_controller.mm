@@ -50,7 +50,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 @implementation SigninScreenViewController
 
 @dynamic delegate;
-@synthesize managedEnabled = _managedEnabled;
+@synthesize isManaged = _isManaged;
 @synthesize screenIntent = _screenIntent;
 @synthesize signinStatus = _signinStatus;
 
@@ -117,7 +117,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
   }
 
   // Add enterprise image view.
-  if (self.managedEnabled) {
+  if (self.isManaged) {
     NSLayoutYAxisAnchor* topAnchorForEnterpriseIcon =
         self.signinStatus == SigninScreenConsumerSigninStatusDisabled
             ? self.specificContentView.topAnchor
@@ -196,7 +196,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
 - (void)generateDisclaimer {
   NSMutableArray<NSString*>* array = [NSMutableArray array];
   NSMutableArray<NSURL*>* urls = [NSMutableArray array];
-  if (self.managedEnabled) {
+  if (self.isManaged) {
     [array addObject:l10n_util::GetNSString(
                          IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED)];
   }

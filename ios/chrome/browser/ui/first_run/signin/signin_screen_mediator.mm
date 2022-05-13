@@ -248,10 +248,7 @@
       _consumer.signinStatus = SigninScreenConsumerSigninStatusDisabled;
       break;
   }
-  self.consumer.managedEnabled =
-      GetEnterpriseSignInRestrictions(self.authenticationService,
-                                      self.prefService, self.syncService) !=
-      kNoEnterpriseRestriction;
+  self.consumer.isManaged = IsApplicationManged();
   if (!self.showFREConsent) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {
@@ -264,8 +261,6 @@
         metricReportingDisabled
             ? SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin
             : SigninScreenConsumerScreenIntentWelcomeAndSignin;
-    self.consumer.managedEnabled |= self.localPrefService->IsManagedPreference(
-        metrics::prefs::kMetricsReportingEnabled);
   }
   if (signinForcedOrAvailable) {
     self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
