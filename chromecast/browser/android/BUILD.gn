@@ -129,6 +129,7 @@ android_library("reactive_android_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [
     "$java_src_dir/org/chromium/chromecast/shell/AsyncTaskRunner.java",
+    "$java_src_dir/org/chromium/chromecast/shell/HandlerScheduler.java",
     "$java_src_dir/org/chromium/chromecast/shell/LocalBroadcastReceiverScope.java",
   ]
   deps = [
@@ -259,6 +260,7 @@ junit_binary("cast_shell_junit_tests") {
     "junit/src/org/chromium/chromecast/shell/CastWebContentsServiceTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsSurfaceHelperTest.java",
     "junit/src/org/chromium/chromecast/shell/ElidedLogcatProviderUnitTest.java",
+    "junit/src/org/chromium/chromecast/shell/HandlerSchedulerTest.java",
     "junit/src/org/chromium/chromecast/shell/LocalBroadcastReceiverScopeTest.java",
     "junit/src/org/chromium/chromecast/shell/LogcatElisionUnitTest.java",
   ]
