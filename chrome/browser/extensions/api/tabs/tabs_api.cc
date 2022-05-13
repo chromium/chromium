@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -834,10 +835,30 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
   chrome::SelectNumberedTab(new_window, 0, {TabStripModel::GestureType::kNone});
 
-  if (focused)
+  if (focused) {
     new_window->window()->Show();
-  else
+  } else {
+    // The new window isn't supposed to be focused. Here, instead of showing an
+    // unfocused window on top (possible on some operating systems), we show
+    // the window and then bring the old focused window back on top.
+    // We still use ShowInactive() (instead of doing a Show() followed
+    // immediately by Deactivate()) because the process of showing the window is
+    // somewhat asynchronous. This causes the immediate Deactivate() call to not
+    // work.
+    BrowserList* const browser_list = BrowserList::GetInstance();
+    Browser* active_browser = browser_list->GetLastActive();
+    bool reset_active = false;
+    // Check if there's a currently-active window that should re-take focus.
+    // NOTE: This browser *may* be from another profile. We don't access any
+    // data from it.
+    if (active_browser && active_browser->window()->IsActive())
+      reset_active = true;
     new_window->window()->ShowInactive();
+    // NOTE: It's possible that showing the new browser synchronously caused
+    // the old one to close. Ensure it's still valid before activating it.
+    if (reset_active && base::Contains(*browser_list, active_browser))
+      active_browser->window()->Activate();
+  }
 
   // Lock the window fullscreen only after the new tab has been created
   // (otherwise the tabstrip is empty), and window()->show() has been called

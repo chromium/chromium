@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -20,14 +21,23 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "ui/ozone/buildflags.h"
+#endif
 
 namespace extensions {
 
@@ -415,5 +425,113 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
   CloseAppWindow(app_window);
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+using TabsApiInteractiveTest = ExtensionApiTest;
+
+// Tests that a window created with `focused: false` does not cover the focused
+// window. Regression test for https://crbug.com/1302159.
+IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
+                       OpeningAnUnfocusedWindowDoesntCoverTheFocusedWindow) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Navigate to `url1` and ensure the browser is active.
+  {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+    ui_test_utils::BrowserActivationWaiter activation_waiter(browser());
+    browser()->window()->Activate();
+    activation_waiter.WaitForActivation();
+  }
+  ASSERT_TRUE(browser()->window()->IsActive());
+
+  // Create and load an extension that creates a new window with a tab at
+  // `url2` with `focused: false` and waits for the tab to complete loading.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Interactive Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "background.js" },
+           "permissions": ["tabs"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function openUnfocusedWindow() {
+             const url = '%s';
+             const tabCreatedPromise = new Promise((resolve) => {
+               chrome.tabs.onUpdated.addListener(
+                   function listener(tabId, changeInfo, tab) {
+                     if (changeInfo.status === 'complete' &&
+                         tab.url === url) {
+                       chrome.tabs.onUpdated.removeListener(listener);
+                       resolve();
+                     }
+                   });
+             });
+             const win =
+                 await chrome.windows.create({focused: false, url: url});
+             chrome.test.assertFalse(win.focused);
+             await tabCreatedPromise;
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(kBackgroundJs, url2.spec().c_str()));
+
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Now, verify the browsers. There should be exactly two browser windows (the
+  // original and the one created by the extension).
+  BrowserList* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(2u, browser_list->size());
+  ASSERT_TRUE(base::Contains(*browser_list, browser()));
+  // Find the new browser. Be flexible in case BrowserList's internal sort
+  // changes.
+  Browser* new_browser = browser_list->get(0) == browser()
+                             ? browser_list->get(1)
+                             : browser_list->get(0);
+  EXPECT_NE(new_browser, browser());
+
+  // The new browser should have a tab pointed to `url2`; we use this mostly as
+  // validation that setup went according to plan.
+  EXPECT_EQ(1, new_browser->tab_strip_model()->count());
+  EXPECT_EQ(url2, new_browser->tab_strip_model()
+                      ->GetActiveWebContents()
+                      ->GetLastCommittedURL());
+
+  bool check_window_active_state = true;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+  check_window_active_state = false;
+#endif
+#endif
+
+  // The new browser should be inactive, since it was created with
+  // `focused: false`. The old browser should remain active.
+  // This assertion fails on Wayland. This is possibly due to
+  // https://crbug.com/1280332, where bubbles are drawn on the same window,
+  // but that is yet to be confirmed.
+  if (check_window_active_state) {
+    EXPECT_FALSE(new_browser->window()->IsActive());
+    EXPECT_TRUE(browser()->window()->IsActive());
+  }
+
+  // The old browser (which retains focus) should be on top of the new browser.
+  // This currently fails because WidgetTest::IsWindowStackedAbove() doesn't
+  // work for different BrowserViews. While the functionality is currently
+  // correct, this means we don't have a good regression test for it.
+  // TODO(https://crbug.com/1302159): Fix this.
+  // EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(
+  //     BrowserView::GetBrowserViewForBrowser(browser())->frame(),
+  //     BrowserView::GetBrowserViewForBrowser(new_browser)->frame()));
+}
 
 }  // namespace extensions
