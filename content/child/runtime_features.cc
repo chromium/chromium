@@ -473,7 +473,7 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableWebGPU, switches::kEnableUnsafeWebGPU, true},
       {wrf::ForceOverlayFullscreenVideo, switches::kForceOverlayFullscreenVideo,
        true},
-      {wrf::EnableDirectSockets, switches::kIsolatedAppOrigins, false},
+      {wrf::EnableDirectSockets, switches::kIsolatedAppOrigins, true},
   };
   for (const auto& mapping : switchToFeatureMapping) {
     if (command_line.HasSwitch(mapping.switch_name))
