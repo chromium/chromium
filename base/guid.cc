@@ -141,6 +141,10 @@ GUID::GUID(const GUID& other) = default;
 
 GUID& GUID::operator=(const GUID& other) = default;
 
+GUID::GUID(GUID&& other) = default;
+
+GUID& GUID::operator=(GUID&& other) = default;
+
 const std::string& GUID::AsLowercaseString() const {
   return lowercase_;
 }

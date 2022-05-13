@@ -56,6 +56,8 @@ class BASE_EXPORT GUID {
 
   GUID(const GUID& other);
   GUID& operator=(const GUID& other);
+  GUID(GUID&& other);
+  GUID& operator=(GUID&& other);
 
   bool is_valid() const { return !lowercase_.empty(); }
 
