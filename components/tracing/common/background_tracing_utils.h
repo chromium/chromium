@@ -13,6 +13,24 @@
 
 namespace tracing {
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "TracingFinalizationDisallowedReason" in
+// src/tools/metrics/histograms/enums.xml.
+enum class TracingFinalizationDisallowedReason {
+  kIncognitoLaunched = 0,
+  kProfileNotLoaded = 1,
+  kCrashMetricsNotLoaded = 2,
+  kLastSessionCrashed = 3,
+  kMetricsReportingDisabled = 4,
+  kTraceUploadedRecently = 5,
+  kLastTracingSessionDidNotEnd = 6,
+  kMaxValue = kLastTracingSessionDidNotEnd
+};
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason);
+
 enum class BackgroundTracingSetupMode {
   // Background tracing config comes from a field trial.
   kFromFieldTrial,

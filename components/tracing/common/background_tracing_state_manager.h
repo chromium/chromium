@@ -12,6 +12,10 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 
+namespace android_webview {
+class AwTracingDelegateTest;
+}
+
 namespace content {
 class BackgroundTracingConfig;
 }
@@ -80,6 +84,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
  private:
   friend base::NoDestructor<BackgroundTracingStateManager>;
   friend class tracing::BackgroundTracingStateManagerTest;
+  friend class android_webview::AwTracingDelegateTest;
 
   BackgroundTracingStateManager();
   ~BackgroundTracingStateManager();

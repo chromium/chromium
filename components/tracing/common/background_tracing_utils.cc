@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -86,6 +87,11 @@ GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
 }
 
 }  // namespace
+
+void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Tracing.Background.FinalizationDisallowedReason",
+                            reason);
+}
 
 void SetupBackgroundTracingWithOutputFile(
     std::unique_ptr<content::BackgroundTracingConfig> config,

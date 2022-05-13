@@ -5,10 +5,10 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_DELEGATE_H_
 
-#include <memory>
-
 #include "content/public/browser/tracing_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefRegistrySimple;
 
 namespace base {
 class Value;
@@ -20,6 +20,8 @@ class AwTracingDelegate : public content::TracingDelegate {
  public:
   AwTracingDelegate();
   ~AwTracingDelegate() override;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // content::TracingDelegate implementation:
   bool IsAllowedToBeginBackgroundScenario(

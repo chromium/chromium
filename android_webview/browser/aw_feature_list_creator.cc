@@ -15,6 +15,7 @@
 #include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/proto/aw_variations_seed.pb.h"
@@ -40,6 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/segregated_pref_store.h"
+#include "components/tracing/common/pref_names.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
@@ -96,6 +98,9 @@ const char* const kPersistentPrefsAllowlist[] = {
     // The last time the apps package name allowlist was queried from the
     // component update service, regardless if it was successful or not.
     prefs::kAppPackageNameLoggingRuleLastUpdateTime,
+
+    // The state of the previous background tracing session.
+    tracing::kBackgroundTracingSessionState,
 };
 
 void HandleReadError(PersistentPrefStore::PrefReadError error) {}
@@ -134,6 +139,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
   AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
       pref_registry.get());
+  AwTracingDelegate::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 

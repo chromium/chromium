@@ -64,26 +64,6 @@ using tracing::BackgroundTracingSetupMode;
 using tracing::BackgroundTracingState;
 using tracing::BackgroundTracingStateManager;
 
-// These values are logged to UMA. Entries should not be renumbered and numeric
-// values should never be reused. Please keep in sync with
-// "TracingFinalizationDisallowedReason" in
-// src/tools/metrics/histograms/enums.xml.
-enum class TracingFinalizationDisallowedReason {
-  kIncognitoLaunched = 0,
-  kProfileNotLoaded = 1,
-  kCrashMetricsNotLoaded = 2,
-  kLastSessionCrashed = 3,
-  kMetricsReportingDisabled = 4,
-  kTraceUploadedRecently = 5,
-  kLastTracingSessionDidNotEnd = 6,
-  kMaxValue = kLastTracingSessionDidNotEnd
-};
-
-void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Tracing.Background.FinalizationDisallowedReason",
-                            reason);
-}
-
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
   if (tracing_mode == BackgroundTracingSetupMode::kFromConfigFile ||
@@ -192,8 +172,8 @@ bool ChromeTracingDelegate::IsActionAllowed(
 
   if (requires_anonymized_data &&
       (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kIncognitoLaunched);
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
 
@@ -203,16 +183,17 @@ bool ChromeTracingDelegate::IsActionAllowed(
   // Don't start a new trace if the previous trace did not end.
   if (action == BackgroundScenarioAction::kStartTracing &&
       state.DidLastSessionEndUnexpectedly()) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd);
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::
+            kLastTracingSessionDidNotEnd);
     return false;
   }
 
   // Check the trace limit for both kStartTracing and kUploadTrace actions
   // because there is no point starting a trace that can't be uploaded.
   if (!ignore_trace_limit && state.DidRecentlyUploadForScenario(config)) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kTraceUploadedRecently);
+    tracing::RecordDisallowedMetric(
+        tracing::TracingFinalizationDisallowedReason::kTraceUploadedRecently);
     return false;
   }
 
