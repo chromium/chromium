@@ -1,0 +1,202 @@
+# Interop Tests
+
+This directory contains a set of tests which ensure the attribution logic as
+implemented matches the intended behavior of the Attribution Reporting API.
+
+See https://wicg.github.io/conversion-measurement-api/ for the draft specification.
+
+See //content/browser/attribution_reporting/attribution_interop_unittest.cc
+for the tests.
+
+These tests are purposefully not implemented as web platform tests, so that
+they can be shared by non-web-based platforms.
+
+The tests here cover how the browser will handle various series of sources and
+triggers with different configurations, but does not rely on any blink APIs.
+
+<!-- TODO(crbug.com/1318118): Add aggregatable reports -->
+Note that currently only event-level reports are covered.
+
+# Test case format
+
+The JSON schema is as follows.
+
+```jsonc
+{
+  "description": "description",
+
+  // Required input.
+  "input": {
+    // List of zero or more sources to register.
+    "sources": [
+      {
+        // Required time at which to register the source in milliseconds since
+        // the UNIX epoch formatted as a base-10 string.
+        "timestamp": "123",
+
+        "registration_request": {
+          // Required URL specified in the attributionsrc registration.
+          "attribution_src_url": "https://reporting.example",
+
+          // Required origin on which to register the source.
+          "source_origin": "https://source.example",
+
+          // Required source type, either "navigation" or "event",
+          // corresponding to whether the source is registered on click or
+          // view, respectively.
+          "source_type": "navigation"
+        },
+
+        // List of URLs and the corresponding responses. Currently only allows
+        // one.
+        "responses": [
+          {
+            // Required URL from which the response was sent.
+            "url": "https://reporting.example",
+
+            "response": {
+              // Required dictionary data to register a source.
+              "Attribution-Reporting-Register-Source": {
+                // Required uint64 formatted as a base-10 string.
+                "source_event_id": "123456789",
+
+                // Required site on which the source will be attributed.
+                "destination": "https://destination.example",
+
+                // Optional int64 in seconds formatted as a base-10 string.
+                // Defaults to 30 days.
+                "expiry": "86400",
+
+                // Optional int64 formatted as a base-10 string.
+                // Defaults to 0.
+                "priority": "-456",
+
+                // Optional dictionary of filters and corresponding values.
+                // Defaults to empty.
+                "filter_data": {
+                  "a": ["b", "c"],
+                  "d": []
+                },
+
+                // Optional uint64 formatted as a base-10 string. Defaults to
+                // null.
+                "debug_key": "987"
+              }
+            }
+          }
+        ]
+      }
+    ],
+
+    // List of zero or more triggers to register.
+    "triggers": [
+      {
+        // Required time at which to register the trigger in milliseconds
+        // since the UNIX epoch.
+        "timestamp": "123",
+
+        "registration_request": {
+          // Required URL from which the response was sent.
+          "attribution_src_url": "https://reporting.example",
+
+          // Required origin on which the trigger is being registered.
+          "destination_origin": "https://destination.example"
+        },
+
+        // List of URLs and the corresponding responses. Currently only allows
+        // one.
+        "responses": [
+          {
+            // Required URL from which the response was sent.
+            "url": "https://reporting.example",
+
+            "response": {
+              // Optional list of zero or more event trigger data.
+              "Attribution-Reporting-Register-Event-Trigger": [
+                {
+                  // Optional uint64 formatted as a base-10 string.
+                  // Defaults to 0.
+                  "trigger_data": "3",
+
+                  // Optional int64 formatted as a base-10 string.
+                  // Defaults to 0.
+                  "priority": "-456",
+
+                  // Optional uint64 formatted as a base-10 string. Defaults to
+                  // null.
+                  "deduplication_key": "654",
+
+                  // Optional dictionary of filters and corresponding values.
+                  // Defaults to empty.
+                  "filters": {
+                    "a": ["b", "c"],
+                    "d": []
+                  },
+
+                  // Optional dictionary of negated filters and corresponding
+                  // values. Defaults to empty.
+                  "not_filters": {
+                    "x": ["y"],
+                    "z": []
+                  }
+                }
+              ],
+
+              // Optional uint64 formatted as a base-10 string. Defaults to
+              // null.
+              "Attribution-Reporting-Trigger-Debug-Key": "789",
+
+              // Optional dictionary of filters and corresponding values.
+              // Defaults to empty.
+              "Attribution-Reporting-Filters": {
+                "a": ["b", "c"],
+                "d": []
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  // Expected output.
+  "output": {
+    // List of event-level results.
+    "event_level_results": [
+      {
+        // URL to which the report would have been sent.
+        "report_url": "https://reporting.example/.well-known/attribution-reporting/report-event-attribution",
+
+        // Time at which the report would have been sent in milliseconds since
+        // the UNIX epoch.
+        "report_time": "123",
+
+        "payload": {
+          // The attribution destination on which the trigger was registered.
+          "attribution_destination": "https://destination.example",
+
+          // uint64 event id formatted as a base-10 string set on the source.
+          "source_event_id": "123456789",
+
+          // Coarse uint64 data formatted as a base-10 string set on the
+          // trigger.
+          "trigger_data": "7",
+
+          // Whether this source was associated with a navigation.
+          "source_type": "navigation",
+
+          // Decimal number between 0 and 1 indicating how often noise is
+          // applied.
+          "randomized_trigger_rate": 0.0024,
+
+          // Debug key set on the source. Omitted if not set.
+          "source_debug_key": "123",
+
+          // Debug key set on the trigger. Omitted if not set.
+          "trigger_debug_key": "789"
+        }
+      }
+    ]
+  }
+}
+```
