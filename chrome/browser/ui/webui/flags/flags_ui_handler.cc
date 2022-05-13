@@ -30,29 +30,29 @@ FlagsUIHandler::FlagsUIHandler()
 FlagsUIHandler::~FlagsUIHandler() {}
 
 void FlagsUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsUIHandler::HandleRequestExperimentalFeatures,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kEnableExperimentalFeature,
       base::BindRepeating(
           &FlagsUIHandler::HandleEnableExperimentalFeatureMessage,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kSetOriginListFlag,
       base::BindRepeating(&FlagsUIHandler::HandleSetOriginListFlagMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kRestartBrowser,
       base::BindRepeating(&FlagsUIHandler::HandleRestartBrowser,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       flags_ui::kCrosUrlFlagsRedirect,
       base::BindRepeating(&FlagsUIHandler::HandleCrosUrlFlagsRedirect,
                           base::Unretained(this)));
@@ -69,9 +69,9 @@ void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
 }
 
 void FlagsUIHandler::HandleRequestExperimentalFeatures(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetListDeprecated()[0];
+  const base::Value& callback_id = args[0];
 
   experimental_features_callback_id_ = callback_id.GetString();
   // Bail out if the handler hasn't been initialized yet. The request will be
@@ -132,20 +132,18 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 }
 
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetListDeprecated().size());
-  if (args->GetListDeprecated().size() != 2)
+  DCHECK_EQ(2u, args.size());
+  if (args.size() != 2)
     return;
 
-  if (!args->GetListDeprecated()[0].is_string() ||
-      !args->GetListDeprecated()[1].is_string()) {
+  if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& entry_internal_name =
-      args->GetListDeprecated()[0].GetString();
-  const std::string& enable_str = args->GetListDeprecated()[1].GetString();
+  const std::string& entry_internal_name = args[0].GetString();
+  const std::string& enable_str = args[1].GetString();
   if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
@@ -156,21 +154,19 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 }
 
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK(flags_storage_);
-  if (args->GetListDeprecated().size() != 2) {
+  if (args.size() != 2) {
     NOTREACHED();
     return;
   }
 
-  if (!args->GetListDeprecated()[0].is_string() ||
-      !args->GetListDeprecated()[1].is_string()) {
+  if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& entry_internal_name =
-      args->GetListDeprecated()[0].GetString();
-  const std::string& value_str = args->GetListDeprecated()[1].GetString();
+  const std::string& entry_internal_name = args[0].GetString();
+  const std::string& value_str = args[1].GetString();
   if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
@@ -180,7 +176,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
                                  flags_storage_.get());
 }
 
-void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
+void FlagsUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   DCHECK(flags_storage_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS be less intrusive and restart inside the user session after
@@ -201,13 +197,13 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
   chrome::AttemptRestart();
 }
 
-void FlagsUIHandler::HandleResetAllFlags(const base::ListValue* args) {
+void FlagsUIHandler::HandleResetAllFlags(const base::Value::List& args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::ListValue* args) {
+void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::Value::List& args) {
   about_flags::CrosUrlFlagsRedirect();
 }
 #endif
