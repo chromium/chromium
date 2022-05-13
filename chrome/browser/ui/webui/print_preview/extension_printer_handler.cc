@@ -33,6 +33,7 @@
 #include "printing/print_job_constants.h"
 #include "printing/pwg_raster_settings.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::DevicePermissionsManager;
 using extensions::DictionaryBuilder;
@@ -81,21 +82,19 @@ std::string GenerateProvisionalUsbPrinterId(
                             extension->id().c_str(), device.guid.c_str());
 }
 
-bool ParseProvisionalUsbPrinterId(const std::string& printer_id,
-                                  std::string* extension_id,
-                                  std::string* device_guid) {
+struct ProvisionalUsbPrinter {
+  std::string extension_id;
+  std::string device_guid;
+};
+
+absl::optional<ProvisionalUsbPrinter> ParseProvisionalUsbPrinterId(
+    const std::string& printer_id) {
   std::vector<std::string> components = base::SplitString(
       printer_id, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  if (components.size() != 3)
-    return false;
-
-  if (components[0] != kProvisionalUsbLabel)
-    return false;
-
-  *extension_id = components[1];
-  *device_guid = components[2];
-  return true;
+  if (components.size() != 3 || components[0] != kProvisionalUsbLabel)
+    return absl::nullopt;
+  return ProvisionalUsbPrinter{.extension_id = std::move(components[1]),
+                               .device_guid = std::move(components[2])};
 }
 
 extensions::PrinterProviderAPI* GetPrinterProviderAPI(Profile* profile) {
@@ -206,18 +205,16 @@ void ExtensionPrinterHandler::StartPrint(
 void ExtensionPrinterHandler::StartGrantPrinterAccess(
     const std::string& printer_id,
     GetPrinterInfoCallback callback) {
-  std::string extension_id;
-  std::string device_guid;
-  if (!ParseProvisionalUsbPrinterId(printer_id, &extension_id, &device_guid)) {
+  absl::optional<ProvisionalUsbPrinter> printer =
+      ParseProvisionalUsbPrinterId(printer_id);
+  if (!printer.has_value()) {
     std::move(callback).Run(base::DictionaryValue());
     return;
   }
 
-  UsbDeviceManager* usb_manager = UsbDeviceManager::Get(profile_);
-  DCHECK(usb_manager);
-
   const device::mojom::UsbDeviceInfo* device =
-      usb_manager->GetDeviceInfo(device_guid);
+      UsbDeviceManager::Get(profile_)->GetDeviceInfo(
+          printer.value().device_guid);
   if (!device) {
     std::move(callback).Run(base::DictionaryValue());
     return;
@@ -225,10 +222,10 @@ void ExtensionPrinterHandler::StartGrantPrinterAccess(
 
   DevicePermissionsManager* permissions_manager =
       DevicePermissionsManager::Get(profile_);
-  permissions_manager->AllowUsbDevice(extension_id, *device);
+  permissions_manager->AllowUsbDevice(printer.value().extension_id, *device);
 
   GetPrinterProviderAPI(profile_)->DispatchGetUsbPrinterInfoRequested(
-      extension_id, *device,
+      printer.value().extension_id, *device,
       base::BindOnce(&ExtensionPrinterHandler::WrapGetPrinterInfoCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
