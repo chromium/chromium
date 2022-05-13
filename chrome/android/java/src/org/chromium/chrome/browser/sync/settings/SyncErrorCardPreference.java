@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -123,22 +122,15 @@ public class SyncErrorCardPreference extends Preference
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
-            errorCardView.getStatusMessage().setVisibility(View.GONE);
+            errorCardView.getTitle().setVisibility(View.GONE);
         } else {
-            errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
+            errorCardView.getTitle().setVisibility(View.VISIBLE);
         }
-        errorCardView.getStatusMessage().setText(
+        errorCardView.getTitle().setText(
                 SyncSettingsUtils.getSyncErrorCardTitle(getContext(), mSyncError));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            errorCardView.getDescription().setVisibility(View.GONE);
-            errorCardView.getNewDescription().setText(
-                    SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
-        } else {
-            errorCardView.getNewDescription().setVisibility(View.GONE);
-            errorCardView.getDescription().setText(
-                    SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
-        }
+        errorCardView.getDescription().setText(
+                SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
 
         errorCardView.getPrimaryButton().setText(
                 SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));

@@ -516,16 +516,11 @@ public class SigninPromoController {
         setImageSize(context, view, R.dimen.signin_promo_cold_state_image_size);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            // TODO(crbug.com/1323197): remove getDescription() or getNewDescription if the feature
-            // enabled or disabled by default.
-            view.getDescription().setVisibility(View.GONE);
-            view.getNewDescription().setText(mDescriptionStringIdNoAccount);
+            // TODO(crbug.com/1323197): set the title visible by default in the XML.
             view.getTitle().setVisibility(View.VISIBLE);
             view.getTitle().setText(mTitleStringId);
-        } else {
-            view.getNewDescription().setVisibility(View.GONE);
-            view.getDescription().setText(mDescriptionStringIdNoAccount);
         }
+        view.getDescription().setText(mDescriptionStringIdNoAccount);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {
             view.getPrimaryButton().setText(R.string.sync_promo_continue);
@@ -544,14 +539,10 @@ public class SigninPromoController {
         setImageSize(context, view, R.dimen.signin_promo_account_image_size);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
-            view.getDescription().setVisibility(View.GONE);
-            view.getNewDescription().setText(mDescriptionStringId);
             view.getTitle().setVisibility(View.VISIBLE);
             view.getTitle().setText(mTitleStringId);
-        } else {
-            view.getNewDescription().setVisibility(View.GONE);
-            view.getDescription().setText(mDescriptionStringId);
         }
+        view.getDescription().setText(mDescriptionStringId);
 
         view.getPrimaryButton().setOnClickListener(v -> signinWithDefaultAccount(context));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)) {

@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
@@ -20,9 +22,7 @@ import org.chromium.ui.widget.ButtonCompat;
 public class PersonalizedSigninPromoView extends LinearLayout {
     private ImageView mImage;
     private ImageButton mDismissButton;
-    private TextView mStatus;
     private TextView mTitle;
-    private TextView mNewDescription;
     private TextView mDescription;
     private ButtonCompat mPrimaryButton;
     private Button mSecondaryButton;
@@ -37,12 +37,21 @@ public class PersonalizedSigninPromoView extends LinearLayout {
 
         mImage = findViewById(R.id.signin_promo_image);
         mDismissButton = findViewById(R.id.signin_promo_close_button);
-        mStatus = findViewById(R.id.signin_promo_status_message);
-        mTitle = findViewById(R.id.signin_promo_title);
-        mNewDescription = findViewById(R.id.new_signin_promo_description);
-        mDescription = findViewById(R.id.signin_promo_description);
         mPrimaryButton = findViewById(R.id.signin_promo_signin_button);
         mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
+            // TODO(crbug.com/1323197): remove new_signin_promo_description or
+            // signin_promo_description and signin_promo_title or signin_promo_status_message, if
+            // the feature enabled or disabled by default.
+            mTitle = findViewById(R.id.signin_promo_title);
+            mDescription = findViewById(R.id.new_signin_promo_description);
+            findViewById(R.id.signin_promo_description).setVisibility(View.GONE);
+        } else {
+            mTitle = findViewById(R.id.signin_promo_status_message);
+            mDescription = findViewById(R.id.signin_promo_description);
+            findViewById(R.id.new_signin_promo_description).setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -62,22 +71,8 @@ public class PersonalizedSigninPromoView extends LinearLayout {
     /**
      * @return A reference to the title of the sync promo.
      */
-    public TextView getStatusMessage() {
-        return mStatus;
-    }
-
-    /**
-     * @return A reference to the title of the sync promo.
-     */
     public TextView getTitle() {
         return mTitle;
-    }
-
-    /**
-     * @return A reference to the description of the promo.
-     */
-    public TextView getNewDescription() {
-        return mNewDescription;
     }
 
     /**
