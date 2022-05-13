@@ -19,6 +19,7 @@ def GetIosDir():
 
 sys.path.append(os.path.join(GetIosDir(), 'build', 'bots', 'scripts'))
 
+import constants
 import iossim_util
 import test_apps
 import xcodebuild_runner
@@ -64,6 +65,7 @@ egtests_app = test_apps.EgtestsApp(
     host_app_path=host_app, inserted_libs=inserted_libs)
 
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
-    shards=1, retries=1, out_dir=output_directory)
+    shards=1, retries=1, readline_timeout=constants.READLINE_TIMEOUT,
+    out_dir=output_directory)
 
 launch_command.launch()
