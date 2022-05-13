@@ -96,17 +96,13 @@ class SampledOutClientIdSavedBrowserTest : public PlatformBrowserTest {
 //    reporting (including first run users), or,
 // 2) They disabled metrics reporting.
 // TODO(crbug.com/1324877): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ClientIdSaved DISABLED_ClientIdSaved
-#else
-#define MAYBE_ClientIdSaved ClientIdSaved
-#endif
 IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest,
-                       MAYBE_ClientIdSaved) {
+                       DISABLED_ClientIdSaved) {
   // Verify that the client ID is initially empty.
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(
       local_state()->GetString(metrics::prefs::kMetricsClientID).empty());
+  // TODO(crbug.com/1325166): Re-enable this test
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android Chrome, since we have not yet consented to metrics reporting,
