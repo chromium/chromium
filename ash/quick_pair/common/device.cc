@@ -57,6 +57,9 @@ void Device::SetAdditionalData(const AdditionalDataType& type,
                                const std::vector<uint8_t>& data) {
   auto result = additional_data_.emplace(type, data);
 
+  if (type == AdditionalDataType::kFastPairVersion && data[0] == 1)
+    set_classic_address(ble_address);
+
   if (!result.second) {
     result.first->second = data;
   }
