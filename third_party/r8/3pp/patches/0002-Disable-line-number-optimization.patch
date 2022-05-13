@@ -1,17 +1,32 @@
-From 7c8843fa5df230f91c388852a36f090d718fae08 Mon Sep 17 00:00:00 2001
+From 79aabeb77f4cbf5dbaf83d3f43b37bf04984cc77 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 20 Jan 2022 16:29:40 -0500
 Subject: [PATCH 2/3] Disable line number optimization
 
 ---
+ src/main/java/com/android/tools/r8/D8Command.java | 3 +++
  src/main/java/com/android/tools/r8/R8Command.java | 2 ++
- 1 file changed, 2 insertions(+)
+ 2 files changed, 5 insertions(+)
 
+diff --git a/src/main/java/com/android/tools/r8/D8Command.java b/src/main/java/com/android/tools/r8/D8Command.java
+index 149507173..00c217b03 100644
+--- a/src/main/java/com/android/tools/r8/D8Command.java
++++ b/src/main/java/com/android/tools/r8/D8Command.java
+@@ -657,6 +657,9 @@ public final class D8Command extends BaseCompilerCommand {
+     internal.setDumpInputFlags(getDumpInputFlags(), skipDump);
+     internal.dumpOptions = dumpOptions();
+ 
++    // Added where it hopefully won't have merge conflicts.
++    internal.lineNumberOptimization = LineNumberOptimization.OFF;
++
+     return internal;
+   }
+ 
 diff --git a/src/main/java/com/android/tools/r8/R8Command.java b/src/main/java/com/android/tools/r8/R8Command.java
-index 05f03d258..977fa97ec 100644
+index 4e7ca32ab..40bacabea 100644
 --- a/src/main/java/com/android/tools/r8/R8Command.java
 +++ b/src/main/java/com/android/tools/r8/R8Command.java
-@@ -924,6 +924,8 @@ public final class R8Command extends BaseCompilerCommand {
+@@ -966,6 +966,8 @@ public final class R8Command extends BaseCompilerCommand {
      internal.mainDexKeptGraphConsumer = mainDexKeptGraphConsumer;
  
      internal.dataResourceConsumer = internal.programConsumer.getDataResourceConsumer();
@@ -21,5 +36,5 @@ index 05f03d258..977fa97ec 100644
      internal.featureSplitConfiguration = featureSplitConfiguration;
  
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.36.0.550.gb090851708-goog
 

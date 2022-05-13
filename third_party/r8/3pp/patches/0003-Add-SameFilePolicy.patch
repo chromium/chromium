@@ -1,4 +1,4 @@
-From 40f1ca68aa893c4c81a115bc94f70a597f8db566 Mon Sep 17 00:00:00 2001
+From 7ad66ccdae89d6614a7fc81ed52eb6b72093a43e Mon Sep 17 00:00:00 2001
 From: Joseph Chao <josephchao@google.com>
 Date: Thu, 31 Mar 2022 19:31:56 +0000
 Subject: [PATCH 3/3] Add SameFilePolicy
@@ -10,10 +10,10 @@ Subject: [PATCH 3/3] Add SameFilePolicy
  create mode 100644 src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 
 diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
-index 2ff1bfbf9..26379e600 100644
+index 70f752ef8..c6c0800a6 100644
 --- a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
 +++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
-@@ -50,6 +50,7 @@ import com.android.tools.r8.horizontalclassmerging.policies.PreserveMethodCharac
+@@ -51,6 +51,7 @@ import com.android.tools.r8.horizontalclassmerging.policies.PreserveMethodCharac
  import com.android.tools.r8.horizontalclassmerging.policies.PreventClassMethodAndDefaultMethodCollisions;
  import com.android.tools.r8.horizontalclassmerging.policies.RespectPackageBoundaries;
  import com.android.tools.r8.horizontalclassmerging.policies.SameFeatureSplit;
@@ -21,7 +21,7 @@ index 2ff1bfbf9..26379e600 100644
  import com.android.tools.r8.horizontalclassmerging.policies.SameInstanceFields;
  import com.android.tools.r8.horizontalclassmerging.policies.SameMainDexGroup;
  import com.android.tools.r8.horizontalclassmerging.policies.SameNestHost;
-@@ -271,6 +272,7 @@ public class PolicyScheduler {
+@@ -273,6 +274,7 @@ public class PolicyScheduler {
      ImmediateProgramSubtypingInfo immediateSubtypingInfo =
          ImmediateProgramSubtypingInfo.create(appView);
      builder.add(
@@ -31,7 +31,7 @@ index 2ff1bfbf9..26379e600 100644
          new SameFeatureSplit(appView),
 diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 new file mode 100644
-index 000000000..9692de109
+index 000000000..fa3940e20
 --- /dev/null
 +++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 @@ -0,0 +1,29 @@
@@ -65,5 +65,5 @@ index 000000000..9692de109
 +  }
 +}
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.36.0.550.gb090851708-goog
 
