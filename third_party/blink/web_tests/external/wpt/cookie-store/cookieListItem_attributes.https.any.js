@@ -6,9 +6,7 @@
 const kCurrentHostname = (new URL(self.location.href)).hostname;
 
 const kOneDay = 24 * 60 * 60 * 1000;
-const kFourHundredDays = 400 * kOneDay;
 const kTenYears = 10 * 365 * kOneDay;
-const kFourHundredDaysFromNow = Date.now() + kFourHundredDays;
 const kTenYearsFromNow = Date.now() + kTenYears;
 
 const kCookieListItemKeys =
@@ -70,7 +68,7 @@ promise_test(async testCase => {
   assert_equals(cookie.value, 'cookie-value');
   assert_equals(cookie.domain, null);
   assert_equals(cookie.path, '/');
-  assert_approx_equals(cookie.expires, kFourHundredDaysFromNow, kOneDay);
+  assert_approx_equals(cookie.expires, kTenYearsFromNow, kOneDay);
   assert_equals(cookie.secure, true);
   assert_equals(cookie.sameSite, 'strict');
   const itemKeys = Object.keys(cookie);
@@ -93,7 +91,7 @@ promise_test(async testCase => {
   assert_equals(cookie.value, 'cookie-value');
   assert_equals(cookie.domain, null);
   assert_equals(cookie.path, '/');
-  assert_approx_equals(cookie.expires, kFourHundredDaysFromNow, kOneDay);
+  assert_approx_equals(cookie.expires, kTenYearsFromNow, kOneDay);
   assert_equals(cookie.secure, true);
 }, 'CookieListItem - cookieStore.set with expires set to a Date 10 ' +
    'years in the future');
