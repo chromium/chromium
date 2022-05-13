@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
-#include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -328,7 +327,8 @@ void TestRenderWidgetHostViewChildFrame::ProcessGestureEvent(
 
 TestRenderViewHost::TestRenderViewHost(
     FrameTree* frame_tree,
-    SiteInstance* instance,
+    SiteInstanceGroup* group,
+    const StoragePartitionConfig& storage_partition_config,
     std::unique_ptr<RenderWidgetHostImpl> widget,
     RenderViewHostDelegate* delegate,
     int32_t routing_id,
@@ -336,7 +336,8 @@ TestRenderViewHost::TestRenderViewHost(
     bool swapped_out,
     scoped_refptr<BrowsingContextState> main_browsing_context_state)
     : RenderViewHostImpl(frame_tree,
-                         instance,
+                         group,
+                         storage_partition_config,
                          std::move(widget),
                          delegate,
                          routing_id,

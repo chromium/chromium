@@ -50,7 +50,6 @@ class Rect;
 namespace content {
 
 class FrameTree;
-class SiteInstance;
 class TestRenderFrameHost;
 class TestPageBroadcast;
 class TestWebContents;
@@ -261,7 +260,8 @@ class TestRenderViewHost : public RenderViewHostImpl,
  public:
   TestRenderViewHost(
       FrameTree* frame_tree,
-      SiteInstance* instance,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
       std::unique_ptr<RenderWidgetHostImpl> widget,
       RenderViewHostDelegate* delegate,
       int32_t routing_id,

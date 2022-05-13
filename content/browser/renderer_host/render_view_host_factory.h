@@ -15,7 +15,7 @@ class FrameTree;
 class RenderViewHost;
 class RenderViewHostDelegate;
 class RenderWidgetHostDelegate;
-class SiteInstance;
+class SiteInstanceGroup;
 
 // A factory for creating RenderViewHosts. There is a global factory function
 // that can be installed for the purposes of testing to provide a specialized
@@ -27,7 +27,8 @@ class RenderViewHostFactory {
   // pointer will be passed to the caller.
   static RenderViewHost* Create(
       FrameTree* frame_tree,
-      SiteInstance* instance,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
       int32_t main_frame_routing_id,
@@ -63,7 +64,8 @@ class RenderViewHostFactory {
   // function to create a different kind of RenderViewHost for testing.
   virtual RenderViewHost* CreateRenderViewHost(
       FrameTree* frame_tree,
-      SiteInstance* instance,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
       int32_t routing_id,

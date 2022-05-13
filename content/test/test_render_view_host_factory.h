@@ -12,7 +12,7 @@
 namespace content {
 
 class AgentSchedulingGroupHostFactory;
-class SiteInstance;
+class SiteInstanceGroup;
 class RenderViewHostDelegate;
 class RenderProcessHostFactory;
 
@@ -35,7 +35,8 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
       RenderProcessHostFactory* rph_factory);
   RenderViewHost* CreateRenderViewHost(
       FrameTree* frame_tree,
-      SiteInstance* instance,
+      SiteInstanceGroup* group,
+      const StoragePartitionConfig& storage_partition_config,
       RenderViewHostDelegate* delegate,
       RenderWidgetHostDelegate* widget_delegate,
       int32_t routing_id,

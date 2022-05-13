@@ -7,7 +7,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/site_instance_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/public/browser/render_process_host_factory.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
@@ -39,7 +39,8 @@ void TestRenderViewHostFactory::set_render_process_host_factory(
 
 RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     FrameTree* frame_tree,
-    SiteInstance* instance,
+    SiteInstanceGroup* group,
+    const StoragePartitionConfig& storage_partition_config,
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
     int32_t routing_id,
@@ -48,11 +49,10 @@ RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     bool swapped_out,
     scoped_refptr<BrowsingContextState> main_browsing_context_state) {
   return new TestRenderViewHost(
-      frame_tree, instance,
-      TestRenderWidgetHost::Create(
-          frame_tree, widget_delegate,
-          static_cast<SiteInstanceImpl*>(instance)->group()->GetSafeRef(),
-          widget_routing_id, false),
+      frame_tree, group, storage_partition_config,
+      TestRenderWidgetHost::Create(frame_tree, widget_delegate,
+                                   group->GetSafeRef(), widget_routing_id,
+                                   false),
       delegate, routing_id, main_frame_routing_id, swapped_out,
       std::move(main_browsing_context_state));
 }

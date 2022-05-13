@@ -188,7 +188,8 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
                                    process_->GetNextRoutingID());
   host_ = mock_host.get();
   render_view_host_ = new TestRenderViewHost(
-      frame_tree_.get(), site_instance_.get(), std::move(mock_host),
+      frame_tree_.get(), site_instance_group_.get(),
+      site_instance_->GetStoragePartitionConfig(), std::move(mock_host),
       web_contents_.get(), process_->GetNextRoutingID(),
       process_->GetNextRoutingID(), false, nullptr);
   parent_layer_ = cc::Layer::Create();
