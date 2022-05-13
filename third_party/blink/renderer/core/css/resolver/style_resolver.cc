@@ -1555,7 +1555,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
                                  selector_filter_, match_result, state.Style(),
                                  EInsideLink::kNotInsideLink);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
-  CollectPseudoRulesForElement(*element, collector, kPseudoIdNone,
+  CollectPseudoRulesForElement(*element, collector, kPseudoIdNone, g_null_atom,
                                rules_to_include);
   return collector.MatchedStyleRuleList();
 }
@@ -1587,6 +1587,7 @@ Element* StyleResolver::FindContainerForElement(
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
     Element* element,
     PseudoId pseudo_id,
+    const AtomicString& document_transition_tag,
     unsigned rules_to_include) {
   DCHECK(element);
   StyleResolverState state(GetDocument(), *element);
@@ -1600,7 +1601,7 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
   // TODO(obrufau): support collecting rules for nested ::marker
   if (!element->IsPseudoElement()) {
     CollectPseudoRulesForElement(*element, collector, pseudo_id,
-                                 rules_to_include);
+                                 document_transition_tag, rules_to_include);
   }
 
   if (tracker_)
@@ -1610,15 +1611,18 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
 
 RuleIndexList* StyleResolver::CssRulesForElement(Element* element,
                                                  unsigned rules_to_include) {
-  return PseudoCSSRulesForElement(element, kPseudoIdNone, rules_to_include);
+  return PseudoCSSRulesForElement(element, kPseudoIdNone, g_null_atom,
+                                  rules_to_include);
 }
 
 void StyleResolver::CollectPseudoRulesForElement(
     const Element& element,
     ElementRuleCollector& collector,
     PseudoId pseudo_id,
+    const AtomicString& document_transition_tag,
     unsigned rules_to_include) {
-  collector.SetPseudoElementStyleRequest(StyleRequest(pseudo_id, nullptr));
+  collector.SetPseudoElementStyleRequest(
+      StyleRequest(pseudo_id, nullptr, document_transition_tag));
 
   if (rules_to_include & kUACSSRules)
     MatchUARules(element, collector);

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -43,7 +44,7 @@ TEST_F(InspectorStyleResolverTest, DirectlyMatchedRules) {
     </div>
   )HTML");
   Element* grid = GetDocument().getElementById("grid");
-  InspectorStyleResolver resolver(grid, kPseudoIdNone);
+  InspectorStyleResolver resolver(grid, kPseudoIdNone, g_null_atom);
   RuleIndexList* matched_rules = resolver.MatchedRules();
   // Some rules are coming for UA.
   EXPECT_EQ(2u, matched_rules->size());
@@ -73,7 +74,7 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
     </div>
   )HTML");
   Element* grid = GetDocument().getElementById("grid");
-  InspectorStyleResolver resolver(grid, kPseudoIdNone);
+  InspectorStyleResolver resolver(grid, kPseudoIdNone, g_null_atom);
   HeapVector<Member<InspectorCSSMatchedRules>> parent_rules =
       resolver.ParentRules();
   Element* grid_container = GetDocument().getElementById("grid-container");
@@ -130,7 +131,7 @@ TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
   Element* middle = GetDocument().getElementById("middle");
   Element* outer = GetDocument().getElementById("outer");
   Element* body = GetDocument().QuerySelector("body");
-  InspectorStyleResolver resolver(target, kPseudoIdNone);
+  InspectorStyleResolver resolver(target, kPseudoIdNone, g_null_atom);
   HeapVector<Member<InspectorCSSMatchedPseudoElements>> parent_pseudos =
       resolver.ParentPseudoElementRules();
   EXPECT_EQ(5u, parent_pseudos.size());

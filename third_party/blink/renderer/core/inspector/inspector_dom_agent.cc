@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -107,6 +108,21 @@ namespace {
 
 const size_t kMaxTextSize = 10000;
 const UChar kEllipsisUChar[] = {0x2026, 0};
+
+template <typename Functor>
+void ForEachSupportedPseudo(const Element* element, Functor& func) {
+  for (PseudoId pseudo_id :
+       {kPseudoIdBefore, kPseudoIdAfter, kPseudoIdMarker}) {
+    if (!PseudoElement::IsWebExposed(pseudo_id, element))
+      continue;
+    if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
+      func(pseudo_element);
+  }
+  if (element == element->GetDocument().documentElement()) {
+    DocumentTransitionUtils::ForEachTransitionPseudo(element->GetDocument(),
+                                                     func);
+  }
+}
 
 }  // namespace
 
@@ -369,12 +385,10 @@ void InspectorDOMAgent::Unbind(Node* node) {
 
   auto* element = DynamicTo<Element>(node);
   if (element) {
-    if (element->GetPseudoElement(kPseudoIdBefore))
-      Unbind(element->GetPseudoElement(kPseudoIdBefore));
-    if (element->GetPseudoElement(kPseudoIdAfter))
-      Unbind(element->GetPseudoElement(kPseudoIdAfter));
-    if (element->GetPseudoElement(kPseudoIdMarker))
-      Unbind(element->GetPseudoElement(kPseudoIdMarker));
+    auto unbind_pseudo = [&](PseudoElement* pseudo_element) {
+      Unbind(pseudo_element);
+    };
+    ForEachSupportedPseudo(element, unbind_pseudo);
   }
 
   NotifyWillRemoveDOMNode(node);
@@ -1909,15 +1923,12 @@ std::unique_ptr<protocol::Array<protocol::DOM::Node>>
 InspectorDOMAgent::BuildArrayForPseudoElements(Element* element,
                                                NodeToIdMap* nodes_map) {
   protocol::Array<protocol::DOM::Node> pseudo_elements;
-  for (PseudoId pseudo_id :
-       {kPseudoIdBefore, kPseudoIdAfter, kPseudoIdMarker}) {
-    if (!PseudoElement::IsWebExposed(pseudo_id, element))
-      continue;
-    if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id)) {
-      pseudo_elements.emplace_back(
-          BuildObjectForNode(pseudo_element, 0, false, nodes_map));
-    }
-  }
+  auto add_pseudo = [&](PseudoElement* pseudo_element) {
+    pseudo_elements.emplace_back(
+        BuildObjectForNode(pseudo_element, 0, false, nodes_map));
+  };
+  ForEachSupportedPseudo(element, add_pseudo);
+
   if (pseudo_elements.empty())
     return nullptr;
   return std::make_unique<protocol::Array<protocol::DOM::Node>>(
