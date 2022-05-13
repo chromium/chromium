@@ -16,6 +16,7 @@
   self = [super init];
   if (self) {
     _layoutGuideCenter = [[LayoutGuideCenter alloc] init];
+    _incognitoLayoutGuideCenter = [[LayoutGuideCenter alloc] init];
   }
   return self;
 }

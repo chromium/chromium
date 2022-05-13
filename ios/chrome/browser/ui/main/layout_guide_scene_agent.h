@@ -12,8 +12,11 @@
 // A scene agent that scopes a LayoutGuideCenter to a scene.
 @interface LayoutGuideSceneAgent : ObservingSceneAgent
 
-// The layout guide center for the current scene.
+// The layout guide center for the current scene and regular browser state.
 @property(nonatomic, readonly) LayoutGuideCenter* layoutGuideCenter;
+
+// The layout guide center for the current scene and Incognito browser state.
+@property(nonatomic, readonly) LayoutGuideCenter* incognitoLayoutGuideCenter;
 
 @end
 
