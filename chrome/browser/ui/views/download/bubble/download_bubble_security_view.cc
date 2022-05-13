@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -48,16 +49,16 @@ void DownloadBubbleSecurityView::AddHeader() {
       gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  auto* back_button =
+  back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(
               &DownloadBubbleNavigationHandler::OpenPrimaryDialog,
               base::Unretained(navigation_handler_)),
           vector_icons::kArrowBackIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-  views::InstallCircleHighlightPathGenerator(back_button);
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kStart);
+  views::InstallCircleHighlightPathGenerator(back_button_);
+  back_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+  back_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                            views::LayoutAlignment::kStart);
 
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
@@ -291,6 +292,22 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   UpdateHeader();
   UpdateIconAndText();
   UpdateButtons();
+}
+
+void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
+  DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+  // Announce that the subpage was opened to inform the user about the changes
+  // in the UI.
+#if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().OverrideName(ui_info.warning_summary);
+  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+  GetViewAccessibility().AnnounceText(ui_info.warning_summary);
+#endif
+
+  // Focus the back button by default to ensure that focus is set when new
+  // content is displayed.
+  back_button_->RequestFocus();
 }
 
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
