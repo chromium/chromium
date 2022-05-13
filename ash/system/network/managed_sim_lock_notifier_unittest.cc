@@ -67,12 +67,10 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
     return NetworkHandler::Get()->managed_network_configuration_handler();
   }
 
-  void SetCellularSimLockState(bool should_lock_sim = true) {
+  void SetCellularSimLockEnabled(bool enable) {
     // Simulate a locked SIM.
     base::Value sim_lock_status(base::Value::Type::DICTIONARY);
-    sim_lock_status.SetKey(
-        shill::kSIMLockTypeProperty,
-        base::Value(should_lock_sim ? shill::kSIMLockPin : ""));
+    sim_lock_status.SetKey(shill::kSIMLockEnabledProperty, base::Value(enable));
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
@@ -154,7 +152,7 @@ TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
   AddCellularService();
   EXPECT_FALSE(GetManagedSimLockNotification());
 
-  SetCellularSimLockState(true);
+  SetCellularSimLockEnabled(true);
   EXPECT_FALSE(GetManagedSimLockNotification());
 
   SetAllowCellularSimLock(false);
@@ -167,7 +165,7 @@ TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
 TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
   AddCellularDevice();
   AddCellularService();
-  SetCellularSimLockState(true);
+  SetCellularSimLockEnabled(true);
   SetAllowCellularSimLock(false);
 
   // Notification should be shown; proceed to remove it.
@@ -194,7 +192,7 @@ TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
   // false.
   EXPECT_FALSE(GetManagedSimLockNotification());
 
-  SetCellularSimLockState(false);
+  SetCellularSimLockEnabled(false);
   SetAllowCellularSimLock(false);
 
   LogOut();

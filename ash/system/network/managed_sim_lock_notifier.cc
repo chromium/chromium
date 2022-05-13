@@ -85,7 +85,7 @@ void ManagedSimLockNotifier::OnCellularNetworksList(
         networks) {
   // Check if there are any PIN locked pSIM or eSIM networks.
   for (auto& network : networks) {
-    if (network->type_state->get_cellular()->sim_locked) {
+    if (network->type_state->get_cellular()->sim_lock_enabled) {
       ShowNotification();
       return;
     }

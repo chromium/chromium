@@ -191,6 +191,8 @@ struct CellularStateProperties {
   bool roaming = false;
   // The signal strength of the cellular connection.
   int32 signal_strength;
+  // True when a SIM is present and has locking enabled.
+  bool sim_lock_enabled = false;
   // True when a SIM is present and locked.
   bool sim_locked = false;
 };

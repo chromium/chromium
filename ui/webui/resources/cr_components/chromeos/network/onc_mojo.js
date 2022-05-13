@@ -650,6 +650,7 @@
           networkTechnology: '',
           roaming: false,
           signalStrength: 0,
+          simLockEnabled: false,
           simLocked: false,
         };
         break;
