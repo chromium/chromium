@@ -40618,6 +40618,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="43"
       label="User tapped &quot;Hidden&quot; in the feed management
              interstitial."/>
+  <int value="44"
+      label="User tapped the Follow button on the page overflow menu."/>
 </enum>
 
 <enum name="FeedUserCommandType">
