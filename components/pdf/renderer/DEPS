@@ -16,4 +16,5 @@ include_rules = [
   "+third_party/skia/include/core",
   "+ui/accessibility",
   "+ui/base",
+  "+v8/include",
 ]

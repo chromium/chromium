@@ -41,7 +41,6 @@
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/post_message_receiver.h"
-#include "pdf/post_message_sender.h"
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
@@ -150,12 +149,9 @@ class PerProcessInitializer final {
 
 class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
  public:
-  BlinkContainerWrapper(blink::WebPluginContainer* container,
-                        V8ValueConverter* v8_value_converter)
-      : container_(container),
-        post_message_sender_(container_, v8_value_converter) {
+  explicit BlinkContainerWrapper(blink::WebPluginContainer* container)
+      : container_(container) {
     DCHECK(container_);
-    DCHECK(v8_value_converter);
   }
   BlinkContainerWrapper(const BlinkContainerWrapper&) = delete;
   BlinkContainerWrapper& operator=(const BlinkContainerWrapper&) = delete;
@@ -200,10 +196,6 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     // Note that `blink::WebLocalFrame::GetScrollOffset()` actually returns a
     // scroll position (a point relative to the top-left corner).
     return GetFrame()->GetScrollOffset();
-  }
-
-  void PostMessage(base::Value::Dict message) override {
-    post_message_sender_.Post(std::move(message));
   }
 
   void UsePluginAsFindHandler() override {
@@ -284,11 +276,8 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     return GetFrame()->Client();
   }
 
-  blink::WebPluginContainer* Container() override { return container_; }
-
  private:
   const raw_ptr<blink::WebPluginContainer> container_;
-  PostMessageSender post_message_sender_;
 };
 
 }  // namespace
@@ -316,10 +305,12 @@ PdfViewWebPlugin::PdfViewWebPlugin(
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
+  DCHECK(container);
+  client_->SetPluginContainer(container);
+
   DCHECK_EQ(container->Plugin(), this);
-  return InitializeCommon(
-      std::make_unique<BlinkContainerWrapper>(container, client_.get()),
-      /*engine_override=*/nullptr);
+  return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container),
+                          /*engine_override=*/nullptr);
 }
 
 bool PdfViewWebPlugin::InitializeForTesting(
@@ -391,20 +382,20 @@ void PdfViewWebPlugin::SendSetSmoothScrolling() {
 }
 
 void PdfViewWebPlugin::Destroy() {
-  if (container_wrapper_) {
+  if (client_->PluginContainer()) {
     // Explicitly destroy the PDFEngine during destruction as it may call back
     // into this object.
     DestroyPreviewEngine();
     DestroyEngine();
     PerProcessInitializer::GetInstance().Release();
-    container_wrapper_.reset();
+    client_->SetPluginContainer(nullptr);
   }
 
   delete this;
 }
 
 blink::WebPluginContainer* PdfViewWebPlugin::Container() const {
-  return container_wrapper_ ? container_wrapper_->Container() : nullptr;
+  return client_->PluginContainer();
 }
 
 v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
@@ -933,7 +924,7 @@ void PdfViewWebPlugin::OnDocumentLoadComplete() {
 }
 
 void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
-  container_wrapper_->PostMessage(std::move(message));
+  client_->PostMessage(std::move(message));
 }
 
 void PdfViewWebPlugin::SaveAs() {

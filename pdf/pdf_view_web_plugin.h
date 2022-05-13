@@ -94,9 +94,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Gets the scroll position.
     virtual gfx::PointF GetScrollPosition() = 0;
 
-    // Enqueues a "message" event carrying `message` to the plugin embedder.
-    virtual void PostMessage(base::Value::Dict message) = 0;
-
     // Tells the embedder to allow the plugin to handle find requests.
     virtual void UsePluginAsFindHandler() = 0;
 
@@ -139,10 +136,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Returns the local frame's client (render frame). May be null in unit
     // tests.
     virtual blink::WebLocalFrameClient* GetWebLocalFrameClient() = 0;
-
-    // Returns the blink web plugin container pointer that's wrapped inside this
-    // object. Returns nullptr if this object is for test only.
-    virtual blink::WebPluginContainer* Container() = 0;
   };
 
   // Allows for dependency injections into `PdfViewWebPlugin`.
@@ -151,6 +144,17 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual ~Client() = default;
 
     virtual base::WeakPtr<Client> GetWeakPtr() = 0;
+
+    // Passes the plugin container to the client. This is first called in
+    // `Initialize()`, and cleared to null in `Destroy()`. The container may
+    // also be null for testing.
+    virtual void SetPluginContainer(blink::WebPluginContainer* container) = 0;
+
+    // Returns the plugin container set by `SetPluginContainer()`.
+    virtual blink::WebPluginContainer* PluginContainer() = 0;
+
+    // Enqueues a "message" event carrying `message` to the plugin embedder.
+    virtual void PostMessage(base::Value::Dict message) {}
 
     // Prints the given `element`.
     virtual void Print(const blink::WebElement& element) {}

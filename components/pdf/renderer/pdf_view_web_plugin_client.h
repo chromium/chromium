@@ -10,10 +10,18 @@
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_web_plugin.h"
 
+namespace blink {
+class WebPluginContainer;
+}  // namespace blink
+
 namespace content {
 class RenderFrame;
 class V8ValueConverter;
 }  // namespace content
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace pdf {
 
@@ -28,9 +36,10 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   std::unique_ptr<base::Value> FromV8Value(
       v8::Local<v8::Value> value,
       v8::Local<v8::Context> context) override;
-  v8::Local<v8::Value> ToV8Value(const base::Value& value,
-                                 v8::Local<v8::Context> context) override;
   base::WeakPtr<chrome_pdf::PdfViewWebPlugin::Client> GetWeakPtr() override;
+  void SetPluginContainer(blink::WebPluginContainer* container) override;
+  blink::WebPluginContainer* PluginContainer() override;
+  void PostMessage(base::Value::Dict message) override;
   void Print(const blink::WebElement& element) override;
   void RecordComputedAction(const std::string& action) override;
   std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>
@@ -41,6 +50,9 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   content::RenderFrame* const render_frame_;
 
   const std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
+  v8::Isolate* const isolate_;
+
+  blink::WebPluginContainer* plugin_container_;
 
   base::WeakPtrFactory<PdfViewWebPluginClient> weak_factory_{this};
 };

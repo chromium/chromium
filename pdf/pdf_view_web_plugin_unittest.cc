@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -182,8 +183,6 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
 
   MOCK_METHOD(gfx::PointF, GetScrollPosition, (), (override));
 
-  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
-
   MOCK_METHOD(void, UsePluginAsFindHandler, (), (override));
 
   MOCK_METHOD(void,
@@ -224,11 +223,6 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
     return nullptr;
   }
 
-  blink::WebPluginContainer* Container() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
-
   blink::WebTextInputType widget_text_input_type() const {
     return widget_text_input_type_;
   }
@@ -261,11 +255,13 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               FromV8Value,
               (v8::Local<v8::Value>, v8::Local<v8::Context>),
               (override));
-  MOCK_METHOD(v8::Local<v8::Value>,
-              ToV8Value,
-              (const base::Value&, v8::Local<v8::Context>),
-              (override));
   MOCK_METHOD(base::WeakPtr<Client>, GetWeakPtr, (), (override));
+  MOCK_METHOD(void,
+              SetPluginContainer,
+              (blink::WebPluginContainer*),
+              (override));
+  MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
+  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
 
  private:
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
@@ -945,8 +941,8 @@ class PdfViewWebPluginWithoutDocInfoTest : public PdfViewWebPluginTest {
 
 TEST_F(PdfViewWebPluginWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
   const base::Value::Dict expect_metadata = CreateExpectedNoMetadataResponse();
-  EXPECT_CALL(*wrapper_ptr_, PostMessage);
-  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
   plugin_->DocumentLoadComplete();
 }
 
@@ -1108,10 +1104,10 @@ TEST_F(PdfViewWebPluginWithDocInfoTest, DocumentLoadCompletePostMessages) {
   const base::Value::Dict expect_bookmarks =
       CreateExpectedBookmarksResponse(engine_ptr_->GetBookmarks());
   const base::Value::Dict expect_metadata = CreateExpectedMetadataResponse();
-  EXPECT_CALL(*wrapper_ptr_, PostMessage);
-  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_attachments))));
-  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_bookmarks))));
-  EXPECT_CALL(*wrapper_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
+  EXPECT_CALL(*client_ptr_, PostMessage);
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_attachments))));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_bookmarks))));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
   plugin_->DocumentLoadComplete();
 }
 

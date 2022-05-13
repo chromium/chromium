@@ -25,8 +25,6 @@ class V8ValueConverter {
   virtual std::unique_ptr<base::Value> FromV8Value(
       v8::Local<v8::Value> value,
       v8::Local<v8::Context> context) = 0;
-  virtual v8::Local<v8::Value> ToV8Value(const base::Value& value,
-                                         v8::Local<v8::Context> context) = 0;
 
  protected:
   ~V8ValueConverter() = default;
