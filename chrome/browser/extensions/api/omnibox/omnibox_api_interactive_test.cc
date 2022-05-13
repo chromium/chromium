@@ -608,7 +608,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 
 // Tests that if the user hits "backspace" (leaving the extension keyword mode),
 // the extension suggestions are not sent.
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
+// TODO(crbug.com/1325409): Flaky.
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
+                       DISABLED_ExtensionSuggestionsOnlyInKeywordMode) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
