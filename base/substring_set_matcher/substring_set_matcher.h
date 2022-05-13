@@ -154,8 +154,9 @@ class BASE_EXPORT SubstringSetMatcher {
   static constexpr uint32_t kEmptyLabel = 0x103;
 
   // A node in the trie, packed tightly together so that it occupies 12 bytes
-  // (both on 32- and 64-bit platforms).
-  class AhoCorasickNode {
+  // (both on 32- and 64-bit platforms), but aligned to at least 4 (see the
+  // comment on edges_).
+  class alignas(AhoCorasickEdge) AhoCorasickNode {
    public:
     AhoCorasickNode();
     ~AhoCorasickNode();
@@ -178,6 +179,10 @@ class BASE_EXPORT SubstringSetMatcher {
     NodeID GetEdgeNoInline(uint32_t label) const;
     void SetEdge(uint32_t label, NodeID node);
     const AhoCorasickEdge* edges() const {
+      // NOTE: Returning edges_.inline_edges here is fine, because it's
+      // the first thing in the struct (see the comment on edges_).
+      DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(edges_.inline_edges) %
+                        alignof(AhoCorasickEdge));
       return edges_capacity_ == 0 ? edges_.inline_edges : edges_.edges;
     }
 
@@ -258,6 +263,11 @@ class BASE_EXPORT SubstringSetMatcher {
     // in the first slot if it exists (ie., is not equal to kRootID), since we
     // need to access that label during every single node we look at during
     // traversal.
+    //
+    // NOTE: Keep this the first member in the struct, so that inline_edges gets
+    // 4-aligned (since the class is marked as such, despite being packed.
+    // Otherwise, edges() can return an unaligned pointer marked as aligned
+    // (the unalignedness gets lost).
     static constexpr int kNumInlineEdges = 2;
     union {
       // Out-of-line edge storage, having room for edges_capacity_ elements.

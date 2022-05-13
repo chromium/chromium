@@ -424,7 +424,12 @@ void SubstringSetMatcher::AhoCorasickNode::SetEdge(uint32_t label,
     edges_.inline_edges[num_edges()] = AhoCorasickEdge{label, node};
     if (label == kFailureNodeLabel) {
       // Make sure that kFailureNodeLabel is first.
-      std::swap(edges_.inline_edges[0], edges_.inline_edges[num_edges()]);
+      // NOTE: We don't use std::swap here, because the compiler doesn't
+      // understand that inline_edges[] is 4-aligned and can give
+      // a warning or error.
+      AhoCorasickEdge temp = edges_.inline_edges[0];
+      edges_.inline_edges[0] = edges_.inline_edges[num_edges()];
+      edges_.inline_edges[num_edges()] = temp;
     }
     --num_free_edges_;
     return;
