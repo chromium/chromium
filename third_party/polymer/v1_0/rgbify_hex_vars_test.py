@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,7 +10,7 @@ import unittest
 class RgbifyHexVarsTest(unittest.TestCase):
   def checkProduces(self, content, expected, **kwargs):
     actual = rgbify_hex_vars.Rgbify(content, **kwargs)
-    self.assertEquals(actual, expected)
+    self.assertEqual(actual, expected)
 
   def checkSame(self, content):
     self.checkProduces(content, content)

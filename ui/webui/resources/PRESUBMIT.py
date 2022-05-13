@@ -89,7 +89,7 @@ def _CheckJsModulizer(input_api, output_api):
     sources = [input_api.os_path.join('tools', 'js_modulizer_test.py')]
     tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
     results += input_api.canned_checks.RunUnitTests(
-        input_api, output_api, tests)
+        input_api, output_api, tests, run_on_python2=False)
   return results
 
 

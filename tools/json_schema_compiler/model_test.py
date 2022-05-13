@@ -121,7 +121,7 @@ class ModelTest(unittest.TestCase):
 
   def testDefaultSpecifiedRedundantly(self):
     test_json = CachedLoad('test/redundant_default_attribute.json')
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         model.ParseException,
         'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
         '  in path/to/redundant_default_attribute.json\n'
@@ -134,7 +134,7 @@ class ModelTest(unittest.TestCase):
 
   def testReturnsAsyncMissingParametersKey(self):
     test_json = CachedLoad('test/returns_async_missing_parameters_key.json')
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         ValueError,
         'parameters key not specified on returns_async: '
         'returnsAsyncMissingParametersKey.asyncNoParametersKey in '

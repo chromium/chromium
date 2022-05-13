@@ -365,8 +365,8 @@ class FeatureCompilerTest(unittest.TestCase):
           'contexts': ['webui'],
         }])
 
-    with self.assertRaisesRegexp(AssertionError,
-                                 'No default parent found for bookmarks'):
+    with self.assertRaisesRegex(AssertionError,
+                                'No default parent found for bookmarks'):
       c._CompileFeature('bookmarks.export', { "allowlist": ["asdf"] })
 
   def testRealIdsDisallowedInAllowlist(self):

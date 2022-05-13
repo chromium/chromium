@@ -70,7 +70,8 @@ def _RunUnitTestsIfNeeded(input_api, output_api):
   if any(f for f in files if f.startswith('rgbify_hex_vars')):
     tests.append(path.join(cwd, 'rgbify_hex_vars_test.py'))
 
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+  return input_api.canned_checks.RunUnitTests(
+      input_api, output_api, tests, run_on_python2=False)
 
 
 def CheckChangeOnUpload(input_api, output_api):

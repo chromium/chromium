@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import clean_json_attrs
 import json
@@ -21,7 +21,8 @@ class CleanJsonAttrs(unittest.TestCase):
     shutil.rmtree(self._start_dir)
 
   def _read_temp_file(self, filename):
-    return json.loads(open(os.path.join(self._start_dir, filename)).read())
+    with open(os.path.join(self._start_dir, filename)) as f:
+      return json.loads(f.read())
 
   def _write_temp_file(self, filename, json_dict):
     with open(os.path.join(self._start_dir, filename), 'w') as f:
@@ -37,7 +38,7 @@ class CleanJsonAttrs(unittest.TestCase):
     args['attr_pattern'] = '^delete'
     self.assertTrue(clean_json_attrs.Clean(**args))
     json_dict = self._read_temp_file('package.json')
-    self.assertEquals(['ignore_me', 'version'], sorted(json_dict.keys()))
+    self.assertEqual(['ignore_me', 'version'], sorted(json_dict.keys()))
 
   def testFilePattern(self):
     self._write_temp_file('clean_me.json', {'_where': '/a/b/c'})
@@ -45,8 +46,10 @@ class CleanJsonAttrs(unittest.TestCase):
     args = self._kwargs.copy()
     args['file_pattern'] = '^clean_'
     self.assertTrue(clean_json_attrs.Clean(**args))
-    self.assertEquals([], self._read_temp_file('clean_me.json').keys())
-    self.assertEquals(['_args'], self._read_temp_file('ignore_me.json').keys())
+    self.assertListEqual(
+        [], list(self._read_temp_file('clean_me.json').keys()))
+    self.assertListEqual(
+        ['_args'], list(self._read_temp_file('ignore_me.json').keys()))
 
   def testNestedKeys(self):
     self._write_temp_file('package.json', {
@@ -62,14 +65,15 @@ class CleanJsonAttrs(unittest.TestCase):
     })
     self.assertTrue(clean_json_attrs.Clean(**self._kwargs))
     json_dict = self._read_temp_file('package.json')
-    self.assertEquals(['nested', 'version'], sorted(json_dict.keys()))
-    self.assertEquals(['also'], json_dict['nested'].keys())
-    self.assertEquals([], json_dict['nested']['also'].keys())
+    self.assertListEqual(['nested', 'version'], sorted(json_dict.keys()))
+    self.assertListEqual(['also'], list(json_dict['nested'].keys()))
+    self.assertListEqual([], list(json_dict['nested']['also'].keys()))
 
   def testNothingToRemove(self):
     self._write_temp_file('package.json', {'version': '2.0.0'})
     self.assertFalse(clean_json_attrs.Clean(**self._kwargs))
-    self.assertEquals(['version'], self._read_temp_file('package.json').keys())
+    self.assertListEqual(
+        ['version'], list(self._read_temp_file('package.json').keys()))
 
   def testSimple(self):
     self._write_temp_file('package.json', {
@@ -78,7 +82,8 @@ class CleanJsonAttrs(unittest.TestCase):
         '_where': '/some/path'
     })
     self.assertTrue(clean_json_attrs.Clean(**self._kwargs))
-    self.assertEquals(['version'], self._read_temp_file('package.json').keys())
+    self.assertListEqual(
+        ['version'], list(self._read_temp_file('package.json').keys()))
 
 
 if __name__ == '__main__':

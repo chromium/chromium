@@ -19,6 +19,7 @@ def _CommonChecks(input_api, output_api):
 
   if any(f for f in files if f.startswith('clean_json_attrs')):
     tests = [path.join(cwd, 'clean_json_attrs_test.py')]
-    return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+    return input_api.canned_checks.RunUnitTests(
+        input_api, output_api, tests, run_on_python2=False)
 
   return []
