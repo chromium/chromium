@@ -45,6 +45,7 @@ ci.builder(
 
 ci.builder(
     name = "Win Builder",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
         short_name = "32",
@@ -93,6 +94,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "Win7 Tests (1)",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
