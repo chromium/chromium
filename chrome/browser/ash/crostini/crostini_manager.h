@@ -449,8 +449,8 @@ class CrostiniManager : public KeyedService,
 
   // Runs all the steps required to restart the given crostini vm and container.
   // The optional |observer| tracks progress. If provided, it must be alive
-  // until the restart completes (i.e. when |callback| is called) or the request
-  // is cancelled via |CancelRestartCrostini|.
+  // until the restart completes (i.e. when |callback| is called) or the restart
+  // is aborted via |AbortRestartCrostini|.
   RestartId RestartCrostini(ContainerId container_id,
                             CrostiniResultCallback callback,
                             RestartObserver* observer = nullptr);
@@ -460,11 +460,10 @@ class CrostiniManager : public KeyedService,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
-  // Cancel a restart request. The associated result callback will be fired
-  // immediately and the observer will be removed. If there were multiple
-  // restart requests for the same container id, the restart may actually keep
-  // going.
-  void CancelRestartCrostini(RestartId restart_id);
+  // Aborts a restart. A "next" restarter with the same ContainerId will run, if
+  // there is one. |callback| will be called once the restart has finished
+  // aborting
+  void AbortRestartCrostini(RestartId restart_id, base::OnceClosure callback);
 
   // Returns true if the Restart corresponding to |restart_id| is not yet
   // complete.
@@ -826,12 +825,7 @@ class CrostiniManager : public KeyedService,
   // checking component registration code may block.
   void MaybeUpdateCrostiniAfterChecks();
 
-  // Called by CrostiniRestarter once it's done with a specific restart request.
-  void RemoveRestartId(RestartId restart_id);
-  // Called by CrostiniRestarter once it's finished. |closure| encapsulates any
-  // outstanding callbacks passed to RestartCrostini*().
-  void RestartCompleted(CrostiniRestarter* restarter,
-                        base::OnceClosure closure);
+  void FinishRestart(CrostiniRestarter* restarter, CrostiniResult result);
 
   // Callback for CrostiniManager::RemoveCrostini.
   void OnRemoveCrostini(CrostiniResult result);
@@ -911,12 +905,14 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<ash::VmShutdownObserver> vm_shutdown_observers_;
   base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
 
-  // RestartIds present in |restarters_by_id_| will always have a restarter in
-  // |restarters_by_container_| for the corresponding ContainerId.
-  std::map<CrostiniManager::RestartId, ContainerId> restarters_by_id_;
-  std::map<ContainerId, std::unique_ptr<CrostiniRestarter>>
+  // Only one restarter flow is actually running for a given container, other
+  // restarters will just have their callback called when the running restarter
+  // completes.
+  std::multimap<ContainerId, CrostiniManager::RestartId>
       restarters_by_container_;
-  static RestartId next_restart_id_;
+
+  std::map<CrostiniManager::RestartId, std::unique_ptr<CrostiniRestarter>>
+      restarters_by_id_;
 
   base::ObserverList<CrostiniDialogStatusObserver>
       crostini_dialog_status_observers_;

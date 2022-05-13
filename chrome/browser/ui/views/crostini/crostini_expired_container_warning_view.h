@@ -21,11 +21,11 @@ class CrostiniExpiredContainerWarningView
  public:
   METADATA_HEADER(CrostiniExpiredContainerWarningView);
 
-  static void Show(Profile* profile, base::OnceClosure callback);
+  static void Show(Profile* profile, std::vector<base::OnceClosure> callbacks);
 
  private:
   CrostiniExpiredContainerWarningView(Profile* profile,
-                                      base::OnceClosure callback);
+                                      std::vector<base::OnceClosure> callbacks);
   ~CrostiniExpiredContainerWarningView() override;
 
   Profile* const profile_;  // Not owned.
