@@ -152,7 +152,7 @@ crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnaccele
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # VP9 videos fail to trigger zero copy video presentation path.
-crbug.com/930343 [ win intel ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/930343 [ win10 intel-0x3e92 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
 
 # Incorrectly reporting SCALING instead of DIRECT on Windows 10 UHD 630 GPUs.
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Underlay [ Failure ]
@@ -164,6 +164,8 @@ crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_NV12 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
+crbug.com/1119491 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
+crbug.com/1119491 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
@@ -186,10 +188,6 @@ crbug.com/1079393 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_
 
 # Hardware overlay promotion fails on Win10 AMD.
 crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-
-# BGRA swap chains don't consistently get promoted to overlays.
-crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
-crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Failure ]
 
 # Failed to create YUY2 swap chain on Win10 AMD RX 5500 XT
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
