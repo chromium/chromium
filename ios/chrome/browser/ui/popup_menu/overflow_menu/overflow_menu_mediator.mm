@@ -171,12 +171,11 @@ OverflowMenuDestination* CreateOverflowMenuDestination(
     handler();
   };
 
-  return [[OverflowMenuDestination alloc]
-                 initWithName:name
-                      uiImage:[UIImage imageNamed:imageName]
-      accessibilityIdentifier:accessibilityID
-           enterpriseDisabled:NO
-                      handler:handlerWithMetrics];
+  return [[OverflowMenuDestination alloc] initWithName:name
+                                             imageName:imageName
+                               accessibilityIdentifier:accessibilityID
+                                    enterpriseDisabled:NO
+                                               handler:handlerWithMetrics];
 }
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
@@ -187,7 +186,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSString* link = l10n_util::GetNSString(linkID);
   return [[OverflowMenuFooter alloc] initWithName:name
                                              link:link
-                                          uiImage:[UIImage imageNamed:imageName]
+                                        imageName:imageName
                           accessibilityIdentifier:kTextMenuEnterpriseInfo
                                           handler:handler];
 }
@@ -1136,8 +1135,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                        base::SysNSStringToUTF16(domainName))
              : l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
                                        base::SysNSStringToUTF16(domainName));
-  self.followAction.uiImage = [UIImage
-      imageNamed:status ? @"popup_menu_unfollow" : @"popup_menu_follow"];
+  [self.followAction setStoredImageName:status ? @"popup_menu_unfollow"
+                                               : @"popup_menu_follow"];
   __weak __typeof(self) weakSelf = self;
   self.followAction.handler = ^{
     RecordAction(status ? UserMetricsAction("MobileMenuUnfollow")

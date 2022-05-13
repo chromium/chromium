@@ -6,15 +6,27 @@ import SwiftUI
 
 /// Represents an item in the overflow menu.
 @objcMembers public class OverflowMenuItem: NSObject, ObservableObject {
+  public enum ImageType {
+    case uiImage(UIImage)
+    case name(String)
+  }
   /// The user-visible name of the item.
   @Published public var name: String
 
-  /// The UIImage used to load the image for SwiftUI.
-  @Published public var uiImage: UIImage
+  /// The base data used to load the image for SwiftUI, either a `UImage` or
+  /// a `String`.
+  /// Note that SwiftUI has a bug regarding `Image`s generated from `UIImage`s
+  /// in Dark Mode. The image color will not adjust.
+  @Published public var storedImage: ImageType
 
   /// The SwiftUI `Image` for the action icon.
   public var image: Image {
-    return Image(uiImage: uiImage)
+    switch storedImage {
+    case .uiImage(let uiImage):
+      return Image(uiImage: uiImage)
+    case .name(let name):
+      return Image(name)
+    }
   }
 
   /// The accessibility identifier for this item.
@@ -27,14 +39,44 @@ import SwiftUI
   @Published public var handler: () -> Void
 
   public init(
-    name: String, uiImage: UIImage, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    name: String, image: ImageType, accessibilityIdentifier: String, enterpriseDisabled: Bool,
     handler: @escaping () -> Void
   ) {
     self.name = name
-    self.uiImage = uiImage
+    storedImage = image
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler
+  }
+
+  public convenience init(
+    name: String, uiImage: UIImage, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    handler: @escaping () -> Void
+  ) {
+    self.init(
+      name: name, image: .uiImage(uiImage), accessibilityIdentifier: accessibilityIdentifier,
+      enterpriseDisabled: enterpriseDisabled, handler: handler)
+  }
+
+  public convenience init(
+    name: String, imageName: String, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    handler: @escaping () -> Void
+  ) {
+    self.init(
+      name: name, image: .name(imageName), accessibilityIdentifier: accessibilityIdentifier,
+      enterpriseDisabled: enterpriseDisabled, handler: handler)
+  }
+
+  /// Objective-C-exposed method to change `storedImage`, as Objective-C cannot
+  /// view enums with stored values.
+  @objc(setStordUIImage:) public func setStoredImage(uiImage: UIImage) {
+    storedImage = .uiImage(uiImage)
+  }
+
+  /// Objective-C-exposed method to change `storedImage`, as Objective-C cannot
+  /// view enums with stored values.
+  @objc(setStoredImageName:) public func setStoredImage(name: String) {
+    storedImage = .name(name)
   }
 }
 

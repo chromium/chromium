@@ -11,12 +11,12 @@ import SwiftUI
   @Published public var link: String
 
   public init(
-    name: String, link: String, uiImage: UIImage, accessibilityIdentifier: String,
+    name: String, link: String, imageName: String, accessibilityIdentifier: String,
     handler: @escaping () -> Void
   ) {
     self.link = link
     super.init(
-      name: name, uiImage: uiImage, accessibilityIdentifier: accessibilityIdentifier,
+      name: name, image: .name(imageName), accessibilityIdentifier: accessibilityIdentifier,
       enterpriseDisabled: false,
       handler: handler)
   }
