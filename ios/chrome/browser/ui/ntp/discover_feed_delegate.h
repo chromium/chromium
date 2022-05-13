@@ -8,10 +8,6 @@
 // Protocol for events related to the Discover Feed.
 @protocol DiscoverFeedDelegate
 
-// Informs the DiscoverFeedDelegate that the ContentSuggestionsViewController
-// has been updated.
-- (void)contentSuggestionsWasUpdated;
-
 // Informs the delegate that the Return to Recent Tab tile has been added.
 - (void)returnToRecentTabWasAdded;
 

@@ -282,6 +282,7 @@
             @"%@%li",
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
     [self.mostVisitedViews addObject:view];
+    index++;
   }
   [self populateMostVisitedModule];
 }

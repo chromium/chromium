@@ -283,11 +283,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - CRWWebStateObserver
 
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  DCHECK_EQ(_webState, webState);
-  [self setContentOffsetForWebState:webState];
-}
-
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
   [self locationBarDidResignFirstResponder];

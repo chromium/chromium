@@ -789,11 +789,6 @@ namespace {
 
 #pragma mark - DiscoverFeedDelegate
 
-- (void)contentSuggestionsWasUpdated {
-  [self updateFeedLayout];
-  [self setContentOffsetToTop];
-}
-
 - (void)returnToRecentTabWasAdded {
   [self updateFeedLayout];
   [self setContentOffsetToTop];

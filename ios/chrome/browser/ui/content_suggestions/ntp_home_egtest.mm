@@ -130,17 +130,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Use commandline args to enable the Discover feed for this test case.
   // Disabled elsewhere to account for possible flakiness.
   AppLaunchConfiguration config;
-  // TODO(crbug.com/1265565):Once kSingleNtp is launched, investigate further as
-  // to why this test is failing.
-  if ([self isRunningTest:@selector
-            (testNewSearchFromNewTabMenuAfterTogglingFeed)]) {
-    config.features_disabled.push_back(kSingleNtp);
-  }
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   config.features_enabled.push_back(kDiscoverFeedInNtp);
   config.features_enabled.push_back(kSingleCellContentSuggestions);
   config.features_enabled.push_back(kContentSuggestionsHeaderMigration);
+  config.features_enabled.push_back(
+      kContentSuggestionsUIViewControllerMigration);
   return config;
 }
 
@@ -944,8 +940,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.
-// TODO(crbug.com/1280323): Fails on iOS device and ios15-beta-simulator.
-- (void)DISABLED_testNewSearchFromNewTabMenu {
+- (void)testNewSearchFromNewTabMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }

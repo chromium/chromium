@@ -629,9 +629,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     // is enabled.
     [self reloadAllData];
   }
-    // TODO(crbug.com/1170995): Potentially remove once ContentSuggestions can
-    // be added as part of a header.
-    [self.discoverFeedDelegate contentSuggestionsWasUpdated];
 }
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
