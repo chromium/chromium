@@ -61,6 +61,23 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   void AuthenticateUsingKey(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
 
+  // Attempts to authenticate session using plain text password.
+  // Does not fill any password-related fields in `context`.
+  // Session will become authenticated upon success.
+  void AuthenticateWithPassword(const std::string& key_label,
+                                const std::string& password,
+                                std::unique_ptr<UserContext> context,
+                                AuthOperationCallback callback);
+
+  // Attempts to authenticate session using PIN as a factor.
+  // PINs use custom salt stored in LocalState, this salt should be provided
+  // by the calling side.
+  // Session will become authenticated upon success.
+  void AuthenticateWithPin(const std::string& pin,
+                           const std::string& pin_salt,
+                           std::unique_ptr<UserContext> context,
+                           AuthOperationCallback callback);
+
   // Attempts to authenticate Kiosk session using specific key based on
   // identity.
   // Session will become authenticated upon success.
@@ -80,6 +97,12 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   void HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback,
                               const std::string& system_salt);
+
+  void HashPasswordAndAuthenticate(const std::string& key_label,
+                                   const std::string& password,
+                                   std::unique_ptr<UserContext> context,
+                                   AuthOperationCallback callback,
+                                   const std::string& system_salt);
 
   void OnAuthenticateAuthSession(
       std::unique_ptr<UserContext> context,

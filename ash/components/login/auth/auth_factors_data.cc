@@ -6,6 +6,7 @@
 
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "base/check_op.h"
 
 namespace ash {
 
@@ -37,6 +38,28 @@ const cryptohome::KeyDefinition* AuthFactorsData::FindKioskKey() const {
   for (const cryptohome::KeyDefinition& key_def : keys_) {
     if (key_def.type == cryptohome::KeyDefinition::TYPE_PUBLIC_MOUNT)
       return &key_def;
+  }
+  return nullptr;
+}
+
+bool AuthFactorsData::HasPasswordKey(const std::string& label) const {
+  DCHECK_NE(label, kCryptohomePinLabel);
+
+  for (const cryptohome::KeyDefinition& key_def : keys_) {
+    if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
+        key_def.label == label)
+      return true;
+  }
+  return false;
+}
+
+const cryptohome::KeyDefinition* AuthFactorsData::FindPinKey() const {
+  for (const cryptohome::KeyDefinition& key_def : keys_) {
+    if (key_def.type == cryptohome::KeyDefinition::TYPE_PASSWORD &&
+        key_def.policy.low_entropy_credential) {
+      DCHECK_EQ(key_def.label, kCryptohomePinLabel);
+      return &key_def;
+    }
   }
   return nullptr;
 }

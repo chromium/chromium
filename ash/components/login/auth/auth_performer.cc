@@ -7,6 +7,7 @@
 #include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/cryptohome/userdataauth_util.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
@@ -104,6 +105,68 @@ void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                                            const std::string& system_salt) {
   context->GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                                system_salt);
+  AuthenticateUsingKey(std::move(context), std::move(callback));
+}
+
+void AuthPerformer::AuthenticateWithPassword(
+    const std::string& key_label,
+    const std::string& password,
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  DCHECK(!password.empty()) << "Caller should check for empty password";
+  DCHECK(!key_label.empty()) << "Caller should provide correct label";
+  DCHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+  const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+  if (!auth_factors.HasPasswordKey(key_label)) {
+    LOGIN_LOG(ERROR) << "User does not have password factor labeled "
+                     << key_label;
+    std::move(callback).Run(
+        std::move(context),
+        CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+    return;
+  }
+
+  SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+      &AuthPerformer::HashPasswordAndAuthenticate, weak_factory_.GetWeakPtr(),
+      password, key_label, std::move(context), std::move(callback)));
+}
+
+void AuthPerformer::HashPasswordAndAuthenticate(
+    const std::string& key_label,
+    const std::string& password,
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    const std::string& system_salt) {
+  // Use Key until proper migration to AuthFactors API.
+  chromeos::Key password_key(password);
+  password_key.SetLabel(key_label);
+  password_key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
+  context->SetKey(password_key);
+  AuthenticateUsingKey(std::move(context), std::move(callback));
+}
+
+void AuthPerformer::AuthenticateWithPin(const std::string& pin,
+                                        const std::string& pin_salt,
+                                        std::unique_ptr<UserContext> context,
+                                        AuthOperationCallback callback) {
+  DCHECK(!pin.empty()) << "Caller should check for empty PIN";
+  DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
+  DCHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+  const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+  const cryptohome::KeyDefinition* key_def = auth_factors.FindPinKey();
+  if (!key_def) {
+    LOGIN_LOG(ERROR) << "User does not have PIN as factor";
+    std::move(callback).Run(
+        std::move(context),
+        CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+    return;
+  }
+  // Use Key until proper migration to AuthFactors API.
+  Key key(pin);
+  DCHECK_EQ(key_def->label, kCryptohomePinLabel);
+  key.SetLabel(key_def->label);
+
+  key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, pin_salt);
   AuthenticateUsingKey(std::move(context), std::move(callback));
 }
 
