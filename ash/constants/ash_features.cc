@@ -1468,6 +1468,10 @@ const base::Feature kVirtualKeyboardBorderedKey{
 const base::Feature kVirtualKeyboardMultitouch{
     "VirtualKeyboardMultitouch", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable round corners for virtual keyboard on ChromeOS.
+const base::Feature kVirtualKeyboardRoundCorners{
+    "VirtualKeyboardRoundCorners", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to allow enabling wake on WiFi features in shill.
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

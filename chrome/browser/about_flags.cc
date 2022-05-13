@@ -4660,6 +4660,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardMultitouchName,
      flag_descriptions::kVirtualKeyboardMultitouchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardMultitouch)},
+    {"enable-cros-virtual-keyboard-round-corners",
+     flag_descriptions::kVirtualKeyboardRoundCornersName,
+     flag_descriptions::kVirtualKeyboardRoundCornersDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardRoundCorners)},
     {"enable-experimental-accessibility-dictation-with-pumpkin",
      flag_descriptions::kExperimentalAccessibilityDictationWithPumpkinName,
      flag_descriptions::
