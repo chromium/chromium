@@ -607,7 +607,7 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
 void CollectUserDataAction::UpdateUserData(UserData* user_data) {
   if (proto_.collect_user_data().has_data_source()) {
     delegate_->RequestUserData(
-        *collect_user_data_options_,
+        UserDataEventField::NONE, *collect_user_data_options_,
         base::BindOnce(&CollectUserDataAction::OnRequestUserData,
                        weak_ptr_factory_.GetWeakPtr(), user_data));
     return;
@@ -799,7 +799,8 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
             Metrics::CollectUserDataResult::TERMS_AND_CONDITIONS_LINK_CLICKED);
 }
 
-void CollectUserDataAction::ReloadUserData(UserData* user_data) {
+void CollectUserDataAction::ReloadUserData(UserDataEventField event_field,
+                                           UserData* user_data) {
   if (HasActionEnded()) {
     return;
   }
@@ -809,7 +810,7 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
   collect_user_data_options_->reload_data_callback = base::BindOnce(
       &CollectUserDataAction::ReloadUserData, weak_ptr_factory_.GetWeakPtr());
   delegate_->RequestUserData(
-      *collect_user_data_options_,
+      event_field, *collect_user_data_options_,
       base::BindOnce(&CollectUserDataAction::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(), user_data));
 }
@@ -818,18 +819,21 @@ void CollectUserDataAction::OnSelectionStateChanged(
     UserDataEventField field,
     UserDataEventType event_type) {
   switch (field) {
-    case CONTACT_EVENT:
+    case UserDataEventField::CONTACT_EVENT:
       metrics_data_.contact_selection_state = user_data::GetNewSelectionState(
           metrics_data_.contact_selection_state, event_type);
       break;
-    case CREDIT_CARD_EVENT:
+    case UserDataEventField::CREDIT_CARD_EVENT:
       metrics_data_.credit_card_selection_state =
           user_data::GetNewSelectionState(
               metrics_data_.credit_card_selection_state, event_type);
       break;
-    case SHIPPING_EVENT:
+    case UserDataEventField::SHIPPING_EVENT:
       metrics_data_.shipping_selection_state = user_data::GetNewSelectionState(
           metrics_data_.shipping_selection_state, event_type);
+      break;
+    case UserDataEventField::PHONE_NUMBER_EVENT:
+    case UserDataEventField::NONE:
       break;
   }
 }

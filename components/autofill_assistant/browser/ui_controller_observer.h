@@ -44,7 +44,9 @@ class UiControllerObserver : public base::CheckedObserver {
       const CollectUserDataOptions* options) = 0;
 
   // Report that the state of the User Data UI has changed.
-  virtual void OnCollectUserDataUiStateChanged(bool enabled) = 0;
+  virtual void OnCollectUserDataUiStateChanged(
+      bool loading,
+      UserDataEventField event_field) = 0;
 
   // Called when details have changed. Details will be empty if they have been
   // cleared.

@@ -77,7 +77,7 @@ class CollectUserDataAction : public Action,
                                        const UserModel* user_model);
   bool IsValidUserFormSection(
       const autofill_assistant::UserFormSectionProto& proto);
-  void ReloadUserData(UserData* user_data);
+  void ReloadUserData(UserDataEventField event_field, UserData* user_data);
 
   // Only used for logging purposes.
   void OnSelectionStateChanged(UserDataEventField field,

@@ -643,7 +643,8 @@ void UiControllerAndroid::RestoreUi() {
   OnDetailsChanged(ui_delegate_->GetDetails());
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
-  OnCollectUserDataUiStateChanged(/* enabled= */ true);
+  OnCollectUserDataUiStateChanged(/* loading= */ false,
+                                  UserDataEventField::NONE);
   OnUserDataChanged(*execution_delegate_->GetUserData(),
                     UserDataFieldChange::ALL);
   OnPersistentGenericUserInterfaceChanged(
@@ -1325,9 +1326,25 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
   Java_AssistantCollectUserDataModel_setVisible(env, jmodel, true);
 }
 
-void UiControllerAndroid::OnCollectUserDataUiStateChanged(bool enabled) {
-  Java_AssistantCollectUserDataModel_setEnableUiInteractions(
-      AttachCurrentThread(), GetCollectUserDataModel(), enabled);
+void UiControllerAndroid::OnCollectUserDataUiStateChanged(
+    bool loading,
+    UserDataEventField event_field) {
+  JNIEnv* env = AttachCurrentThread();
+  auto jmodel = GetCollectUserDataModel();
+
+  Java_AssistantCollectUserDataModel_setEnableUiInteractions(env, jmodel,
+                                                             !loading);
+  Java_AssistantCollectUserDataModel_setMarkContactsLoading(
+      env, jmodel, loading && event_field == UserDataEventField::CONTACT_EVENT);
+  Java_AssistantCollectUserDataModel_setMarkPhoneNumbersLoading(
+      env, jmodel,
+      loading && event_field == UserDataEventField::PHONE_NUMBER_EVENT);
+  Java_AssistantCollectUserDataModel_setMarkShippingAddressesLoading(
+      env, jmodel,
+      loading && event_field == UserDataEventField::SHIPPING_EVENT);
+  Java_AssistantCollectUserDataModel_setMarkPaymentMethodsLoading(
+      env, jmodel,
+      loading && event_field == UserDataEventField::CREDIT_CARD_EVENT);
 }
 
 void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,

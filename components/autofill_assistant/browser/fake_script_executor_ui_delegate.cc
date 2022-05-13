@@ -95,8 +95,10 @@ void FakeScriptExecutorUiDelegate::SetCollectUserDataOptions(
   collect_user_data_options_ = options;
 }
 
-void FakeScriptExecutorUiDelegate::SetCollectUserDataUiState(bool enabled) {
-  collect_user_data_ui_enabled_ = enabled;
+void FakeScriptExecutorUiDelegate::SetCollectUserDataUiState(
+    bool loading,
+    UserDataEventField event_field) {
+  collect_user_data_ui_loading__field_ = event_field;
 }
 
 void FakeScriptExecutorUiDelegate::SetLastSuccessfulUserDataOptions(

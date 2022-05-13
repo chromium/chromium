@@ -22,6 +22,8 @@ public class AssistantTagsForTesting {
     public static final String COLLECT_USER_DATA_INFO_SECTION_TAG = "info_section";
     public static final String COLLECT_USER_DATA_TERMS_REQUIRE_REVIEW = "require_review";
     public static final String COLLECT_USER_DATA_DATA_ORIGIN_NOTICE_TAG = "data_origin_notice";
+    public static final String COLLECT_USER_DATA_SUMMARY_LOADING_SPINNER_TAG =
+            "summary_loading_spinner";
     public static final String VERTICAL_EXPANDER_CHEVRON = "chevron";
     public static final String COLLECT_USER_DATA_CHOICE_LIST = "choicelist";
     public static final String CHOICE_LIST_EDIT_ICON = "edit_icon";

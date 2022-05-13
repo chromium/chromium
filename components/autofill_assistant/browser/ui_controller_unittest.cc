@@ -496,7 +496,8 @@ TEST_F(UiControllerTest, UserDataChangesByOutOfLoopWrite) {
 
 TEST_F(UiControllerTest, UserDataFormReloadFromContactChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
-  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  base::MockCallback<base::OnceCallback<void(UserDataEventField, UserData*)>>
+      reload_callback;
   options->reload_data_callback = reload_callback.Get();
   base::MockCallback<
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
@@ -508,7 +509,7 @@ TEST_F(UiControllerTest, UserDataFormReloadFromContactChange) {
 
   EXPECT_CALL(change_callback, Run(UserDataEventField::CONTACT_EVENT,
                                    UserDataEventType::ENTRY_CREATED));
-  EXPECT_CALL(reload_callback, Run);
+  EXPECT_CALL(reload_callback, Run(UserDataEventField::CONTACT_EVENT, _));
   ui_controller_->HandleContactInfoChange(nullptr,
                                           UserDataEventType::ENTRY_CREATED);
 }
@@ -516,7 +517,8 @@ TEST_F(UiControllerTest, UserDataFormReloadFromContactChange) {
 TEST_F(UiControllerTest, UserDataFormDoNotReloadFromContactSelectionChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
   options->contact_details_name = "CONTACT";
-  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  base::MockCallback<base::OnceCallback<void(UserDataEventField, UserData*)>>
+      reload_callback;
   options->reload_data_callback = reload_callback.Get();
   base::MockCallback<
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
@@ -535,7 +537,8 @@ TEST_F(UiControllerTest, UserDataFormDoNotReloadFromContactSelectionChange) {
 
 TEST_F(UiControllerTest, UserDataFormReloadFromPhoneNumberChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
-  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  base::MockCallback<base::OnceCallback<void(UserDataEventField, UserData*)>>
+      reload_callback;
   options->reload_data_callback = reload_callback.Get();
   base::MockCallback<
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
@@ -545,16 +548,17 @@ TEST_F(UiControllerTest, UserDataFormReloadFromPhoneNumberChange) {
 
   ui_controller_->SetCollectUserDataOptions(options.get());
 
-  EXPECT_CALL(change_callback, Run(UserDataEventField::CONTACT_EVENT,
+  EXPECT_CALL(change_callback, Run(UserDataEventField::PHONE_NUMBER_EVENT,
                                    UserDataEventType::ENTRY_CREATED));
-  EXPECT_CALL(reload_callback, Run);
+  EXPECT_CALL(reload_callback, Run(UserDataEventField::PHONE_NUMBER_EVENT, _));
   ui_controller_->HandlePhoneNumberChange(nullptr,
                                           UserDataEventType::ENTRY_CREATED);
 }
 
 TEST_F(UiControllerTest, UserDataFormReloadFromShippingAddressChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
-  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  base::MockCallback<base::OnceCallback<void(UserDataEventField, UserData*)>>
+      reload_callback;
   options->reload_data_callback = reload_callback.Get();
   base::MockCallback<
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
@@ -566,14 +570,15 @@ TEST_F(UiControllerTest, UserDataFormReloadFromShippingAddressChange) {
 
   EXPECT_CALL(change_callback, Run(UserDataEventField::SHIPPING_EVENT,
                                    UserDataEventType::ENTRY_CREATED));
-  EXPECT_CALL(reload_callback, Run);
+  EXPECT_CALL(reload_callback, Run(UserDataEventField::SHIPPING_EVENT, _));
   ui_controller_->HandleShippingAddressChange(nullptr,
                                               UserDataEventType::ENTRY_CREATED);
 }
 
 TEST_F(UiControllerTest, UserDataFormReloadFromCreditCardChange) {
   auto options = std::make_unique<FakeCollectUserDataOptions>();
-  base::MockCallback<base::OnceCallback<void(UserData*)>> reload_callback;
+  base::MockCallback<base::OnceCallback<void(UserDataEventField, UserData*)>>
+      reload_callback;
   options->reload_data_callback = reload_callback.Get();
   base::MockCallback<
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
@@ -585,7 +590,7 @@ TEST_F(UiControllerTest, UserDataFormReloadFromCreditCardChange) {
 
   EXPECT_CALL(change_callback, Run(UserDataEventField::CREDIT_CARD_EVENT,
                                    UserDataEventType::ENTRY_CREATED));
-  EXPECT_CALL(reload_callback, Run);
+  EXPECT_CALL(reload_callback, Run(UserDataEventField::CREDIT_CARD_EVENT, _));
   ui_controller_->HandleCreditCardChange(nullptr, nullptr,
                                          UserDataEventType::ENTRY_CREATED);
 }
@@ -1123,8 +1128,10 @@ TEST_F(UiControllerTest, OnExecuteScriptSetMessageAndClearUserActions) {
 
 TEST_F(UiControllerTest, SetCollectUserDataUiState) {
   EXPECT_CALL(mock_observer_,
-              OnCollectUserDataUiStateChanged(/* enabled= */ false));
-  ui_controller_->SetCollectUserDataUiState(false);
+              OnCollectUserDataUiStateChanged(
+                  /* loading= */ true, UserDataEventField::SHIPPING_EVENT));
+  ui_controller_->SetCollectUserDataUiState(/* loading= */ true,
+                                            UserDataEventField::SHIPPING_EVENT);
 }
 
 }  // namespace autofill_assistant

@@ -461,6 +461,22 @@ class AssistantCollectUserDataBinder
             view.mPaymentMethodSection.setEnabled(enabled);
             view.mLoginSection.setEnabled(enabled);
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.MARK_CONTACTS_LOADING) {
+            view.mContactDetailsSection.setLoading(
+                    model.get(AssistantCollectUserDataModel.MARK_CONTACTS_LOADING));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.MARK_PHONE_NUMBERS_LOADING) {
+            view.mPhoneNumberSection.setLoading(
+                    model.get(AssistantCollectUserDataModel.MARK_PHONE_NUMBERS_LOADING));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.MARK_SHIPPING_ADDRESSES_LOADING) {
+            view.mShippingAddressSection.setLoading(
+                    model.get(AssistantCollectUserDataModel.MARK_SHIPPING_ADDRESSES_LOADING));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.MARK_PAYMENT_METHODS_LOADING) {
+            view.mPaymentMethodSection.setLoading(
+                    model.get(AssistantCollectUserDataModel.MARK_PAYMENT_METHODS_LOADING));
+            return true;
         }
         return false;
     }

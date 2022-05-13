@@ -208,9 +208,10 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
   MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
   MOCK_CONST_METHOD0(GetElementStore, ElementStore*());
-  MOCK_METHOD2(
+  MOCK_METHOD3(
       RequestUserData,
-      void(const CollectUserDataOptions& options,
+      void(UserDataEventField event_field,
+           const CollectUserDataOptions& options,
            base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
                callback));
   MOCK_METHOD0(SupportsExternalActions, bool());

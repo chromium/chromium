@@ -2622,7 +2622,7 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   auto* incomplete = user_data_response.add_available_contacts();
   (*incomplete->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2694,7 +2694,7 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
   *user_data_response.add_available_phone_numbers()->mutable_value() =
       MakeAutofillEntry("+1 187-654-3210");
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2799,7 +2799,7 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
   AddCompleteAddressEntriesToMap("John Doe",
                                  payment_instrument->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2850,7 +2850,7 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   auto* address = user_data_response.add_available_addresses();
   AddCompleteAddressEntriesToMap("John Doe", address->mutable_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2903,7 +2903,7 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
   (*profile->mutable_values())[14] =
       MakeAutofillEntry("+1 123-456-7890", /* raw= */ true);
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2990,7 +2990,7 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
   AddCompleteAddressEntriesToMap(
       "Jane Doe", payment_instrument_2->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -3067,7 +3067,7 @@ TEST_F(CollectUserDataActionTest,
   AddCompleteAddressEntriesToMap(
       "Jane Doe", payment_instrument_2->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+      .WillOnce(RunOnceCallback<2>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -3343,11 +3343,11 @@ TEST_F(CollectUserDataActionTest, LogsUkmSelectionStateUpdated) {
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         user_data_.terms_and_conditions_ = ACCEPTED;
         collect_user_data_options->selected_user_data_changed_callback.Run(
-            CONTACT_EVENT, SELECTION_CHANGED);
+            UserDataEventField::CONTACT_EVENT, SELECTION_CHANGED);
         collect_user_data_options->selected_user_data_changed_callback.Run(
-            CREDIT_CARD_EVENT, ENTRY_CREATED);
+            UserDataEventField::CREDIT_CARD_EVENT, ENTRY_CREATED);
         collect_user_data_options->selected_user_data_changed_callback.Run(
-            SHIPPING_EVENT, ENTRY_EDITED);
+            UserDataEventField::SHIPPING_EVENT, ENTRY_EDITED);
         user_model_.SetSelectedCreditCard(
             std::make_unique<autofill::CreditCard>(credit_card), &user_data_);
         user_model_.SetSelectedAutofillProfile(
@@ -3732,7 +3732,7 @@ TEST_F(CollectUserDataActionTest, LogUkmDataFromBackend) {
   collect_user_data_proto->mutable_data_source();
 
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
+      .WillRepeatedly(RunOnceCallback<2>(true, GetUserDataResponseProto()));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         user_data_.terms_and_conditions_ = ACCEPTED;
@@ -3921,15 +3921,15 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
       .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
       .Times(3)
-      .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
+      .WillRepeatedly(RunOnceCallback<2>(true, GetUserDataResponseProto()));
   EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         std::move(collect_user_data_options->reload_data_callback)
-            .Run(&user_data_);
+            .Run(UserDataEventField::NONE, &user_data_);
       }))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         std::move(collect_user_data_options->reload_data_callback)
-            .Run(&user_data_);
+            .Run(UserDataEventField::NONE, &user_data_);
       }))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         // We can't submit here since the user data is not complete.

@@ -61,7 +61,13 @@ enum UserDataEventType {
   ENTRY_CREATED
 };
 
-enum UserDataEventField { CONTACT_EVENT, CREDIT_CARD_EVENT, SHIPPING_EVENT };
+enum class UserDataEventField {
+  NONE,
+  CONTACT_EVENT,
+  PHONE_NUMBER_EVENT,
+  CREDIT_CARD_EVENT,
+  SHIPPING_EVENT
+};
 
 // Represents a concrete login choice in the UI, e.g., 'Guest checkout' or
 // a particular Chrome PWM login account.
@@ -353,7 +359,7 @@ struct CollectUserDataOptions {
       additional_actions_callback;
   base::OnceCallback<void(int, UserData*, const UserModel*)>
       terms_link_callback;
-  base::OnceCallback<void(UserData*)> reload_data_callback;
+  base::OnceCallback<void(UserDataEventField, UserData*)> reload_data_callback;
   // Called whenever there is a change to the selected user data.
   base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>
       selected_user_data_changed_callback;

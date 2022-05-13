@@ -2260,16 +2260,20 @@ TEST_F(ScriptExecutorTest, RequestUserData) {
       mock_callback;
   EXPECT_CALL(mock_callback, Run(true, _));
 
-  executor_->RequestUserData(CollectUserDataOptions(), mock_callback.Get());
+  executor_->RequestUserData(UserDataEventField::SHIPPING_EVENT,
+                             CollectUserDataOptions(), mock_callback.Get());
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::RUNNING));
-  EXPECT_FALSE(ui_delegate_.GetCollectUserDataUiEnabled());
+  EXPECT_EQ(ui_delegate_.GetCollectUserDataUiLoadingField(),
+            UserDataEventField::SHIPPING_EVENT);
 }
 
 TEST_F(ScriptExecutorTest, CollectUserData) {
   // Ui has been disabled while loading.
-  ui_delegate_.SetCollectUserDataUiState(/* enabled= */ false);
-  EXPECT_FALSE(ui_delegate_.GetCollectUserDataUiEnabled());
+  ui_delegate_.SetCollectUserDataUiState(/* loading= */ true,
+                                         UserDataEventField::SHIPPING_EVENT);
+  EXPECT_EQ(ui_delegate_.GetCollectUserDataUiLoadingField(),
+            UserDataEventField::SHIPPING_EVENT);
 
   CollectUserDataOptions options;
   executor_->CollectUserData(&options);
@@ -2278,7 +2282,8 @@ TEST_F(ScriptExecutorTest, CollectUserData) {
   EXPECT_TRUE(options.additional_actions_callback);
   EXPECT_TRUE(options.terms_link_callback);
   EXPECT_EQ(ui_delegate_.GetOptions(), &options);
-  EXPECT_TRUE(ui_delegate_.GetCollectUserDataUiEnabled());
+  EXPECT_EQ(ui_delegate_.GetCollectUserDataUiLoadingField(),
+            UserDataEventField::NONE);
 }
 
 TEST_F(ScriptExecutorTest, MustUseBackendData) {

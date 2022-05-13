@@ -262,6 +262,7 @@ class ScriptExecutor : public ActionDelegate,
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   void RequestUserData(
+      UserDataEventField event_field,
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
       override;

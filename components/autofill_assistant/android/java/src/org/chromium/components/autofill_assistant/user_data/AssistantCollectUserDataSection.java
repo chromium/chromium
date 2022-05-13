@@ -53,12 +53,14 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
     private final @Nullable View mTitleAddButton;
     private final AssistantVerticalExpander mSectionExpander;
     private final AssistantChoiceList mItemsView;
-    private final View mSummaryView;
+    private final View mSummaryContentView;
+    private final View mSummarySpinnerView;
     private final int mFullViewResId;
     private final int mTitleToContentPadding;
     private final List<Item> mItems;
 
     private boolean mUiEnabled = true;
+    private boolean mIsLoading;
     private boolean mIgnoreItemSelectedNotifications;
     private boolean mIgnoreItemChangeNotification;
     private boolean mRequestReloadOnChange;
@@ -92,13 +94,16 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         mSectionExpander = new AssistantVerticalExpander(context, null);
         View sectionTitle =
                 inflater.inflate(R.layout.autofill_assistant_payment_request_section_title, null);
-        mSummaryView = inflater.inflate(summaryViewResId, null);
+        mSummaryContentView = inflater.inflate(summaryViewResId, /* root= */ null);
+        mSummarySpinnerView =
+                inflater.inflate(R.layout.autofill_assistant_loading_spinner, /* root= */ null);
+        View summaryView = buildSummaryView(context, mSummaryContentView, mSummarySpinnerView);
         mItemsView = createChoiceList(listAddButton);
 
         mSectionExpander.setTitleView(sectionTitle,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mSectionExpander.setCollapsedView(mSummaryView,
+        mSectionExpander.setCollapsedView(summaryView,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mSectionExpander.setExpandedView(mItemsView,
@@ -111,7 +116,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
                 R.dimen.autofill_assistant_bottombar_horizontal_spacing);
         setHorizontalMargins(sectionTitle, horizontalMargin, horizontalMargin);
         setHorizontalMargins(mSectionExpander.getChevronButton(), 0, horizontalMargin);
-        setHorizontalMargins(mSummaryView, horizontalMargin, 0);
+        setHorizontalMargins(summaryView, horizontalMargin, 0);
         setHorizontalMargins(mItemsView, 0, 0);
 
         if (titleAddButton == null) {
@@ -201,7 +206,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
      */
     void updateViews() {
         if (mSelectedOption != null) {
-            updateSummaryView(mSummaryView, mSelectedOption);
+            updateSummaryView(mSummaryContentView, mSelectedOption);
         }
         for (int i = 0; i < mItems.size(); i++) {
             updateFullView(mItems.get(i).mFullView, mItems.get(i).mOption);
@@ -239,7 +244,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
             addItem(item);
         } else {
             eventType = AssistantUserDataEventType.ENTRY_EDITED;
-            updateSummaryView(mSummaryView, item.mOption);
+            updateSummaryView(mSummaryContentView, item.mOption);
         }
 
         if (select) {
@@ -255,6 +260,18 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
 
     void setRequestReloadOnChange(boolean requestReloadOnChange) {
         mRequestReloadOnChange = requestReloadOnChange;
+    }
+
+    private View buildSummaryView(Context context, View contentView, View spinnerView) {
+        LinearLayout viewWrapper = new LinearLayout(context);
+
+        viewWrapper.addView(contentView);
+
+        spinnerView.setTag(AssistantTagsForTesting.COLLECT_USER_DATA_SUMMARY_LOADING_SPINNER_TAG);
+        spinnerView.setVisibility(View.GONE);
+        viewWrapper.addView(spinnerView);
+
+        return viewWrapper;
     }
 
     private AssistantChoiceList createChoiceList(@Nullable String addButtonText) {
@@ -281,7 +298,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
 
     private void updatePaddings() {
         View titleView = mSectionExpander.getTitleView();
-        if (isEmpty()) {
+        if (isEmpty() && !mIsLoading) {
             // Section is empty, i.e., the title is the bottom-most widget.
             titleView.setPadding(titleView.getPaddingLeft(), mTopPadding,
                     titleView.getPaddingRight(), mBottomPadding);
@@ -296,6 +313,11 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
                     titleView.getPaddingRight(), mTitleToContentPadding);
             setBottomPadding(mSectionExpander.getCollapsedView(), mBottomPadding);
         }
+    }
+
+    private void setBottomPadding(View view, int padding) {
+        view.setPadding(
+                view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
     }
 
     /**
@@ -350,7 +372,7 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
         mIgnoreItemSelectedNotifications = true;
         mItemsView.setCheckedItem(item.mFullView);
         mIgnoreItemSelectedNotifications = false;
-        updateSummaryView(mSummaryView, item.mOption);
+        updateSummaryView(mSummaryContentView, item.mOption);
         updateUi();
 
         if (notify) {
@@ -452,9 +474,25 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
      * Enable or disable UI interactions.
      * @param enabled The flag to disable the interactions.
      */
-    protected void setEnabled(boolean enabled) {
+    void setEnabled(boolean enabled) {
         mUiEnabled = enabled;
         updateUi();
+    }
+
+    /**
+     * Set the view to loading, showing a spinner instead of the content - or to done, showing the
+     * content while hiding the spinner.
+     *
+     * @param loading The flag.
+     */
+    void setLoading(boolean loading) {
+        mIsLoading = loading;
+        mSummaryContentView.setVisibility(loading ? View.GONE : View.VISIBLE);
+        mSummarySpinnerView.setVisibility(loading ? View.VISIBLE : View.GONE);
+        AssistantLoadingSpinner loadingSpinner =
+                mSummarySpinnerView.findViewById(R.id.loading_spinner);
+        loadingSpinner.setAnimationState(loading);
+        updatePaddings();
     }
 
     /**
@@ -475,11 +513,6 @@ public abstract class AssistantCollectUserDataSection<T extends AssistantOptionM
             mSectionExpander.setExpanded(false);
         }
         updatePaddings();
-    }
-
-    private void setBottomPadding(View view, int padding) {
-        view.setPadding(
-                view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), padding);
     }
 
     private boolean canBeVisible() {

@@ -56,4 +56,7 @@
     <dimen name="autofill_assistant_form_line_height_3">88dp</dimen>
 
     <dimen name="autofill_assistant_root_view_top_padding">12dp</dimen>
+
+    <dimen name="autofill_assistant_loading_spinner_size">20dp</dimen>
+    <dimen name="autofill_assistant_loading_spinner_padding">4dp</dimen>
 </resources>

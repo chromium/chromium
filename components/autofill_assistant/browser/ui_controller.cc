@@ -839,7 +839,7 @@ void UiController::HandleShippingAddressChange(
   }
 
   collect_user_data_options_->selected_user_data_changed_callback.Run(
-      SHIPPING_EVENT, event_type);
+      UserDataEventField::SHIPPING_EVENT, event_type);
   DCHECK(!collect_user_data_options_->shipping_address_name.empty());
   SetProfile(collect_user_data_options_->shipping_address_name,
              UserDataFieldChange::SHIPPING_ADDRESS, std::move(address));
@@ -857,7 +857,7 @@ void UiController::HandleContactInfoChange(
   }
 
   collect_user_data_options_->selected_user_data_changed_callback.Run(
-      CONTACT_EVENT, event_type);
+      UserDataEventField::CONTACT_EVENT, event_type);
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
   SetProfile(collect_user_data_options_->contact_details_name,
              UserDataFieldChange::CONTACT_PROFILE, std::move(profile));
@@ -870,7 +870,7 @@ void UiController::HandlePhoneNumberChange(
     return;
   }
   if (ShouldReloadData(*collect_user_data_options_, event_type)) {
-    ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
+    ReloadUserData(UserDataEventField::PHONE_NUMBER_EVENT, event_type);
     return;
   }
 
@@ -894,7 +894,7 @@ void UiController::HandleCreditCardChange(
   }
 
   collect_user_data_options_->selected_user_data_changed_callback.Run(
-      CREDIT_CARD_EVENT, event_type);
+      UserDataEventField::CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
   SetProfile(collect_user_data_options_->billing_address_name,
              UserDataFieldChange::BILLING_ADDRESS, std::move(billing_profile));
@@ -922,7 +922,7 @@ void UiController::ReloadUserData(UserDataEventField event_field,
       event_field, event_type);
 
   std::move(collect_user_data_options_->reload_data_callback)
-      .Run(GetUserData());
+      .Run(event_field, GetUserData());
 }
 
 void UiController::SetTermsAndConditions(
@@ -1003,9 +1003,10 @@ void UiController::SetCollectUserDataOptions(CollectUserDataOptions* options) {
   execution_delegate_->NotifyUserDataChange(UserDataFieldChange::ALL);
 }
 
-void UiController::SetCollectUserDataUiState(bool enabled) {
+void UiController::SetCollectUserDataUiState(bool loading,
+                                             UserDataEventField event) {
   for (UiControllerObserver& observer : observers_) {
-    observer.OnCollectUserDataUiStateChanged(enabled);
+    observer.OnCollectUserDataUiStateChanged(loading, event);
   }
 }
 

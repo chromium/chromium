@@ -207,6 +207,14 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     public static final WritableBooleanPropertyKey ENABLE_UI_INTERACTIONS =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey MARK_CONTACTS_LOADING =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey MARK_PHONE_NUMBERS_LOADING =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey MARK_SHIPPING_ADDRESSES_LOADING =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey MARK_PAYMENT_METHODS_LOADING =
+            new WritableBooleanPropertyKey();
 
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
@@ -225,7 +233,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL,
                 ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS,
                 DATA_ORIGIN_LINK_TEXT, DATA_ORIGIN_DIALOG_TITLE, DATA_ORIGIN_DIALOG_TEXT,
-                DATA_ORIGIN_DIALOG_BUTTON_TEXT, ENABLE_UI_INTERACTIONS);
+                DATA_ORIGIN_DIALOG_BUTTON_TEXT, ENABLE_UI_INTERACTIONS, MARK_CONTACTS_LOADING,
+                MARK_PHONE_NUMBERS_LOADING, MARK_SHIPPING_ADDRESSES_LOADING,
+                MARK_PAYMENT_METHODS_LOADING);
 
         /*
          * Set initial state for basic type properties (others are implicitly null).
@@ -255,6 +265,10 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(DATA_ORIGIN_DIALOG_TEXT, "");
         set(DATA_ORIGIN_DIALOG_BUTTON_TEXT, "");
         set(ENABLE_UI_INTERACTIONS, true);
+        set(MARK_CONTACTS_LOADING, false);
+        set(MARK_PHONE_NUMBERS_LOADING, false);
+        set(MARK_SHIPPING_ADDRESSES_LOADING, false);
+        set(MARK_PAYMENT_METHODS_LOADING, false);
     }
 
     @CalledByNative
@@ -649,5 +663,25 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setEnableUiInteractions(boolean enable) {
         set(ENABLE_UI_INTERACTIONS, enable);
+    }
+
+    @CalledByNative
+    private void setMarkContactsLoading(boolean loading) {
+        set(MARK_CONTACTS_LOADING, loading);
+    }
+
+    @CalledByNative
+    private void setMarkPhoneNumbersLoading(boolean loading) {
+        set(MARK_PHONE_NUMBERS_LOADING, loading);
+    }
+
+    @CalledByNative
+    private void setMarkShippingAddressesLoading(boolean loading) {
+        set(MARK_SHIPPING_ADDRESSES_LOADING, loading);
+    }
+
+    @CalledByNative
+    private void setMarkPaymentMethodsLoading(boolean loading) {
+        set(MARK_PAYMENT_METHODS_LOADING, loading);
     }
 }
