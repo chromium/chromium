@@ -45,6 +45,8 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
   DCHECK(object.GetFrame());
   value->SetString("frame", String::FromUTF8(ToTraceValue(object.GetFrame())));
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
+  value->SetBoolean("is_in_outermost_main_frame",
+                    object.GetFrame()->IsOutermostMainFrame());
   if (object.GetNode())
     value->SetInteger("dom_node_id", DOMNodeIds::IdForNode(object.GetNode()));
 }
@@ -83,7 +85,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
     LocalFrameView& frame_view) {
   if (!need_recording_viewport)
     return;
-  if (!frame_view.GetFrame().IsMainFrame())
+  if (!frame_view.GetFrame().IsOutermostMainFrame())
     return;
   ScrollableArea* scrollable_area = frame_view.GetScrollableArea();
   DCHECK(scrollable_area);
