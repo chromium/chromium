@@ -67,8 +67,10 @@ const char* kAppIdsWithHiddenPinToShelf[] = {
     app_constants::kLacrosAppId,
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
@@ -420,6 +422,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         std::move(run_on_os_login.value()));
   }
 
+// Speculative fix for crbug.com/1315958
+#if !BUILDFLAG(IS_CHROMEOS)
   if (update.AppType() == apps::AppType::kWeb) {
     auto* provider =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
@@ -461,6 +465,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         fh_enabled, /*is_managed=*/false, file_handling_types,
         file_handling_types_label, learn_more_url);
   }
+#endif
 
   return app;
 }
