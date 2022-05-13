@@ -49,9 +49,9 @@ constexpr char kFastPairEngagementFlowMetricSubsequent[] =
 const char kFastPairRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 constexpr char kFastPairPairTimeMetricInitial[] =
-    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol2";
 constexpr char kFastPairPairTimeMetricSubsequent[] =
-    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol2";
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
 const char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";

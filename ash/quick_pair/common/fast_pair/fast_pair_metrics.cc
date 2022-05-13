@@ -50,9 +50,9 @@ const char kEngagementFlowSubsequentMetric[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
 const char kTotalUxPairTimeInitialMetric[] =
-    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol2";
 const char kTotalUxPairTimeSubsequentMetric[] =
-    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol2";
 const char kRetroactiveEngagementFlowMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps";
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
@@ -211,13 +211,16 @@ void AttemptRecordingTotalUxPairTime(const Device& device,
                                      base::TimeDelta total_pair_time) {
   switch (device.protocol) {
     case Protocol::kFastPairInitial:
-      base::UmaHistogramTimes(kTotalUxPairTimeInitialMetric, total_pair_time);
+      base::UmaHistogramCustomTimes(kTotalUxPairTimeInitialMetric,
+                                    total_pair_time, base::Milliseconds(1),
+                                    base::Seconds(25), 50);
       break;
     case Protocol::kFastPairRetroactive:
       break;
     case Protocol::kFastPairSubsequent:
-      base::UmaHistogramTimes(kTotalUxPairTimeSubsequentMetric,
-                              total_pair_time);
+      base::UmaHistogramCustomTimes(kTotalUxPairTimeSubsequentMetric,
+                                    total_pair_time, base::Milliseconds(1),
+                                    base::Seconds(25), 50);
       break;
   }
 }
