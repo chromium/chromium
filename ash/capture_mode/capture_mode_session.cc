@@ -1966,29 +1966,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   DCHECK(is_capture_region);
-  // Allow events that are located on the capture mode bar or settings menu to
-  // pass through so we can click the buttons.
-  if (!is_event_on_capture_bar &&
-      !(capture_mode_settings_widget_ &&
-        capture_mode_settings_widget_->GetWindowBoundsInScreen().Contains(
-            screen_location))) {
-    if (capture_mode_settings_widget_ &&
-        located_press_event_on_settings_menu_) {
-      capture_mode_settings_widget_->GetNativeWindow()->delegate()->OnEvent(
-          event);
-    }
-    event->SetHandled();
-    event->StopPropagation();
-  }
-
-  // OnLocatedEventPressed() and OnLocatedEventDragged used root locations since
-  // CaptureModeController::user_capture_region() is stored in root
-  // coordinates..
-  // TODO(sammiequon): Update CaptureModeController::user_capture_region() to
-  // store screen coordinates.
-  gfx::Point location_in_root = event->location();
-  aura::Window::ConvertPointToTarget(event_target, current_root_,
-                                     &location_in_root);
 
   // Early return if the given event is targeted on the capture bar or settings
   // menu, since the switch block below is for updating the user capture region
@@ -2003,11 +1980,21 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
+  event->SetHandled();
+  event->StopPropagation();
+
+  // OnLocatedEventPressed() and OnLocatedEventDragged used root locations since
+  // CaptureModeController::user_capture_region() is stored in root
+  // coordinates..
+  // TODO(sammiequon): Update CaptureModeController::user_capture_region() to
+  // store screen coordinates.
+  gfx::Point location_in_root = event->location();
+  aura::Window::ConvertPointToTarget(event_target, current_root_,
+                                     &location_in_root);
+
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
     case ui::ET_TOUCH_PRESSED:
-      if (is_event_on_settings_menu)
-        located_press_event_on_settings_menu_ = true;
       old_mouse_warp_status_ = SetMouseWarpEnabled(false);
       OnLocatedEventPressed(location_in_root, is_touch);
       break;
@@ -2022,7 +2009,6 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
         SetMouseWarpEnabled(*old_mouse_warp_status_);
       old_mouse_warp_status_.reset();
       OnLocatedEventReleased(location_in_root);
-      located_press_event_on_settings_menu_ = false;
       break;
     default:
       break;
