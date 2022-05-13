@@ -32,6 +32,7 @@ generate_grd("build_grd") {
     ":emoji_data",
     ":emoji_data_remaining",
     ":emoticon_data",
+    ":symbol_data",
   ]
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
@@ -174,6 +175,17 @@ action_foreach("emoticon_data") {
     "{{source}}",
     "--output",
     rebase_path(merged_json, root_build_dir),
+  ]
+}
+
+action("symbol_data") {
+  script = "tools/symbol_data.py"
+
+  outputs = [ "$target_gen_dir/symbol_ordering.json" ]
+
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
   ]
 }
 
