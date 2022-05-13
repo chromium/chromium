@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,7 +20,9 @@
 
 namespace {
 
-base::Value CreateProfileEntry(const ProfileAttributesEntry* entry) {
+base::Value CreateProfileEntry(
+    const ProfileAttributesEntry* entry,
+    const base::flat_set<base::FilePath>& loaded_profile_paths) {
   base::Value profile_entry(base::Value::Type::DICTIONARY);
   profile_entry.SetKey("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.SetStringKey("localProfileName", entry->GetLocalProfileName());
@@ -69,7 +73,8 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry) {
     signedAccounts.Append(gaiaId);
   }
   profile_entry.SetKey("signedAccounts", std::move(signedAccounts));
-
+  profile_entry.SetBoolKey("isLoaded",
+                           loaded_profile_paths.contains(entry->GetPath()));
   return profile_entry;
 }
 
@@ -104,8 +109,13 @@ base::Value ProfileInternalsHandler::GetProfilesList() {
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributesSortedByLocalProfileName();
+  std::vector<Profile*> loaded_profiles =
+      g_browser_process->profile_manager()->GetLoadedProfiles();
+  base::flat_set<base::FilePath> loaded_profile_paths =
+      base::MakeFlatSet<base::FilePath>(
+          loaded_profiles, {}, [](const auto& it) { return it->GetPath(); });
   for (const ProfileAttributesEntry* entry : entries) {
-    profiles_list.Append(CreateProfileEntry(entry));
+    profiles_list.Append(CreateProfileEntry(entry, loaded_profile_paths));
   }
   return profiles_list;
 }
