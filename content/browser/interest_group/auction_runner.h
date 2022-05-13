@@ -819,6 +819,8 @@ class CONTENT_EXPORT AuctionRunner {
     std::unique_ptr<ScoredBid> top_bid_;
     // Number of bidders with the same score as `top_bidder`.
     size_t num_top_bids_ = 0;
+    // Number of bidders with the same score as `second_highest_score_`.
+    size_t num_second_highest_bids_ = 0;
 
     // The numeric value of the bid that got the second highest score. When
     // there's a tie for second highest score, just take the most recent one (

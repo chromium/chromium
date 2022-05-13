@@ -22,9 +22,11 @@
 
 namespace content {
 
-// Per-StoragePartition manager of auction bidder and seller worklet processes.
-// Limits the total number of worklet process at once. Processes for the same
-// origin will be vended to multiple consumers.
+class RenderProcessHost;
+class SiteInstance;
+
+// Base class of per-StoragePartition manager of auction bidder and seller
+// worklet processes. This provides limiting and sharing of worker processes.
 class CONTENT_EXPORT AuctionProcessManager {
  public:
   // The maximum number of bidder processes. Once this number is reached, no
@@ -71,8 +73,23 @@ class CONTENT_EXPORT AuctionProcessManager {
     // process. The pipe, however, may get broken if the process exits.
     auction_worklet::mojom::AuctionWorkletService* GetService();
 
+    // Returns any RenderProcessHost being used to host this process, or
+    // nullptr.
+    RenderProcessHost* GetRenderProcessHostForTesting();
+
+    // Returns the underlying process assignment at this level.
+    // Meant for reference-equality testing.
+    const scoped_refptr<WorkletProcess>& worklet_process_for_testing() const {
+      return worklet_process_;
+    }
+
+    const scoped_refptr<SiteInstance>& site_instance_for_testing() const {
+      return site_instance_;
+    }
+
    private:
-    friend AuctionProcessManager;
+    friend class AuctionProcessManager;
+    friend class InRendererAuctionProcessManager;
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr
@@ -85,6 +102,10 @@ class CONTENT_EXPORT AuctionProcessManager {
     base::OnceClosure callback_;
     url::Origin origin_;
     WorkletType worklet_type_;
+
+    // SiteInstance representing the worklet. Used only by
+    // InRendererAuctionProcessManager.
+    scoped_refptr<SiteInstance> site_instance_;
 
     // Associated AuctionProcessManager. Set when a process is requested,
     // cleared once a process is assigned (synchronously or asynchronously),
@@ -101,7 +122,6 @@ class CONTENT_EXPORT AuctionProcessManager {
     base::WeakPtrFactory<ProcessHandle> weak_ptr_factory_{this};
   };
 
-  AuctionProcessManager();
   AuctionProcessManager(const AuctionProcessManager&) = delete;
   AuctionProcessManager& operator=(const AuctionProcessManager&) = delete;
   virtual ~AuctionProcessManager();
@@ -117,6 +137,9 @@ class CONTENT_EXPORT AuctionProcessManager {
   // Auctions must request (and get) a service for their `kSeller` worklet
   // before requesting any `kBidder` worklets to avoid deadlock.
   //
+  // `frame_site_instance` must be the SiteInstance of the frame that requested
+  // the auction. It's only examined by InRendererAuctionProcessManager.
+  //
   // Passed in ProcessHandles must be destroyed before the AuctionProcessManager
   // is. ProcessHandles may not be reused.
   //
@@ -124,10 +147,12 @@ class CONTENT_EXPORT AuctionProcessManager {
   // AuctionProcessManager to request more WorkletServices, or even to delete
   // the AuctionProcessManager, since nothing but the callback invocation is on
   // the call stack.
-  [[nodiscard]] bool RequestWorkletService(WorkletType worklet_type,
-                                           const url::Origin& origin,
-                                           ProcessHandle* process_handle,
-                                           base::OnceClosure callback);
+  [[nodiscard]] bool RequestWorkletService(
+      WorkletType worklet_type,
+      const url::Origin& origin,
+      scoped_refptr<SiteInstance> frame_site_instance,
+      ProcessHandle* process_handle,
+      base::OnceClosure callback);
 
   size_t GetPendingBidderRequestsForTesting() const {
     return pending_bidder_request_queue_.size();
@@ -143,11 +168,31 @@ class CONTENT_EXPORT AuctionProcessManager {
   }
 
  protected:
-  // Launches the actual process. Virtual so tests can override it.
-  virtual void LaunchProcess(
+  AuctionProcessManager();
+
+  // Launches the actual process. Return value of null is permitted if a
+  // RenderProcessHost isn't used; otherwise the process will be kept-alive and
+  // watched by the ProcessHandle's WorkletProcess.
+  virtual RenderProcessHost* LaunchProcess(
       mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
           auction_worklet_service_receiver,
-      const std::string& display_name);
+      const ProcessHandle* process_handle,
+      const std::string& display_name) = 0;
+
+  // Used to compute the value of `site_instance_` field of ProcessHandle.
+  // A subclass can return nullptr if it is not using SiteInstance to place
+  // worklets in appropriate renderers, but some other mechanism implementing a
+  // policy that's at least as strong as site isolation would be.
+  virtual scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
+      SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) = 0;
+
+  // Tries to see if a shared process can be used for this, which will bypass
+  // the normal accounting logic and just use it. If it returns true, the
+  // process got assigned synchronously. There is no async case.
+  //
+  // `process_handle` will be already filled.
+  virtual bool TryUseSharedProcess(ProcessHandle* process_handle) = 0;
 
   // Returns the display name to use for a process. Separate method so it can be
   // used in tests.
@@ -214,6 +259,55 @@ class CONTENT_EXPORT AuctionProcessManager {
   ProcessMap seller_processes_;
 
   base::WeakPtrFactory<AuctionProcessManager> weak_ptr_factory_{this};
+};
+
+// An implementation of AuctionProcessManager that places worklet execution into
+// dedicated utility processes, isolated by domain and role.
+class CONTENT_EXPORT DedicatedAuctionProcessManager
+    : public AuctionProcessManager {
+ public:
+  DedicatedAuctionProcessManager();
+  ~DedicatedAuctionProcessManager() override;
+
+ private:
+  RenderProcessHost* LaunchProcess(
+      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+          auction_worklet_service_receiver,
+      const ProcessHandle* process_handle,
+      const std::string& display_name) override;
+
+  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
+      SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) override;
+  bool TryUseSharedProcess(ProcessHandle* process_handle) override;
+};
+
+// An alternative implementation of AuctionProcessManager that places worklet
+// execution into regular renderer processes (rather than worklet-only utility
+// processes) following the site isolation policy.
+class CONTENT_EXPORT InRendererAuctionProcessManager
+    : public AuctionProcessManager {
+ public:
+  InRendererAuctionProcessManager();
+  ~InRendererAuctionProcessManager() override;
+
+ protected:
+  RenderProcessHost* LaunchProcess(
+      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+          auction_worklet_service_receiver,
+      const ProcessHandle* process_handle,
+      const std::string& display_name) override;
+
+  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
+      SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) override;
+  bool TryUseSharedProcess(ProcessHandle* process_handle) override;
+
+ private:
+  RenderProcessHost* LaunchInSiteInstance(
+      SiteInstance* site_instance,
+      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+          auction_worklet_service_receiver);
 };
 
 }  // namespace content

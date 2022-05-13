@@ -1138,9 +1138,10 @@ class MockAuctionProcessManager
   ~MockAuctionProcessManager() override = default;
 
   // AuctionProcessManager implementation:
-  void LaunchProcess(
+  RenderProcessHost* LaunchProcess(
       mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
           auction_worklet_service_receiver,
+      const ProcessHandle* handle,
       const std::string& display_name) override {
     mojo::ReceiverId receiver_id =
         receiver_set_.Add(this, std::move(auction_worklet_service_receiver));
@@ -1161,6 +1162,17 @@ class MockAuctionProcessManager
     }
 
     receiver_display_name_map_[receiver_id] = display_name;
+    return nullptr;
+  }
+
+  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
+      SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) override {
+    return nullptr;
+  }
+
+  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
+    return false;
   }
 
   // auction_worklet::mojom::AuctionWorkletService implementation:
@@ -1347,9 +1359,10 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
   }
 
  private:
-  void LaunchProcess(
+  RenderProcessHost* LaunchProcess(
       mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
           auction_worklet_service_receiver,
+      const ProcessHandle* handle,
       const std::string& display_name) override {
     // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
     // production code. Don't bother to delete the service on pipe close,
@@ -1357,6 +1370,17 @@ class SameProcessAuctionProcessManager : public AuctionProcessManager {
     auction_worklet_services_.push_back(
         std::make_unique<auction_worklet::AuctionWorkletServiceImpl>(
             std::move(auction_worklet_service_receiver)));
+    return nullptr;
+  }
+
+  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
+      SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) override {
+    return nullptr;
+  }
+
+  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
+    return false;
   }
 
   std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
@@ -1516,6 +1540,7 @@ class AuctionRunnerTest : public testing::Test,
 
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         base::FilePath(), /*in_memory=*/true,
+        InterestGroupManagerImpl::ProcessMode::kDedicated,
         /*url_loader_factory=*/nullptr);
     if (!auction_process_manager_) {
       auction_process_manager_ =
@@ -1725,6 +1750,9 @@ class AuctionRunnerTest : public testing::Test,
     return &url_loader_factory_;
   }
   RenderFrameHostImpl* GetFrame() override { return nullptr; }
+  scoped_refptr<SiteInstance> GetFrameSiteInstance() override {
+    return scoped_refptr<SiteInstance>();
+  }
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override {
     return network::mojom::ClientSecurityState::New();
   }
@@ -4480,9 +4508,9 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
               GURL(base::StringPrintf("https://%zu.test", i)));
           EXPECT_TRUE(auction_process_manager->RequestWorkletService(
               AuctionProcessManager::WorkletType::kSeller, origin,
-              &*sellers.back(), base::BindOnce([]() {
-                ADD_FAILURE() << "This should not be called";
-              })));
+              scoped_refptr<SiteInstance>(), &*sellers.back(),
+              base::BindOnce(
+                  []() { ADD_FAILURE() << "This should not be called"; })));
         }
       }
 
@@ -4496,9 +4524,9 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
             GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
         EXPECT_TRUE(auction_process_manager->RequestWorkletService(
             AuctionProcessManager::WorkletType::kBidder, origin,
-            &*bidders.back(), base::BindOnce([]() {
-              ADD_FAILURE() << "This should not be called";
-            })));
+            scoped_refptr<SiteInstance>(), &*bidders.back(),
+            base::BindOnce(
+                []() { ADD_FAILURE() << "This should not be called"; })));
       }
 
       // If neither sellers nor bidders are at their limit, the auction should
@@ -4623,9 +4651,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
             GURL(base::StringPrintf("https://%zu.test", i)));
         EXPECT_TRUE(auction_process_manager->RequestWorkletService(
             AuctionProcessManager::WorkletType::kSeller, origin,
-            &*sellers.back(), base::BindOnce([]() {
-              ADD_FAILURE() << "This should not be called";
-            })));
+            scoped_refptr<SiteInstance>(), &*sellers.back(),
+            base::BindOnce(
+                []() { ADD_FAILURE() << "This should not be called"; })));
       }
 
       // Make `num_used_bidder_worklet_processes` bidder worklet requests for
@@ -4638,9 +4666,9 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
             GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
         EXPECT_TRUE(auction_process_manager->RequestWorkletService(
             AuctionProcessManager::WorkletType::kBidder, origin,
-            &*bidders.back(), base::BindOnce([]() {
-              ADD_FAILURE() << "This should not be called";
-            })));
+            scoped_refptr<SiteInstance>(), &*bidders.back(),
+            base::BindOnce(
+                []() { ADD_FAILURE() << "This should not be called"; })));
       }
 
       // If neither sellers nor bidders are at their limit, the auction should
@@ -4766,9 +4794,9 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
         GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
     EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
         AuctionProcessManager::WorkletType::kBidder, origin,
-        &*other_bidders.back(), base::BindOnce([]() {
-          ADD_FAILURE() << "This should not be called";
-        })));
+        scoped_refptr<SiteInstance>(), &*other_bidders.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
   }
 
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
@@ -4844,9 +4872,10 @@ TEST_F(AuctionRunnerTest,
     url::Origin origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
     EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
-        AuctionProcessManager::WorkletType::kSeller, origin, &*sellers.back(),
-        base::BindOnce(
-            []() { ADD_FAILURE() << "This should not be called"; })));
+        AuctionProcessManager::WorkletType::kSeller, origin,
+        scoped_refptr<SiteInstance>(), &*sellers.back(), base::BindOnce([]() {
+          ADD_FAILURE() << "This should not be called";
+        })));
   }
 
   // Take up but 1 of the bidder worklet process slots.
@@ -4856,9 +4885,10 @@ TEST_F(AuctionRunnerTest,
     url::Origin origin = url::Origin::Create(
         GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
     EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
-        AuctionProcessManager::WorkletType::kBidder, origin, &*bidders.back(),
-        base::BindOnce(
-            []() { ADD_FAILURE() << "This should not be called"; })));
+        AuctionProcessManager::WorkletType::kBidder, origin,
+        scoped_refptr<SiteInstance>(), &*bidders.back(), base::BindOnce([]() {
+          ADD_FAILURE() << "This should not be called";
+        })));
   }
 
   RunStandardAuction();

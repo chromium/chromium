@@ -443,6 +443,10 @@ RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
   return static_cast<RenderFrameHostImpl*>(render_frame_host());
 }
 
+scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
+  return render_frame_host()->GetSiteInstance();
+}
+
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();

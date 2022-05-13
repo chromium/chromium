@@ -25,6 +25,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -126,6 +127,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
       worklet_info_(std::move(worklet_info)) {
   if (worklet_manager_->auction_process_manager()->RequestWorkletService(
           worklet_info_.type, url::Origin::Create(worklet_info_.script_url),
+          worklet_manager_->delegate()->GetFrameSiteInstance(),
           &process_handle_,
           base::BindOnce(
               &AuctionWorkletManager::WorkletOwner::OnProcessAssigned,

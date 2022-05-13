@@ -92,12 +92,17 @@ InterestGroupManagerImpl::ReportRequest::~ReportRequest() = default;
 InterestGroupManagerImpl::InterestGroupManagerImpl(
     const base::FilePath& path,
     bool in_memory,
+    ProcessMode process_mode,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : impl_(base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
             in_memory ? base::FilePath() : path),
-      auction_process_manager_(std::make_unique<AuctionProcessManager>()),
+      auction_process_manager_(
+          base::WrapUnique(process_mode == ProcessMode::kDedicated
+                               ? static_cast<AuctionProcessManager*>(
+                                     new DedicatedAuctionProcessManager())
+                               : new InRendererAuctionProcessManager())),
       update_manager_(this, std::move(url_loader_factory)),
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),

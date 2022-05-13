@@ -435,6 +435,7 @@ void MockRenderProcessHost::IncrementWorkerRefCount() {
 }
 
 void MockRenderProcessHost::DecrementWorkerRefCount() {
+  DCHECK_GT(worker_ref_count_, 0);
   --worker_ref_count_;
 }
 

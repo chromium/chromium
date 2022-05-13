@@ -1313,8 +1313,16 @@ void StoragePartitionImpl::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
+    // Auction worklets on non-Android use dedicated processes; on Android due
+    // to high cost of process launch they try to reuse renderers.
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
-        path, is_in_memory(), GetURLLoaderFactoryForBrowserProcess());
+        path, is_in_memory(),
+#if BUILDFLAG(IS_ANDROID)
+        InterestGroupManagerImpl::ProcessMode::kInRenderer,
+#else
+        InterestGroupManagerImpl::ProcessMode::kDedicated,
+#endif
+        GetURLLoaderFactoryForBrowserProcess());
   }
 
   // The Topics API is not available in Incognito mode.

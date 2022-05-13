@@ -30,16 +30,25 @@ class SellerWorklet;
 // sandboxed utility process.
 class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
  public:
+  // Constructor for when `this` owns the receiver. This is for the case where
+  // this is used as a service, with ServiceFactory managing the lifetime.
   explicit AuctionWorkletServiceImpl(
       mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+
+  // Constructor for when owned by an external SelfOwnedReceiver. Used by
+  // |Create()|, which is intended for use with a BinderMap.
+  AuctionWorkletServiceImpl();
+
   explicit AuctionWorkletServiceImpl(const AuctionWorkletServiceImpl&) = delete;
   AuctionWorkletServiceImpl& operator=(const AuctionWorkletServiceImpl&) =
       delete;
   ~AuctionWorkletServiceImpl() override;
 
-  const scoped_refptr<AuctionV8Helper>& AuctionV8HelperForTesting() {
-    return auction_v8_helper_;
-  }
+  // Creates an instance owned by (and bound to) |receiver|.
+  static void Create(
+      mojo::PendingReceiver<mojom::AuctionWorkletService> receiver);
+
+  scoped_refptr<AuctionV8Helper> AuctionV8HelperForTesting();
 
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
@@ -65,6 +74,7 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       uint16_t experiment_group_id) override;
 
  private:
+  class V8HelperHolder;
   void DisconnectSellerWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
@@ -72,7 +82,7 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
 
   mojo::Receiver<mojom::AuctionWorkletService> receiver_;
 
-  scoped_refptr<AuctionV8Helper> auction_v8_helper_;
+  scoped_refptr<V8HelperHolder> auction_v8_helper_holder_;
 
   mojo::UniqueReceiverSet<mojom::BidderWorklet> bidder_worklets_;
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;

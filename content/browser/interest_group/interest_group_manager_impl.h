@@ -49,12 +49,18 @@ class InterestGroupStorage;
 // as it performs blocking file IO when backed by on-disk storage.
 class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
  public:
+  // Controls how auction worklets will be run. kDedicated will use
+  // fully-isolated utility processes solely for worklet. kInRenderer will
+  // re-use regular renderers following the normal site isolation policy.
+  enum class ProcessMode { kDedicated, kInRenderer };
+
   // Creates an interest group manager using the provided directory path for
   // persistent storage. If `in_memory` is true the path is ignored and only
   // in-memory storage is used.
   explicit InterestGroupManagerImpl(
       const base::FilePath& path,
       bool in_memory,
+      ProcessMode process_mode,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~InterestGroupManagerImpl() override;
   InterestGroupManagerImpl(const InterestGroupManagerImpl& other) = delete;

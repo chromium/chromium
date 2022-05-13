@@ -480,6 +480,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //    process that the shared storage worklets are going to use is determined
   //    by the concrete implementation of
   //    `SharedStorageRenderThreadWorkletDriver`.
+  //  - Auction Worklets (on Android only):
+  //    (https://github.com/WICG/turtledove/blob/main/FLEDGE.md)
+  //    Keeps the renderer alive if there are any worklets using it.
   virtual void IncrementWorkerRefCount() = 0;
   virtual void DecrementWorkerRefCount() = 0;
 

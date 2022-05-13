@@ -28,6 +28,7 @@
 namespace content {
 
 class RenderFrameHostImpl;
+class SiteInstance;
 
 // Per-frame manager of auction worklets. Manages creation and sharing of
 // worklets. Worklets may be reused if they share URLs for scripts and trusted
@@ -80,6 +81,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     // Get containing frame. (Passed to debugging hooks).
     virtual RenderFrameHostImpl* GetFrame() = 0;
+
+    // Returns the SiteInstance representing the frame running the auction.
+    virtual scoped_refptr<SiteInstance> GetFrameSiteInstance() = 0;
 
     // Returns the ClientSecurityState associated with the frame, for use in
     // bidder worklet and signals fetches.

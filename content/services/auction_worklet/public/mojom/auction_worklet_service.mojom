@@ -18,8 +18,9 @@ struct BrowserSignals {
   url.mojom.Origin seller;
 };
 
-// Used by the browser to load and run FLEDGE worklets in a sandboxed utility
-// process.
+// Used by the browser to load and run FLEDGE worklets. This can run in a
+// sandboxed utility process (non-Android) or inside a regular renderer
+// (Android).
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 [ServiceSandbox=sandbox.mojom.Sandbox.kServiceWithJit]
 interface AuctionWorkletService {
