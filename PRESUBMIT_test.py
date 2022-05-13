@@ -2323,6 +2323,71 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
 
   # TODO(dcheng): add tests for when there are no missing per-file rules. These
   # are currently missing because `open()` is not injected.
+  def testMissingSecurityReviewerAtUpload(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile(f'services/goat/public/goat.mojom',
+                       ['// Scary contents.'])]
+    self._injectFakeOwnersClient(
+        mock_input_api,
+        ['apple@chromium.org', 'orange@chromium.org'])
+    self._injectFakeChangeOwnerAndReviewers(
+        mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
+    mock_input_api.is_committing = False
+    mock_input_api.dry_run = False
+    mock_output_api = MockOutputApi()
+    results = PRESUBMIT.CheckSecurityOwners(
+        mock_input_api, mock_output_api)
+    # TODO(dcheng): This should be 1, but the PRESUBMIT currently opens the
+    # OWNERS file in an unmockable way.
+    self.assertEqual(2, len(results))
+    self.assertEqual('warning', results[0].type)
+    self.assertEqual(
+        'Found missing security reviewers:', results[0].message)
+
+  def testMissingSecurityReviewerAtDryRunCommit(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile(f'services/goat/public/goat.mojom',
+                       ['// Scary contents.'])]
+    self._injectFakeOwnersClient(
+        mock_input_api,
+        ['apple@chromium.org', 'orange@chromium.org'])
+    self._injectFakeChangeOwnerAndReviewers(
+        mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
+    mock_input_api.is_committing = True
+    mock_input_api.dry_run = True
+    mock_output_api = MockOutputApi()
+    results = PRESUBMIT.CheckSecurityOwners(
+        mock_input_api, mock_output_api)
+    # TODO(dcheng): This should be 1, but the PRESUBMIT currently opens the
+    # OWNERS file in an unmockable way.
+    self.assertEqual(2, len(results))
+    self.assertEqual('error', results[0].type)
+    self.assertEqual(
+        'Found missing security reviewers:', results[0].message)
+
+  def testmissingSecurityApprovalAtRealCommit(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile(f'services/goat/public/goat.mojom',
+                       ['// Scary contents.'])]
+    self._injectFakeOwnersClient(
+        mock_input_api,
+        ['apple@chromium.org', 'orange@chromium.org'])
+    self._injectFakeChangeOwnerAndReviewers(
+        mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
+    mock_input_api.is_committing = True
+    mock_input_api.dry_run = False
+    mock_output_api = MockOutputApi()
+    results = PRESUBMIT.CheckSecurityOwners(
+        mock_input_api, mock_output_api)
+    # TODO(dcheng): This should be 1, but the PRESUBMIT currently opens the
+    # OWNERS file in an unmockable way.
+    self.assertEqual(2, len(results))
+    self.assertEqual('error', results[0].type)
+    self.assertEqual(
+        'Found missing security reviewers:', results[0].message)
 
   def testMissingPerFileRulesButNotSecurityReviewer(self):
     for pattern, filename in self._test_cases:
@@ -2348,29 +2413,38 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
                          mock_output_api.more_cc)
 
   def testIpcChangeNeedsSecurityOwner(self):
-    for pattern, filename in self._test_cases:
-      with self.subTest(line=filename):
-        mock_input_api = MockInputApi()
-        mock_input_api.files = [
-          MockAffectedFile(f'services/goat/public/{filename}',
-                           ['// Scary contents.'])]
-        self._injectFakeOwnersClient(
-            mock_input_api,
-            ['apple@chromium.org', 'orange@chromium.org'])
-        self._injectFakeChangeOwnerAndReviewers(
-            mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
-        mock_output_api = MockOutputApi()
-        errors = PRESUBMIT.CheckSecurityOwners(
-            mock_input_api, mock_output_api)
-        self.assertEqual(2, len(errors))
-        self.assertEqual(
-            'Found missing security reviewers:', errors[0].message)
-        self.assertEqual(
-            'Found OWNERS files with missing per-file rules for '
-            'security-sensitive files.\nPlease update the OWNERS files below '
-            'to add the missing rules:', errors[1].message)
-        self.assertEqual(['ipc-security-reviews@chromium.org'],
-                         mock_output_api.more_cc)
+    for is_committing in [True, False]:
+      for pattern, filename in self._test_cases:
+        with self.subTest(
+            line=f'is_committing={is_committing}, filename={filename}'):
+          mock_input_api = MockInputApi()
+          mock_input_api.files = [
+            MockAffectedFile(f'services/goat/public/{filename}',
+                             ['// Scary contents.'])]
+          self._injectFakeOwnersClient(
+              mock_input_api,
+              ['apple@chromium.org', 'orange@chromium.org'])
+          self._injectFakeChangeOwnerAndReviewers(
+              mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
+          mock_input_api.is_committing = is_committing
+          mock_input_api.dry_run = False
+          mock_output_api = MockOutputApi()
+          results = PRESUBMIT.CheckSecurityOwners(
+              mock_input_api, mock_output_api)
+          self.assertEqual(2, len(results))
+          if is_committing:
+            self.assertEqual('error', results[0].type)
+          else:
+            self.assertEqual('warning', results[0].type)
+          self.assertEqual(
+              'Found missing security reviewers:', results[0].message)
+          self.assertEqual('error', results[1].type)
+          self.assertEqual(
+              'Found OWNERS files with missing per-file rules for '
+              'security-sensitive files.\nPlease update the OWNERS files below '
+              'to add the missing rules:', results[1].message)
+          self.assertEqual(['ipc-security-reviews@chromium.org'],
+                           mock_output_api.more_cc)
 
 
   def testServiceManifestChangeNeedsSecurityOwner(self):
@@ -2590,6 +2664,7 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
     self._injectFakeChangeOwnerAndReviewers(
         mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
     mock_input_api.is_committing = True
+    mock_input_api.dry_run = False
     mock_input_api.files = [
         MockAffectedFile('file.cc', ['GetServiceSandboxType<mojom::Goat>()'])
     ]

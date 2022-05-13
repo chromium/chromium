@@ -2246,6 +2246,8 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
                     '--tbr was specified, skipping OWNERS check for DEPS additions'
                 )
             ]
+        # TODO(dcheng): Make this generate an error on dry runs if the reviewer
+        # is not added, to prevent review serialization.
         if input_api.dry_run:
             return [
                 output_api.PresubmitNotifyResult(
@@ -2768,7 +2770,9 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
     """
     owner_email, reviewers = (
         input_api.canned_checks.GetCodereviewOwnerAndReviewers(
-            input_api, None, approval_needed=input_api.is_committing))
+            input_api,
+            None,
+            approval_needed=input_api.is_committing and not input_api.dry_run))
 
     security_owners = input_api.owners_client.ListOwners(owners_file)
     return any(owner in reviewers for owner in security_owners)
@@ -3010,10 +3014,6 @@ def CheckSecurityOwners(input_api, output_api):
         output_api.AppendCC('ipc-security-reviews@chromium.org')
 
     results = []
-    if input_api.is_committing:
-        make_presubmit_message = output_api.PresubmitError
-    else:
-        make_presubmit_message = output_api.PresubmitPromptWarning
 
     # Ensure that a security reviewer is included as a CL reviewer. This is a
     # hack, but is needed because the OWNERS check (by design) ignores new
@@ -3024,6 +3024,12 @@ def CheckSecurityOwners(input_api, output_api):
     missing_reviewer_errors.extend(fuchsia_results.missing_reviewer_errors)
 
     if missing_reviewer_errors:
+        # Missing reviewers are only a warning at upload time; otherwise, it'd
+        # be impossible to upload a change.
+        if input_api.is_committing:
+            make_presubmit_message = output_api.PresubmitError
+        else:
+            make_presubmit_message = output_api.PresubmitPromptWarning
         results.append(
             make_presubmit_message(
                 'Found missing security reviewers:',
@@ -3034,8 +3040,13 @@ def CheckSecurityOwners(input_api, output_api):
     owners_file_errors.extend(fuchsia_results.owners_file_errors)
 
     if owners_file_errors:
+        # Missing per-file rules are always an error. While swarming and caching
+        # means that uploading a patchset with updated OWNERS files and sending
+        # it to the CQ again should not have a large incremental cost, it is
+        # still frustrating to discover the error only after the change has
+        # already been uploaded.
         results.append(
-            make_presubmit_message(
+            output_api.PresubmitError(
                 'Found OWNERS files with missing per-file rules for '
                 'security-sensitive files.\nPlease update the OWNERS files '
                 'below to add the missing rules:',
