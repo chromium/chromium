@@ -12,7 +12,7 @@ import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_checkbox/cr_checkbox.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import './certificate_shared_css.js';
+import './certificate_shared.css.js';
 
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -4,7 +4,7 @@
 
 import("//crypto/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -33,9 +33,9 @@ ts_library("build_ts") {
   ]
 }
 
-html_to_js("css_wrapper_files") {
+css_to_wrapper("css_wrapper_files") {
   visibility = [ ":preprocess_generated" ]
-  js_files = css_wrapper_files
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
