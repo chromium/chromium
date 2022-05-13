@@ -291,7 +291,7 @@ bool AutofillClientImpl::IsPasswordManagerEnabled() {
 }
 
 void AutofillClientImpl::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {
   NOTREACHED();
 }

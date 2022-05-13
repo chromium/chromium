@@ -147,7 +147,6 @@ void AndroidAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
 }
 
 void AndroidAutofillManager::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
   has_server_prediction_ = true;
   if (auto* provider = GetAutofillProvider())

@@ -19,6 +19,7 @@
 
 namespace autofill {
 class AutocompleteHistoryManager;
+class AutofillDriver;
 class AutofillPopupDelegate;
 class CardUnmaskDelegate;
 class CreditCard;
@@ -126,7 +127,7 @@ class AwAutofillClient : public autofill::AutofillClient,
   bool IsAutocompleteEnabled() override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
+      autofill::AutofillDriver* driver,
       const std::vector<autofill::FormStructure*>& forms) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;

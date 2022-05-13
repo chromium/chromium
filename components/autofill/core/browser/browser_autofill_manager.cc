@@ -1475,9 +1475,8 @@ void BrowserAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
 }
 
 void BrowserAutofillManager::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
-  client()->PropagateAutofillPredictions(rfh, forms);
+  client()->PropagateAutofillPredictions(driver(), forms);
 }
 
 void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,

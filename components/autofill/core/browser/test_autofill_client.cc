@@ -287,7 +287,7 @@ bool TestAutofillClient::IsPasswordManagerEnabled() {
 }
 
 void TestAutofillClient::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {}
 
 void TestAutofillClient::DidFillOrPreviewField(

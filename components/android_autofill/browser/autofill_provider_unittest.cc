@@ -20,7 +20,7 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
   }
 
   void SimulatePropagateAutofillPredictions() {
-    PropagateAutofillPredictions(nullptr, std::vector<FormStructure*>());
+    PropagateAutofillPredictions({});
   }
 
   void SimulateOnAskForValuesToFillImpl() {

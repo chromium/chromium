@@ -91,8 +91,7 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(void,
               PropagateAutofillPredictions,
-              (content::RenderFrameHost * rfh,
-               const std::vector<FormStructure*>& forms),
+              (const std::vector<FormStructure*>& forms),
               (override));
   MOCK_METHOD(void,
               OnFormSubmittedImpl,

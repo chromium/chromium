@@ -167,11 +167,6 @@ void ContentAutofillDriver::FillOrPreviewFormImpl(
   GetAutofillAgent()->FillOrPreviewForm(query_id, data, action);
 }
 
-void ContentAutofillDriver::PropagateAutofillPredictions(
-    const std::vector<FormStructure*>& forms) {
-  autofill_manager_->PropagateAutofillPredictions(render_frame_host_, forms);
-}
-
 void ContentAutofillDriver::HandleParsedForms(
     const std::vector<const FormData*>& forms) {
   // No op.

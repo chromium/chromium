@@ -59,6 +59,7 @@ namespace autofill {
 
 class AddressNormalizer;
 class AutofillAblationStudy;
+class AutofillDriver;
 struct AutofillOfferData;
 class AutofillProfile;
 class AutocompleteHistoryManager;
@@ -654,7 +655,7 @@ class AutofillClient : public RiskDataLoader {
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
   virtual void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
+      AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) = 0;
 
   // Inform the client that the field has been filled.

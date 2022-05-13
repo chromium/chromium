@@ -80,10 +80,6 @@ std::vector<FieldGlobalId> TestAutofillDriver::FillOrPreviewForm(
   return result;
 }
 
-void TestAutofillDriver::PropagateAutofillPredictions(
-    const std::vector<FormStructure*>& forms) {
-}
-
 void TestAutofillDriver::HandleParsedForms(
     const std::vector<const FormData*>& forms) {}
 

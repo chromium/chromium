@@ -124,7 +124,6 @@ class AndroidAutofillManager : public AutofillManager {
       const DenseSet<FormType>& form_types) override {}
 
   void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
 
   void OnServerRequestError(FormSignature form_signature,

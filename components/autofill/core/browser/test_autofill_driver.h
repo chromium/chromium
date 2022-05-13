@@ -63,8 +63,6 @@ class TestAutofillDriver : public ContentAutofillDriver {
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override;
-  void PropagateAutofillPredictions(
-      const std::vector<FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;

@@ -111,12 +111,6 @@ std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
   return safe_fields;
 }
 
-void AutofillDriverIOS::PropagateAutofillPredictions(
-    const std::vector<autofill::FormStructure*>& forms) {
-  browser_autofill_manager_.client()->PropagateAutofillPredictions(nullptr,
-                                                                   forms);
-}
-
 void AutofillDriverIOS::HandleParsedForms(
     const std::vector<const FormData*>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =

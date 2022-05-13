@@ -491,7 +491,7 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Forward form structures to the password generation manager to detect
   // account creation forms.
-  driver()->PropagateAutofillPredictions(queried_forms);
+  PropagateAutofillPredictions(queried_forms);
 }
 
 void AutofillManager::OnServerRequestError(

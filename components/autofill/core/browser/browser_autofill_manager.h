@@ -248,7 +248,6 @@ class BrowserAutofillManager : public AutofillManager,
   void OnHidePopup() override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
   void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;
 

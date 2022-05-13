@@ -29,12 +29,36 @@ namespace autofill {
 
 class FormStructure;
 
-// Interface that allows Autofill core code to interact with its driver (i.e.,
-// obtain information from it and give information to it). A concrete
-// implementation must be provided by the driver.
+// AutofillDriver is Autofill's lowest-level abstraction of a frame that is
+// shared among all platforms.
+//
+// Most notably, it is a gateway for all communication from the browser code to
+// the DOM, or more precisely, to the AutofillAgent (which are different classes
+// of the same name in non-iOS vs iOS).
+//
+// The reverse communication, from the AutofillAgent to the browser code, goes
+// through mojom::AutofillDriver on non-iOS, and directly to AutofillManager on
+// iOS.
+//
+// An AutofillDriver corresponds to a frame, rather than a document, in the
+// sense that it may survive navigations.
+//
+// AutofillDriver has two implementations:
+// - AutofillDriverIOS for iOS,
+// - ContentAutofillDriver for all other platforms.
+//
+// An AutofillDriver's lifetime should be contained by the associated frame.
+//
+// AutofillDriverIOS is co-owned by AutofillDriverIOSWebFrame, which itself is
+// owned by the WebFrame, and the iOS-specific AutofillAgent, which extends the
+// driver's lifetime beyond the WebFrame's (crbug.com/892612).
+//
+// ContentAutofillDriver is owned by ContentAutofillDriverFactory, which ensures
+// that the associated RenderFrameHost's lifetime contains the driver's
+// lifetime.
 class AutofillDriver {
  public:
-  virtual ~AutofillDriver() {}
+  virtual ~AutofillDriver() = default;
 
   // Returns whether the user is currently operating in an incognito context.
   virtual bool IsIncognito() const = 0;
@@ -91,11 +115,6 @@ class AutofillDriver {
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
-
-  // Pass the form structures to the password manager to choose correct username
-  // and to the password generation manager to detect account creation forms.
-  virtual void PropagateAutofillPredictions(
-      const std::vector<FormStructure*>& forms) = 0;
 
   // Forwards parsed |forms| to the embedder.
   virtual void HandleParsedForms(const std::vector<const FormData*>& forms) = 0;

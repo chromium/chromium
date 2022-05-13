@@ -117,7 +117,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   bool IsAutocompleteEnabled() override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
+      AutofillDriver* driver,
       const std::vector<FormStructure*>& forms) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;

@@ -877,13 +877,18 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
 }
 
 void ChromeAutofillClient::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    AutofillDriver* autofill_driver,
     const std::vector<FormStructure*>& forms) {
-  password_manager::ContentPasswordManagerDriver* driver =
+  // This cast is safe because all non-iOS clients use ContentAutofillDriver as
+  // AutofillDriver implementation.
+  content::RenderFrameHost* rfh =
+      static_cast<ContentAutofillDriver*>(autofill_driver)->render_frame_host();
+  password_manager::ContentPasswordManagerDriver* password_manager_driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           rfh);
-  if (driver) {
-    driver->GetPasswordManager()->ProcessAutofillPredictions(driver, forms);
+  if (password_manager_driver) {
+    password_manager_driver->GetPasswordManager()->ProcessAutofillPredictions(
+        password_manager_driver, forms);
   }
 }
 

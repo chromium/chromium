@@ -388,7 +388,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
 }
 
 void ChromeAutofillClientIOS::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
   if (!PasswordTabHelper::FromWebState(web_state_)) {
     return;

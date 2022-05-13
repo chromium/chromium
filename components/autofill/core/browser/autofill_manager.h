@@ -44,6 +44,12 @@ class LogManager;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
+//
+// AutofillManager has two implementations:
+// - AndroidAutofillManager for WebView and WebLayer,
+// - BrowserAutofillManager for Chrome.
+//
+// It is owned by the AutofillDriver.
 class AutofillManager
     : public AutofillDownloadManager::Observer,
       public translate::TranslateDriver::LanguageDetectionObserver {
@@ -175,7 +181,6 @@ class AutofillManager
   // Invoked when the field type predictions are downloaded from the autofill
   // server.
   virtual void PropagateAutofillPredictions(
-      content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) = 0;
 
   virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;

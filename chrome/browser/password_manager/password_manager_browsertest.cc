@@ -1223,8 +1223,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Use autofill predictions
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContents(WebContents());
-  autofill_client->PropagateAutofillPredictions(WebContents()->GetMainFrame(),
-                                                {&form_structure});
+  autofill_client->PropagateAutofillPredictions(
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          WebContents()->GetMainFrame()),
+      {&form_structure});
 
   // Check original values before interaction
   CheckElementValue("username_field", "example@example.com");
@@ -1285,8 +1287,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Use autofill predictions
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContents(WebContents());
-  autofill_client->PropagateAutofillPredictions(WebContents()->GetMainFrame(),
-                                                {&form_structure});
+  autofill_client->PropagateAutofillPredictions(
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          WebContents()->GetMainFrame()),
+      {&form_structure});
 
   // Check original values before interaction
   CheckElementValue("username_field", "example@example.com");
