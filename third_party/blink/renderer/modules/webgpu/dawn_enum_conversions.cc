@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -612,6 +613,29 @@ WGPUPredefinedColorSpace AsDawnEnum(
   switch (webgpu_enum.AsEnum()) {
     case V8GPUPredefinedColorSpace::Enum::kSRGB:
       return WGPUPredefinedColorSpace_Srgb;
+  }
+}
+
+WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUFeatureName::Enum::kPipelineStatisticsQuery:
+      return WGPUFeatureName_PipelineStatisticsQuery;
+    case V8GPUFeatureName::Enum::kTextureCompressionBc:
+      return WGPUFeatureName_TextureCompressionBC;
+    case V8GPUFeatureName::Enum::kTextureCompressionEtc2:
+      return WGPUFeatureName_TextureCompressionETC2;
+    case V8GPUFeatureName::Enum::kTextureCompressionAstc:
+      return WGPUFeatureName_TextureCompressionASTC;
+    case V8GPUFeatureName::Enum::kTimestampQuery:
+      return WGPUFeatureName_TimestampQuery;
+    case V8GPUFeatureName::Enum::kShaderFloat16:
+      return WGPUFeatureName_DawnShaderFloat16;
+    case V8GPUFeatureName::Enum::kDepthClamping:
+      return WGPUFeatureName_DepthClamping;
+    case V8GPUFeatureName::Enum::kDepth24UnormStencil8:
+      return WGPUFeatureName_Depth24UnormStencil8;
+    case V8GPUFeatureName::Enum::kDepth32FloatStencil8:
+      return WGPUFeatureName_Depth32FloatStencil8;
   }
 }
 

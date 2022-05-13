@@ -29,18 +29,6 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
   ReservedTexture ReserveTexture(WGPUDevice device) override;
-  void RequestAdapterAsync(
-      PowerPreference power_preference,
-      bool force_fallback_adapter,
-      base::OnceCallback<void(int32_t,
-                              const WGPUDeviceProperties&,
-                              const char*)> request_adapter_callback) override;
-  void RequestDeviceAsync(
-      uint32_t adapter_service_id,
-      const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice,
-                              const WGPUSupportedLimits*,
-                              const char*)> request_device_callback) override;
 
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 

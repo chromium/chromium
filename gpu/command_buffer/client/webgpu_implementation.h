@@ -119,26 +119,11 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   void FlushAwaitingCommands() override;
   scoped_refptr<APIChannel> GetAPIChannel() const override;
   ReservedTexture ReserveTexture(WGPUDevice device) override;
-  void RequestAdapterAsync(
-      PowerPreference power_preference,
-      bool force_fallback_adapter,
-      base::OnceCallback<void(int32_t,
-                              const WGPUDeviceProperties&,
-                              const char*)> request_adapter_callback) override;
-  void RequestDeviceAsync(
-      uint32_t requested_adapter_id,
-      const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice,
-                              const WGPUSupportedLimits*,
-                              const char*)> request_device_callback) override;
-
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
  private:
   const char* GetLogPrefix() const { return "webgpu"; }
   void CheckGLError() {}
-  DawnRequestAdapterSerial NextRequestAdapterSerial();
-  DawnRequestDeviceSerial NextRequestDeviceSerial();
   void LoseContext();
 
   raw_ptr<WebGPUCmdHelper> helper_;
@@ -147,18 +132,6 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 #endif
 
   LogSettings log_settings_;
-
-  using RequestAdapterCallback = base::OnceCallback<
-      void(int32_t, const WGPUDeviceProperties&, const char*)>;
-  base::flat_map<DawnRequestAdapterSerial, RequestAdapterCallback>
-      request_adapter_callback_map_;
-  DawnRequestAdapterSerial request_adapter_serial_ = 0;
-
-  using RequestDeviceCallback =
-      base::OnceCallback<void(bool, const WGPUSupportedLimits*, const char*)>;
-  base::flat_map<DawnRequestDeviceSerial, RequestDeviceCallback>
-      request_device_callback_map_;
-  DawnRequestDeviceSerial request_device_serial_ = 0;
 
   std::atomic_bool lost_{false};
 };

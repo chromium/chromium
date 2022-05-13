@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_H_
 
+#include <dawn/webgpu.h>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -14,7 +16,6 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 // Forward declarations from webgpu.h
-struct WGPUDeviceProperties;
 typedef struct WGPUBufferImpl* WGPUBuffer;
 // Forward declaration from dawn_proc.h
 struct DawnProcTable;
@@ -91,8 +92,8 @@ class GPU final : public ScriptWrappable,
   void OnRequestAdapterCallback(ScriptState* script_state,
                                 const GPURequestAdapterOptions* options,
                                 ScriptPromiseResolver* resolver,
-                                int32_t adapter_server_id,
-                                const WGPUDeviceProperties& properties,
+                                WGPURequestAdapterStatus status,
+                                WGPUAdapter adapter,
                                 const char* error_message);
 
   void RecordAdapterForIdentifiability(ScriptState* script_state,

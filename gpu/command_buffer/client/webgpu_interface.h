@@ -31,6 +31,8 @@ class APIChannel : public base::RefCounted<APIChannel> {
   // As long as a reference to this APIChannel alive, it is valid to
   // call these procs.
   virtual const DawnProcTable& GetProcs() const = 0;
+  // Get the WGPUInstance.
+  virtual WGPUInstance GetWGPUInstance() const = 0;
 
   // Disconnect. All commands using the WebGPU API should become a
   // no-op and server-side resources can be freed.
@@ -64,18 +66,6 @@ class WebGPUInterface : public InterfaceBase {
   virtual scoped_refptr<APIChannel> GetAPIChannel() const = 0;
 
   virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
-  virtual void RequestAdapterAsync(
-      PowerPreference power_preference,
-      bool force_fallback_adapter,
-      base::OnceCallback<void(int32_t,
-                              const WGPUDeviceProperties&,
-                              const char*)> request_adapter_callback) = 0;
-  virtual void RequestDeviceAsync(
-      uint32_t adapter_service_id,
-      const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice,
-                              const WGPUSupportedLimits*,
-                              const char*)> request_device_callback) = 0;
 
   // Gets or creates a usable WGPUDevice synchronously. It really should not
   // be used, and the async request adapter and request device APIs should be

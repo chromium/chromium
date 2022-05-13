@@ -38,18 +38,6 @@ class WebGPUDecoderTest : public ::testing::Test {
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
         &outputter_, GpuPreferences(), nullptr));
     ASSERT_EQ(decoder_->Initialize(GpuFeatureInfo()), ContextResult::kSuccess);
-
-    constexpr uint32_t kAdapterClientID = 0;
-    cmds::RequestAdapter requestAdapterCmd;
-    requestAdapterCmd.Init(
-        kAdapterClientID, false,
-        static_cast<uint32_t>(webgpu::PowerPreference::kHighPerformance));
-    ASSERT_EQ(error::kNoError, ExecuteCmd(requestAdapterCmd));
-
-    constexpr uint32_t kAdapterServiceID = 0;
-    cmds::RequestDevice requestDeviceCmd;
-    requestDeviceCmd.Init(0, kAdapterServiceID, 1, 0, 0, 0, 0);
-    ASSERT_EQ(error::kNoError, ExecuteCmd(requestDeviceCmd));
   }
 
   bool WebGPUSupported() const {

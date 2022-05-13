@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -113,6 +114,29 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   }
 }
 
+WGPUPowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
+  switch (power_preference.AsEnum()) {
+    case V8GPUPowerPreference::Enum::kLowPower:
+      return WGPUPowerPreference_LowPower;
+    case V8GPUPowerPreference::Enum::kHighPerformance:
+      return WGPUPowerPreference_HighPerformance;
+  }
+}
+
+WGPURequestAdapterOptions AsDawnType(
+    const GPURequestAdapterOptions* webgpu_options) {
+  DCHECK(webgpu_options);
+
+  WGPURequestAdapterOptions dawn_options = {};
+  dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
+  if (webgpu_options->hasPowerPreference()) {
+    dawn_options.powerPreference =
+        AsDawnType(webgpu_options->powerPreference());
+  }
+
+  return dawn_options;
+}
+
 }  // anonymous namespace
 
 // static
@@ -170,13 +194,25 @@ void GPU::ContextDestroyed() {
 void GPU::OnRequestAdapterCallback(ScriptState* script_state,
                                    const GPURequestAdapterOptions* options,
                                    ScriptPromiseResolver* resolver,
-                                   int32_t adapter_server_id,
-                                   const WGPUDeviceProperties& properties,
+                                   WGPURequestAdapterStatus status,
+                                   WGPUAdapter adapter,
                                    const char* error_message) {
-  GPUAdapter* adapter = nullptr;
-  if (adapter_server_id >= 0) {
-    adapter = MakeGarbageCollected<GPUAdapter>(
-        this, "Default", adapter_server_id, properties, dawn_control_client_);
+  GPUAdapter* gpu_adapter = nullptr;
+  switch (status) {
+    case WGPURequestAdapterStatus_Success:
+      gpu_adapter = MakeGarbageCollected<GPUAdapter>(this, "Default", adapter,
+                                                     dawn_control_client_);
+      break;
+
+    // Note: requestAdapter never rejects, but we print a console warning if
+    // there are error messages.
+    case WGPURequestAdapterStatus_Unavailable:
+    case WGPURequestAdapterStatus_Error:
+    case WGPURequestAdapterStatus_Unknown:
+      break;
+
+    default:
+      NOTREACHED();
   }
   if (error_message) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -185,8 +221,8 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
         mojom::blink::ConsoleMessageLevel::kWarning, error_message);
     execution_context->AddConsoleMessage(console_message);
   }
-  RecordAdapterForIdentifiability(script_state, options, adapter);
-  resolver->Resolve(adapter);
+  RecordAdapterForIdentifiability(script_state, options, gpu_adapter);
+  resolver->Resolve(gpu_adapter);
 }
 
 void GPU::RecordAdapterForIdentifiability(
@@ -250,21 +286,19 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  // For now we choose kHighPerformance by default.
-  gpu::webgpu::PowerPreference power_preference =
-      gpu::webgpu::PowerPreference::kHighPerformance;
-  if (options->hasPowerPreference() &&
-      options->powerPreference() == "low-power") {
-    power_preference = gpu::webgpu::PowerPreference::kLowPower;
-  }
-
   auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
   DCHECK(context_provider);
-  context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
-      power_preference, options->forceFallbackAdapter(),
-      WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-                WrapPersistent(script_state), WrapPersistent(options),
-                WrapPersistent(resolver)));
+
+  WGPURequestAdapterOptions dawn_options = AsDawnType(options);
+  auto* callback =
+      BindWGPUOnceCallback(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+                           WrapPersistent(script_state),
+                           WrapPersistent(options), WrapPersistent(resolver));
+
+  dawn_control_client_->GetProcs().instanceRequestAdapter(
+      dawn_control_client_->GetWGPUInstance(), &dawn_options,
+      callback->UnboundCallback(), callback->AsUserdata());
+  dawn_control_client_->EnsureFlush();
 
   UseCounter::Count(ExecutionContext::From(script_state), WebFeature::kWebGPU);
 
