@@ -101,6 +101,7 @@ void DeskButtonBase::OnThemeChanged() {
   background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor);
+  UpdateBorderState();
   SchedulePaint();
 }
 

@@ -94,6 +94,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool CanAcceptEvent(const ui::Event& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
  private:
   // The OverviewItem which owns the widget which houses this view. Non-null

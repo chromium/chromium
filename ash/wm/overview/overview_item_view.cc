@@ -329,6 +329,11 @@ void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
 }
 
+void OverviewItemView::OnThemeChanged() {
+  WindowMiniView::OnThemeChanged();
+  UpdateBorderState(IsViewHighlighted());
+}
+
 BEGIN_METADATA(OverviewItemView, WindowMiniView)
 END_METADATA
 

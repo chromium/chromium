@@ -49,6 +49,7 @@ void SaveDeskTemplateButton::OnThemeChanged() {
   PillButton::OnThemeChanged();
   SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80));
+  UpdateBorderState();
 }
 
 void SaveDeskTemplateButton::UpdateBorderState() {
