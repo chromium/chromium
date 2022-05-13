@@ -46,6 +46,9 @@ class ASH_EXPORT AutotestDesksApi {
 
   // Check whether a window belongs to a desk at |desk_index| or not.
   bool IsWindowInDesk(aura::Window* window, int desk_index);
+
+  // Returns the number of currently created desks.
+  int GetDeskCount() const;
 };
 
 }  // namespace ash

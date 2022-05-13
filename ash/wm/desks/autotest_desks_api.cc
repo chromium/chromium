@@ -215,4 +215,8 @@ bool AutotestDesksApi::IsWindowInDesk(aura::Window* window, int desk_index) {
   return desk_container->Contains(window);
 }
 
+int AutotestDesksApi::GetDeskCount() const {
+  return DesksController::Get()->desks().size();
+}
+
 }  // namespace ash
