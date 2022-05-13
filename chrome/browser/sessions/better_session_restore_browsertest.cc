@@ -65,6 +65,13 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_util.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#endif
+
 namespace {
 
 const char kTestHeaders[] = "HTTP/1.1 200 OK\nContent-type: text/html\n\n";
@@ -155,6 +162,22 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
   BetterSessionRestoreTest(const BetterSessionRestoreTest&) = delete;
   BetterSessionRestoreTest& operator=(const BetterSessionRestoreTest&) = delete;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    std::string device_account_email = "primaryaccount@gmail.com";
+    account_manager::AccountKey key(
+        signin::GetTestGaiaIdForEmail(device_account_email),
+        ::account_manager::AccountType::kGaia);
+    init_params->device_account =
+        account_manager::ToMojoAccount({key, device_account_email});
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+#endif
 
  protected:
   void SetUpOnMainThread() override {

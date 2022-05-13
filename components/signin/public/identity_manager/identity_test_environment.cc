@@ -672,7 +672,7 @@ void IdentityTestEnvironment::ResetToAccountsNotYetLoadedFromDiskState() {
 }
 
 void IdentityTestEnvironment::ReloadAccountsFromDisk() {
-  fake_token_service()->LoadCredentials(CoreAccountId());
+  fake_token_service()->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
 }
 
 bool IdentityTestEnvironment::IsAccessTokenRequestPending() {

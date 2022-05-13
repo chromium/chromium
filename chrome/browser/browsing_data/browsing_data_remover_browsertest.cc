@@ -73,6 +73,13 @@
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_util.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#endif
+
 using content::BrowserThread;
 using content::BrowsingDataFilterBuilder;
 
@@ -116,6 +123,22 @@ class BrowsingDataRemoverBrowserTest
 #endif
     InitFeatureList(std::move(enabled_features));
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    std::string device_account_email = "primaryaccount@gmail.com";
+    account_manager::AccountKey key(
+        signin::GetTestGaiaIdForEmail(device_account_email),
+        ::account_manager::AccountType::kGaia);
+    init_params->device_account =
+        account_manager::ToMojoAccount({key, device_account_email});
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+#endif
 
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();

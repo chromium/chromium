@@ -143,6 +143,9 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
         account_manager::AccountManagerFacade* account_manager_facade,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        bool delete_signin_cookies_on_exit,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         bool is_regular_profile)
     : signin_client_(signin_client),
       account_tracker_service_(account_tracker_service),
@@ -150,6 +153,9 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
       account_manager_facade_(account_manager_facade),
       backoff_entry_(&kBackoffPolicy),
       backoff_error_(GoogleServiceAuthError::NONE),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      delete_signin_cookies_on_exit_(delete_signin_cookies_on_exit),
+#endif
       is_regular_profile_(is_regular_profile),
       weak_factory_(this) {
   network_connection_tracker_->AddNetworkConnectionObserver(this);
@@ -285,7 +291,8 @@ ProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (load_credentials_state() !=
@@ -311,6 +318,20 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
 
   DCHECK(account_manager_facade_);
   account_manager_facade_->AddObserver(this);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signin cookies can only be cleared for non-syncing
+  // secondary profiles, because:
+  // - the main profile cannot be signed out,
+  // - clearing cookie does not turn sync off
+  // Additionally, there is no way for Chrome to "invalidate" a token. In
+  // particular, the "sync paused" state does not exist.
+  bool revoke_all_tokens =
+      delete_signin_cookies_on_exit_ && !is_syncing &&
+      !signin_client_->GetInitialPrimaryAccount().has_value();
+  if (revoke_all_tokens)
+    RevokeAllCredentials();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   account_manager_facade_->GetAccounts(
       base::BindOnce(&ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts,
                      weak_factory_.GetWeakPtr()));

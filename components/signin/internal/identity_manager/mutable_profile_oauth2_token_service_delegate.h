@@ -71,7 +71,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   void RevokeAllCredentials() override;

@@ -76,7 +76,8 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
 }
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   // In tests |LoadCredentials| may be called twice, in this case we call
   // |FireRefreshTokensLoaded| again to notify that credentials are loaded.
   if (load_credentials_state() ==
@@ -92,7 +93,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
 
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
-  delegate_->LoadCredentials(primary_account_id);
+  delegate_->LoadCredentials(primary_account_id, is_syncing);
 }
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(

@@ -178,7 +178,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::Shutdown() {
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,

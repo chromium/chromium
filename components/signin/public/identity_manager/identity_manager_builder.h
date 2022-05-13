@@ -62,8 +62,11 @@ struct IdentityManagerBuildParams {
   base::FilePath profile_path;
   raw_ptr<SigninClient> signin_client = nullptr;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool delete_signin_cookies_on_exit = false;
+#endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   scoped_refptr<TokenWebData> token_web_data;
 #endif
 

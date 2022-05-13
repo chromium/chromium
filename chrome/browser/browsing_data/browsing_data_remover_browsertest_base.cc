@@ -373,7 +373,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           pos < 30 ? 0 : pos - 30,
           std::min(content.size() - 1, pos + hostname.size() + 30));
       LOG(WARNING) << "Found file content: " << file << "\n"
-                   << partial_content << "\n";
+                   << partial_content << "\n" << found;
     }
   }
   return found;

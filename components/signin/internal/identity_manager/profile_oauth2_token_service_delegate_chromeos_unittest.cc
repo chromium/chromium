@@ -223,7 +223,11 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     delegate_ = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
         client_.get(), &account_tracker_service_,
         network::TestNetworkConnectionTracker::GetInstance(),
-        account_manager_facade_.get(), true /* is_regular_profile */);
+        account_manager_facade_.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        /*delete_signin_cookies_on_exit=*/false,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+        /*is_regular_profile=*/true);
 
     LoadCredentialsAndWaitForCompletion(
         account_info_.account_id /* primary_account_id */);
@@ -270,7 +274,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnRefreshTokensLoaded())
         .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-    delegate_->LoadCredentials(primary_account_id);
+    delegate_->LoadCredentials(primary_account_id, /*is_syncing=*/false);
     run_loop.Run();
   }
 
@@ -378,12 +382,17 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       client_.get(), &account_tracker_service_,
       network::TestNetworkConnectionTracker::GetInstance(),
-      account_manager_facade_.get(), false /* is_regular_profile */);
+      account_manager_facade_.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      /*delete_signin_cookies_on_exit=*/false,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      /*is_regular_profile=*/false);
   TestOAuth2TokenServiceObserver observer(delegate.get());
 
   // Test that LoadCredentials works as expected.
   EXPECT_FALSE(observer.refresh_tokens_loaded_);
-  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */);
+  delegate->LoadCredentials(CoreAccountId() /* primary_account_id */,
+                            /*is_syncing=*/false);
   EXPECT_TRUE(observer.refresh_tokens_loaded_);
   EXPECT_EQ(LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
             delegate->load_credentials_state());
@@ -601,8 +610,13 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   auto delegate = std::make_unique<ProfileOAuth2TokenServiceDelegateChromeOS>(
       client_.get(), &account_tracker_service_,
       network::TestNetworkConnectionTracker::GetInstance(),
-      account_manager_facade.get(), true /* is_regular_profile */);
-  delegate->LoadCredentials(account1.account_id /* primary_account_id */);
+      account_manager_facade.get(),
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      /*delete_signin_cookies_on_exit=*/false,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS
+      /*is_regular_profile=*/true);
+  delegate->LoadCredentials(account1.account_id /* primary_account_id */,
+                            /*is_syncing=*/false);
   TestOAuth2TokenServiceObserver observer(delegate.get());
   // Wait until AccountManager is fully initialized.
   task_environment_.RunUntilIdle();

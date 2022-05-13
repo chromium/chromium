@@ -54,7 +54,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   // POA2TService aware accounts.
   void RevokeAllCredentials() override;
 
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
 
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const absl::optional<CoreAccountId>& primary_account_id) override;

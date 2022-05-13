@@ -155,7 +155,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, GetAccounts) {
   EXPECT_TRUE(accounts.empty());
 
   // Load tokens from disk.
-  oauth2_service_->GetDelegate()->LoadCredentials(CoreAccountId());
+  oauth2_service_->GetDelegate()->LoadCredentials(CoreAccountId(),
+                                                  /*is_syncing=*/false);
 
   // |account_id_| should now be visible in the accounts.
   accounts = oauth2_service_->GetAccounts();

@@ -367,7 +367,8 @@ void MutableProfileOAuth2TokenServiceDelegate::InvalidateTokenForMultilogin(
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   if (load_credentials_state() ==
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS) {
     VLOG(1) << "Load credentials operation already in progress";

@@ -120,7 +120,8 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
   // token service.
   token_service_->AddObserver(this);
   token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 bool PrimaryAccountManager::IsInitialized() const {

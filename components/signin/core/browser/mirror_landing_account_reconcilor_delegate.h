@@ -9,12 +9,15 @@
 
 namespace signin {
 
+class IdentityManager;
+
 // AccountReconcilorDelegate specialized for Mirror, using the "Mirror landing"
 // variant. Mirror is always enabled, even when there is no primary account.
 class MirrorLandingAccountReconcilorDelegate
     : public AccountReconcilorDelegate {
  public:
-  MirrorLandingAccountReconcilorDelegate();
+  MirrorLandingAccountReconcilorDelegate(IdentityManager* identity_manager,
+                                         bool is_main_profile);
   ~MirrorLandingAccountReconcilorDelegate() override;
 
   MirrorLandingAccountReconcilorDelegate(
@@ -27,6 +30,8 @@ class MirrorLandingAccountReconcilorDelegate
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool ShouldAbortReconcileIfPrimaryHasError() const override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;
+  void OnAccountsCookieDeletedByUserAction(
+      bool synced_data_deletion_in_progress) override;
   std::vector<CoreAccountId> GetChromeAccountsForReconcile(
       const std::vector<CoreAccountId>& chrome_accounts,
       const CoreAccountId& primary_account,
@@ -34,6 +39,11 @@ class MirrorLandingAccountReconcilorDelegate
       bool first_execution,
       bool primary_has_error,
       const gaia::MultiloginMode mode) const override;
+
+ private:
+  bool ShouldRevokeTokensOnCookieDeleted() const;
+  const raw_ptr<IdentityManager> identity_manager_;
+  const bool is_main_profile_;
 };
 
 }  // namespace signin

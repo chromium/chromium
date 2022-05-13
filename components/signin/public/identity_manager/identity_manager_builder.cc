@@ -115,9 +115,12 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS)
           params->account_manager_facade, params->is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+          params->delete_signin_cookies_on_exit,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) ||  BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          params->delete_signin_cookies_on_exit, params->token_web_data,
-#endif
+          params->token_web_data,
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(IS_IOS)
           std::move(params->device_accounts_provider),
 #endif

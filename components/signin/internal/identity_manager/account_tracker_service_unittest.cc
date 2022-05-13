@@ -211,7 +211,8 @@ class AccountTrackerServiceTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     CreateAccountTracker(base::FilePath(), /*network_enabled=*/true);
-    fake_oauth2_token_service_.LoadCredentials(CoreAccountId());
+    fake_oauth2_token_service_.LoadCredentials(CoreAccountId(),
+                                               /*is_syncing=*/false);
   }
 
   void TearDown() override {

@@ -50,7 +50,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()

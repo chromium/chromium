@@ -6,14 +6,19 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace signin {
 
-MirrorLandingAccountReconcilorDelegate::
-    MirrorLandingAccountReconcilorDelegate() = default;
+MirrorLandingAccountReconcilorDelegate::MirrorLandingAccountReconcilorDelegate(
+    IdentityManager* identity_manager,
+    bool is_main_profile)
+    : identity_manager_(identity_manager), is_main_profile_(is_main_profile) {}
 
 MirrorLandingAccountReconcilorDelegate::
     ~MirrorLandingAccountReconcilorDelegate() = default;
@@ -25,6 +30,22 @@ bool MirrorLandingAccountReconcilorDelegate::IsReconcileEnabled() const {
 gaia::GaiaSource MirrorLandingAccountReconcilorDelegate::GetGaiaApiSource()
     const {
   return gaia::GaiaSource::kAccountReconcilorMirror;
+}
+
+bool MirrorLandingAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted()
+    const {
+  return !is_main_profile_ &&
+         !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync);
+}
+
+void MirrorLandingAccountReconcilorDelegate::
+    OnAccountsCookieDeletedByUserAction(bool synced_data_deletion_in_progress) {
+  if (!ShouldRevokeTokensOnCookieDeleted())
+    return;
+
+  identity_manager_->GetAccountsMutator()->RemoveAllAccounts(
+      signin_metrics::SourceForRefreshTokenOperation::
+          kAccountReconcilor_GaiaCookiesDeletedByUser);
 }
 
 bool MirrorLandingAccountReconcilorDelegate::

@@ -123,7 +123,8 @@ const net::BackoffEntry* ProfileOAuth2TokenServiceDelegate::BackoffEntry()
 }
 
 void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   NOTREACHED()
       << "ProfileOAuth2TokenServiceDelegate does not load credentials. "
          "Subclasses that need to load credentials must provide "

@@ -280,7 +280,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
                        main_refresh_token);
 
   // Force LoadCredentials.
-  oauth2_service_delegate_->LoadCredentials(main_account_id);
+  oauth2_service_delegate_->LoadCredentials(main_account_id,
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   // Legacy tokens get discarded, but the old refresh token is kept.
@@ -309,7 +310,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   ResetObserverCounts();
 
   // Force LoadCredentials.
-  oauth2_service_delegate_->LoadCredentials(main_account_id);
+  oauth2_service_delegate_->LoadCredentials(main_account_id,
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   // Again legacy tokens get discarded, but since the main porfile account
@@ -376,7 +378,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
@@ -417,7 +420,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   AddAuthTokenManually("AccountId-" + account1.ToString(), "refresh_token");
   AddAuthTokenManually("AccountId-" + account2.ToString(), "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -444,7 +448,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Perform a load from an empty DB.
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(account_id);
+  oauth2_service_delegate_->LoadCredentials(account_id, /*is_syncing=*/false);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   base::RunLoop().RunUntilIdle();
@@ -482,7 +486,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
 
-  oauth2_service_delegate_->LoadCredentials(account_id);
+  oauth2_service_delegate_->LoadCredentials(account_id, /*is_syncing=*/false);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   base::RunLoop().RunUntilIdle();
@@ -522,7 +526,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Perform a load from an empty DB.
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             oauth2_service_delegate_->load_credentials_state());
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   base::RunLoop().RunUntilIdle();
@@ -545,7 +550,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(2, auth_error_changed_count_);
   ResetObserverCounts();
 
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             oauth2_service_delegate_->load_credentials_state());
   base::RunLoop().RunUntilIdle();
@@ -584,7 +590,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadAfterDiceMigration) {
   AddAuthTokenManually("AccountId-" + primary_account.account_id.ToString(),
                        "refresh_token");
 
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(
@@ -606,7 +613,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Shutdown the database to trigger a database read error.
   token_web_data_->ShutdownDatabase();
 
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0u, oauth2_service_delegate_->GetAccounts().size());
@@ -625,7 +633,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
   oauth2_service_delegate_->LoadCredentials(
-      /*primary_account_id=*/CoreAccountId());
+      /*primary_account_id=*/CoreAccountId(), /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   // No tokens were loaded.
@@ -1080,7 +1088,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ShutdownService) {
   EXPECT_EQ(2u, accounts.size());
   EXPECT_EQ(1, count(accounts.begin(), accounts.end(), account_id1));
   EXPECT_EQ(1, count(accounts.begin(), accounts.end(), account_id2));
-  oauth2_service_delegate_->LoadCredentials(account_id1);
+  oauth2_service_delegate_->LoadCredentials(account_id1, /*is_syncing=*/false);
   oauth2_service_delegate_->UpdateCredentials(account_id1, "refresh_token3");
   oauth2_service_delegate_->Shutdown();
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
@@ -1110,7 +1118,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
     account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email, "refresh_token");
-    oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id);
+    oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id,
+                                              /*is_syncing=*/false);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1130,7 +1139,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
     oauth2_service_delegate_->Shutdown();
     ResetObserverCounts();
 
-    oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id);
+    oauth2_service_delegate_->LoadCredentials(acc_id_gaia_id,
+                                              /*is_syncing=*/false);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1180,7 +1190,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     AddAuthTokenManually("AccountId-" + email1, "refresh_token");
     AddAuthTokenManually("AccountId-" + email2, "refresh_token");
     AddAuthTokenManually("AccountId-" + gaia_id1, "refresh_token");
-    oauth2_service_delegate_->LoadCredentials(acc_gaia1);
+    oauth2_service_delegate_->LoadCredentials(acc_gaia1, /*is_syncing=*/false);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1200,7 +1210,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     oauth2_service_delegate_->Shutdown();
     ResetObserverCounts();
 
-    oauth2_service_delegate_->LoadCredentials(acc_gaia1);
+    oauth2_service_delegate_->LoadCredentials(acc_gaia1, /*is_syncing=*/false);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1, tokens_loaded_count_);
@@ -1228,7 +1238,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(primary_account);
+  oauth2_service_delegate_->LoadCredentials(primary_account,
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1387,7 +1398,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
                        "refresh_token");
   AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
                        "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(primary_account);
+  oauth2_service_delegate_->LoadCredentials(primary_account,
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, tokens_loaded_count_);
@@ -1415,7 +1427,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   // Check that the changes have been persisted in the database: tokens are not
   // revoked again on the server.
   client_->SetNetworkCallsDelayed(true);
-  oauth2_service_delegate_->LoadCredentials(primary_account);
+  oauth2_service_delegate_->LoadCredentials(primary_account,
+                                            /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
@@ -1451,7 +1464,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   {
     base::HistogramTester h_tester;
     AddAuthTokenManually("account_id", "refresh_token");
-    token_service.LoadCredentials(account_id);
+    token_service.LoadCredentials(account_id, /*is_syncing=*/false);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ("TokenService::LoadCredentials",
@@ -1512,7 +1525,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
   const CoreAccountId account_id("account_id");
 
   // Create another token service
@@ -1522,7 +1536,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
       std::make_unique<FakeProfileOAuth2TokenServiceDelegate>();
   FakeProfileOAuth2TokenServiceDelegate* other_delegate = delegate.get();
   ProfileOAuth2TokenService other_token_service(&prefs, std::move(delegate));
-  other_token_service.LoadCredentials(CoreAccountId());
+  other_token_service.LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
 
   // Add credentials to the first token service delegate.
   oauth2_service_delegate_->UpdateCredentials(account_id, "token");

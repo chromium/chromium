@@ -103,7 +103,8 @@ void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   FireRefreshTokensLoaded();

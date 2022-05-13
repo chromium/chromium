@@ -451,7 +451,8 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             load_credentials_state());
   set_load_credentials_state(

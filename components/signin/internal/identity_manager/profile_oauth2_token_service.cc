@@ -255,12 +255,13 @@ void ProfileOAuth2TokenService::SetRefreshTokenRevokedFromSourceCallback(
 }
 
 void ProfileOAuth2TokenService::LoadCredentials(
-    const CoreAccountId& primary_account_id) {
+    const CoreAccountId& primary_account_id,
+    bool is_syncing) {
   DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
             update_refresh_token_source_);
   update_refresh_token_source_ =
       SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
-  GetDelegate()->LoadCredentials(primary_account_id);
+  GetDelegate()->LoadCredentials(primary_account_id, is_syncing);
 }
 
 void ProfileOAuth2TokenService::UpdateCredentials(

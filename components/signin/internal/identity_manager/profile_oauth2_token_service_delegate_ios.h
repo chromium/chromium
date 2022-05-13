@@ -46,7 +46,8 @@ class ProfileOAuth2TokenServiceIOSDelegate
   void UpdateAuthError(const CoreAccountId& account_id,
                        const GoogleServiceAuthError& error) override;
 
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   std::vector<CoreAccountId> GetAccounts() const override;
 
   // This method should not be called when using shared authentication.

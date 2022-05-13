@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/test/task_environment.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +30,7 @@ gaia::ListedAccount BuildListedAccount(const std::string& gaia_id) {
 
 TEST(MirrorLandingAccountReconcilorDelegateTest,
      GetChromeAccountsForReconcile) {
+  base::test::TaskEnvironment task_environment;
   CoreAccountId kPrimaryAccountId = CoreAccountId::FromGaiaId("primary");
   CoreAccountId kOtherAccountId1 = CoreAccountId::FromGaiaId("1");
   CoreAccountId kOtherAccountId2 = CoreAccountId::FromGaiaId("2");
@@ -35,7 +38,8 @@ TEST(MirrorLandingAccountReconcilorDelegateTest,
   gaia::ListedAccount gaia_account_1 = BuildListedAccount("1");
   gaia::ListedAccount gaia_account_2 = BuildListedAccount("2");
   gaia::ListedAccount gaia_account_3 = BuildListedAccount("3");
-  MirrorLandingAccountReconcilorDelegate delegate;
+  MirrorLandingAccountReconcilorDelegate delegate(
+      IdentityTestEnvironment().identity_manager(), /*is_main_profile=*/false);
   // No primary account. Gaia accounts are removed.
   EXPECT_TRUE(
       delegate

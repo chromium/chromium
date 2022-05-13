@@ -45,7 +45,8 @@ class FakeProfileOAuth2TokenServiceDelegate
                        const GoogleServiceAuthError& error) override;
   std::vector<CoreAccountId> GetAccounts() const override;
   void RevokeAllCredentials() override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   void RevokeCredentials(const CoreAccountId& account_id) override;

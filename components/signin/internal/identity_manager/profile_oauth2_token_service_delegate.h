@@ -116,7 +116,8 @@ class ProfileOAuth2TokenServiceDelegate {
   // is initialized. Default implementation is NOTREACHED - subsclasses that
   // are used by the ProfileOAuth2TokenService must provide an implementation
   // for this method.
-  virtual void LoadCredentials(const CoreAccountId& primary_account_id);
+  virtual void LoadCredentials(const CoreAccountId& primary_account_id,
+                               bool is_syncing);
 
   // Returns the state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state() const {

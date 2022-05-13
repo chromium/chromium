@@ -36,6 +36,11 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
       account_manager::AccountManagerFacade* account_manager_facade,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // |delete_signin_cookies_on_exit|  is used on startup, in case the
+      // cookies were not properly cleared on last exit.
+      bool delete_signin_cookies_on_exit,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       bool is_regular_profile);
 
   ProfileOAuth2TokenServiceDelegateChromeOS(
@@ -59,7 +64,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -122,6 +128,10 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   // Used to rate-limit token fetch requests so as to not overload the server.
   net::BackoffEntry backoff_entry_;
   GoogleServiceAuthError backoff_error_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool delete_signin_cookies_on_exit_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Is |this| attached to a regular (non-Signin && non-LockScreen) Profile.
   const bool is_regular_profile_;

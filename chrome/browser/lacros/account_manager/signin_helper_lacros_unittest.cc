@@ -63,8 +63,9 @@ class TestAccountReconcilor : public AccountReconcilor {
       : AccountReconcilor(
             identity_manager,
             client,
-            std::make_unique<
-                signin::MirrorLandingAccountReconcilorDelegate>()) {}
+            std::make_unique<signin::MirrorLandingAccountReconcilorDelegate>(
+                identity_manager,
+                client->GetInitialPrimaryAccount().has_value())) {}
 
   void SimulateSetCookiesFinished() {
     OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);

@@ -187,7 +187,9 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // For a regular profile, the primary account id comes from
   // PrimaryAccountManager.
   // For a supervised user, the id comes from SupervisedUserService.
-  void LoadCredentials(const CoreAccountId& primary_account_id);
+  // |is_syncing| whether the primary account has sync consent.
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing);
 
   // Returns true if LoadCredentials finished with no errors.
   bool HasLoadCredentialsFinishedWithNoErrors();

@@ -1725,7 +1725,7 @@ TEST_F(IdentityManagerTest, IdentityManagerGetsTokensLoadedEvent) {
   // we fake the credentials loaded state and force another load in
   // order to be able to capture the TokensLoaded event.
   token_service()->set_all_credentials_loaded_for_testing(false);
-  token_service()->LoadCredentials(CoreAccountId());
+  token_service()->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
   run_loop.Run();
 }
 
@@ -2352,7 +2352,7 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
   // order to test AreRefreshTokensLoaded.
   token_service()->set_all_credentials_loaded_for_testing(false);
   EXPECT_FALSE(identity_manager()->AreRefreshTokensLoaded());
-  token_service()->LoadCredentials(CoreAccountId());
+  token_service()->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
   run_loop.Run();
   EXPECT_TRUE(identity_manager()->AreRefreshTokensLoaded());
 }
