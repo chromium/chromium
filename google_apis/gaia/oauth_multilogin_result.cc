@@ -105,8 +105,14 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* same_site = cookie.FindStringKey("sameSite");
     const std::string* same_party = cookie.FindStringKey("sameParty");
 
-    base::TimeDelta before_expiration =
-        base::Seconds(expiration_delta.value_or(0.0));
+    base::Time now = base::Time::Now();
+    // TODO(crbug.com/1264458) If CreateSanitizedCookie were used below, this
+    // wouldn't be needed and ValidateAndAdjustExpiryDate could be moved back
+    // into anon namespace instead of being exposed as a static function.
+    // Alternatly, if we were sure GAIA cookies wouldn't try to expire more
+    // than 400 days in the future we wouldn't need this either.
+    base::Time expiration = net::CanonicalCookie::ValidateAndAdjustExpiryDate(
+        now + base::Seconds(expiration_delta.value_or(0.0)), now);
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&
@@ -127,10 +133,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
             name ? *name : "", value ? *value : "", cookie_domain,
-            path ? *path : "", /*creation=*/base::Time::Now(),
-            base::Time::Now() + before_expiration,
-            /*last_access=*/base::Time::Now(),
-            /*last_update=*/base::Time::Now(), is_secure.value_or(true),
+            path ? *path : "", /*creation=*/now, expiration,
+            /*last_access=*/now, /*last_update=*/now, is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
             same_party_bool, /*partition_key=*/absl::nullopt,

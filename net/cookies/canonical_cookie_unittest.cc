@@ -49,6 +49,9 @@ using testing::Eq;
 using testing::Not;
 using testing::Property;
 
+// Tests which use this class verify the expiry date clamping behavior when
+// kClampCookieExpiryTo400Days is enabled. This caps expiry dates on new/updated
+// cookies to max of 400 days, but does not affect previously stored cookies.
 class CanonicalCookieWithClampingTest
     : public testing::Test,
       public testing::WithParamInterface<bool> {
@@ -672,6 +675,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Max-age with expires (max-age should take precedence).
   cookie = CanonicalCookie::Create(
@@ -681,6 +685,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Max-age=0 should create an expired cookie with expiry equal to the earliest
   // representable time.
@@ -691,6 +696,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_TRUE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Negative max-age should create an expired cookie with expiry equal to the
   // earliest representable time.
@@ -701,6 +707,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_TRUE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Max-age with whitespace (should be trimmed out).
   cookie = CanonicalCookie::Create(url, "A=1; max-age = 60  ; Secure",
@@ -710,6 +717,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Seconds(60) + creation_time, cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Max-age with non-integer should be ignored.
   cookie = CanonicalCookie::Create(url, "A=1; max-age=abcd", creation_time,
@@ -718,6 +726,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_FALSE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Overflow max-age should be clipped.
   cookie = CanonicalCookie::Create(url,
@@ -735,6 +744,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   } else {
     EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   }
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Underflow max-age should be clipped.
   cookie = CanonicalCookie::Create(url,
@@ -748,6 +758,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_TRUE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+  EXPECT_TRUE(cookie->IsCanonical());
 }
 
 TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
@@ -765,6 +776,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_TRUE(cookie->IsExpired(creation_time));
   EXPECT_TRUE((past_date - cookie->ExpiryDate()).magnitude() <
               base::Seconds(1));
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Expires in the future
   base::Time future_date = base::Time::Now() + base::Days(10);
@@ -776,6 +788,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_TRUE((future_date - cookie->ExpiryDate()).magnitude() <
               base::Seconds(1));
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Expires in the far future
   future_date = base::Time::Now() + base::Days(800);
@@ -793,6 +806,7 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
     EXPECT_TRUE((future_date - cookie->ExpiryDate()).magnitude() <
                 base::Seconds(1));
   }
+  EXPECT_TRUE(cookie->IsCanonical());
 
   // Expires in the far future using CreateUnsafeCookieForTesting.
   cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -805,6 +819,11 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
+  if (IsClampCookieExpiryTo400DaysEnabled()) {
+    EXPECT_FALSE(cookie->IsCanonical());
+  } else {
+    EXPECT_TRUE(cookie->IsCanonical());
+  }
 
   // Expires in the far future using FromStorage.
   cookie = CanonicalCookie::FromStorage(
@@ -818,6 +837,11 @@ TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
   EXPECT_EQ(base::Time(), cookie->LastUpdateDate());
+  if (IsClampCookieExpiryTo400DaysEnabled()) {
+    EXPECT_FALSE(cookie->IsCanonical());
+  } else {
+    EXPECT_TRUE(cookie->IsCanonical());
+  }
 }
 
 TEST(CanonicalCookieTest, EmptyExpiry) {
