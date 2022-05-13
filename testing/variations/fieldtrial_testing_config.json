@@ -4001,6 +4001,21 @@
             ]
         }
     ],
+    "IOSOfflinePageRefactoring": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseLoadSimulatedRequestForErrorPageNavigation"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordAutofillRichIPHStudy": [
         {
             "platforms": [
