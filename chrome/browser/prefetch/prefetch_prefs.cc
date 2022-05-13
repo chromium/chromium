@@ -9,6 +9,9 @@
 
 namespace prefetch {
 
+const base::Feature kPreloadingHoldback{"PreloadingHoldback",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
@@ -56,6 +59,13 @@ void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state) {
 }
 
 bool IsSomePreloadingEnabled(const PrefService& prefs) {
+  if (base::FeatureList::IsEnabled(kPreloadingHoldback)) {
+    return false;
+  }
+  return IsSomePreloadingEnabledIgnoringFinch(prefs);
+}
+
+bool IsSomePreloadingEnabledIgnoringFinch(const PrefService& prefs) {
   return GetPreloadPagesState(prefs) != PreloadPagesState::kNoPreloading;
 }
 

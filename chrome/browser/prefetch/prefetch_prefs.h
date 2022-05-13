@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PREFS_H_
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PREFS_H_
 
+#include "base/feature_list.h"
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -12,6 +14,7 @@ class PrefRegistrySyncable;
 class PrefService;
 
 namespace prefetch {
+extern const base::Feature kPreloadingHoldback;
 
 // Enum describing when to allow network predictions.  The numerical value is
 // stored in the prefs file, therefore the same enum with the same order must be
@@ -45,15 +48,22 @@ enum class PreloadPagesState {
 };
 
 // Returns the PreloadPagesState corresponding to the NetworkPredictionOptions
-// setting persisted in prefs.
+// setting persisted in prefs. Note that this will return the pref value
+// regardless of whether preloading is disabled via Finch. Prefer using
+// IsSomePreloadingEnabled in most cases.
 PreloadPagesState GetPreloadPagesState(const PrefService& prefs);
 
 // Converts the given PreloadPagesState to a NetworkPredictionOptions and
 // persist it in prefs.
 void SetPreloadPagesState(PrefService* prefs, PreloadPagesState state);
 
-// Returns true if preloading is not entirely disabled.
+// Returns true if preloading is not entirely disabled. Preloading might be
+// disabled by the user via UI settings stored in prefs or by Finch.
 bool IsSomePreloadingEnabled(const PrefService& prefs);
+
+// Returns true if preloading is not entirely disabled via the UI settings.
+// Ignores the PreloadingHoldback Finch feature.
+bool IsSomePreloadingEnabledIgnoringFinch(const PrefService& prefs);
 
 void RegisterPredictionOptionsProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);

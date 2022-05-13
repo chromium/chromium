@@ -6472,7 +6472,11 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
   if (!web_request_api || web_request_api->MayHaveProxies())
     return false;
 #endif
-  return prefetch::IsSomePreloadingEnabled(
+  // Preloading is sometimes disabled globally in Chrome via Finch to monitor
+  // its impact. However, we do not want to evaluate the impact of preconnecting
+  // at the start of navigation as part of the preloading holdback, so ignore
+  // the Finch setting here.
+  return prefetch::IsSomePreloadingEnabledIgnoringFinch(
       *Profile::FromBrowserContext(browser_context)->GetPrefs());
 }
 

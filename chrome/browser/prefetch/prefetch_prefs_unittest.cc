@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -95,4 +96,64 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabled) {
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
   EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+}
+
+TEST(PrefetchPrefsTest, IsSomePreloadingEnabled_PreloadingHoldback) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(
+          prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
+}
+
+TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(prefetch::kPreloadingHoldback);
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(
+          prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated));
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
 }
