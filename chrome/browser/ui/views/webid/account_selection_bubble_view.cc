@@ -6,6 +6,7 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -205,6 +206,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 void AccountSelectionBubbleView::CloseBubble() {
   if (!GetWidget())
     return;
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.CloseVerifySheet.Desktop",
+                        verify_sheet_shown_);
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
@@ -469,6 +472,7 @@ void AccountSelectionBubbleView::OnAccountSelected(
 
 void AccountSelectionBubbleView::ShowVerifySheet(
     const content::IdentityRequestAccount& account) {
+  verify_sheet_shown_ = true;
   RemoveNonHeaderChildViews();
   title_label_->SetText(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
   views::ProgressBar* progress_bar =

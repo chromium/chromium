@@ -10,6 +10,7 @@ import android.os.Handler;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -133,6 +134,9 @@ class AccountSelectionMediator {
 
         Runnable closeOnClickRunnable = () -> {
             onDismissed(/*shouldEmbargo=*/true);
+
+            RecordHistogram.recordBooleanHistogram(
+                    "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
         };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)

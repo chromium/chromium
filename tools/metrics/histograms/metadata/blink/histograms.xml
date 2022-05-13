@@ -800,6 +800,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.CloseVerifySheet.Android" enum="Boolean"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records whether the UI that a user is closing is the verify sheet or not on
+    Android. Records at most one sample per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.CloseVerifySheet.Desktop" enum="Boolean"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records whether the UI that a user is closing is the verify sheet or not on
+    desktop. Records at most one sample per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean" expires_after="M110">
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
