@@ -1,0 +1,98 @@
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_GL_GL_DISPLAY_MANAGER_H_
+#define UI_GL_GL_DISPLAY_MANAGER_H_
+
+#include <map>
+#include <vector>
+
+#include "base/check.h"
+#include "base/no_destructor.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_preference.h"
+
+namespace gl {
+
+template <typename GLDisplayPlatform>
+class GL_EXPORT GLDisplayManager {
+ public:
+  // Getter for the singleton. This will return nullptr on failure.
+  static GLDisplayManager<GLDisplayPlatform>* GetInstance() {
+    static base::NoDestructor<GLDisplayManager<GLDisplayPlatform>> instance;
+    return instance.get();
+  }
+
+  // This should be called before calling GetDisplay(GpuPreference).
+  // Otherwise kDefault GPU will be mapped to 0 instead of a valid
+  // system_device_id.
+  void SetGpuPreference(GpuPreference preference, uint64_t system_device_id) {
+#if DCHECK_IS_ON()
+    auto iter = gpu_preference_map_.find(preference);
+    DCHECK(gpu_preference_map_.end() == iter);
+#endif
+    gpu_preference_map_[preference] = system_device_id;
+  }
+
+  GLDisplayManager(const GLDisplayManager&) = delete;
+  GLDisplayManager& operator=(const GLDisplayManager&) = delete;
+
+  GLDisplayPlatform* GetDisplay(uint64_t system_device_id) {
+    for (const auto& display : displays_) {
+      if (display->system_device_id() == system_device_id) {
+        return display.get();
+      }
+    }
+
+    std::unique_ptr<GLDisplayPlatform> display(
+        new GLDisplayPlatform(system_device_id));
+    displays_.push_back(std::move(display));
+    return displays_.back().get();
+  }
+
+  GLDisplayPlatform* GetDisplay(GpuPreference preference) {
+    uint64_t system_device_id = 0;
+    auto iter = gpu_preference_map_.find(preference);
+    if (iter == gpu_preference_map_.end() &&
+        preference != GpuPreference::kDefault) {
+      // If kLowPower or kHighPerformance is queried but they are not set in the
+      // map, default to the kDefault GPU.
+      iter = gpu_preference_map_.find(GpuPreference::kDefault);
+    }
+    if (iter != gpu_preference_map_.end())
+      system_device_id = iter->second;
+    return GetDisplay(system_device_id);
+  }
+
+  GLDisplayPlatform* GetDefaultDisplay() {
+    return GetDisplay(GpuPreference::kDefault);
+  }
+
+ private:
+  friend class base::NoDestructor<GLDisplayManager<GLDisplayPlatform>>;
+#if defined(USE_EGL)
+  friend class GLDisplayManagerEGLTest;
+#endif
+
+  // Don't delete these functions for testing purpose.
+  // Each test constructs a scoped GLDisplayManager directly.
+  GLDisplayManager() = default;
+  virtual ~GLDisplayManager() = default;
+
+  std::vector<std::unique_ptr<GLDisplayPlatform>> displays_;
+  std::map<GpuPreference, uint64_t> gpu_preference_map_;
+};
+
+#if defined(USE_EGL)
+using GLDisplayManagerEGL = GLDisplayManager<GLDisplayEGL>;
+#endif
+
+#if defined(USE_GLX)
+using GLDisplayManagerX11 = GLDisplayManager<GLDisplayX11>;
+#endif
+
+}  // namespace gl
+
+#endif  // UI_GL_GL_DISPLAY_MANAGER_H_

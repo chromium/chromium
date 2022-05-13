@@ -12,17 +12,15 @@
 
 namespace gl {
 
-GLDisplay::GLDisplay() = default;
+GLDisplay::GLDisplay(uint64_t system_device_id)
+    : system_device_id_(system_device_id) {}
 
 GLDisplay::~GLDisplay() = default;
 
 #if defined(USE_EGL)
-GLDisplayEGL::GLDisplayEGL() {
+GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
+    : GLDisplay(system_device_id) {
   display_ = EGL_NO_DISPLAY;
-}
-
-GLDisplayEGL::GLDisplayEGL(EGLDisplay display) {
-  display_ = display;
 }
 
 GLDisplayEGL::~GLDisplayEGL() = default;
@@ -144,7 +142,8 @@ bool GLDisplayEGL::IsEGLQueryDeviceSupported() {
 #endif  // defined(USE_EGL)
 
 #if defined(USE_GLX)
-GLDisplayX11::GLDisplayX11() = default;
+GLDisplayX11::GLDisplayX11(uint64_t system_device_id)
+    : GLDisplay(system_device_id) {}
 
 GLDisplayX11::~GLDisplayX11() = default;
 

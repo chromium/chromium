@@ -37,6 +37,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
@@ -277,6 +278,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (preferred_gpu)
     system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu->luid);
 #endif
+
+#if defined(USE_EGL)
+  if (system_device_id != 0) {
+    gl::GLDisplayManagerEGL::GetInstance()->SetGpuPreference(
+        gl::GpuPreference::kDefault, system_device_id);
+  }
+#endif  // USE_EGL
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 

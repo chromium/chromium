@@ -75,6 +75,8 @@ component("gl") {
     "gl_context_stub.h",
     "gl_display.cc",
     "gl_display.h",
+    "gl_display_manager.cc",
+    "gl_display_manager.h",
     "gl_enums.cc",
     "gl_enums.h",
     "gl_enums_implementation_autogen.h",
@@ -587,6 +589,7 @@ test("gl_unittests") {
   if (use_egl) {
     sources += [
       "egl_api_unittest.cc",
+      "gl_display_manager_unittest.cc",
       "test/egl_initialization_displays_unittest.cc",
     ]
   }

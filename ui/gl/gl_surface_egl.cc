@@ -33,6 +33,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_display_egl_util.h"
+#include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
@@ -189,11 +190,6 @@ bool GLSurfaceEGL::initialized_ = false;
 namespace {
 
 class EGLGpuSwitchingObserver;
-
-// TODO(jonahr): This is a temporary static object because there is only one
-// display supported. This will be removed once each GLSurfaceEGL owns its own
-// GLDisplay reference, passed in on init.
-GLDisplayEGL* g_gl_display = nullptr;
 
 EGLGpuSwitchingObserver* g_egl_gpu_switching_observer = nullptr;
 
@@ -991,10 +987,8 @@ EGLDisplay GLSurfaceEGL::GetEGLDisplay() {
 
 // static
 GLDisplayEGL* GLSurfaceEGL::GetGLDisplayEGL() {
-  if (g_gl_display == nullptr) {
-    g_gl_display = new GLDisplayEGL(EGL_NO_DISPLAY);
-  }
-  return g_gl_display;
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(
+      GpuPreference::kDefault);
 }
 
 // static
@@ -1200,6 +1194,7 @@ void GLSurfaceEGL::ShutdownOneOff() {
   if (display->GetDisplay() != EGL_NO_DISPLAY) {
     DCHECK(g_driver_egl.fn.eglTerminateFn);
     eglTerminate(display->GetDisplay());
+    display->SetDisplay(EGL_NO_DISPLAY);
   }
 
   display->egl_client_extensions = nullptr;
@@ -1217,11 +1212,6 @@ void GLSurfaceEGL::ShutdownOneOff() {
   display->egl_display_texture_share_group_supported = false;
   display->egl_create_context_client_arrays_supported = false;
   display->egl_angle_feature_control_supported = false;
-
-  if (g_gl_display) {
-    delete g_gl_display;
-    g_gl_display = nullptr;
-  }
 
   initialized_ = false;
 }

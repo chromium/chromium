@@ -5,6 +5,8 @@
 #ifndef UI_GL_GL_DISPLAY_H_
 #define UI_GL_GL_DISPLAY_H_
 
+#include <stdint.h>
+
 #include "ui/gl/gl_export.h"
 
 #if defined(USE_EGL)
@@ -12,6 +14,9 @@
 #endif  // defined(USE_EGL)
 
 namespace gl {
+
+template <typename GLDisplayPlatform>
+class GLDisplayManager;
 
 class EGLDisplayPlatform {
  public:
@@ -59,22 +64,24 @@ enum DisplayType {
 
 class GL_EXPORT GLDisplay {
  public:
-  GLDisplay();
-
   GLDisplay(const GLDisplay&) = delete;
   GLDisplay& operator=(const GLDisplay&) = delete;
+
+  uint64_t system_device_id() const { return system_device_id_; }
 
   virtual ~GLDisplay();
 
   virtual void* GetDisplay() = 0;
+
+ protected:
+  explicit GLDisplay(uint64_t system_device_id);
+
+  uint64_t system_device_id_ = 0;
 };
 
 #if defined(USE_EGL)
 class GL_EXPORT GLDisplayEGL : public GLDisplay {
  public:
-  GLDisplayEGL();
-  explicit GLDisplayEGL(EGLDisplay display);
-
   GLDisplayEGL(const GLDisplayEGL&) = delete;
   GLDisplayEGL& operator=(const GLDisplayEGL&) = delete;
 
@@ -148,6 +155,10 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool egl_angle_vulkan_image_supported = false;
 
  private:
+  friend class GLDisplayManager<GLDisplayEGL>;
+
+  explicit GLDisplayEGL(uint64_t system_device_id);
+
   EGLDisplay display_;
 };
 #endif  // defined(USE_EGL)
@@ -155,14 +166,17 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 #if defined(USE_GLX)
 class GL_EXPORT GLDisplayX11 : public GLDisplay {
  public:
-  GLDisplayX11();
-
   GLDisplayX11(const GLDisplayX11&) = delete;
   GLDisplayX11& operator=(const GLDisplayX11&) = delete;
 
   ~GLDisplayX11() override;
 
   void* GetDisplay() override;
+
+ private:
+  friend class GLDisplayManager<GLDisplayX11>;
+
+  explicit GLDisplayX11(uint64_t system_device_id);
 };
 #endif  // defined(USE_GLX)
 
