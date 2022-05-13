@@ -21,6 +21,7 @@ message FilterClassification {
   enum UseCase {
     USE_CASE_UNKNOWN = 0;
     CROSS_OTR = 1;
+    CROSS_SITE_NO_3PC = 2;
   }
   optional string site = 1;         // eTLD+1, required
   optional SiteRole site_role = 2;  // required

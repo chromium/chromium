@@ -14,8 +14,13 @@
 
 namespace url_param_filter {
 
+// `unordered_map` is used for the outer map of domains, which is likely to have
+// hundreds. `map` is used for the inner map of `UseCase`, which will have a
+// single digit number of keys.
 using ClassificationMap =
-    std::unordered_map<std::string, url_param_filter::FilterClassification>;
+    std::unordered_map<std::string,
+                       std::map<FilterClassification::UseCase,
+                                url_param_filter::FilterClassification>>;
 
 class ClassificationsLoader {
  public:

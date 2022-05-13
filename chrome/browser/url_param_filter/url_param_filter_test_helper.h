@@ -23,11 +23,29 @@ MATCHER_P(EqualsProto,
 // observed as the source (aka referer) of a navigation, block params
 // "plzblock" and "plzblock1".
 url_param_filter::ClassificationMap CreateClassificationMapForTesting(
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& source,
+    url_param_filter::FilterClassification_SiteRole role);
+
+// Equivalent to the other overload, but uses the default (unknown) use case for
+// all parameters.
+url_param_filter::ClassificationMap CreateClassificationMapForTesting(
     const std::map<std::string, std::vector<std::string>>& source,
     url_param_filter::FilterClassification_SiteRole role);
 
 // Creates and serializes the URL param filter classifications proto.
 // Used for simulating reading the classifications file from Component Updater.
+std::string CreateSerializedUrlParamFilterClassificationForTesting(
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& source_params,
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& destination_params);
+
+// Equivalent to the other overload, but uses empty use case lists for all
+// parameters.
 std::string CreateSerializedUrlParamFilterClassificationForTesting(
     const std::map<std::string, std::vector<std::string>>& source_params,
     const std::map<std::string, std::vector<std::string>>& destination_params);
@@ -35,12 +53,32 @@ std::string CreateSerializedUrlParamFilterClassificationForTesting(
 // Create a base64 representation of the URL param filter classifications
 // proto. Used for initialization of the feature params in tests.
 std::string CreateBase64EncodedFilterParamClassificationForTesting(
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& source_params,
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& destination_params);
+
+// Equivalent to the other overload, but uses empty use case lists for all
+// parameters.
+std::string CreateBase64EncodedFilterParamClassificationForTesting(
     const std::map<std::string, std::vector<std::string>>& source_params,
     const std::map<std::string, std::vector<std::string>>& destination_params);
 
 // Make a FilterClassifications proto using two maps, for source and destination
 // classifications. Each map takes the form "site"->["p1", "p2", ...] where
 // each "pi" in the list is a param that should be filtered from that site.
+FilterClassifications MakeClassificationsProtoFromMapWithUseCases(
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& source_map,
+    const std::map<std::string,
+                   std::map<FilterClassification::UseCase,
+                            std::vector<std::string>>>& dest_map);
+
+// Equivalent to the other overload, but uses empty use case lists for all
+// parameters.
 FilterClassifications MakeClassificationsProtoFromMap(
     const std::map<std::string, std::vector<std::string>>& source_map,
     const std::map<std::string, std::vector<std::string>>& dest_map);
@@ -49,12 +87,21 @@ FilterClassifications MakeClassificationsProtoFromMap(
 FilterClassification MakeFilterClassification(
     const std::string& site,
     FilterClassification_SiteRole role,
+    const std::vector<std::string>& params,
+    const std::vector<FilterClassification::UseCase>& use_cases);
+
+// Equivalent to the other overload, but uses an empty list of use cases.
+FilterClassification MakeFilterClassification(
+    const std::string& site,
+    FilterClassification_SiteRole role,
     const std::vector<std::string>& params);
 
 // Helper method for adding repeated classifications on a FilterClassification.
-void AddClassification(FilterClassification* classification,
-                       const std::string& site,
-                       FilterClassification_SiteRole role,
-                       const std::vector<std::string>& params);
+void AddClassification(
+    FilterClassification* classification,
+    const std::string& site,
+    FilterClassification_SiteRole role,
+    const std::vector<std::string>& params,
+    const std::vector<FilterClassification::UseCase>& use_cases);
 }  // namespace url_param_filter
 #endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_TEST_HELPER_H_

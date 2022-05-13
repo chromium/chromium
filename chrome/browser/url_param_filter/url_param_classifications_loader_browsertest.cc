@@ -167,12 +167,16 @@ IN_PROC_BROWSER_TEST_F(ClassificationsLoaderFeatureEnabledAndComponentInstalled,
   FilterClassification expected_dest = MakeFilterClassification(
       "dest.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock_dest"});
-  EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair("source.test", EqualsProto(expected_source))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair("dest.test", EqualsProto(expected_dest))));
+  EXPECT_THAT(loader()->GetSourceClassifications(),
+              UnorderedElementsAre(Pair(
+                  "source.test", UnorderedElementsAre(Pair(
+                                     FilterClassification::USE_CASE_UNKNOWN,
+                                     EqualsProto(expected_source))))));
+  EXPECT_THAT(loader()->GetDestinationClassifications(),
+              UnorderedElementsAre(
+                  Pair("dest.test", UnorderedElementsAre(Pair(
+                                        FilterClassification::USE_CASE_UNKNOWN,
+                                        EqualsProto(expected_dest))))));
 }
 
 // Feature enabled with just "should_filter"= unset/true/false, and the
@@ -240,12 +244,17 @@ IN_PROC_BROWSER_TEST_P(
   FilterClassification expected_dest = MakeFilterClassification(
       "dest.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock_dest"});
-  EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair("source.test", EqualsProto(expected_source))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair("dest.test", EqualsProto(expected_dest))));
+  ClassificationMap s = loader()->GetSourceClassifications();
+  EXPECT_THAT(loader()->GetSourceClassifications(),
+              UnorderedElementsAre(Pair(
+                  "source.test", UnorderedElementsAre(Pair(
+                                     FilterClassification::USE_CASE_UNKNOWN,
+                                     EqualsProto(expected_source))))));
+  EXPECT_THAT(loader()->GetDestinationClassifications(),
+              UnorderedElementsAre(
+                  Pair("dest.test", UnorderedElementsAre(Pair(
+                                        FilterClassification::USE_CASE_UNKNOWN,
+                                        EqualsProto(expected_dest))))));
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -281,12 +290,18 @@ IN_PROC_BROWSER_TEST_F(
   FilterClassification expected_dest = MakeFilterClassification(
       "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock2"});
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-src.test", EqualsProto(expected_source))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-dst.test", EqualsProto(expected_dest))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-src.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_source))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-dst.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_dest))))));
 }
 
 // Feature enabled with just "classifications" param, and the component is
@@ -326,12 +341,18 @@ IN_PROC_BROWSER_TEST_F(
   FilterClassification expected_dest = MakeFilterClassification(
       "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock2"});
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-src.test", EqualsProto(expected_source))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-dst.test", EqualsProto(expected_dest))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-src.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_source))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-dst.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_dest))))));
 }
 
 // Feature enabled with "should_filter"= unset/true/false and a classifications
@@ -362,12 +383,18 @@ IN_PROC_BROWSER_TEST_P(
   FilterClassification expected_dest = MakeFilterClassification(
       "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock2"});
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-src.test", EqualsProto(expected_source))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-dst.test", EqualsProto(expected_dest))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-src.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_source))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-dst.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_dest))))));
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -415,12 +442,18 @@ IN_PROC_BROWSER_TEST_P(
   FilterClassification expected_dest = MakeFilterClassification(
       "feature-dst.test", FilterClassification_SiteRole_DESTINATION,
       {"plzblock2"});
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-src.test", EqualsProto(expected_source))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(
-                  Pair("feature-dst.test", EqualsProto(expected_dest))));
+  EXPECT_THAT(
+      loader()->GetSourceClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-src.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_source))))));
+  EXPECT_THAT(
+      loader()->GetDestinationClassifications(),
+      UnorderedElementsAre(
+          Pair("feature-dst.test",
+               UnorderedElementsAre(Pair(FilterClassification::USE_CASE_UNKNOWN,
+                                         EqualsProto(expected_dest))))));
 }
 
 INSTANTIATE_TEST_CASE_P(

@@ -38,7 +38,7 @@ std::string GetClassifiedSite(const GURL& gurl) {
 // Add the params classified as requiring filtering into the given parameter
 // set.
 void AddParams(std::set<std::string>& parameter_set,
-               url_param_filter::FilterClassification classification) {
+               FilterClassification classification) {
   for (auto i : classification.parameters()) {
     parameter_set.insert(i.name());
   }
@@ -50,7 +50,8 @@ FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
                        const ClassificationMap& source_classification_map,
                        const ClassificationMap& destination_classification_map,
-                       bool check_nested) {
+                       const bool check_nested,
+                       const FilterClassification::UseCase use_case) {
   GURL result = GURL{destination_url};
   int filtered_params_count = 0;
 
@@ -69,13 +70,25 @@ FilterResult FilterUrl(const GURL& source_url,
   auto source_classification_result =
       source_classification_map.find(source_classified_site);
   if (source_classification_result != source_classification_map.end()) {
-    AddParams(blocked_parameters, source_classification_result->second);
+    auto source_classification_with_use_case =
+        source_classification_result->second.find(use_case);
+    if (source_classification_with_use_case !=
+        source_classification_result->second.end()) {
+      AddParams(blocked_parameters,
+                source_classification_with_use_case->second);
+    }
   }
   auto destination_classification_result =
       destination_classification_map.find(destination_classified_site);
   if (destination_classification_result !=
       destination_classification_map.end()) {
-    AddParams(blocked_parameters, destination_classification_result->second);
+    auto destination_classification_with_use_case =
+        destination_classification_result->second.find(use_case);
+    if (destination_classification_with_use_case !=
+        destination_classification_result->second.end()) {
+      AddParams(blocked_parameters,
+                destination_classification_with_use_case->second);
+    }
   }
   // Return quickly if there are no parameters we care about.
   if (blocked_parameters.size() == 0) {
@@ -95,7 +108,7 @@ FilterResult FilterUrl(const GURL& source_url,
         if (nested.is_valid()) {
           FilterResult nested_result =
               FilterUrl(destination_url, nested, source_classification_map,
-                        destination_classification_map, false);
+                        destination_classification_map, false, use_case);
           // If a nested URL contains a param we must filter, do so now.
           if (nested != nested_result.filtered_url) {
             value = base::EscapeQueryParamValue(
@@ -126,24 +139,37 @@ FilterResult FilterUrl(const GURL& source_url,
 }
 }  // anonymous namespace
 
-FilterResult FilterUrl(
-    const GURL& source_url,
-    const GURL& destination_url,
-    const ClassificationMap& source_classification_map,
-    const ClassificationMap& destination_classification_map) {
+FilterResult FilterUrl(const GURL& source_url,
+                       const GURL& destination_url,
+                       const ClassificationMap& source_classification_map,
+                       const ClassificationMap& destination_classification_map,
+                       const FilterClassification::UseCase use_case) {
   return FilterUrl(source_url, destination_url, source_classification_map,
-                   destination_classification_map, true);
+                   destination_classification_map, true, use_case);
 }
 
 FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
   if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
     return FilterResult{destination_url, 0};
   }
-
   return FilterUrl(
       source_url, destination_url,
       ClassificationsLoader::GetInstance()->GetSourceClassifications(),
-      ClassificationsLoader::GetInstance()->GetDestinationClassifications());
+      ClassificationsLoader::GetInstance()->GetDestinationClassifications(),
+      FilterClassification::USE_CASE_UNKNOWN);
+}
+
+FilterResult FilterUrl(const GURL& source_url,
+                       const GURL& destination_url,
+                       const FilterClassification::UseCase use_case) {
+  if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
+    return FilterResult{destination_url, 0};
+  }
+  return FilterUrl(
+      source_url, destination_url,
+      ClassificationsLoader::GetInstance()->GetSourceClassifications(),
+      ClassificationsLoader::GetInstance()->GetDestinationClassifications(),
+      use_case);
 }
 
 }  // namespace url_param_filter

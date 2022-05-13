@@ -20,6 +20,20 @@ namespace url_param_filter {
 
 namespace {
 
+void ProcessClassification(ClassificationMap& map,
+                           const FilterClassification& classification) {
+  if (classification.use_cases_size() > 0) {
+    for (int use_case : classification.use_cases()) {
+      map[classification.site()]
+         [static_cast<FilterClassification::UseCase>(use_case)] =
+             classification;
+    }
+  } else {
+    map[classification.site()][FilterClassification::USE_CASE_UNKNOWN] =
+        classification;
+  }
+}
+
 ClassificationMap GetClassificationsFromFeature(
     const std::string& feature_classifications,
     FilterClassification_SiteRole role) {
@@ -32,7 +46,7 @@ ClassificationMap GetClassificationsFromFeature(
     if (classifications.ParseFromString(uncompressed)) {
       for (auto i : classifications.classifications()) {
         if (i.site_role() == role) {
-          map[i.site()] = i;
+          ProcessClassification(map, i);
         }
       }
     }
@@ -42,13 +56,13 @@ ClassificationMap GetClassificationsFromFeature(
 
 // If this is called before `ReadClassifications` has read classifications from
 // the component, returns an empty map.
-ClassificationMap GetClassificationsFromFile(
+ClassificationMap GetClassificationMap(
     const absl::optional<std::vector<FilterClassification>>& classifications) {
   if (!classifications.has_value())
     return ClassificationMap();
   ClassificationMap map;
   for (const FilterClassification& classification : classifications.value()) {
-    map[classification.site()] = classification;
+    ProcessClassification(map, classification);
   }
   return map;
 }
@@ -124,10 +138,10 @@ ClassificationMap ClassificationsLoader::GetClassificationsInternal(
   // classifications.
   switch (role) {
     case FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE:
-      return GetClassificationsFromFile(component_source_classifications_);
+      return GetClassificationMap(component_source_classifications_);
     case FilterClassification_SiteRole::
         FilterClassification_SiteRole_DESTINATION:
-      return GetClassificationsFromFile(component_destination_classifications_);
+      return GetClassificationMap(component_destination_classifications_);
     case FilterClassification_SiteRole_SITE_ROLE_UNKNOWN:
       return ClassificationMap();
   }
