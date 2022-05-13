@@ -380,6 +380,11 @@ crbug.com/1181126 [ win10 nvidia-0x2184 ] Pixel_WebGL2_BlitFramebuffer_Result_Di
 crbug.com/1321305 [ mac release apple-apple-m1 ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1321305 [ mac release apple-apple-m1 ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 
+# Hangs with mac 0-copy path of WebGPU ImportExternalTexture
+crbug.com/1213170 [ mac no-asan amd-0x6821 ] Pixel_WebGPUImport* [ Failure ]
+crbug.com/1213170 [ mac no-asan intel-0xd26 ] Pixel_WebGPUImport* [ Failure ]
+crbug.com/1213170 [ mac no-asan intel-0x3e9b ] Pixel_WebGPUImport* [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

@@ -2225,6 +2225,9 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
                                     plane);
   }
+  if (picture_format_ == PIXEL_FORMAT_NV12)
+    picture.set_is_webgpu_compatible(true);
+
   client_->PictureReady(std::move(picture));
   return true;
 }
