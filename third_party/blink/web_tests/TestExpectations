@@ -6894,5 +6894,8 @@ crbug.com/1323627 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 # Sheriff 2022-05-11
 crbug.com/1324428 fast/webgl/canvas-toDataURL-crash.html [ Crash Pass ]
 
+# Throttling a hidden-cross origin frame may stall animations.
+crbug.com/1323246 external/wpt/web-animations/timing-model/timelines/sibling-iframe-timeline.html [ Failure Pass ]
+
 # Temp disable tests to merge DevTools show non-color CSS variable previews in the autocomplete dropdown feature
 crbug.com/1285091 http/tests/devtools/elements/styles-3/style-autocomplete-swatches.js [ Skip ]
