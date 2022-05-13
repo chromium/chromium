@@ -1120,6 +1120,11 @@
                      trigger:ViewRevealTrigger::AppBackgrounding];
     [self dismissPopovers];
   }
+  if (ShowThumbStripInTraitCollection(
+          self.baseViewController.traitCollection) !=
+      [self isThumbStripEnabled]) {
+    [self updateThumbstripIfNeededOnViewController:self.baseViewController];
+  }
 }
 
 #pragma mark - ViewControllerTraitCollectionObserver
@@ -1131,6 +1136,11 @@
   if (sceneState.activationLevel < SceneActivationLevelForegroundInactive) {
     return;
   }
+  [self updateThumbstripIfNeededOnViewController:viewController];
+}
+
+- (void)updateThumbstripIfNeededOnViewController:
+    (UIViewController*)viewController {
   BOOL canShowThumbStrip =
       ShowThumbStripInTraitCollection(viewController.traitCollection);
   if (canShowThumbStrip != [self isThumbStripEnabled]) {
