@@ -49,8 +49,12 @@ class MockArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
       : v8::ArrayBuffer::Allocator(), currently_allocated_(0) {}
 
   void* Allocate(size_t length) override {
-    void* data = AllocateUninitialized(length);
-    return data == nullptr ? data : memset(data, 0, length);
+    lock_guard<mutex> mtx_locker(mtx_);
+    if (length + currently_allocated_ > kAllocationLimit) {
+      return nullptr;
+    }
+    currently_allocated_ += length;
+    return allocator_->Allocate(length);
   }
 
   void* AllocateUninitialized(size_t length) override {
@@ -59,15 +63,13 @@ class MockArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
       return nullptr;
     }
     currently_allocated_ += length;
-    return malloc(length);
+    return allocator_->AllocateUninitialized(length);
   }
 
   void Free(void* ptr, size_t length) override {
     lock_guard<mutex> mtx_locker(mtx_);
     currently_allocated_ -= length;
-    // We need to free before we unlock, otherwise currently_allocated_ will
-    // be innacurate.
-    free(ptr);
+    return allocator_->Free(ptr, length);
   }
 };
 
