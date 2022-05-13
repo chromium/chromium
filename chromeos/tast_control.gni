@@ -29,14 +29,6 @@ tast_disabled_tests_from_chrome_all = [
   "apps.SystemWebAppsReinstall.default_enabled_apps_stable",
   "camera.EncodeAccelJPEG",
 
-  # crbug.com/1247485
-  "inputs.PhysicalKeyboardInputFields.us_en",
-  "inputs.VirtualKeyboardAccent",
-
-  # crbug.com/1247177
-  "inputs.PhysicalKeyboardEnglishTyping",
-  "inputs.PhysicalKeyboardEmoji",
-
   # https://crbug.com/1252352
   "quicksettings.SignInScreen.battery",
   "quicksettings.SignInScreen.noaudio_nobattery",
@@ -93,17 +85,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1282369
   "apps.LaunchHelpAppOffline",
 
-  # https://crbug.com/1282366 and https://crbug.com/1311184
-  "inputs.VirtualKeyboardChangeInput.a11y",
-  "inputs.VirtualKeyboardDeadKeys.french",
-  "inputs.VirtualKeyboardFloat.clamshell",
-  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
-  "inputs.VirtualKeyboardHandwriting.docked",
-  "inputs.VirtualKeyboardHandwriting.floating",
-  "inputs.VirtualKeyboardMultipaste",
-  "inputs.VirtualKeyboardOOBE",
-  "inputs.VirtualKeyboardSystemLanguages.es",
-
   # https://crbug.com/1282370
   "arc.Boot.vm_with_per_vcpu_core_scheduling",
 
@@ -112,12 +93,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # http://b/212644512
   "security.SELinuxFilesDataDir",
-
-  # https://crbug.com/1283300 (http://b/212637568)
-  "inputs.PhysicalKeyboardCapsLock",
-  "inputs.PhysicalKeyboardChangeInput",
-  "inputs.PhysicalKeyboardAutocorrect.en_us_1",
-  "inputs.PhysicalKeyboardDeadKeys.us_intl_acute",
 
   # https://crbug.com/1260046
   "wmp.WindowCycle",
