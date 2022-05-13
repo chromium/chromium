@@ -236,6 +236,92 @@ def CheckPretty(contents, file_path, message_type):
     ]
   return []
 
+def _GetStudyConfigFeatures(study_config):
+  """Gets the set of features overridden in a study config."""
+  features = set()
+  for experiment in study_config.get("experiments", []):
+    features.update(experiment.get("enable_features", []))
+    features.update(experiment.get("disable_features", []))
+  return features
+
+def _GetDuplicatedFeatures(study1, study2):
+  """Gets the set of features that are overridden in two overlapping studies."""
+  duplicated_features = set()
+  for study_config1 in study1:
+    features = _GetStudyConfigFeatures(study_config1)
+    platforms = set(study_config1.get("platforms", []))
+    for study_config2 in study2:
+      # If the study configs do not specify any common platform, they do not
+      # overlap, so we can skip them.
+      if platforms.isdisjoint(set(study_config2.get("platforms", []))):
+        continue
+
+      common_features = features & _GetStudyConfigFeatures(study_config2)
+      duplicated_features.update(common_features)
+
+  return duplicated_features
+
+def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
+  """Validates that features are not specified in multiple studies.
+
+  Note that a feature may be specified in different studies that do not overlap.
+  For example, if they specify different platforms. In such a case, this will
+  not give a warning/error. However, it is possible that this incorrectly
+  gives an error, as it is possible for studies to have complex filters (e.g.,
+  if they make use of additional filters such as form_factors,
+  is_low_end_device, etc.). In those cases, the PRESUBMIT check can be bypassed.
+  Since this will only check for studies that were changed in this particular
+  commit, bypassing the PRESUBMIT check will not block future commits.
+
+  Args:
+    new_json_data: Parsed JSON object representing the new fieldtrial config.
+    old_json_data: Parsed JSON object representing the old fieldtrial config.
+    message_type: Type of message from |output_api| to return in the case of
+      errors/warnings.
+
+  Returns:
+    A list of |message_type| messages. In the case of all tests passing with no
+    warnings/errors, this will return [].
+  """
+  # Get list of studies that changed.
+  changed_studies = []
+  for study_name in new_json_data:
+    if (study_name not in old_json_data or
+          new_json_data[study_name] != old_json_data[study_name]):
+      changed_studies.append(study_name)
+
+  # A map between a feature name and the name of studies that use it. E.g.,
+  # duplicated_features_to_studies_map["FeatureA"] = {"StudyA", "StudyB"}.
+  # Only features that are defined in multiple studies are added to this map.
+  duplicated_features_to_studies_map = dict()
+
+  # Compare the changed studies against all studies defined.
+  for changed_study_name in changed_studies:
+    for study_name in new_json_data:
+      if changed_study_name == study_name:
+        continue
+
+      duplicated_features = _GetDuplicatedFeatures(
+          new_json_data[changed_study_name], new_json_data[study_name])
+
+      for feature in duplicated_features:
+        if feature not in duplicated_features_to_studies_map:
+          duplicated_features_to_studies_map[feature] = set()
+        duplicated_features_to_studies_map[feature].update(
+            [changed_study_name, study_name])
+
+  if len(duplicated_features_to_studies_map) == 0:
+    return []
+
+  duplicated_features_strings = [
+      "%s (in studies %s)" % (feature, ', '.join(studies))
+      for feature, studies in duplicated_features_to_studies_map.items()
+  ]
+
+  return [
+    message_type('The following feature(s) were specified in multiple '
+                  'studies: %s' % ', '.join(duplicated_features_strings))
+  ]
 
 def CommonChecks(input_api, output_api):
   affected_files = input_api.AffectedFiles(
@@ -260,6 +346,12 @@ def CommonChecks(input_api, output_api):
       if result:
         return result
       result = CheckPretty(contents, f.LocalPath(), output_api.PresubmitError)
+      if result:
+        return result
+      result = CheckDuplicatedFeatures(
+          json_data,
+          input_api.json.loads('\n'.join(f.OldContents())),
+          output_api.PresubmitError)
       if result:
         return result
     except ValueError:
