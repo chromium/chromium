@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include <algorithm>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -102,7 +103,9 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   // for the button.
   AddChildViewAt(
       std::make_unique<SavedTabGroupButton>(
-          group, page_navigator(),
+          group,
+          base::BindRepeating(&SavedTabGroupBar::page_navigator,
+                              base::Unretained(this)),
           base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
                               base::Unretained(this), group.group_id),
           /*is_group_in_tabstrip*/ false, animations_enabled_),

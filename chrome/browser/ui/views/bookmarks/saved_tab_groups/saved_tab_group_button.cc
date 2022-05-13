@@ -44,11 +44,12 @@ constexpr float kBorderThickness = 2.0f;
 constexpr float kCircleRadius = 14.0f;
 }  // namespace
 
-SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
-                                         content::PageNavigator* page_navigator,
-                                         PressedCallback callback,
-                                         bool is_group_in_tabstrip,
-                                         bool animations_enabled)
+SavedTabGroupButton::SavedTabGroupButton(
+    const SavedTabGroup& group,
+    base::RepeatingCallback<content::PageNavigator*()> page_navigator,
+    PressedCallback callback,
+    bool is_group_in_tabstrip,
+    bool animations_enabled)
     : MenuButton(std::move(callback), group.title),
       tab_group_color_id_(group.color),
       is_group_in_tabstrip_(is_group_in_tabstrip),
@@ -191,7 +192,7 @@ bool SavedTabGroupButton::HasButtonOutline() const {
 
 SavedTabGroupButton::ContextMenuController::ContextMenuController(
     const std::vector<SavedTabGroupTab>& tabs,
-    content::PageNavigator* page_navigator)
+    base::RepeatingCallback<content::PageNavigator*()> page_navigator)
     : tabs_(tabs), page_navigator_(page_navigator) {}
 SavedTabGroupButton::ContextMenuController::~ContextMenuController() = default;
 
@@ -205,7 +206,9 @@ void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
     dialog_model.AddMenuItem(
         ui::ImageModel::FromImage(tab.favicon), tab.tab_title,
         base::BindRepeating(
-            [](GURL url, content::PageNavigator* page_navigator,
+            [](GURL url,
+               base::RepeatingCallback<content::PageNavigator*()>
+                   page_navigator,
                int event_flags) {
               content::OpenURLParams params(
                   url, content::Referrer(),
@@ -213,7 +216,7 @@ void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
                   ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                   /*is_renderer_initiated=*/false,
                   /*started_from_context_menu=*/true);
-              page_navigator->OpenURL(params);
+              page_navigator.Run()->OpenURL(params);
             },
             tab.url, page_navigator_));
   }

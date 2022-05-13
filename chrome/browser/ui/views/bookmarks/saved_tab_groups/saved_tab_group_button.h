@@ -29,11 +29,12 @@ class Canvas;
 class SavedTabGroupButton : public views::MenuButton {
  public:
   METADATA_HEADER(SavedTabGroupButton);
-  SavedTabGroupButton(const SavedTabGroup& group,
-                      content::PageNavigator* page_navigator,
-                      PressedCallback callback,
-                      bool is_group_in_tabstrip,
-                      bool animations_enabled = true);
+  SavedTabGroupButton(
+      const SavedTabGroup& group,
+      base::RepeatingCallback<content::PageNavigator*()> page_navigator,
+      PressedCallback callback,
+      bool is_group_in_tabstrip,
+      bool animations_enabled = true);
 
   SavedTabGroupButton(const SavedTabGroupButton&) = delete;
   SavedTabGroupButton& operator=(const SavedTabGroupButton&) = delete;
@@ -59,8 +60,9 @@ class SavedTabGroupButton : public views::MenuButton {
   // when a tab group is updated.
   class ContextMenuController : public views::ContextMenuController {
    public:
-    ContextMenuController(const std::vector<SavedTabGroupTab>& tabs,
-                          content::PageNavigator* page_navigator);
+    ContextMenuController(
+        const std::vector<SavedTabGroupTab>& tabs,
+        base::RepeatingCallback<content::PageNavigator*()> page_navigator);
     ~ContextMenuController() override;
 
    private:
@@ -78,8 +80,8 @@ class SavedTabGroupButton : public views::MenuButton {
     // title, url, and favicon.
     const std::vector<SavedTabGroupTab> tabs_;
 
-    // The page navigator used to open the context menu items into a new tab.
-    content::PageNavigator* page_navigator_;
+    // A callback used to fetch the current PageNavigator used to open URLs.
+    base::RepeatingCallback<content::PageNavigator*()> page_navigator_;
   };
 
   // The animations for button movement.
