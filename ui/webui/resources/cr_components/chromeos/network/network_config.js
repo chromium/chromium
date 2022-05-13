@@ -329,7 +329,13 @@ Polymer({
     eapInnerItemsPeap_: {
       type: Array,
       readOnly: true,
-      value: ['Automatic', 'MD5', 'MSCHAPv2'],
+      value: () => {
+        const values = ['Automatic', 'MD5', 'MSCHAPv2'];
+        if (loadTimeData.getBoolean('eapGtcWifiAuthentication')) {
+          values.push('GTC');
+        }
+        return values;
+      },
     },
 
     /**

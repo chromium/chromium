@@ -453,6 +453,9 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
+  html_source->AddBoolean("eapGtcWifiAuthentication",
+                          ash::features::IsEapGtcWifiAuthenticationEnabled());
+
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
       base::FeatureList::IsEnabled(ash::features::kHiddenNetworkWarning));

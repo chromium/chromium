@@ -55527,6 +55527,7 @@ from previous Chrome versions.
   <int value="-1420949910" label="ChromeWideEchoCancellation:enabled"/>
   <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
+  <int value="-1420478723" label="EapGtcWifiAuthentication:enabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>
@@ -60657,6 +60658,7 @@ from previous Chrome versions.
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>
+  <int value="2007421572" label="EapGtcWifiAuthentication:disabled"/>
   <int value="2007638959" label="CrOSLabsFloatWindow:disabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>

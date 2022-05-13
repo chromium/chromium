@@ -494,6 +494,10 @@ const base::Feature kDriveFsBidirectionalNativeMessaging{
 const base::Feature kDriveFsMirroring{"DriveFsMirroring",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables authenticating to Wi-Fi networks using EAP-GTC.
+const base::Feature kEapGtcWifiAuthentication{
+    "EapGtcWifiAuthentication", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Eche Phone Hub permission onboarding.
 const base::Feature kEchePhoneHubPermissionsOnboarding{
     "EchePhoneHubPermissionsOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1729,6 +1733,10 @@ bool IsDragWindowToNewDeskEnabled() {
 
 bool IsDriveFsMirroringEnabled() {
   return base::FeatureList::IsEnabled(kDriveFsMirroring);
+}
+
+bool IsEapGtcWifiAuthenticationEnabled() {
+  return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
 }
 
 bool IsEchePhoneHubPermissionsOnboarding() {

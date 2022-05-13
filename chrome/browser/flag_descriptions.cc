@@ -4747,6 +4747,10 @@ const char kTrimOnMemoryPressureName[] = "Trim Working Set on memory pressure";
 const char kTrimOnMemoryPressureDescription[] =
     "Trim Working Set periodically on memory pressure";
 
+const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
+const char kEapGtcWifiAuthenticationDescription[] =
+    "Allows configuration of WiFi networks using EAP-GTC authentication";
+
 const char kEchePhoneHubPermissionsOnboardingName[] =
     "Enable Eche Phone Hub Permissions Onboarding";
 const char kEchePhoneHubPermissionsOnboardingDescription[] =

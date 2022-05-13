@@ -1450,6 +1450,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "eap-gtc-wifi-authentication",
+    "owners": [ "cros-connectivity@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "eche-phone-hub-permissions-onboarding",
     "owners": [ "dhnishi" ],
     "expiry_milestone": 104

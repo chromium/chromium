@@ -203,6 +203,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDriveFsBidirectionalNativeMessaging;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDriveFsMirroring;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEapGtcWifiAuthentication;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEchePhoneHubPermissionsOnboarding;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWADebugMode;
@@ -639,6 +641,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayAlignmentAssistanceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDragUnpinnedAppToPinEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDragWindowToNewDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDriveFsMirroringEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEapGtcWifiAuthenticationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEchePhoneHubPermissionsOnboarding();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWAEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWADebugModeEnabled();
