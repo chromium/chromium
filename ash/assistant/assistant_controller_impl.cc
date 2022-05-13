@@ -20,6 +20,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -175,14 +176,7 @@ void AssistantControllerImpl::OpenUrl(const GURL& url,
   if (IsAndroidIntent(url)) {
     android_helper->LaunchAndroidIntent(url.spec());
   } else {
-    // The new tab should be opened with a user activation since the user
-    // interacted with the Assistant to open the url. |in_background| describes
-    // the relationship between |url| and Assistant UI, not the browser. As
-    // such, the browser will always be instructed to open |url| in a new
-    // browser tab and Assistant UI state will be updated downstream to respect
-    // |in_background|.
-    NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+    chromeos::assistant::AssistantBrowserDelegate::Get()->OpenUrl(url);
   }
   NotifyUrlOpened(url, from_server);
 }

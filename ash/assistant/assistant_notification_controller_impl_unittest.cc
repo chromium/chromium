@@ -10,9 +10,9 @@
 
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
+#include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -199,7 +199,7 @@ class AssistantServiceMock : public TestAssistantService {
 
 // AssistantNotificationControllerTest -----------------------------------------
 
-class AssistantNotificationControllerTest : public AshTestBase {
+class AssistantNotificationControllerTest : public AssistantAshTestBase {
  public:
   AssistantNotificationControllerTest(
       const AssistantNotificationControllerTest&) = delete;
@@ -208,11 +208,12 @@ class AssistantNotificationControllerTest : public AshTestBase {
 
  protected:
   AssistantNotificationControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AssistantAshTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AssistantNotificationControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    AssistantAshTestBase::SetUp();
 
     controller_ =
         Shell::Get()->assistant_controller()->notification_controller();

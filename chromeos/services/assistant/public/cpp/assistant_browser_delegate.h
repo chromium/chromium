@@ -81,6 +81,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) = 0;
 
+  // Opens the specified `url` in a new browser tab. Special handling is applied
+  // to OS Settings url which may cause deviation from this behavior.
+  virtual void OpenUrl(GURL url) = 0;
+
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   // Requests a connection to Libassistant service interface via the browser.
   virtual void RequestLibassistantService(

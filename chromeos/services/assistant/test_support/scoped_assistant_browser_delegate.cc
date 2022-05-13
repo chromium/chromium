@@ -4,6 +4,8 @@
 
 #include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
+
 namespace chromeos {
 namespace assistant {
 
@@ -31,6 +33,11 @@ void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
     media_controller_manager_receiver_->reset();
     media_controller_manager_receiver_->Bind(std::move(receiver));
   }
+}
+
+void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 }  // namespace assistant
