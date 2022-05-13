@@ -131,9 +131,6 @@ void JNI_InstantAppsMessageDelegate_OnMessageDismissed(
     const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jstring>& jurl,
     const jboolean instant_app_is_default) {
-  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  std::string url(base::android::ConvertJavaStringToUTF8(env, jurl));
-  InstantAppsSettings::RecordDismissEvent(web_contents, url);
   if (instant_app_is_default) {
     base::RecordAction(base::UserMetricsAction(
         "Android.InstantApps.BannerDismissedAppIsDefault"));
@@ -141,4 +138,9 @@ void JNI_InstantAppsMessageDelegate_OnMessageDismissed(
     base::RecordAction(
         base::UserMetricsAction("Android.InstantApps.BannerDismissed"));
   }
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  if (!web_contents)
+    return;
+  std::string url(base::android::ConvertJavaStringToUTF8(env, jurl));
+  InstantAppsSettings::RecordDismissEvent(web_contents, url);
 }
