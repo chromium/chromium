@@ -384,11 +384,11 @@ void WaylandWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
-  restored_size_in_dip_ = bounds.size();
+  restored_size_dip_ = bounds.size();
 }
 
 gfx::Rect WaylandWindow::GetRestoredBoundsInDIP() const {
-  return gfx::Rect(restored_size_in_dip_);
+  return gfx::Rect(restored_size_dip_);
 }
 
 bool WaylandWindow::ShouldWindowContentsBeTransparent() const {
@@ -1045,6 +1045,10 @@ void WaylandWindow::ApplyPendingBounds() {
   for (auto& configure : pending_configures_)
     configure.set = true;
   SetBoundsDip(pending_configures_.back().bounds_dip);
+}
+
+bool WaylandWindow::HasPendingConfigures() const {
+  return !pending_configures_.empty();
 }
 
 }  // namespace ui

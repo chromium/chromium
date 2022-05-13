@@ -347,31 +347,14 @@ class WaylandWindow : public PlatformWindow,
   // Applies pending bounds.
   virtual void ApplyPendingBounds();
 
-  // These bounds attributes below have suffixes that indicate units used.
-  // Wayland operates in DIP but the platform operates in physical pixels so
-  // our WaylandWindow is the link that has to translate the units. See also
-  // comments in the implementation.
-  //
-  // Bounds that will be applied when the window state is finalized. The window
-  // may get several configuration events that update the pending bounds, and
-  // only upon finalizing the state is the latest value stored as the current
-  // bounds via |ApplyPendingBounds|. Measured in DIP because updated in the
-  // handler that receives DIP from Wayland.
-  gfx::Rect pending_bounds_dip_;
+  bool HasPendingConfigures() const;
 
-  // The size of the platform window before it went maximized or fullscreen in
-  // dip.
-  gfx::Size restored_size_in_dip_;
+  gfx::Rect pending_bounds_dip() const { return pending_bounds_dip_; }
+  void set_pending_bounds_dip(const gfx::Rect rect) {
+    pending_bounds_dip_ = rect;
+  }
 
-  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
-  // ack_configure with |serial| will be sent to the Wayland compositor.
-  struct PendingConfigure {
-    gfx::Rect bounds_dip;
-    uint32_t serial;
-    // True if this configure has been passed to the compositor for rendering.
-    bool set = false;
-  };
-  base::circular_deque<PendingConfigure> pending_configures_;
+  const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
 
  private:
   friend class WaylandBufferManagerViewportTest;
@@ -494,6 +477,32 @@ class WaylandWindow : public PlatformWindow,
   // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
   // be invoked during UpdateVisualSize() in unit tests.
   bool apply_pending_state_on_update_visual_size_ = false;
+
+  // These bounds attributes below have suffixes that indicate units used.
+  // Wayland operates in DIP but the platform operates in physical pixels so
+  // our WaylandWindow is the link that has to translate the units. See also
+  // comments in the implementation.
+  //
+  // Bounds that will be applied when the window state is finalized. The window
+  // may get several configuration events that update the pending bounds, and
+  // only upon finalizing the state is the latest value stored as the current
+  // bounds via |ApplyPendingBounds|. Measured in DIP because updated in the
+  // handler that receives DIP from Wayland.
+  gfx::Rect pending_bounds_dip_;
+
+  // The size of the platform window before it went maximized or fullscreen in
+  // dip.
+  gfx::Size restored_size_dip_;
+
+  // Pending xdg-shell configures. Once this window is drawn to |bounds_dip|,
+  // ack_configure request with |serial| will be sent to the Wayland compositor.
+  struct PendingConfigure {
+    gfx::Rect bounds_dip;
+    uint32_t serial;
+    // True if this configure has been passed to the compositor for rendering.
+    bool set = false;
+  };
+  base::circular_deque<PendingConfigure> pending_configures_;
 
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;

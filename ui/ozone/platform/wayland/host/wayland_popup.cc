@@ -173,11 +173,11 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
-  pending_bounds_dip_ = gfx::ScaleToRoundedRect(
-      wl::TranslateBoundsToTopLevelCoordinates(
-          gfx::ScaleToRoundedRect(bounds_dip, window_scale()),
-          parent_window()->GetBounds()),
-      1.0 / window_scale());
+  auto bounds_px = gfx::ScaleToRoundedRect(bounds_dip, window_scale());
+  set_pending_bounds_dip(
+      gfx::ScaleToRoundedRect(wl::TranslateBoundsToTopLevelCoordinates(
+                                  bounds_px, parent_window()->GetBounds()),
+                              1.f / window_scale()));
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
@@ -185,7 +185,6 @@ void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
     delegate()->OnDamageRect(gfx::Rect{{0, 0}, GetBounds().size()});
     schedule_redraw_ = false;
   }
-
   ProcessPendingBoundsDip(serial);
 }
 
@@ -201,11 +200,10 @@ void WaylandPopup::UpdateVisualSize(const gfx::Size& size_px,
 }
 
 void WaylandPopup::ApplyPendingBounds() {
-  if (pending_configures_.empty())
-    return;
-
-  base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
-  WaylandWindow::ApplyPendingBounds();
+  if (HasPendingConfigures()) {
+    base::AutoReset<bool> auto_reset(&wayland_sets_bounds_, true);
+    WaylandWindow::ApplyPendingBounds();
+  }
 }
 
 void WaylandPopup::UpdateWindowMask() {

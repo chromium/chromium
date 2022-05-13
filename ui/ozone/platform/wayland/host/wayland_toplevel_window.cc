@@ -100,11 +100,10 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 }
 
 void WaylandToplevelWindow::ApplyPendingBounds() {
-  if (pending_configures_.empty())
-    return;
-  DCHECK(shell_toplevel_);
-
-  WaylandWindow::ApplyPendingBounds();
+  if (HasPendingConfigures()) {
+    DCHECK(shell_toplevel_);
+    WaylandWindow::ApplyPendingBounds();
+  }
 }
 
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(
@@ -388,24 +387,26 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   // the fullscreen mode, wayland may set the width and height to be 1. Instead,
   // explicitly set the bounds to the current desired ones or the previous
   // bounds.
+  gfx::Rect bounds_dip(pending_bounds_dip());
   if (width_dip > 1 && height_dip > 1) {
-    pending_bounds_dip_ = gfx::Rect(x, y, width_dip, height_dip);
+    bounds_dip.SetRect(x, y, width_dip, height_dip);
     if (is_normal && frame_insets_px()) {
-      pending_bounds_dip_.Inset(
+      bounds_dip.Inset(
           -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
-      pending_bounds_dip_.set_origin({x, y});
+      bounds_dip.set_origin({x, y});
     }
   } else if (is_normal) {
-    pending_bounds_dip_.set_size(
-        restored_size_in_dip_.IsEmpty()
-            ? gfx::ScaleToRoundedSize(GetBounds().size(), 1.0 / window_scale())
-            : restored_size_in_dip_);
+    gfx::Size size_in_dip =
+        restored_size_dip().IsEmpty()
+            ? gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / window_scale())
+            : restored_size_dip();
+    bounds_dip.set_size(size_in_dip);
   }
 
-  pending_bounds_dip_ = gfx::ScaleToRoundedRect(
+  set_pending_bounds_dip(gfx::ScaleToRoundedRect(
       AdjustBoundsToConstraintsPx(
-          gfx::ScaleToRoundedRect(pending_bounds_dip_, window_scale())),
-      1 / window_scale());
+          gfx::ScaleToRoundedRect(bounds_dip, window_scale())),
+      1 / window_scale()));
 
   // Store the restored bounds if current state differs from the normal state.
   // It can be client or compositor side change from normal to something else.
@@ -441,7 +442,7 @@ void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   ProcessPendingBoundsDip(serial);
-  pending_bounds_dip_ = gfx::Rect();
+  set_pending_bounds_dip({});
 }
 
 void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px,
