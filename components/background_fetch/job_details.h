@@ -49,6 +49,9 @@ struct JobDetails {
   // requests.
   uint64_t GetDownloadedBytes() const;
 
+  // Whether the job has finished successfully (not aborted).
+  bool IsComplete() const;
+
   void UpdateInProgressBytes(const std::string& download_guid,
                              uint64_t bytes_uploaded,
                              uint64_t bytes_downloaded);

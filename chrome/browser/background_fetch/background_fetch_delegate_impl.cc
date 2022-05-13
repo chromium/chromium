@@ -116,7 +116,11 @@ void BackgroundFetchDelegateImpl::UpdateUI(
 void BackgroundFetchDelegateImpl::OpenItem(
     const offline_items_collection::OpenParams& open_params,
     const offline_items_collection::ContentId& id) {
-  OnUiFinished(id.id, /*activated=*/true);
+  OnUiActivated(id.id);
+
+  auto* job_details = GetJobDetails(id.id, /*allow_null=*/true);
+  if (job_details && job_details->IsComplete())
+    OnUiFinished(id.id);
 }
 
 void BackgroundFetchDelegateImpl::RemoveItem(

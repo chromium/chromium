@@ -68,6 +68,10 @@ uint64_t JobDetails::GetInProgressBytes() const {
   return bytes;
 }
 
+bool JobDetails::IsComplete() const {
+  return job_state == State::kJobComplete;
+}
+
 void JobDetails::UpdateInProgressBytes(const std::string& download_guid,
                                        uint64_t bytes_uploaded,
                                        uint64_t bytes_downloaded) {

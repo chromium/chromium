@@ -104,7 +104,9 @@ const SkBitmap* BackgroundFetchDownload::GetLargeIcon() {
 }
 
 void BackgroundFetchDownload::OnFinished(bool activated) {
-  controller_->OnUiFinished(job_id_, activated);
+  if (activated)
+    controller_->OnUiActivated(job_id_);
+  controller_->OnUiFinished(job_id_);
   // |this| is deleted.
 }
 
