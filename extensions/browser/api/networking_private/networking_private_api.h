@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/values.h"
+#include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/networking_private.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -239,6 +241,9 @@ class NetworkingPrivateGetEnabledNetworkTypesFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> enabled_networks_onc_types);
 };
 
 // Implements the chrome.networkingPrivate.getDeviceStates method.
@@ -259,6 +264,10 @@ class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
+                  device_states);
 };
 
 // Implements the chrome.networkingPrivate.enableNetworkType method.
@@ -279,6 +288,9 @@ class NetworkingPrivateEnableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.disableNetworkType method.
@@ -299,6 +311,9 @@ class NetworkingPrivateDisableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.requestNetworkScan method.
@@ -319,6 +334,9 @@ class NetworkingPrivateRequestNetworkScanFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(bool success);
 };
 
 // Implements the chrome.networkingPrivate.startConnect method.
@@ -504,6 +522,9 @@ class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> global_policies);
 };
 
 class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
@@ -523,6 +544,9 @@ class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  void Result(std::unique_ptr<base::Value> certificate_list);
 };
 
 }  // namespace extensions

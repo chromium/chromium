@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -20,6 +21,8 @@
 #include "extensions/common/api/networking_private.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/features/feature_provider.h"
+
+#include "base/logging.h"
 
 namespace extensions {
 
@@ -466,12 +469,18 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  base::Value enabled_networks_onc_types(
-      GetDelegate(browser_context())->GetEnabledNetworkTypes());
-  if (enabled_networks_onc_types.GetList().empty())
-    return RespondNow(Error(networking_private::kErrorNotSupported));
+  GetDelegate(browser_context())
+      ->GetEnabledNetworkTypes(base::BindOnce(
+          &NetworkingPrivateGetEnabledNetworkTypesFunction::Result, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
+    std::unique_ptr<base::Value> enabled_networks_onc_types) {
+  if (enabled_networks_onc_types->GetList().empty())
+    return Respond(Error(networking_private::kErrorNotSupported));
   base::Value enabled_networks_list(base::Value::Type::LIST);
-  for (const auto& entry : enabled_networks_onc_types.GetList()) {
+  for (const auto& entry : enabled_networks_onc_types->GetList()) {
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
       enabled_networks_list.Append(
@@ -486,7 +495,7 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
     }
   }
-  return RespondNow(OneArgument(std::move(enabled_networks_list)));
+  return Respond(OneArgument(std::move(enabled_networks_list)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -498,16 +507,22 @@ NetworkingPrivateGetDeviceStatesFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetDeviceStatesFunction::Run() {
-  std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList> device_states(
-      GetDelegate(browser_context())->GetDeviceStateList());
+  GetDelegate(browser_context())
+      ->GetDeviceStateList(base::BindOnce(
+          &NetworkingPrivateGetDeviceStatesFunction::Result, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateGetDeviceStatesFunction::Result(
+    std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList> device_states) {
   if (!device_states)
-    return RespondNow(Error(networking_private::kErrorNotSupported));
+    return Respond(Error(networking_private::kErrorNotSupported));
 
   base::Value::List device_state_list;
   for (const auto& properties : *device_states)
     device_state_list.Append(
         base::Value::FromUniquePtrValue(properties->ToValue()));
-  return RespondNow(OneArgument(base::Value(std::move(device_state_list))));
+  return Respond(OneArgument(base::Value(std::move(device_state_list))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -523,11 +538,18 @@ NetworkingPrivateEnableNetworkTypeFunction::Run() {
       private_api::EnableNetworkType::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!GetDelegate(browser_context())
-           ->EnableNetworkType(private_api::ToString(params->network_type))) {
-    return RespondNow(Error(networking_private::kErrorNotSupported));
-  }
-  return RespondNow(NoArguments());
+  GetDelegate(browser_context())
+      ->EnableNetworkType(
+          private_api::ToString(params->network_type),
+          base::BindOnce(&NetworkingPrivateEnableNetworkTypeFunction::Result,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+void NetworkingPrivateEnableNetworkTypeFunction::Result(bool success) {
+  if (!success)
+    return Respond(Error(networking_private::kErrorNotSupported));
+  return Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -542,11 +564,18 @@ NetworkingPrivateDisableNetworkTypeFunction::Run() {
   std::unique_ptr<private_api::DisableNetworkType::Params> params =
       private_api::DisableNetworkType::Params::Create(args());
 
-  if (!GetDelegate(browser_context())
-           ->DisableNetworkType(private_api::ToString(params->network_type))) {
-    return RespondNow(Error(networking_private::kErrorNotSupported));
-  }
-  return RespondNow(NoArguments());
+  GetDelegate(browser_context())
+      ->DisableNetworkType(
+          private_api::ToString(params->network_type),
+          base::BindOnce(&NetworkingPrivateDisableNetworkTypeFunction::Result,
+                         this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateDisableNetworkTypeFunction::Result(bool success) {
+  if (!success)
+    return Respond(Error(networking_private::kErrorNotSupported));
+  return Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -562,9 +591,18 @@ NetworkingPrivateRequestNetworkScanFunction::Run() {
       private_api::RequestNetworkScan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string network_type = private_api::ToString(params->network_type);
-  if (!GetDelegate(browser_context())->RequestScan(network_type))
-    return RespondNow(Error(networking_private::kErrorNotSupported));
-  return RespondNow(NoArguments());
+  GetDelegate(browser_context())
+      ->RequestScan(
+          network_type,
+          base::BindOnce(&NetworkingPrivateRequestNetworkScanFunction::Result,
+                         this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateRequestNetworkScanFunction::Result(bool success) {
+  if (!success)
+    return Respond(Error(networking_private::kErrorNotSupported));
+  return Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -840,13 +878,21 @@ NetworkingPrivateGetGlobalPolicyFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetGlobalPolicyFunction::Run() {
-  base::Value policy_dict(GetDelegate(browser_context())->GetGlobalPolicy());
+  GetDelegate(browser_context())
+      ->GetGlobalPolicy(base::BindOnce(
+          &NetworkingPrivateGetGlobalPolicyFunction::Result, this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateGetGlobalPolicyFunction::Result(
+    std::unique_ptr<base::Value> policy_dict) {
   // private_api::GlobalPolicy is a subset of the global policy dictionary
   // (by definition), so use the api setter/getter to generate the subset.
   std::unique_ptr<private_api::GlobalPolicy> policy(
-      private_api::GlobalPolicy::FromValue(policy_dict));
+      private_api::GlobalPolicy::FromValue(*policy_dict));
   DCHECK(policy);
-  return RespondNow(
+  return Respond(
       ArgumentList(private_api::GetGlobalPolicy::Results::Create(*policy)));
 }
 
@@ -863,9 +909,15 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  base::Value certificate_lists(
-      GetDelegate(browser_context())->GetCertificateLists());
-  return RespondNow(OneArgument(std::move(certificate_lists)));
+  GetDelegate(browser_context())
+      ->GetCertificateLists(base::BindOnce(
+          &NetworkingPrivateGetCertificateListsFunction::Result, this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void NetworkingPrivateGetCertificateListsFunction::Result(
+    std::unique_ptr<base::Value> certificate_lists) {
+  return Respond(OneArgument(std::move(*certificate_lists)));
 }
 
 }  // namespace extensions

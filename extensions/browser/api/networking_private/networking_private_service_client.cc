@@ -332,47 +332,53 @@ void NetworkingPrivateServiceClient::SelectCellularMobileNetwork(
   std::move(failure_callback).Run(networking_private::kErrorNotSupported);
 }
 
-base::Value NetworkingPrivateServiceClient::GetEnabledNetworkTypes() {
+void NetworkingPrivateServiceClient::GetEnabledNetworkTypes(
+    EnabledNetworkTypesCallback callback) {
   base::Value network_list(base::Value::Type::LIST);
   network_list.Append(::onc::network_type::kWiFi);
-  return network_list;
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(std::move(network_list)));
 }
 
-std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
-NetworkingPrivateServiceClient::GetDeviceStateList() {
+void NetworkingPrivateServiceClient::GetDeviceStateList(
+    DeviceStateListCallback callback) {
   std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
   std::unique_ptr<api::networking_private::DeviceStateProperties> properties(
       new api::networking_private::DeviceStateProperties);
   properties->type = api::networking_private::NETWORK_TYPE_WIFI;
   properties->state = api::networking_private::DEVICE_STATE_TYPE_ENABLED;
   device_state_list->push_back(std::move(properties));
-  return device_state_list;
+  std::move(callback).Run(std::move(device_state_list));
 }
 
-base::Value NetworkingPrivateServiceClient::GetGlobalPolicy() {
-  return base::Value(base::Value::Type::DICTIONARY);
+void NetworkingPrivateServiceClient::GetGlobalPolicy(
+    GetGlobalPolicyCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue(
+      base::Value(base::Value::Type::DICTIONARY)));
 }
 
-base::Value NetworkingPrivateServiceClient::GetCertificateLists() {
-  return base::Value(base::Value::Type::DICTIONARY);
+void NetworkingPrivateServiceClient::GetCertificateLists(
+    GetCertificateListsCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue(
+      base::Value(base::Value::Type::DICTIONARY)));
 }
 
-bool NetworkingPrivateServiceClient::EnableNetworkType(
-    const std::string& type) {
-  return false;
+void NetworkingPrivateServiceClient::EnableNetworkType(const std::string& type,
+                                                       BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateServiceClient::DisableNetworkType(
-    const std::string& type) {
-  return false;
+void NetworkingPrivateServiceClient::DisableNetworkType(const std::string& type,
+                                                        BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateServiceClient::RequestScan(
-    const std::string& /* type */) {
+void NetworkingPrivateServiceClient::RequestScan(const std::string& /* type */,
+                                                 BoolCallback callback) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&WiFiService::RequestNetworkScan,
                                         base::Unretained(wifi_service_.get())));
-  return true;
+  std::move(callback).Run(true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

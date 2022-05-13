@@ -602,41 +602,47 @@ void NetworkingPrivateLinux::SelectCellularMobileNetwork(
                      std::move(failure_callback));
 }
 
-base::Value NetworkingPrivateLinux::GetEnabledNetworkTypes() {
+void NetworkingPrivateLinux::GetEnabledNetworkTypes(
+    EnabledNetworkTypesCallback callback) {
   base::Value network_list(base::Value::Type::LIST);
   network_list.Append(::onc::network_type::kWiFi);
-  return network_list;
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(std::move(network_list)));
 }
 
-std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
-NetworkingPrivateLinux::GetDeviceStateList() {
+void NetworkingPrivateLinux::GetDeviceStateList(
+    DeviceStateListCallback callback) {
   std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
   std::unique_ptr<api::networking_private::DeviceStateProperties> properties(
       new api::networking_private::DeviceStateProperties);
   properties->type = api::networking_private::NETWORK_TYPE_WIFI;
   properties->state = api::networking_private::DEVICE_STATE_TYPE_ENABLED;
   device_state_list->push_back(std::move(properties));
-  return device_state_list;
+  std::move(callback).Run(std::move(device_state_list));
 }
 
-base::Value NetworkingPrivateLinux::GetGlobalPolicy() {
-  return {};
+void NetworkingPrivateLinux::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue({}));
 }
 
-base::Value NetworkingPrivateLinux ::GetCertificateLists() {
-  return {};
+void NetworkingPrivateLinux ::GetCertificateLists(
+    GetCertificateListsCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue({}));
 }
 
-bool NetworkingPrivateLinux::EnableNetworkType(const std::string& type) {
-  return false;
+void NetworkingPrivateLinux::EnableNetworkType(const std::string& type,
+                                               BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateLinux::DisableNetworkType(const std::string& type) {
-  return false;
+void NetworkingPrivateLinux::DisableNetworkType(const std::string& type,
+                                                BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateLinux::RequestScan(const std::string& /* type */) {
-  return GetNetworksForScanRequest();
+void NetworkingPrivateLinux::RequestScan(const std::string& /* type */,
+                                         BoolCallback callback) {
+  std::move(callback).Run(GetNetworksForScanRequest());
 }
 
 void NetworkingPrivateLinux::AddObserver(
