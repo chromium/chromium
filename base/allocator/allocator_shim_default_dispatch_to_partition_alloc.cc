@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -26,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
@@ -651,6 +653,8 @@ void ConfigurePartitions(
 
 #if defined(PA_ALLOW_PCSCAN)
 void EnablePCScan(base::internal::PCScan::InitConfig config) {
+  partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
+      &::base::PlatformThread::SetName);
   internal::PCScan::Initialize(config);
 
   internal::PCScan::RegisterScannableRoot(Allocator());

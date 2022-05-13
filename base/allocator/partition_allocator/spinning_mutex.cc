@@ -23,7 +23,7 @@
 #endif  // defined(PA_HAS_LINUX_KERNEL)
 
 #if !defined(PA_HAS_FAST_MUTEX)
-#include "base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sched.h>

@@ -12,13 +12,10 @@
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/test/bind.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,15 +42,6 @@ constexpr size_t kFillCountForMediumBucket =
     kDefaultCountForMediumBucket / ThreadCache::kBatchFillRatio;
 
 static_assert(kMediumSize <= ThreadCache::kDefaultSizeThreshold, "");
-
-class LambdaThreadDelegate : public base::PlatformThread::Delegate {
- public:
-  explicit LambdaThreadDelegate(base::RepeatingClosure f) : f_(std::move(f)) {}
-  void ThreadMain() override { f_.Run(); }
-
- private:
-  base::RepeatingClosure f_;
-};
 
 class DeltaCounter {
  public:
@@ -358,24 +346,97 @@ TEST_P(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
   root_->Free(ptr);
 }
 
+namespace {
+
+size_t FillThreadCacheAndReturnIndex(ThreadSafePartitionRoot* root,
+                                     size_t size,
+                                     bool with_denser_bucket_distribution,
+                                     size_t count = 1) {
+  uint16_t bucket_index =
+      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+          size, with_denser_bucket_distribution);
+  std::vector<void*> allocated_data;
+
+  for (size_t i = 0; i < count; ++i) {
+    allocated_data.push_back(root->Alloc(size, ""));
+  }
+  for (void* ptr : allocated_data) {
+    root->Free(ptr);
+  }
+
+  return bucket_index;
+}
+
+// TODO(1151236): To remove callback from partition allocator's DEPS,
+// rewrite the tests without BindLambdaForTesting and RepeatingClosure.
+// However this makes a little annoying to add more tests using their
+// own threads. Need to support an easier way to implement tests using
+// PlatformThreadForTesting::Create().
+class ThreadDelegateForMultipleThreadCaches
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForMultipleThreadCaches(ThreadCache* parent_thread_cache,
+                                        ThreadSafePartitionRoot* root,
+                                        bool with_denser_bucket_distribution)
+      : parent_thread_tcache_(parent_thread_cache),
+        root_(root),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override {
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
+    FillThreadCacheAndReturnIndex(root_, kMediumSize,
+                                  with_denser_bucket_distribution_);
+    auto* tcache = root_->thread_cache_for_testing();
+    EXPECT_TRUE(tcache);
+
+    EXPECT_NE(parent_thread_tcache_, tcache);
+  }
+
+ private:
+  ThreadCache* parent_thread_tcache_ = nullptr;
+  ThreadSafePartitionRoot* root_ = nullptr;
+  bool with_denser_bucket_distribution_;
+};
+
+}  // namespace
+
 TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCaches) {
   FillThreadCacheAndReturnIndex(kMediumSize);
   auto* parent_thread_tcache = root_->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    FillThreadCacheAndReturnIndex(kMediumSize);
-    auto* tcache = root_->thread_cache_for_testing();
-    EXPECT_TRUE(tcache);
+  ThreadDelegateForMultipleThreadCaches delegate(parent_thread_tcache, root_,
+                                                 GetParam());
 
-    EXPECT_NE(parent_thread_tcache, tcache);
-  })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
-  base::PlatformThread::Join(thread_handle);
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
+
+namespace {
+
+class ThreadDelegateForThreadCacheReclaimedWhenThreadExits
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForThreadCacheReclaimedWhenThreadExits(
+      ThreadSafePartitionRoot* root,
+      void*& other_thread_ptr)
+      : root_(root), other_thread_ptr_(other_thread_ptr) {}
+
+  void ThreadMain() override {
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
+    other_thread_ptr_ = root_->Alloc(kMediumSize, "");
+    root_->Free(other_thread_ptr_);
+    // |other_thread_ptr| is now in the thread cache.
+  }
+
+ private:
+  ThreadSafePartitionRoot* root_ = nullptr;
+  void*& other_thread_ptr_;
+};
+
+}  // namespace
 
 TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   // Make sure that there is always at least one object allocated in the test
@@ -387,18 +448,14 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
     tmp.push_back(root_->Alloc(kMediumSize, ""));
   }
 
-  void* other_thread_ptr;
+  void* other_thread_ptr = nullptr;
+  ThreadDelegateForThreadCacheReclaimedWhenThreadExits delegate(
+      root_, other_thread_ptr);
 
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    other_thread_ptr = root_->Alloc(kMediumSize, "");
-    root_->Free(other_thread_ptr);
-    // |other_thread_ptr| is now in the thread cache.
-  })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
-  base::PlatformThread::Join(thread_handle);
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 
   void* this_thread_ptr = root_->Alloc(kMediumSize, "");
   // |other_thread_ptr| was returned to the central allocator, and is returned
@@ -420,6 +477,38 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
 #define MAYBE_ThreadCacheRegistry ThreadCacheRegistry
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)
 
+namespace {
+
+class ThreadDelegateForThreadCacheRegistry
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForThreadCacheRegistry(ThreadCache* parent_thread_cache,
+                                       ThreadSafePartitionRoot* root,
+                                       bool with_denser_bucket_distribution)
+      : parent_thread_tcache_(parent_thread_cache),
+        root_(root),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override {
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
+    FillThreadCacheAndReturnIndex(root_, kSmallSize,
+                                  with_denser_bucket_distribution_);
+    auto* tcache = root_->thread_cache_for_testing();
+    EXPECT_TRUE(tcache);
+
+    internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
+    EXPECT_EQ(tcache->prev_for_testing(), nullptr);
+    EXPECT_EQ(tcache->next_for_testing(), parent_thread_tcache_);
+  }
+
+ private:
+  ThreadCache* parent_thread_tcache_ = nullptr;
+  ThreadSafePartitionRoot* root_ = nullptr;
+  bool with_denser_bucket_distribution_;
+};
+
+}  // namespace
+
 TEST_P(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
   auto* parent_thread_tcache = root_->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
@@ -430,20 +519,13 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
     EXPECT_EQ(parent_thread_tcache->next_, nullptr);
   }
 
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    FillThreadCacheAndReturnIndex(kSmallSize);
-    auto* tcache = root_->thread_cache_for_testing();
-    EXPECT_TRUE(tcache);
+  ThreadDelegateForThreadCacheRegistry delegate(parent_thread_tcache, root_,
+                                                GetParam());
 
-    internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
-    EXPECT_EQ(tcache->prev_, nullptr);
-    EXPECT_EQ(tcache->next_, parent_thread_tcache);
-  })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
-  base::PlatformThread::Join(thread_handle);
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
@@ -499,13 +581,23 @@ TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
-TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
-  FillThreadCacheAndReturnIndex(kMediumSize);
-  uint64_t alloc_count = root_->thread_cache_for_testing()->stats_.alloc_count;
+namespace {
 
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
+class ThreadDelegateForMultipleThreadCachesAccounting
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForMultipleThreadCachesAccounting(
+      ThreadSafePartitionRoot* root,
+      int alloc_ount,
+      bool with_denser_bucket_distribution)
+      : root_(root),
+        alloc_count_(alloc_count),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override {
     EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
-    size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize);
+    size_t bucket_index = FillThreadCacheAndReturnIndex(
+        root_, kMediumSize, with_denser_bucket_distribution_);
 
     ThreadCacheStats stats;
     ThreadCacheRegistry::Instance().DumpStats(false, &stats);
@@ -517,12 +609,29 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 
     uint64_t this_thread_alloc_count =
         root_->thread_cache_for_testing()->stats_.alloc_count;
-    EXPECT_EQ(alloc_count + this_thread_alloc_count, stats.alloc_count);
-  })};
+    EXPECT_EQ(alloc_count_ + this_thread_alloc_count, stats.alloc_count);
+  }
 
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
-  base::PlatformThread::Join(thread_handle);
+ private:
+ private:
+  ThreadSafePartitionRoot* root_ = nullptr;
+  bool with_denser_bucket_distribution_;
+  const int alloc_count_;
+};
+
+}  // namespace
+
+TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
+  FillThreadCacheAndReturnIndex(kMediumSize);
+  uint64_t alloc_count = root_->thread_cache_for_testing()->stats_.alloc_count;
+
+  ThreadDelegateForMultipleThreadCachesAccounting delegate(root_, alloc_count,
+                                                           GetParam());
+
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
 
 #endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
@@ -533,6 +642,58 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 #else
 #define MAYBE_PurgeAll PurgeAll
 #endif
+
+namespace {
+
+class ThreadDelegateForPurgeAll
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForPurgeAll(ThreadSafePartitionRoot* root,
+                            ThreadCache*& other_thread_tcache,
+                            std::atomic<bool>& other_thread_started,
+                            std::atomic<bool>& purge_called,
+                            int bucket_index,
+                            bool with_denser_bucket_distribution)
+      : root_(root),
+        other_thread_tcache_(other_thread_tcache),
+        other_thread_started_(other_thread_started),
+        purge_called_(purge_called),
+        bucket_index_(bucket_index),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override NO_THREAD_SAFETY_ANALYSIS {
+    FillThreadCacheAndReturnIndex(root_, kSmallSize,
+                                  with_denser_bucket_distribution_);
+    other_thread_tcache_ = root_->thread_cache_for_testing();
+
+    other_thread_started_.store(true, std::memory_order_release);
+    while (!purge_called_.load(std::memory_order_acquire)) {
+    }
+
+    // Purge() was not triggered from the other thread.
+    EXPECT_EQ(kFillCountForSmallBucket,
+              other_thread_tcache_->bucket_count_for_testing(bucket_index_));
+    // Allocations do not trigger Purge().
+    void* data = root_->Alloc(kSmallSize, "");
+    EXPECT_EQ(kFillCountForSmallBucket - 1,
+              other_thread_tcache_->bucket_count_for_testing(bucket_index_));
+    // But deallocations do.
+    root_->Free(data);
+    EXPECT_EQ(0u,
+              other_thread_tcache_->bucket_count_for_testing(bucket_index_));
+  }
+
+ private:
+  ThreadSafePartitionRoot* root_ = nullptr;
+  ThreadCache*& other_thread_tcache_;
+  std::atomic<bool>& other_thread_started_;
+  std::atomic<bool>& purge_called_;
+  const int bucket_index_;
+  bool with_denser_bucket_distribution_;
+};
+
+}  // namespace
+
 TEST_P(PartitionAllocThreadCacheTest, MAYBE_PurgeAll)
 NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> other_thread_started{false};
@@ -542,30 +703,12 @@ NO_THREAD_SAFETY_ANALYSIS {
   ThreadCache* this_thread_tcache = root_->thread_cache_for_testing();
   ThreadCache* other_thread_tcache = nullptr;
 
-  LambdaThreadDelegate delegate{
-      base::BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
-        FillThreadCacheAndReturnIndex(kSmallSize);
-        other_thread_tcache = root_->thread_cache_for_testing();
-
-        other_thread_started.store(true, std::memory_order_release);
-        while (!purge_called.load(std::memory_order_acquire)) {
-        }
-
-        // Purge() was not triggered from the other thread.
-        EXPECT_EQ(kFillCountForSmallBucket,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-        // Allocations do not trigger Purge().
-        void* data = root_->Alloc(kSmallSize, "");
-        EXPECT_EQ(kFillCountForSmallBucket - 1,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-        // But deallocations do.
-        root_->Free(data);
-        EXPECT_EQ(0u,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-      })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
+  ThreadDelegateForPurgeAll delegate(root_, other_thread_tcache,
+                                     other_thread_started, purge_called,
+                                     bucket_index, GetParam());
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
 
   while (!other_thread_started.load(std::memory_order_acquire)) {
   }
@@ -583,7 +726,7 @@ NO_THREAD_SAFETY_ANALYSIS {
             other_thread_tcache->bucket_count_for_testing(bucket_index));
 
   purge_called.store(true, std::memory_order_release);
-  base::PlatformThread::Join(thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
 
 TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
@@ -634,6 +777,59 @@ TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
   // in the multiple threads test.
 }
 
+namespace {
+
+void FillThreadCacheWithMemory(ThreadSafePartitionRoot* root,
+                               size_t target_cached_memory,
+                               bool with_denser_bucket_distribution) {
+  for (int batch : {1, 2, 4, 8, 16}) {
+    for (size_t allocation_size = 1;
+         allocation_size <= ThreadCache::kLargeSizeThreshold;
+         allocation_size++) {
+      FillThreadCacheAndReturnIndex(root, allocation_size, batch,
+                                    with_denser_bucket_distribution);
+
+      if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
+        return;
+    }
+  }
+
+  ASSERT_GE(ThreadCache::Get()->CachedMemory(), target_cached_memory);
+}
+
+class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForPeriodicPurgeSumsOverAllThreads(
+      ThreadSafePartitionRoot* root,
+      std::atomic<int>& allocations_done,
+      std::atomic<bool>& can_finish,
+      bool with_denser_bucket_distribution)
+      : root_(root),
+        allocations_done_(allocations_done),
+        can_finish_(can_finish),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override {
+    FillThreadCacheWithMemory(
+        root_, 5 * ThreadCacheRegistry::kMinCachedMemoryForPurging,
+        with_denser_bucket_distribution_);
+    allocations_done_.fetch_add(1, std::memory_order_release);
+
+    // This thread needs to be alive when the next periodic purge task runs.
+    while (!can_finish_.load(std::memory_order_acquire)) {
+    }
+  }
+
+ private:
+  ThreadSafePartitionRoot* root_ = nullptr;
+  std::atomic<int>& allocations_done_;
+  std::atomic<bool>& can_finish_;
+  bool with_denser_bucket_distribution_;
+};
+
+}  // namespace
+
 // Disabled due to flakiness: crbug.com/1220371
 TEST_P(PartitionAllocThreadCacheTest,
        DISABLED_PeriodicPurgeSumsOverAllThreads) {
@@ -667,23 +863,18 @@ TEST_P(PartitionAllocThreadCacheTest,
 
   std::atomic<int> allocations_done{0};
   std::atomic<bool> can_finish{false};
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    FillThreadCacheWithMemory(5 *
-                              ThreadCacheRegistry::kMinCachedMemoryForPurging);
-    allocations_done.fetch_add(1, std::memory_order_release);
+  ThreadDelegateForPeriodicPurgeSumsOverAllThreads delegate(
+      root_, allocations_done, can_finish, GetParam());
 
-    // This thread needs to be alive when the next periodic purge task runs.
-    while (!can_finish.load(std::memory_order_acquire)) {
-    }
-  })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
-  base::PlatformThreadHandle thread_handle_2;
-  base::PlatformThread::Create(0, &delegate, &thread_handle_2);
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
+  internal::base::PlatformThreadHandle thread_handle_2;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle_2);
 
   while (allocations_done.load(std::memory_order_acquire) != 2) {
-    base::PlatformThread::YieldCurrentThread();
+    internal::base::PlatformThreadForTesting::YieldCurrentThread();
   }
 
   // Many allocations on the other thread.
@@ -691,8 +882,8 @@ TEST_P(PartitionAllocThreadCacheTest,
   EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   can_finish.store(true, std::memory_order_release);
-  base::PlatformThread::Join(thread_handle);
-  base::PlatformThread::Join(thread_handle_2);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle_2);
 }
 
 // TODO(https://crbug.com/1287799): Flaky on IOS.
@@ -769,6 +960,55 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
 #define MAYBE_DynamicCountPerBucketMultipleThreads \
   DynamicCountPerBucketMultipleThreads
 #endif
+
+namespace {
+
+class ThreadDelegateForDynamicCountPerBucketMultipleThreads
+    : public internal::base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForDynamicCountPerBucketMultipleThreads(
+      ThreadSafePartitionRoot* root,
+      std::atomic<bool>& other_thread_started,
+      std::atomic<bool>& threshold_changed,
+      int bucket_index,
+      bool with_denser_bucket_distribution)
+      : root_(root),
+        other_thread_started_(other_thread_started),
+        threshold_changed_(threshold_changed),
+        bucket_index_(bucket_index),
+        with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
+
+  void ThreadMain() override {
+    FillThreadCacheAndReturnIndex(root_, kSmallSize,
+                                  with_denser_bucket_distribution_,
+                                  kDefaultCountForSmallBucket + 10);
+    auto* this_thread_tcache = root_->thread_cache_for_testing();
+    // More than the default since the multiplier has changed.
+    EXPECT_GT(this_thread_tcache->bucket_count_for_testing(bucket_index_),
+              kDefaultCountForSmallBucket + 10);
+
+    other_thread_started_.store(true, std::memory_order_release);
+    while (!threshold_changed_.load(std::memory_order_acquire)) {
+    }
+
+    void* data = root_->Alloc(kSmallSize, "");
+    // Deallocations trigger limit enforcement.
+    root_->Free(data);
+    // Since the bucket is too full, it gets halved by batched deallocation.
+    EXPECT_EQ(static_cast<uint8_t>(ThreadCache::kSmallBucketBaseCount / 2),
+              this_thread_tcache->bucket_count_for_testing(bucket_index_));
+  }
+
+ private:
+  ThreadSafePartitionRoot* root_ = nullptr;
+  std::atomic<bool>& other_thread_started_;
+  std::atomic<bool>& threshold_changed_;
+  const int bucket_index_;
+  bool with_denser_bucket_distribution_;
+};
+
+}  // namespace
+
 TEST_P(PartitionAllocThreadCacheTest,
        MAYBE_DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
@@ -784,27 +1024,12 @@ TEST_P(PartitionAllocThreadCacheTest,
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
       ThreadCache::kDefaultMultiplier + 1);
 
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket + 10);
-    auto* this_thread_tcache = root_->thread_cache_for_testing();
-    // More than the default since the multiplier has changed.
-    EXPECT_GT(this_thread_tcache->buckets_[bucket_index].count,
-              kDefaultCountForSmallBucket + 10);
+  ThreadDelegateForDynamicCountPerBucketMultipleThreads delegate(
+      root_, other_thread_started, threshold_changed, bucket_index, GetParam());
 
-    other_thread_started.store(true, std::memory_order_release);
-    while (!threshold_changed.load(std::memory_order_acquire)) {
-    }
-
-    void* data = root_->Alloc(kSmallSize, "");
-    // Deallocations trigger limit enforcement.
-    root_->Free(data);
-    // Since the bucket is too full, it gets halved by batched deallocation.
-    EXPECT_EQ(static_cast<uint8_t>(ThreadCache::kSmallBucketBaseCount / 2),
-              this_thread_tcache->bucket_count_for_testing(bucket_index));
-  })};
-
-  base::PlatformThreadHandle thread_handle;
-  base::PlatformThread::Create(0, &delegate, &thread_handle);
+  internal::base::PlatformThreadHandle thread_handle;
+  internal::base::PlatformThreadForTesting::Create(0, &delegate,
+                                                   &thread_handle);
 
   while (!other_thread_started.load(std::memory_order_acquire)) {
   }
@@ -812,7 +1037,7 @@ TEST_P(PartitionAllocThreadCacheTest,
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(1.);
   threshold_changed.store(true, std::memory_order_release);
 
-  base::PlatformThread::Join(thread_handle);
+  internal::base::PlatformThreadForTesting::Join(thread_handle);
 }
 
 TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {

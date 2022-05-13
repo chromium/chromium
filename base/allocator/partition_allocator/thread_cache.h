@@ -306,7 +306,7 @@ class BASE_EXPORT ThreadCache {
     return buckets_[index].count;
   }
 
-  base::PlatformThreadId thread_id() const { return thread_id_; }
+  internal::base::PlatformThreadId thread_id() const { return thread_id_; }
 
   // Sets the maximum size of allocations that may be cached by the thread
   // cache. This applies to all threads. However, the maximum size is bounded by
@@ -325,6 +325,15 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kDefaultSizeThreshold;
   static constexpr size_t kLargeSizeThreshold =
       ThreadCacheLimits::kLargeSizeThreshold;
+
+  const ThreadCache* prev_for_testing() const
+      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+    return prev_;
+  }
+  const ThreadCache* next_for_testing() const
+      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+    return next_;
+  }
 
  private:
   friend class tools::HeapDumper;
@@ -405,7 +414,8 @@ class BASE_EXPORT ThreadCache {
 
   // Cold data below.
   PartitionRoot<>* const root_;
-  const base::PlatformThreadId thread_id_;
+
+  const internal::base::PlatformThreadId thread_id_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;
 #endif

@@ -35,6 +35,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -43,6 +44,7 @@
 
 namespace partition_alloc::tools {
 
+using ::base::PlatformThreadId;
 using partition_alloc::internal::BucketIndexLookup;
 using partition_alloc::internal::PartitionBucket;
 using partition_alloc::internal::SlotSpanMetadata;

@@ -6,8 +6,6 @@ noparent = True
 include_rules = [
     "+base/allocator/buildflags.h",
     "+base/base_export.h",
-    "+base/bind.h",
-    "+base/callback.h",
     "+base/check.h",
     "+base/check_op.h",
     "+base/compiler_specific.h",
@@ -40,7 +38,6 @@ include_rules += [
     "+base/debug/proc_maps_linux.h",
     "+base/strings/stringprintf.h",
     "+base/system/sys_info.h",
-    "+base/test/bind.h",
     "+base/test/gtest_util.h",
     "+base/time/time_override.h",
     "+base/timer/lap_timer.h",

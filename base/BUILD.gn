@@ -2725,12 +2725,7 @@ test("base_perftests") {
     "synchronization/waitable_event_perftest.cc",
     "threading/thread_perftest.cc",
   ]
-  if (use_partition_alloc) {
-    sources += [
-      "allocator/partition_allocator/partition_alloc_perftest.cc",
-      "allocator/partition_allocator/partition_lock_perftest.cc",
-    ]
-  }
+
   deps = [
     ":base",
     "//base/test:test_support",
@@ -2738,6 +2733,15 @@ test("base_perftests") {
     "//testing/gtest",
     "//testing/perf",
   ]
+
+  if (use_partition_alloc) {
+    sources += [
+      "allocator/partition_allocator/partition_alloc_perftest.cc",
+      "allocator/partition_allocator/partition_lock_perftest.cc",
+    ]
+    deps += [ "allocator/partition_allocator:test_support" ]
+  }
+
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
@@ -3669,6 +3673,7 @@ test("base_unittests") {
         "allocator/partition_allocator/partition_alloc_base/native_library_pa_unittest.cc",
       ]
     }
+    deps += [ "allocator/partition_allocator:test_support" ]
   }
 
   if (is_mac) {

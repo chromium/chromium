@@ -16,7 +16,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
@@ -475,7 +474,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
 ThreadCache::ThreadCache(PartitionRoot<>* root)
     : should_purge_(false),
       root_(root),
-      thread_id_(base::PlatformThread::CurrentId()),
+      thread_id_(internal::base::PlatformThread::CurrentId()),
       next_(nullptr),
       prev_(nullptr) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);

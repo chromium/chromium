@@ -11,8 +11,8 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
@@ -38,7 +38,7 @@ void UserFaultFDThread(int uffd) {
   PA_DCHECK(-1 != uffd);
 
   static constexpr char kThreadName[] = "PCScanPFHandler";
-  ::base::PlatformThread::SetName(kThreadName);
+  internal::base::PlatformThread::SetName(kThreadName);
 
   while (true) {
     // Pool on the uffd descriptor for page fault events.

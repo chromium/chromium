@@ -30,6 +30,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/ref_counted.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -47,7 +48,6 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/immediate_crash.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -1212,7 +1212,7 @@ class PCScan::PCScanThread final {
                   // Ideally we should avoid mixing base:: and std:: API for
                   // threading, but this is useful for visualizing the pcscan
                   // thread in chrome://tracing.
-                  base::PlatformThread::SetName(kThreadName);
+                  internal::base::PlatformThread::SetName(kThreadName);
                   instance->TaskLoop();
                 },
                 this}

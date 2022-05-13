@@ -84,7 +84,7 @@ constexpr const char* MutatorIdToTracingString(
 class StatsReporterImpl final : public partition_alloc::StatsReporter {
  public:
   void ReportTraceEvent(internal::StatsCollector::ScannerId id,
-                        [[maybe_unused]] const PlatformThreadId tid,
+                        [[maybe_unused]] uint32_t tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
 #if BUILDFLAG(ENABLE_BASE_TRACING)
@@ -103,7 +103,7 @@ class StatsReporterImpl final : public partition_alloc::StatsReporter {
   }
 
   void ReportTraceEvent(internal::StatsCollector::MutatorId id,
-                        [[maybe_unused]] const PlatformThreadId tid,
+                        [[maybe_unused]] uint32_t tid,
                         int64_t start_time_ticks_internal_value,
                         int64_t end_time_ticks_internal_value) override {
 #if BUILDFLAG(ENABLE_BASE_TRACING)

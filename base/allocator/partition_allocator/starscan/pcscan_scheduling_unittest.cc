@@ -6,7 +6,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "testing/gtest/include/gtest/gtest.h"

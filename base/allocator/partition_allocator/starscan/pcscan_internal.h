@@ -114,11 +114,12 @@ class PCScanInternal final {
   friend class partition_alloc::internal::StarScanSnapshot;
 
   using StackTops = std::unordered_map<
-      ::base::PlatformThreadId,
+      internal::base::PlatformThreadId,
       void*,
-      std::hash<::base::PlatformThreadId>,
+      std::hash<internal::base::PlatformThreadId>,
       std::equal_to<>,
-      MetadataAllocator<std::pair<const ::base::PlatformThreadId, void*>>>;
+      MetadataAllocator<
+          std::pair<const internal::base::PlatformThreadId, void*>>>;
 
   PCScanInternal();
 

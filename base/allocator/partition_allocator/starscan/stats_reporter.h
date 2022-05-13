@@ -6,9 +6,11 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STATS_REPORTER_H_
 
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
-#include "base/threading/platform_thread.h"
 
 namespace partition_alloc {
+
+static_assert(sizeof(uint32_t) >= sizeof(internal::base::PlatformThreadId),
+              "sizeof(tid) must be larger than sizeof(PlatformThreadId)");
 
 // StatsReporter is a wrapper to invoke TRACE_EVENT_BEGIN/END, TRACE_COUNTER1,
 // and UmaHistogramTimes. It is used to just remove trace_log and uma
@@ -16,11 +18,11 @@ namespace partition_alloc {
 class StatsReporter {
  public:
   virtual void ReportTraceEvent(internal::StatsCollector::ScannerId id,
-                                const base::PlatformThreadId tid,
+                                uint32_t tid,
                                 int64_t start_time_ticks_internal_value,
                                 int64_t end_time_ticks_internal_value) {}
   virtual void ReportTraceEvent(internal::StatsCollector::MutatorId id,
-                                const base::PlatformThreadId tid,
+                                uint32_t tid,
                                 int64_t start_time_ticks_internal_value,
                                 int64_t end_time_ticks_internal_value) {}
 

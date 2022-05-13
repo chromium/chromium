@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/bind.h"
 #include "base/time/time.h"
 
 namespace partition_alloc::internal {

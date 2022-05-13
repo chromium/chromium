@@ -108,6 +108,9 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/rand_util.h",
     "partition_alloc_base/scoped_clear_last_error.h",
     "partition_alloc_base/sys_byteorder.h",
+    "partition_alloc_base/threading/platform_thread.cc",
+    "partition_alloc_base/threading/platform_thread.h",
+    "partition_alloc_base/threading/platform_thread_ref.h",
     "partition_alloc_check.h",
     "partition_alloc_config.h",
     "partition_alloc_constants.h",
@@ -174,6 +177,7 @@ target(partition_alloc_target_type, "partition_alloc") {
       "page_allocator_internals_win.h",
       "partition_alloc_base/rand_util_win.cc",
       "partition_alloc_base/scoped_clear_last_error_win.cc",
+      "partition_alloc_base/threading/platform_thread_win.cc",
       "partition_tls_win.cc",
     ]
   } else if (is_posix) {
@@ -185,6 +189,8 @@ target(partition_alloc_target_type, "partition_alloc") {
       "partition_alloc_base/posix/safe_strerror.cc",
       "partition_alloc_base/posix/safe_strerror.h",
       "partition_alloc_base/rand_util_posix.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
     ]
   } else if (is_fuchsia) {
     sources += [
@@ -192,6 +198,8 @@ target(partition_alloc_target_type, "partition_alloc") {
       "partition_alloc_base/posix/safe_strerror.cc",
       "partition_alloc_base/posix/safe_strerror.h",
       "partition_alloc_base/rand_util_fuchsia.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
     ]
   }
   if (is_android) {
@@ -267,6 +275,69 @@ target(partition_alloc_target_type, "partition_alloc") {
 
   # Partition alloc is relatively hot (>1% of cycles for users of CrOS). Use speed-focused
   # optimizations for it.
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
+  }
+}
+
+source_set("test_support") {
+  sources = [ "partition_alloc_base/threading/platform_thread_for_testing.h" ]
+  if (is_posix) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
+    ]
+  }
+  if (is_fuchsia) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_fuchsia_for_testing.cc",
+      "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
+    ]
+  }
+  if (is_win) {
+    sources +=
+        [ "partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
+  }
+  if (is_mac || is_ios) {
+    sources +=
+        [ "partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+  }
+  if (is_linux || is_chromeos) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_linux_for_testing.cc",
+    ]
+  }
+  if (is_android) {
+    sources += [
+      "partition_alloc_base/threading/platform_thread_android_for_testing.cc",
+    ]
+  }
+  public_deps = [
+    "//base:debugging_buildflags",
+    "//base:logging_buildflags",
+    "//base:synchronization_buildflags",
+    "//base:tracing_buildflags",
+    "//base/allocator:buildflags",
+    "//build:branding_buildflags",
+    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
+    "//build/config/compiler:compiler_buildflags",
+  ]
+  public_configs = []
+  if (is_fuchsia) {
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fit",
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs += [ ":fuchsia_sync_lib" ]
+  }
+  deps = [ "//base:base" ]
+
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_speed" ]

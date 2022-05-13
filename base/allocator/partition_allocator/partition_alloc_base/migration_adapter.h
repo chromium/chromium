@@ -18,9 +18,6 @@
 namespace base {
 
 class LapTimer;
-class PlatformThread;
-class PlatformThreadHandle;
-class PlatformThreadRef;
 class TimeDelta;
 class TimeTicks;
 
@@ -38,6 +35,7 @@ template <typename T>
 constexpr TimeDelta Microseconds(T n);
 
 BASE_EXPORT std::string StringPrintf(const char* format, ...);
+BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
 
 #if BUILDFLAG(IS_ANDROID)
 template <typename CharT, typename Traits>
@@ -71,6 +69,12 @@ bool IsOS10_11();
 
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace subtle {
+
+BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
+
+}  // namespace subtle
+
 }  // namespace base
 
 namespace partition_alloc::internal::base {
@@ -82,11 +86,9 @@ using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
 using ::base::Microseconds;
 using ::base::Milliseconds;
-using ::base::PlatformThread;
-using ::base::PlatformThreadHandle;
-using ::base::PlatformThreadRef;
 using ::base::Seconds;
 using ::base::StringPrintf;
+using ::base::TerminateBecauseOutOfMemory;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
 
@@ -105,6 +107,8 @@ using ::base::mac::IsOS10_11;
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)
+
+using ::base::subtle::TimeTicksNowIgnoringOverride;
 
 }  // namespace partition_alloc::internal::base
 

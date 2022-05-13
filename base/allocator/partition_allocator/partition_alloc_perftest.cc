@@ -10,12 +10,10 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
 #include "build/build_config.h"
@@ -34,10 +32,7 @@ namespace base {
 
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
-using ::base::BindOnce;
-using ::base::OnceCallback;
 using ::base::StringPrintf;
-using ::base::Unretained;
 
 }  // namespace base
 
@@ -142,21 +137,22 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 };
 
-class TestLoopThread : public base::PlatformThread::Delegate {
+class TestLoopThread : public base::PlatformThreadForTesting::Delegate {
  public:
-  explicit TestLoopThread(base::OnceCallback<float()> test_fn)
-      : test_fn_(std::move(test_fn)) {
-    PA_CHECK(base::PlatformThread::Create(0, this, &thread_handle_));
+  TestLoopThread(float (*test_fn)(Allocator*), Allocator* allocator)
+      : test_fn_(test_fn), allocator_(allocator) {
+    PA_CHECK(base::PlatformThreadForTesting::Create(0, this, &thread_handle_));
   }
 
   float Run() {
-    base::PlatformThread::Join(thread_handle_);
+    base::PlatformThreadForTesting::Join(thread_handle_);
     return laps_per_second_;
   }
 
-  void ThreadMain() override { laps_per_second_ = std::move(test_fn_).Run(); }
+  void ThreadMain() override { laps_per_second_ = test_fn_(allocator_); }
 
-  base::OnceCallback<float()> test_fn_;
+  float (*test_fn_)(Allocator*) = nullptr;
+  Allocator* allocator_ = nullptr;
   base::PlatformThreadHandle thread_handle_;
   std::atomic<float> laps_per_second_;
 };
@@ -350,14 +346,13 @@ void RunTest(int thread_count,
 
   std::unique_ptr<TestLoopThread> noisy_neighbor_thread = nullptr;
   if (noisy_neighbor_fn) {
-    noisy_neighbor_thread = std::make_unique<TestLoopThread>(
-        base::BindOnce(noisy_neighbor_fn, base::Unretained(alloc.get())));
+    noisy_neighbor_thread =
+        std::make_unique<TestLoopThread>(noisy_neighbor_fn, alloc.get());
   }
 
   std::vector<std::unique_ptr<TestLoopThread>> threads;
   for (int i = 0; i < thread_count; ++i) {
-    threads.push_back(std::make_unique<TestLoopThread>(
-        base::BindOnce(test_fn, base::Unretained(alloc.get()))));
+    threads.push_back(std::make_unique<TestLoopThread>(test_fn, alloc.get()));
   }
 
   uint64_t total_laps_per_second = 0;

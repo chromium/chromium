@@ -26,6 +26,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
@@ -36,10 +37,8 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -215,12 +214,6 @@ class CountDanglingRawPtr {
 // namespace, but inspects objects inside `partition_alloc::internal`.
 // For ease of reading, the tests are placed into the latter namespace.
 namespace partition_alloc::internal {
-
-// TODO(crbug.com/1288247): Remove these when migration is complete.
-namespace base {
-using ::base::BindLambdaForTesting;
-using ::base::RepeatingClosure;
-}  // namespace base
 
 using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
@@ -4171,18 +4164,38 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 
 namespace {
 
-class LambdaThreadDelegate : public base::PlatformThread::Delegate {
- public:
-  explicit LambdaThreadDelegate(base::RepeatingClosure f) : f_(f) {}
-  void ThreadMain() override { f_.Run(); }
-
- private:
-  base::RepeatingClosure f_;
-};
-
 NOINLINE void FreeForTest(void* data) {
   free(data);
 }
+
+class ThreadDelegateForPreforkHandler
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  ThreadDelegateForPreforkHandler(std::atomic<bool>& please_stop,
+                                  std::atomic<int>& started_threads,
+                                  const int alloc_size)
+      : please_stop_(please_stop),
+        started_threads_(started_threads),
+        alloc_size_(alloc_size) {}
+
+  void ThreadMain() override {
+    started_threads_++;
+    while (!please_stop_.load(std::memory_order_relaxed)) {
+      void* ptr = malloc(alloc_size_);
+
+      // A simple malloc() / free() pair can be discarded by the compiler (and
+      // is), making the test fail. It is sufficient to make |FreeForTest()| a
+      // NOINLINE function for the call to not be eliminated, but it is
+      // required.
+      FreeForTest(ptr);
+    }
+  }
+
+ private:
+  std::atomic<bool>& please_stop_;
+  std::atomic<int>& started_threads_;
+  const int alloc_size_;
+};
 
 }  // namespace
 
@@ -4197,23 +4210,13 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
   // makes it likely that this thread will own the lock, and that the
   // EXPECT_EXIT() part will deadlock.
   constexpr size_t kAllocSize = ThreadCache::kLargeSizeThreshold + 1;
-  LambdaThreadDelegate delegate{base::BindLambdaForTesting([&]() {
-    started_threads++;
-    while (!please_stop.load(std::memory_order_relaxed)) {
-      void* ptr = malloc(kAllocSize);
-
-      // A simple malloc() / free() pair can be discarded by the compiler (and
-      // is), making the test fail. It is sufficient to make |FreeForTest()| a
-      // NOINLINE function for the call to not be eliminated, but it is
-      // required.
-      FreeForTest(ptr);
-    }
-  })};
+  ThreadDelegateForPreforkHandler delegate(please_stop, started_threads,
+                                           kAllocSize);
 
   constexpr int kThreads = 4;
   base::PlatformThreadHandle thread_handles[kThreads];
   for (auto& thread_handle : thread_handles) {
-    base::PlatformThread::Create(0, &delegate, &thread_handle);
+    base::PlatformThreadForTesting::Create(0, &delegate, &thread_handle);
   }
   // Make sure all threads are actually already running.
   while (started_threads != kThreads) {
@@ -4229,7 +4232,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 
   please_stop.store(true);
   for (auto& thread_handle : thread_handles) {
-    base::PlatformThread::Join(thread_handle);
+    base::PlatformThreadForTesting::Join(thread_handle);
   }
 }
 
