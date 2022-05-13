@@ -208,7 +208,7 @@ vars = {
   # 2 Run additional a few optional tryjobs:
   #   lacros-amd64-generic-chrome-skylab
   #   lacros-arm-generic-chrome-skylab
-  'lacros_sdk_version': '14748.0.0',
+  'lacros_sdk_version': '14803.0.0',
 
   # Generate location tag metadata to include in tests result data uploaded
   # to ResultDB. This isn't needed on some configs and the tool that generates
