@@ -334,8 +334,15 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
     matched_bits.Set(TimingField::kFirstContentfulPaint);
   if (timing.paint_timing->first_meaningful_paint)
     matched_bits.Set(TimingField::kFirstMeaningfulPaint);
-  if (timing.paint_timing->largest_contentful_paint->largest_image_paint ||
-      timing.paint_timing->largest_contentful_paint->largest_text_paint) {
+  // The largest contentful paint's size can be nonzero while the time can be 0
+  // since a time of 0 is sent when the image is still painting. We set
+  // LargestContentfulPaint to be observed when its time is non-zero.
+  if ((timing.paint_timing->largest_contentful_paint->largest_image_paint &&
+       !timing.paint_timing->largest_contentful_paint->largest_image_paint
+            ->is_zero()) ||
+      (timing.paint_timing->largest_contentful_paint->largest_text_paint &&
+       !timing.paint_timing->largest_contentful_paint->largest_text_paint
+            ->is_zero())) {
     matched_bits.Set(TimingField::kLargestContentfulPaint);
   }
   if (timing.paint_timing->first_input_or_scroll_notified_timestamp)

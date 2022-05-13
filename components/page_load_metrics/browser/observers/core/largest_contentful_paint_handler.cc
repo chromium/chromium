@@ -39,9 +39,14 @@ const ContentfulPaintTimingInfo& MergeTimingsBySizeAndTime(
   // When both sizes are equal
   DCHECK(timing1.Time());
   DCHECK(timing2.Time());
-  if (timing1.Time().value() < timing2.Time().value())
+  // The size can be nonzero while the time can be 0 since a time of 0 is sent
+  // when the image is still painting. When we merge the two
+  // |ContentfulPaintTimingInfo| objects, we should ignore the one with 0 time.
+  if (timing1.Time() == base::TimeDelta())
+    return timing2;
+  if (timing2.Time() == base::TimeDelta())
     return timing1;
-  return timing2;
+  return timing1.Time().value() < timing2.Time().value() ? timing1 : timing2;
 }
 
 void MergeForSubframesWithAdjustedTime(
