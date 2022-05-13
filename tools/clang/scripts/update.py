@@ -100,9 +100,12 @@ def DownloadUrl(url, output_file):
       request = urllib.request.Request(url)
       request.add_header('Accept-Encoding', 'gzip')
       response = urllib.request.urlopen(request)
-      total_size = int(response.info().get('Content-Length').strip())
+      total_size = None
+      if 'Content-Length' in response.headers:
+        total_size = int(response.headers['Content-Length'].strip())
 
-      is_gzipped = response.info().get('Content-Encoding', '').strip() == 'gzip'
+      is_gzipped = response.headers.get('Content-Encoding',
+                                        '').strip() == 'gzip'
       if is_gzipped:
         gzip_decode = zlib.decompressobj(zlib.MAX_WBITS + 16)
 
@@ -118,11 +121,12 @@ def DownloadUrl(url, output_file):
           chunk = gzip_decode.decompress(chunk)
         output_file.write(chunk)
 
-        num_dots = TOTAL_DOTS * bytes_done // total_size
-        sys.stdout.write('.' * (num_dots - dots_printed))
-        sys.stdout.flush()
-        dots_printed = num_dots
-      if bytes_done != total_size:
+        if total_size is not None:
+          num_dots = TOTAL_DOTS * bytes_done // total_size
+          sys.stdout.write('.' * (num_dots - dots_printed))
+          sys.stdout.flush()
+          dots_printed = num_dots
+      if total_size is not None and bytes_done != total_size:
         raise urllib.error.URLError("only got %d of %d bytes" %
                                     (bytes_done, total_size))
       if is_gzipped:
