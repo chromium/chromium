@@ -267,12 +267,10 @@ class SearchProvider : public BaseSearchProvider,
 
   // Starts a new SimpleURLLoader requesting suggest results from
   // |template_url|; callers own the returned SimpleURLLoader, which is NULL for
-  // invalid providers. Note the request will never time out unless the given
-  // |timeout| is greater than 0.
+  // invalid providers.
   std::unique_ptr<network::SimpleURLLoader> CreateSuggestLoader(
       const TemplateURL* template_url,
-      const AutocompleteInput& input,
-      const base::TimeDelta& timeout);
+      const AutocompleteInput& input);
 
   // Converts the parsed results to a set of AutocompleteMatches, |matches_|.
   void ConvertResultsToAutocompleteMatches();

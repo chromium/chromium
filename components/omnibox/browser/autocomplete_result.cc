@@ -239,7 +239,9 @@ void AutocompleteResult::SortAndCull(
   for (auto& match : matches_)
     match.ComputeStrippedDestinationURL(input, template_url_service);
 
+#if !BUILDFLAG(IS_IOS)
   DemoteOnDeviceSearchSuggestions();
+#endif  // !BUILDFLAG(IS_IOS)
 
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
       input.current_page_classification());
@@ -413,10 +415,6 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
 }
 
 void AutocompleteResult::DemoteOnDeviceSearchSuggestions() {
-  const std::string mode = OmniboxFieldTrial::OnDeviceHeadSuggestDemoteMode();
-  if (mode != "decrease-relevances" && mode != "remove-suggestions")
-    return;
-
   std::vector<AutocompleteMatch*> on_device_search_suggestions;
   int search_provider_search_suggestion_min_relevance = -1,
       on_device_search_suggestion_max_relevance = -1;
@@ -436,36 +434,27 @@ void AutocompleteResult::DemoteOnDeviceSearchSuggestions() {
     // triggering condition once keyword search is launched at Android & iOS.
     if (m.IsSearchProviderSearchSuggestion() && !m.IsTrivialAutocompletion()) {
       search_provider_search_suggestion_exists = true;
-      if (mode == "decrease-relevances") {
-        search_provider_search_suggestion_min_relevance =
-            search_provider_search_suggestion_min_relevance < 0
-                ? m.relevance
-                : std::min(search_provider_search_suggestion_min_relevance,
-                           m.relevance);
-      }
+      search_provider_search_suggestion_min_relevance =
+          search_provider_search_suggestion_min_relevance < 0
+              ? m.relevance
+              : std::min(search_provider_search_suggestion_min_relevance,
+                         m.relevance);
     } else if (m.IsOnDeviceSearchSuggestion()) {
       on_device_search_suggestions.push_back(&m);
-      if (mode == "decrease-relevances") {
-        on_device_search_suggestion_max_relevance =
-            std::max(on_device_search_suggestion_max_relevance, m.relevance);
-      }
+      on_device_search_suggestion_max_relevance =
+          std::max(on_device_search_suggestion_max_relevance, m.relevance);
     }
   }
 
-  // If SearchProvider search suggestions present, adjust the relevances for
-  // OnDeviceProvider search suggestions, determined by mode:
-  // 1. decrease-relevances: if any OnDeviceProvider search suggestion has a
-  //    higher relevance than any SearchProvider one, subtract the difference
-  //    b/w the maximum OnDeviceProvider search suggestion relevance and the
-  //    minimum SearchProvider search suggestion relevance from the relevances
-  //    for all OnDeviceProvider ones.
-  // 2. remove-suggestions: set the relevances to 0 for all OnDeviceProvider
-  //    search suggestions.
+  // If any OnDeviceProvider search suggestion has a higher relevance than any
+  // SearchProvider one, subtract the difference b/w the maximum
+  // OnDeviceProvider search suggestion relevance and the minimum SearchProvider
+  // search suggestion relevance from the relevances for all OnDeviceProvider
+  // ones.
   if (search_provider_search_suggestion_exists &&
       !on_device_search_suggestions.empty()) {
-    if (mode == "decrease-relevances" &&
-        on_device_search_suggestion_max_relevance >=
-            search_provider_search_suggestion_min_relevance) {
+    if (on_device_search_suggestion_max_relevance >=
+        search_provider_search_suggestion_min_relevance) {
       int relevance_offset =
           (on_device_search_suggestion_max_relevance -
            search_provider_search_suggestion_min_relevance + 1);
@@ -473,9 +462,6 @@ void AutocompleteResult::DemoteOnDeviceSearchSuggestions() {
         m->relevance = m->relevance > relevance_offset
                            ? m->relevance - relevance_offset
                            : 0;
-    } else if (mode == "remove-suggestions") {
-      for (auto* m : on_device_search_suggestions)
-        m->relevance = 0;
     }
   }
 }

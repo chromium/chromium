@@ -78,16 +78,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
   scoped_refptr<OnDeviceHeadProvider> provider_;
 };
 
-class OnDeviceHeadProviderZeroDelayTest : public OnDeviceHeadProviderTest {
- public:
-  OnDeviceHeadProviderZeroDelayTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox::kOnDeviceHeadProviderNonIncognito,
-        {{OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs, "0"}});
-  }
-};
-
-TEST_F(OnDeviceHeadProviderZeroDelayTest, ModelInstanceNotCreated) {
+TEST_F(OnDeviceHeadProviderTest, ModelInstanceNotCreated) {
   AutocompleteInput input(u"M", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_want_asynchronous_matches(true);
@@ -106,7 +97,7 @@ TEST_F(OnDeviceHeadProviderZeroDelayTest, ModelInstanceNotCreated) {
   EXPECT_TRUE(provider_->done());
 }
 
-TEST_F(OnDeviceHeadProviderZeroDelayTest, RejectSynchronousRequest) {
+TEST_F(OnDeviceHeadProviderTest, RejectSynchronousRequest) {
   AutocompleteInput input(u"M", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_want_asynchronous_matches(false);
@@ -129,7 +120,7 @@ TEST_F(OnDeviceHeadProviderTest, TestIfIncognitoIsAllowed) {
   }
 }
 
-TEST_F(OnDeviceHeadProviderZeroDelayTest, RejectOnFocusRequest) {
+TEST_F(OnDeviceHeadProviderTest, RejectOnFocusRequest) {
   AutocompleteInput input(u"M", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_want_asynchronous_matches(true);
@@ -141,7 +132,7 @@ TEST_F(OnDeviceHeadProviderZeroDelayTest, RejectOnFocusRequest) {
   ASSERT_FALSE(IsOnDeviceHeadProviderAllowed(input));
 }
 
-TEST_F(OnDeviceHeadProviderZeroDelayTest, NoMatches) {
+TEST_F(OnDeviceHeadProviderTest, NoMatches) {
   AutocompleteInput input(u"b", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_want_asynchronous_matches(true);
@@ -159,7 +150,7 @@ TEST_F(OnDeviceHeadProviderZeroDelayTest, NoMatches) {
   EXPECT_TRUE(provider_->done());
 }
 
-TEST_F(OnDeviceHeadProviderZeroDelayTest, HasMatches) {
+TEST_F(OnDeviceHeadProviderTest, HasMatches) {
   AutocompleteInput input(u"M", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_want_asynchronous_matches(true);
@@ -180,7 +171,7 @@ TEST_F(OnDeviceHeadProviderZeroDelayTest, HasMatches) {
   EXPECT_EQ(u"map", provider_->matches()[2].contents);
 }
 
-TEST_F(OnDeviceHeadProviderZeroDelayTest, CancelInProgressRequest) {
+TEST_F(OnDeviceHeadProviderTest, CancelInProgressRequest) {
   AutocompleteInput input1(u"g", metrics::OmniboxEventProto::OTHER,
                            TestSchemeClassifier());
   input1.set_want_asynchronous_matches(true);

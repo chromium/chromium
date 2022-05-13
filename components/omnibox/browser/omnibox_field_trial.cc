@@ -650,50 +650,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   return constraint;
 }
 
-int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
-    bool is_incognito) {
-  const int kDefaultScore =
-#if BUILDFLAG(IS_IOS)
-      99;
-#else
-      is_incognito ? 99 : 1000;
-#endif  // BUILDFLAG(IS_IOS)
-  return is_incognito
-             ? kDefaultScore
-             : base::GetFieldTrialParamByFeatureAsInt(
-                   omnibox::kOnDeviceHeadProviderNonIncognito,
-                   kOnDeviceHeadSuggestMaxScoreForNonUrlInput, kDefaultScore);
-}
-
-int OmniboxFieldTrial::OnDeviceHeadSuggestDelaySuggestRequestMs(
-    bool is_incognito) {
-  const int kDefaultDelayNonIncognito = 0;
-  return is_incognito ? 0
-                      : base::GetFieldTrialParamByFeatureAsInt(
-                            omnibox::kOnDeviceHeadProviderNonIncognito,
-                            kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                            kDefaultDelayNonIncognito);
-}
-
-int OmniboxFieldTrial::OnDeviceSearchProviderDefaultLoaderTimeoutMs(
-    bool is_incognito) {
-  return is_incognito ? 0
-                      : base::GetFieldTrialParamByFeatureAsInt(
-                            omnibox::kOnDeviceHeadProviderNonIncognito,
-                            kOnDeviceSearchProviderDefaultLoaderTimeoutMs, 0);
-}
-
-std::string OmniboxFieldTrial::OnDeviceHeadSuggestDemoteMode() {
-  std::string demote_mode = base::GetFieldTrialParamValueByFeature(
-      omnibox::kOnDeviceHeadProviderNonIncognito,
-      kOnDeviceHeadSuggestDemoteMode);
-#if !BUILDFLAG(IS_IOS)
-  if (demote_mode.empty())
-    demote_mode = "decrease-relevances";
-#endif  // !BUILDFLAG(IS_IOS)
-  return demote_mode;
-}
-
 bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
@@ -784,14 +740,6 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
 
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
-const char OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput[] =
-    "OnDeviceSuggestMaxScoreForNonUrlInput";
-const char OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs[] =
-    "DelayOnDeviceHeadSuggestRequestMs";
-const char OmniboxFieldTrial::kOnDeviceSearchProviderDefaultLoaderTimeoutMs[] =
-    "SearchProviderDefaultLoaderTimeoutMs";
-const char OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode[] =
-    "DemoteOnDeviceSearchSuggestionsMode";
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 

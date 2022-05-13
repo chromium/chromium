@@ -629,20 +629,11 @@ void SearchProvider::Run(bool query_is_private) {
   time_suggest_request_sent_ = base::TimeTicks::Now();
 
   if (!query_is_private) {
-    int timeout_ms = 0;
-    // Consider explicitly setting a timeout for requests sent to Google when
-    // On Device Head provider is enabled.
-    if (IsSearchEngineGoogle(providers_.GetDefaultProviderURL(), client())) {
-      timeout_ms =
-          OmniboxFieldTrial::OnDeviceSearchProviderDefaultLoaderTimeoutMs(
-              client()->IsOffTheRecord());
-    }
-    default_loader_ = CreateSuggestLoader(
-        providers_.GetDefaultProviderURL(), input_,
-        timeout_ms > 0 ? base::Milliseconds(timeout_ms) : base::TimeDelta());
+    default_loader_ =
+        CreateSuggestLoader(providers_.GetDefaultProviderURL(), input_);
   }
-  keyword_loader_ = CreateSuggestLoader(providers_.GetKeywordProviderURL(),
-                                        keyword_input_, base::TimeDelta());
+  keyword_loader_ =
+      CreateSuggestLoader(providers_.GetKeywordProviderURL(), keyword_input_);
 
   // Both the above can fail if the providers have been modified or deleted
   // since the query began.
@@ -922,8 +913,7 @@ void SearchProvider::ApplyCalculatedNavigationRelevance(
 
 std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     const TemplateURL* template_url,
-    const AutocompleteInput& input,
-    const base::TimeDelta& timeout) {
+    const AutocompleteInput& input) {
   if (!template_url || template_url->suggestions_url().empty())
     return nullptr;
 
@@ -1027,8 +1017,6 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
 
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  if (timeout.is_positive())
-    loader->SetTimeoutDuration(timeout);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client()->GetURLLoaderFactory().get(),
       base::BindOnce(&SearchProvider::OnURLLoadComplete, base::Unretained(this),

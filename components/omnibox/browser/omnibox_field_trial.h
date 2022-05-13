@@ -373,11 +373,6 @@ bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
-int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito);
-int OnDeviceSearchProviderDefaultLoaderTimeoutMs(bool is_incognito);
-int OnDeviceHeadSuggestDelaySuggestRequestMs(bool is_incognito);
-// Function only works in non-incognito when server suggestions are available.
-std::string OnDeviceHeadSuggestDemoteMode();
 
 // Returns true if CGI parameter names should not be considered when scoring
 // suggestions.
@@ -473,12 +468,6 @@ extern const char kDynamicMaxAutocompleteIncreasedLimitParam[];
 // Parameter names used by on device head provider.
 // These four parameters are shared by both non-incognito and incognito.
 extern const char kOnDeviceHeadModelLocaleConstraint[];
-extern const char kOnDeviceHeadSuggestMaxScoreForNonUrlInput[];
-extern const char kOnDeviceHeadSuggestDelaySuggestRequestMs[];
-extern const char kOnDeviceSearchProviderDefaultLoaderTimeoutMs[];
-// This parameter is for non-incognito which are only useful when server
-// suggestions are available.
-extern const char kOnDeviceHeadSuggestDemoteMode[];
 
 // The amount of time to wait before sending a new suggest request after the
 // previous one unless overridden by a field trial parameter.
