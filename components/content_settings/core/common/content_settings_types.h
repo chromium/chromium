@@ -281,6 +281,12 @@ enum class ContentSettingsType : int32_t {
   // the browser FedCM API.
   FEDERATED_IDENTITY_API,
 
+  // Stores notification interactions per origin for the past 90 days.
+  // Interactions per origin are pre-aggregated over seven-day windows: A
+  // notification interaction or display is assigned to the last Monday midnight
+  // in local time.
+  NOTIFICATION_INTERACTIONS,
+
   NUM_TYPES,
 };
 

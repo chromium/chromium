@@ -250,6 +250,12 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::NOTIFICATION_INTERACTIONS,
+           "notification-interactions", base::Value(),
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings

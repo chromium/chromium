@@ -24,6 +24,9 @@ const base::Feature kBlockRepeatedNotificationPermissionPrompts{
     "BlockRepeatedNotificationPermissionPrompts",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kNotificationInteractionHistory{
+    "NotificationInteractionHistory", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kOneTimeGeolocationPermission{
     "OneTimeGeolocationPermission", base::FEATURE_DISABLED_BY_DEFAULT};
 

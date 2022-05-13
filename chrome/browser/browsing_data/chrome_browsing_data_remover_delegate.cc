@@ -772,6 +772,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         delete_end, website_settings_filter);
 #endif
 
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::NOTIFICATION_INTERACTIONS, base::Time(),
+        base::Time::Max(), website_settings_filter);
+
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
         ->RemoveEmbargoAndResetCounts(filter);
   }

@@ -23,6 +23,9 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kBlockRepeatedNotificationPermissionPrompts;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kNotificationInteractionHistory;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kOneTimeGeolocationPermission;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

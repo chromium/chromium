@@ -18065,6 +18065,7 @@ Called by update_net_error_codes.py.-->
   <int value="83" label="Auto-darken web content"/>
   <int value="84" label="Request desktop site"/>
   <int value="85" label="Federated identity browser JavaScript API"/>
+  <int value="86" label="Notification interactions"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

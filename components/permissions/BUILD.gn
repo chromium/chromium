@@ -57,6 +57,8 @@ source_set("permissions") {
     "contexts/webxr_permission_context.h",
     "contexts/window_placement_permission_context.cc",
     "contexts/window_placement_permission_context.h",
+    "notifications_engagement_service.cc",
+    "notifications_engagement_service.h",
     "object_permission_context_base.cc",
     "object_permission_context_base.h",
     "permission_actions_history.cc",
