@@ -7,11 +7,11 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import './icons.js';
+import './icons.html.js';
 import './viewer-download-controls.js';
 import './viewer-page-selector.js';
-import './shared-css.js';
-import './shared-vars.js';
+import './pdf-shared.css.js';
+import './shared-vars.css.js';
 // <if expr="enable_ink">
 import './viewer-annotations-bar.js';
 import './viewer-annotations-mode-dialog.js';

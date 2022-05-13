@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
-import './icons.js';
+import './icons.html.js';
 import './viewer-zoom-button.js';
 
 import {isRTL} from 'chrome://resources/js/util.m.js';

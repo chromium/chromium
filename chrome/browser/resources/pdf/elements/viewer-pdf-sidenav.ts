@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared-vars.js';
-import '../pdf_viewer_shared_style.js';
-import './icons.js';
+import './shared-vars.css.js';
+import '../pdf_viewer_shared_style.css.js';
+import './icons.html.js';
 import './viewer-document-outline.js';
 import './viewer-thumbnail-bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';

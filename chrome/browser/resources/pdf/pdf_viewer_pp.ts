@@ -4,9 +4,9 @@
 
 import './elements/viewer-error-dialog.js';
 import './elements/viewer-page-indicator.js';
-import './elements/shared-vars.js';
+import './elements/shared-vars.css.js';
 import './elements/viewer-zoom-toolbar.js';
-import './pdf_viewer_shared_style.js';
+import './pdf_viewer_shared_style.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';

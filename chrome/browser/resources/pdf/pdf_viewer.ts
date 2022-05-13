@@ -10,8 +10,8 @@ import './elements/viewer-password-dialog.js';
 import './elements/viewer-pdf-sidenav.js';
 import './elements/viewer-properties-dialog.js';
 import './elements/viewer-toolbar.js';
-import './elements/shared-vars.js';
-import './pdf_viewer_shared_style.js';
+import './elements/shared-vars.css.js';
+import './pdf_viewer_shared_style.css.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
