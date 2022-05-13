@@ -13625,6 +13625,65 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   host_impl_ = nullptr;
 }
 
+// Tests that no scrolls occur when thumb_len equals track_len.
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollOnLargeThumb) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.compositor_threaded_scrollbar_scrolling = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
+  // Setup the viewport.
+  const gfx::Size viewport_size = gfx::Size(360, 600);
+  const gfx::Size content_size = gfx::Size(345, 3800);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+  // Set up the scrollbar and its dimensions.
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  layer_tree_impl->set_painted_device_scale_factor(2.5f);
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
+  SetupScrollbarLayerCommon(scroll_layer, scrollbar);
+  scrollbar->SetHitTestable(true);
+
+  const gfx::Size scrollbar_size = gfx::Size(15, 600);
+  scrollbar->SetBounds(scrollbar_size);
+
+  // Set up the thumb dimensions.
+  scrollbar->SetThumbThickness(15);
+  scrollbar->SetThumbLength(575);
+  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+
+  TestInputHandlerClient input_handler_client;
+  GetInputHandler().BindToClient(&input_handler_client);
+
+  // PointerDown on the scrollbar should populate drag_state.
+  GetInputHandler().MouseDown(gfx::PointF(350, 300),
+                              /*jump_key_modifier*/ false);
+  EXPECT_TRUE(GetInputHandler()
+                  .scrollbar_controller_for_testing()
+                  ->drag_state_.has_value());
+
+  // Moving the mouse downwards should result in no scroll.
+  InputHandlerPointerResult res =
+      GetInputHandler().MouseMoveAt(gfx::Point(350, 600));
+  EXPECT_EQ(res.scroll_delta.y(), 0);
+
+  // Moving the mouse upwards should result in no scroll.
+  res = GetInputHandler().MouseMoveAt(gfx::Point(350, 0));
+  EXPECT_EQ(res.scroll_delta.y(), 0);
+
+  // End the scroll.
+  GetInputHandler().MouseUp(gfx::PointF(350, 0));
+  EXPECT_TRUE(!GetInputHandler()
+                   .scrollbar_controller_for_testing()
+                   ->drag_state_.has_value());
+
+  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+}
+
 // Tests that deleting a horizontal scrollbar doesn't affect the autoscroll task
 // for the vertical scrollbar.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {

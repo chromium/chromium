@@ -465,6 +465,9 @@ float ScrollbarController::GetScrollerToScrollbarRatio() const {
           : thumb_rect.width();
   float viewport_length = GetViewportLength();
 
+  if (scrollbar_track_length == scrollbar_thumb_length)
+    return 0;
+
   return (scroll_layer_length - viewport_length) /
          (scrollbar_track_length - scrollbar_thumb_length);
 }

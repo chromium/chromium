@@ -186,6 +186,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
                            AutoscrollOnDeletedScrollbar);
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            ThumbDragAfterJumpClick);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           ScrollOnLargeThumb);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollTaskAbort);
 
   // This method gets the scroll offset for a regular scroller, or the combined
