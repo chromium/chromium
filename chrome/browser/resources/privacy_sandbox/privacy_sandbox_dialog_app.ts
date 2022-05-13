@@ -9,24 +9,25 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './privacy_sandbox_dialog_app.html.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 
-const PrivacySandboxDialogAppElementBase = PolymerElement;
-
 export interface PrivacySandboxDialogAppElement {
-  $: {contentArea: HTMLElement, expandSection: HTMLElement};
+  $: {
+    contentArea: HTMLElement,
+    expandSection: HTMLElement,
+  };
 }
 
-export class PrivacySandboxDialogAppElement extends
-    PrivacySandboxDialogAppElementBase {
+export class PrivacySandboxDialogAppElement extends PolymerElement {
   static get is() {
     return 'privacy-sandbox-dialog-app';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -35,12 +36,14 @@ export class PrivacySandboxDialogAppElement extends
         type: Boolean,
         observer: 'onLearnMoreExpandedChanged_',
       },
+
       isConsent_: {
         type: Boolean,
         value: () => {
           return loadTimeData.getBoolean('isConsent');
         },
       },
+
       canScrollClass_: String,
       fitIntoDialogClass_: String,
     };
@@ -48,8 +51,8 @@ export class PrivacySandboxDialogAppElement extends
 
   private expanded_: boolean;
   private isConsent_: boolean;
-  private canScrollClass_: String;
-  private fitIntoDialogClass_: String;
+  private canScrollClass_: string;
+  private fitIntoDialogClass_: string;
   private didStartWithScrollbar_: boolean;
 
   override connectedCallback() {
@@ -143,7 +146,6 @@ declare global {
     'privacy-sandbox-dialog-app': PrivacySandboxDialogAppElement;
   }
 }
-
 
 customElements.define(
     PrivacySandboxDialogAppElement.is, PrivacySandboxDialogAppElement);

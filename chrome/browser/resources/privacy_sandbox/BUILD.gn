@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("privacy_sandbox.gni")
@@ -47,18 +47,18 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+  in_files = html_wrapper_files
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 ts_library("build_ts") {
@@ -66,7 +66,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = non_web_component_files + web_component_files
+  in_files = ts_files + html_wrapper_files
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",
