@@ -147,23 +147,34 @@ blink::WebMouseEvent CreateDefaultMouseDownEvent() {
   return web_event;
 }
 
-class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
+class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
  public:
-  explicit FakeContainerWrapper(PdfViewWebPlugin* web_plugin)
-      : web_plugin_(web_plugin) {
+  void SetPlugin(PdfViewWebPlugin* web_plugin) {
+    web_plugin_ = web_plugin;
+
     ON_CALL(*this, UpdateTextInputState)
         .WillByDefault(Invoke(
-            this, &FakeContainerWrapper::UpdateTextInputStateFromPlugin));
-
+            this, &FakePdfViewWebPluginClient::UpdateTextInputStateFromPlugin));
     UpdateTextInputStateFromPlugin();
   }
 
-  FakeContainerWrapper(const FakeContainerWrapper&) = delete;
-  FakeContainerWrapper& operator=(const FakeContainerWrapper&) = delete;
-  ~FakeContainerWrapper() override = default;
+  // PdfViewWebPlugin::Client:
+  MOCK_METHOD(std::unique_ptr<base::Value>,
+              FromV8Value,
+              (v8::Local<v8::Value>, v8::Local<v8::Context>),
+              (override));
 
-  // PdfViewWebPlugin::ContainerWrapper:
-  void Invalidate() override {}
+  MOCK_METHOD(base::WeakPtr<Client>, GetWeakPtr, (), (override));
+
+  MOCK_METHOD(void,
+              SetPluginContainer,
+              (blink::WebPluginContainer*),
+              (override));
+  MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
+
+  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
+
+  MOCK_METHOD(void, Invalidate, (), (override));
 
   MOCK_METHOD(void,
               RequestTouchEventType,
@@ -240,28 +251,6 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
   blink::WebTextInputType widget_text_input_type_;
 
   raw_ptr<PdfViewWebPlugin> web_plugin_;
-};
-
-class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
- public:
-  FakePdfViewWebPluginClient() = default;
-  FakePdfViewWebPluginClient(const FakePdfViewWebPluginClient&) = delete;
-  FakePdfViewWebPluginClient& operator=(const FakePdfViewWebPluginClient&) =
-      delete;
-  ~FakePdfViewWebPluginClient() override = default;
-
-  // PdfViewWebPlugin::Client:
-  MOCK_METHOD(std::unique_ptr<base::Value>,
-              FromV8Value,
-              (v8::Local<v8::Value>, v8::Local<v8::Context>),
-              (override));
-  MOCK_METHOD(base::WeakPtr<Client>, GetWeakPtr, (), (override));
-  MOCK_METHOD(void,
-              SetPluginContainer,
-              (blink::WebPluginContainer*),
-              (override));
-  MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
-  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
 
  private:
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
@@ -313,6 +302,8 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
     plugin_ =
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
             std::move(client), std::move(unbound_remote), params));
+
+    client_ptr_->SetPlugin(plugin_.get());
   }
 
   void TearDown() override { plugin_.reset(); }
@@ -326,19 +317,10 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   void SetUp() override {
     PdfViewWebPluginWithoutInitializeTest::SetUp();
 
-    auto wrapper =
-        std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
-    wrapper_ptr_ = wrapper.get();
     auto engine = CreateEngine();
     engine_ptr_ = engine.get();
-    EXPECT_TRUE(plugin_->InitializeForTesting(
-        std::move(wrapper), std::move(engine), CreateLoader()));
-  }
-
-  void TearDown() override {
-    wrapper_ptr_ = nullptr;
-
-    PdfViewWebPluginWithoutInitializeTest::TearDown();
+    EXPECT_TRUE(
+        plugin_->InitializeForTesting(std::move(engine), CreateLoader()));
   }
 
   // Allow derived test classes to create their own custom TestPDFiumEngine.
@@ -382,8 +364,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                                           const gfx::Rect& window_rect) {
     // The plugin container's device scale must be set before calling
     // UpdateGeometry().
-    ASSERT_TRUE(wrapper_ptr_);
-    wrapper_ptr_->set_device_scale(device_scale);
+    client_ptr_->set_device_scale(device_scale);
     plugin_->UpdateGeometry(window_rect, window_rect, window_rect,
                             /*is_visible=*/true);
   }
@@ -444,22 +425,19 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   }
 
   raw_ptr<TestPDFiumEngine> engine_ptr_;
-  raw_ptr<FakeContainerWrapper> wrapper_ptr_;
 
   // Provides the cc::PaintCanvas for painting.
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
 
 TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
-  auto wrapper =
-      std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
   auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
-  EXPECT_CALL(*wrapper,
+  EXPECT_CALL(*client_ptr_,
               RequestTouchEventType(
                   blink::WebPluginContainer::kTouchEventRequestTypeRaw));
 
-  EXPECT_TRUE(plugin_->InitializeForTesting(
-      std::move(wrapper), std::move(engine), /*loader=*/nullptr));
+  EXPECT_TRUE(
+      plugin_->InitializeForTesting(std::move(engine), /*loader=*/nullptr));
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
@@ -501,7 +479,7 @@ TEST_F(PdfViewWebPluginTest,
 TEST_F(PdfViewWebPluginTest, UpdateGeometryScroll) {
   SetDocumentDimensions({100, 200});
 
-  EXPECT_CALL(*wrapper_ptr_, GetScrollPosition)
+  EXPECT_CALL(*client_ptr_, GetScrollPosition)
       .WillRepeatedly(Return(gfx::PointF(4.0f, 6.0f)));
   EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(4));
   EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(6));
@@ -675,7 +653,7 @@ class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
 };
 
 TEST_F(PdfViewWebPluginMouseEventsTest, HandleInputEvent) {
-  wrapper_ptr_->set_device_scale(kDeviceScale);
+  client_ptr_->set_device_scale(kDeviceScale);
   UpdatePluginGeometry(kDeviceScale, gfx::Rect(20, 20));
 
   ui::Cursor dummy_cursor;
@@ -776,7 +754,7 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
   ASSERT_TRUE(plugin_->SelectionAsMarkup().IsEmpty());
 
   static constexpr char kSelectedText[] = "1234";
-  EXPECT_CALL(*wrapper_ptr_,
+  EXPECT_CALL(*client_ptr_,
               TextSelectionChanged(blink::WebString::FromUTF8(kSelectedText), 0,
                                    gfx::Range(0, 4)));
 
@@ -786,7 +764,7 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
   EXPECT_EQ(kSelectedText, plugin_->SelectionAsMarkup().Utf8());
 
   static constexpr char kEmptyText[] = "";
-  EXPECT_CALL(*wrapper_ptr_,
+  EXPECT_CALL(*client_ptr_,
               TextSelectionChanged(blink::WebString::FromUTF8(kEmptyText), 0,
                                    gfx::Range(0, 0)));
   plugin_->SetSelectedText(kEmptyText);
@@ -797,41 +775,41 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
 
 TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
   ASSERT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
-            wrapper_ptr_->widget_text_input_type());
+            client_ptr_->widget_text_input_type());
 
   MockFunction<void()> checkpoint;
   {
     InSequence sequence;
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
     EXPECT_CALL(checkpoint, Call);
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
     EXPECT_CALL(checkpoint, Call);
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
     EXPECT_CALL(checkpoint, Call);
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
   }
 
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
-            wrapper_ptr_->widget_text_input_type());
+            client_ptr_->widget_text_input_type());
 
   checkpoint.Call();
 
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
-            wrapper_ptr_->widget_text_input_type());
+            client_ptr_->widget_text_input_type());
 
   checkpoint.Call();
 
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
-            wrapper_ptr_->widget_text_input_type());
+            client_ptr_->widget_text_input_type());
 
   checkpoint.Call();
 
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNonText);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
-            wrapper_ptr_->widget_text_input_type());
+            client_ptr_->widget_text_input_type());
 }
 
 TEST_F(PdfViewWebPluginTest, SearchString) {
@@ -862,8 +840,8 @@ TEST_F(PdfViewWebPluginTest, UpdateFocus) {
     InSequence sequence;
 
     // Focus false -> true: Triggers updates.
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
-    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
     EXPECT_CALL(checkpoint, Call(1));
 
     // Focus true -> true: No updates.
@@ -872,16 +850,16 @@ TEST_F(PdfViewWebPluginTest, UpdateFocus) {
     // Focus true -> false: Triggers updates. `UpdateTextInputState` is called
     // twice because it also gets called due to
     // `PDFiumEngine::UpdateFocus(false)`.
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState).Times(2);
-    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState).Times(2);
+    EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
     EXPECT_CALL(checkpoint, Call(3));
 
     // Focus false -> false: No updates.
     EXPECT_CALL(checkpoint, Call(4));
 
     // Focus false -> true: Triggers updates.
-    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
-    EXPECT_CALL(*wrapper_ptr_, UpdateSelectionBounds);
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState);
+    EXPECT_CALL(*client_ptr_, UpdateSelectionBounds);
   }
 
   // The focus type does not matter in this test.
@@ -914,8 +892,8 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
   const std::vector<gfx::Rect> tickmarks = {gfx::Rect(1, 2), gfx::Rect(3, 4)};
   plugin_->UpdateTickMarks(tickmarks);
 
-  EXPECT_CALL(*wrapper_ptr_, ReportFindInPageTickmarks(tickmarks));
-  EXPECT_CALL(*wrapper_ptr_, ReportFindInPageMatchCount(123, 5, true));
+  EXPECT_CALL(*client_ptr_, ReportFindInPageTickmarks(tickmarks));
+  EXPECT_CALL(*client_ptr_, ReportFindInPageMatchCount(123, 5, true));
   plugin_->NotifyNumberOfFindResultsChanged(/*total=*/5, /*final_result=*/true);
 }
 

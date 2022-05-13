@@ -63,9 +63,23 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public PostMessageReceiver::Client,
                                public PdfAccessibilityActionHandler {
  public:
-  class ContainerWrapper {
+  // Provides services from the plugin's container.
+  class Client : public V8ValueConverter {
    public:
-    virtual ~ContainerWrapper() = default;
+    virtual ~Client() = default;
+
+    virtual base::WeakPtr<Client> GetWeakPtr() = 0;
+
+    // Passes the plugin container to the client. This is first called in
+    // `Initialize()`, and cleared to null in `Destroy()`. The container may
+    // also be null for testing.
+    virtual void SetPluginContainer(blink::WebPluginContainer* container) = 0;
+
+    // Returns the plugin container set by `SetPluginContainer()`.
+    virtual blink::WebPluginContainer* PluginContainer() = 0;
+
+    // Enqueues a "message" event carrying `message` to the plugin embedder.
+    virtual void PostMessage(base::Value::Dict message) {}
 
     // Invalidates the entire web plugin container and schedules a paint of the
     // page in it.
@@ -136,25 +150,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Returns the local frame's client (render frame). May be null in unit
     // tests.
     virtual blink::WebLocalFrameClient* GetWebLocalFrameClient() = 0;
-  };
-
-  // Allows for dependency injections into `PdfViewWebPlugin`.
-  class Client : public V8ValueConverter {
-   public:
-    virtual ~Client() = default;
-
-    virtual base::WeakPtr<Client> GetWeakPtr() = 0;
-
-    // Passes the plugin container to the client. This is first called in
-    // `Initialize()`, and cleared to null in `Destroy()`. The container may
-    // also be null for testing.
-    virtual void SetPluginContainer(blink::WebPluginContainer* container) = 0;
-
-    // Returns the plugin container set by `SetPluginContainer()`.
-    virtual blink::WebPluginContainer* PluginContainer() = 0;
-
-    // Enqueues a "message" event carrying `message` to the plugin embedder.
-    virtual void PostMessage(base::Value::Dict message) {}
 
     // Prints the given `element`.
     virtual void Print(const blink::WebElement& element) {}
@@ -285,10 +280,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
-  // Initializes the plugin using the `container_wrapper` and `engine` provided
-  // by tests. Lets CreateUrlLoaderInternal() return `loader` on its first call.
-  bool InitializeForTesting(std::unique_ptr<ContainerWrapper> container_wrapper,
-                            std::unique_ptr<PDFiumEngine> engine,
+  // Initializes the plugin using the `engine` provided by tests. Lets
+  // `CreateUrlLoaderInternal()` return `loader` on its first call.
+  bool InitializeForTesting(std::unique_ptr<PDFiumEngine> engine,
                             std::unique_ptr<UrlLoader> loader);
 
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
@@ -329,8 +323,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Passing in a null `engine_override` allows InitializeCommon() to create a
   // PDFiumEngine normally. Otherwise, `engine_override` is used.
-  bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper,
-                        std::unique_ptr<PDFiumEngine> engine_override);
+  bool InitializeCommon(std::unique_ptr<PDFiumEngine> engine_override);
 
   // Sends whether to do smooth scrolling.
   void SendSetSmoothScrolling();
@@ -417,8 +410,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool has_focus_ = false;
 
   blink::WebPluginParams initial_params_;
-
-  std::unique_ptr<ContainerWrapper> container_wrapper_;
 
   v8::Persistent<v8::Object> scriptable_receiver_;
 

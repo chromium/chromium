@@ -295,7 +295,6 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/display",
       "//ui/events/blink",
       "//v8",
     ]

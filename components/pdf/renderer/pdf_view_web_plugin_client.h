@@ -40,6 +40,34 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   void SetPluginContainer(blink::WebPluginContainer* container) override;
   blink::WebPluginContainer* PluginContainer() override;
   void PostMessage(base::Value::Dict message) override;
+  void Invalidate() override;
+  void RequestTouchEventType(
+      blink::WebPluginContainer::TouchEventRequestType request_type) override;
+  void ReportFindInPageMatchCount(int identifier,
+                                  int total,
+                                  bool final_update) override;
+  void ReportFindInPageSelection(int identifier, int index) override;
+  void ReportFindInPageTickmarks(
+      const std::vector<gfx::Rect>& tickmarks) override;
+  float DeviceScaleFactor() override;
+  gfx::PointF GetScrollPosition() override;
+  void UsePluginAsFindHandler() override;
+  void SetReferrerForRequest(blink::WebURLRequest& request,
+                             const blink::WebURL& referrer_url) override;
+  void Alert(const blink::WebString& message) override;
+  bool Confirm(const blink::WebString& message) override;
+  blink::WebString Prompt(const blink::WebString& message,
+                          const blink::WebString& default_value) override;
+  void TextSelectionChanged(const blink::WebString& selection_text,
+                            uint32_t offset,
+                            const gfx::Range& range) override;
+  std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
+      const blink::WebAssociatedURLLoaderOptions& options) override;
+  void UpdateTextInputState() override;
+  void UpdateSelectionBounds() override;
+  std::string GetEmbedderOriginString() override;
+  blink::WebLocalFrame* GetFrame() override;
+  blink::WebLocalFrameClient* GetWebLocalFrameClient() override;
   void Print(const blink::WebElement& element) override;
   void RecordComputedAction(const std::string& action) override;
   std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>

@@ -4,6 +4,8 @@
 
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -12,13 +14,23 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
+#include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_widget.h"
+#include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
@@ -74,6 +86,132 @@ void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
 
   plugin_container_->EnqueueMessageEvent(
       blink::WebSerializedScriptValue::Serialize(isolate_, converted_message));
+}
+
+void PdfViewWebPluginClient::Invalidate() {
+  plugin_container_->Invalidate();
+}
+
+void PdfViewWebPluginClient::RequestTouchEventType(
+    blink::WebPluginContainer::TouchEventRequestType request_type) {
+  plugin_container_->RequestTouchEventType(request_type);
+}
+
+void PdfViewWebPluginClient::ReportFindInPageMatchCount(int identifier,
+                                                        int total,
+                                                        bool final_update) {
+  plugin_container_->ReportFindInPageMatchCount(identifier, total,
+                                                final_update);
+}
+
+void PdfViewWebPluginClient::ReportFindInPageSelection(int identifier,
+                                                       int index) {
+  plugin_container_->ReportFindInPageSelection(identifier, index);
+}
+
+void PdfViewWebPluginClient::ReportFindInPageTickmarks(
+    const std::vector<gfx::Rect>& tickmarks) {
+  blink::WebLocalFrame* frame = GetFrame();
+  if (frame) {
+    frame->SetTickmarks(blink::WebElement(),
+                        blink::WebVector<gfx::Rect>(tickmarks));
+  }
+}
+
+float PdfViewWebPluginClient::DeviceScaleFactor() {
+  // Do not rely on `blink::WebPluginContainer::DeviceScaleFactor()`, since it
+  // doesn't always reflect the real screen's device scale. Instead, get the
+  // device scale from the top-level frame's `display::ScreenInfo`.
+  blink::WebWidget* widget = GetFrame()->LocalRoot()->FrameWidget();
+  return widget->GetOriginalScreenInfo().device_scale_factor;
+}
+
+gfx::PointF PdfViewWebPluginClient::GetScrollPosition() {
+  // Note that `blink::WebLocalFrame::GetScrollOffset()` actually returns a
+  // scroll position (a point relative to the top-left corner).
+  return GetFrame()->GetScrollOffset();
+}
+
+void PdfViewWebPluginClient::UsePluginAsFindHandler() {
+  plugin_container_->UsePluginAsFindHandler();
+}
+
+void PdfViewWebPluginClient::SetReferrerForRequest(
+    blink::WebURLRequest& request,
+    const blink::WebURL& referrer_url) {
+  GetFrame()->SetReferrerForRequest(request, referrer_url);
+}
+
+void PdfViewWebPluginClient::Alert(const blink::WebString& message) {
+  blink::WebLocalFrame* frame = GetFrame();
+  if (frame)
+    frame->Alert(message);
+}
+
+bool PdfViewWebPluginClient::Confirm(const blink::WebString& message) {
+  blink::WebLocalFrame* frame = GetFrame();
+  return frame && frame->Confirm(message);
+}
+
+blink::WebString PdfViewWebPluginClient::Prompt(
+    const blink::WebString& message,
+    const blink::WebString& default_value) {
+  blink::WebLocalFrame* frame = GetFrame();
+  return frame ? frame->Prompt(message, default_value) : blink::WebString();
+}
+
+void PdfViewWebPluginClient::TextSelectionChanged(
+    const blink::WebString& selection_text,
+    uint32_t offset,
+    const gfx::Range& range) {
+  // Focus the plugin's containing frame before changing the text selection.
+  // TODO(crbug.com/1234559): Would it make more sense not to change the text
+  // selection at all in this case? Maybe we only have this problem because we
+  // support a "selectAll" message.
+  blink::WebLocalFrame* frame = GetFrame();
+  frame->View()->SetFocusedFrame(frame);
+
+  frame->TextSelectionChanged(selection_text, offset, range);
+}
+
+std::unique_ptr<blink::WebAssociatedURLLoader>
+PdfViewWebPluginClient::CreateAssociatedURLLoader(
+    const blink::WebAssociatedURLLoaderOptions& options) {
+  return GetFrame()->CreateAssociatedURLLoader(options);
+}
+
+void PdfViewWebPluginClient::UpdateTextInputState() {
+  // `widget` is null in Print Preview.
+  auto* widget = GetFrame()->FrameWidget();
+  if (widget)
+    widget->UpdateTextInputState();
+}
+
+void PdfViewWebPluginClient::UpdateSelectionBounds() {
+  // `widget` is null in Print Preview.
+  auto* widget = GetFrame()->FrameWidget();
+  if (widget)
+    widget->UpdateSelectionBounds();
+}
+
+std::string PdfViewWebPluginClient::GetEmbedderOriginString() {
+  auto* frame = GetFrame();
+  if (!frame)
+    return {};
+
+  auto* parent_frame = frame->Parent();
+  if (!parent_frame)
+    return {};
+
+  return GURL(parent_frame->GetSecurityOrigin().ToString().Utf8()).spec();
+}
+
+blink::WebLocalFrame* PdfViewWebPluginClient::GetFrame() {
+  return plugin_container_->GetDocument().GetFrame();
+}
+
+blink::WebLocalFrameClient* PdfViewWebPluginClient::GetWebLocalFrameClient() {
+  return GetFrame()->Client();
 }
 
 void PdfViewWebPluginClient::Print(const blink::WebElement& element) {
