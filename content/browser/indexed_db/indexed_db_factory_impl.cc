@@ -20,7 +20,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -456,10 +455,6 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   leveldb::Status s =
       class_factory_->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
-  base::UmaHistogramEnumeration(
-      "WebCore.IndexedDB.DestroyCorruptBackingStoreStatus",
-      leveldb_env::GetLevelDBStatusUMAValue(s),
-      leveldb_env::LEVELDB_STATUS_MAX);
 }
 
 std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
@@ -861,10 +856,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
       // This is a special case where we want to make sure the database is
       // deleted, so we try to delete again.
       status = class_factory_->leveldb_factory().DestroyLevelDB(database_path);
-      base::UmaHistogramEnumeration(
-          "WebCore.IndexedDB.DestroyCorruptBackingStoreStatus",
-          leveldb_env::GetLevelDBStatusUMAValue(status),
-          leveldb_env::LEVELDB_STATUS_MAX);
+
       if (UNLIKELY(!status.ok())) {
         LOG(ERROR) << "Unable to delete backing store: " << status.ToString();
         return {nullptr, status, data_loss_info, /*is_disk_full=*/false};
