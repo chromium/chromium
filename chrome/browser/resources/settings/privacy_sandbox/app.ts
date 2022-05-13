@@ -204,6 +204,9 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   }
 
   private onDialogClose_() {
+    // This function will only be called once, regardless of how the dialog is
+    // shut (either via ESC or via the button), as in the latter the dialog is
+    // not "closed", but rather removed from the DOM.
     const lastView = this.privacySandboxSettingsView_;
     this.privacySandboxSettingsView_ = PrivacySandboxSettingsView.MAIN;
     afterNextRender(this, async () => {
