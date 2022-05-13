@@ -25,7 +25,7 @@ per-file check_grd_for_unused_strings.py=estade@chromium.org
 
 per-file gyp-explain.py=thakis@chromium.org
 
-per-file gypv8sh.py=jochen@chromium.org
+per-file gypv8sh.py=machenbach@chromium.org
 
 per-file include_tracer.py=thakis@chromium.org
 
