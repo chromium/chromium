@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -83,14 +82,11 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         }
     }
 
-    private OmniboxTestUtils mOmnibox;
-
     @Override
     @Before
     public void setUp() throws Exception {
         mTestPage = "/chrome/test/data/android/contextualsearch/simple_test.html";
         super.setUp();
-        mOmnibox = new OmniboxTestUtils(sActivityTestRule.getActivity());
     }
 
     //============================================================================================
@@ -148,30 +144,6 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.reload());
         // Make sure the page is fully loaded.
         ChromeTabUtils.waitForTabPageLoaded(tab, testUrl);
-    }
-
-    //============================================================================================
-    // Omnibox
-    //============================================================================================
-
-    /**
-     * Tests whether the contextual search panel hides when omnibox is clicked.
-     */
-    //@SmallTest
-    //@Feature({"ContextualSearch"})
-    @Test
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Flaked in 2017.  https://crbug.com/707529")
-    public void testHidesWhenOmniboxFocused() throws Exception {
-        clickWordNode("intelligence");
-
-        Assert.assertEquals("Intelligence", mFakeServer.getSearchTermRequested());
-        fakeResponse(false, 200, "Intelligence", "display-text", "alternate-term", false);
-        assertContainsParameters("Intelligence", "alternate-term");
-        waitForPanelToPeek();
-
-        mOmnibox.requestFocus();
-        assertPanelClosedOrUndefined();
     }
 
     //============================================================================================

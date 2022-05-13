@@ -11,6 +11,7 @@ import android.os.Build;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -41,6 +42,13 @@ import org.chromium.ui.test.util.UiRestriction;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchCriticalTest extends ContextualSearchInstrumentationBase {
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        mTestPage = "/chrome/test/data/android/contextualsearch/tap_test.html";
+        super.setUp();
+    }
+
     //============================================================================================
     // Test Cases
     //============================================================================================
@@ -156,10 +164,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testResolveDisablePreload(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveDisablePreload(@EnabledFeature int enabledFeature) throws Exception {
         simulateSlowResolveSearch("intelligence");
 
         assertSearchTermRequested();
@@ -179,7 +184,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/765403")
+    //   @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/765403")
     @DisabledTest(
             message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
     public void
@@ -337,9 +342,11 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(message = "http://crbug.com/1296677")
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
+        // This flakes when running the Translations Feature, probably due to DOMUtils issues.
+        if (enabledFeature == EnabledFeature.TRANSLATIONS) return;
+
         // This test depends on preloading the content - which is loaded and not made visible.
         // We only preload when the user has decided to accept the privacy opt-in.
         mPolicy.overrideDecidedStateForTesting(true);
@@ -470,7 +477,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(message = "http://crbug.com/1296677")
     public void testTapCloseRemovedFromHistory(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
@@ -492,7 +498,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
+    //  @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
     @DisabledTest(
             message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
@@ -520,10 +526,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1161540")
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testChainedTapsRemovedFromHistory() throws Exception {
+    public void testChainedTapsRemovedFromHistory() throws Exception {
         // Make sure we use tap for the simulateResolveSearch since only tap chains.
         FeatureList.setTestFeatures(ENABLE_NONE);
 
