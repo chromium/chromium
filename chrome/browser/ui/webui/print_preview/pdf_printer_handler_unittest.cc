@@ -43,6 +43,13 @@ const char kPdfPrinterCapability[] =
                 }
               ]
             },
+            "dpi": {
+               "option": [ {
+                  "horizontal_dpi": 300,
+                  "is_default": true,
+                  "vertical_dpi": 300
+               } ]
+            },
             "media_size":{
               "option":[
                 {

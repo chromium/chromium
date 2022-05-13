@@ -101,8 +101,9 @@ void PrintingContext::UsePdfSettings() {
   pdf_settings.Set(kSettingCollate, true);
   pdf_settings.Set(kSettingCopies, 1);
   pdf_settings.Set(kSettingColor, static_cast<int>(mojom::ColorModel::kColor));
-  pdf_settings.Set(kSettingDpiHorizontal, kPointsPerInch);
-  pdf_settings.Set(kSettingDpiVertical, kPointsPerInch);
+  // DPI value should match GetPdfCapabilities().
+  pdf_settings.Set(kSettingDpiHorizontal, kDefaultPdfDpi);
+  pdf_settings.Set(kSettingDpiVertical, kDefaultPdfDpi);
   pdf_settings.Set(kSettingDuplexMode,
                    static_cast<int>(printing::mojom::DuplexMode::kSimplex));
   pdf_settings.Set(kSettingLandscape, false);
@@ -152,7 +153,8 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   if (!open_in_external_preview &&
       (printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kExtension)) {
-    settings_->set_dpi(kDefaultPdfDpi);
+    if (printer_type == mojom::PrinterType::kExtension)
+      settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
     if (!settings_->requested_media().size_microns.IsEmpty()) {
       float device_microns_per_device_unit =

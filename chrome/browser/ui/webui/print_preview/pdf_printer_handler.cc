@@ -148,6 +148,13 @@ base::Value GetPdfCapabilities(
   }
   media.SaveTo(&description);
 
+  // DPI value should match PrintingContext::UsePdfSettings().
+  cloud_devices::printer::DpiCapability dpi;
+  dpi.AddDefaultOption(
+      cloud_devices::printer::Dpi(kDefaultPdfDpi, kDefaultPdfDpi),
+      /*is_default=*/true);
+  dpi.SaveTo(&description);
+
   return std::move(description).ToValue();
 }
 
