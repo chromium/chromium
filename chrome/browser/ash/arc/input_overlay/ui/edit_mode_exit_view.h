@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
@@ -54,12 +55,12 @@ class EditModeExitView : public views::View {
   void OnSaveButtonPressed();
   void OnCancelButtonPressed();
 
-  ash::PillButton* reset_button_ = nullptr;
-  ash::PillButton* save_button_ = nullptr;
-  ash::PillButton* cancel_button_ = nullptr;
+  raw_ptr<ash::PillButton> reset_button_ = nullptr;
+  raw_ptr<ash::PillButton> save_button_ = nullptr;
+  raw_ptr<ash::PillButton> cancel_button_ = nullptr;
 
   // DisplayOverlayController owns |this| class, no need to deallocate.
-  DisplayOverlayController* const display_overlay_controller_ = nullptr;
+  const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 };
 
 }  // namespace input_overlay

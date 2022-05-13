@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_TAG_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_TAG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
@@ -42,8 +43,8 @@ class ActionTag : public views::View {
   void InitTextTag();
   void InitImageTag();
 
-  ActionImage* image_ = nullptr;
-  ActionLabel* label_ = nullptr;
+  raw_ptr<ActionImage> image_ = nullptr;
+  raw_ptr<ActionLabel> label_ = nullptr;
 };
 
 }  // namespace input_overlay
