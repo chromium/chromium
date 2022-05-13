@@ -61,6 +61,13 @@ void PermissionUpdateMessageController::ShowMessageInternal(
     int title_id,
     int description_id,
     PermissionUpdatedCallback callback) {
+  // crbug.com/1319880: Some permission clients tend to request to re-prompt
+  // more than expected.
+  for (auto& delegate : message_delegates_) {
+    if (delegate->GetTitleId() == title_id) {
+      return;
+    }
+  }
   auto delegate = std::make_unique<PermissionUpdateMessageDelegate>(
       &GetWebContents(), required_android_permissions,
       optional_android_permissions, content_settings_types, icon_id, title_id,

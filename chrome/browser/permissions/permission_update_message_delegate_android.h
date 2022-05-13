@@ -40,6 +40,7 @@ class PermissionUpdateMessageDelegate {
   ~PermissionUpdateMessageDelegate();
 
   void OnPermissionResult(bool all_permissions_granted);
+  int GetTitleId();
 
  private:
   friend class PermissionUpdateMessageControllerAndroidTest;
@@ -53,6 +54,7 @@ class PermissionUpdateMessageDelegate {
   base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_;
   std::unique_ptr<PermissionUpdateRequester> permission_update_requester_;
   std::unique_ptr<messages::MessageWrapper> message_;
+  int title_id_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_UPDATE_MESSAGE_DELEGATE_ANDROID_H_

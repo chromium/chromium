@@ -38,6 +38,7 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
       base::BindOnce(&PermissionUpdateMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
 
+  title_id_ = title_id;
   message_->SetTitle(l10n_util::GetStringUTF16(title_id));
   message_->SetDescription(l10n_util::GetStringUTF16(description_id));
   message_->SetPrimaryButtonText(
@@ -60,6 +61,10 @@ void PermissionUpdateMessageDelegate::OnPermissionResult(
   // The callback may destroy `this`.
   // Do not access any member variables after this point.
   std::move(delete_callback_).Run(this);
+}
+
+int PermissionUpdateMessageDelegate::GetTitleId() {
+  return title_id_;
 }
 
 void PermissionUpdateMessageDelegate::HandlePrimaryActionCallback() {
