@@ -240,7 +240,8 @@ struct VisitContentAnnotations {
                           VisitContentModelAnnotations model_annotations,
                           const std::vector<std::string>& related_searches,
                           const GURL& search_normalized_url,
-                          const std::u16string& search_terms);
+                          const std::u16string& search_terms,
+                          const std::string& alternative_title);
   VisitContentAnnotations(const VisitContentAnnotations& other);
   ~VisitContentAnnotations();
 
@@ -251,6 +252,8 @@ struct VisitContentAnnotations {
   std::vector<std::string> related_searches;
   GURL search_normalized_url;
   std::u16string search_terms;
+  // Alternative page title for the visit.
+  std::string alternative_title;
 };
 
 class URLResult : public URLRow {

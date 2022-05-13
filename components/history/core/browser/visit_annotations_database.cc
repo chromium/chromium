@@ -24,7 +24,7 @@ namespace {
 #define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                        \
   " visit_id,visibility_score,categories,page_topics_model_version,"  \
   "annotation_flags,entities,related_searches,search_normalized_url," \
-  "search_terms "
+  "search_terms,alternative_title "
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
   " visit_id,context_annotation_flags,duration_since_last_visit," \
   "page_end_reason,total_foreground_duration "
@@ -169,7 +169,8 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
                        "entities VARCHAR,"
                        "related_searches VARCHAR,"
                        "search_normalized_url VARCHAR,"
-                       "search_terms LONGVARCHAR)")) {
+                       "search_terms LONGVARCHAR,"
+                       "alternative_title VARCHAR)")) {
     return false;
   }
 
@@ -226,7 +227,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO content_annotations(" HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?,?,?,?,?,?)"));
+      ")VALUES(?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindDouble(
       1, static_cast<double>(
@@ -245,6 +246,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   statement.BindString(7,
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(8, visit_content_annotations.search_terms);
+  statement.BindString(9, visit_content_annotations.alternative_title);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'content_annotations' insert statement:  "
@@ -285,7 +287,8 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
       "visibility_score=?,categories=?,"
       "page_topics_model_version=?,"
       "annotation_flags=?,entities=?,"
-      "related_searches=?,search_normalized_url=?,search_terms=? "
+      "related_searches=?,search_normalized_url=?,search_terms=?,"
+      "alternative_title=? "
       "WHERE visit_id=?"));
   statement.BindDouble(
       0, static_cast<double>(
@@ -304,7 +307,8 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   statement.BindString(6,
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(7, visit_content_annotations.search_terms);
-  statement.BindInt64(8, visit_id);
+  statement.BindString(8, visit_content_annotations.alternative_title);
+  statement.BindInt64(9, visit_id);
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -370,6 +374,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->search_normalized_url =
       GURL(statement.ColumnString(7));
   out_content_annotations->search_terms = statement.ColumnString16(8);
+  out_content_annotations->alternative_title = statement.ColumnString(9);
   return true;
 }
 
@@ -639,6 +644,21 @@ bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddSearchMetadata() {
       "ALTER TABLE content_annotations "
       "ADD COLUMN search_normalized_url; \n"
       "ALTER TABLE content_annotations ADD COLUMN search_terms LONGVARCHAR");
+}
+
+bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddAlternativeTitle() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << "Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "alternative_title"))
+    return true;
+
+  // Add the `alternative_title`column to the older versions of the table.
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN alternative_title");
 }
 
 }  // namespace history

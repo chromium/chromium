@@ -45,6 +45,7 @@ extern const base::Feature kPageContentAnnotationsValidation;
 extern const base::Feature kPreventLongRunningPredictionModels;
 extern const base::Feature kOverrideNumThreadsForModelExecution;
 extern const base::Feature kOptGuideEnableXNNPACKDelegateWithTFLite;
+extern const base::Feature kRemotePageMetadata;
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -251,6 +252,10 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale);
 // Returns whether page entities should be retrieved from the remote
 // Optimization Guide service.
 bool RemotePageEntitiesEnabled();
+
+// Returns whether page metadata should be retrieved from the remote
+// Optimization Guide service.
+bool RemotePageMetadataEnabled();
 
 // The time to wait beyond the onload event before sending the hints request for
 // link predictions.

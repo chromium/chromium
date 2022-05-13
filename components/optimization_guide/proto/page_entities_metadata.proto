@@ -29,6 +29,8 @@ message Entity {
 message PageEntitiesMetadata {
   // A set of entities that are expected to be present on the page.
   repeated Entity entities = 1;
+  // A string representing an alternative title for the page.
+  optional string alternative_title = 2;
 }
 
 // The metadata associated with an |Entity|.

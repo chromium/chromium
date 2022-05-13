@@ -23,6 +23,12 @@ namespace optimization_guide {
 
 namespace {
 
+// Return whether or not we should fetch remote metadata.
+bool FetchRemoteMetadataEnabled() {
+  return features::RemotePageEntitiesEnabled() ||
+         features::RemotePageMetadataEnabled();
+}
+
 // Returns search metadata if |url| is a valid Search URL according to
 // |template_url_service|.
 absl::optional<SearchMetadata> ExtractSearchMetadata(
@@ -121,7 +127,7 @@ PageContentAnnotationsWebContentsObserver::
       optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(page_content_annotations_service_);
 
-  if (features::RemotePageEntitiesEnabled() && optimization_guide_decider_) {
+  if (FetchRemoteMetadataEnabled() && optimization_guide_decider_) {
     optimization_guide_decider_->RegisterOptimizationTypes(
         {proto::PAGE_ENTITIES});
   }
@@ -147,12 +153,11 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   optimization_guide::HistoryVisit history_visit = optimization_guide::
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
           web_contents(), navigation_handle->GetNavigationId());
-
-  if (features::RemotePageEntitiesEnabled() && optimization_guide_decider_) {
+  if (FetchRemoteMetadataEnabled() && optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimizationAsync(
         navigation_handle, proto::PAGE_ENTITIES,
         base::BindOnce(&PageContentAnnotationsWebContentsObserver::
-                           OnRemotePageEntitiesReceived,
+                           OnRemotePageMetadataReceived,
                        weak_ptr_factory_.GetWeakPtr(), history_visit));
   }
 
@@ -247,7 +252,7 @@ void PageContentAnnotationsWebContentsObserver::TitleWasSet(
   }
 }
 
-void PageContentAnnotationsWebContentsObserver::OnRemotePageEntitiesReceived(
+void PageContentAnnotationsWebContentsObserver::OnRemotePageMetadataReceived(
     const HistoryVisit& history_visit,
     OptimizationGuideDecision decision,
     const OptimizationMetadata& metadata) {
@@ -256,22 +261,36 @@ void PageContentAnnotationsWebContentsObserver::OnRemotePageEntitiesReceived(
 
   absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
       metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
-  if (!page_entities_metadata || page_entities_metadata->entities().size() == 0)
+  if (!page_entities_metadata)
     return;
 
-  std::vector<history::VisitContentModelAnnotations::Category> entities;
-  for (const auto& entity : page_entities_metadata->entities()) {
-    if (entity.entity_id().empty())
-      continue;
+  // Persist entities to VisitContentModelAnnotations if that feature is
+  // enabled.
+  if (page_entities_metadata->entities().size() != 0 &&
+      features::RemotePageEntitiesEnabled()) {
+    std::vector<history::VisitContentModelAnnotations::Category> entities;
+    for (const auto& entity : page_entities_metadata->entities()) {
+      if (entity.entity_id().empty())
+        continue;
 
-    if (entity.score() < 0 || entity.score() > 100)
-      continue;
+      if (entity.score() < 0 || entity.score() > 100)
+        continue;
 
-    entities.emplace_back(history::VisitContentModelAnnotations::Category(
-        entity.entity_id(), entity.score()));
+      entities.emplace_back(history::VisitContentModelAnnotations::Category(
+          entity.entity_id(), entity.score()));
+    }
+    page_content_annotations_service_->PersistRemotePageEntities(history_visit,
+                                                                 entities);
   }
-  page_content_annotations_service_->PersistRemotePageEntities(history_visit,
-                                                               entities);
+  if (!features::RemotePageMetadataEnabled()) {
+    return;
+  }
+  // Persist any other metadata to VisitContentAnnotations.
+  page_entities_metadata->clear_entities();
+  if (page_entities_metadata->has_alternative_title()) {
+    page_content_annotations_service_->PersistRemotePageMetadata(
+        history_visit, *page_entities_metadata);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);

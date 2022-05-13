@@ -130,6 +130,10 @@ class VisitAnnotationsDatabase {
   // Called by the derived classes to migrate the older content_annotations
   // table by adding the search_normalized_url and search_terms columns.
   bool MigrateContentAnnotationsAddSearchMetadata();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table by adding the alternative_title column.
+  bool MigrateContentAnnotationsAddAlternativeTitle();
 };
 
 }  // namespace history

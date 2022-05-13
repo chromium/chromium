@@ -518,6 +518,17 @@ void HistoryService::AddSearchMetadataForVisit(
                               search_terms));
 }
 
+void HistoryService::AddPageMetadataForVisit(
+    const std::string& alternative_title,
+    VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryService::AddPageMetadataForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::AddPageMetadataForVisit,
+                              history_backend_, visit_id, alternative_title));
+}
+
 void HistoryService::AddPageWithDetails(const GURL& url,
                                         const std::u16string& title,
                                         int visit_count,

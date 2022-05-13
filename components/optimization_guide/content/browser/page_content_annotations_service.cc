@@ -49,6 +49,8 @@ std::string PageContentAnnotationsTypeToString(
       return "RelatedSearches";
     case PageContentAnnotationsType::kSearchMetadata:
       return "SearchMetadata";
+    case PageContentAnnotationsType::kRemoteMetdata:
+      return "RemoteMetadata";
   }
 }
 
@@ -541,6 +543,18 @@ void PageContentAnnotationsService::PersistRemotePageEntities(
            // Even though we are persisting remote page entities, we store
            // these as an override to the model annotations.
            PageContentAnnotationsType::kModelAnnotations);
+}
+
+void PageContentAnnotationsService::PersistRemotePageMetadata(
+    const HistoryVisit& visit,
+    const proto::PageEntitiesMetadata& page_metadata) {
+  if (!page_metadata.has_alternative_title())
+    return;
+  QueryURL(visit,
+           base::BindOnce(&history::HistoryService::AddPageMetadataForVisit,
+                          history_service_->AsWeakPtr(),
+                          page_metadata.alternative_title()),
+           PageContentAnnotationsType::kRemoteMetdata);
 }
 
 // static

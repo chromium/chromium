@@ -117,6 +117,10 @@ const base::Feature kOptimizationGuideModelDownloading {
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
                                             enabled_by_default_desktop_only};
 
+// Enables fetching page metadata from the remote Optimization Guide service.
+const base::Feature kRemotePageMetadata{"RemotePageMetadata",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the page entities model to be annotated on every page load.
 const base::Feature kPageEntitiesPageContentAnnotations{
     "PageEntitiesPageContentAnnotations", enabled_by_default_desktop_only};
@@ -507,8 +511,13 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
 }
 
 bool RemotePageEntitiesEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(kPageContentAnnotations,
-                                           "fetch_remote_page_entities", false);
+  return GetFieldTrialParamByFeatureAsBool(kRemotePageMetadata,
+                                           "persist_page_entities", false);
+}
+
+bool RemotePageMetadataEnabled() {
+  return GetFieldTrialParamByFeatureAsBool(kRemotePageMetadata,
+                                           "persist_page_metadata", false);
 }
 
 base::TimeDelta GetOnloadDelayForHintsFetching() {

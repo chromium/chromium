@@ -30,6 +30,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -84,13 +85,15 @@ struct SearchMetadata {
 // The type of page content annotations stored in the history database.
 enum class PageContentAnnotationsType {
   kUnknown = 0,
-  // Results from executing the models on page content or received from the
-  // remote Optimization Guide service.
+  // Results from executing the models on page content or annotations received
+  // from the remote Optimization Guide service.
   kModelAnnotations = 1,
   // Related searches for the Google Search Results page.
   kRelatedSearches = 2,
   // Metadata for "search-like" pages.
   kSearchMetadata = 3,
+  // Metadata received from the remote Optimization Guide service.
+  kRemoteMetdata = 4,
 };
 
 // A KeyedService that annotates page content.
@@ -225,6 +228,13 @@ class PageContentAnnotationsService : public KeyedService,
       const HistoryVisit& visit,
       const std::vector<history::VisitContentModelAnnotations::Category>&
           entities);
+
+  // Persist |page_metadata| for |visit| in |history_service_|.
+  //
+  // Virtualized for testing.
+  virtual void PersistRemotePageMetadata(
+      const HistoryVisit& visit,
+      const proto::PageEntitiesMetadata& page_metadata);
 
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.

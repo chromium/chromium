@@ -537,14 +537,15 @@ class PageContentAnnotationsServiceRemotePageEntitiesBrowserTest
     : public PageContentAnnotationsServiceBrowserTest {
  public:
   PageContentAnnotationsServiceRemotePageEntitiesBrowserTest() {
+    // Make sure remote page metadata works without page content annotations
+    // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
-         {features::kPageContentAnnotations,
+         {features::kRemotePageMetadata,
           {
-              {"write_to_history_service", "true"},
-              {"fetch_remote_page_entities", "true"},
+              {"persist_page_entities", "true"},
           }}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{{features::kPageContentAnnotations}});
     set_load_model_on_startup(false);
   }
   ~PageContentAnnotationsServiceRemotePageEntitiesBrowserTest() override =
@@ -593,6 +594,62 @@ IN_PROC_BROWSER_TEST_F(
       got_content_annotations->model_annotations.entities,
       UnorderedElementsAre(
           history::VisitContentModelAnnotations::Category("entity1", 50)));
+}
+
+class PageContentAnnotationsServiceRemoteMetadataBrowserTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceRemoteMetadataBrowserTest() {
+    // Make sure remote page metadata works without page content annotations
+    // enabled.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kRemotePageMetadata,
+          {
+              {"persist_page_metadata", "true"},
+          }}},
+        /*disabled_features=*/{{features::kPageContentAnnotations}});
+    set_load_model_on_startup(false);
+  }
+  ~PageContentAnnotationsServiceRemoteMetadataBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
+                       StoresMetadataFromRemoteService) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+
+  proto::PageEntitiesMetadata page_entities_metadata;
+  page_entities_metadata.set_alternative_title("alternative title");
+  OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(page_entities_metadata);
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.RemoteMetadata",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_EQ(got_content_annotations->alternative_title, "alternative title");
 }
 
 class PageContentAnnotationsServiceNoHistoryTest

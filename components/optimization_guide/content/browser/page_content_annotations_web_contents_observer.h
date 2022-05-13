@@ -54,9 +54,9 @@ class PageContentAnnotationsWebContentsObserver
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
 
-  // Callback invoked when the page entities have been received from
+  // Callback invoked when the page metadata has been received from
   // |optimization_guide_decider_| for |visit|.
-  void OnRemotePageEntitiesReceived(const HistoryVisit& visit,
+  void OnRemotePageMetadataReceived(const HistoryVisit& visit,
                                     OptimizationGuideDecision decision,
                                     const OptimizationMetadata& metadata);
 

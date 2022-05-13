@@ -96,6 +96,17 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_search_metadata_;
   }
 
+  void PersistRemotePageMetadata(
+      const HistoryVisit& visit,
+      const proto::PageEntitiesMetadata& page_metadata) override {
+    last_page_metadata_ = page_metadata;
+  }
+
+  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_persisted()
+      const {
+    return last_page_metadata_;
+  }
+
  private:
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
@@ -105,6 +116,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                 std::vector<history::VisitContentModelAnnotations::Category>>>
       last_entities_persistence_request_;
   absl::optional<SearchMetadata> last_search_metadata_;
+  absl::optional<proto::PageEntitiesMetadata> last_page_metadata_;
 };
 
 class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
@@ -140,6 +152,15 @@ class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
       proto::Entity* entity4 = page_entities_metadata.add_entities();
       entity4->set_entity_id("scoretoolow");
       entity4->set_score(-1);
+
+      OptimizationMetadata metadata;
+      metadata.SetAnyMetadataForTesting(page_entities_metadata);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    if (navigation_handle->GetURL() == GURL("http://hasmetadata.com/")) {
+      proto::PageEntitiesMetadata page_entities_metadata;
+      page_entities_metadata.set_alternative_title("alternative title");
 
       OptimizationMetadata metadata;
       metadata.SetAnyMetadataForTesting(page_entities_metadata);
@@ -498,8 +519,8 @@ class PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest
  public:
   PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageContentAnnotations,
-        {{"fetch_remote_page_entities", "true"}});
+        features::kRemotePageMetadata,
+        {{"persist_page_entities", "true"}, {"persist_page_metadata", "true"}});
   }
 
  private:
@@ -557,6 +578,17 @@ TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
       request->second,
       UnorderedElementsAre(
           history::VisitContentModelAnnotations::Category("entity1", 50)));
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       RequestsToPersistIfHasPageMetadata) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://hasmetadata.com/"));
+
+  absl::optional<proto::PageEntitiesMetadata> metadata =
+      service()->last_page_metadata_persisted();
+  EXPECT_EQ(metadata->alternative_title(), "alternative title");
 }
 
 }  // namespace optimization_guide

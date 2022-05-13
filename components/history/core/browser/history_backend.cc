@@ -593,6 +593,29 @@ void HistoryBackend::AddSearchMetadataForVisit(
   }
 }
 
+void HistoryBackend::AddPageMetadataForVisit(
+    VisitID visit_id,
+    const std::string& alternative_title) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddPageMetadataForVisit");
+
+  if (!db_)
+    return;
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.alternative_title = alternative_title;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.alternative_title = alternative_title;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
     return;

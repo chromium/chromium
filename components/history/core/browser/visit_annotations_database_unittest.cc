@@ -90,8 +90,9 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   std::vector<std::string> related_searches{"related searches",
                                             "búsquedas relacionadas"};
   VisitContentAnnotations content_annotations{
-      annotation_flags, model_annotations, related_searches,
-      GURL("http://pagewithvisit.com?q=search"), u"search"};
+      annotation_flags, model_annotations,
+      related_searches, GURL("http://pagewithvisit.com?q=search"),
+      u"search",        "Alternative title"};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -119,6 +120,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
   EXPECT_EQ(GURL("http://pagewithvisit.com?q=search"),
             got_content_annotations.search_normalized_url);
   EXPECT_EQ(u"search", got_content_annotations.search_terms);
+  EXPECT_EQ("Alternative title", got_content_annotations.alternative_title);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -172,8 +174,9 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kBrowsingTopicsEligible;
   VisitContentAnnotations original{
-      annotation_flags, model_annotations, related_searches,
-      GURL("http://pagewithvisit.com?q=search"), u"search"};
+      annotation_flags, model_annotations,
+      related_searches, GURL("http://pagewithvisit.com?q=search"),
+      u"search",        "Alternative title"};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.
@@ -183,6 +186,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   modification.search_normalized_url =
       GURL("http://pagewithvisit.com?q=search2");
   modification.search_terms = u"search2";
+  modification.alternative_title = "New alternative title";
   UpdateContentAnnotationsForVisit(visit_id, modification);
 
   // Check that the mutated version was written.
@@ -208,6 +212,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.search_normalized_url,
             GURL("http://pagewithvisit.com?q=search2"));
   EXPECT_EQ(final.search_terms, u"search2");
+  EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
@@ -259,8 +264,9 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
   VisitContentAnnotations content_annotations{
-      annotation_flags, model_annotations, related_searches,
-      GURL("http://pagewithvisit.com?q=search"), u"search"};
+      annotation_flags, model_annotations,
+      related_searches, GURL("http://pagewithvisit.com?q=search"),
+      u"search",        "Alternative title"};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   VisitContentAnnotations got_content_annotations;

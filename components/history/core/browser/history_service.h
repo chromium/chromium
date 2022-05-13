@@ -245,6 +245,10 @@ class HistoryService : public KeyedService {
                                  const std::u16string& search_terms,
                                  VisitID visit_id);
 
+  // Updates the history database with additional page metadata.
+  void AddPageMetadataForVisit(const std::string& alternative_title,
+                               VisitID visit_id);
+
   // Querying ------------------------------------------------------------------
 
   // Returns the information about the requested URL. If the URL is found,

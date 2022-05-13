@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -25,11 +26,13 @@
 namespace {
 
 bool ShouldEnablePageContentAnnotations() {
-  // Allow for the validation experiment and/or the Topics experiment to enable
-  // the PCAService without need to enable both features.
+  // Allow for the validation experiment, remote page metadata, or the Topics
+  // experiment to enable the PCAService without need to enable both features.
   return optimization_guide::features::IsPageContentAnnotationEnabled() ||
          base::FeatureList::IsEnabled(
              optimization_guide::features::kPageContentAnnotationsValidation) ||
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kRemotePageMetadata) ||
          base::FeatureList::IsEnabled(blink::features::kBrowsingTopics);
 }
 
