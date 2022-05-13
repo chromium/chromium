@@ -568,7 +568,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSOmniboxUpdatedPopupUIDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSOmniboxUpdatedPopupUI,
                                     kiOSOmniboxUpdatedPopupUIVariations,
-                                    "kIOSOmniboxUpdatedPopupUI")},
+                                    "IOSOmniboxUpdatedPopupUI")},
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,
