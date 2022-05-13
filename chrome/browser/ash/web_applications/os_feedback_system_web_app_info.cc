@@ -12,7 +12,10 @@
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -78,4 +81,19 @@ bool OSFeedbackAppDelegate::ShouldAllowResize() const {
 }
 gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForOSFeedbackApp(browser);
+}
+
+Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    web_app::WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  // This check is needed to enforce the policy no matter how and from where the
+  // feedback tool is to be launched.
+  if (!profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed)) {
+    return nullptr;
+  }
+  // TODO(xiangdongkong): Take a screenshot and launch the app afterward.
+  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
+                                                             url, params);
 }

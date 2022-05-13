@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/notification_types.h"
@@ -77,6 +78,32 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, NavigateToFeedback) {
                                    ->tab_strip_model()
                                    ->GetActiveWebContents()
                                    ->GetVisibleURL());
+}
+
+// This test verifies that the Feedback app is not opened when
+// UserFeedbackAllowed is set to false.
+IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, UserFeedbackNotAllowed) {
+  WaitForTestSystemAppInstall();
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               false);
+
+  GURL main_feedback_url(ash::kChromeUIOSFeedbackUrl);
+  GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), main_feedback_url.spec());
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  // browser() tab contents should be unaffected.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(old_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  // We now still have one browser.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(old_url, chrome::FindLastActive()
+                         ->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetVisibleURL());
 }
 
 // Test that the Feedback App has a default bounds of 640(height)x600(width)

@@ -15,6 +15,10 @@
 class Browser;
 struct WebAppInstallInfo;
 
+namespace web_app {
+class WebAppProvider;
+}  // namespace web_app
+
 class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit OSFeedbackAppDelegate(Profile* profile);
@@ -27,6 +31,11 @@ class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.
