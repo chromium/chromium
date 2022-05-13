@@ -391,13 +391,12 @@ void DeviceActivityClient::CancelUseCases() {
   std::queue<DeviceActiveUseCase*> pending_use_cases;
   std::swap(pending_use_cases_, pending_use_cases);
 
-  // Calling std::queue.front() on empty queue results in undefined behaviour.
-  // Safety check queue is not empty before |TransitionToIdle|.
-  if (pending_use_cases.empty()) {
-    return;
+  for (auto* use_case : GetUseCases()) {
+    // Setting  the window identifier resets the object to a fresh state.
+    use_case->SetWindowIdentifier(absl::nullopt);
   }
 
-  TransitionToIdle(pending_use_cases.front());
+  TransitionToIdle(nullptr);
 }
 
 void DeviceActivityClient::TransitionOutOfIdle(

@@ -971,6 +971,130 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
             DeviceActivityClient::State::kIdle);
 }
 
+TEST_F(DeviceActivityClientTest,
+       ReportGracefullyAfterNetworkDisconnectsDuringPreviousRun) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  DeviceActiveUseCase* first_use_case =
+      device_activity_client_->GetUseCases().front();
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingMembershipOprf);
+
+  EXPECT_NE(first_use_case->GetWindowIdentifier(), absl::nullopt);
+  EXPECT_NE(first_use_case->GetPsmIdentifier(), absl::nullopt);
+  EXPECT_NE(first_use_case->GetPsmRlweClient(), nullptr);
+
+  // While waiting for OPRF request, simulate network disconnection.
+  SetWifiNetworkState(shill::kStateOffline);
+
+  // Network offline should cancel all pending use cases, and clear the saved
+  // state of the attempted pings.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // Currently the use cases stores window id, psm id, and psm rlwe client
+    // pointer in state.
+    EXPECT_EQ(use_case->GetWindowIdentifier(), absl::nullopt);
+    EXPECT_EQ(use_case->GetPsmIdentifier(), absl::nullopt);
+    EXPECT_EQ(use_case->GetPsmRlweClient(), nullptr);
+  }
+
+  // Return back to |kIdle| state after a successful check-in.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  // Attempt to report actives gracefully.
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // |nonmember_test_case| is used to return psm response bodies for
+  // the OPRF, and Query requests. The query request returns nonmember status.
+  const psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase&
+      nonmember_test_case = psm_test_data_->nonmember_test_case;
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingMembershipOprf);
+
+    SimulateOprfResponse(GetFresnelOprfResponse(nonmember_test_case),
+                         net::HTTP_OK);
+    SimulateQueryResponse(GetFresnelQueryResponse(nonmember_test_case),
+                          net::HTTP_OK);
+    SimulateImportResponse(std::string(), net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+  }
+
+  // Return back to |kIdle| state after a successful check-in.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+
+  // Verify that |OnCheckInDone| is called for each use case.
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActivity.MethodCalled",
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnCheckInDone,
+      2);
+
+  // Verify the last known ping timestamp is set for each use case.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
+  }
+
+  // Returned back to |kIdle| state after a successful check-in.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, NetworkDisconnectionClearsUseCaseState) {
+  // Device active reporting starts check membership on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // After the network comes online, the client triggers device active reporting
+  // for the front use case first. It will block on waiting for a response from
+  // the OPRF network request. At this point the window id, psm id, and psm rlwe
+  // client should be set by the client for just the front use case.
+  DeviceActiveUseCase* first_use_case =
+      device_activity_client_->GetUseCases().front();
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kCheckingMembershipOprf);
+
+  EXPECT_NE(first_use_case->GetWindowIdentifier(), absl::nullopt);
+  EXPECT_NE(first_use_case->GetPsmIdentifier(), absl::nullopt);
+  EXPECT_NE(first_use_case->GetPsmRlweClient(), nullptr);
+
+  // While waiting for OPRF response, simulate network disconnection.
+  SetWifiNetworkState(shill::kStateOffline);
+
+  // Network offline should cancel all pending use cases, and clear the saved
+  // state of the attempted pings.
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    // Currently the use cases stores window id, psm id, and psm rlwe client
+    // pointer in state.
+    EXPECT_EQ(use_case->GetWindowIdentifier(), absl::nullopt);
+    EXPECT_EQ(use_case->GetPsmIdentifier(), absl::nullopt);
+    EXPECT_EQ(use_case->GetPsmRlweClient(), nullptr);
+  }
+
+  // Return back to |kIdle| state after the network goes offline.
+  EXPECT_EQ(device_activity_client_->GetState(),
+            DeviceActivityClient::State::kIdle);
+}
+
 TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   // Device active reporting starts check membership on network connect.
   SetWifiNetworkState(shill::kStateOnline);
