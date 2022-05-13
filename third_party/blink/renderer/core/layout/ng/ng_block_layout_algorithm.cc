@@ -1528,20 +1528,24 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       return nullptr;
     }
 
-    // Find the available inline-size which should be given to the child.
-    LayoutUnit line_left_offset = opportunity.rect.start_offset.line_offset;
-    LayoutUnit line_right_offset = opportunity.rect.end_offset.line_offset;
-
-    LayoutUnit line_left_margin = child_data.margins.LineLeft(direction);
-    LayoutUnit line_right_margin = child_data.margins.LineRight(direction);
-
-    // When the inline dimensions of layout opportunity match the available
-    // inline-size, a new formatting context can expand outside of the
-    // opportunity if negative margins are present.
+    // Determine which sides of the opportunity have floats we should avoid.
+    // We can detect this when the opportunity-rect sides match the
+    // available-rect sides.
+    bool has_floats_on_line_left =
+        opportunity.rect.LineStartOffset() != origin_offset.line_offset;
+    bool has_floats_on_line_right =
+        opportunity.rect.LineEndOffset() !=
+        (origin_offset.line_offset + ChildAvailableSize().inline_size);
     bool can_expand_outside_opportunity =
-        opportunity.rect.start_offset.line_offset ==
-            origin_offset.line_offset &&
-        opportunity.rect.InlineSize() == ChildAvailableSize().inline_size;
+        !has_floats_on_line_left && !has_floats_on_line_right;
+
+    const LayoutUnit line_left_margin = child_data.margins.LineLeft(direction);
+    const LayoutUnit line_right_margin =
+        child_data.margins.LineRight(direction);
+
+    // Find the available inline-size which should be given to the child.
+    LayoutUnit line_left_offset = opportunity.rect.LineStartOffset();
+    LayoutUnit line_right_offset = opportunity.rect.LineEndOffset();
 
     if (can_expand_outside_opportunity) {
       // No floats have affected the available inline-size, adjust the
@@ -1599,13 +1603,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       return layout_result;
     }
 
+    // Check if we can fit in the opportunity block direction.
     NGFragment fragment(writing_direction, layout_result->PhysicalFragment());
-
-    // Check if the fragment will fit in this layout opportunity, if not proceed
-    // to the next opportunity.
-    if ((fragment.InlineSize() > opportunity.rect.InlineSize() &&
-         !can_expand_outside_opportunity) ||
-        fragment.BlockSize() > opportunity.rect.BlockSize())
+    if (fragment.BlockSize() > opportunity.rect.BlockSize())
       continue;
 
     // Now find the fragment's (final) position calculating the auto margins.
@@ -1635,13 +1635,40 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
                            fragment.InlineSize(), &auto_margins);
     }
 
-    // |auto_margins| are initialized as a copy of the child's initial margins.
-    // To determine the effect of the auto-margins we only apply the difference.
-    LayoutUnit auto_margin_line_left =
-        auto_margins.LineLeft(direction) - line_left_margin;
+    // Determine our final BFC offset.
+    //
+    // NOTE: |auto_margins| are initialized as a copy of the child's initial
+    // margins. To determine the effect of the auto-margins we apply only the
+    // difference.
+    NGBfcOffset child_bfc_offset = {LayoutUnit(),
+                                    opportunity.rect.BlockStartOffset()};
+    if (ConstraintSpace().Direction() == TextDirection::kLtr) {
+      LayoutUnit auto_margin_line_left =
+          auto_margins.LineLeft(direction) - line_left_margin;
+      child_bfc_offset.line_offset = line_left_offset + auto_margin_line_left;
+    } else {
+      LayoutUnit auto_margin_line_right =
+          auto_margins.LineRight(direction) - line_right_margin;
+      child_bfc_offset.line_offset =
+          line_right_offset - auto_margin_line_right - fragment.InlineSize();
+    }
 
-    *out_child_bfc_offset = {line_left_offset + auto_margin_line_left,
-                             opportunity.rect.start_offset.block_offset};
+    // Check if we'll intersect any floats on our line-left/line-right.
+    if (has_floats_on_line_left &&
+        child_bfc_offset.line_offset < opportunity.rect.LineStartOffset())
+      continue;
+    if (has_floats_on_line_right &&
+        child_bfc_offset.line_offset + fragment.InlineSize() >
+            opportunity.rect.LineEndOffset())
+      continue;
+
+    // If we can't expand outside our opportunity, check if we fit in the
+    // inline direction.
+    if (!can_expand_outside_opportunity &&
+        fragment.InlineSize() > opportunity.rect.InlineSize())
+      continue;
+
+    *out_child_bfc_offset = child_bfc_offset;
     return layout_result;
   }
 

@@ -909,7 +909,6 @@ crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule3-outside-right-002.xht
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule7-outside-left-001.xht [ Failure ]
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-rule7-outside-right-001.xht [ Failure ]
 crbug.com/711704 external/wpt/css/CSS2/floats/floats-wrap-bfc-006.xht [ Failure ]
-crbug.com/1322774 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-003.tentative.html [ Failure ]
 
 crbug.com/711709 external/wpt/css/CSS2/floats-clear/floating-replaced-height-008.xht [ Skip ]
 crbug.com/711709 external/wpt/css/CSS2/floats-clear/floats-108.xht [ Skip ]
