@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -128,6 +129,11 @@ void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
 namespace bluez {
 
 namespace {
+
+bool* dump_without_crashing_flag;
+extern "C" void HandleDumpWithoutCrashing() {
+  *dump_without_crashing_flag = true;
+}
 
 // Callback for BluetoothDevice::GetConnectionInfo() that simply saves the
 // connection info to the bound argument.
@@ -4971,6 +4977,35 @@ TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceFound) {
   EXPECT_EQ(adapter_->GetDevice(
                 bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress),
             devices_found_pair.second);
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceNULL) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  bool did_dump_without_crashing = false;
+  dump_without_crashing_flag = &did_dump_without_crashing;
+  base::debug::SetDumpWithoutCrashingFunction(&HandleDumpWithoutCrashing);
+  advertisement_monitor->delegate()->OnDeviceFound(dbus::ObjectPath(""));
+
+  EXPECT_TRUE(did_dump_without_crashing);
+
+  base::debug::SetDumpWithoutCrashingFunction(nullptr);
 }
 
 TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceLost) {
