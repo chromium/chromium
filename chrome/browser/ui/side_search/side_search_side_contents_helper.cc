@@ -90,17 +90,8 @@ SideSearchSideContentsHelper::MaybeCreateThrottleFor(
   return std::make_unique<SideSearchContentsThrottle>(handle);
 }
 
-void SideSearchSideContentsHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // DidFinishNavigation triggers even if the navigation has been cancelled by
-  // the throttle. Early return if this is the case.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
-  const auto& url = navigation_handle->GetURL();
+void SideSearchSideContentsHelper::PrimaryPageChanged(content::Page& page) {
+  const auto& url = page.GetMainDocument().GetLastCommittedURL();
   DCHECK(GetConfig()->ShouldNavigateInSidePanel(url));
   DCHECK(delegate_);
   delegate_->LastSearchURLUpdated(url);

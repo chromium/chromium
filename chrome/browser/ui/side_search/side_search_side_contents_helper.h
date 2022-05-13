@@ -58,8 +58,7 @@ class SideSearchSideContentsHelper
       content::NavigationHandle* handle);
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
