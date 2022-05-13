@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
   ValidateWebPrefs(web_contents, false /* tablet_mode_enabled */);
 }
 
-IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeNTPs) {
+IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, IncludeNTPs) {
   ASSERT_TRUE(AddTabAtIndexToBrowser(
       browser(), 0, GURL(chrome::kChromeUINewTabPageURL),
       ui::PAGE_TRANSITION_LINK, false /* check_navigation_success */));
@@ -215,10 +215,10 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeNTPs) {
   EXPECT_STREQ(web_contents->GetLastCommittedURL().spec().c_str(),
                chrome::kChromeUINewTabPageURL);
 
-  // NTPs should not be affected in tablet mode.
+  // Mobile-style Blink prefs should be applied to the NTP in tablet mode.
   SetTabletMode(true);
   ASSERT_TRUE(InTabletMode());
-  ValidateWebPrefs(web_contents, false /* tablet_mode_enabled */);
+  ValidateWebPrefs(web_contents, true /* tablet_mode_enabled */);
 }
 
 }  // namespace

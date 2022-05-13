@@ -36,7 +36,7 @@ GURL GetURL(content::WebContents* contents) {
 }
 
 // Returns true if |contents| is of an internal pages (such as
-// chrome://settings, chrome://extensions, ... etc) or the New Tab Page.
+// chrome://settings, chrome://extensions, ... etc).
 bool IsInternalPage(content::WebContents* contents) {
   DCHECK(contents);
 
@@ -49,7 +49,7 @@ bool IsInternalPage(content::WebContents* contents) {
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   if (profile && search::IsNTPOrRelatedURL(url, profile))
-    return true;
+    return false;
 
   return url.SchemeIs(content::kChromeUIScheme);
 }
@@ -68,7 +68,6 @@ void OverrideWebkitPrefsForTabletMode(
   if (!browser || browser->is_type_app() || browser->is_type_app_popup())
     return;
 
-  // Also exclude internal pages and NTPs.
   if (IsInternalPage(contents))
     return;
 
