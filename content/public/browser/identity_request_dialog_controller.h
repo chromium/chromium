@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -82,7 +81,6 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
 
   absl::optional<SkColor> brand_text_color;
   absl::optional<SkColor> brand_background_color;
-  SkBitmap brand_icon;
   GURL brand_icon_url;
 };
 

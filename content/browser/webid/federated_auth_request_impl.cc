@@ -776,13 +776,18 @@ void FederatedAuthRequestImpl::OnManifestReady(
         /*should_call_callback=*/false);
     return;
   }
-  GURL brand_icon_url = idp_metadata.brand_icon_url;
-  DownloadBitmap(
-      brand_icon_url, request_dialog_controller_->GetBrandIconIdealSize(),
-      base::BindOnce(&FederatedAuthRequestImpl::OnBrandIconDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     request_dialog_controller_->GetBrandIconMinimumSize(),
-                     std::move(idp_metadata)));
+  if (IsEndpointUrlValid(endpoints_.client_metadata)) {
+    network_manager_->FetchClientMetadata(
+        endpoints_.client_metadata, client_id_,
+        base::BindOnce(
+            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
+            weak_ptr_factory_.GetWeakPtr(), std::move(idp_metadata)));
+  } else {
+    network_manager_->SendAccountsRequest(
+        endpoints_.accounts, client_id_,
+        base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+  }
 }
 
 void FederatedAuthRequestImpl::OnManifestFetchedForRevoke(
@@ -890,35 +895,6 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(
     std::move(revoke_callback_).Run(status);
 }
 
-void FederatedAuthRequestImpl::OnBrandIconDownloaded(
-    int icon_minimum_size,
-    IdentityProviderMetadata idp_metadata,
-    int id,
-    int http_status_code,
-    const GURL& image_url,
-    const std::vector<SkBitmap>& bitmaps,
-    const std::vector<gfx::Size>& sizes) {
-  // For the sake of FedCM spec simplicity do not support multi-resolution .ico
-  // files.
-  if (bitmaps.size() == 1 && bitmaps[0].width() == bitmaps[0].height() &&
-      bitmaps[0].width() >= icon_minimum_size) {
-    idp_metadata.brand_icon = bitmaps[0];
-  }
-
-  if (IsEndpointUrlValid(endpoints_.client_metadata)) {
-    network_manager_->FetchClientMetadata(
-        endpoints_.client_metadata, client_id_,
-        base::BindOnce(
-            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
-            weak_ptr_factory_.GetWeakPtr(), std::move(idp_metadata)));
-  } else {
-    network_manager_->SendAccountsRequest(
-        endpoints_.accounts, client_id_,
-        base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(), idp_metadata));
-  }
-}
-
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     IdentityProviderMetadata idp_metadata,
     IdpNetworkRequestManager::FetchStatus status,
@@ -930,23 +906,6 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
       endpoints_.accounts, client_id_,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), idp_metadata));
-}
-
-void FederatedAuthRequestImpl::DownloadBitmap(
-    const GURL& icon_url,
-    int ideal_icon_size,
-    WebContents::ImageDownloadCallback callback) {
-  if (!icon_url.is_valid()) {
-    std::move(callback).Run(0 /* id */, 404 /* http_status_code */, icon_url,
-                            std::vector<SkBitmap>(), std::vector<gfx::Size>());
-    return;
-  }
-
-  WebContents::FromRenderFrameHost(render_frame_host_)
-      ->DownloadImage(icon_url, /*is_favicon*/ false,
-                      gfx::Size(ideal_icon_size, ideal_icon_size),
-                      0 /* max_bitmap_size */, false /* bypass_cache */,
-                      std::move(callback));
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(

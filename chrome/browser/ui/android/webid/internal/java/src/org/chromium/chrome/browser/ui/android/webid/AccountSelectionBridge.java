@@ -38,7 +38,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private static int getBrandIconMinimumSize() {
+    static int getBrandIconMinimumSize() {
         // Icon needs to be big enough for the smallest screen density (1x).
         Resources resources = ContextUtils.getApplicationContext().getResources();
         // Density < 1.0f on ldpi devices. Adjust density to ensure that
@@ -48,7 +48,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private static int getBrandIconIdealSize() {
+    static int getBrandIconIdealSize() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size));
     }

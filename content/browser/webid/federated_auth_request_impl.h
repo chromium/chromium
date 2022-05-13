@@ -94,21 +94,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata idp_metadata);
   void OnManifestReady(IdentityProviderMetadata idp_metadata);
-  void OnBrandIconDownloaded(int icon_minimum_size,
-                             IdentityProviderMetadata idp_metadata,
-                             int id,
-                             int http_status_code,
-                             const GURL& image_url,
-                             const std::vector<SkBitmap>& bitmaps,
-                             const std::vector<gfx::Size>& sizes);
   void OnClientMetadataResponseReceived(
       IdentityProviderMetadata idp_metadata,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata data);
 
-  void DownloadBitmap(const GURL& icon_url,
-                      int ideal_icon_size,
-                      WebContents::ImageDownloadCallback callback);
   void OnAccountsResponseReceived(
       IdentityProviderMetadata idp_metadata,
       IdpNetworkRequestManager::FetchStatus status,

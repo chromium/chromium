@@ -15,7 +15,6 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import static java.util.Arrays.asList;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -271,12 +270,9 @@ public class AccountSelectionViewTest {
     @MediumTest
     public void testContinueButtonBranding() {
         final int expectedTextColor = Color.BLUE;
-        final int expectedIconColor = Color.RED;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Bitmap brandIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-            brandIcon.eraseColor(expectedIconColor);
-            IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(
-                    expectedTextColor, /*brandBackgroundColor*/ Color.GREEN, brandIcon);
+            IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(expectedTextColor,
+                    /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example");
 
             mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, idpMetadata));
         });
