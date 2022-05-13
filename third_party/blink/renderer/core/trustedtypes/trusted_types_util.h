@@ -14,6 +14,7 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
+class QualifiedName;
 class V8UnionStringOrTrustedScript;
 class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
@@ -86,6 +87,16 @@ TrustedTypesCheckForExecCommand(const String&,
 // Example: To determine whether 'eval' may pass, one needs to also take CSP
 // into account.
 CORE_EXPORT bool RequireTrustedTypesCheck(const ExecutionContext*);
+
+// Determine whether an attribute is considered an event handler by Trusted
+// Types.
+//
+// Note: This is different from Element::IsEventHandlerAttribute, because
+// Element only needs this distinction for built-in attributes, but not for
+// user-defined property names. But Trusted Types needs this for any built-in or
+// user-defined attribute/property, and thus must check against a list of known
+// event handlers.
+bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
 
 }  // namespace blink
 

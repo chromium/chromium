@@ -75,6 +75,13 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   ExecutionContext* GetExecutionContext() const override;
   void Trace(Visitor*) const override;
 
+  // Check whether a given attribute is considered an event handler.
+  //
+  // This function is largely unrelated to the TrustedTypePolicyFactory, but
+  // it reuses the data from getTypeMapping, which is why we have defined it
+  // here.
+  static bool IsEventHandlerAttributeName(const AtomicString& attributeName);
+
  private:
   const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,
                                                            const ScriptValue&);
