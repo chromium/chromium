@@ -48,6 +48,9 @@ class ASH_EXPORT CalendarEventFetch {
   void Cancel();
 
  private:
+  // Sends the request for an event list. Cancels any in-progress fetch request.
+  void SendFetchRequest();
+
   // Callback invoked when results of a fetch are available.
   void OnResultReceived(
       google_apis::ApiErrorCode error,
@@ -57,7 +60,10 @@ class ASH_EXPORT CalendarEventFetch {
   void OnTimeout();
 
   // Start of the month whose events we're fetching.
-  base::Time start_of_month_;
+  const base::Time start_of_month_;
+
+  // Fetch start/end times.
+  const std::pair<base::Time, base::Time> time_range_;
 
   // Callback invoked when the fetch is complete.
   FetchCompleteCallback complete_callback_;

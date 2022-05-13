@@ -25,36 +25,41 @@ CalendarEventFetch::CalendarEventFetch(
     FetchInternalErrorCallback internal_error_callback,
     const base::TickClock* tick_clock)
     : start_of_month_(start_of_month),
+      time_range_(calendar_utils::GetFetchStartEndTimes(start_of_month)),
       complete_callback_(std::move(complete_callback)),
       internal_error_callback_(std::move(internal_error_callback)),
       fetch_start_time_(base::Time::Now()),
       timeout_(tick_clock) {
-  CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
-  DCHECK(client);
-
-  const std::pair<base::Time, base::Time> fetch_times =
-      calendar_utils::GetFetchStartEndTimes(start_of_month);
-
-  if (ash::features::IsCalendarModelDebugModeEnabled()) {
-    VLOG(1) << "Fetching: " << fetch_times.first << " => "
-            << fetch_times.second;
-  }
-
-  cancel_closure_ =
-      client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
-                                          weak_factory_.GetWeakPtr()),
-                           fetch_times.first, fetch_times.second);
-  DCHECK(cancel_closure_);
-
-  timeout_.Start(
-      FROM_HERE, calendar_utils::kEventFetchTimeout,
-      base::BindOnce(&CalendarEventFetch::OnTimeout, base::Unretained(this)));
+  SendFetchRequest();
 }
 
 CalendarEventFetch::~CalendarEventFetch() = default;
 
 void CalendarEventFetch::Cancel() {
   std::move(cancel_closure_).Run();
+}
+
+void CalendarEventFetch::SendFetchRequest() {
+  if (cancel_closure_)
+    Cancel();
+
+  CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
+  DCHECK(client);
+
+  if (ash::features::IsCalendarModelDebugModeEnabled()) {
+    VLOG(1) << __FUNCTION__ << ": " << time_range_.first << " => "
+            << time_range_.second;
+  }
+
+  cancel_closure_ =
+      client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
+                                          weak_factory_.GetWeakPtr()),
+                           time_range_.first, time_range_.second);
+  DCHECK(cancel_closure_);
+
+  timeout_.Start(FROM_HERE, calendar_utils::kEventFetchTimeout,
+                 base::BindOnce(&CalendarEventFetch::OnTimeout,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void CalendarEventFetch::OnResultReceived(
