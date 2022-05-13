@@ -123,7 +123,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -511,8 +510,6 @@ class RemoveUkmDataTester {
 
   [[nodiscard]] bool Init(Profile* profile) {
     // Setup required dependencies for segmentation platform:
-    segmentation_platform::SegmentationPlatformServiceFactory::GetInstance()
-        ->set_local_state_for_testing(&local_state_);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
@@ -549,7 +546,6 @@ class RemoveUkmDataTester {
 
  private:
   ukm::TestUkmRecorder ukm_recorder_;
-  TestingPrefServiceSimple local_state_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<history::HistoryService> history_service_;
   segmentation_platform::UkmDataManagerTestUtils test_utils_;

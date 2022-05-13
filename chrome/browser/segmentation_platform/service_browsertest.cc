@@ -132,13 +132,7 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, PRE_RunDefaultModel) {
                                /*result_expected=*/false);
 }
 
-// TODO(crbug.com/1324887): Re-enable this test
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_RunDefaultModel DISABLED_RunDefaultModel
-#else
-#define MAYBE_RunDefaultModel RunDefaultModel
-#endif
-IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, MAYBE_RunDefaultModel) {
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
   WaitForPlatformInit();
   // Result is available from previous session's selection.
   ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
@@ -173,8 +167,7 @@ class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
 // incognito mode. This disables the segmentation platform data collection.
 // TODO(ssid): Fix this test for CrOS by waiting for signin profile to be
 // deleted at startup before adding metrics.
-// TODO(crbug.com/1324887): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PRE_RunUkmBasedModel DISABLED_PRE_RunUkmBasedModel
 #define MAYBE_RunUkmBasedModel DISABLED_RunUkmBasedModel
 #else

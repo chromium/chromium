@@ -115,7 +115,6 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   params->model_provider =
       std::make_unique<TestModelProviderFactory>(&model_provider_data_);
   params->profile_prefs = &pref_service_;
-  params->local_state = &pref_service_;
   params->history_service = history_service;
   params->task_runner = task_runner_;
   params->clock = &test_clock_;

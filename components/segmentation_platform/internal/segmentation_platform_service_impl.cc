@@ -68,7 +68,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
   DCHECK(task_runner_);
   DCHECK(clock);
-  DCHECK(init_params->profile_prefs && init_params->local_state);
+  DCHECK(init_params->profile_prefs);
 
   if (init_params->storage_service) {
     // Test only:

@@ -61,7 +61,6 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
     history::HistoryService* history_service = nullptr;
     base::FilePath storage_dir;
     PrefService* profile_prefs = nullptr;
-    PrefService* local_state = nullptr;
 
     std::unique_ptr<ModelProviderFactory> model_provider;
     UkmDataManager* ukm_data_manager = nullptr;
