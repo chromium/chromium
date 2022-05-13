@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -266,7 +267,6 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
   SharedStorageBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                              blink::features::kFencedFrames,
                               features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
@@ -347,7 +347,9 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
 
   ~SharedStorageBrowserTest() override = default;
 
- private:
+ protected:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -1040,6 +1042,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
+                       RunURLSelectionOperationNotAllowedInFencedFrame) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  RenderFrameHostWrapper fenced_frame_rfh_wrapper(
+      fenced_frame_test_helper_.CreateFencedFrame(
+          shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh_wrapper.get(), R"(
+      sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EvalJsResult result = EvalJs(fenced_frame_rfh_wrapper.get(), R"(
+      sharedStorage.runURLSelectionOperation(
+          'test-url-selection-operation',
+          ["title0.html"], {data: {'mockResult': 0}});
+    )");
+
+  EXPECT_TRUE(result.error.find("sharedStorage.runURLSelectionOperation() is "
+                                "not allowed in fenced frame") !=
+              std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(

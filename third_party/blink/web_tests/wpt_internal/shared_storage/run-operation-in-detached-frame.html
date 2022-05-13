@@ -10,7 +10,13 @@
       const childSharedStorage = iframe.contentWindow.sharedStorage;
       iframe.remove();
 
-      return childSharedStorage.runOperation("operation1");
+      try {
+        await childSharedStorage.runOperation("operation1");
+      } catch (e) {
+        assert_equals(e.name, 'InvalidAccessError');
+        return;
+      }
+      assert_unreached("did not reject");
     }, 'runOperation when frame is detached');
   </script>
 </body>

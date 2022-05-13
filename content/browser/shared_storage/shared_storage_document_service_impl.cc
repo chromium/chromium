@@ -43,17 +43,17 @@ void SharedStorageDocumentServiceImpl::Bind(
 void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     const GURL& script_source_url,
     AddModuleOnWorkletCallback callback) {
-  if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage);
-    return;
-  }
-
   if (!render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           script_source_url)) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
         "Attempted to load a cross-origin module script.");
+    return;
+  }
+
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage);
     return;
   }
 
@@ -89,10 +89,11 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationOnWorkletCallback callback) {
-  if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(/*success=*/false,
-                            /*error_message=*/kSharedStorageDisabledMessage,
-                            GURL());
+  if (render_frame_host().IsNestedWithinFencedFrame()) {
+    // This could indicate a compromised renderer, so let's terminate it.
+    receiver_.ReportBadMessage(
+        "Attempted to execute RunURLSelectionOperationOnWorklet within a "
+        "fenced frame.");
     return;
   }
 
@@ -101,6 +102,13 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     receiver_.ReportBadMessage(
         "Attempted to execute RunURLSelectionOperationOnWorklet with invalid "
         "URLs array length.");
+    return;
+  }
+
+  if (!IsSharedStorageAllowed()) {
+    std::move(callback).Run(/*success=*/false,
+                            /*error_message=*/kSharedStorageDisabledMessage,
+                            GURL());
     return;
   }
 
