@@ -166,6 +166,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void RegisterPluginVmToken(const base::UnguessableToken& token);
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
+  // Used when running capture unittests to avoid running sensor related path.
+  void DisableSensorForTesting();
+
   // CameraHalDispatcher implementations.
   void RegisterServer(
       mojo::PendingRemote<cros::mojom::CameraHalServer> server) final;
@@ -286,6 +289,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;
+
+  bool sensor_enabled_ = true;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };

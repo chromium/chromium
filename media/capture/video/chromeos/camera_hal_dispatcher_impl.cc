@@ -347,6 +347,10 @@ void CameraHalDispatcherImpl::UnregisterPluginVmToken(
   token_manager_.UnregisterPluginVmToken(token);
 }
 
+void CameraHalDispatcherImpl::DisableSensorForTesting() {
+  sensor_enabled_ = false;
+}
+
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()
     : proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
@@ -450,6 +454,11 @@ void CameraHalDispatcherImpl::RegisterSensorClientWithToken(
     const base::UnguessableToken& auth_token,
     RegisterSensorClientWithTokenCallback callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+
+  if (!sensor_enabled_) {
+    std::move(callback).Run(-EPERM);
+    return;
+  }
 
   main_task_runner_->PostTask(
       FROM_HERE,
