@@ -48,30 +48,12 @@
 # crbug.com/1090942
 -org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragmentTest.*
 
-# crbug.com/1092987
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testIncognitoToggle_thumbnailFetchCount
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testThumbnailFetchingResult_defaultAspectRatio
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRecycling_aspectRatioPoint75
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testGridToTabToCurrentLiveDetached
-
-# crbug.com/1096295
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testActivityCanBeGarbageCollectedAfterFinished
-
 # crbug.com/1112812
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest.testAutostart
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyYear
 
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
-
-# crbug.com/1077552
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_Incognito
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_10WebTabs
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRenderGrid_10WebTabs_InitialScroll
-
-# crbug.com/1130621
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testShowOnlyOneTabSuggestionMessageCard_withHardCleanup
 
 # crbug.com/1146477
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth

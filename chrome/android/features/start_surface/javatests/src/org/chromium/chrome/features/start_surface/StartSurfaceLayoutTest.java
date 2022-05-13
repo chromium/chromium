@@ -52,6 +52,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import android.view.View;
@@ -320,8 +321,8 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1324721",
-        supported_abis_includes = "x86")
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1324721 "
+        + "and crbug.com/1077552", supported_abis_includes = "x86")
     public void testRenderGrid_Incognito() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -516,10 +517,11 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // clang-format off
     @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1094492",
-            supported_abis_includes = "x86")
-    public void
-    testGridToTabToCurrentLiveDetached() throws Exception {
+        supported_abis_includes = "x86")
+    public void testGridToTabToCurrentLiveDetached() throws Exception {
+        // clang-format on
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
         // This works on emulators but not on real devices. See crbug.com/986047.
         if (!isEmulator()) return;
@@ -755,7 +757,11 @@ public class StartSurfaceLayoutTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
+    // clang-format off
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1063991",
+        sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void testIncognitoToggle_tabCount() {
+        // clang-format on
         mActivityTestRule.loadUrl(mUrl);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -779,8 +785,6 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
-            message = "https://crbug.com/1023833")
     @DisabledTest(message = "https://crbug.com/1233169")
     public void testIncognitoToggle_thumbnailFetchCount() throws InterruptedException {
         // clang-format on
@@ -935,7 +939,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
-    @FlakyTest(message = "https://crbug.com/1230107")
+    @DisabledTest(message = "https://crbug.com/1230107, crbug.com/1130621")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
@@ -957,7 +961,7 @@ public class StartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    @FlakyTest(message = "https://crbug.com/1198484")
+    @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
         // clang-format on
@@ -1327,6 +1331,7 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
+    @DisabledTest(message = "http://crbug/1092987")
     public void testRecycling_aspectRatioPoint75() {
         // clang-format on
         prepareTabs(10, 0, mUrl);
@@ -1457,7 +1462,7 @@ public class StartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
-    @DisabledTest(message = "Flaky - https://crbug.com/1124041")
+    @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
     public void testSwipeToDismiss_GTS() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1905,7 +1910,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2.")
+    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
     public void testActivityCanBeGarbageCollectedAfterFinished() throws Exception {
         prepareTabs(1, 0, "about:blank");
 

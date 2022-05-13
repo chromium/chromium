@@ -49,7 +49,6 @@
 
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testSwipeToDismiss_GTS
 
 # crbug.com/1061198
 -org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
@@ -98,17 +97,8 @@
 # crbug.com/1063981
 -org.chromium.chrome.browser.toolbar.IdentityDiscControllerTest.testIdentityDiscWithSignInState
 
-# crbug.com/1063984
--org.chromium.chrome.browser.tasks.ReturnToChromeTest.testInitialScrollIndex
-
 # crbug.com/1063987
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testHidesWithAnimation
-
-# crbug.com/1063991
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testIncognitoToggle_tabCount
-
-# crbug.com/1064058
--org.chromium.chrome.features.start_surface.StartSurfaceLayoutTest.testRecycling_aspectRatioPoint75
 
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu

@@ -426,7 +426,7 @@ public class ReturnToChromeUtilTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/single"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1023079")
+    @DisabledTest(message = "https://crbug.com/1023079, crbug.com/1063984")
     public void testInitialScrollIndex() throws Exception {
         // clang-format on
         // Instant start is not applicable since we need to create tabs and restart.
