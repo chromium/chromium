@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -130,6 +132,9 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
     local_state()->SetDict(kKioskMetrics, std::move(value));
   }
 
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      ash::switches::kLoginUser, "fake-user");
+
   WebKioskTracksBrowserCreationTest();
 
   const base::Value* value = local_state()->GetDictionary(kKioskMetrics);
@@ -146,7 +151,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   }
 
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,
-                              KioskSessionState::kWebStarted, 1);
+                              KioskSessionState::kRestored, 1);
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,
                               KioskSessionState::kCrashed, 1);
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,

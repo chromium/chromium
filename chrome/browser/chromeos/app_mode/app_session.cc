@@ -43,6 +43,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -121,6 +123,23 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
       base::Seconds(dump_requested ? kDumpWaitSeconds : 0));
 }
 
+bool IsRestoredSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Return true for a kiosk session restored after crash.
+  // The kiosk session gets restored to a state that was prior to crash:
+  // * no --login-manager command line flag, since no login screen is shown
+  //   in the middle of a kiosk session.
+  // * --login-user command line flag is present, because the session is
+  //   re-started in the middle and kiosk profile is already logged in.
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ash::switches::kLoginManager) &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ash::switches::kLoginUser);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // namespace
 
 class AppSessionMetricsService {
@@ -131,24 +150,28 @@ class AppSessionMetricsService {
   ~AppSessionMetricsService() = default;
 
   void RecordKioskSessionStarted() {
-    RecordPreviousKioskSessionCrashIfAny();
-    RecordKioskSessionState(KioskSessionState::kStarted);
-    RecordKioskSessionCountPerDay();
+    RecordKioskSessionStarted(KioskSessionState::kStarted);
   }
 
   void RecordKioskSessionWebStarted() {
-    RecordPreviousKioskSessionCrashIfAny();
-    RecordKioskSessionState(KioskSessionState::kWebStarted);
-    RecordKioskSessionCountPerDay();
+    RecordKioskSessionStarted(KioskSessionState::kWebStarted);
+  }
+
+  void RecordKioskSessionWebWithLacrosStarted() {
+    RecordKioskSessionStarted(KioskSessionState::kWebWithLacrosStarted);
   }
 
   void RecordKioskSessionStopped() {
+    if (!IsKioskSessionRunning())
+      return;
     RecordKioskSessionState(KioskSessionState::kStopped);
     RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
                                kKioskSessionDurationInDaysNormalHistogram);
   }
 
   void RecordKioskSessionCrashed() {
+    if (!IsKioskSessionRunning())
+      return;
     RecordKioskSessionState(KioskSessionState::kCrashed);
     RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                                kKioskSessionDurationInDaysCrashedHistogram);
@@ -167,6 +190,20 @@ class AppSessionMetricsService {
   }
 
  private:
+  // Returns true if |start_time_| is set meaning the kiosk session has been
+  // started and not ended yet.
+  bool IsKioskSessionRunning() const { return !start_time_.is_null(); }
+
+  void RecordKioskSessionStarted(KioskSessionState started_state) {
+    RecordPreviousKioskSessionCrashIfAny();
+    if (IsRestoredSession()) {
+      RecordKioskSessionState(KioskSessionState::kRestored);
+    } else {
+      RecordKioskSessionState(started_state);
+    }
+    RecordKioskSessionCountPerDay();
+  }
+
   void RecordKioskSessionState(KioskSessionState state) const {
     base::UmaHistogramEnumeration(kKioskSessionStateHistogram, state);
   }
@@ -179,7 +216,7 @@ class AppSessionMetricsService {
   void RecordKioskSessionDuration(
       const std::string& kiosk_session_duration_histogram,
       const std::string& kiosk_session_duration_in_days_histogram) {
-    if (start_time_.is_null())
+    if (!IsKioskSessionRunning())
       return;
     base::TimeDelta duration = base::Time::Now() - start_time_;
     if (duration >= kKioskSessionDurationHistogramLimit) {
@@ -263,6 +300,7 @@ class AppSessionMetricsService {
     DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));
 
     prefs_->SetDict(kKioskMetrics, std::move(new_metrics_dict));
+    prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
   }
 
   PrefService* prefs_;
@@ -411,7 +449,7 @@ AppSession::AppSession(base::OnceClosure attempt_user_exit,
           std::make_unique<AppSessionMetricsService>(local_state)) {}
 AppSession::~AppSession() {
   if (!is_shutting_down_)
-    metrics_service_->RecordKioskSessionCrashed();
+    metrics_service_->RecordKioskSessionStopped();
 }
 
 void AppSession::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -431,6 +469,12 @@ void AppSession::InitForWebKiosk(Browser* browser) {
   SetProfile(browser->profile());
   CreateBrowserWindowHandler(browser);
   metrics_service_->RecordKioskSessionWebStarted();
+}
+
+void AppSession::InitForWebKioskWithLacros(Profile* profile) {
+  SetProfile(profile);
+  CreateBrowserWindowHandler(nullptr);
+  metrics_service_->RecordKioskSessionWebWithLacrosStarted();
 }
 
 void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {

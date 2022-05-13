@@ -54,7 +54,9 @@ enum class KioskSessionState {
   kStopped = 3,
   kPluginCrashed = 4,
   kPluginHung = 5,
-  kMaxValue = kPluginHung,
+  kWebWithLacrosStarted = 6,
+  kRestored = 7,
+  kMaxValue = kRestored,
 };
 
 // AppSession maintains a kiosk session and handles its lifetime.
@@ -74,6 +76,9 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
 
   // Initializes an app session for Web kiosk.
   virtual void InitForWebKiosk(Browser* browser);
+
+  // Initializes an app session for Web kiosk with lacros.
+  virtual void InitForWebKioskWithLacros(Profile* profile);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);

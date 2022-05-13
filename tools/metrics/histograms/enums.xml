@@ -52028,6 +52028,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Successfully stopped"/>
   <int value="4" label="Plugin crashed"/>
   <int value="5" label="Plugin hung"/>
+  <int value="6" label="Web kiosk with lacros started"/>
+  <int value="7" label="Restored session"/>
 </enum>
 
 <enum name="KmsVncMethodEnum">
