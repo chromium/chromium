@@ -120,8 +120,6 @@ void OfflinePageTabHelper::LoadData(int offline_navigation,
                                     const GURL& url,
                                     const std::string& extension,
                                     const std::string& data) {
-  DCHECK(!web::features::IsLoadSimulatedRequestAPIEnabled());
-
   if (!web_state_ || !web_state_->GetNavigationManager() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
     // It is possible that the web_state_ has been detached during the page
@@ -361,10 +359,7 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
     return;
   }
 
-  LoadOfflinePage(entry_url);
-}
-
-void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
+  base::FilePath offline_path = entry->DistilledPath();
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
   base::FilePath offline_root =
@@ -372,34 +367,37 @@ void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
           ->OfflineRoot()
           .DirName();
 
-  if (web::features::IsLoadSimulatedRequestAPIEnabled()) {
-    if (@available(iOS 15, *)) {
-      const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
-      base::FilePath offline_path = entry->DistilledPath();
-      bool is_pdf = offline_path.Extension() == ".pdf";
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetOfflineData, offline_root, offline_path),
+      base::BindOnce(&OfflinePageTabHelper::LoadData,
+                     weak_factory_.GetWeakPtr(), last_navigation_started_,
+                     entry_url, offline_path.Extension()));
+}
 
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::BindOnce(&GetOfflineData, offline_root, offline_path),
-          base::BindOnce(&OfflinePageTabHelper::LoadOfflineData,
-                         weak_factory_.GetWeakPtr(), web_state_, url, is_pdf));
-    }
-  } else {
-    GURL entry_url = GetOnlineURLFromNavigationURL(url);
-    const ReadingListEntry* entry =
-        reading_list_model_->GetEntryByURL(entry_url);
+void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
+  DCHECK(web::features::IsLoadSimulatedRequestAPIEnabled());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  base::FilePath offline_root =
+      ReadingListDownloadServiceFactory::GetForBrowserState(browser_state)
+          ->OfflineRoot()
+          .DirName();
+
+  if (@available(iOS 15, *)) {
+    const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
     base::FilePath offline_path = entry->DistilledPath();
+    bool is_pdf = offline_path.Extension() == ".pdf";
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(&GetOfflineData, offline_root, offline_path),
-        base::BindOnce(&OfflinePageTabHelper::LoadData,
-                       weak_factory_.GetWeakPtr(), last_navigation_started_,
-                       entry_url, offline_path.Extension()));
+        base::BindOnce(&OfflinePageTabHelper::LoadOfflineData,
+                       weak_factory_.GetWeakPtr(), web_state_, url, is_pdf));
   }
 }
 
