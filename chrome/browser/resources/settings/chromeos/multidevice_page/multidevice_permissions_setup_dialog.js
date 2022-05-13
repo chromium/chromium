@@ -488,7 +488,7 @@ Polymer({
         return this.i18n('multidevicePermissionsSetupOperationsInstructions');
       case Status.CONNECTION_REQUESTED:
       case Status.CONNECTING:
-        return this.i18n('multideviceNotificationAccessSetupInstructions');
+        return this.i18n('multidevicePermissionsSetupInstructions');
       default:
         return '';
     }

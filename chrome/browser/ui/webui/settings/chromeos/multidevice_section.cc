@@ -468,6 +468,8 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY},
       {"multidevicePermissionsSetupAppsSummary",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY},
+      {"multidevicePermissionsSetupInstructions",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS},
       {"multidevicePermissionsSetupOperationsInstructions",
        IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS},
       {"multidevicePermissionsSetupCompletedSummary",

@@ -3203,13 +3203,16 @@ Press an assigned switch or key to remove assignment.
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> can then:
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_CAMERA_ROLL_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Recent photos' setup button. Explains to the user that they need to grant Google Play Services permission to access files on the phone.">
-    View your phone's recent photos and media
+    View your phone's photos and media
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
     View, dismiss, and reply to your phone's notifications
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to stream apps.">
-    Stream messaging apps
+    Stream your phone's apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to grant permissions, they need to have their phone unlocked, close by, and with Bluetooth/Wi-Fi on to complete setup.">
+    Make sure your phone is close by, unlocked, and Bluetooth and Wi-Fi are turned on
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
     Finish setting up on your phone
