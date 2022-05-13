@@ -30,13 +30,7 @@ class MockUpdateView : public UpdateView {
   MockUpdateView();
   virtual ~MockUpdateView();
 
-  void Bind(UpdateScreen* screen) override;
-  void Unbind() override;
-
   MOCK_METHOD(void, Show, (bool is_opt_out_enabled));
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, MockBind, (UpdateScreen * screen));
-  MOCK_METHOD(void, MockUnbind, ());
 
   MOCK_METHOD(void, SetUpdateState, (UpdateView::UIState value));
   MOCK_METHOD(void,

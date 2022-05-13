@@ -9,15 +9,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
-
-constexpr StaticOobeScreenId UpdateView::kScreenId;
 
 namespace {
 
@@ -42,9 +39,7 @@ constexpr const char kOptOutInfo[] = "opt-out-info";
 
 }  // namespace
 
-UpdateScreenHandler::UpdateScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.UpdateScreen.userActed");
-}
+UpdateScreenHandler::UpdateScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 UpdateScreenHandler::~UpdateScreenHandler() = default;
 
@@ -54,35 +49,25 @@ void UpdateScreenHandler::Show(bool is_opt_out_enabled) {
   ShowInWebUI(std::move(data));
 }
 
-void UpdateScreenHandler::Hide() {}
-
-void UpdateScreenHandler::Bind(UpdateScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void UpdateScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void UpdateScreenHandler::SetUpdateState(UpdateView::UIState value) {
   switch (value) {
     case UpdateView::UIState::kCheckingForUpdate:
-      CallJS("login.UpdateScreen.setUpdateState", kCheckingForUpdate);
+      CallExternalAPI("setUpdateState", kCheckingForUpdate);
       break;
     case UpdateView::UIState::kUpdateInProgress:
-      CallJS("login.UpdateScreen.setUpdateState", kUpdateInProgress);
+      CallExternalAPI("setUpdateState", kUpdateInProgress);
       break;
     case UpdateView::UIState::kRestartInProgress:
-      CallJS("login.UpdateScreen.setUpdateState", kRestartInProgress);
+      CallExternalAPI("setUpdateState", kRestartInProgress);
       break;
     case UpdateView::UIState::kManualReboot:
-      CallJS("login.UpdateScreen.setUpdateState", kManualReboot);
+      CallExternalAPI("setUpdateState", kManualReboot);
       break;
     case UpdateView::UIState::kCellularPermission:
-      CallJS("login.UpdateScreen.setUpdateState", kCellularPermission);
+      CallExternalAPI("setUpdateState", kCellularPermission);
       break;
     case UpdateView::UIState::kOptOutInfo:
-      CallJS("login.UpdateScreen.setUpdateState", kOptOutInfo);
+      CallExternalAPI("setUpdateState", kOptOutInfo);
       break;
   }
 }
@@ -91,20 +76,20 @@ void UpdateScreenHandler::SetUpdateStatus(
     int percent,
     const std::u16string& percent_message,
     const std::u16string& timeleft_message) {
-  CallJS("login.UpdateScreen.setUpdateStatus", percent, percent_message,
-         timeleft_message);
+  CallExternalAPI("setUpdateStatus", percent, percent_message,
+                  timeleft_message);
 }
 
 void UpdateScreenHandler::ShowLowBatteryWarningMessage(bool value) {
-  CallJS("login.UpdateScreen.showLowBatteryWarningMessage", value);
+  CallExternalAPI("showLowBatteryWarningMessage", value);
 }
 
 void UpdateScreenHandler::SetAutoTransition(bool value) {
-  CallJS("login.UpdateScreen.setAutoTransition", value);
+  CallExternalAPI("setAutoTransition", value);
 }
 
 void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
-  CallJS("login.UpdateScreen.setCancelUpdateShortcutEnabled", value);
+  CallExternalAPI("setCancelUpdateShortcutEnabled", value);
 }
 
 void UpdateScreenHandler::DeclareLocalizedValues(

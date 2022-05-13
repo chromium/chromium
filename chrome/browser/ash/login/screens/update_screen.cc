@@ -117,15 +117,9 @@ UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
           std::make_unique<ErrorScreensHistogramHelper>("Update")),
       version_updater_(std::make_unique<VersionUpdater>(this)),
       wait_before_reboot_time_(kWaitBeforeRebootTime),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
-  if (view_)
-    view_->Bind(this);
-}
+      tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
-UpdateScreen::~UpdateScreen() {
-  if (view_)
-    view_->Unbind();
-}
+UpdateScreen::~UpdateScreen() = default;
 
 bool UpdateScreen::MaybeSkip(WizardContext* context) {
   if (context->enrollment_triggered_early) {
@@ -190,19 +184,21 @@ void UpdateScreen::HideImpl() {
   accessibility_subscription_ = {};
   power_manager_subscription_.Reset();
   show_timer_.Stop();
-  if (view_)
-    view_->Hide();
   is_shown_ = false;
 }
 
-void UpdateScreen::OnUserActionDeprecated(const std::string& action_id) {
+void UpdateScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   bool is_chrome_branded_build = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   is_chrome_branded_build = true;
 #endif
 
-  if (!is_chrome_branded_build &&
-      action_id == kUserActionCancelUpdateShortcut) {
+  if (action_id == kUserActionCancelUpdateShortcut) {
+    if (is_chrome_branded_build) {
+      VLOG(1) << "Ignore update cancel in branded build";
+      return;
+    }
     // Skip update UI, usually used only in debug builds/tests.
     VLOG(1) << "Forced update cancel";
     ExitUpdate(Result::UPDATE_NOT_REQUIRED);
@@ -214,7 +210,7 @@ void UpdateScreen::OnUserActionDeprecated(const std::string& action_id) {
   } else if (action_id == kUserActionOptOutInfoNext) {
     FinishExitUpdate(Result::UPDATE_OPT_OUT_INFO_SHOWN);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

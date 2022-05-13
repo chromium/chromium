@@ -21,18 +21,8 @@ void MockUpdateScreen::RunExit(UpdateScreen::Result result) {
   ExitUpdate(result);
 }
 
-MockUpdateView::MockUpdateView() {
-  EXPECT_CALL(*this, MockBind(_)).Times(AtLeast(1));
-}
+MockUpdateView::MockUpdateView() = default;
 
 MockUpdateView::~MockUpdateView() = default;
-
-void MockUpdateView::Bind(UpdateScreen* screen) {
-  MockBind(screen);
-}
-
-void MockUpdateView::Unbind() {
-  MockUnbind();
-}
 
 }  // namespace ash

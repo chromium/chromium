@@ -122,7 +122,7 @@ class UpdateScreen : public BaseScreen,
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void ExitUpdate(Result result);
 
