@@ -10,6 +10,7 @@ import selenium
 import sys
 import time
 
+DEFAULT_STP_DRIVER_PATH = '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver'
 
 class BrowserBench(object):
   def __init__(self, name, version):
@@ -34,15 +35,30 @@ class BrowserBench(object):
     return chrome
 
   @staticmethod
+  def _CreateSafariDriver(optargs):
+    params = {}
+    if optargs.executable:
+      params['exexutable_path'] = optargs.executable
+    if optargs.browser == 'stp':
+      safari_options = webdriver.safari.options.Options()
+      safari_options.use_technology_preview = 1
+      params['desired_capabilities'] = {
+          'browserName': safari_options.capabilities['browserName']
+      }
+      # Stp requires executable_path. If the path is not supplied use the
+      # typical location.
+      if not optargs.executable:
+        params['executable_path'] = DEFAULT_STP_DRIVER_PATH
+    return webdriver.Safari(**params)
+
+  @staticmethod
   def _CreateDriver(optargs):
     if optargs.browser == 'chrome':
       return BrowserBench._CreateChromeDriver(optargs)
-    elif optargs.browser == 'safari':
+    elif optargs.browser == 'safari' or optargs.browser == 'stp':
       for i in range(0, 10):
         try:
-          return webdriver.Safari(
-              executable_path=optargs.executable
-          ) if optargs.executable else webdriver.Safari()
+          return BrowserBench._CreateSafariDriver(optargs)
         except selenium.common.exceptions.SessionNotCreatedException as e:
           print('Connecting to Safari failed, will try again ', e)
           time.sleep(5)
@@ -114,11 +130,13 @@ class BrowserBench(object):
     parser.add_option('-b',
                       '--browser',
                       dest='browser',
-                      help='The browser to use to run MotionMark in.')
+                      help="""The browser to use. One of chrome, safari, or stp
+                              (Safari Technology Preview).""")
     parser.add_option('-e',
                       '--executable-path',
                       dest='executable',
-                      help='Path to the executable to the driver binary.')
+                      help="""Path to the executable to the driver binary. For
+                              safari this is the path to safaridriver.""")
     parser.add_option('-a',
                       '--arguments',
                       dest='arguments',

@@ -3,7 +3,7 @@
 The following command line flags are supported for all benchmarks:
 
 - `-b`': The browser to run the benchmark in. The valid options currently are
-         'chrome' and 'safari'.
+         'chrome', 'safari', and 'stp'.
 
 - `-e`: Path to the executable for the driver binary.
 
@@ -27,6 +27,7 @@ Safari requires enabling remote automation:
 
 1. Enable the developer menu in the Advanced tab of Preferences.
 2. Enable 'Remote Automation' via the 'Developer' menu.
+3. Run `safaridriver --enable`.
 
 ## MotionMark
 
