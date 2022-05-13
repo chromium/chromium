@@ -53,6 +53,7 @@ constexpr int kLabelTextInBetweenPadding = 10;
 constexpr int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
 constexpr int kExpandedCalenarPadding = 8;
+constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
@@ -369,9 +370,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
           calendar_view_controller_->currently_shown_date()));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
-  tri_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kLabelVerticalPadding, kContentHorizontalPadding, 0,
-      kContentHorizontalPadding - calendar_utils::kColumnSetPadding)));
+  tri_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding, 0,
+                        kContentHorizontalPadding - kChevronPadding)));
   tri_view->AddView(TriView::Container::START, header_);
 
   auto* button_container = new views::View();
@@ -382,8 +383,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
       views::BoxLayout::MainAxisAlignment::kEnd);
   // Aligns button with the calendar dates in the `TableLayout`.
   button_container_layout->set_between_child_spacing(
-      calendar_utils::kDateHorizontalPadding +
-      calendar_utils::kColumnSetPadding);
+      calendar_utils::kDateHorizontalPadding + kChevronPadding);
 
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
