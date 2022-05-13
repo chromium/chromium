@@ -171,20 +171,6 @@ crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_
 crbug.com/1079393 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 crbug.com/1183090 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
 
-
-# Flaky tests on Windows 10 HD 630 GPUs. Temporarily suppress them all and they will be put back one by one soon.
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4 [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_DXVA [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Fullsize [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_VP9_DXVA [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
-crbug.com/1278681 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
-
-
 # VP scaling tests are also flaky.
 crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_MP4_VP_SCALING [ Failure ]
 crbug.com/1136971 [ win10 intel-0x3e92 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
