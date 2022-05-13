@@ -9,7 +9,7 @@
         <!-- TODO(crbug.com/1152592): Figure out why setting TextAppearance isn't working for
              ChipView. -->
         <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
-        <item name="chipColor">@color/menu_footer_chip_background_baseline</item>
+        <item name="chipColor">@color/menu_footer_chip_background_baseline_list</item>
         <item name="solidColorChip">true</item>
         <item name="textAlignStart">true</item>
         <item name="reduceEndPadding">true</item>
