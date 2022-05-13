@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 
 namespace browser_util {
@@ -57,14 +58,15 @@ bool IsBrowserAlreadyRunning() {
     // probably broken already if QueryFullProcessImageNameW is failing.
     return false;
   }
-
-  std::replace(nt_path_name.begin(), nt_path_name.end(), '\\', '!');
-  std::transform(nt_path_name.begin(), nt_path_name.end(), nt_path_name.begin(),
+  std::wstring nt_dir_name(
+      base::FilePath(nt_path_name).DirName().value().c_str());
+  std::replace(nt_dir_name.begin(), nt_dir_name.end(), '\\', '!');
+  std::transform(nt_dir_name.begin(), nt_dir_name.end(), nt_dir_name.begin(),
                  tolower);
-  nt_path_name = L"Global\\" + nt_path_name;
+  nt_dir_name = L"Global\\" + nt_dir_name;
   if (handle != NULL)
     ::CloseHandle(handle);
-  handle = ::CreateEventW(NULL, TRUE, TRUE, nt_path_name.c_str());
+  handle = ::CreateEventW(NULL, TRUE, TRUE, nt_dir_name.c_str());
   int error = ::GetLastError();
   return (error == ERROR_ALREADY_EXISTS || error == ERROR_ACCESS_DENIED);
 }
