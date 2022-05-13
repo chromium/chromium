@@ -190,7 +190,8 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
 
     r.ACCESSIBILITY = r.ADVANCED.createSection('/accessibility', 'a11y');
 
-    // <if expr="is_linux">
+    // TODO(crbug.com/1307455): Make this just "is_linux" when fixing.
+    // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
     // </if>
 
