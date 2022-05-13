@@ -440,6 +440,15 @@ try_.orchestrator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(),
+    mirrors = [
+        "ci/Linux ASan LSan Builder",
+        "ci/Linux ASan LSan Tests (1)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
 )
 
 try_.compilator_builder(
