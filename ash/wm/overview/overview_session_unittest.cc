@@ -816,7 +816,8 @@ TEST_P(OverviewSessionTest, FullscreenWindow) {
 }
 
 // Tests entering overview mode with maximized window.
-TEST_P(OverviewSessionTest, MaximizedWindow) {
+// TODO(crbug.com/1325386): Flaky.
+TEST_P(OverviewSessionTest, DISABLED_MaximizedWindow) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
