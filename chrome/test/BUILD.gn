@@ -8094,6 +8094,11 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_pdf) {
+    sources += [ "../common/pdf_util_unittest.cc" ]
+    deps += [ "//pdf:content_restriction" ]
+  }
+
   if (enable_plugins) {
     sources += [
       "../browser/plugins/chrome_plugin_service_filter_unittest.cc",

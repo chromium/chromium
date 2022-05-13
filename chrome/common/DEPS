@@ -75,7 +75,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "logging_chrome.cc": [
+  "logging_chrome\.cc": [
     "+ash/constants/ash_switches.h",
-  ]
+  ],
+  "pdf_util_unittest\.cc": [
+    "+pdf/content_restriction.h",
+  ],
 }

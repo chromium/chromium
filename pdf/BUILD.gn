@@ -71,7 +71,6 @@ if (enable_pdf) {
       "accessibility.cc",
       "accessibility.h",
       "chunk_stream.h",
-      "content_restriction.h",
       "document_attachment_info.cc",
       "document_attachment_info.h",
       "document_layout.cc",
@@ -158,6 +157,7 @@ if (enable_pdf) {
     deps = [
       ":accessibility",
       ":buildflags",
+      ":content_restriction",
       ":features",
       ":ppapi_migration",
       "//base",
@@ -201,6 +201,7 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility",
+      ":content_restriction",
       ":internal",
       ":pdf",
       ":ppapi_migration",
@@ -208,6 +209,11 @@ if (enable_pdf) {
       "//third_party/pdfium",
       "//ui/base",
     ]
+  }
+
+  source_set("content_restriction") {
+    # Exists separately to expose this header for testing.
+    public = [ "content_restriction.h" ]
   }
 
   source_set("accessibility") {
@@ -383,6 +389,7 @@ if (enable_pdf) {
       ":accessibility",
       ":assert_enums",
       ":buildflags",
+      ":content_restriction",
       ":features",
       ":internal",
       ":pdf",
