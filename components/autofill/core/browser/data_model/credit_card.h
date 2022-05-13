@@ -124,6 +124,9 @@ class CreditCard : public AutofillDataModel {
   // Returns string of dots for hidden card information.
   static std::u16string GetMidlineEllipsisDots(size_t num_dots);
 
+  // Returns whether the card is a local card.
+  static bool IsLocalCard(const CreditCard* card);
+
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
   void SetNetworkForMaskedCard(base::StringPiece network);

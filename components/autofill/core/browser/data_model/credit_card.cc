@@ -170,7 +170,7 @@ CreditCard::CreditCard(const CreditCard& credit_card) : CreditCard() {
   operator=(credit_card);
 }
 
-CreditCard::~CreditCard() {}
+CreditCard::~CreditCard() = default;
 
 // static
 const std::u16string CreditCard::StripSeparators(const std::u16string& number) {
@@ -372,6 +372,11 @@ std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
     dots.append(kMidlineEllipsisDot);
   }
   return dots;
+}
+
+// static
+bool CreditCard::IsLocalCard(const CreditCard* card) {
+  return card && card->record_type() == CreditCard::LOCAL_CARD;
 }
 
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {

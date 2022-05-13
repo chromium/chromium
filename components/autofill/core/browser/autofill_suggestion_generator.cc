@@ -57,13 +57,17 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillType& type,
-    const std::string& app_locale) {
+    const std::string& app_locale,
+    bool* should_display_gpay_logo) {
   std::vector<Suggestion> suggestions;
 
   DCHECK(personal_data_);
   std::vector<CreditCard*> cards_to_suggest =
       personal_data_->GetCreditCardsToSuggest(
           autofill_client_->AreServerCardsSupported());
+
+  *should_display_gpay_logo = base::ranges::all_of(
+      cards_to_suggest, base::not_fn(&CreditCard::IsLocalCard));
 
   // The field value is sanitized before attempting to match it to the user's
   // data.

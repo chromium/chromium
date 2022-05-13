@@ -95,7 +95,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
  public:
   class Accessor {
    public:
-    virtual ~Accessor() {}
+    virtual ~Accessor() = default;
     virtual void OnCreditCardFetched(
         CreditCardFetchResult result,
         const CreditCard* credit_card = nullptr,
@@ -115,12 +115,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 
   // Logs information about current credit card data.
   void UpdateCreditCardFormEventLogger();
-  // Returns all credit cards.
-  std::vector<CreditCard*> GetCreditCards();
-  // Returns credit cards in the order to be suggested to the user.
-  std::vector<CreditCard*> GetCreditCardsToSuggest();
-  // Returns true only if all cards are server cards.
-  bool ShouldDisplayGPayLogo();
   // Returns true when deletion is allowed. Only local cards can be deleted.
   bool DeleteCard(const CreditCard* card);
   // Returns true if the |card| is deletable. Fills out
@@ -131,9 +125,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 
   // Returns false only if some form of authentication is still in progress.
   bool ShouldClearPreviewedForm();
-
-  // Retrieves instance of CreditCard with given guid.
-  CreditCard* GetCreditCard(std::string guid);
 
   // Makes a call to Google Payments to retrieve authentication details.
   void PrepareToFetchCreditCard();
@@ -246,9 +237,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 
   // Returns whether or not unmasked card cache is empty. Exposed for testing.
   bool UnmaskedCardCacheIsEmpty();
-
-  // Returns false if all suggested cards are local cards, otherwise true.
-  bool ServerCardsAvailable();
 
   // Invoked from CreditCardFIDOAuthenticator::IsUserVerifiable().
   // |is_user_verifiable| is set to true only if user has a verifying platform

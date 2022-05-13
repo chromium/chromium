@@ -12225,11 +12225,13 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                         false /* include_full_server_credit_card */,
                         false /* masked_card_is_enrolled_for_virtual_card */);
 
-    credit_card_with_cvc_ = {.credit_card = *autofill_manager()
-                                                 .GetCreditCardAccessManager()
-                                                 ->GetCreditCardsToSuggest()
-                                                 .front(),
-                             .cvc = u"123"};
+    credit_card_with_cvc_ = {
+        .credit_card = *autofill_manager()
+                            .personal_data_
+                            ->GetCreditCardsToSuggest(
+                                autofill_client_->AreServerCardsSupported())
+                            .front(),
+        .cvc = u"123"};
 
     url::Origin main_origin =
         url::Origin::Create(GURL("https://example.test/"));

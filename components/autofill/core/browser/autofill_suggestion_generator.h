@@ -41,7 +41,8 @@ class AutofillSuggestionGenerator {
       const FormStructure& form_structure,
       const FormFieldData& field,
       const AutofillType& type,
-      const std::string& app_locale);
+      const std::string& app_locale,
+      bool* should_display_gpay_logo);
 
   // Remove credit cards that are expired at |comparison_time| and not used
   // since |min_last_used| from |cards|. The relative ordering of |cards| is
