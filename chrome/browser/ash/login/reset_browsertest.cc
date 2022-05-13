@@ -513,7 +513,8 @@ IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdate,
 }
 
 IN_PROC_BROWSER_TEST_F(ResetTestWithTpmFirmwareUpdate,
-                       ResetFromSigninWithFirmwareUpdate) {
+                       // TODO(crbug.com/1324763): Re-enable this test
+                       DISABLED_ResetFromSigninWithFirmwareUpdate) {
   OobeScreenWaiter(ResetView::kScreenId).Wait();
 
   ASSERT_TRUE(HasPendingTpmFirmwareUpdateCheck());
