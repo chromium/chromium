@@ -697,6 +697,9 @@ module.exports = {
 
     // go/tsstyle#switch-statements
     'default-case': 'error',
+
+    // go/tsstyle#return-types
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
