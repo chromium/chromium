@@ -843,7 +843,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1784707308176068866">Futtatás a háttérben, amikor együttműködő natív alkalmazás kéri</translation>
 <translation id="1784849162047402014">Az eszközön kevés a lemezterület</translation>
 <translation id="1787350673646245458">Felhasználó képe</translation>
-<translation id="1788329699711791226">Hozzáférhet a következő profilban tárolt, Chrome böngészővel kapcsolatos dolgaihoz: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
@@ -872,6 +871,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1813278315230285598">Szolgáltatások</translation>
 <translation id="18139523105317219">EDI fél neve</translation>
 <translation id="1815083418640426271">Beillesztés egyszerű szövegként</translation>
+<translation id="1815097521077272760">Meghívták, hogy próbálja ki a billentyűzettel történő irányítást ennél a játéknál.</translation>
 <translation id="1815181278146012280">Kérdezzen rá, ha valamelyik webhely hozzá szeretne férni a HID-eszközökhöz</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> további…</translation>
 <translation id="1816036116994822943">Keresési sebesség a billentyűzeten</translation>
@@ -1005,6 +1005,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1935303383381416800">Láthatják az Ön tartózkodási helyét</translation>
 <translation id="1936931585862840749">Számmal jelezze, hogy hány példányt szeretne nyomtatni (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Nem lehet importálni a tároló <ph name="ARCHITECTURE_CONTAINER" /> architektúratípusát, ugyanis az eszköz architektúrájának típusa <ph name="ARCHITECTURE_DEVICE" />. Megpróbálhatja helyreállítani ezt a tárolót egy másik eszközön, vagy a Fájlok alkalmazás megnyitásával hozzáférhet a tároló lemezképében lévő fájlokhoz.</translation>
+<translation id="1938320257168860255">Hiba történt. Győződjön meg arról, hogy telefonja a közelben van, a zárolása fel van oldva, valamint hogy be van kapcsolva rajta a Wi-Fi és a Bluetooth.</translation>
 <translation id="1938351510777341717">Külső parancs</translation>
 <translation id="1940546824932169984">Társított eszközök</translation>
 <translation id="1941410638996203291">Kezdési idő: <ph name="TIME" /></translation>
@@ -1087,6 +1088,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="2030455719695904263">Érintőpad</translation>
 <translation id="2031639749079821948">A jelszó mentve van a Google-fiókjában</translation>
 <translation id="2031914984822377766">Adja meg a <ph name="LINK_BEGIN" />webhelyeken használni kívánt nyelveket<ph name="LINK_END" />. A rendszer a lista tetején található nyelvet használja majd a fordításokhoz.</translation>
+<translation id="2033758234986231162">Nem sikerült fenntartani a telefon kapcsolatát. Győződjön meg arról, hogy telefonja a közelben van, a zárolása fel van oldva, valamint hogy be van kapcsolva rajta a Wi-Fi és a Bluetooth.</translation>
 <translation id="2034346955588403444">Másik Wi-Fi-hálózat hozzáadása</translation>
 <translation id="203574396658008164">Jegyzetkészítés engedélyezése a lezárási képernyőn</translation>
 <translation id="2037445849770872822">A felügyelet be van állítva ebben a Google-fiókban. Szélesebb körű szülői felügyelet beállításához válassza a Tovább lehetőséget.
@@ -3755,6 +3757,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="461661862154729886">Energiaforrás</translation>
 <translation id="4617001782309103936">Túl rövid</translation>
 <translation id="4617270414136722281">Bővítménybeállítások</translation>
+<translation id="4617880081511131945">Nem lehet kapcsolódni</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
 <translation id="4620809267248568679">Ezt a beállítást egy bővítmény kényszeríti ki.</translation>
@@ -4047,6 +4050,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4907306957610201395">Engedélykategória</translation>
 <translation id="4908811072292128752">Új lap megnyitása két webhely egyidejű böngészéséhez</translation>
 <translation id="4909038193460299775">Mivel ezt a fiókot a(z) <ph name="DOMAIN" /> domain kezeli, könyvjelzői, előzményei, jelszavai és más beállításai törlődnek erről az eszközről. Meglévő adatait azonban továbbra is tárolni fogja Google-fiókja, és azokat a <ph name="BEGIN_LINK" />Google Irányítópulton<ph name="END_LINK" /> kezelheti.</translation>
+<translation id="4912265719039610598">Az alkalmazásstreamelést letiltotta a telefon rendszergazdája.</translation>
 <translation id="4912643508233590958">Tétlen aktiválások</translation>
 <translation id="4915961947098019832">Megjeleníthetnek képeket</translation>
 <translation id="4916542008280060967">Engedélyezi a webhelynek a következő szerkesztését: <ph name="FILE_NAME" />?</translation>
@@ -4657,7 +4661,6 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5539221284352502426">A szerver elutasította a megadott jelszót. Lehetséges okok: Túl rövid a jelszó. A jelszónak tartalmaznia kell számokat és szimbólumokat. A jelszó nem egyezhet meg korábbi jelszavakkal.</translation>
 <translation id="5541694225089836610">A rendszergazda letiltotta a műveletet.</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Az Ön fiókkezelője: <ph name="MANAGER_NAME" />. Rendszergazdája láthatja és szerkesztheti ezt a Chrome-böngészőprofilt és az adatait. Ezek közé az adatok közé tartoznak a könyvjelzők, az előzmények és a jelszavak is.</translation>
 <translation id="5542750926112347543">A(z) <ph name="DOMAIN" /> oldalról származó cookie-k le vannak tiltva</translation>
 <translation id="5542949973455282971">Csatlakozás a(z) <ph name="CARRIER_NAME" /> szolgáltatóhoz</translation>
 <translation id="5543983818738093899">Állapot ellenőrzése…</translation>
@@ -6878,6 +6881,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Állítsa be a kijelző határait</translation>
 <translation id="7760004034676677601">Erre a kezdőoldalra számított?</translation>
+<translation id="7762024824096060040">Ez a fiók nem használható</translation>
 <translation id="7762463735017901568">Az értesítések szinkronizálását letiltotta a telefon rendszergazdája</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> a(z) <ph name="DOWNLOAD_DOMAIN" /> webhelyről</translation>
@@ -7047,6 +7051,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7919210519031517829"><ph name="DURATION" /> mp</translation>
 <translation id="7920363873148656176">A(z) <ph name="ORIGIN" /> megtekintheti a következő fájlt: <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Vegye fel azokat a szavakat, melyeknél szeretné kihagyni a helyesírás-ellenőrzést</translation>
+<translation id="7921347341284348270">Nem tekintheti meg telefonja értesítéseit ebben a felügyelt fiókban. Próbálja újra másik fiókkal. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="7922935920104868876">Részletek megjelenítése a harmadik felektől származó cookie-k inkognitó módban való letiltásáról</translation>
 <translation id="7923564237306226146">A Linux frissítése befejeződött</translation>
 <translation id="7924358170328001543">Hibás portátirányítás</translation>

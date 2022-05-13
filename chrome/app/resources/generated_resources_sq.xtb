@@ -829,7 +829,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1784707308176068866">Ekzekutoje në sfond kur kërkohet nga një aplikacion origjinal bashkëpunues</translation>
 <translation id="1784849162047402014">Pajisja ka hapësirë të ulët në disk</translation>
 <translation id="1787350673646245458">Imazhi i përdoruesit</translation>
-<translation id="1788329699711791226">Qasu te gjërat e tua në shfletuesin Chrome nga <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Hiq qasjen</translation>
 <translation id="1791662854739702043">I instaluar</translation>
 <translation id="1792619191750875668">Ekrani i zgjeruar</translation>
@@ -2310,6 +2309,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
+<translation id="3193695589337931419">Shërbimet utilitare të sinjalizimeve të sistemit</translation>
 <translation id="3194786596445804250">Shfaq detajet për bllokimin e kukive të palëve të treta</translation>
 <translation id="3197453258332670132">Me një klikim me butonin djathtas ose një shtypje të gjatë, shfaq informacione përkatëse për zgjedhjen e tekstit</translation>
 <translation id="3199127022143353223">Serverët</translation>
@@ -4639,7 +4639,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5539221284352502426">Fjalëkalimi që fute u refuzua nga serveri. Arsyet e mundshme përfshijnë: fjalëkalimi është tepër i shkurtër. Fjalëkalimi duhet të përfshijë numra ose simbole. Fjalëkalimi duhet të jetë i ndryshëm nga fjalëkalimet e mëparshme.</translation>
 <translation id="5541694225089836610">Veprimi është çaktivizuar nga administratori yt</translation>
 <translation id="5542132724887566711">Profili</translation>
-<translation id="554229901779827904">Llogaria jote menaxhohet nga <ph name="MANAGER_NAME" />. Administratori yt mund të shikojë dhe të modifikojë këtë profil në shfletuesin Chrome dhe të dhënat e tij. Të dhënat e tua përfshijnë faqeshënuesit, historikun dhe fjalëkalimet.</translation>
 <translation id="5542750926112347543">Kukit nga <ph name="DOMAIN" /> u bllokuan</translation>
 <translation id="5542949973455282971">Po lidhet me <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Po kontrollon për statusin...</translation>

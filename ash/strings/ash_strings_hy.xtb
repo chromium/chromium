@@ -143,6 +143,7 @@
 <translation id="1749109475624620922">«<ph name="WINDOW_TITLE" />» պատուհանը նշանակվեց բոլոր աշխատասեղաններին։</translation>
 <translation id="1750088060796401187">Աշխատասեղանների առավելագույն թիվը (<ph name="MAX_DESK_LIMIT" />) լրացել է։ Հեռացրեք որևէ աշխատասեղան՝ նորը բացելու համար։</translation>
 <translation id="1756833229520115364">Չհաջողվեց պահել ձևանմուշը։ Չափազանց շատ պատուհաններ կամ ներդիրներ կան։</translation>
+<translation id="1757857692711134412">Անջատված է մինչև մայրամուտ</translation>
 <translation id="1761222317188459878">Միացնել/անջատել կապը: <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
@@ -508,6 +509,7 @@
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="40062176907008878">Ձեռագիր</translation>
 <translation id="4017989525502048489">Լազերային ցուցիչ</translation>
+<translation id="401993194061514265">Նշիչը հասանելի չէ։ Նորից բացեք Screencast-ը։</translation>
 <translation id="4021716437419160885">Ոլորել վար</translation>
 <translation id="4028481283645788203">Անվտանգության նկատառումներից ելնելով անհրաժեշտ է մուտքագրել գաղտնաբառը</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +524,7 @@
 <translation id="412298498316631026">պատուհան</translation>
 <translation id="4123259114412175274">Chromebook-ն ապակողպելու համար հեռախոսում միացրեք Bluetooth-ը</translation>
 <translation id="4129129681837227511">Ծանուցումները կողպէկրանին տեսնելու համար ապակողպեք սարքը և փոխեք կարգավորումները:</translation>
+<translation id="4136724716305260864">Միացված է մինչև մայրամուտ</translation>
 <translation id="4146833061457621061">Միացնել երաժշտություն</translation>
 <translation id="4165275524535002941">Մալուխը կարող է համատեղելի չլինել էկրանների հետ</translation>
 <translation id="4177913004758410636">{0,plural, =1{Թարմացրեք սարքը մեկ օրվա ընթացքում}one{Թարմացրեք սարքը # օրվա ընթացքում}other{Թարմացրեք սարքը # օրվա ընթացքում}}</translation>
@@ -574,6 +577,7 @@
 <translation id="4421231901400348175">Էկրանի կառավարման համօգտագործում <ph name="HELPER_NAME" />-ի հետ Հեռակա օգնության միջոցով:</translation>
 <translation id="4424159417645388645">Աշխատասեղան 5</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
+<translation id="4435022394553622295">Դիտեք ձեր հեռախոսի ծանուցումներն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="4441283832827406317">Հավելվածները դասավորված են ըստ անվանման</translation>
 <translation id="4445159312344259901">Մուտք գործեք՝ ապակողպելու համար</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 կարևոր ծանուցում}one{# կարևոր ծանուցում}other{# կարևոր ծանուցում}}</translation>
@@ -591,7 +595,6 @@
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
 <translation id="4505050298327493054">Ակտիվ աշխատանքային սեղան։</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
-<translation id="4516867700536986208">Բոլոր հավելվածները․ ձախ կամ ներքև սլաքի օգնությամբ կարող եք բացել բոլոր հավելվածների ցանկը</translation>
 <translation id="4518404433291145981">Ձեր Chromebook-ն ապակողպելու համար նախ ապակողպեք ձեր հեռախոսը</translation>
 <translation id="4527045527269911712">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորվելու թույլտվություն է խնդրում:</translation>
 <translation id="453661520163887813">Լրիվ կլիցքավորվի <ph name="TIME" />-ից</translation>
@@ -701,6 +704,7 @@
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Եվս 1 ծանուցում}one{Եվս # ծանուցում}other{Եվս # ծանուցում}}</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208059991603368177">Միացված է</translation>
+<translation id="5216991270656129561">Անջատված կլինի մինչև <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="523505283826916779">Հատուկ գործառույթների կարգավորումներ</translation>
@@ -750,6 +754,7 @@
 <translation id="553675580533261935">Ելք աշխատաշրջանից</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Միացնել/անջատել ձայնային ներածումը</translation>
+<translation id="5560420195677022218">Դիտեք ձեր հեռախոսի հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="556042886152191864">Կոճակ</translation>
 <translation id="5571066253365925590">Bluetooth-ը միացված է</translation>
 <translation id="557563299383177668">Հաջորդ պարբերությունը</translation>
@@ -968,6 +973,7 @@
 <translation id="6884665277231944629">Վերադառնալ այսօրվա ամսաթվին</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>
+<translation id="6891721121089053234">Դիտեք ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6901883536534621389">Օգտագործեք ժեստեր նավիգացիայի համար</translation>
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
@@ -1026,7 +1032,6 @@
 <translation id="7302889331339392448">«Կենդանի ենթագրեր» գործառույթը միացված է։</translation>
 <translation id="7303365578352795231">Օգնականն այլ սարքում է պատասխանում:</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Վերջերս օգտագործված հավելվածներ․ ձախ սլաքի օգնությամբ կարող եք բացել վերջերս օգտագործված հավելվածների ցանկը</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="731589979057211264">Shelf Party ռեժիմը միացված է։</translation>
 <translation id="7319740667687257810">Launcher՝ մասնակի տարբերակ</translation>
@@ -1096,6 +1101,7 @@
 <translation id="7684531502177797067">Օգտագործվում է «<ph name="CAMERA_NAME" />» տեսախցիկը։</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Ավելացնել նոր բջջային ցանց</translation>
+<translation id="7720400844887872976">Միացված կլինի մինչև <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ՆՈՐԻՑ ՓՈՐՁԵԼ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ծանուցում}one{# ծանուցում}other{# ծանուցում}}</translation>
 <translation id="7724603315864178912">Կտրել</translation>
@@ -1160,7 +1166,6 @@
 <translation id="8051716679295756675">«<ph name="DESK_TEMPLATE_NAME" />» անունով ձևանմուշ արդեն գոյություն ունի</translation>
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>
 <translation id="8054466585765276473">Մարտկոցի ժամանակի հաշվարկում:</translation>
-<translation id="8055510977240456975">Թաքցնել շարունակելու առաջարկները</translation>
 <translation id="8061464966246066292">Բարձր կոնտրաստ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="8113423164597455979">Բոլորը միացված են</translation>
@@ -1178,6 +1183,7 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="8155628902202578800">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
+<translation id="8183592608247778598">Դիտեք ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումներն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="8192202700944119416">Ծանուցումները թաքցված են:</translation>
 <translation id="8196787716797768628">Ժեստերի միջոցով արագ անցեք մեկ հավելվածից մյուսը և օգտագործեք Chromebook-ը պլանշետի ռեժիմում։</translation>
 <translation id="8200772114523450471">Շարունակել</translation>

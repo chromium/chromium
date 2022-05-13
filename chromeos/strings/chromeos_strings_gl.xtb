@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Axustar á zona de escaneo</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
+<translation id="1380220803921738821">Estanse producindo erros. Proba a reiniciar o dispositivo ou a recuperar o firmware cunha memoria USB.</translation>
 <translation id="1387854245479784695">Esta é a suma de todos os núcleos</translation>
 <translation id="1394661041439318933">Nivel de batería do estoxo do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pódeselle facer ping á pasarela</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="28232023175184696">Non foi posible conectarse a Internet. Facer clic para tentalo de novo.</translation>
+<translation id="2827359915699915567">Escribe manualmente este URL para obter o código de desbloqueo do servidor de autorización de devolución de mercadoría.</translation>
 <translation id="2859243502336719778">Actualización esencial</translation>
 <translation id="2860473693272905224">Coloca outra páxina no escáner</translation>
 <translation id="2872961005593481000">Pechar</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Dirección da clave</translation>
 <translation id="3310640316857623290">A latencia do DNS supera considerablemente o límite permitido</translation>
 <translation id="3328783797891415197">Proba en curso</translation>
+<translation id="3333527094307156612">Utiliza este código QR para obter o código de desbloqueo de 8 caracteres. Tamén podes escribir manualmente <ph name="LINK_BEGIN" />este URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectada</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
+<translation id="3643810137582748570">Omitir calibración</translation>
 <translation id="3678765385266369662">Selecciona como queres desactivar a protección da escritura</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única páxina. Ao realizar esta acción, redirixirásete á pantalla de inicio da función do escáner.</translation>
+<translation id="506768878203270635">Mete os 8 caracteres</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -469,6 +474,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5649768706273821470">Escoitar</translation>
 <translation id="5655283760733841251">Aumentar brillo do teclado</translation>
+<translation id="5661196929408385351">Usar Powerwash e apagar</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
@@ -480,6 +486,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="576835345334454681">Aumentar brillo da pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
+<translation id="578753362485952307">Se estás adaptando unha placa base para utilizala noutro dispositivo, vai ao <ph name="LINK_BEGIN" />fluxo de adaptación<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -536,6 +543,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
+<translation id="6295178529664209245">Queres continuar coa reparación?</translation>
 <translation id="6302401976930124515">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
 <translation id="6319207335391420837">Actualizar o firmware deste dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar o protector de pantalla</translation>
@@ -571,6 +579,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6575134580692778371">Non configurado</translation>
 <translation id="6579509898032828423">Usar esta foto</translation>
 <translation id="6596816719288285829">Enderezo IP</translation>
+<translation id="6611280807952151149">Saír da reparación do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
@@ -583,6 +592,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6723847290197874913">Luz traseira do teclado</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
+<translation id="6746847322826305075">Podes continuar coa reparación completa ou restablecer a configuración de fábrica (Powerwash) do dispositivo para almacenar a placa base.</translation>
 <translation id="6747215703636344499">Detívose (a saída está chea)</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">O dispositivo é un ordenador.</translation>
@@ -630,6 +640,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
 <translation id="7271040990581020067">Nestes momentos, o escáner está en uso. Téntao de novo máis tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Selecciona 1 ou máis compoñentes e téntao de novo ou omite a calibración</translation>
 <translation id="7281657306185710294">Brisa</translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
@@ -660,11 +671,13 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión por USB</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Non se puido detectar este compoñente.</translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
 <translation id="7626501172915339021">Levar a cabo o desbloqueo do servidor de autorización de devolución de mercadoría (RSU)</translation>
 <translation id="763165478673169849">Última hora de restablecemento</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7656388927906093505">O dispositivo é un rato.</translation>
+<translation id="7657530360897961171">Produciuse un erro de reparación no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
@@ -706,6 +719,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8083281199617904460">Este proceso de reparación debe efectualo un técnico cualificado, e só se debe iniciar despois de substituír os compoñentes que non funcionen correctamente.</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
+<translation id="8109786307828817014">Queres continuar a pesar dos erros de calibración?</translation>
 <translation id="811820734797650957">(Android) pódeselle facer ping á pasarela</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
@@ -728,6 +742,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Sen imaxes</translation>
 <translation id="8327249300223641918">Antes de continuar, coloca o dispositivo (tanto a base como a tapa) nunha superficie plana.</translation>
+<translation id="8330949592403310082">Selecciona os compoñentes que se substituíron</translation>
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
@@ -752,6 +767,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Pode que os compoñentes non funcionen correctamente a menos que se calibren</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
@@ -806,6 +822,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9025198690966128418">Utilizar como dispositivo persoal</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolución de DNS ten latencia alta</translation>
+<translation id="9063121522582193837">Non se puideron calibrar algúns compoñentes</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Usar este vídeo</translation>

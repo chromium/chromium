@@ -420,6 +420,7 @@
 <translation id="1415708812149920388">已禁止讀取剪貼簿</translation>
 <translation id="1415990189994829608">這個工作階段類型不允許使用 <ph name="EXTENSION_NAME" /> (擴充功能 ID 為「<ph name="EXTENSION_ID" />」)。</translation>
 <translation id="1418552618736477642">通知和應用程式</translation>
+<translation id="1418882096915998312">正在進行 Enterprise 註冊作業</translation>
 <translation id="1418954524306642206">請瀏覽並指定印表機 PPD</translation>
 <translation id="1420834118113404499">媒體授權</translation>
 <translation id="1420920093772172268">如要允許配對，請<ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
@@ -830,7 +831,6 @@
 <translation id="1784707308176068866">合作原生應用程式提出要求時在背景執行</translation>
 <translation id="1784849162047402014">裝置磁碟空間即將用盡</translation>
 <translation id="1787350673646245458">使用者圖片</translation>
-<translation id="1788329699711791226">透過 <ph name="ACCOUNT_EMAIL" /> 存取你的 Chrome 瀏覽器資料</translation>
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">擴充顯示畫面</translation>
@@ -2311,6 +2311,7 @@
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192947282887913208">音訊檔</translation>
+<translation id="3193695589337931419">系統信號公用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 的詳細資料</translation>
 <translation id="3197453258332670132">按一下滑鼠右鍵或長按畫面，即可查看所選文字的相關資訊</translation>
 <translation id="3199127022143353223">伺服器</translation>
@@ -3397,6 +3398,7 @@
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
 <translation id="4278390842282768270">允許</translation>
+<translation id="4278498748067682896">你將使用「資訊站或看板升級」授權，這項授權只允許裝置在資訊站或看板模式下運作。如果希望使用者登入裝置，請返回上一個畫面，然後使用「Chrome Enterprise 升級版」進行註冊。</translation>
 <translation id="4279129444466079448">你最多可以在這部裝置上安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
 <translation id="4280325816108262082">裝置關閉或處於閒置狀態時，會自動中斷連線</translation>
 <translation id="4281844954008187215">服務條款</translation>
@@ -4637,7 +4639,6 @@
 <translation id="5539221284352502426">輸入的密碼遭到伺服器拒絕。可能的原因包括：密碼長度不足、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">你的管理員停用了這個動作</translation>
 <translation id="5542132724887566711">設定檔</translation>
-<translation id="554229901779827904">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chrome 瀏覽器設定檔及其中的資料，包括書籤、歷史記錄和密碼。</translation>
 <translation id="5542750926112347543">系統已封鎖 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至「<ph name="CARRIER_NAME" />」</translation>
 <translation id="5543983818738093899">正在檢查狀態...</translation>

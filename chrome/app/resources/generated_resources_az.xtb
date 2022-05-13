@@ -828,7 +828,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1784707308176068866">Birgə işləyən yerli tətbiq tərəfindən tələb edildikdə arxa fonda işlədin</translation>
 <translation id="1784849162047402014">Cihazda disk yaddaşı azdır</translation>
 <translation id="1787350673646245458">İstifadəçinin şəkli</translation>
-<translation id="1788329699711791226">Chrome brauzerinin elementlərinə <ph name="ACCOUNT_EMAIL" /> hesabından giriş edin</translation>
 <translation id="1790976235243700817">Girişi silin</translation>
 <translation id="1791662854739702043">Quraşdırıldı</translation>
 <translation id="1792619191750875668">Genişləndirilmiş ekran</translation>
@@ -857,6 +856,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1813278315230285598">Xidmətlər</translation>
 <translation id="18139523105317219">EDI Partiya Adı</translation>
 <translation id="1815083418640426271">Sadə Mətn Kimi Yerləşdirin</translation>
+<translation id="1815097521077272760">Bu oyun üçün klaviatura nəzarətini sınamağa dəvət olunmusunuz.</translation>
 <translation id="1815181278146012280">Sayt HID cihazlarına daxil olmaq istədikdə icazə tələb edin</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> daha...</translation>
 <translation id="1816036116994822943">Klaviaturanın skan edilmə sürəti</translation>
@@ -990,6 +990,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1935303383381416800">Məkanınıza baxmaq icazəsi verilib</translation>
 <translation id="1936931585862840749">Neçə nüsxə çap etmək istədiyinizi rəqəm ilə (1-<ph name="MAX_COPIES" /> arasında) göstərin</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> konteyner forma növü <ph name="ARCHITECTURE_DEVICE" /> cihazı ilə import edilə bilməz. Bu konteyneri fərqli cihaza bərpa edə, yaxud onu Fayl tətbiqində açaraq konteyner şəklin daxilindəki faylları əldə edə bilərsiniz.</translation>
+<translation id="1938320257168860255">Xəta oldu. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="1938351510777341717">Xarici Əmr</translation>
 <translation id="1940546824932169984">Qoşulmuş cihazlar</translation>
 <translation id="1941410638996203291">Başlama vaxtı: <ph name="TIME" /></translation>
@@ -1072,6 +1073,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="2030455719695904263">Trekped</translation>
 <translation id="2031639749079821948">Parolunuz Google Hesabınızda saxlanılıb</translation>
 <translation id="2031914984822377766">Tərcih etdiyiniz <ph name="LINK_BEGIN" />vebsayt dillərini<ph name="LINK_END" /> əlavə edin. Siyahıda ilk sıradakı dil tərcümələr üçün istifadə olunacaq.</translation>
+<translation id="2033758234986231162">Telefonunuzla bağlantı qurmaq mümkün deyil. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="2034346955588403444">Digər WiFi şəbəkəsi əlavə edin</translation>
 <translation id="203574396658008164">Kilid ekranından qeyd götürməni aktiv edin</translation>
 <translation id="2037445849770872822">Bu Google Hesabında nəzarət ayarlanıb. Daha çox valideyn nəzarəti ayarlamaq üçün "Davam edin" seçiminə klikləyin.
@@ -3738,6 +3740,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="461661862154729886">Enerji mənbəyi</translation>
 <translation id="4617001782309103936">Çox qısa</translation>
 <translation id="4617270414136722281">Artırma seçimləri</translation>
+<translation id="4617880081511131945">Bağlantı qurmaq mümkün deyil</translation>
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4619615317237390068">Digər cihazlardan tablar</translation>
 <translation id="4620809267248568679">Bu ayar artırma tərəfindən icra olunur.</translation>
@@ -4030,6 +4033,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4907306957610201395">İcazə Kateqoriyası</translation>
 <translation id="4908811072292128752">Eyni anda iki saytı axtarmaq üçün yeni tab açın</translation>
 <translation id="4909038193460299775">Bu hesab <ph name="DOMAIN" /> tərəfindən idarə olunduğu üçün, əlfəcin, tarixçə, parol və digər ayarlarınız bu cihazdan silinəcək. Buna baxmayaraq, datanız Google hesabınızın yaddaşında qalacaq və <ph name="BEGIN_LINK" />Google İdarə Panelində<ph name="END_LINK" /> idarə oluna bilər.</translation>
+<translation id="4912265719039610598">Tətbiqlərin yayımı telefonunuzun administratoru tərəfindən deaktiv edilib.</translation>
 <translation id="4912643508233590958">İnaktiv oyanışlar</translation>
 <translation id="4915961947098019832">Şəkilləri göstərmək icazəsi verilib</translation>
 <translation id="4916542008280060967">Sayta <ph name="FILE_NAME" /> faylını redaktə etmək üçün icazə verilsin?</translation>
@@ -4639,7 +4643,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5539221284352502426">Daxil etdiyiniz parol server tərəfindən rədd edildi. Səbəblər bunlar ola bilər: Parol çox qısadır. Parol rəqəm və ya simvollardan ibarət olmalıdır. Parol əvvəlki paroldan fərqli olmalıdır.</translation>
 <translation id="5541694225089836610">Administrator əməliyyatı deaktiv edib</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Hesabınız <ph name="MANAGER_NAME" /> tərəfindən idarə olunur. Administratorunuz bu Chrome brauzer profilini və onun datasını görə və redaktə edə bilər. Datanıza əlfəcinlər, tarixçə və parollar daxildir.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> kukiləri blok edildi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> şəbəkəsinə qoşulur</translation>
 <translation id="5543983818738093899">Status yoxlanılır...</translation>
@@ -6857,6 +6860,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ekran hüdudlarını tənzimləyin</translation>
 <translation id="7760004034676677601">Bu gözlədiyiniz başlanğıc səhifədir?</translation>
+<translation id="7762024824096060040">Bu hesabı istifadə etmək mümkün deyil</translation>
 <translation id="7762463735017901568">Bildirişlərin sinxronizasiyası telefonunuzun administratoru tərəfindən deaktiv edilib</translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> domenindən <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -7026,6 +7030,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7919210519031517829"><ph name="DURATION" />san</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylına baxa bilər</translation>
 <translation id="7920482456679570420">Orfoqrafiya yoxlayıcısının ötürməsini istədiyiniz sözləri əlavə edin</translation>
+<translation id="7921347341284348270">Bu idarə olunan hesabda telefonunuzun bildirişlərinə baxa bilməzsiniz. Fərqli hesabla yenidən cəhd edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">Anonim rejimdə üçüncü tərəf kukilərini bloklamaq haqqında detalları göstərin</translation>
 <translation id="7923564237306226146">Linux təkmilləşdirməsi tamamlandı</translation>
 <translation id="7924358170328001543">Portu yönləndirərkən xəta oldu</translation>

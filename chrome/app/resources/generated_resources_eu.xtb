@@ -251,7 +251,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1235924639474699896">{COUNT,plural, =1{testua}other{# testu}}</translation>
 <translation id="1236009322878349843">Editatu telefonoa</translation>
 <translation id="1239594683407221485">Arakatu gailuko edukia Fitxategiak aplikazioan.</translation>
-<translation id="1240903469550363138">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko irudia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />zerbitzu-baldintzak<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />zerbitzu-baldintzak<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera</translation>
 <translation id="124116460088058876">Hizkuntza gehiago</translation>
 <translation id="1241753985463165747">Abiarazitakoan, irakurri eta aldatu oraingo webgunean dituzun datu guztiak</translation>
@@ -832,7 +832,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1784707308176068866">Abiarazi atzeko planoan lankidetzarako aplikazio natibo batek hala eskatzen duenean</translation>
 <translation id="1784849162047402014">Toki gutxi gelditzen da gailuan</translation>
 <translation id="1787350673646245458">Erabiltzailearen irudia</translation>
-<translation id="1788329699711791226">Atzitu Chrome arakatzailean dituzun gauzak <ph name="ACCOUNT_EMAIL" /> bidez</translation>
 <translation id="1790976235243700817">Kendu sarbidea</translation>
 <translation id="1791662854739702043">Instalatu da</translation>
 <translation id="1792619191750875668">Pantaila hedatua</translation>
@@ -4642,7 +4641,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5539221284352502426">Zerbitzariak idatzi duzun pasahitza baztertu du, arrazoi hauetako baten ondorioz: pasahitza laburregia da, pasahitzak zenbakiak edo ikurrak izan behar ditu, edo pasahitza ezin da izan aurreko baten berdina.</translation>
 <translation id="5541694225089836610">Administratzaileak desgaitu egin du ekintza</translation>
 <translation id="5542132724887566711">Profila</translation>
-<translation id="554229901779827904"><ph name="MANAGER_NAME" /> administratzaileak kudeatzen du kontua. Chrome arakatzaileko profil hau eta profil honetako datuak ikusi eta edita ditzake administratzaileak. Datu horien artean laster-markak, historia eta pasahitzak daude.</translation>
 <translation id="5542750926112347543">Blokeatu dira <ph name="DOMAIN" /> domeinuaren cookieak</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> operadorearen sarera konektatzen</translation>
 <translation id="5543983818738093899">Egoera egiaztatzen…</translation>

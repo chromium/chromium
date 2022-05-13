@@ -1949,6 +1949,7 @@
 <translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="6337534724793800597">Siyasətləri adlara əsasən filtrləyin</translation>
 <translation id="6340739886198108203">Administrator siyasəti məxfi kontent göründükdə skrinşot çəkməyi və ya nəsə qeydə almağı tövsiyə etmir:</translation>
+<translation id="6348220984832452017">Aktiv Variasiyalar</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün sinxronizasiya edilib)}=2{2 parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}other{# parol (<ph name="DOMAIN_LIST" />üçün sinxronizasiya edilib)}}</translation>
 <translation id="6355392890578844978">Bu brauzer şirkət və ya başqa təşkilat tərəfindən idarə edilmir. Bu cihazdakı fəaliyyət Chromium'dan kənarda idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

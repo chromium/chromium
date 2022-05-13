@@ -844,7 +844,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1784707308176068866">Patakbuhin sa background kapag hiniling ng nakikipagtulungang native application</translation>
 <translation id="1784849162047402014">Kaunti na lang ang espasyo sa disk ng device</translation>
 <translation id="1787350673646245458">Larawan ng user</translation>
-<translation id="1788329699711791226">I-access ang iyong mga bagay sa Chrome browser mula sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Alisin ang access</translation>
 <translation id="1791662854739702043">Na-install</translation>
 <translation id="1792619191750875668">Pinalawak na display</translation>
@@ -873,6 +872,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1813278315230285598">Mga Serbisyo</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">I-paste Bilang Plain Text</translation>
+<translation id="1815097521077272760">Naimbita kang sumubok ng pagkontrol gamit ang keyboard para sa larong ito.</translation>
 <translation id="1815181278146012280">Magtanong kapag gusto ng isang site na i-access ang mga HID device</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> pa...</translation>
 <translation id="1816036116994822943">Bilis ng pag-scan ng keyboard</translation>
@@ -1007,6 +1007,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1935303383381416800">Pinapayagang makita ang iyong lokasyon</translation>
 <translation id="1936931585862840749">Gumamit ng numero para isaad kung gaano karaming kopya ang ipi-print (1 hanggang <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Hindi puwedeng mag-import ng uri ng architecture ng container na <ph name="ARCHITECTURE_CONTAINER" /> sa device na ito na <ph name="ARCHITECTURE_DEVICE" />. Maaari mong subukang i-restore ang container na ito sa ibang device, o puwede mong i-access ang mga file sa loob ng ganitong larawan ng container sa pamamagitan ng pagbukas sa app na Mga File.</translation>
+<translation id="1938320257168860255">Nagkaproblema. Tiyaking ang iyong telepono ay nasa malapit, naka-unlock, at naka-on ang Bluetooth at Wi-Fi.</translation>
 <translation id="1938351510777341717">External na Command</translation>
 <translation id="1940546824932169984">Mga nakakonektang device</translation>
 <translation id="1941410638996203291">Oras ng pagsisimula <ph name="TIME" /></translation>
@@ -1089,6 +1090,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2031639749079821948">Naka-save ang iyong password sa Google Account mo</translation>
 <translation id="2031914984822377766">Idagdag ang iyong mga gustong <ph name="LINK_BEGIN" />wika ng website<ph name="LINK_END" />. Gagamitin ang wika sa itaas mula sa listahan para sa mga pagsasalin.</translation>
+<translation id="2033758234986231162">Hindi makapagpanatili ng koneksyon sa iyong telepono. Tiyaking ang iyong telepono ay nasa malapit, naka-unlock, at naka-on ang Bluetooth at Wi-Fi.</translation>
 <translation id="2034346955588403444">Magdagdag ng iba pang Wi-Fi network</translation>
 <translation id="203574396658008164">I-enable ang pagtatala mula sa lock screen</translation>
 <translation id="2037445849770872822">Na-set up ang patnubay para sa Google Account na ito. Para mag-set up ng higit pang kontrol ng magulang, piliin ang Magpatuloy.
@@ -3759,6 +3761,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="461661862154729886">Energy source</translation>
 <translation id="4617001782309103936">Napakaikli</translation>
 <translation id="4617270414136722281">Mga opsyon ng extension</translation>
+<translation id="4617880081511131945">Hindi makakonekta</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4619615317237390068">Mga tab mula sa iba pang device</translation>
 <translation id="4620809267248568679">Ipinapatupad ng isang extension ang setting na ito.</translation>
@@ -4051,6 +4054,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4907306957610201395">Kategorya ng Pahintulot</translation>
 <translation id="4908811072292128752">Magbukas ng bagong tab upang mag-browse ng dalawang site nang sabay</translation>
 <translation id="4909038193460299775">Dahil pinamamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear sa device na ito ang iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store ang data mo sa iyong Google Account at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
+<translation id="4912265719039610598">Na-disable ang streaming ng mga app ng iyong administrator ng telepono.</translation>
 <translation id="4912643508233590958">Mga Idle na Pag-wake Up</translation>
 <translation id="4915961947098019832">Pinapayagang magpakita ng mga larawan</translation>
 <translation id="4916542008280060967">Payagan ang site na i-edit ang <ph name="FILE_NAME" />?</translation>
@@ -4660,7 +4664,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5539221284352502426">Tinanggihan ng server ang password na inilagay mo. Kabilang sa mga posibleng dahilan: Masyadong maikli ang password. Dapat may mga numero o simbolo ang password. Dapat naiiba ang password sa mga nakaraang password.</translation>
 <translation id="5541694225089836610">Na-disable ng iyong administrator ang pagkilos na ito</translation>
 <translation id="5542132724887566711">Profile</translation>
-<translation id="554229901779827904">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome Browser at ang data na ito. Kabilang sa iyong data ang mga bookmark, history, at password.</translation>
 <translation id="5542750926112347543">Na-block ang cookies mula sa <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Kumokonekta sa <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Hinahanap ang status...</translation>
@@ -6882,6 +6885,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Isaayos ang mga hangganan ng iyong display</translation>
 <translation id="7760004034676677601">Ito ba ang inaasahan mong pahina sa pagsisimula?</translation>
+<translation id="7762024824096060040">Hindi magagamit ang account na ito</translation>
 <translation id="7762463735017901568">Na-disable ng administrator ng iyong telepono ang pag-sync ng notification</translation>
 <translation id="7764225426217299476">Magdagdag ng address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> mula sa <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7052,6 +7056,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176">Puwedeng tingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Magdagdag ng mga salitang gusto mong laktawan ng pang-check ng pagbabaybay</translation>
+<translation id="7921347341284348270">Hindi mo makikita ang mga notification ng telepono mo sa pinamamahalaang account na ito. Subukan ulit gamit ang ibang account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">Ipakita ang mga detalye tungkol sa pag-block ng third-party na cookies sa Incognito</translation>
 <translation id="7923564237306226146">Kumpleto na ang pag-upgrade ng Linux</translation>
 <translation id="7924358170328001543">Nagka-error sa pag-forward ng port</translation>

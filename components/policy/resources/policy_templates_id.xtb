@@ -3869,35 +3869,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, Desktop Terpadu akan dinonaktifkan dan pengguna tidak dapat mengaktifkannya.</translation>
 <translation id="5255162913209987122">Dapat Direkomendasikan</translation>
 <translation id="5257395339965216304">Data aplikasi yang dihosting</translation>
-<translation id="5263649486910778308">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
-
-      Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
-      Set Pihak Pertama terdiri dari satu pemilik dan satu atau beberapa situs anggota. Semua situs dalam Set Pihak Pertama harus
-      berupa domain yang dapat didaftarkan yang disalurkan melalui HTTPS, terlepas dari apakah situs merupakan pemilik atau anggota.
-      Setiap situs dalam Set Pihak Pertama juga harus unik. Artinya, situs tidak boleh menjadi pemilik dan anggota secara bersamaan, ataupun
-      tercantum sebagai anggota Set Pihak Pertama lebih dari sekali.
-      Lihat https://github.com/privacycg/first-party-sets untuk mendapatkan info selengkapnya terkait Set Pihak Pertama.
-
-      Jika kebijakan ini diberikan kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
-
-      Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
-      di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
-      Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-      Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
-      di Set Pihak Pertama dalam daftar browser, Set Pihak pertama browser akan diupdate agar
-      Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diupdate,
-      Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-      Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
-      lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
-      dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
-      <ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
-
-      Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
-
-      Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
-      error yang sesuai akan ditampilkan.</translation>
 <translation id="5266173014392157048">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menetapkan server mana yang menjadi tujuan delegasi <ph name="PRODUCT_NAME" />. Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.

@@ -842,7 +842,6 @@
 <translation id="1784707308176068866">הפעלה ברקע כשהדבר מתבקש על-ידי אפליקציה מקורית הפועלת בשיתוף פעולה</translation>
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1787350673646245458">תמונת המשתמש</translation>
-<translation id="1788329699711791226">‏גישה לנתונים של <ph name="ACCOUNT_EMAIL" /> בדפדפן Chrome</translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792619191750875668">תצוגה מורחבת</translation>
@@ -2328,6 +2327,7 @@
 <translation id="3189187154924005138">סמן גדול</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
+<translation id="3193695589337931419">כלי איסוף של אותות במערכת</translation>
 <translation id="3194786596445804250">‏הצגת פרטים על חסימת קובצי cookie של צדדים שלישיים</translation>
 <translation id="3197453258332670132">בלחיצה ימנית או בלחיצה ארוכה, יוצג מידע שקשור לטקסט שבחרת</translation>
 <translation id="3199127022143353223">שרתים</translation>
@@ -4658,7 +4658,6 @@
 <translation id="5539221284352502426">השרת דחה את הסיסמה שהזנת. סיבות אפשריות לכך: הסיסמה קצרה מדי; הסיסמה חייבת לכלול ספרות או סמלים; הסיסמה לא יכולה להיות זהה לסיסמה שכבר השתמשת בה בעבר.</translation>
 <translation id="5541694225089836610">האפשרות לבצע את הפעולה הזו הושבתה על-ידי מנהל המערכת</translation>
 <translation id="5542132724887566711">פרופיל</translation>
-<translation id="554229901779827904">‏החשבון שלך מנוהל על ידי <ph name="MANAGER_NAME" />. האדמין שלך יכול לראות ולערוך את הפרופיל והנתונים שלך בדפדפן Chrome. הנתונים שלך כוללים את הסימניות, ההיסטוריה והסיסמאות.</translation>
 <translation id="5542750926112347543">‏קובצי Cookie מ-<ph name="DOMAIN" /> חסומים</translation>
 <translation id="5542949973455282971">מתבצע חיבור אל <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">הסטטוס בבדיקה...</translation>

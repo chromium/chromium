@@ -846,7 +846,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1784707308176068866">Rhedeg yn y cefndir pan ofynnir amdano gan ap brodorol sy'n cydweithredu</translation>
 <translation id="1784849162047402014">Nid oes gan y ddyfais lawer o le disg ar ôl</translation>
 <translation id="1787350673646245458">Llun defnyddiwr</translation>
-<translation id="1788329699711791226">Cael mynediad at eich stwff porwr Chrome o <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Tynnu mynediad</translation>
 <translation id="1791662854739702043">Wedi gosod</translation>
 <translation id="1792619191750875668">Sgrîn estynedig</translation>
@@ -2331,6 +2330,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3189187154924005138">Cyrchwr mawr</translation>
 <translation id="3190558889382726167">Mae'r cyfrinair wedi'i gadw</translation>
 <translation id="3192947282887913208">Ffeiliau Sain</translation>
+<translation id="3193695589337931419">Cyfleustodau Signalau System</translation>
 <translation id="3194786596445804250">Dangos manylion am rwystro cwcis trydydd parti</translation>
 <translation id="3197453258332670132">Drwy dde-glicio neu bwyso'n hir, Gallwch ddangos wybodaeth gysylltiedig ar gyfer eich dewis testun</translation>
 <translation id="3199127022143353223">Gweinyddion</translation>
@@ -4661,7 +4661,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5539221284352502426">Gwrthodwyd y cyfrinair a nodoch gan y gweinydd. Mae rhesymau posib yn cynnwys: Mae'r cyfrinair yn rhy fyr. Rhaid i'r cyfrinair gynnwys rhifau neu symbolau. Rhaid i'r cyfrinair fod yn wahanol i gyfrineiriau blaenorol.</translation>
 <translation id="5541694225089836610">Mae'r weithred hon wedi'i hanalluogi gan eich gweinyddwr</translation>
 <translation id="5542132724887566711">Proffil</translation>
-<translation id="554229901779827904">Rheolir eich cyfrif gan <ph name="MANAGER_NAME" />. Gall eich gweinyddwr weld a golygu'r proffil porwr Chrome hwn a'i ddata. Mae eich data yn cynnwys nodau tudalen, hanes a chyfrineiriau.</translation>
 <translation id="5542750926112347543">Mae'r cwcis o <ph name="DOMAIN" /> wedi'u rhwystro</translation>
 <translation id="5542949973455282971">Wrthi'n cysylltu â <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Wrthi'n gwirio am statws...</translation>

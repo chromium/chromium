@@ -846,7 +846,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1784707308176068866">Paleisti fone, kai to prašo bendradarbiaujanti savoji programa</translation>
 <translation id="1784849162047402014">Mažai laisvos vietos įrenginio diske</translation>
 <translation id="1787350673646245458">Naudotojo vaizdas</translation>
-<translation id="1788329699711791226">Pasiekite naršyklės „Chrome“ duomenis iš <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Pašalinti prieigą</translation>
 <translation id="1791662854739702043">Įdiegta</translation>
 <translation id="1792619191750875668">Išplėstas vaizdas</translation>
@@ -2331,6 +2330,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3189187154924005138">Didelis žymeklis</translation>
 <translation id="3190558889382726167">Slaptažodis išsaugotas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
+<translation id="3193695589337931419">Sistemos signalų paslaugų programos</translation>
 <translation id="3194786596445804250">Rodyti išsamią informaciją apie trečiųjų šalių slapukų blokavimą</translation>
 <translation id="3197453258332670132">Spustelėjus dešiniuoju pelės klavišu arba ilgai paspaudus rodoma su jūsų teksto pasirinkimu susijusi informacija</translation>
 <translation id="3199127022143353223">Serveriai</translation>
@@ -4661,7 +4661,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5539221284352502426">Serveris atmetė įvestą slaptažodį. Taip galėjo nutikti dėl toliau išvardytų priežasčių. Slaptažodis yra per trumpas. Slaptažodį turi sudaryti ir skaičiai arba simboliai. Slaptažodis turi skirtis nuo ankstesnių slaptažodžių.</translation>
 <translation id="5541694225089836610">Veiksmą išjungė administratorius</translation>
 <translation id="5542132724887566711">Profilis</translation>
-<translation id="554229901779827904">Jūsų paskyrą tvarko <ph name="MANAGER_NAME" />. Administratorius gali matyti ir redaguoti „Chrome“ naršyklės profilį bei jo duomenis. Jūsų duomenys apima žymes, istoriją ir slaptažodžius.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> slapukai užblokuoti</translation>
 <translation id="5542949973455282971">Jungiamasi prie „<ph name="CARRIER_NAME" />“</translation>
 <translation id="5543983818738093899">Tikrinama būsena...</translation>

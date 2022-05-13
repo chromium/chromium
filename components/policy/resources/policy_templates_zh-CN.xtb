@@ -3795,25 +3795,6 @@
       如果此政策设为 False 或未设置，系统将关闭“统一桌面”，而且用户无法开启该功能。</translation>
 <translation id="5255162913209987122">可推荐</translation>
 <translation id="5257395339965216304">托管的应用数据</translation>
-<translation id="5263649486910778308">此政策提供了一种方式，以覆盖浏览器用来实现 First-Party Set 功能的集合列表。
-
-      浏览器的 First-Party Set 列表中的每个集合都必须符合 First-Party Set 要求。
-      每个 First-Party Set 都应包含一个所有者网站以及一个或多个成员网站。无论是所有者网站还是成员网站，每个 First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网域。
-      此外，First-Party Set 中的每个网站都必须互不相同，也就是说：同一个网站不能既是所有者又是成员，也不能重复列为 First-Party Set 的成员。
-      如需详细了解 First-Party Set，请参阅 https://github.com/privacycg/first-party-sets。
-
-      如果此政策设为一个空字典，浏览器会使用 First-Party Set 的公开列表。
-
-      对于 <ph name="REPLACEMENTS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，该网站便会被从浏览器的 First-Party Set 中移除。
-      之后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
-
-      对于 <ph name="ADDITIONS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，浏览器的 First-Party Set 便会被更新，以将新的 First-Party Set 添加到浏览器的列表中。待浏览器的列表更新完毕后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
-
-      浏览器的 First-Party Set 列表要求其中的所有网站都不得出现在多个集合中。<ph name="REPLACEMENTS" /> 列表和 <ph name="ADDITIONS" /> 列表也都有这样的要求。同理，同一个网站不能既出现在 <ph name="REPLACEMENTS" /> 列表中又出现在 <ph name="ADDITIONS" /> 列表中。
-
-      通配符 (*) 无法用作政策值，也无法用于这些列表所含的任何 First-Party Set 中。
-
-      此政策提供的所有集合都必须是有效的 First-Party Set；如果无效，则会触发相应的错误。</translation>
 <translation id="5266173014392157048">此政策已被弃用，请改用“<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。

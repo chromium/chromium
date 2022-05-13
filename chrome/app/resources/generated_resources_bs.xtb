@@ -842,7 +842,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1784707308176068866">Pokretanje u pozadini kada to zahtijeva saradnička izvorna aplikacija</translation>
 <translation id="1784849162047402014">Na disku ima malo prostora</translation>
 <translation id="1787350673646245458">Slika korisnika</translation>
-<translation id="1788329699711791226">Pristupite stvarima na vašem pregledniku Chrome s računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni ekran</translation>
@@ -2326,7 +2325,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
 <translation id="3192947282887913208">Audio fajlovi</translation>
-<translation id="3193695589337931419">Uslužni programi za signale sustava</translation>
+<translation id="3193695589337931419">Uslužni programi za signalizaciju sistema</translation>
 <translation id="3194786596445804250">Prikaži detalje o blokiranju kolačića trećih strana</translation>
 <translation id="3197453258332670132">Desnim klikom ili dugim pritiskom pogledajte srodne informacije za odabir teksta</translation>
 <translation id="3199127022143353223">Serveri</translation>
@@ -4657,7 +4656,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5539221284352502426">Server je odbio lozinku koju ste unijeli. Mogući razlozi su: Lozinka je prekratka. Lozinka mora uključivati brojeve ili simbole. Lozinka se mora razlikovati od prethodnih lozinki.</translation>
 <translation id="5541694225089836610">Radnju je onemogućio vaš administrator</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može vidjeti i uređivati ovaj profil preglednika Chrome i njegove podatke. Vaši podaci obuhvataju oznake, historiju i lozinke.</translation>
 <translation id="5542750926112347543">Blokirani su kolačići s domene <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Povezivanje s operaterom <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Provjera statusa...</translation>

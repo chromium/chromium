@@ -841,7 +841,6 @@
 <translation id="1784707308176068866">درصورت درخواست یک برنامه بومی همکار، در پس‌زمینه اجرا شود</translation>
 <translation id="1784849162047402014">فضای ذخیره‌سازی دستگاه رو به اتمام است</translation>
 <translation id="1787350673646245458">تصویر کاربر</translation>
-<translation id="1788329699711791226">‏دسترسی به اطلاعات مرورگر Chrome از <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">برداشتن دسترسی</translation>
 <translation id="1791662854739702043">نصب‌شده</translation>
 <translation id="1792619191750875668">نمایشگر گسترده</translation>
@@ -870,6 +869,7 @@
 <translation id="1813278315230285598">سرویس‌ها</translation>
 <translation id="18139523105317219">‏نام طرف EDI</translation>
 <translation id="1815083418640426271">جای‌گذاری به‌عنوان نوشتار ساده</translation>
+<translation id="1815097521077272760">از شما دعوت شده است تا کنترل صفحه‌کلید این بازی را امتحان کنید.</translation>
 <translation id="1815181278146012280">‏وقتی سایتی می‌خواهد به دستگاه‌های HID دسترسی پیدا کند سؤال شود</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> مورد دیگر…</translation>
 <translation id="1816036116994822943">سرعت اسکن کردن صفحه‌کلید</translation>
@@ -1003,6 +1003,7 @@
 <translation id="1935303383381416800">اجازه دارد مکانتان را ببیند</translation>
 <translation id="1936931585862840749">از شماره‌ای برای مشخص کردن تعداد کپی‌های چاپ استفاده کنید (۱ تا <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">‏نمی‌توان با این دستگاه که <ph name="ARCHITECTURE_DEVICE" /> است، محتوای با نوع معماری <ph name="ARCHITECTURE_CONTAINER" /> را وارد کرد. می‌توانید این محتوا را در دستگاه دیگری بازیابی کنید، یا اینکه برنامه Files را باز کنید و ازطریق آن به فایل‌های درون این تصویر محتوی دسترسی یابید.</translation>
+<translation id="1938320257168860255">‏مشکلی پیش آمد. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز باشد، و بلوتوث و Wi-Fi روشن باشند.</translation>
 <translation id="1938351510777341717">فرمان خارجی</translation>
 <translation id="1940546824932169984">دستگاه‌های متصل</translation>
 <translation id="1941410638996203291">زمان شروع <ph name="TIME" /></translation>
@@ -1085,6 +1086,7 @@
 <translation id="2030455719695904263">پد لمسی</translation>
 <translation id="2031639749079821948">‏گذرواژه‌تان در «حساب Google» شما ذخیره می‌شود</translation>
 <translation id="2031914984822377766"><ph name="LINK_BEGIN" />زبان‌های وب‌سایت<ph name="LINK_END" /> ترجیحی‌تان را اضافه کنید. زبان اول در فهرست برای ترجمه‌ها استفاده خواهد شد.</translation>
+<translation id="2033758234986231162">‏اتصال به تلفن قطع می‌شود. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز باشد، و بلوتوث و Wi-Fi روشن باشند.</translation>
 <translation id="2034346955588403444">‏افزودن شبکه WiFi دیگر</translation>
 <translation id="203574396658008164">فعال کردن یادداشت‌برداری از صفحه درحالت قفل</translation>
 <translation id="2037445849770872822">‏برای این «حساب Google» نظارت تنظیم شده است. برای تنظیم کنترل‌های والدین بیشتر، «ادامه» را انتخاب کنید.
@@ -3755,6 +3757,7 @@
 <translation id="461661862154729886">منبع انرژی</translation>
 <translation id="4617001782309103936">بسیار کوتاه</translation>
 <translation id="4617270414136722281">گزینه‌های افزونه</translation>
+<translation id="4617880081511131945">امکان برقراری اتصال وجود ندارد</translation>
 <translation id="4619564267100705184">تأیید هویت</translation>
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620809267248568679">این تنظیم توسط یک برنامهٔ افزودنی به اجرا گذاشته می‌شود.</translation>
@@ -4047,6 +4050,7 @@
 <translation id="4907306957610201395">دسته مجوز</translation>
 <translation id="4908811072292128752">برای مرور دو سایت به‌طور هم‌زمان، برگه جدیدی را باز کنید</translation>
 <translation id="4909038193460299775">‏از آن‌جا که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، نشانک‌ها، سابقه، گذرواژه‌ها و دیگر تنظیماتتان از این دستگاه پاک می‌شوند. اما داده‌هایتان در حساب Google ذخیره می‌مانند و می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کنید.</translation>
+<translation id="4912265719039610598">سرپرست تلفنتان جاری‌سازی برنامه را غیرفعال کرده است.</translation>
 <translation id="4912643508233590958">خروج از حالت بیکار</translation>
 <translation id="4915961947098019832">اجازه دارد تصاویر را نشان دهد</translation>
 <translation id="4916542008280060967">به سایت اجازه می‌دهید <ph name="FILE_NAME" /> را ویرایش کند؟</translation>
@@ -4656,7 +4660,6 @@
 <translation id="5539221284352502426">سرور گذرواژه‌ای را که وارد کرده‌اید نپذیرفته است. دلایل احتمالی عبارت‌ است از: گذرواژه خیلی کوتاه است. گذرواژه باید حاوی اعداد یا نمادها باشد. گذرواژه باید با گذرواژه‌های قبلی متفاوت باشد.</translation>
 <translation id="5541694225089836610">سرپرستتان کنش را غیرفعال کرده است</translation>
 <translation id="5542132724887566711">نمایه</translation>
-<translation id="554229901779827904">‏<ph name="MANAGER_NAME" /> حساب شما را مدیریت می‌کند. سرپرست می‌تواند این نمایه مرورگر Chrome و داده‌های آن را ببیند و ویرایش کند. داده‌هایتان شامل نشانک‌ها، سابقه، و گذرواژه‌ها می‌شود.</translation>
 <translation id="5542750926112347543">کوکی‌های <ph name="DOMAIN" /> مسدود شدند</translation>
 <translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
@@ -6878,6 +6881,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">تنظیم مرزهای نمایشگرتان</translation>
 <translation id="7760004034676677601">آیا این صفحه راه‌اندازی مورد انتظار شماست؟</translation>
+<translation id="7762024824096060040">نمی‌توان از این حساب استفاده کرد</translation>
 <translation id="7762463735017901568">سرپرست تلفن همگام‌سازی اعلان را غیرفعال کرده است</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7047,6 +7051,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /></translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
+<translation id="7921347341284348270">نمی‌توانید اعلان‌های تلفنتان را در این حساب مدیریت‌شده مشاهده کنید. با حساب دیگری دوباره امتحان کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">نمایش جزئیات مربوط به مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="7923564237306226146">‏ارتقای Linux کامل شد</translation>
 <translation id="7924358170328001543">خطا هنگام ارسال درگاه</translation>

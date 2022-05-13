@@ -47,6 +47,7 @@
 <translation id="1283524564873030414">지난 24시간</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1291506870746876680">사이트를 나가면 <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> 권한이 사용 안함으로 재설정됩니다.</translation>
+<translation id="1312721752506309252">향상된 보호 모드를 사용 중입니다.</translation>
 <translation id="1321993286294231467">이미지를 저장하는 중에 오류가 발생했습니다.</translation>
 <translation id="1322735045095424339">조직에서 시크릿 모드 사용을 요구함</translation>
 <translation id="1323735185997015385">삭제</translation>
@@ -825,6 +826,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7966516440812255683">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하는 데 쿠키를 사용할 수 있습니다.
 
 사이트에서 사용자의 다양한 사이트 탐색 활동 정보로 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 있습니다.</translation>
+<translation id="7966904497916178308">표준 보호 모드를 사용 중입니다.</translation>
 <translation id="7971521879845308059">팝업 차단</translation>
 <translation id="797413074872316787">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요</translation>
 <translation id="7978018860671536736">3. AutoFill Passwords(비밀번호 자동 완성)를 탭합니다.</translation>

@@ -3858,35 +3858,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si estableces la política como falsa o no la estableces, se desactivará este modo y los usuarios no podrán activarlo.</translation>
 <translation id="5255162913209987122">Se puede recomendar</translation>
 <translation id="5257395339965216304">Datos de apps alojadas</translation>
-<translation id="5263649486910778308">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los conjuntos propios.
-
-      Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
-      Un conjunto propio consiste en un propietario y uno o más sitios miembro. Todos los sitios de un conjunto propio deben
-      ser un dominio registrable de HTTPS, sin importar si es un sitio miembro o propietario.
-      Además, cada sitio en un conjunto propio debe ser único, lo que quiere decir que un sitio no puede ser propietario y miembro, ni
-      estar enumerado más de una vez como miembro de un conjunto propio.
-      Para obtener más información sobre los conjuntos propios, ve a https://github.com/privacycg/first-party-sets.
-
-      Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de conjuntos propios.
-
-      Para todos los sitios de un conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
-      en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
-      Luego de esto, el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
-
-      Para todos los sitios pertenecientes a un conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
-      en un conjunto propio de la lista del navegador, el conjunto propio del navegador se actualizará para que
-      el nuevo conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
-      el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
-
-      La lista de conjuntos propios del navegador requiere que ningún sitio de la lista esté en
-      más de un conjunto. También se requiere para las listas <ph name="REPLACEMENTS" />
-      y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
-      las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />
-
-      Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
-
-      Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
-      producirá un error.</translation>
 <translation id="5266173014392157048">Esta política dejó de estar disponible. Usa la política "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" en su lugar.
 
       Si estableces la política, se asignarán los servidores a los que <ph name="PRODUCT_NAME" /> puede delegar las credenciales de usuario. Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).

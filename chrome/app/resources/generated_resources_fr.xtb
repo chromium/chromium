@@ -833,7 +833,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1784707308176068866">Exécuter en arrière-plan à la demande d'une application partenaire native</translation>
 <translation id="1784849162047402014">Peu d'espace disque disponible sur l'appareil</translation>
 <translation id="1787350673646245458">Image de l'utilisateur</translation>
-<translation id="1788329699711791226">Accéder à vos données Chrome à partir de l'adresse <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Supprimer l'accès</translation>
 <translation id="1791662854739702043">Installé dans</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
@@ -2314,6 +2313,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3189187154924005138">Grand curseur</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
+<translation id="3193695589337931419">Utilitaires des signaux du système</translation>
 <translation id="3194786596445804250">Afficher les détails sur le blocage des cookies tiers</translation>
 <translation id="3197453258332670132">Affichez des infos liées au texte sélectionné avec un clic droit ou un appui de manière prolongée</translation>
 <translation id="3199127022143353223">Serveurs</translation>
@@ -4643,7 +4643,6 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5539221284352502426">Le serveur a refusé le mot de passe que vous avez saisi. Voici plusieurs raisons possibles : le mot de passe est trop court. Il ne contient pas de chiffres ni de symboles. Il est identique aux précédents mots de passe.</translation>
 <translation id="5541694225089836610">Votre administrateur a désactivé cette action</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut afficher et modifier ce profil de navigateur Chrome et ses données. Vos données incluent les favoris, l'historique et les mots de passe.</translation>
 <translation id="5542750926112347543">Les cookies du domaine <ph name="DOMAIN" /> ont été bloqués</translation>
 <translation id="5542949973455282971">Connexion à <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Vérification de l'état en cours…</translation>

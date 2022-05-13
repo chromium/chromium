@@ -834,7 +834,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1784707308176068866">Pokretanje u pozadini kada to zatraži suradnička nativna aplikacija</translation>
 <translation id="1784849162047402014">Na uređaju nema dovoljno prostora</translation>
 <translation id="1787350673646245458">Slika korisnika</translation>
-<translation id="1788329699711791226">Pristupite svojim sadržajima u pregledniku Chrome putem računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni zaslon</translation>
@@ -4646,7 +4645,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5539221284352502426">Poslužitelj je odbio zaporku koju ste unijeli. Mogući su razlozi sljedeći: zaporka je prekratka. Zaporka mora sadržavati brojeve ili simbole. Zaporka mora biti različita od prethodnih zaporki.</translation>
 <translation id="5541694225089836610">Radnju je onemogućio administrator</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može pregledavati i uređivati profil ovog preglednika Chrome i njegove podatke. Vaši podaci uključuju oznake, povijest i zaporke.</translation>
 <translation id="5542750926112347543">Blokirani su kolačići s domene <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Povezivanje s mrežom <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Provjeravanje statusa...</translation>

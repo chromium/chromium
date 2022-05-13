@@ -838,7 +838,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1784707308176068866">Kjør i bakgrunnen når et samarbeidende, integrert program spør om det</translation>
 <translation id="1784849162047402014">Det er lite plass på enheten</translation>
 <translation id="1787350673646245458">Brukerbilde</translation>
-<translation id="1788329699711791226">Få tilgang til Chrome-nettlesertingene dine via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Fjern tilgangen</translation>
 <translation id="1791662854739702043">Installert</translation>
 <translation id="1792619191750875668">Utvidet skjerm</translation>
@@ -867,6 +866,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1813278315230285598">Tjenester</translation>
 <translation id="18139523105317219">Navn på EDI-enhet</translation>
 <translation id="1815083418640426271">Lim inn som ren tekst</translation>
+<translation id="1815097521077272760">Du er invitert til å prøve tastaturkontroll for dette spillet.</translation>
 <translation id="1815181278146012280">Spør når nettsteder vil ha tilgang til HID-enheter</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> til …</translation>
 <translation id="1816036116994822943">Skannehastighet for tastaturet</translation>
@@ -1000,6 +1000,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1935303383381416800">Nettsteder som har lov til å se posisjonen din</translation>
 <translation id="1936931585862840749">Bruk et tall for å angi hvor mange eksemplarer som skal skrives ut (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Kan ikke importere beholderarkitekturtypen <ph name="ARCHITECTURE_CONTAINER" /> med denne enheten (<ph name="ARCHITECTURE_DEVICE" />). Du kan prøve å gjenopprette denne beholderen på en annen enhet, eller du kan få tilgang til filene i beholderavbildningen ved å åpne den i Filer-appen.</translation>
+<translation id="1938320257168860255">Noe gikk galt. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er på.</translation>
 <translation id="1938351510777341717">Ekstern kommando</translation>
 <translation id="1940546824932169984">Tilkoblede enheter</translation>
 <translation id="1941410638996203291">Starttid: <ph name="TIME" /></translation>
@@ -1082,6 +1083,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="2030455719695904263">Styreflate</translation>
 <translation id="2031639749079821948">Passordet er lagret i Google-kontoen din</translation>
 <translation id="2031914984822377766">Legg til <ph name="LINK_BEGIN" />nettstedspråkene<ph name="LINK_END" /> du foretrekker. Det øverste språket på listen blir brukt i oversettelser.</translation>
+<translation id="2033758234986231162">Kan ikke opprette forbindelse med telefonen din. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er på.</translation>
 <translation id="2034346955588403444">Legg til et annet Wi-Fi-nettverk</translation>
 <translation id="203574396658008164">Slå på notatskriving på låseskjermen</translation>
 <translation id="2037445849770872822">Tilsyn er satt opp for denne Google-kontoen. For å sette opp mer foreldrekontroll, velg Fortsett.
@@ -3749,6 +3751,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="461661862154729886">Energikilde</translation>
 <translation id="4617001782309103936">For kort</translation>
 <translation id="4617270414136722281">Alternativer for utvidelser</translation>
+<translation id="4617880081511131945">Kan ikke opprette forbindelse</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4619615317237390068">Faner fra andre enheter</translation>
 <translation id="4620809267248568679">Denne innstillingen håndheves av en utvidelse.</translation>
@@ -4041,6 +4044,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4907306957610201395">Tillatelseskategori</translation>
 <translation id="4908811072292128752">Åpne en ny fane for å surfe på to nettsteder samtidig</translation>
 <translation id="4909038193460299775">Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten. Data du har lagret i Google-kontoen din, blir imidlertid værende og kan administreres ved hjelp av <ph name="BEGIN_LINK" />Google Oversikt<ph name="END_LINK" />.</translation>
+<translation id="4912265719039610598">Telefonens administrator har deaktivert appstrømming.</translation>
 <translation id="4912643508233590958">Inaktive oppvåkninger</translation>
 <translation id="4915961947098019832">Nettsteder som har lov til å vise bilder</translation>
 <translation id="4916542008280060967">Vil du la nettstedet redigere <ph name="FILE_NAME" />?</translation>
@@ -4649,7 +4653,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5539221284352502426">Passordet du skrev inn, ble avvist av tjeneren. Mulige grunner kan være: Passordet er for kort. Passordet må inneholde tall eller symboler. Passordet må være forskjellig fra tidligere passord.</translation>
 <translation id="5541694225089836610">Administratoren din har slått av handlingen</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren din kan se og redigere denne Chrome-nettleserprofilen og tilhørende data. Dataene dine omfatter bokmerker, logg og passord.</translation>
 <translation id="5542750926112347543">Informasjonskapsler fra <ph name="DOMAIN" /> er blokkert</translation>
 <translation id="5542949973455282971">Kobler til <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Sjekker statusen …</translation>
@@ -6869,6 +6872,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Juster grensene for skjermen</translation>
 <translation id="7760004034676677601">Er dette oppstartssiden du forventet?</translation>
+<translation id="7762024824096060040">Kan ikke bruke denne kontoen</translation>
 <translation id="7762463735017901568">Telefonens administrator har deaktivert synkronisering av varsler</translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7038,6 +7042,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> kan se <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Legg til ord du vil at stavekontrollen skal hoppe over</translation>
+<translation id="7921347341284348270">Du kan ikke se varslene på telefonen din i denne administrerte kontoen. Prøv igjen med en annen konto. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">Vis detaljer om å blokkere informasjonskapsler fra tredjeparter i inkognitomodus</translation>
 <translation id="7923564237306226146">Linux-oppgraderingen er fullført</translation>
 <translation id="7924358170328001543">Feil ved viderekobling av port</translation>

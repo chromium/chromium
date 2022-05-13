@@ -3837,27 +3837,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
 <translation id="5257395339965216304">Données des applications hébergées</translation>
-<translation id="5263649486910778308">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles propriétaires.
-
-      Chaque ensemble figurant dans la liste des ensembles propriétaires du navigateur doit respecter les exigences liées aux ensembles propriétaires.
-      Un ensemble propriétaire se compose d'un propriétaire et d'un ou plusieurs sites membres. Tous les sites d'un tel ensemble doivent être
-      des domaines enregistrables diffusés sur HTTPS, qu'il s'agisse de propriétaires ou de sites membres.
-      Chaque site d'un ensemble propriétaire doit également être unique. Cela signifie qu'un site ne peut pas être à la fois un propriétaire et un membre,
-      ni être listé plusieurs fois en tant que membre d'un ensemble propriétaire.
-      Pour en savoir plus sur les ensembles propriétaires, consultez la page https://github.com/privacycg/first-party-sets.
-
-      Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles propriétaires.
-
-      Pour tous les sites appartenant à un ensemble propriétaire de la liste <ph name="REPLACEMENTS" /> : si un site apparaît également dans un ensemble propriétaire de la liste du navigateur, il sera supprimé de l'ensemble propriétaire du navigateur.
-      L'ensemble propriétaire de la règle sera alors ajouté à la liste des ensembles propriétaires du navigateur.
-
-      Pour tous les sites appartenant à un ensemble propriétaire de la liste <ph name="ADDITIONS" /> : si un site apparaît également dans un ensemble propriétaire de la liste du navigateur, l'ensemble propriétaire du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble propriétaire à la liste du navigateur. Lorsque la liste du navigateur a été actualisée, l'ensemble propriétaire de la règle est alors ajouté à la liste des ensembles propriétaires du navigateur.
-
-      La liste des ensembles propriétaires du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition est également requise pour la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />. De la même manière, un site ne peut pas figurer à la fois sur la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />.
-
-      Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble propriétaire de ces listes.
-
-      Tous les ensembles fournis par cette règle doivent être des ensembles propriétaires valides. Si ce n'est pas le cas, une erreur est renvoyée.</translation>
 <translation id="5266173014392157048">Cette règle est obsolète (veuillez utiliser la règle "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" à la place).
 
       Elle permet de spécifier les serveurs que <ph name="PRODUCT_NAME" /> est susceptible d'utiliser. Séparez les noms des serveurs par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.

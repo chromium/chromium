@@ -41,7 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
 <translation id="1367951781824006909">Odaberite fajl</translation>
-<translation id="1380220803921738821">Dolazi do pogrešaka. Pokušajte ponovno pokrenuti ili oporaviti opremu pomoću USB flash diska.</translation>
+<translation id="1380220803921738821">Nailazimo na greške. Pokušajte ponovo pokrenuti ili oporaviti firmver pomoću USB diska.</translation>
 <translation id="1387854245479784695">Ovo je agregacija svih jezgara</translation>
 <translation id="1394661041439318933">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije kućišta.</translation>
 <translation id="1397738625398125236">Pristupnik se može provjeriti pingom</translation>
@@ -187,7 +187,7 @@
 <translation id="2789486458103222910">Uredu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Nije moguće povezivanje na internet. Kliknite da pokušate ponovo.</translation>
-<translation id="2827359915699915567">Ručno unesite ovaj URL da biste dobili RSU kôd</translation>
+<translation id="2827359915699915567">Ručno unesite ovaj URL da primite RSU kôd</translation>
 <translation id="2859243502336719778">Kritično ažuriranje</translation>
 <translation id="2860473693272905224">Stavite drugu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
@@ -227,7 +227,7 @@
 <translation id="3291996639387199448">Smjer ključa</translation>
 <translation id="3310640316857623290">Latentnost DNS-a je znatno iznad dozvoljenog praga</translation>
 <translation id="3328783797891415197">Test je u toku</translation>
-<translation id="3333527094307156612">Pomoću ovog QR koda dohvatite osmeroznamenkasti kôd za otključavanje. Možete i ručno unijeti <ph name="LINK_BEGIN" />ovaj URL<ph name="LINK_END" />.</translation>
+<translation id="3333527094307156612">Koristite ovaj QR kôd da primite kôd za otključavanje od 8 znakova. Također možete ručno unijeti <ph name="LINK_BEGIN" />ovaj URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Ne znam</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3368922792935385530">Povezano</translation>
@@ -412,7 +412,7 @@
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
-<translation id="506768878203270635">Unesite osam znakova</translation>
+<translation id="506768878203270635">Unesite 8 znakova</translation>
 <translation id="5088172560898466307">Naziv host računara servera</translation>
 <translation id="5089810972385038852">Država</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -474,7 +474,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
 <translation id="5655283760733841251">Pojačavanje osvjetljenja tastature</translation>
-<translation id="5661196929408385351">Izvrši powerwash i isključi</translation>
+<translation id="5661196929408385351">Powerwash i isključivanje</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Porodica</translation>
@@ -486,7 +486,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="576835345334454681">Pojačavanje osvjetljenja ekrana</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5784136236926853061">Visoka HTTP latentnost</translation>
-<translation id="578753362485952307">Ako prepravljate matičnu ploču za upotrebu u nekom drugom uređaju, idite na <ph name="LINK_BEGIN" />tijek za prepravljanje<ph name="LINK_END" />.</translation>
+<translation id="578753362485952307">Ako prepravljate glavnu ploču da je koristite u drugom uređaju, idite u <ph name="LINK_BEGIN" />tok prepravljanja<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5843706793424741864">Farenhajt</translation>
@@ -543,7 +543,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Uključi tamnu temu</translation>
-<translation id="6295178529664209245">Želite li nastaviti s popravkom?</translation>
+<translation id="6295178529664209245">Nastaviti popravku?</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključite čuvara ekrana</translation>
@@ -579,7 +579,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6575134580692778371">Nije konfigurirano</translation>
 <translation id="6579509898032828423">Koristi ovu fotografiju</translation>
 <translation id="6596816719288285829">IP adresa</translation>
-<translation id="6611280807952151149">Napusti popravak uređaja <ph name="DEVICE_TYPE" /></translation>
+<translation id="6611280807952151149">Izađi iz popravke uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
 <translation id="6620487321149975369">Zadaci za štampanje će se pojaviti u historiji osim ako ih ne uklonite ručno</translation>
 <translation id="6643016212128521049">Obriši</translation>
@@ -592,7 +592,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6723847290197874913">Pozadinsko svjetlo tastature</translation>
 <translation id="672609503628871915">Pogledajte što je novo</translation>
-<translation id="6746847322826305075">Možete nastaviti s potpunim popravkom ili izvršiti powerwash (vraćanje na tvorničke postavke) uređaja da biste vratili matičnu ploču u zalihe.</translation>
+<translation id="6746847322826305075">Možete nastaviti s potpunom popravkom ili pokrenuti Powerwash na uređaju (vratiti na fabričke postavke) da dopunite glavnu ploču.</translation>
 <translation id="6747215703636344499">Zaustavljeno – izlaz je pun</translation>
 <translation id="6749473226660745022">Fotografije</translation>
 <translation id="6753452347192452143">Uređaj je računar.</translation>
@@ -640,7 +640,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
-<translation id="7281209642468917121">Odaberite barem jednu komponentu i pokušajte ponovo ili preskočite kalibraciju</translation>
+<translation id="7281209642468917121">Odaberite 1 komponentu ili više i pokušajte ponovo, ili preskočite kalibraciju</translation>
 <translation id="7281657306185710294">Osjetite povjetarac</translation>
 <translation id="7287310195820267359">Kolekcije pozadinskih slika</translation>
 <translation id="7297226631177386107">Nije se moguće povezati putem zaštitnog zida s HTTPS web lokacijama</translation>
@@ -671,13 +671,13 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ekran na dodir</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
-<translation id="760845693386726841">Ta komponenta nije otkrivena.</translation>
+<translation id="760845693386726841">Otkrivanje ove komponente nije uspjelo.</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="7626501172915339021">Izvršite RMA otključavanje servera (RMA Server Unlock, RSU)</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
-<translation id="7657530360897961171">Pogreška prilikom popravljanja uređaja <ph name="DEVICE_TYPE" /></translation>
+<translation id="7657530360897961171">Greška popravke uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665800271478495366">Promjena avatara</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
@@ -719,7 +719,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8083281199617904460">Ovaj postupak popravka je namijenjen obučenom tehničaru za popravak. Počnite samo nakon zamjene komponenti koje ne rade ispravno.</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
-<translation id="8109786307828817014">Želite li nastaviti s neuspjelim kalibracijama?</translation>
+<translation id="8109786307828817014">Nastaviti s neuspjelim kalibracijama?</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može provjeriti pingom</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
@@ -742,7 +742,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8302368968391049045">HTTPs zaštitni zid</translation>
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8327249300223641918">Prije nego nastavite, postavite cijeli uređaj (bazu i poklopac) na ravnu površinu.</translation>
-<translation id="8330949592403310082">Odaberite komponente koje su zamijenjene</translation>
+<translation id="8330949592403310082">Odaberite koje su komponente zamijenjene</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
@@ -767,7 +767,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8529392826145705615">Komponente možda neće funkcionirati pravilno ako se ne kalibriraju</translation>
+<translation id="8529392826145705615">Moguće je da komponente neće ispravno funkcionirati ako ih ne kalibrirate</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
 <translation id="8620617069779373398">Status rominga</translation>
@@ -822,7 +822,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS rezolucija ima visoku latentnost</translation>
-<translation id="9063121522582193837">Kalibracija nekih komponenti nije uspjela</translation>
+<translation id="9063121522582193837">Kalibriranje određenih komponenti nije uspjelo</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Koristi ovaj videozapis</translation>

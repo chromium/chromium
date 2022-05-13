@@ -3848,35 +3848,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su False o non viene impostato, la modalità Desktop unificato viene disattivata e gli utenti non possono attivarla.</translation>
 <translation id="5255162913209987122">Può essere consigliata</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
-<translation id="5263649486910778308">Questo criterio consente di eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
-
-      Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
-      Un insieme proprietario è composto da un sito proprietario e da uno o più siti membri. Tutti i siti di un insieme proprietari devono
-      avere un dominio registrabile servito attraverso HTTPS, a prescindere dal fatto che si tratti di un sito proprietario o membro.
-      Ciascun sito di un insieme proprietario deve anche essere univoco, ovvero non può essere sia proprietario sia membro, né
-      può essere elencato più di una volta come membro di un insieme proprietario.
-      Consulta la pagina https://github.com/privacycg/first-party-sets per maggiori informazioni sugli insiemi proprietari.
-
-      Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
-
-      Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
-      in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
-      Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-      Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
-      in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il
-      nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
-      l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-      L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno
-      sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" />
-      e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente sia negli elenchi
-      <ph name="REPLACEMENTS" /> che negli elenchi <ph name="ADDITIONS" />.
-
-      I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
-
-      Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietari validi. Qualora non lo fossero, verrà restituito
-      un errore appropriato.</translation>
 <translation id="5266173014392157048">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Separa i nomi dei server con le virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.

@@ -831,7 +831,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1784707308176068866">Pokreni u pozadini kada to zatraži matična aplikacija za saradnju</translation>
 <translation id="1784849162047402014">Uređaju ponestaje prostora na disku</translation>
 <translation id="1787350673646245458">Slika korisnika</translation>
-<translation id="1788329699711791226">Pristupite sadržaju iz Chrome pregledača preko <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni prikaz</translation>
@@ -4641,7 +4640,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5539221284352502426">Server je odbio lozinku koju ste uneli. Mogući razlozi obuhvataju: Lozinka je prekratka. Lozinka mora da sadrži brojeve ili simbole. Lozinka mora da se razlikuje od prethodnih lozinki.</translation>
 <translation id="5541694225089836610">Administrator je onemogućio radnju</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Vašim nalogom upravlja <ph name="MANAGER_NAME" />. Administrator može da vidi i menja ovaj profil u Chrome pregledaču i njegove podatke Podaci obuhvataju obeleživače, istoriju i lozinke.</translation>
 <translation id="5542750926112347543">Kolačići sa <ph name="DOMAIN" /> su blokirani</translation>
 <translation id="5542949973455282971">Povezuje se sa mrežom <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Provera statusa...</translation>

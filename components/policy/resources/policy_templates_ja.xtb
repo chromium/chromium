@@ -3647,25 +3647,6 @@
       このポリシーを False に設定するか未設定のままにした場合、統合デスクトップはオフになり、ユーザーはこの設定をオンにすることはできません。</translation>
 <translation id="5255162913209987122">推奨ポリシーの表示</translation>
 <translation id="5257395339965216304">ホストされているアプリデータ</translation>
-<translation id="5263649486910778308">このポリシーでは、ブラウザが First-Party Set 機能で使用するセットのリストをオーバーライドできます。
-
-      ブラウザの First-Party Set リストの各セットは、First-Party Set の要件を満たしている必要があります。
-      First-Party Set は、オーナーサイトと 1 つ以上のメンバーサイトで構成される必要があります。First-Party Set のすべてのサイトは、オーナーサイトかメンバーサイトかにかかわらず、HTTPS 経由で配信される登録可能なドメインである必要があります。
-      また、First-Party Set の各サイトは一意である必要があります。つまり、サイトはオーナーとメンバーの両方であることはできず、First-Party Set のメンバーとして複数回指定することもできません。
-      First-Party Set の詳細については、https://github.com/privacycg/first-party-sets　をご覧ください。
-
-      このポリシーで空の辞書を指定した場合、ブラウザは First-Party Set の公開リストを使用します。
-
-      <ph name="REPLACEMENTS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、ブラウザの First-Party Set からそのサイトが削除されます。
-      その後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
-
-      <ph name="ADDITIONS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、新しい First-Party Set をブラウザのリストに追加できるようにブラウザの First-Party Set が更新されます。ブラウザのリストが更新された後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
-
-      ブラウザの First-Party Set リストのサイトは、いずれも複数のセットに含まれないようにする必要があります。この要件は <ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストにも適用されます。同様に、同じサイトを<ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストの両方に含めることはできません。
-
-      ワイルドカード（*）は、ポリシーの値として使用できず、これらのリストのどの First-Party Set でも使用できません。
-
-      このポリシーで指定するすべてのセットは、有効な First-Party Set である必要があります。そうでない場合は、該当するエラーが出力されます。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。

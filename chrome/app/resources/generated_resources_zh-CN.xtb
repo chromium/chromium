@@ -827,7 +827,6 @@
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1787350673646245458">用户图片</translation>
-<translation id="1788329699711791226">从 <ph name="ACCOUNT_EMAIL" /> 访问您的 Chrome 浏览器信息</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -2304,6 +2303,7 @@
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192947282887913208">音频文件</translation>
+<translation id="3193695589337931419">系统信号实用程序</translation>
 <translation id="3194786596445804250">显示屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3199127022143353223">服务器</translation>
@@ -4630,7 +4630,6 @@
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
 <translation id="5542132724887566711">个人资料</translation>
-<translation id="554229901779827904">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据。您的数据包括书签、历史记录和密码。</translation>
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在检查状态…</translation>

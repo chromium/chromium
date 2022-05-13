@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
 <translation id="1367951781824006909">Vybrat soubor</translation>
+<translation id="1380220803921738821">Narážíme na chyby. Zkuste zařízení restartovat nebo obnovit firmware pomocí jednotky USB flash.</translation>
 <translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
 <translation id="1394661041439318933">Stav baterie pouzdra je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
+<translation id="2827359915699915567">Pokud chcete získat kód RSU, ručně zadejte tuto adresu URL</translation>
 <translation id="2859243502336719778">Kritická aktualizace</translation>
 <translation id="2860473693272905224">Položte na skener další stránku</translation>
 <translation id="2872961005593481000">Vypnout</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
+<translation id="3333527094307156612">Pomocí tohoto QR kódu získáte 8znakový odemykací kód. Můžete také ručně zadat tuto <ph name="LINK_BEGIN" />adresu URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Nevím</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
+<translation id="3643810137582748570">Přeskočit kalibraci</translation>
 <translation id="3678765385266369662">Vyberte, jak chcete vypnout ochranu proti zápisu</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">Zamknutá SIM karta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Název skupiny</translation>
 <translation id="5051044138948155788">Toto je jediná stránka. Touto akcí přejdete na obrazovku zahájení skenování.</translation>
+<translation id="506768878203270635">Zadejte 8 znaků</translation>
 <translation id="5088172560898466307">Název hostitele serveru</translation>
 <translation id="5089810972385038852">Stát/kraj</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -469,6 +474,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
 <translation id="5655283760733841251">Zvýšit jas</translation>
+<translation id="5661196929408385351">Resetovat do továrního nastavení a vypnout</translation>
 <translation id="5669267381087807207">Aktivování</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
@@ -480,6 +486,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="576835345334454681">Zvýšit jas displeje</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
+<translation id="578753362485952307">Pokud předěláváte základní desku k použití v jiném zařízení, přejděte na <ph name="LINK_BEGIN" />postup předělání<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
@@ -536,6 +543,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Zapnout tmavý motiv</translation>
+<translation id="6295178529664209245">Pokračovat v opravě?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnout spořič obrazovky</translation>
@@ -571,6 +579,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6575134580692778371">Není konfigurováno</translation>
 <translation id="6579509898032828423">Použít tuto fotku</translation>
 <translation id="6596816719288285829">IP adresa</translation>
+<translation id="6611280807952151149">Ukončit opravu zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
 <translation id="6643016212128521049">Vymazat</translation>
@@ -583,6 +592,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6723847290197874913">Podsvícení klávesnice</translation>
 <translation id="672609503628871915">Co je nového</translation>
+<translation id="6746847322826305075">Můžete pokračovat v úplné opravě nebo zařízení pomocí funkce Powerwash resetovat do továrního nastavení a uložit základní desku do úložiště.</translation>
 <translation id="6747215703636344499">Zastaveno – výstupní zásobník je plný</translation>
 <translation id="6749473226660745022">Fotky</translation>
 <translation id="6753452347192452143">Zařízení je počítač.</translation>
@@ -630,6 +640,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Vyberte 1 nebo více komponent a zkuste to znovu, nebo kalibraci přeskočte</translation>
 <translation id="7281657306185710294">Šňůra</translation>
 <translation id="7287310195820267359">Sbírky tapet</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
@@ -660,11 +671,13 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Dotyková obrazovka USB</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Tuto komponentu se nepodařilo zjistit.</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="7626501172915339021">Provést odemknutí RSU (RMA Server Unlock)</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7656388927906093505">Zařízení je myš.</translation>
+<translation id="7657530360897961171">Chyba opravy zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7665800271478495366">Změnit avatara</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
@@ -706,6 +719,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8083281199617904460">Tento proces opravy by měl provádět vyškolený technik. Začněte až po výměně nefunkčních komponent.</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
 <translation id="8104083085214006426">Používáte otevřenou, nezabezpečenou síť</translation>
+<translation id="8109786307828817014">Pokračovat s neúspěšnými kalibracemi?</translation>
 <translation id="811820734797650957">(Android) Pingnutí brány</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
@@ -728,6 +742,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Žádné obrázky</translation>
 <translation id="8327249300223641918">Než budete pokračovat, položte celé zařízení (základnu i víko) na rovný povrch.</translation>
+<translation id="8330949592403310082">Vyberte, které komponenty byly vyměněny</translation>
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
 <translation id="8352772353338965963">Přidat účet do vícenásobného přihlášení. Ke všem přihlášeným účtům lze přistupovat bez zadání hesla, proto byste tuto funkci měli používat pouze s důvěryhodnými účty.</translation>
@@ -752,6 +767,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8503836310948963452">Ještě pár minut…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Pokud komponenty nejsou zkalibrovány, nemusí fungovat správně</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
@@ -806,6 +822,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="9025198690966128418">Použít jako osobní zařízení</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Překlad záznamů DNS má vysokou latenci</translation>
+<translation id="9063121522582193837">Některé komponenty se nepodařilo zkalibrovat</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Použít toto video</translation>

@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sobita skannitava alaga</translation>
 <translation id="1367951781824006909">Vali fail</translation>
+<translation id="1380220803921738821">Ilmneb vigu. Proovige taaskäivitada või taastage püsivara, kasutades USB-mälupulka.</translation>
 <translation id="1387854245479784695">See on kõigi tuumade koondväärtus</translation>
 <translation id="1394661041439318933">Seadme ümbrise aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Lüüsi saab pingida</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="28232023175184696">Internetiga ei õnnestu ühendust luua. Klõpsake uuesti proovimiseks.</translation>
+<translation id="2827359915699915567">Sisestage see URL käsitsi, et hankida RSU-kood</translation>
 <translation id="2859243502336719778">Tähtis värskendus</translation>
 <translation id="2860473693272905224">Asetage skannerile veel üks leht</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Võtme suund</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
+<translation id="3333527094307156612">Kasutage seda QR-koodi, et saada 8-tähemärgiline avamiskood. Saate <ph name="LINK_BEGIN" />selle URL-i<ph name="LINK_END" /> sisestada ka käsitsi.</translation>
 <translation id="3336855445806447827">Pole kindel</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="3621202678540785336">Sisend</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
+<translation id="3643810137582748570">Jäta kalibreerimine vahele</translation>
 <translation id="3678765385266369662">Valige, kuidas soovite kirjutuskaitse välja lülitada</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">SIM on lukus (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupi nimi</translation>
 <translation id="5051044138948155788">See on ainus leht. See suunab teid skannimise avakuvale.</translation>
+<translation id="506768878203270635">Sisestage 8 tähemärki</translation>
 <translation id="5088172560898466307">Serveri hosti nimi</translation>
 <translation id="5089810972385038852">Osariik/Maakond</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -469,6 +474,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5649768706273821470">Esita</translation>
 <translation id="5655283760733841251">Klaviatuuri ereduse suurendamine</translation>
+<translation id="5661196929408385351">Powerwash ja lülita välja</translation>
 <translation id="5669267381087807207">Aktiveerimine</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perekond</translation>
@@ -480,6 +486,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="576835345334454681">Ekraanikuva ereduse suurendamine</translation>
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
+<translation id="578753362485952307">Kui parandate emaplaati, et seda kasutada muus seadmes, avage <ph name="LINK_BEGIN" />ümbertöötlemise voog<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="583281660410589416">Tundmatu</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -536,6 +543,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Tumeda teema sisselülitamine</translation>
+<translation id="6295178529664209245">Kas jätkata remondiga?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> tühistati</translation>
 <translation id="6319207335391420837">Seadme <ph name="DEVICE_NAME" /> püsivara värskendamine</translation>
 <translation id="6321407676395378991">Ekraanisäästja sisselülitamine</translation>
@@ -571,6 +579,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6575134580692778371">Ei ole konfigureeritud</translation>
 <translation id="6579509898032828423">Kasuta seda fotot</translation>
 <translation id="6596816719288285829">IP-aadress</translation>
+<translation id="6611280807952151149">Välju seadme <ph name="DEVICE_TYPE" /> remondivoost</translation>
 <translation id="6618744767048954150">Pooleli</translation>
 <translation id="6620487321149975369">Prinditööd kuvatakse ajaloos, kui neid käsitsi ei eemaldata</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
@@ -583,6 +592,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6723847290197874913">Klaviatuuri taustavalgus</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
+<translation id="6746847322826305075">Saate jätkata täieliku remondiga või seadmes teha Powerwashi (tehaseseadetele lähtestamise), et emaplaat ladustada.</translation>
 <translation id="6747215703636344499">Peatatud – väljastussalv on täis</translation>
 <translation id="6749473226660745022">Fotod</translation>
 <translation id="6753452347192452143">Seade on arvuti.</translation>
@@ -630,6 +640,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Valige vähemalt üks komponent ja proovige uuesti või jätke kalibreerimine vahele</translation>
 <translation id="7281657306185710294">Tunnetage briisi</translation>
 <translation id="7287310195820267359">Taustapiltide kogud</translation>
 <translation id="7297226631177386107">Ei saa HTTPS-veebisaitidega läbi tulemüüri ühendust luua</translation>
@@ -660,11 +671,13 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-puuteekraan</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> on jäänud</translation>
+<translation id="760845693386726841">Seda komponenti ei õnnestunud tuvastada.</translation>
 <translation id="7620771111601174153">Lisateavet leiate abikeskusest</translation>
 <translation id="7626501172915339021">Avage RMA server (RSU)</translation>
 <translation id="763165478673169849">Viimane lähtestamisaeg</translation>
 <translation id="7648838807254605802">Pikk HTTPS-i latentsusaeg</translation>
 <translation id="7656388927906093505">Seade on hiir.</translation>
+<translation id="7657530360897961171">Viga seadme <ph name="DEVICE_TYPE" /> remontimisel</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7665800271478495366">Muuda avatari</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
@@ -706,6 +719,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8083281199617904460">Remondiprotsess on mõeldud koolitatud remonditehnikule. Alustage alles pärast rikkiläinud komponentide asendamist.</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8104083085214006426">Kasutate avatud ja ebaturvalist võrku</translation>
+<translation id="8109786307828817014">Kas jätkata ebaõnnestunud kalibreerimistega?</translation>
 <translation id="811820734797650957">(Android) Lüüsi saab pingida</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
@@ -728,6 +742,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8302368968391049045">HTTPS-i tulemüür</translation>
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8327249300223641918">Enne jätkamist asetage kogu seade (alus ja kaas) tasasele pinnale.</translation>
+<translation id="8330949592403310082">Valige, millised komponendid asendati</translation>
 <translation id="8336739000755212683">Seadme kontopildi muutmine</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
@@ -752,6 +767,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Komponendid ei pruugi töötada, kui neid ei kalibreerita</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
 <translation id="8576249514688522074">Lähtestamata</translation>
 <translation id="8620617069779373398">Rändluse olek</translation>
@@ -806,6 +822,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="9025198690966128418">Isikliku seadme kasutamine</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-i eraldusvõimel on pikk latentsusaeg</translation>
+<translation id="9063121522582193837">Mõnda komponenti ei saanud kalibreerida</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Kasuta seda videot</translation>

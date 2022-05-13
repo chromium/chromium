@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Сканерлеу аймағына сәйкестендіру</translation>
 <translation id="1367951781824006909">Файлды таңдау</translation>
+<translation id="1380220803921738821">Қателер пайда болды. Өшіріп қосып көріңіз немесе USB құрылғысы арқылы микробағдарламаны қалпына келтіріңіз.</translation>
 <translation id="1387854245479784695">Бұл – барлық ядролар жинағы.</translation>
 <translation id="1394661041439318933">Қаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1397738625398125236">Шлюздің байланысын тексеруге болады</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="28232023175184696">Интернетке қосыла алмай жатыр. Әрекетті қайталау үшін түртіңіз.</translation>
+<translation id="2827359915699915567">RSU кодын алу үшін URL мекенжайын қолмен енгізіңіз</translation>
 <translation id="2859243502336719778">Маңызды жаңарту</translation>
 <translation id="2860473693272905224">Сканерге басқа бет қойыңыз.</translation>
 <translation id="2872961005593481000">Өшіру</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Кілт бағыты</translation>
 <translation id="3310640316857623290">DNS кідірісі рұқсат етілетін шектен әлдеқайда жоғары.</translation>
 <translation id="3328783797891415197">Тексерілуде</translation>
+<translation id="3333527094307156612">8 таңбалық құлып ашу кодын алу үшін осы QR кодын пайдаланыңыз. Сондай-ақ <ph name="LINK_BEGIN" />URL мекенжайын<ph name="LINK_END" /> қолмен теруіңізге болады.</translation>
 <translation id="3336855445806447827">Сенімді емеспін</translation>
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">Қосылған</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="3621202678540785336">Енгізу</translation>
 <translation id="3632579075709132555">Құпиялылық экранын қосу/өшіру</translation>
+<translation id="3643810137582748570">Калибрлеуді өткізіп жіберу</translation>
 <translation id="3678765385266369662">Write Protect-ті өшіру әдісін таңдаңыз</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">SIM құлыпталған (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топ атауы</translation>
 <translation id="5051044138948155788">Бұл — жалғыз бет. Содан кейін сканерлеуді бастау экранына өтесіз.</translation>
+<translation id="506768878203270635">8 таңба енгізіңіз.</translation>
 <translation id="5088172560898466307">Сервер хостының атауы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -468,6 +473,7 @@
 <translation id="5620281292257375798">Тек ішкі қолданысқа арналған</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5655283760733841251">Пернетақта жарықтығын арттыру</translation>
+<translation id="5661196929408385351">Powerwash және өшіру</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Отбасы</translation>
@@ -479,6 +485,7 @@
 <translation id="576835345334454681">Дисплей жарықтығын арттыру</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
+<translation id="578753362485952307">Жүйелік тақтаны басқа құрылғыда пайдалану үшін ондағы ақауларды жойып жатсаңыз, <ph name="LINK_BEGIN" />осы бетке<ph name="LINK_END" /> өтіңіз.</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
@@ -535,6 +542,7 @@
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Қараңғы режимді қосу</translation>
+<translation id="6295178529664209245">Жөндеуді жалғастырасыз ба?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тексерісінен бас тартылды.</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> құрылғысының микробағдарламасын жаңарту</translation>
 <translation id="6321407676395378991">Скринсейверді қосу</translation>
@@ -570,6 +578,7 @@
 <translation id="6575134580692778371">Реттелмеген</translation>
 <translation id="6579509898032828423">Осы фотосуретті қолдану</translation>
 <translation id="6596816719288285829">IP мекенжайы</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> құрылғысын жөндеу бетінен шығу</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
@@ -582,6 +591,7 @@
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
+<translation id="6746847322826305075">Жүйелік тақтаны қалпына келтіру үшін толық жөндеу немесе Powerwash (зауыттық параметрлерге қайтару) арқылы жалғастыруыңызға болады.</translation>
 <translation id="6747215703636344499">Тоқтатылды: шығыс науа толып кетті</translation>
 <translation id="6749473226660745022">Фотосуреттер</translation>
 <translation id="6753452347192452143">Бұл — компьютер.</translation>
@@ -629,6 +639,7 @@
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">1 немесе бірнеше құрамдас таңдап, әрекетті қайталаңыз немесе калибрлеуді өткізіп жіберіңіз.</translation>
 <translation id="7281657306185710294">Самал жел</translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
 <translation id="7297226631177386107">Брандмауэр арқылы HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
@@ -659,11 +670,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсорлық экраны</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
+<translation id="760845693386726841">Бұл құрамдас жойылмады.</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="7626501172915339021">(RSU) RMA серверінің құлпын ашу</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7656388927906093505">Бұл — тінтуір.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> құрылғысын жөндеу қатесі</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7665800271478495366">Аватарды өзгерту</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
@@ -705,6 +718,7 @@
 <translation id="8083281199617904460">Бұл жөндеу жұмысын арнайы техник маман жүргізуі керек. Жұмыс істемей тұрған құрамдастарды ауыстырғаннан кейін ғана іске қосыңыз.</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
+<translation id="8109786307828817014">Калибрленбеген құрамдастармен жалғастыра бересіз бе?</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
@@ -727,6 +741,7 @@
 <translation id="8302368968391049045">HTTPS брандмауэрі</translation>
 <translation id="8318753676953949627">Кескіндер жоқ.</translation>
 <translation id="8327249300223641918">Жалғастырмас бұрын, құрылғыңызды (негіз және қақпақ) тегіс бетке қойыңыз.</translation>
+<translation id="8330949592403310082">Ауыстырылған құрамдастарды таңдаңыз</translation>
 <translation id="8336739000755212683">Құрылғыда аккаунт суретін өзгерту</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8352772353338965963">Бірнеше аккаунтға кіру үшін аккаунт қосыңыз. Барлық кірілген аккаунтларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді аккаунтлар пайдалануы тиіс.</translation>
@@ -751,6 +766,7 @@
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Құрамдастар калибрленбесе, дұрыс жұмыс істемеуі мүмкін.</translation>
 <translation id="8575298406870537639">Желіге қосылу үшін оператор осы опцияны талап етуі мүмкін. Мәліметтер алу үшін операторыңызға хабарласыңыз.</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
@@ -805,6 +821,7 @@
 <translation id="9025198690966128418">Жеке құрылғы ретінде пайдалану</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>
+<translation id="9063121522582193837">Кейбір құрамдастар калибрленбеді</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Осы бейнені қолдану</translation>

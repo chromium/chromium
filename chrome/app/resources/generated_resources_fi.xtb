@@ -842,7 +842,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1784707308176068866">Suorita taustalla, jos yhteistyötä tekevä natiivisovellus niin pyytää</translation>
 <translation id="1784849162047402014">Laitteen tallennustila on vähissä.</translation>
 <translation id="1787350673646245458">Käyttäjän kuva</translation>
-<translation id="1788329699711791226">Käytä Chrome-selaimen sisältöä tällä tilillä: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Poista käyttöoikeus</translation>
 <translation id="1791662854739702043">Asennettu</translation>
 <translation id="1792619191750875668">Laajennettu näyttö</translation>
@@ -2327,6 +2326,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3189187154924005138">Suuri kohdistin</translation>
 <translation id="3190558889382726167">Salasana on tallennettu</translation>
 <translation id="3192947282887913208">Äänitiedostot</translation>
+<translation id="3193695589337931419">System Signals Utilities</translation>
 <translation id="3194786596445804250">Näytä tietoa kolmansien osapuolten evästeiden estämisestä</translation>
 <translation id="3197453258332670132">Näytä valittuun tekstiin liittyviä tietoja klikkaamalla kakkospainikkeella tai painamalla pitkään</translation>
 <translation id="3199127022143353223">Palvelimet</translation>
@@ -4654,7 +4654,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5539221284352502426">Palvelin hylkäsi antamasi salasanan. Mahdollisia syitä: Salasana on liian lyhyt. Salasanassa on oltava numeroita tai merkkejä. Salasanan on oltava eri kuin aiemmat salasanat.</translation>
 <translation id="5541694225089836610">Järjestelmänvalvoja on poistanut toiminnon käytöstä</translation>
 <translation id="5542132724887566711">Profiili</translation>
-<translation id="554229901779827904"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chrome-selainprofiilin ja sen datan sekä muokata niitä. Data sisältää esimerkiksi kirjanmerkit, historian ja salasanat.</translation>
 <translation id="5542750926112347543">Evästeet lähteestä <ph name="DOMAIN" /> estetty</translation>
 <translation id="5542949973455282971">Yhdistetään: <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Tarkistetaan tilaa…</translation>

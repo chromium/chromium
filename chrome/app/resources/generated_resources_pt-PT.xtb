@@ -832,7 +832,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1784707308176068866">Execução em segundo plano quando solicitado por uma app nativa cooperante</translation>
 <translation id="1784849162047402014">O dispositivo tem pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do utilizador</translation>
-<translation id="1788329699711791226">Aceda aos seus itens do navegador Chrome a partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Remover acesso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Ecrã expandido</translation>
@@ -2314,6 +2313,7 @@ Pretende pará-lo?</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
+<translation id="3193695589337931419">Utilitários dos sinais do sistema</translation>
 <translation id="3194786596445804250">Mostrar detalhes sobre como bloquear cookies de terceiros</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do rato ou ao manter o botão premido, apresenta informações para a sua seleção de texto</translation>
 <translation id="3199127022143353223">Servidores</translation>
@@ -4643,7 +4643,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5539221284352502426">A palavra-passe introduzida foi rejeitada pelo servidor. Motivos possíveis: a palavra-passe é demasiado curta; a palavra-passe tem de incluir números ou símbolos; a palavra-passe tem de ser diferente das palavras-passe antigas.</translation>
 <translation id="5541694225089836610">A ação foi desativada pelo administrador.</translation>
 <translation id="5542132724887566711">Perfil</translation>
-<translation id="554229901779827904">A sua conta é gerida por <ph name="MANAGER_NAME" />. O seu administrador pode ver e editar este perfil do navegador Chrome e os respetivos dados. Os seus dados incluem os marcadores, o histórico e as palavras-passe.</translation>
 <translation id="5542750926112347543">Cookies de <ph name="DOMAIN" /> bloqueados.</translation>
 <translation id="5542949973455282971">A ligar a <ph name="CARRIER_NAME" />…</translation>
 <translation id="5543983818738093899">A verificar o estado...</translation>

@@ -47,6 +47,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1283524564873030414">Son 24 Saat</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
+<translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
 <translation id="1321993286294231467">Şəkil yadda saxlanılarkən xəta.</translation>
 <translation id="1322735045095424339">Təşkilatınız Anonim rejimi tələb edir</translation>
 <translation id="1323735185997015385">Silin</translation>
@@ -825,6 +826,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7966516440812255683">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
 
 Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər (məsələn, reklamları fərdiləşdirmək üçün).</translation>
+<translation id="7966904497916178308">Standart qoruma aktivdir</translation>
 <translation id="7971521879845308059">Popupları bloklayın</translation>
 <translation id="797413074872316787">Cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="7978018860671536736">3. Parolların Avtomatik Doldurulmasına toxunun</translation>

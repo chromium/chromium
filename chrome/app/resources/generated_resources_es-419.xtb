@@ -829,7 +829,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784707308176068866">Ejecutar en segundo plano cuando lo solicita una app nativa cooperativa</translation>
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1787350673646245458">Imagen de usuario</translation>
-<translation id="1788329699711791226">Accede a todo lo que tienes en el navegador Chrome desde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -2310,6 +2309,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
+<translation id="3193695589337931419">Utilidades de las indicaciones del sistema</translation>
 <translation id="3194786596445804250">Mostrar detalles sobre cómo bloquear cookies de terceros</translation>
 <translation id="3197453258332670132">Para ver información relacionada sobre la selección de texto, haz clic con el botón derecho en ella o mantenla presionada.</translation>
 <translation id="3199127022143353223">Servidores</translation>
@@ -4639,7 +4639,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
-<translation id="554229901779827904"><ph name="MANAGER_NAME" /> administra tu cuenta. El administrador puede ver y editar este perfil del navegador de Chrome y sus datos. Tus datos incluyen los favoritos, el historial y las contraseñas.</translation>
 <translation id="5542750926112347543">Las cookies de <ph name="DOMAIN" /> están bloqueadas</translation>
 <translation id="5542949973455282971">Conectando a <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando estado…</translation>
@@ -5460,7 +5459,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6367097275976877956">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="6367985768157257101">¿Quieres recibir contenido mediante Compartir con Nearby?</translation>
 <translation id="6368276408895187373">Habilitado: <ph name="VARIATION_NAME" /></translation>
-<translation id="636850387210749493">Registro de empresa</translation>
+<translation id="636850387210749493">Inscripción empresarial</translation>
 <translation id="6370021412472292592">No se pudo cargar el manifiesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>

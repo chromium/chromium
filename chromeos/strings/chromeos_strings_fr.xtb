@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
+<translation id="1380220803921738821">Nous rencontrons des erreurs. Essayez de redémarrer ou restaurer le micrologiciel à l'aide d'une clé USB.</translation>
 <translation id="1387854245479784695">Tous cœurs confondus</translation>
 <translation id="1394661041439318933">L'étui de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="1397738625398125236">Pinguer la passerelle</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
+<translation id="2827359915699915567">Saisir manuellement cette URL pour obtenir le code RSU</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
 <translation id="2860473693272905224">Placez une autre page sur le scanner</translation>
 <translation id="2872961005593481000">Éteindre</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3328783797891415197">Test en cours</translation>
+<translation id="3333527094307156612">Utilisez ce code QR pour obtenir le code de déverrouillage à 8 caractères. Vous pouvez aussi saisir <ph name="LINK_BEGIN" />cette URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Je ne sais pas.</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3368922792935385530">Connecté</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
+<translation id="3643810137582748570">Passer le calibrage</translation>
 <translation id="3678765385266369662">Sélectionnez comment vous voulez désactiver la protection en écriture</translation>
 <translation id="3689839747745352263">Test de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Vous allez revenir à l'écran où commencer à scanner.</translation>
+<translation id="506768878203270635">Saisissez les 8 caractères</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État</translation>
 <translation id="5090362543162270857">IPSec (IKEv2)</translation>
@@ -469,6 +474,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5620281292257375798">Interne uniquement</translation>
 <translation id="5649768706273821470">Écouter</translation>
 <translation id="5655283760733841251">Augmenter la luminosité du clavier</translation>
+<translation id="5661196929408385351">Powerwash et éteindre</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
@@ -480,6 +486,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="576835345334454681">Augmenter la luminosité de l'écran</translation>
 <translation id="57838592816432529">Couper le son</translation>
 <translation id="5784136236926853061">Latence HTTP élevée</translation>
+<translation id="578753362485952307">Si vous apportez des modifications à une carte mère pour l'utiliser sur un autre appareil, accédez à la <ph name="LINK_BEGIN" />procédure de modification<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -536,6 +543,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Appliquer le thème sombre</translation>
+<translation id="6295178529664209245">Continuer la réparation ?</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel sur <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activer l'économiseur d'écran</translation>
@@ -571,6 +579,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6575134580692778371">Non configuré</translation>
 <translation id="6579509898032828423">Utiliser cette photo</translation>
 <translation id="6596816719288285829">Adresse IP</translation>
+<translation id="6611280807952151149">Quitter la réparation du <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">En cours</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
@@ -583,6 +592,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
 <translation id="672609503628871915">Voir les nouveautés</translation>
+<translation id="6746847322826305075">Vous pouvez continuer avec une réparation complète ou rétablir la configuration d'usine (Powerwash) de l'appareil pour remettre la carte mère en stock.</translation>
 <translation id="6747215703636344499">Tâche suspendue - Bac de sortie plein</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6753452347192452143">L'appareil est un ordinateur.</translation>
@@ -630,6 +640,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Sélectionnez 1 ou plusieurs composants, puis réessayez ou passez le calibrage</translation>
 <translation id="7281657306185710294">Brise légère</translation>
 <translation id="7287310195820267359">Collections de fonds d'écran</translation>
 <translation id="7297226631177386107">Impossible de se connecter aux sites HTTPS via le pare-feu</translation>
@@ -660,11 +671,13 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Impossible de détecter ce composant.</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
 <translation id="7626501172915339021">Par un RSU</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
+<translation id="7657530360897961171">Erreur de réparation du <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665800271478495366">Modifier l'avatar</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
@@ -706,6 +719,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8083281199617904460">Ce processus de réparation est destiné à guider les réparateurs qualifiés. Ne commencez qu'après avoir remplacé les composants défectueux.</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
+<translation id="8109786307828817014">Continuer malgré les échecs de calibrage ?</translation>
 <translation id="811820734797650957">(Android) Pinguer la passerelle</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander les compteurs de trafic</translation>
@@ -728,6 +742,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8302368968391049045">Pare-feu HTTPS</translation>
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8327249300223641918">Avant de commencer, placez tout l'appareil (base et couvercle) sur une surface plane.</translation>
+<translation id="8330949592403310082">Sélectionner les composants qui ont été remplacés</translation>
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8352772353338965963">Ajoutez un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
@@ -752,6 +767,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Certains composants peuvent ne pas fonctionner correctement s'ils ne sont pas calibrés</translation>
 <translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>
@@ -806,6 +822,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="9025198690966128418">Utiliser en tant qu'appareil personnel</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Latence élevée pour la résolution DNS</translation>
+<translation id="9063121522582193837">Impossible de calibrer certains composants</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>

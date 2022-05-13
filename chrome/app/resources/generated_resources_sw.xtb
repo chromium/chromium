@@ -840,7 +840,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1784707308176068866">Tumia chinichini unapoombwa na programu ya mfumo inayokubalika</translation>
 <translation id="1784849162047402014">Kifaa hakina nafasi ya hifadhi ya kutosha</translation>
 <translation id="1787350673646245458">Picha ya mtumiaji</translation>
-<translation id="1788329699711791226">Fikia vitu vya kivinjari chako cha Chrome kwenye <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ondoa idhini ya kufikia</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
 <translation id="1792619191750875668">Mwonekano mpana</translation>
@@ -2325,6 +2324,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3189187154924005138">Kiteuzi kikubwa</translation>
 <translation id="3190558889382726167">Nenosiri limehifadhiwa</translation>
 <translation id="3192947282887913208">Faili za Sauti</translation>
+<translation id="3193695589337931419">Programu Saidizi ya Mawimbi ya Mfumo</translation>
 <translation id="3194786596445804250">Onesha maelezo kuhusu kuzuia vidakuzi vya tovuti nyingine</translation>
 <translation id="3197453258332670132">Ukibofya kulia au ukibonyeza kwa muda mrefu, unaweza kuonyesha maelezo yanayohusiana na maandishi uliyoyachagua</translation>
 <translation id="3199127022143353223">Seva</translation>
@@ -4653,7 +4653,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5539221284352502426">Nenosiri uliloweka limekataliwa na seva. Hali hii inaweza kusababishwa na: Nenosiri kuwa fupi mno. Nenosiri lazima lijumuishe nambari na ishara. Nenosiri lazima liwe tofauti na manenosiri ya awali.</translation>
 <translation id="5541694225089836610">Kitendo kimezimwa na msimamizi wako</translation>
 <translation id="5542132724887566711">Wasifu</translation>
-<translation id="554229901779827904">Akaunti yako inadhibitiwa na <ph name="MANAGER_NAME" />. Msimamizi wako anaweza kuona na kubadilisha wasifu wa kivinjari hiki cha Chrome na data yake. Data yako inajumuisha alamisho, historia, na manenosiri.</translation>
 <translation id="5542750926112347543">Vidakuzi kutoka <ph name="DOMAIN" /> vimezuiwa</translation>
 <translation id="5542949973455282971">Inaunganisha kwenye <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Inakagua hali...</translation>

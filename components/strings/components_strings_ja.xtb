@@ -1945,6 +1945,7 @@
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="6337534724793800597">ポリシーを名前でフィルタ</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
+<translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件（同期）}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件（同期）}other{<ph name="DOMAIN_LIST" /> のパスワード # 件（同期）}}</translation>
 <translation id="6355392890578844978">このブラウザは、会社またはその他の組織によって管理されていません。このデバイス上のアクティビティは、Chromium の外部で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

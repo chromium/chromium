@@ -832,7 +832,6 @@
 <translation id="1784707308176068866">تعاون کرنے والی اصل ایپلیکیشن کی درخواست پر پس منظر میں چلائیں</translation>
 <translation id="1784849162047402014">آلہ میں ڈسک کی جگہ کم ہے</translation>
 <translation id="1787350673646245458">صارف تصویر</translation>
-<translation id="1788329699711791226">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کی سہولیات تک رسائی حاصل کریں</translation>
 <translation id="1790976235243700817">رسائی ہٹائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792619191750875668">توسیع کردہ ڈسپلے</translation>
@@ -861,6 +860,7 @@
 <translation id="1813278315230285598">سروسز</translation>
 <translation id="18139523105317219">‏EDI پارٹی نام</translation>
 <translation id="1815083418640426271">سادہ متن کے بطور پیسٹ کریں</translation>
+<translation id="1815097521077272760">آپ کو اس گیم کے لیے کی بورڈ کنٹرول آزمانے کے لیے مدعو کیا گیا ہے۔</translation>
 <translation id="1815181278146012280">‏جب کوئی سائٹ HID آلات تک رسائی حاصل کرنا چاہے تو پوچھیں</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" /> مزید…</translation>
 <translation id="1816036116994822943">کی بورڈ اسکیننگ کی رفتار</translation>
@@ -994,6 +994,7 @@
 <translation id="1935303383381416800">آپ کا مقام دیکھنے کی اجازت ہے</translation>
 <translation id="1936931585862840749">پرنٹ کرنے کی خاطر کاپیوں کی تعداد بتانے کیلئے نمبر (1 سے <ph name="MAX_COPIES" /> تک) کا استعمال کریں۔</translation>
 <translation id="1937774647013465102">اس آلہ جو کہ <ph name="ARCHITECTURE_DEVICE" /> ہے کے ساتھ کنٹینر کے فن تعمیر کی قسم <ph name="ARCHITECTURE_CONTAINER" /> کو درآمد نہیں کیا جا سکتا۔ آپ اس کنٹینر کو کسی دوسرے آلہ میں بحال کرنے کی کوشش کر سکتے ہیں، یا فائلز ایپ میں کھول کر اس کنٹینر کی تصویر کے اندر موجود فائلوں تک رسائی حاصل کر سکتے ہیں۔</translation>
+<translation id="1938320257168860255">‏کچھ غلط ہوگیا۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں۔</translation>
 <translation id="1938351510777341717">بیرونی کمانڈ</translation>
 <translation id="1940546824932169984">منسلک آلات</translation>
 <translation id="1941410638996203291">وقت آغاز <ph name="TIME" /></translation>
@@ -1076,6 +1077,7 @@
 <translation id="2030455719695904263">ٹریک پیڈ</translation>
 <translation id="2031639749079821948">‏آپ کا پاس ورڈ آپ کے Google اکاؤنٹ میں محفوظ ہے</translation>
 <translation id="2031914984822377766">اپنی ترجیحی <ph name="LINK_BEGIN" />ویب سائٹ کی زبانیں<ph name="LINK_END" /> شامل کریں۔ فہرست میں سرفہرست زبان ترجمے کے لیے استعمال کی جائے گی۔</translation>
+<translation id="2033758234986231162">‏آپ کے فون کے ساتھ کنکشن برقرار نہیں رکھا جا سکتا۔ یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں۔</translation>
 <translation id="2034346955588403444">‏دوسرا WiFi نیٹ ورک شامل کریں</translation>
 <translation id="203574396658008164">مقفل اسکرین سے نوٹ لینا فعال کریں</translation>
 <translation id="2037445849770872822">‏اس Google اکاؤنٹ کیلئے نگرانی ترتیب دے دی گئی ہے۔ مزید پیرنٹل کنٹرولز ترتیب دینے کیلئے، 'جاری رکھیں' منتخب کریں۔
@@ -3743,6 +3745,7 @@
 <translation id="461661862154729886">توانائی کا ماخذ</translation>
 <translation id="4617001782309103936">بہت چھوٹا</translation>
 <translation id="4617270414136722281">ایکسٹینشنز کے اختیارات</translation>
+<translation id="4617880081511131945">کنکشن قائم نہیں کیا جا سکتا</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4619615317237390068">دیگر آلات کے ٹیبز</translation>
 <translation id="4620809267248568679">ایک ایکسٹینشن یہ ترتیب نافذ کرتی ہے۔</translation>
@@ -4035,6 +4038,7 @@
 <translation id="4907306957610201395">اجازت کا زمرہ</translation>
 <translation id="4908811072292128752">ایک بار میں دو سائٹس کو براؤز کرنے کے لئے ایک نیا ٹیب کھولیں</translation>
 <translation id="4909038193460299775">‏چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے،  لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔ البتہ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا اور اس کا <ph name="BEGIN_LINK" />Google ڈیش بورڈ<ph name="END_LINK" /> پر نظم کیا جا سکتا ہے۔</translation>
+<translation id="4912265719039610598">آپ کے فون کے منتظم نے ایپ کی سلسلہ بندی کو غیر فعال کر دیا ہے۔</translation>
 <translation id="4912643508233590958">معطل ویک اپس</translation>
 <translation id="4915961947098019832">تصاویر دکھانے کی اجازت ہے</translation>
 <translation id="4916542008280060967">سائٹ کو <ph name="FILE_NAME" /> کی ترمیم کرنے دیں؟</translation>
@@ -4643,7 +4647,6 @@
 <translation id="5539221284352502426">آپ کا درج کردہ پاس ورڈ سرور کی طرف سے مسترد کر دیا گیا۔ ممکنہ وجوہات میں شامل ہیں: پاس ورڈ کافی چھوٹا ہے۔ پاس ورڈ میں نمبرز یا علامتوں کا شامل ہونا ضروری ہے۔ پاس ورڈ کا پرانے پاس ورڈز سے مختلف ہونا ضروری ہے۔</translation>
 <translation id="5541694225089836610">آپ کے منتظم نے کارروائی کو غیر فعال کر دیا ہے</translation>
 <translation id="5542132724887566711">پروفائل</translation>
-<translation id="554229901779827904">‏آپ کا اکاؤنٹ <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ آپ کا منتظم اس Chrome براؤزر کی پروفائل اور اس کے ڈیٹا کو دیکھ اور اس میں ترمیم کر سکتا ہے۔ آپ کے ڈیٹا میں بک مارکس، سرگزشت اور پاس ورڈز شامل ہیں۔</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> کی کوکیز مسدود ہو گئیں</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="5543983818738093899">اسٹیٹس چیک کیا جا رہا ہے…</translation>
@@ -6863,6 +6866,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
 <translation id="7760004034676677601">کیا یہی وہ ابتدائی صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
+<translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
 <translation id="7762463735017901568">اطلاع کی مطابقت پذیری کو آپ کے فون کے منتظم نے بند کر دیا ہے</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> سے <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -7032,6 +7036,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> سیکنڈ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> دیکھ سکتا ہے</translation>
 <translation id="7920482456679570420">وہ الفاظ شامل کریں جنہیں آپ چاہتے ہیں کہ املا کی جانچ نظر انداز کرے</translation>
+<translation id="7921347341284348270">آپ اس نظم کردہ اکاؤنٹ پر اپنے فون کی اطلاعات نہیں دیکھ سکتے۔ مختلف اکاؤنٹ کے ساتھ دوبارہ کوشش کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">پوشیدگی میں فریق ثالث کی کوکیز کو مسدود کرنے کے بارے میں تفصیلات دکھائیں</translation>
 <translation id="7923564237306226146">‏Linux اپ گریڈ مکمل ہو گیا</translation>
 <translation id="7924358170328001543">پورٹ فارورڈ کرنے میں خرابی</translation>

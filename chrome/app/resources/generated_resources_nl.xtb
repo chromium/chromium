@@ -832,7 +832,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1784707308176068866">Uitvoeren op de achtergrond wanneer dit wordt gevraagd door een samenwerkende systeemeigen app</translation>
 <translation id="1784849162047402014">Weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="1787350673646245458">Gebruikersafbeelding</translation>
-<translation id="1788329699711791226">Krijg toegang tot je Chrome-browsergegevens via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Toegang intrekken</translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792619191750875668">Uitgebreid scherm</translation>
@@ -4645,7 +4644,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5539221284352502426">Het wachtwoord dat je hebt opgegeven, is afgewezen door de server. Mogelijke redenen zijn: Het wachtwoord is te kort. Het wachtwoord moet cijfers of symbolen bevatten. Het wachtwoord moet verschillen van eerdere wachtwoorden.</translation>
 <translation id="5541694225089836610">Actie is door de beheerder uitgezet</translation>
 <translation id="5542132724887566711">Profiel</translation>
-<translation id="554229901779827904">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens bekijken en bewerken. Je gegevens omvatten bookmarks, geschiedenis en wachtwoorden.</translation>
 <translation id="5542750926112347543">Cookies van <ph name="DOMAIN" /> geblokkeerd</translation>
 <translation id="5542949973455282971">Verbinding maken met <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Status controleren…</translation>

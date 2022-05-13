@@ -1954,6 +1954,7 @@
 <translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
 <translation id="6340739886198108203">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति स्क्रीनशॉट लेने या रिकॉर्डिंग करने का सुझाव नहीं देती है:</translation>
+<translation id="6348220984832452017">इस्तेमाल किए जा सकने वाले वर्शन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium के बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>

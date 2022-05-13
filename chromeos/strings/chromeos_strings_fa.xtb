@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">شبکه اصلی، بدون فراگردی</translation>
 <translation id="1327977588028644528">دروازه</translation>
+<translation id="1328223165223065150">رنگ کاغذدیواری</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">متناسب با ناحیه اسکن</translation>
 <translation id="1367951781824006909">انتخاب یک فایل</translation>
@@ -55,6 +56,7 @@
 <translation id="1442433966118452622">منبع تصویر</translation>
 <translation id="1451536289672181509">دستگاه صفحه‌کلید است.</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
+<translation id="1459784442280469416">‏ذخیره در USB</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
 <translation id="1478594628797167447">اسکنر</translation>
@@ -63,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
+<translation id="1512982610995527443">دستگاه تا ۵ ثانیه دیگر خاموش خواهد شد</translation>
+<translation id="1522984060396982789">تعمیر باموفقیت انجام شد. می‌توانید دستگاه را خاموش کنید یا اقدامات بیشتری انجام دهید.</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
@@ -105,6 +109,7 @@
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
+<translation id="1932611479324127242">قطع باتری</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1977994649430373166">‏عکس نمایه Google</translation>
@@ -123,6 +128,7 @@
 <translation id="2138109643290557664">شناور شدن</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />٪</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
+<translation id="2154739667870063220">راه‌اندازی مجدد</translation>
 <translation id="2157959690810728433">در صف</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: امتحان مجدد</translation>
 <translation id="2161394479394250669">لغو کردن کار چاپ</translation>
@@ -140,6 +146,7 @@
 <translation id="2240366984605217732">تغییر طرح‌بندی</translation>
 <translation id="225692081236532131">وضعیت فعال‌سازی</translation>
 <translation id="2271469253353559191">زمان‌بندی حالت تاریک</translation>
+<translation id="2275586345903859204">تعمیر انجام شد</translation>
 <translation id="2287186687001756809">تصویری وجود ندارد. برای افزودن عکس به <ph name="LINK" /> بروید</translation>
 <translation id="2307344026739914387">استفاده از جفت‌کلید فعلی</translation>
 <translation id="2320295602967756579">فعال کردن زمینه روشن</translation>
@@ -183,6 +190,7 @@
 <translation id="2717139507051041123">فعال کردن حالت رنگ تیره</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
+<translation id="2756652381241102009">اجرای عیب‌یابی</translation>
 <translation id="2783010256799387990">موفق</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
@@ -332,6 +340,7 @@
 <translation id="4378551569595875038">در حال اتصال..</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">درحال بازراه‌اندازی <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">چهره‌نمای کنونی</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> خاموش است</translation>
 <translation id="4429881212383817840">‏بلیت Kerberos به‌زودی منقضی می‌شود</translation>
@@ -368,6 +377,7 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
+<translation id="4751272708893364980">‏دیدن گزارش‌های RMA (مجوز پس دادن کالا)</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4774530504324923332">‏به کلید امنیتی سازگار با RSU، کدخوان پاسخ‌سریع، و دستگاه دیگری با اتصال اینترنت نیاز خواهید داشت</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
@@ -451,9 +461,11 @@
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
 <translation id="5376354385557966694">حالت روشن خودکار</translation>
 <translation id="537872351913703572">دستگاه به کاربر یا سازمان دیگری منتقل خواهد شد</translation>
+<translation id="5389224261615877010">رنگین‌کمان</translation>
 <translation id="5395600419410242651">پاک کردن همه داده‌ها</translation>
 <translation id="5400907029458559844">دستگاه درحال برقراری اتصال است.</translation>
 <translation id="5401938042319910061">اجرای همه روال‌ها</translation>
+<translation id="5406131354638931058">باتری دستگاه‌هایی را که ارسال یا انبار می‌شوند قطع کنید</translation>
 <translation id="5423849171846380976">فعال شد</translation>
 <translation id="5430931332414098647">اشتراک‌گذاری اینترنت فوری</translation>
 <translation id="5431318178759467895">رنگ</translation>
@@ -506,6 +518,7 @@
 <translation id="5931523347251946569">فایل پیدا نشد</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="594552776027197022">ایجد جفت‌کلید تصادفی</translation>
+<translation id="5951259522948394825">تأیید کنید که همه‌چیز در جای خود قرار دارد و گزارش عیب‌یابی را مشاهده کنید</translation>
 <translation id="5972388717451707488">به‌روزرسانی موتور</translation>
 <translation id="5984145644188835034">کاغذدیواری پیش‌فرض</translation>
 <translation id="6017514345406065928">سبز</translation>
@@ -726,6 +739,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">انتخاب <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">ورود</translation>
+<translation id="819552138404104974">‏گزارش‌های RMA (مجوز پس دادن کالا)</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8217675307824400706">متصل شوید</translation>
@@ -759,6 +773,7 @@
 <translation id="8456761643544401578">حالت تاریک خودکار</translation>
 <translation id="8461329675984532579">نام ارائه‌دهنده اصلی</translation>
 <translation id="8467104829907989997">درحال واسنجی اجزا…</translation>
+<translation id="8474030592808010086">برای قطع کردن باتری، دستگاه را از برق جدا کنید</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
@@ -804,6 +819,7 @@
 <translation id="8898840733695078011">قدرت سیگنال</translation>
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">ببینید چه مشکلاتی رفع شده است</translation>
 <translation id="8919837981463578619">انجام نشد - سینی موجود نیست</translation>
 <translation id="8923267550422472772">روزی از ماه که بازنشانی انجام می‌شود</translation>
 <translation id="8928727111548978589">انجام نشد - کاغذ تمام شده است</translation>

@@ -316,6 +316,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
+<translation id="8213374284266571500">Chromium blocked this file because this type of file is dangerous</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="8266560134891435528">Chromium can't check your passwords because you're not signed in</translation>
 <translation id="8276522524898344151">Chromium is trying to copy passwords.</translation>

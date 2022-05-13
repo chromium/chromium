@@ -83,6 +83,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Translate image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Active <ph name="LAST_UPDATED" /> days ago</translation>
+<translation id="13931502444227376">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1406000523432664303">‘Do Not Track’</translation>
@@ -145,6 +146,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="173522743738009831">About Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explore</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
+<translation id="1750259112639922169">Tab group – <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1754404134430936718">Text copied</translation>
 <translation id="1779766957982586368">Close window</translation>
@@ -171,6 +173,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1928696683969751773">Updates</translation>
 <translation id="19288952978244135">Reopen Chrome.</translation>
 <translation id="1933845786846280168">Selected Tab</translation>
+<translation id="193571872656840963">Show thanks to this creator</translation>
 <translation id="1943432128510653496">Save passwords</translation>
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
@@ -788,6 +791,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reaction changed</translation>
+<translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
@@ -1128,6 +1132,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7177873915659574692">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="718226107353899806">You can add up to <ph name="MAX_NUM_REACTIONS" /> reactions</translation>
+<translation id="7183693674623539380">Tab group – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>

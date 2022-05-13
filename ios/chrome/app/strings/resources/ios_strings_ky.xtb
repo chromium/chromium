@@ -47,6 +47,7 @@
 <translation id="1283524564873030414">Акыркы 24 саат</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> сайтынан чыкканыңызда ага берилген уруксаттар өчүрүлөт.</translation>
+<translation id="1312721752506309252">Өркүндөтүлгөн коргоо күйүк</translation>
 <translation id="1321993286294231467">Сүрөттү сактоодо ката кетти.</translation>
 <translation id="1322735045095424339">Уюмуңуз жашыруун режимди колдонууну талап кылат</translation>
 <translation id="1323735185997015385">Жок кылуу</translation>
@@ -580,6 +581,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6012140227487808125">Шифрленүүдө…</translation>
 <translation id="6021332621416007159">Төмнкүдө ачуу…</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> эмес беле?</translation>
+<translation id="6036215966221662377">Серептөө дайындарын өчүрүү</translation>
 <translation id="6036514205982097558">Бардык өтмөктөр бир серепчиде</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -825,6 +827,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7966516440812255683">Серептөөнү ыңгайлаштыруу, мисалы, аккаунттан чыгарбоо же арабадагы сатып алган нерселериңизди эстеп калуу үчүн сайттар cookie файлдарын колдоно алышат.
 
 Сайттар жарнамаларды жекелештирүү максатында башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышат.</translation>
+<translation id="7966904497916178308">Стандарттуу коргоо күйүк</translation>
 <translation id="7971521879845308059">Калк чыкмл бөгт</translation>
 <translation id="797413074872316787">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн шайкештирүүнү иштетиңиз.</translation>
 <translation id="7978018860671536736">3. Сырсөздөрдү автотолтурууну таптап коюңуз</translation>

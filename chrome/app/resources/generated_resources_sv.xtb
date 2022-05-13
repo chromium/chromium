@@ -843,7 +843,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1784707308176068866">Kör i bakgrunden när en samverkande inbyggd app begär det</translation>
 <translation id="1784849162047402014">Enheten har ont om diskutrymme</translation>
 <translation id="1787350673646245458">Användarbild</translation>
-<translation id="1788329699711791226">Få åtkomst till det du har i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ta bort åtkomst</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792619191750875668">Utökad skärm</translation>
@@ -4659,7 +4658,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5539221284352502426">Det angivna lösenordet avvisades av servern. Möjliga orsaker: Lösenordet är för kort. Lösenordet måste innehålla siffror eller symboler. Det får inte vara ett återanvänt lösenord.</translation>
 <translation id="5541694225089836610">Åtgärden har inaktiverats av administratören</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chrome-profilen och data i den. Dit hör bland annat bokmärken, historik och lösenord.</translation>
 <translation id="5542750926112347543">Cookies från <ph name="DOMAIN" /> blockeras</translation>
 <translation id="5542949973455282971">Ansluter till <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontrollerar status …</translation>

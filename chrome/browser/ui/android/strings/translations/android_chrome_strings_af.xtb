@@ -106,6 +106,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="1493287004536771723">Jy volg tans <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Soekenjin</translation>
 <translation id="1513352483775369820">Boekmerke en webgeskiedenis</translation>
+<translation id="1513814250881909472">Sinkroniseer om jou oortjies van jou ander toestelle af te kry</translation>
 <translation id="1513858653616922153">Vee wagwoord uit</translation>
 <translation id="1518421282666914498">Emosie-GIF <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Aktief vandag</translation>
@@ -184,6 +185,7 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="1995884366040846621">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou naam, e-posadres en profielfoto met hierdie werf deel. Lees hierdie werf se <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
 <translation id="200114059308480249">Sluit omringende teks by Google-soektogte in?</translation>
+<translation id="2011996512573319870">Sinkroniseer om die relevantste inhoud van Google af te kry</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# lêer}other{# lêers}}</translation>
 <translation id="2020309681647789787">Jy sal jou geskiedenis op al jou gesinkroniseerde toestelle hê sodat jy kan voortgaan met dit waarmee jy besig was</translation>
 <translation id="2021896219286479412">Volskermwerfkontroles</translation>
@@ -267,6 +269,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2472163211318554013">Meld aan om Chrome ten beste te benut</translation>
 <translation id="247737702124049222">Prentbeskrywings is aan</translation>
+<translation id="2481251096908459228">Sien stories vir jou</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
 <translation id="2494974097748878569">Google Assistent in Chrome</translation>
@@ -308,6 +311,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# oudiolêer}other{# oudiolêers}}</translation>
 <translation id="265156376773362237">Standaardvooraflaai</translation>
 <translation id="2656405586795711023">Webprogramme</translation>
+<translation id="2700802943130197326">Sinkroniseer om jou wagwoorde, boekmerke en meer op al jou ander toestelle te kry.</translation>
 <translation id="2702516483241149200">Nuut: Deel 'n skakel wat na hierdie teks toe rollees</translation>
 <translation id="2704606927547763573">Gekopieer</translation>
 <translation id="2707726405694321444">Herlaai bladsy</translation>
@@ -569,6 +573,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4162867837470729563">Lys deelopsies teen volle hoogte.</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
+<translation id="4177222230309051052">Kry al jou boekmerke</translation>
 <translation id="4181841719683918333">Tale</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4196597275619698563">Skep kaart</translation>
@@ -724,6 +729,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4987271110129728827">Kan nie daardie bladsy kry nie. Gaan jou spelling na of probeer ’n websoektog.</translation>
 <translation id="4988526792673242964">Bladsye</translation>
 <translation id="5001388021414335527">Volg hierdie werf hier</translation>
+<translation id="500351648694011114">Blaai makliker</translation>
 <translation id="5004416275253351869">Google-aktiwiteitkontroles</translation>
 <translation id="5005141133360250920">Reaksie is uitgevee</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
@@ -875,6 +881,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5864419784173784555">Wag tans vir nog 'n aflaai …</translation>
 <translation id="5865733239029070421">Stuur gebruikstatistieke en omvalverslae outomaties na Google</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
+<translation id="5869789175361934029">Gaan voort van ’n ander toestel af</translation>
 <translation id="587735546353481577">Om 'n werf te volg, moet jy na die werf gaan, die Chrome-kieslys oopmaak, en op Volg tik.</translation>
 <translation id="5880748256563468367">Gaan na stroom</translation>
 <translation id="5884076754568147479">Om jou te help om take te voltooi, sal Google die URL'e en inhoud ontvang van werwe waarop jy Assistent gebruik, asook inligting wat jy deur Assistent indien</translation>
@@ -1448,6 +1455,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8909135823018751308">Deel …</translation>
 <translation id="8912362522468806198">Google-rekening</translation>
 <translation id="8920114477895755567">Wag tans vir besonderhede van ouers.</translation>
+<translation id="8921980840204105660">Sinkroniseer om jou boekmerke van jou ander toestelle af te kry</translation>
 <translation id="8922289737868596582">Laai bladsye vanaf die Meer Opsies-knoppie af om hulle vanlyn te gebruik</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is gereed</translation>

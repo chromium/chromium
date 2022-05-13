@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">होम नेटवर्क, रोमिंग नहीं</translation>
 <translation id="1327977588028644528">गेटवे</translation>
+<translation id="1328223165223065150">वॉलपेपर का रंग</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
+<translation id="1380220803921738821">कई गड़बड़ियां हो रही हैं. डिवाइस को फिर चालू करके देखें या यूएसबी थंब ड्राइव का इस्तेमाल करके, फ़र्मवेयर को रिकवर करके देखें.</translation>
 <translation id="1387854245479784695">यह सभी कोर एक साथ दिखाता है</translation>
 <translation id="1394661041439318933">डिवाइस के केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">इमेज का सोर्स</translation>
 <translation id="1451536289672181509">डिवाइस एक कीबोर्ड है.</translation>
 <translation id="1459693405370120464">मौसम</translation>
+<translation id="1459784442280469416">यूएसबी ड्राइव पर सेव करें</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
 <translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
+<translation id="1512982610995527443">डिवाइस पांच सेकंड में शट डाउन हो जाएगा</translation>
+<translation id="1522984060396982789">रिपेयर की प्रोसेस पूरी हुई. आप चाहें, तो डिवाइस को शट डाउन करें या कोई अन्य कार्रवाई करें.</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="155865706765934889">टचपैड</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">हार्डवेयर पुनरीक्षण</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
 <translation id="1908234395526491708">यूडीपी अनुरोध पूरे नहीं हो पाए</translation>
+<translation id="1932611479324127242">बैटरी कटऑफ़ करें</translation>
 <translation id="1947737735496445907">प्रिंट किया गया</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1977994649430373166">Google खाते पर प्रोफ़ाइल फ़ोटो</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">फ़्लोट ऑन बाई</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फ़ोटो</translation>
+<translation id="2154739667870063220">फिर चालू करें</translation>
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">लेआउट स्विच करने वाला बटन</translation>
 <translation id="225692081236532131">सक्रियण की स्थिति</translation>
 <translation id="2271469253353559191">गहरे रंग वाला मोड शेड्यूल करें</translation>
+<translation id="2275586345903859204">रिपेयर की प्रोसेस पूरी हुई</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
 <translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">गहरे रंग वाला मोड चालू करें</translation>
 <translation id="2740531572673183784">ठीक है</translation>
 <translation id="2751739896257479635">EAP चरण 2 प्रमाणीकरण</translation>
+<translation id="2756652381241102009">डाइग्नोस्टिक्स चलाएं</translation>
 <translation id="2783010256799387990">जांच में पास</translation>
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="28232023175184696">इंटरनेट से कनेक्ट नहीं किया जा सका. फिर से कोशिश करने के लिए क्लिक करें.</translation>
+<translation id="2827359915699915567">आरएसयू कोड पाने के लिए, इस यूआरएल को मैन्युअल तरीके से टाइप करें</translation>
 <translation id="2859243502336719778">अहम अपडेट</translation>
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
@@ -225,6 +235,7 @@
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
+<translation id="3333527094307156612">आठ वर्णों का अनलॉक कोड पाने के लिए, इस क्यूआर कोड का इस्तेमाल करें. <ph name="LINK_BEGIN" />इस यूआरएल<ph name="LINK_END" /> को मैन्युअल तरीके से भी टाइप किया जा सकता है.</translation>
 <translation id="3336855445806447827">पक्के तौर पर नहीं बता सकता</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
@@ -258,6 +269,7 @@
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
+<translation id="3643810137582748570">अभी कैलिब्रेट न करें</translation>
 <translation id="3678765385266369662">चुनें कि राइट प्रोटेक्ट को कैसे बंद करना है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
@@ -328,6 +340,7 @@
 <translation id="4378551569595875038">कनेक्टिंग...</translation>
 <translation id="4382484599443659549">पीडीएफ़</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> को रीस्टार्ट किया जा रहा है</translation>
+<translation id="4415951057168511744">मौजूदा अवतार</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> बंद है</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
@@ -364,6 +377,7 @@
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4744944742468440486">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी</translation>
+<translation id="4751272708893364980">आरएमए लॉग देखें</translation>
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4774530504324923332">इसके लिए, आपको RSU करने की सुविधा वाली सुरक्षा कुंजी, एक क्यूआर कोड स्कैनर, और इंटरनेट कनेक्शन वाले एक अन्य डिवाइस की ज़रूरत पड़ेगी</translation>
 <translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
@@ -408,6 +422,7 @@
 <translation id="5049856988445523908">सिम लॉक है (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">समूह नाम</translation>
 <translation id="5051044138948155788">सिर्फ़ यह पेज है. यह आपको उस स्क्रीन पर ले जाएगा जहां स्कैनिंग शुरू होती है.</translation>
+<translation id="506768878203270635">आठ वर्णों का आरएसयू कोड डालें</translation>
 <translation id="5088172560898466307">सर्वर होस्‍टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -446,9 +461,11 @@
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
 <translation id="537872351913703572">डिवाइस किसी दूसरे उपयोगकर्ता या संगठन को दिया जाएगा</translation>
+<translation id="5389224261615877010">इंद्रधनुष</translation>
 <translation id="5395600419410242651">पूरा डेटा हमेशा के लिए मिटाएं</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
 <translation id="5401938042319910061">सभी रूटीन चलाएं</translation>
+<translation id="5406131354638931058">स्टोर या शिप किए जाने वाले डिवाइसों के लिए, बैटरी कटऑफ़ करें</translation>
 <translation id="5423849171846380976">सक्रिय हुआ</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -469,6 +486,7 @@
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5649768706273821470">सुनें</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
+<translation id="5661196929408385351">पावरवॉश और शट डाउन करें</translation>
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">परिवार</translation>
@@ -480,6 +498,7 @@
 <translation id="576835345334454681">डिसप्ले की रोशनी बढ़ाने वाला बटन</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5784136236926853061">एचटीटीपी अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
+<translation id="578753362485952307">अगर किसी दूसरे डिवाइस में इस्तेमाल करने के लिए मेनबोर्ड पर काम किया जा रहा है, तो <ph name="LINK_BEGIN" />रीवर्क फ़्लो पर जाएं<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5843706793424741864">फ़ैरनहाइट</translation>
@@ -499,6 +518,7 @@
 <translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="594552776027197022">रैंडम कुंजी के जोड़े बनाएं</translation>
+<translation id="5951259522948394825">पक्का करें कि सब कुछ सही है और डाइग्नोस्टिक्स रिपोर्ट देखें</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">डिफ़ॉल्ट वॉलपेपर</translation>
 <translation id="6017514345406065928">हरा</translation>
@@ -536,6 +556,7 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">गहरे रंग वाली थीम चालू करें</translation>
+<translation id="6295178529664209245">क्या आपको रिपेयर की प्रोसेस जारी रखनी है?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> के लिए फ़र्मवेयर अपडेट करें</translation>
 <translation id="6321407676395378991">स्क्रीन सेवर चालू करें</translation>
@@ -571,6 +592,7 @@
 <translation id="6575134580692778371">कॉन्फ़िगर नहीं है</translation>
 <translation id="6579509898032828423">इस फ़ोटो का इस्तेमाल करें</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> को रिपेयर करने की प्रोसेस से बाहर निकलें</translation>
 <translation id="6618744767048954150">जांच चल रही है</translation>
 <translation id="6620487321149975369">प्रिंट की गई फ़ाइलें तब तक इतिहास में दिखेंगी, जब तक इन्हें मैन्युअल तरीके से हटा नहीं दिया जाता</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
@@ -583,6 +605,7 @@
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723847290197874913">कीबोर्ड की बैकलाइट</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
+<translation id="6746847322826305075">आप चाहें तो डिवाइस को पूरा रिपेयर करने की प्रोसेस जारी रखें. इसके अलावा, मेनबोर्ड को रीस्टॉक करने के लिए, डिवाइस को पावरवॉश (फ़ैक्ट्री रीसेट) भी किया जा सकता है.</translation>
 <translation id="6747215703636344499">बंद हो गया - आउटपुट भर गया</translation>
 <translation id="6749473226660745022">फ़ोटो</translation>
 <translation id="6753452347192452143">डिवाइस एक कंप्यूटर है.</translation>
@@ -630,6 +653,7 @@
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">एक या ज़्यादा कॉम्पोनेंट चुनें और फिर से कोशिश करें. इसके अलावा, कैलिब्रेट किए बिना आगे बढ़ा जा सकता है</translation>
 <translation id="7281657306185710294">फ़ील द ब्रीज़</translation>
 <translation id="7287310195820267359">वॉलपेपर कलेक्शन</translation>
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
@@ -660,11 +684,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">यूएसबी टचस्क्रीन</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>
+<translation id="760845693386726841">यह कॉम्पोनेंट नहीं मिला.</translation>
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
 <translation id="7626501172915339021">आरएमए सर्वर अनलॉक (RSU) लागू करें</translation>
 <translation id="763165478673169849">आखिर में रीसेट किया गया समय</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" /> को रिपेयर करते समय गड़बड़ी हुई</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7665800271478495366">अवतार बदलें</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
@@ -706,12 +732,14 @@
 <translation id="8083281199617904460">यह रिपेयर प्रोसेस, किसी प्रशिक्षित रिपेयर टेक्नीशियन के लिए है. खराब कॉम्पोनेंट बदलने के बाद ही प्रोसेस शुरू करें.</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8104083085214006426">आप एक ओपन नेटवर्क का इस्तेमाल कर रहे हैं जो सुरक्षित नहीं है</translation>
+<translation id="8109786307828817014">क्या आपको कॉम्पोनेंट को कैलिब्रेट किए बिना आगे बढ़ना है?</translation>
 <translation id="811820734797650957">(Android) गेटवे को पिंग किया जा सकता है</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनें</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">आरएमए लॉग</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8217675307824400706">वाई-फ़ाई से कनेक्ट हों</translation>
@@ -728,6 +756,7 @@
 <translation id="8302368968391049045">एचटीटीपीएस फ़ायरवॉल</translation>
 <translation id="8318753676953949627">कोई इमेज नहीं</translation>
 <translation id="8327249300223641918">आगे बढ़ने से पहले, पूरे डिवाइस (बेस और लिड) को किसी समतल जगह पर रखें.</translation>
+<translation id="8330949592403310082">चुनें कि कौनसे कॉम्पोनेंट बदले गए हैं</translation>
 <translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="8352772353338965963">एक से ज़्यादा साइन-इन के लिए कोई खाता जोड़ें. सभी साइन इन किए गए खातों को पासवर्ड के बिना एक्सेस किया जा सकता है, इसलिए इस सुविधा का इस्तेमाल सिर्फ़ विश्वसनीय खातों के साथ किया जाना चाहिए.</translation>
@@ -744,6 +773,7 @@
 <translation id="8456761643544401578">अपने-आप गहरे रंग वाला मोड</translation>
 <translation id="8461329675984532579">'होम' पर सेवाएं देने वाली कंपनी का नाम</translation>
 <translation id="8467104829907989997">कॉम्पोनेंट कैलिब्रेट किए जा रहे हैं...</translation>
+<translation id="8474030592808010086">बैटरी कटऑफ़ करने के लिए, डिवाइस को डिसकनेक्ट करें</translation>
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
@@ -752,6 +782,7 @@
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">अगर कॉम्पोनेंट कैलिब्रेट नहीं किए जाते हैं, तो हो सकता है कि वे सही तरीके से काम न करें</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
@@ -788,6 +819,7 @@
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">देखें कि क्या ठीक किया गया है</translation>
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
 <translation id="8923267550422472772">रीसेट करने के लिए महीने की तारीख</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
@@ -806,6 +838,7 @@
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">डीएनएस रिज़ॉल्यूशन के इंतज़ार का समय ज़्यादा है</translation>
+<translation id="9063121522582193837">कुछ कॉम्पोनेंट को कैलिब्रेट नहीं किया जा सका</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9082718469794970195">इस वीडियो का इस्तेमाल करें</translation>

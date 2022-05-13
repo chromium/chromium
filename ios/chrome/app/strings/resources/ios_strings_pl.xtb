@@ -47,6 +47,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
+<translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
 <translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
 <translation id="1323735185997015385">Usuń</translation>
@@ -823,6 +824,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7966516440812255683">Witryny mogą używać plików cookie dla Twojej wygody – na przykład, by zapamiętać Twoje logowanie lub zawartość koszyka.
 
 Witryny mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
+<translation id="7966904497916178308">Włączona jest standardowa ochrona</translation>
 <translation id="7971521879845308059">Blokuj wyskakujące okienka</translation>
 <translation id="797413074872316787">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="7978018860671536736">3. Kliknij Automatyczne wypełnianie haseł.</translation>

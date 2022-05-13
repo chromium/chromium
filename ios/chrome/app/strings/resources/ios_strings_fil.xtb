@@ -47,6 +47,7 @@
 <translation id="1283524564873030414">Nakalipas na 24 na Oras</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
 <translation id="1291506870746876680">Mare-reset sa naka-off ang mga pahintulot sa <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> kapag umalis ka sa site na ito.</translation>
+<translation id="1312721752506309252">Naka-on ang pinaigting na proteksyon</translation>
 <translation id="1321993286294231467">Nagka-error sa pag-save ng larawan.</translation>
 <translation id="1322735045095424339">Ipinag-aatas ng iyong organisasyon na mag-browse sa Incognito mode</translation>
 <translation id="1323735185997015385">I-delete</translation>
@@ -825,6 +826,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7966516440812255683">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo.
 
 Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad.</translation>
+<translation id="7966904497916178308">Naka-on ang standard na proteksyon.</translation>
 <translation id="7971521879845308059">I-block ang Mga Pop-up</translation>
 <translation id="797413074872316787">Para mag-sync at mag-personalize sa mga device, i-on ang pag-sync.</translation>
 <translation id="7978018860671536736">3. I-tap ang I-autofill ang Mga Password</translation>

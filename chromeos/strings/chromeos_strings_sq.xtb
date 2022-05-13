@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Përshtat me zonën e skanuar</translation>
 <translation id="1367951781824006909">Zgjidh një skedar</translation>
+<translation id="1380220803921738821">Po ndeshim disa gabime. Provo ta rindezësh pajisjen ose ta rikuperosh firmuerin duke përdorur një njësi disku USB.</translation>
 <translation id="1387854245479784695">Kjo është një përmbledhje e të gjitha të dhënave kryesore</translation>
 <translation id="1394661041439318933">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kasë.</translation>
 <translation id="1397738625398125236">Porta e kalimit mund të kryejë verifikimin "ping"</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
+<translation id="2827359915699915567">Shkruaj në mënyrë manuale këtë URL për të marrë kodin RSU</translation>
 <translation id="2859243502336719778">Përditësim kritik</translation>
 <translation id="2860473693272905224">Vendos një faqe tjetër në skaner</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Drejtimi i çelësit</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
+<translation id="3333527094307156612">Përdor këtë kod QR për të marrë kodin e shkyçjes me 8 karaktere. Mund ta shkruash <ph name="LINK_BEGIN" />këtë URL<ph name="LINK_END" /> edhe në mënyrë manuale.</translation>
 <translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
 <translation id="3621202678540785336">Hyrje</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
+<translation id="3643810137582748570">Kapërce kalibrimin</translation>
 <translation id="3678765385266369662">Zgjidh se si dëshiron ta çaktivizosh Write Protect</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
+<translation id="506768878203270635">Fut kodin me 8 karaktere</translation>
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -468,6 +473,7 @@
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
+<translation id="5661196929408385351">Powerwash dhe fikja</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familja</translation>
@@ -479,6 +485,7 @@
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
+<translation id="578753362485952307">Nëse po riparon një pllakë kryesore të qarkut për ta përdorur në një pajisje tjetër, shko te <ph name="LINK_BEGIN" />fluksi i riparimit<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5843706793424741864">Farenhait</translation>
@@ -535,6 +542,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
+<translation id="6295178529664209245">Të vazhdohet riparimi?</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
@@ -570,6 +578,7 @@
 <translation id="6575134580692778371">I pakonfiguruar</translation>
 <translation id="6579509898032828423">Përdor këtë fotografi</translation>
 <translation id="6596816719288285829">Adresa e IP-së</translation>
+<translation id="6611280807952151149">Dil nga riparimi i pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
 <translation id="6643016212128521049">Pastro</translation>
@@ -582,6 +591,7 @@
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6723847290197874913">Drita e sfondit e tastierës</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
+<translation id="6746847322826305075">Mund të vazhdosh me riparimin e plotë ose me rivendosjen në gjendjen e fabrikës (Powerwash) për pajisjen për të rikuperuar pllakën kryesore të qarkut.</translation>
 <translation id="6747215703636344499">Ndaloi - Dalja është plot</translation>
 <translation id="6749473226660745022">Fotografitë</translation>
 <translation id="6753452347192452143">Pajisja është një kompjuter.</translation>
@@ -629,6 +639,7 @@
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Zgjidh 1 ose më shumë komponentë dhe provoje përsëri, ose kapërceje kalibrimin</translation>
 <translation id="7281657306185710294">Ndjeje puhizën</translation>
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
 <translation id="7297226631177386107">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës</translation>
@@ -659,11 +670,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekrani me prekje me USB</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
+<translation id="760845693386726841">Ky komponent nuk mund të zbulohej.</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="7626501172915339021">Kryej RMA Server Unlock (RSU)</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
+<translation id="7657530360897961171">Gabim riparimi për pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
@@ -705,6 +718,7 @@
 <translation id="8083281199617904460">Ky proces riparimi duhet të kryhet nga një teknik i trajnuar për riparimin. Fillo vetëm pas zëvendësimit të komponentëve që nuk funksionojnë mirë.</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
+<translation id="8109786307828817014">Të vazhdohet me kalibrimet e dështuara?</translation>
 <translation id="811820734797650957">(Android) Portëkalimi mund të marrë ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
@@ -727,6 +741,7 @@
 <translation id="8302368968391049045">Mur mbrojtës HTTPS</translation>
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8327249300223641918">Para se të vazhdosh, vendose të gjithë pajisjen (bazën dhe kapakun) mbi një sipërfaqe të rrafshët.</translation>
+<translation id="8330949592403310082">Zgjidh se cilët komponentë janë zëvendësuar</translation>
 <translation id="8336739000755212683">Ndrysho imazhin e llogarisë së pajisjes</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
@@ -751,6 +766,7 @@
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Komponentët mund të mos funksionojnë si duhet nëse nuk kalibrohen</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>
@@ -805,6 +821,7 @@
 <translation id="9025198690966128418">Përdore si pajisje personale</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Rezolucioni i DNS-së ka vonesë të lartë</translation>
+<translation id="9063121522582193837">Disa komponentë nuk mund të kalibroheshin</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9082718469794970195">Përdor këtë video</translation>

@@ -846,7 +846,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1784707308176068866">Izvajanje v ozadju na zahtevo sodelujoče izvorne aplikacije</translation>
 <translation id="1784849162047402014">V napravi primanjkuje prostora na disku</translation>
 <translation id="1787350673646245458">Slika uporabnika</translation>
-<translation id="1788329699711791226">Dostopajte do stvari v brskalniku Chrome iz računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Odstrani dostop</translation>
 <translation id="1791662854739702043">Nameščeno</translation>
 <translation id="1792619191750875668">Razširjen zaslon</translation>
@@ -4662,7 +4661,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5539221284352502426">Vneseno geslo je zavrnil strežnik. Možni razlogi za to so: Geslo je prekratko. Geslo mora vsebovati številke ali simbole. Geslo se mora razlikovati od prejšnjih gesel.</translation>
 <translation id="5541694225089836610">Dejanje je onemogočil skrbnik</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Vaš račun upravlja <ph name="MANAGER_NAME" />. Vaš skrbnik lahko vidi in upravlja ta profil za brskalnik Chrome s podatki vred. Podatki vključujejo zaznamke, zgodovino in gesla.</translation>
 <translation id="5542750926112347543">Piškotki s spletnega mesta <ph name="DOMAIN" /> so blokirani</translation>
 <translation id="5542949973455282971">Povezovanje z operaterjem <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Preverjanje stanja ...</translation>

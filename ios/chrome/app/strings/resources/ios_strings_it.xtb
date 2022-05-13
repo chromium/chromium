@@ -47,6 +47,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1283524564873030414">Ultime 24 ore</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1291506870746876680">Le autorizzazioni del sito <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> verranno disattivate quando uscirai dal sito.</translation>
+<translation id="1312721752506309252">È attiva la protezione avanzata</translation>
 <translation id="1321993286294231467">Errore durante il salvataggio dell'immagine.</translation>
 <translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
@@ -825,6 +826,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7966516440812255683">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
 I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci.</translation>
+<translation id="7966904497916178308">È attiva la protezione standard</translation>
 <translation id="7971521879845308059">Blocca popup</translation>
 <translation id="797413074872316787">Attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi.</translation>
 <translation id="7978018860671536736">3. Tocca Riempimento automatico password</translation>

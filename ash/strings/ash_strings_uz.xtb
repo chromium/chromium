@@ -595,7 +595,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4481530544597605423">Uzilgan qurilmalar</translation>
 <translation id="4505050298327493054">Faol ish stoli.</translation>
 <translation id="4513946894732546136">Fikr-mulohaza</translation>
-<translation id="4516867700536986208">Barcha ilovalarni koʻrish uchun chapga yoki pastga strelka tugmasini bosing</translation>
 <translation id="4518404433291145981">Chromebook qulfini ochish uchun telefon qulfini yeching</translation>
 <translation id="4527045527269911712">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda.</translation>
 <translation id="453661520163887813">To‘liq quvvatlanishiga <ph name="TIME" /> qoldi</translation>
@@ -1033,7 +1032,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7302889331339392448">Jonli izoh yoqilmagan.</translation>
 <translation id="7303365578352795231">Boshqa qurilmada javob berilmoqda</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Oxirgi ilovalarni koʻrish uchun chapga strelka tugmasini bosing</translation>
 <translation id="7313193732017069507">Kamera tugmasini chiqarish</translation>
 <translation id="731589979057211264">Shelf Party yoniq.</translation>
 <translation id="7319740667687257810">Launcher, ajratib ko‘rsatish</translation>
@@ -1168,7 +1166,6 @@ yangi oʻrnatilgan</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> nomli andoza bor</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8054466585765276473">Batareyadan ishlash mumkin bo‘lgan vaqt hisoblanmoqda.</translation>
-<translation id="8055510977240456975">Davomiy takliflarni berkitish</translation>
 <translation id="8061464966246066292">Yuqori kontrast</translation>
 <translation id="8098591350844501178">Ekranni “<ph name="RECEIVER_NAME" />” qurilmasiga translatsiya qilishni to‘xtatish</translation>
 <translation id="8113423164597455979">Yoniq, hammasi</translation>

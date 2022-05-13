@@ -844,7 +844,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1784707308176068866">Executar em segundo plano quando solicitado por um aplicativo nativo de cooperação</translation>
 <translation id="1784849162047402014">O dispositivo está com pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do usuário</translation>
-<translation id="1788329699711791226">Acesse os dados do navegador Chrome pela conta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Remover acesso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Exibição estendida</translation>
@@ -3795,6 +3794,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4648491805942548247">Permissões insuficientes</translation>
 <translation id="4650591383426000695">Desconecte seu smartphone do <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Não foi possível carregar o componente on-line com recursos do modo de demonstração.</translation>
+<translation id="4651921906638302153">Não é possível fazer login com essa conta</translation>
 <translation id="4652935475563630866">A mudança na configuração da câmera exige que você reinicialize o Parallels Desktop. Faça isso para continuar.</translation>
 <translation id="4653405415038586100">Erro ao configurar o Linux</translation>
 <translation id="465406513924180949">Você está vendo carrinhos que ajudam a voltar aos itens que você deixou em carrinhos de compras pela Web.
@@ -4661,7 +4661,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5539221284352502426">A senha inserida foi recusada pelo servidor. Entre os possíveis motivos estão: a senha é muito curta, não inclui números ou símbolos ou é igual a senhas anteriores.</translation>
 <translation id="5541694225089836610">Ação desativada pelo administrador</translation>
 <translation id="5542132724887566711">Perfil</translation>
-<translation id="554229901779827904">Sua conta é gerenciada por <ph name="MANAGER_NAME" />. Seu administrador pode ver e editar este perfil do navegador Chrome e os dados dele. Seus dados incluem favoritos, histórico e senhas.</translation>
 <translation id="5542750926112347543">Os cookies de <ph name="DOMAIN" /> foram bloqueados</translation>
 <translation id="5542949973455282971">Conectando-se à <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Verificando status...</translation>
@@ -5452,6 +5451,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6327785803543103246">Descoberta automática do proxy da Web</translation>
 <translation id="6331818708794917058">Os sites podem pedir para se conectar a dispositivos MIDI</translation>
 <translation id="6333064448949140209">O arquivo será enviado ao Google para depuração</translation>
+<translation id="6333170995003625229">Não foi possível verificar seu endereço de e-mail ou sua senha. Tente fazer login novamente.</translation>
 <translation id="6335920438823100346">Para iniciar o Linux, <ph name="MANAGER" /> exige que você faça backup dos seus dados e redefina o Chromebook para as configurações originais.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do adb. O <ph name="DEVICE_TYPE" /> será redefinido em 24 horas. Faça backup dos arquivos importantes para você.</translation>
 <translation id="6338981933082930623">Todos os sites podem exibir anúncios</translation>
@@ -5862,6 +5862,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6735304988756581115">Mostrar cookies e outros dados do site...</translation>
 <translation id="6736243959894955139">Endereço</translation>
 <translation id="6737663862851963468">Remover tíquete do Kerberos</translation>
+<translation id="6738430949033571771">Verificando a conta…</translation>
 <translation id="6739923123728562974">Mostrar atalho na área de trabalho</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> pausado</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Seu administrador<ph name="END_LINK" /> desativou o "Navegação segura"</translation>
@@ -7679,6 +7680,8 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8546306075665861288">Cache da imagem</translation>
 <translation id="8546930481464505581">Personalizar barra de toque</translation>
 <translation id="8547013269961688403">Ativar lupa de tela cheia</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />O e-mail <ph name="USER_EMAIL" /> é gerenciado por <ph name="MANAGER" />. Ele não pode ser adicionado como conta adicional.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Para usar o e-mail <ph name="USER_EMAIL" />, saia do seu <ph name="DEVICE_TYPE" />. Em seguida, na parte de baixo da tela de login, selecione Adicionar pessoa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Mantenha pressionada a tecla "Pesquisar" para alternar o comportamento das teclas de função</translation>
 <translation id="8549316893834449916">Para fazer login no Chromebook, você usará a mesma Conta do Google usada no Gmail, Drive, YouTube e outros serviços.</translation>
 <translation id="8551388862522347954">Licenças</translation>

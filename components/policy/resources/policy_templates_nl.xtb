@@ -3799,25 +3799,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als je het beleid instelt op False of niet instelt, wordt 'Geïntegreerde desktop' uitgezet. Gebruikers kunnen deze functie dan niet aanzetten.</translation>
 <translation id="5255162913209987122">Kan worden aanbevolen</translation>
 <translation id="5257395339965216304">Gegevens van gehoste apps</translation>
-<translation id="5263649486910778308">Dit beleid biedt een manier om de lijst met reeksen te overschrijven die de browser gebruikt voor First-Party Sets-functies.
-
-      Elke reeks in de lijst met First-Party Sets van de browser moet voldoen aan de vereisten van een First-Party Set.
-      Een First-Party Set bestaat uit een eigenaarssite en een of meer lidsites. Alle sites in een First-Party Set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost, ongeacht of het een eigenaars- of lidsite is.
-      Elke site in een First-Party Set moet ook uniek zijn. Dit betekent dat een site niet zowel eigenaar als lid kan zijn en maar één keer als lid van een First-Party Set kan worden vermeld.
-      Zie https://github.com/privacycg/first-party-sets voor meer informatie over First-Party Sets.
-
-      Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met First-Party Sets.
-
-      Voor alle sites in een First-Party Set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, die site wordt verwijderd uit de First-Party Set van de browser.
-      Daarna wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
-
-      Voor alle sites in een First-Party Set uit de lijst <ph name="ADDITIONS" />, geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, de First-Party Set van de browser wordt geüpdatet zodat de nieuwe First-Party Set kan worden toegevoegd aan de lijst van de browser. Nadat de lijst van de browser is geüpdatet, wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
-
-      De lijst met First-Party Sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan 1 reeks is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
-
-      Jokertekens (*) worden zowel in First-Party Sets als in deze lijsten niet ondersteund als beleidswaarde.
-
-      Alle reeksen die in dit beleid worden opgegeven, moeten geldige First-Party Sets zijn. Zo niet, dan krijg je de relevante foutmelding.</translation>
 <translation id="5266173014392157048">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, worden servers toegewezen waaraan <ph name="PRODUCT_NAME" /> kan delegeren. Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.

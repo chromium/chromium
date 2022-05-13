@@ -830,7 +830,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1784707308176068866">Original ilova tomonidan talab qilinganda fonda ishga tushirish</translation>
 <translation id="1784849162047402014">Diskda bo‘sh joy tugamoqda</translation>
 <translation id="1787350673646245458">Foydalanuvchi rasmi</translation>
-<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> bilan Chrome brauzeriga kiring</translation>
 <translation id="1790976235243700817">Ruxsatni olib tashlash</translation>
 <translation id="1791662854739702043">Oʻrnatilgan</translation>
 <translation id="1792619191750875668">Kengaytirilgan ekran</translation>
@@ -4646,7 +4645,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5539221284352502426">Server kiritilgan parolni qabul qilmadi. Unutmangki: Parol juda qisqa, raqamlar va belgilardan iborat va avval ishlatilmagan bo‘lishi zarur.</translation>
 <translation id="5541694225089836610">Bu amalni administrator faolsizlantirgan</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi maʼlumotlarni koʻrib, tahrirlay oladi. Maʼlumotlaringizga xatchoʻplar, tarix va parollar kiradi.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> saytidan cookie fayllar bloklandi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> nomli tarmoqqa ulanmoqda</translation>
 <translation id="5543983818738093899">Holat tekshirilmoqda...</translation>

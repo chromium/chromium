@@ -41,6 +41,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
 <translation id="1367951781824006909">Valitse tiedosto</translation>
+<translation id="1380220803921738821">Kohtaamme virheitä. Yritä käynnistää uudelleen tai palauttaa laiteohjelmisto USB-muistitikulla.</translation>
 <translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
 <translation id="1394661041439318933">Laitteen kotelon akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
@@ -186,6 +187,7 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="28232023175184696">Ei internetyhteyttä. Yritä uudelleen klikkaamalla.</translation>
+<translation id="2827359915699915567">Kirjoita URL-osoite manuaalisesti saadaksesi RSU-koodin</translation>
 <translation id="2859243502336719778">Tärkeä päivitys</translation>
 <translation id="2860473693272905224">Aseta toinen sivu skanneriin</translation>
 <translation id="2872961005593481000">Sammuta</translation>
@@ -225,6 +227,7 @@
 <translation id="3291996639387199448">Avaimen suunta</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
 <translation id="3328783797891415197">Testi käynnissä</translation>
+<translation id="3333527094307156612">Käytä QR-koodia saadaksesi 8-merkkisen avauskoodin. Voit myös kirjoittaa <ph name="LINK_BEGIN" />URL-osoitteen<ph name="LINK_END" /> manuaalisesti.</translation>
 <translation id="3336855445806447827">En tiedä</translation>
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
@@ -258,6 +261,7 @@
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="3621202678540785336">Äänitulo:</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
+<translation id="3643810137582748570">Ohita kalibrointi</translation>
 <translation id="3678765385266369662">Valitse, miten haluat ottaa kirjoitussuojauksen pois päältä</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
@@ -408,6 +412,7 @@
 <translation id="5049856988445523908">SIM-kortti lukittu (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
 <translation id="5051044138948155788">Tämä on ainoa sivu. Sinut ohjataan skannauksen aloitusnäytölle.</translation>
+<translation id="506768878203270635">Lisää 8 merkkiä</translation>
 <translation id="5088172560898466307">Palvelimen isäntänimi</translation>
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -469,6 +474,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
+<translation id="5661196929408385351">Powerwash ja sammutus</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Perhe</translation>
@@ -480,6 +486,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="576835345334454681">Lisää näytön kirkkautta</translation>
 <translation id="57838592816432529">Mykistä</translation>
 <translation id="5784136236926853061">Suuri HTTP-viive</translation>
+<translation id="578753362485952307">Jos uudelleentyöstät emolevyä käytettäväksi toisessa laitteessa, siirry kohtaan <ph name="LINK_BEGIN" />uudelleentyöstön ohjeet<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -536,6 +543,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Laita tumma teema päälle</translation>
+<translation id="6295178529664209245">Jatketaanko korjausta?</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="6319207335391420837">Päivitä laiteohjelmisto: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Laita näytönsäästäjä päälle</translation>
@@ -571,6 +579,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6575134580692778371">Ei määritetty</translation>
 <translation id="6579509898032828423">Käytä tätä kuvaa</translation>
 <translation id="6596816719288285829">IP-osoite</translation>
+<translation id="6611280807952151149">Poistu <ph name="DEVICE_TYPE" />-korjauksesta</translation>
 <translation id="6618744767048954150">Käynnissä</translation>
 <translation id="6620487321149975369">Tulostustyöt näkyvät historiassa, ellei niitä poisteta manuaalisesti</translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
@@ -583,6 +592,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6723839937902243910">Virta</translation>
 <translation id="6723847290197874913">Näppämistön taustavalo</translation>
 <translation id="672609503628871915">Uudet ominaisuudet</translation>
+<translation id="6746847322826305075">Voit jatkaa laitteen täyttä korjausta tai käyttää powerwashia (tehdasasetusten palautus) emolevyn varastointiin.</translation>
 <translation id="6747215703636344499">Pysähtynyt – Syöte täynnä</translation>
 <translation id="6749473226660745022">Kuvat</translation>
 <translation id="6753452347192452143">Laite on tietokone.</translation>
@@ -630,6 +640,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
 <translation id="7271040990581020067">Skanneri on tällä hetkellä käytössä. Yritä myöhemmin uudelleen.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Valitse yksi tai useampi komponentti ja yritä uudestaan tai ohita kalibrointi</translation>
 <translation id="7281657306185710294">Tunne tuulahdus</translation>
 <translation id="7287310195820267359">Taustakuvakokoelmat</translation>
 <translation id="7297226631177386107">HTTPS-sivustoihin ei voi yhdistää palomuurin läpi</translation>
@@ -660,11 +671,13 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
+<translation id="760845693386726841">Komponenttia ei voitu havaita.</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="7626501172915339021">Avaa palvelin tuotepalautusvaltuutusta varten (RSU)</translation>
 <translation id="763165478673169849">Edellinen nollausaika</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7656388927906093505">Laite on hiiri.</translation>
+<translation id="7657530360897961171">Korjausvirhe: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665800271478495366">Vaihda avatar</translation>
 <translation id="7690294790491645610">Vahvista uusi salasana</translation>
@@ -706,6 +719,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8083281199617904460">Korjausprosessi on tarkoitettu koulutetun korjausteknikon suoritettavaksi. Aloita vasta, kun väärin toimivat komponentit on vaihdettu.</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8104083085214006426">Käytät avointa ja suojaamatonta verkkoa</translation>
+<translation id="8109786307828817014">Jatketaanko epäonnistuneella kalibroinnilla?</translation>
 <translation id="811820734797650957">(Android) Yhdyskäytävää voidaan pingata</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>
@@ -728,6 +742,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8302368968391049045">HTTPS-palomuuri</translation>
 <translation id="8318753676953949627">Ei kuvia</translation>
 <translation id="8327249300223641918">Ennen kuin jatkat, aseta koko laite (pohja ja kansi) tasaiselle alustalle.</translation>
+<translation id="8330949592403310082">Valitse, mitkä komponentit korvattiin</translation>
 <translation id="8336739000755212683">Vaihda laitteen tilikuva</translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8352772353338965963">Lisää tili useaan tiliin kirjautumiseen. Kaikkia tilejä, joihin on kirjauduttu sisään, voi käyttää ilman salasanaa. Käytä siis ominaisuutta vain luotetuilla tileillä.</translation>
@@ -752,6 +767,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Komponentit eivät ehkä toimi oikein ilman kalibrointia</translation>
 <translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
@@ -806,6 +822,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9025198690966128418">Käytä henkilökohtaisena laitteena</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-selvityksen viive on pitkä</translation>
+<translation id="9063121522582193837">Joitain komponentteja ei voitu kalibroida</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Käytä tätä videota</translation>
