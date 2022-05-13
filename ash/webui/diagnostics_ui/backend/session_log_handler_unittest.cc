@@ -349,7 +349,6 @@ class SessionLogHandlerAshTest : public NoSessionAshTestBase {
 
 // Validates behavior when log controller is used to generate session log.
 TEST_F(SessionLogHandlerAshTest, SaveSessionLogFlagEnabled) {
-  const std::string expected_log_header = "Diagnostics Log";
   base::RunLoop run_loop;
 
   // Simulate select file
@@ -362,8 +361,26 @@ TEST_F(SessionLogHandlerAshTest, SaveSessionLogFlagEnabled) {
   RunTasks();
 
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
-  ASSERT_EQ(1u, log_lines.size());
-  EXPECT_EQ(expected_log_header, log_lines[0]);
+  ASSERT_EQ(8u, log_lines.size());
+
+  // Empty system data log.
+  const std::string expected_system_header = "=== System ===";
+  EXPECT_EQ(expected_system_header, log_lines[0]);
+  const std::string expected_routine_header = "--- Test Routines ---";
+  EXPECT_EQ(expected_routine_header, log_lines[1]);
+  const std::string expected_no_routine_msg =
+      "No routines of this type were run in the session.";
+  EXPECT_EQ(expected_no_routine_msg, log_lines[2]);
+
+  // Empty network data log.
+  const std::string expected_network_header = "=== Networking ===";
+  EXPECT_EQ(expected_network_header, log_lines[3]);
+  const std::string expected_network_info_header = "--- Network Info ---";
+  EXPECT_EQ(expected_network_info_header, log_lines[4]);
+  EXPECT_EQ(expected_routine_header, log_lines[5]);
+  EXPECT_EQ(expected_no_routine_msg, log_lines[6]);
+  const std::string expected_network_events_header = "--- Network Events ---";
+  EXPECT_EQ(expected_network_events_header, log_lines[7]);
 }
 
 // Validates that invoking the saveSessionLog Web UI event opens the

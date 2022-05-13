@@ -5,6 +5,8 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -27,10 +30,27 @@ namespace diagnostics {
 namespace {
 
 DiagnosticsLogController* g_instance = nullptr;
+
 // Default path for storing logs.
 const char kDiaganosticsTmpDir[] = "/tmp/diagnostics";
 const char kDiaganosticsDirName[] = "diagnostics";
 
+// Session log headers and fallback content.
+const char kRoutineLogSubsectionHeader[] = "--- Test Routines --- \n";
+const char kSystemLogSectionHeader[] = "=== System === \n";
+const char kNetworkingLogSectionHeader[] = "=== Networking === \n";
+const char kNoRoutinesRun[] =
+    "No routines of this type were run in the session.\n";
+
+std::string GetRoutineResultsString(const std::string& results) {
+  const std::string section_header =
+      std::string(kRoutineLogSubsectionHeader) + "\n";
+  if (results.empty()) {
+    return section_header + kNoRoutinesRun;
+  }
+
+  return section_header + results;
+}
 // Determines if profile should be accessed with current session state.  If at
 // sign-in screen, guest user, kiosk app, or before the profile has
 // successfully loaded temporary path should be used for storing logs.
@@ -39,9 +59,6 @@ bool ShouldUseActiveUserProfileDir(session_manager::SessionState state,
   return state == session_manager::SessionState::ACTIVE &&
          status == ash::LoginStatus::USER;
 }
-
-// Placeholder session log contents.
-const char kLogFileContents[] = "Diagnostics Log";
 
 }  // namespace
 
@@ -87,10 +104,38 @@ void DiagnosticsLogController::Initialize(
 bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
     const base::FilePath& save_file_path) {
   DCHECK(!save_file_path.empty());
+  std::vector<std::string> log_pieces;
 
-  // TODO(ashleydp): Replace |kLogFileContents| when actual log contents
-  // available to write to file.
-  return base::WriteFile(save_file_path, kLogFileContents);
+  // Fetch system data from TelemetryLog.
+  const std::string system_log_contents = telemetry_log_->GetContents();
+  log_pieces.push_back(kSystemLogSectionHeader);
+  if (!system_log_contents.empty()) {
+    log_pieces.push_back(system_log_contents);
+  }
+
+  // Fetch system routines from RoutineLog.
+  const std::string system_routines =
+      routine_log_->GetContentsForCategory("system");
+  // Add the routine section for the system category.
+  log_pieces.push_back(GetRoutineResultsString(system_routines));
+
+  if (features::IsNetworkingInDiagnosticsAppEnabled()) {
+    // Add networking category.
+    log_pieces.push_back(kNetworkingLogSectionHeader);
+
+    // Add the network info section.
+    log_pieces.push_back(networking_log_->GetNetworkInfo());
+
+    // Add the routine section for the network category.
+    const std::string network_routines =
+        routine_log_->GetContentsForCategory("network");
+    log_pieces.push_back(GetRoutineResultsString(network_routines));
+
+    // Add the network events section.
+    log_pieces.push_back(networking_log_->GetNetworkEvents());
+  }
+
+  return base::WriteFile(save_file_path, base::JoinString(log_pieces, "\n"));
 }
 
 void DiagnosticsLogController::ResetAndInitializeLogWriters() {
