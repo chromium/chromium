@@ -160,7 +160,9 @@ base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
   }
 
   // Handle the case of a JSON-encoded string for a dict policy.
-  if (schema.type() == base::Value::Type::DICTIONARY && value.is_string()) {
+  if ((schema.type() == base::Value::Type::DICTIONARY ||
+       schema.type() == base::Value::Type::LIST) &&
+      value.is_string()) {
     absl::optional<base::Value> decoded_value = base::JSONReader::Read(
         value.GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (decoded_value.has_value()) {
