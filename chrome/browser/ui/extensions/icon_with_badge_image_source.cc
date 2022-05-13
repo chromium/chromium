@@ -59,12 +59,13 @@ IconWithBadgeImageSource::Badge::~Badge() {}
 
 IconWithBadgeImageSource::IconWithBadgeImageSource(
     const gfx::Size& size,
-    const ui::ColorProvider* color_provider)
-    : gfx::CanvasImageSource(size), color_provider_(color_provider) {
-  DCHECK(color_provider_);
+    GetColorProviderCallback get_color_provider_callback)
+    : gfx::CanvasImageSource(size),
+      get_color_provider_callback_(std::move(get_color_provider_callback)) {
+  DCHECK(get_color_provider_callback_);
 }
 
-IconWithBadgeImageSource::~IconWithBadgeImageSource() {}
+IconWithBadgeImageSource::~IconWithBadgeImageSource() = default;
 
 void IconWithBadgeImageSource::SetIcon(const gfx::Image& icon) {
   icon_ = icon;
@@ -76,10 +77,12 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   if (!badge_ || badge_->text.empty())
     return;
 
+  const ui::ColorProvider* color_provider = get_color_provider_callback_.Run();
+
   // Generate the badge's render text.
   SkColor text_color =
       SkColorGetA(badge_->text_color) == SK_AlphaTRANSPARENT
-          ? color_provider_->GetColor(kColorExtensionIconBadgeForegroundDefault)
+          ? color_provider->GetColor(kColorExtensionIconBadgeForegroundDefault)
           : badge_->text_color;
 
   constexpr int kBadgeHeight = 12;
@@ -177,10 +180,12 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
   if (!badge_text_)
     return;
 
+  const ui::ColorProvider* color_provider = get_color_provider_callback_.Run();
+
   // Make sure the background color is opaque. See http://crbug.com/619499
   SkColor background_color =
       SkColorGetA(badge_->background_color) == SK_AlphaTRANSPARENT
-          ? color_provider_->GetColor(kColorExtensionIconBadgeBackgroundDefault)
+          ? color_provider->GetColor(kColorExtensionIconBadgeBackgroundDefault)
           : SkColorSetA(badge_->background_color, SK_AlphaOPAQUE);
   cc::PaintFlags rect_flags;
   rect_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -213,13 +218,14 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
   // to double the CSS-based blur values.
   constexpr int kBlurCorrection = 2;
 
+  const ui::ColorProvider* color_provider = get_color_provider_callback_.Run();
   const gfx::ShadowValue key_shadow(
       gfx::Vector2d(0, 1), kBlurCorrection * 2 /*blur*/,
-      color_provider_->GetColor(kColorExtensionIconDecorationKeyShadow));
+      color_provider->GetColor(kColorExtensionIconDecorationKeyShadow));
 
   const gfx::ShadowValue ambient_shadow(
       gfx::Vector2d(0, 2), kBlurCorrection * 6 /*blur*/,
-      color_provider_->GetColor(kColorExtensionIconDecorationAmbientShadow));
+      color_provider->GetColor(kColorExtensionIconDecorationAmbientShadow));
 
   const float blocked_action_badge_radius = GetBlockedActionBadgeRadius();
 
@@ -232,7 +238,7 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
   paint_flags.setStyle(cc::PaintFlags::kFill_Style);
   paint_flags.setAntiAlias(true);
   paint_flags.setColor(
-      color_provider_->GetColor(kColorExtensionIconDecorationBackground));
+      color_provider->GetColor(kColorExtensionIconDecorationBackground));
   paint_flags.setLooper(
       gfx::CreateShadowDrawLooper({key_shadow, ambient_shadow}));
 

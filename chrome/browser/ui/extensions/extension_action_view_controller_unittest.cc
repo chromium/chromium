@@ -45,6 +45,8 @@
 #include "extensions/common/user_script.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/native_theme/native_theme.h"
 
 using extensions::mojom::ManifestLocation;
 using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
@@ -256,6 +258,13 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
   EXPECT_TRUE(image_source->paint_blocked_actions_decoration());
+
+  // Simulate NativeTheme update after `image_source` is created.
+  // `image_source` should paint fine without hitting use-after-free in such
+  // case.  See http://crbug.com/1315967
+  ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->NotifyOnNativeThemeUpdated();
+  image_source->GetImageForScale(1.0f);
 }
 
 // Tests the appearance of extension actions for extensions without a browser or
