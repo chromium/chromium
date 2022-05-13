@@ -19,6 +19,7 @@ export enum State {
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_MULTISTREAM_RECORDING = 'enable-multistream-recording',
   ENABLE_PTZ = 'enable-ptz',
+  ENABLE_PTZ_FOR_BUILTIN = 'enable-ptz-for-builtin',
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
   EXPERT = 'expert',
   FPS_30 = 'fps-30',

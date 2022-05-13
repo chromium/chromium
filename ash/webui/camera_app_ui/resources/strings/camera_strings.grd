@@ -357,6 +357,9 @@
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>
+      <message desc="Label for expert mode option: enable PTZ for builtin camera." name="IDS_EXPERT_ENABLE_PTZ_FOR_BUILTIN">
+        Enable pan tilt zoom
+      </message>
       <message desc="Label for expert mode option: enable full-sized video snapshot." name="IDS_EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT">
         Enable full-sized video snapshot
       </message>

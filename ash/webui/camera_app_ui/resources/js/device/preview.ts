@@ -181,13 +181,15 @@ export class Preview {
         // Enable PTZ on fake camera for testing.
         return true;
       }
-      if (this.facing !== Facing.EXTERNAL) {
-        // PTZ function is excluded from builtin camera until we set up
-        // its AVL calibration standard.
-        return false;
+      if (this.facing === Facing.EXTERNAL) {
+        return true;
+      } else if (
+          state.get(state.State.EXPERT) &&
+          state.get(state.State.ENABLE_PTZ_FOR_BUILTIN)) {
+        return true;
       }
 
-      return true;
+      return false;
     })();
 
     if (!this.isSupportPTZInternal) {
