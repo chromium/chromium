@@ -427,7 +427,7 @@ int TestSuite::Run() {
 #if BUILDFLAG(IS_FUCHSIA)
   // Cache the BuildInfo so individual tests do not need to worry about it.
   // Some ProcessUtilTest cases, which use kTestChildProcess, do not pass any
-  // services, so skip this if that switch is not found.
+  // services, so skip this if that switch was present.
   // This must be called before Initialize() because, for example,
   // content::ContentTestSuite::Initialize() may use the cached values.
   if (client_func.empty())

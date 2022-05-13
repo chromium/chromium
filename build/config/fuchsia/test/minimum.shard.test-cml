@@ -6,7 +6,7 @@
   children: [
     {
       name: "build-info-service",
-      url: "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cm"
+      url: "fuchsia-pkg://fuchsia.com/fake-build-info#meta/fake_build_info.cm",
     },
     {
       name: "intl_property_manager",
