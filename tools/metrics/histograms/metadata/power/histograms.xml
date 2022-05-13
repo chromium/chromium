@@ -631,7 +631,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2022-04-17">
+<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BacklightLevelOnBattery" units="%"
-    expires_after="2022-04-10">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -651,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2022-04-24">
+    expires_after="2023-05-13">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2022-04-03">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1529,7 +1529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
-    expires_after="2021-10-17">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1567,7 +1567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2020-06-21">
+    expires_after="2023-05-12">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -1829,7 +1829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2022-04-17">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1840,7 +1840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
-    expires_after="2022-04-24">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1852,7 +1852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
-    expires_after="2022-04-24">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1863,7 +1863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2022-04-24">
+    expires_after="2023-05-12">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
