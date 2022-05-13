@@ -3424,6 +3424,9 @@
                         "SafeBrowsingExtensionTelemetry",
                         "SafeBrowsingExtensionTelemetryReportContactedHosts",
                         "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
+                    ],
+                    "disable_features": [
+                        "SafeBrowsingExtensionTelemetryPersistence"
                     ]
                 },
                 {
@@ -3433,6 +3436,11 @@
                     },
                     "enable_features": [
                         "SafeBrowsingExtensionTelemetry"
+                    ],
+                    "disable_features": [
+                        "SafeBrowsingExtensionTelemetryPersistence",
+                        "SafeBrowsingExtensionTelemetryReportContactedHosts",
+                        "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
                     ]
                 },
                 {
@@ -3443,6 +3451,10 @@
                     "enable_features": [
                         "SafeBrowsingExtensionTelemetry",
                         "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
+                    ],
+                    "disable_features": [
+                        "SafeBrowsingExtensionTelemetryPersistence",
+                        "SafeBrowsingExtensionTelemetryReportContactedHosts"
                     ]
                 },
                 {
@@ -3453,6 +3465,10 @@
                     "enable_features": [
                         "SafeBrowsingExtensionTelemetry",
                         "SafeBrowsingExtensionTelemetryReportContactedHosts"
+                    ],
+                    "disable_features": [
+                        "SafeBrowsingExtensionTelemetryPersistence",
+                        "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal"
                     ]
                 },
                 {
