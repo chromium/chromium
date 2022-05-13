@@ -339,7 +339,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
+// TODO(crbug.com/1325374): Flaky.
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
+                       DISABLED_MigrateWithInsuficientSpace) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
