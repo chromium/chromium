@@ -1394,20 +1394,6 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
                                    .get();
     nodes.push_back(node);
     parent = node->parent();
-    // saved tab groups feature flag.
-    if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-        !node->is_url()) {
-      RecordBookmarkFolderOpen(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
-      const size_t start_index = (node == bookmark_model_->bookmark_bar_node())
-                                     ? GetFirstHiddenNodeIndex()
-                                     : 0;
-      bookmark_menu_ =
-          new BookmarkMenuController(browser_, GetPageNavigatorGetter(),
-                                     GetWidget(), node, start_index, false);
-      bookmark_menu_->set_observer(this);
-      bookmark_menu_->RunMenuAt(this);
-      return;
-    }
   } else {
     parent = bookmark_model_->bookmark_bar_node();
     nodes.push_back(parent);
