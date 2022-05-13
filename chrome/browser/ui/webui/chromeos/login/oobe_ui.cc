@@ -259,7 +259,7 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
-void AddDebuggerResources(content::WebUIDataSource* source) {
+void AddDebuggerResources(content::WebUIDataSource* source, bool use_poly3) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
   // Enable for ChromeOS-on-linux for developers and test images.
@@ -267,10 +267,10 @@ void AddDebuggerResources(content::WebUIDataSource* source) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
-  const bool poly3_enabled = features::IsOobePolymer3Enabled();
+
   if (enable_debugger) {
     source->AddResourcePath(kDebuggerUtilJSPath, IDR_OOBE_DEBUGGER_UTIL_JS);
-    if (poly3_enabled) {
+    if (use_poly3) {
       source->AddResourcePath(kDebuggerMJSPath, IDR_OOBE_DEBUGGER_M_JS);
     } else {
       source->AddResourcePath(kDebuggerJSPath, IDR_OOBE_DEBUGGER_JS);
@@ -325,6 +325,18 @@ void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
 }
 
+// Polymer3 could be turned on for both flows (OOBE & 'Add Person'), or just
+// for the 'Add Person' flow.
+bool ShouldUsePolymer3Resources(bool is_oobe_flow) {
+  const bool is_add_person_flow = !is_oobe_flow;
+  const bool poly3_enabled_for_both_flows = features::IsOobePolymer3Enabled();
+  const bool poly3_enabled_for_addperson_flow =
+      features::IsOobeAddPersonPolymer3Enabled();
+
+  return poly3_enabled_for_both_flows ||
+         (poly3_enabled_for_addperson_flow && is_add_person_flow);
+}
+
 // Creates a WebUIDataSource for chrome://oobe
 content::WebUIDataSource* CreateOobeUIDataSource(
     const base::Value::Dict& localized_strings,
@@ -343,18 +355,20 @@ content::WebUIDataSource* CreateOobeUIDataSource(
 
   OobeUI::AddOobeComponents(source);
 
-  // First, configure default and non-shared resources for the current display
-  // type.
-  if (features::IsOobePolymer3Enabled()) {
+  // Determine whether this is the 'OOBE' or the 'Add Person' flow, and add
+  // either Polymer3 or Polymer2 default resources.
+  const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
+  const bool use_polymer3_resources = ShouldUsePolymer3Resources(is_oobe_flow);
+  if (use_polymer3_resources) {
     source->SetDefaultResource(IDR_OOBE_POLY3_HTML);
     // Add boolean variables that are used by Polymer3 to add screens
-    // dynamically.
+    // dynamically depending on the flow type.
     source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
-    source->AddBoolean("isOobeFlow", display_type == OobeUI::kOobeDisplay);
-  } else {
-    if (display_type == OobeUI::kOobeDisplay) {
+    source->AddBoolean("isOobeFlow", is_oobe_flow);
+  } else { /* Polymer 2 Resources */
+    if (is_oobe_flow) {
       AddOobeDisplayTypeDefaultResources(source);
-    } else {
+    } else /* is_add_person_flow */ {
       AddLoginDisplayTypeDefaultResources(source);
     }
   }
@@ -368,7 +382,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   AddAssistantScreensResources(source);
   AddMultiDeviceSetupResources(source);
 
-  AddDebuggerResources(source);
+  AddDebuggerResources(source, use_polymer3_resources);
   AddTestAPIResources(source);
 
   source->AddResourcePath(kWebviewSamlInjectedJSPath,

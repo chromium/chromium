@@ -581,9 +581,12 @@ const base::Feature kEnableOAuthIpp{"EnableOAuthIpp",
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables Polymer3 for OOBE
+// Enables Polymer3 for OOBE and AddPerson flows.
 const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables Polymer3 for only the 'Add Person' flow on the login screen.
+const base::Feature kOobeAddPersonPolymer3{"OobeAddPersonPolymer3",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables Kiosk enrollment option in OOBE.
 const base::Feature kEnableKioskEnrollmentInOobe{
@@ -1998,6 +2001,10 @@ bool IsOobeHidDetectionRevampEnabled() {
 
 bool IsOobePolymer3Enabled() {
   return base::FeatureList::IsEnabled(kEnableOobePolymer3);
+}
+
+bool IsOobeAddPersonPolymer3Enabled() {
+  return base::FeatureList::IsEnabled(kOobeAddPersonPolymer3);
 }
 
 bool IsKioskEnrollmentInOobeEnabled() {

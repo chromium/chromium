@@ -239,6 +239,8 @@ extern const base::Feature kEnableOobeChromeVoxHint;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobePolymer3;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kOobeAddPersonPolymer3;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableKioskEnrollmentInOobe;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableOobeNetworkScreenSkip;
@@ -710,6 +712,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOAuthIppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChromeVoxHintEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeHidDetectionRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobePolymer3Enabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeAddPersonPolymer3Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKioskEnrollmentInOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeNetworkScreenSkipEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeConsolidatedConsentEnabled();
