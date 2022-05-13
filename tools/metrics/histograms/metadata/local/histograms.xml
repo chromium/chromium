@@ -380,15 +380,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.OnConnectionDestroyed" enum="Boolean"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Recorded when the database connection is closed unexpectedly.
-  </summary>
-</histogram>
-
 <histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
     expires_after="M87">
   <owner>mek@chromium.org</owner>
