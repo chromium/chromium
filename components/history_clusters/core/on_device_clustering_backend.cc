@@ -31,7 +31,6 @@
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
-#include "components/history_clusters/core/url_deduper_cluster_finalizer.h"
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -421,14 +420,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 
   cluster_finalizers.push_back(
       std::make_unique<ContentVisibilityClusterFinalizer>());
-  if (GetConfig().should_dedupe_similar_visits) {
-    cluster_finalizers.push_back(
-        std::make_unique<SimilarVisitDeduperClusterFinalizer>());
-  } else {
-    // Otherwise, only dedupe based on normalized URL.
-    cluster_finalizers.push_back(
-        std::make_unique<UrlDeduperClusterFinalizer>());
-  }
+  cluster_finalizers.push_back(
+      std::make_unique<SimilarVisitDeduperClusterFinalizer>());
   cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
   if (GetConfig().should_hide_single_visit_clusters_on_prominent_ui_surfaces) {
     cluster_finalizers.push_back(

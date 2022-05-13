@@ -88,6 +88,8 @@ history::ClusterVisit CreateClusterVisit(
       normalized_url ? *normalized_url : annotated_visit.url_row.url();
   cluster_visit.url_for_deduping =
       ComputeURLForDeduping(cluster_visit.normalized_url);
+  cluster_visit.url_for_display =
+      ComputeURLForDisplay(cluster_visit.normalized_url);
   return cluster_visit;
 }
 

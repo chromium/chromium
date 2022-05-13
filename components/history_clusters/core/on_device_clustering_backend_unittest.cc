@@ -120,7 +120,6 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
  public:
   OnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
-    config_.should_dedupe_similar_visits = false;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.split_clusters_at_search_visits = false;
@@ -431,7 +430,6 @@ class OnDeviceClusteringWithContentBackendTest
  public:
   OnDeviceClusteringWithContentBackendTest() {
     config_.content_clustering_enabled = true;
-    config_.should_dedupe_similar_visits = false;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.should_check_hosts_to_skip_clustering_for = false;
@@ -689,7 +687,6 @@ class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
  public:
   EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
-    config_.should_dedupe_similar_visits = false;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     SetConfigForTesting(config_);
@@ -760,7 +757,6 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
  public:
   BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
-    config_.should_dedupe_similar_visits = false;
     config_.should_include_categories_in_keywords = true;
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.clustering_tasks_batch_size = 1;

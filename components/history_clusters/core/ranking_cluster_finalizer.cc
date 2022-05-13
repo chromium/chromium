@@ -132,7 +132,6 @@ void RankingClusterFinalizer::ComputeFinalVisitScores(
     }
 
     // Determine the max score to use for normalizing all the scores.
-    auto visit_url = visit.normalized_url;
     auto visit_scores_it =
         url_visit_scores.find(visit.annotated_visit.visit_row.visit_id);
     if (visit_scores_it != url_visit_scores.end()) {

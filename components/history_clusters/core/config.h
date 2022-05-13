@@ -143,10 +143,6 @@ struct Config {
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
 
-  // Whether to collapse visits within a cluster that will show on the UI in the
-  // same way.
-  bool should_dedupe_similar_visits = true;
-
   // Whether to filter clusters that are noisy from the UI. This will
   // heuristically remove clusters that are unlikely to be "interesting".
   bool should_filter_noisy_clusters = true;

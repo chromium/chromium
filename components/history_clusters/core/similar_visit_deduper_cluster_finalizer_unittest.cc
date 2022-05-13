@@ -40,10 +40,12 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeExactSimilarVisit) {
   visit.annotated_visit.url_row.set_title(u"sametitle");
   visit.annotated_visit.context_annotations.total_foreground_duration =
       base::Seconds(20);
+  visit.url_for_display = u"someurl";
 
   history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/#abc")));
   canonical_visit.annotated_visit.url_row.set_title(u"sametitle");
+  canonical_visit.url_for_display = u"someurl";
 
   history::Cluster cluster;
   cluster.visits = {visit, canonical_visit};
