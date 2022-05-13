@@ -23,6 +23,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.TextView;
@@ -311,6 +312,14 @@ public abstract class UrlBar extends AutocompleteEditText {
         mAllowFocus = allowFocus;
         setFocusable(allowFocus);
         setFocusableInTouchMode(allowFocus);
+    }
+
+    /**
+     * Sends an accessibility event to the URL bar to request accessibility focus on it (e.g. for
+     * TalkBack).
+     */
+    public void requestAccessibilityFocus() {
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 
     /**

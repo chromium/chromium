@@ -745,9 +745,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onContentChanged(Tab tab) {
                 checkIfNtpLoaded();
                 mToolbar.onTabContentViewChanged();
-                if (shouldShowCursorInLocationBar()) {
-                    mLocationBar.showUrlBarCursorWithoutFocusAnimations();
-                }
+                maybeShowCursorInLocationBar();
                 // Paint preview status might have been changed. Update the omnibox chip.
                 mLocationBarModel.notifySecurityStateChanged();
             }
@@ -926,6 +924,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     mToolbar.onTabSwitcherTransitionFinished();
                     updateButtonStatus();
+
+                    if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mActivity)) {
+                        checkIfNtpLoaded();
+                        maybeShowCursorInLocationBar();
+                    }
                 }
             }
         };
@@ -1001,9 +1004,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // Note: this is executed during native initialization.
             // Defer Omnibox focus, giving Autocomplete time to finish initialization.
             mHandler.post(() -> setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB));
-            if (shouldShowCursorInLocationBar()) {
-                mLocationBar.showUrlBarCursorWithoutFocusAnimations();
-            }
+            maybeShowCursorInLocationBar();
             updateButtonStatus();
         }
     }
@@ -1900,9 +1901,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // Place the cursor in the Omnibox if applicable.  We always clear the focus above to
             // ensure the shield placed over the content is dismissed when switching tabs.  But if
             // needed, we will refocus the omnibox and make the cursor visible here.
-            if (shouldShowCursorInLocationBar()) {
-                mLocationBar.showUrlBarCursorWithoutFocusAnimations();
-            }
+            maybeShowCursorInLocationBar();
         }
 
         updateButtonStatus();
@@ -1975,17 +1974,30 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         return mLocationBar.getVoiceRecognitionHandler();
     }
 
-    private boolean shouldShowCursorInLocationBar() {
+    /**
+     * Called whenever the NTP could have been entered (e.g. tab content changed, tab navigated to
+     * from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed entered the
+     * NTP, we will check two cases:
+     *   1. If a11y is enabled, we will request a11y focus on the omnibox (e.g. for TalkBack).
+     *   2. If a keyboard is plugged in, we will show the URL bar cursor (without focus animations).
+     */
+    private void maybeShowCursorInLocationBar() {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
         Tab tab = mLocationBarModel.getTab();
-        if (tab == null) return false;
+        if (tab == null) return;
         NativePage nativePage = tab.getNativePage();
         if (!(nativePage instanceof NewTabPage) && !(nativePage instanceof IncognitoNewTabPage)) {
-            return false;
+            return;
         }
 
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                && mActivity.getResources().getConfiguration().keyboard
-                == Configuration.KEYBOARD_QWERTY;
+        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && nativePage instanceof NewTabPage) {
+            mLocationBar.requestUrlBarAccessibilityFocus();
+        }
+
+        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+            mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+        }
     }
 
     /**
