@@ -28,6 +28,8 @@ NSString* const kSeparatorColor = @"separator_color";
 NSString* const kSolidButtonTextColor = @"solid_button_text_color";
 NSString* const kTableViewRowHighlightColor = @"table_view_row_highlight_color";
 NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
+NSString* const kUpdatedTertiaryBackgroundColor =
+    @"updated_tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";

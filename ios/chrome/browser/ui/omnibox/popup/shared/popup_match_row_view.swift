@@ -138,7 +138,7 @@ struct PopupMatchRowView: View {
       if isHighlighted {
         LinearGradient(gradient: Colors.highlightingGradient, startPoint: .top, endPoint: .bottom)
       } else if self.isPressed {
-        Color.tableRowViewHighlight
+        Color.updatedTertiaryBackground
       }
 
       button
