@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -141,7 +142,22 @@ class HistoryClustersMediator implements SearchDelegate {
     }
 
     private void queryComplete(HistoryClustersResult result) {
+        boolean isQueryless = result.getQuery().isEmpty();
         for (HistoryCluster cluster : result.getClusters()) {
+            if (isQueryless) {
+                PropertyModel clusterModel =
+                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+                clusterModel.set(HistoryClustersItemProperties.LABEL, cluster.getLabel());
+                clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                        (v) -> startSearch(cluster.getLabel()));
+                Drawable journeysDrawable = UiUtils.getTintedDrawable(
+                        mContext, R.drawable.ic_journeys, R.color.default_icon_color_tint_list);
+                clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
+                ListItem visitItem = new ListItem(ItemType.CLUSTER, clusterModel);
+                mModelList.add(visitItem);
+                continue;
+            }
+
             for (ClusterVisit visit : cluster.getVisits()) {
                 PropertyModel visitModel =
                         new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);

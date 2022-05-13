@@ -20,14 +20,16 @@ class HistoryClustersItemProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {CLICK_HANDLER, ICON_DRAWABLE, TITLE, URL};
+    static final PropertyKey[] ALL_KEYS = {CLICK_HANDLER, ICON_DRAWABLE, LABEL, TITLE, URL};
 
-    @IntDef({HistoryClustersItemProperties.ItemType.VISIT})
+    @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         int VISIT = 1;
+        int CLUSTER = 2;
     }
 }

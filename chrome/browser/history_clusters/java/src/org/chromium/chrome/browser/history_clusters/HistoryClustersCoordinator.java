@@ -109,6 +109,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mAdapter = new SimpleRecyclerViewAdapter(mModelList);
         mAdapter.registerType(
                 ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
+        mAdapter.registerType(ItemType.CLUSTER, this::buildClusterView,
+                HistoryClustersViewBinder::bindClusterView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(
@@ -138,6 +140,13 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 mToolbarModel, mSelectableListLayout, HistoryClustersViewBinder::bindListLayout);
 
         mActivityViewInflated = true;
+    }
+
+    private View buildClusterView(ViewGroup parent) {
+        SelectableItemView<HistoryCluster> clusterView =
+                (SelectableItemView<HistoryCluster>) LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.history_cluster, parent, false);
+        return clusterView;
     }
 
     private View buildVisitView(ViewGroup parent) {

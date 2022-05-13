@@ -13,6 +13,10 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +27,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -32,9 +38,11 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersMediatorTest.ShadowUiUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -45,9 +53,18 @@ import java.util.Arrays;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowUiUtils.class})
 public class HistoryClustersMediatorTest {
     private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
+    @Implements(UiUtils.class)
+    static class ShadowUiUtils {
+        static Drawable sDrawable;
+        @Implementation
+        public static Drawable getTintedDrawable(
+                Context context, @DrawableRes int drawableId, @ColorRes int tintColorId) {
+            return sDrawable;
+        }
+    }
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -72,13 +89,16 @@ public class HistoryClustersMediatorTest {
     private GURL mMockGurl;
     @Mock
     private Function<GURL, Intent> mUrlIntentCreator;
+    @Mock
+    private Drawable mDrawable;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
     private ClusterVisit mVisit3;
     private HistoryCluster mCluster1;
     private HistoryCluster mCluster2;
-    private HistoryClustersResult mHistoryClustersResult;
+    private HistoryClustersResult mHistoryClustersResultWithQuery;
+    private HistoryClustersResult mHistoryClustersResultEmptyQuery;
     private ModelList mModelList;
     private PropertyModel mToolbarModel;
     private Intent mIntent = new Intent();
@@ -89,6 +109,7 @@ public class HistoryClustersMediatorTest {
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(mContext);
+        ShadowUiUtils.sDrawable = mDrawable;
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mIntent).when(mUrlIntentCreator).apply(mMockGurl);
@@ -104,8 +125,10 @@ public class HistoryClustersMediatorTest {
                 Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2), "label1", new ArrayList<>());
         mCluster2 = new HistoryCluster(
                 Arrays.asList("bar", "baz"), Arrays.asList(mVisit3), "label2", new ArrayList<>());
-        mHistoryClustersResult = new HistoryClustersResult(
+        mHistoryClustersResultWithQuery = new HistoryClustersResult(
                 Arrays.asList(mCluster1, mCluster2), "query", false, false);
+        mHistoryClustersResultEmptyQuery =
+                new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2), "", false, false);
     }
 
     @Test
@@ -121,7 +144,7 @@ public class HistoryClustersMediatorTest {
         mMediator.query("query");
         assertEquals(mModelList.size(), 0);
 
-        fulfillPromise(promise, mHistoryClustersResult);
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
         assertEquals(mModelList.size(), 3);
         ListItem item = mModelList.get(0);
@@ -130,6 +153,21 @@ public class HistoryClustersMediatorTest {
         assertTrue(model.getAllSetProperties().containsAll(
                 Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
                         HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.URL)));
+    }
+    @Test
+    public void testEmptyQuery() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("");
+
+        mMediator.query("");
+        fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
+
+        assertEquals(mModelList.size(), 2);
+        ListItem item = mModelList.get(0);
+        assertEquals(item.type, ItemType.CLUSTER);
+        PropertyModel model = item.model;
+        assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(
+                HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.LABEL)));
     }
 
     @Test

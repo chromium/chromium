@@ -23,4 +23,8 @@ class HistoryClustersResult {
     public List<HistoryCluster> getClusters() {
         return mClusters;
     }
+
+    public String getQuery() {
+        return mQuery;
+    }
 }

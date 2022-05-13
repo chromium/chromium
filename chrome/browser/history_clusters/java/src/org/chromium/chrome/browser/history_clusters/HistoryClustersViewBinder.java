@@ -51,4 +51,15 @@ class HistoryClustersViewBinder {
             }
         }
     }
+
+    public static void bindClusterView(PropertyModel model, View view, PropertyKey key) {
+        HistoryClusterView clusterView = (HistoryClusterView) view;
+        if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
+            clusterView.setOnClickListener(model.get(HistoryClustersItemProperties.CLICK_HANDLER));
+        } else if (key == HistoryClustersItemProperties.ICON_DRAWABLE) {
+            clusterView.setIconDrawable(model.get(HistoryClustersItemProperties.ICON_DRAWABLE));
+        } else if (key == HistoryClustersItemProperties.LABEL) {
+            clusterView.setLabel(model.get(HistoryClustersItemProperties.LABEL));
+        }
+    }
 }
