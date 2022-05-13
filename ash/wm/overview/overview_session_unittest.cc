@@ -779,7 +779,8 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
 }
 
 // Tests entering overview mode with two windows and selecting one.
-TEST_P(OverviewSessionTest, FullscreenWindow) {
+// TODO(crbug.com/1323145): Flaky.
+TEST_P(OverviewSessionTest, DISABLED_FullscreenWindow) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
