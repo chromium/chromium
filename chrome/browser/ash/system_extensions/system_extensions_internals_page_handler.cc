@@ -18,7 +18,8 @@ void SystemExtensionsInternalsPageHandler::
         const base::SafeBaseName& system_extension_dir_name,
         InstallSystemExtensionFromDownloadsDirCallback callback) {
   base::FilePath downloads_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_path)) {
+  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
+                              &downloads_path)) {
     std::move(callback).Run(false);
     return;
   }
