@@ -3348,4 +3348,52 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ParentFilter) {
   EXPECT_EQ(ELEMENT_RESOLUTION_FAILED, failing_status.proto_status());
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WebpageZoom) {
+  double initial_width =
+      content::EvalJs(
+          shell(),
+          R"(document.querySelector("#select").getBoundingClientRect().width)")
+          .ExtractDouble();
+  EXPECT_GT(initial_width, 0);
+
+  ClientStatus body_status;
+  ElementFinderResult body;
+  FindElement(Selector({"body"}), &body_status, &body);
+  EXPECT_EQ(ACTION_APPLIED, body_status.proto_status());
+
+  ClientStatus zoom_status;
+  base::RunLoop zoom_run_loop;
+  web_controller_->ExecuteJS(
+      "this.style.webkitTransform = 'scale(2)'", body,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), zoom_run_loop.QuitClosure(),
+                     &zoom_status));
+  zoom_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, zoom_status.proto_status());
+
+  double after_zoom_width =
+      content::EvalJs(
+          shell(),
+          R"(document.querySelector("#select").getBoundingClientRect().width)")
+          .ExtractDouble();
+  EXPECT_NEAR(after_zoom_width, initial_width * 2, 1);
+
+  ClientStatus reset_status;
+  base::RunLoop reset_run_loop;
+  web_controller_->ExecuteJS(
+      "this.style.webkitTransform = 'scale(1)'", body,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), reset_run_loop.QuitClosure(),
+                     &reset_status));
+  reset_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, reset_status.proto_status());
+
+  double after_reset_width =
+      content::EvalJs(
+          shell(),
+          R"(document.querySelector("#select").getBoundingClientRect().width)")
+          .ExtractDouble();
+  EXPECT_NEAR(after_reset_width, initial_width, 1);
+}
+
 }  // namespace autofill_assistant
