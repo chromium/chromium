@@ -107,11 +107,11 @@ std::shared_ptr<api::Cancelable> ScheduledExecutor::Schedule(
   timer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ScheduledExecutor::StartTimerWithId,
-                     base::Unretained(this), id,
+                     timer_task_runner_weak_factory_.GetWeakPtr(), id,
                      base::Microseconds(absl::ToInt64Microseconds(duration))));
 
-  return std::make_shared<CancelableTask>(
-      base::BindOnce(&TryCancelTask, weak_factory_.GetWeakPtr(), id));
+  return std::make_shared<CancelableTask>(base::BindOnce(
+      &TryCancelTask, cancelable_task_weak_factory_.GetWeakPtr(), id));
 }
 
 void ScheduledExecutor::StartTimerWithId(const base::UnguessableToken& id,
@@ -125,9 +125,10 @@ void ScheduledExecutor::StartTimerWithId(const base::UnguessableToken& id,
     return;
 
   it->second->timer.SetTaskRunner(timer_task_runner_);
-  it->second->timer.Start(FROM_HERE, delay,
-                          base::BindOnce(&ScheduledExecutor::RunTaskWithId,
-                                         base::Unretained(this), id));
+  it->second->timer.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&ScheduledExecutor::RunTaskWithId,
+                     timer_task_runner_weak_factory_.GetWeakPtr(), id));
 }
 
 void ScheduledExecutor::StopTimerWithIdAndDeleteTaskEntry(
@@ -177,7 +178,7 @@ bool ScheduledExecutor::OnTaskCancelled(const base::UnguessableToken& id) {
   timer_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ScheduledExecutor::StopTimerWithIdAndDeleteTaskEntry,
-                     base::Unretained(this), id));
+                     timer_task_runner_weak_factory_.GetWeakPtr(), id));
   return true;
 }
 
