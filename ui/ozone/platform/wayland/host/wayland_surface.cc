@@ -466,7 +466,7 @@ void WaylandSurface::ApplyPendingState() {
 
   if (pending_state_.background_color != state_.background_color) {
     DCHECK(GetAugmentedSurface());
-    if (augmented_surface_get_version(GetAugmentedSurface()),
+    if (augmented_surface_get_version(GetAugmentedSurface()) >=
         static_cast<uint32_t>(
             AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION)) {
       wl_array color_data;
