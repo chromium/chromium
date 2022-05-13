@@ -57,6 +57,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                            bool initializing) = 0;
     virtual void SetTechnologyProhibited(const std::string& type,
                                          bool prohibited) = 0;
+    virtual void SetTechnologyEnabled(const std::string& type,
+                                      base::OnceClosure callback,
+                                      bool enabled) = 0;
     // |network| must be a dictionary describing a Shill network configuration
     // which will be appended to the results returned from
     // GetNetworksForGeolocation().

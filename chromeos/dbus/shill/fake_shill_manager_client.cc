@@ -557,6 +557,11 @@ void FakeShillManagerClient::SetTechnologyInitializing(const std::string& type,
     if (AppendIfNotPresent(
             GetListProperty(shill::kUninitializedTechnologiesProperty),
             base::Value(type))) {
+      if (GetListProperty(shill::kEnabledTechnologiesProperty)
+              ->EraseListValue(base::Value(type))) {
+        CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
+      }
+
       CallNotifyObserversPropertyChanged(
           shill::kUninitializedTechnologiesProperty);
     }
@@ -595,6 +600,21 @@ void FakeShillManagerClient::SetTechnologyProhibited(const std::string& type,
   stub_properties_.SetStringKey(shill::kProhibitedTechnologiesProperty,
                                 prohibited_technologies);
   CallNotifyObserversPropertyChanged(shill::kProhibitedTechnologiesProperty);
+}
+
+void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
+                                                  base::OnceClosure callback,
+                                                  bool enabled) {
+  base::ListValue* enabled_list =
+      GetListProperty(shill::kEnabledTechnologiesProperty);
+  if (enabled)
+    AppendIfNotPresent(enabled_list, base::Value(type));
+  else
+    enabled_list->EraseListValue(base::Value(type));
+  CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
+  // May affect available services.
+  SortManagerServices(true);
 }
 
 void FakeShillManagerClient::AddGeoNetwork(const std::string& technology,
@@ -1144,21 +1164,6 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   if (technologies)
     return base::Contains(technologies->GetListDeprecated(), base::Value(type));
   return false;
-}
-
-void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
-                                                  base::OnceClosure callback,
-                                                  bool enabled) {
-  base::ListValue* enabled_list =
-      GetListProperty(shill::kEnabledTechnologiesProperty);
-  if (enabled)
-    AppendIfNotPresent(enabled_list, base::Value(type));
-  else
-    enabled_list->EraseListValue(base::Value(type));
-  CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
-  // May affect available services.
-  SortManagerServices(true);
 }
 
 base::Value FakeShillManagerClient::GetEnabledServiceList() const {

@@ -88,6 +88,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                                  bool initializing) override;
   void SetTechnologyProhibited(const std::string& type,
                                bool prohibited) override;
+  void SetTechnologyEnabled(const std::string& type,
+                            base::OnceClosure callback,
+                            bool enabled) override;
   void AddGeoNetwork(const std::string& technology,
                      const base::Value& network) override;
   void AddProfile(const std::string& profile_path) override;
@@ -125,9 +128,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void NotifyObserversPropertyChanged(const std::string& property);
   base::ListValue* GetListProperty(const std::string& property);
   bool TechnologyEnabled(const std::string& type) const;
-  void SetTechnologyEnabled(const std::string& type,
-                            base::OnceClosure callback,
-                            bool enabled);
   void ScanCompleted(const std::string& device_path);
 
   // Parses the command line for Shill stub switches and sets initial states.
