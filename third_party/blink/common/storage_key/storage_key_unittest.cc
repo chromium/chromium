@@ -59,71 +59,52 @@ TEST(StorageKeyTest, Equivalence) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
   url::Origin origin3 = url::Origin();
-  url::Origin origin4 =
-      url::Origin();  // Creates a different opaque origin than origin3.
-
+  // Create another opaque origin different from origin3.
+  url::Origin origin4 = url::Origin();
   base::UnguessableToken nonce1 = base::UnguessableToken::Create();
   base::UnguessableToken nonce2 = base::UnguessableToken::Create();
 
-  StorageKey key1_origin1 = StorageKey(origin1);
-  StorageKey key2_origin1 = StorageKey(origin1);
-  StorageKey key3_origin2 = StorageKey(origin2);
+  // Ensure that the opaque origins produce opaque StorageKeys
+  EXPECT_TRUE(IsOpaque(StorageKey(origin3)));
+  EXPECT_TRUE(IsOpaque(StorageKey(origin4)));
 
-  StorageKey key4_origin3 = StorageKey(origin3);
-  StorageKey key5_origin3 = StorageKey(origin3);
-  StorageKey key6_origin4 = StorageKey(origin4);
-  EXPECT_TRUE(IsOpaque(key4_origin3));
-  EXPECT_TRUE(IsOpaque(key5_origin3));
-  EXPECT_TRUE(IsOpaque(key6_origin4));
-
-  StorageKey key7_origin1_nonce1 = StorageKey::CreateWithNonce(origin1, nonce1);
-  StorageKey key8_origin1_nonce1 = StorageKey::CreateWithNonce(origin1, nonce1);
-  StorageKey key9_origin1_nonce2 = StorageKey::CreateWithNonce(origin1, nonce2);
-  StorageKey key10_origin2_nonce1 =
-      StorageKey::CreateWithNonce(origin2, nonce1);
-
-  StorageKey key11_origin1_origin2 = StorageKey(origin1, origin2);
-  StorageKey key12_origin2_origin1 = StorageKey(origin2, origin1);
-  // TODO(https://crbug.com/1287130): Change or remove this expectation once the
-  // full ancestor tree has been properly searched to determine AncestorChainBit
-  // value.
-  EXPECT_EQ(key11_origin1_origin2.ancestor_chain_bit(),
-            blink::mojom::AncestorChainBit::kSameSite);
-
-  // All are equivalent to themselves
-  EXPECT_EQ(key1_origin1, key1_origin1);
-  EXPECT_EQ(key2_origin1, key2_origin1);
-  EXPECT_EQ(key3_origin2, key3_origin2);
-  EXPECT_EQ(key4_origin3, key4_origin3);
-  EXPECT_EQ(key5_origin3, key5_origin3);
-  EXPECT_EQ(key6_origin4, key6_origin4);
-  EXPECT_EQ(key7_origin1_nonce1, key7_origin1_nonce1);
-  EXPECT_EQ(key8_origin1_nonce1, key8_origin1_nonce1);
-  EXPECT_EQ(key9_origin1_nonce2, key9_origin1_nonce2);
-  EXPECT_EQ(key10_origin2_nonce1, key10_origin2_nonce1);
-
-  // StorageKeys created from the same origins are equivalent.
-  EXPECT_EQ(key1_origin1, key2_origin1);
-  EXPECT_EQ(key4_origin3, key5_origin3);
-
-  // StorageKeys created from different origins are not equivalent.
-  EXPECT_NE(key1_origin1, key3_origin2);
-  EXPECT_NE(key4_origin3, key6_origin4);
-  EXPECT_NE(key7_origin1_nonce1, key10_origin2_nonce1);
-
-  // StorageKeys created from the same origins and nonces are equivalent.
-  EXPECT_EQ(key7_origin1_nonce1, key8_origin1_nonce1);
-
-  // StorageKeys created from different nonces are not equivalent.
-  EXPECT_NE(key7_origin1_nonce1, key9_origin1_nonce2);
-
-  // StorageKeys created from different origin and different nonces are not
-  // equivalent.
-  EXPECT_NE(key9_origin1_nonce2, key10_origin2_nonce1);
-
-  // The top-level site doesn't factor in when storage partitioning is disabled.
-  EXPECT_EQ(key11_origin1_origin2, key1_origin1);
-  EXPECT_EQ(key12_origin2_origin1, key3_origin2);
+  const struct {
+    StorageKey storage_key1;
+    StorageKey storage_key2;
+    bool expected_equivalent;
+  } kTestCases[] = {
+      // StorageKeys made from the same origin are equivalent.
+      {StorageKey(origin1), StorageKey(origin1), true},
+      {StorageKey(origin2), StorageKey(origin2), true},
+      {StorageKey(origin3), StorageKey(origin3), true},
+      {StorageKey(origin4), StorageKey(origin4), true},
+      // StorageKeys made from the same origin and nonce are equivalent.
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin1, nonce1), true},
+      {StorageKey::CreateWithNonce(origin1, nonce2),
+       StorageKey::CreateWithNonce(origin1, nonce2), true},
+      {StorageKey::CreateWithNonce(origin2, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce1), true},
+      // StorageKeys made from different origins are not equivalent.
+      {StorageKey(origin1), StorageKey(origin2), false},
+      {StorageKey(origin3), StorageKey(origin4), false},
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce1), false},
+      // StorageKeys made from different nonces are not equivalent.
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin1, nonce2), false},
+      // StorageKeys made from different origins and nonce are not equivalent.
+      {StorageKey::CreateWithNonce(origin1, nonce1),
+       StorageKey::CreateWithNonce(origin2, nonce2), false},
+      // When storage partitioning is disabled, the top-level site isn't taken
+      // into account for equivalence.
+      {StorageKey(origin1, origin2), StorageKey(origin1), true},
+      {StorageKey(origin2, origin1), StorageKey(origin2), true},
+  };
+  for (const auto& test_case : kTestCases) {
+    ASSERT_EQ(test_case.storage_key1 == test_case.storage_key2,
+              test_case.expected_equivalent);
+  }
 }
 
 // Test that StorageKeys are/aren't equivalent as expected when storage
