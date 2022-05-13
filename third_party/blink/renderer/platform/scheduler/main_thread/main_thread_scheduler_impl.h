@@ -397,9 +397,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   const SchedulingSettings& scheduling_settings() const;
 
-  void SetPrioritizeCompositingAfterInput(
-      bool prioritize_compositing_after_input);
-
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
   base::sequence_manager::TaskQueue::QueuePriority compositor_priority() const {
@@ -915,6 +912,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeTicks last_frame_time;
     bool should_prioritize_compositor_task_queue_after_delay;
     bool have_seen_a_frame;
+
+    // Set when a discrete input event is handled on the main thread. This is
+    // used by the kPrioritizeCompositingAfterInput experiment to determine if
+    // the next frame should be prioritized.
+    bool did_handle_discrete_input_event = false;
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 

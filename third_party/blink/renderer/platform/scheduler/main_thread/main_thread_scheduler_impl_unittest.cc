@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/platform/scheduler/web_widget_scheduler.h"
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
@@ -811,12 +813,40 @@ class MainThreadSchedulerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void AppendToVectorBeginMainFrameTask(Vector<String>* vector, String value) {
+    DoMainFrame();
+    AppendToVectorTestTask(vector, value);
+  }
+
+  void AppendToVectorBeginMainFrameTaskWithInput(Vector<String>* vector,
+                                                 String value) {
+    scheduler_->DidHandleInputEventOnMainThread(
+        FakeInputEvent(WebInputEvent::Type::kMouseMove),
+        WebInputEventResult::kHandledApplication);
+    AppendToVectorBeginMainFrameTask(vector, value);
+  }
+
+  void AppendToVectorInputEventTask(WebInputEvent::Type event_type,
+                                    Vector<String>* vector,
+                                    String value) {
+    scheduler_->DidHandleInputEventOnMainThread(
+        FakeInputEvent(event_type), WebInputEventResult::kHandledApplication);
+    AppendToVectorTestTask(vector, value);
+  }
+
   // Helper for posting several tasks of specific types. |task_descriptor| is a
   // string with space delimited task identifiers. The first letter of each
-  // task identifier specifies the task type:
+  // task identifier specifies the task type. For 'C' and 'P' types, the second
+  // letter specifies that type of task to simulate.
   // - 'D': Default task
   // - 'C': Compositor task
+  //   - "CM": Compositor task that simulates running a main frame
+  //   - "CI": Compositor task that simulates running a main frame with
+  //            rAF-algined input
   // - 'P': Input task
+  //   - "PC": Input task that simulates dispatching a continuous input event
+  //   - "PD": Input task that simulates dispatching a discrete input event
+  // - 'E': Input task that dispatches input events
   // - 'L': Loading task
   // - 'M': Loading Control task
   // - 'I': Idle task
@@ -836,14 +866,46 @@ class MainThreadSchedulerImplTest : public testing::Test {
                                         String::FromUTF8(task)));
           break;
         case 'C':
-          compositor_task_runner_->PostTask(
-              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+          if (base::StartsWith(task, "CM")) {
+            compositor_task_runner_->PostTask(
+                FROM_HERE, base::BindOnce(&MainThreadSchedulerImplTest::
+                                              AppendToVectorBeginMainFrameTask,
+                                          base::Unretained(this), run_order,
+                                          String::FromUTF8(task)));
+          } else if (base::StartsWith(task, "CI")) {
+            compositor_task_runner_->PostTask(
+                FROM_HERE,
+                base::BindOnce(&MainThreadSchedulerImplTest::
+                                   AppendToVectorBeginMainFrameTaskWithInput,
+                               base::Unretained(this), run_order,
+                               String::FromUTF8(task)));
+          } else {
+            compositor_task_runner_->PostTask(
+                FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                          String::FromUTF8(task)));
+          }
           break;
         case 'P':
-          input_task_runner_->PostTask(
-              FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                        String::FromUTF8(task)));
+          if (base::StartsWith(task, "PC")) {
+            input_task_runner_->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &MainThreadSchedulerImplTest::AppendToVectorInputEventTask,
+                    base::Unretained(this), WebInputEvent::Type::kMouseMove,
+                    run_order, String::FromUTF8(task)));
+
+          } else if (base::StartsWith(task, "PD")) {
+            input_task_runner_->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &MainThreadSchedulerImplTest::AppendToVectorInputEventTask,
+                    base::Unretained(this), WebInputEvent::Type::kMouseUp,
+                    run_order, String::FromUTF8(task)));
+          } else {
+            input_task_runner_->PostTask(
+                FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
+                                          String::FromUTF8(task)));
+          }
           break;
         case 'L':
           loading_task_queue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
@@ -3410,25 +3472,46 @@ class MainThreadSchedulerImplWithCompositingAfterInputPrioritizationTest
 TEST_F(MainThreadSchedulerImplWithCompositingAfterInputPrioritizationTest,
        CompositingAfterInput) {
   Vector<String> run_order;
-  // Input tasks cause compositor tasks to be prioritized until a BeginMainFrame
-  // runs.
+
+  // Input tasks don't cause compositor tasks to be prioritized unless an input
+  // event was handled.
   PostTestTasks(&run_order, "P1 T1 C1 C2");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P1", "C1", "C2", "T1"));
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "T1", "C1", "C2"));
   run_order.clear();
 
-  scheduler_->WillBeginFrame(viz::BeginFrameArgs());
-
-  PostTestTasks(&run_order, "T2 C3 C4");
+  // Tasks with input events cause compositor tasks to be prioritized until a
+  // BeginMainFrame runs.
+  PostTestTasks(&run_order, "T1 P1 PD1 C1 C2 CM1 C2 T2 CM2");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("T2", "C3", "C4"));
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "PD1", "C1", "C2", "CM1",
+                                              "T1", "C2", "T2", "CM2"));
   run_order.clear();
 
   // Input tasks and compositor tasks will be interleaved because they have the
   // same priority.
-  PostTestTasks(&run_order, "T3 P2 C5 P3 C6");
+  PostTestTasks(&run_order, "T1 PD1 C1 PD2 C2");
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("P2", "C5", "P3", "C6", "T3"));
+  EXPECT_THAT(run_order, testing::ElementsAre("PD1", "C1", "PD2", "C2", "T1"));
+  run_order.clear();
+}
+
+TEST_F(MainThreadSchedulerImplWithCompositingAfterInputPrioritizationTest,
+       CompositorNotPrioritizedAfterContinuousInput) {
+  Vector<String> run_order;
+
+  // rAF-aligned input should not cause the next frame to be prioritized.
+  PostTestTasks(&run_order, "P1 T1 CI1 T2 CI2 T3 CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "T1", "CI1", "T2", "CI2",
+                                              "T3", "CM1"));
+  run_order.clear();
+
+  // Continuous input that runs outside of rAF should not cause the next frame
+  // to be prioritized.
+  PostTestTasks(&run_order, "PC1 T1 CM1 T2 CM2");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("PC1", "T1", "CM1", "T2", "CM2"));
   run_order.clear();
 }
 

@@ -33,12 +33,14 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_renderer_process_type.h"
+#include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
@@ -48,6 +50,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -870,9 +873,6 @@ void MainThreadSchedulerImpl::RemoveTaskObserver(
 }
 
 void MainThreadSchedulerImpl::WillBeginFrame(const viz::BeginFrameArgs& args) {
-  // TODO(crbug/1068426): Figure out when and if |UpdatePolicy| should be called
-  //  and, if needed, remove the call to it from
-  //  |SetPrioritizeCompositingAfterInput|.
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::WillBeginFrame", "args",
                args.AsValue());
@@ -888,7 +888,6 @@ void MainThreadSchedulerImpl::WillBeginFrame(const viz::BeginFrameArgs& args) {
     base::AutoLock lock(any_thread_lock_);
     any_thread().begin_main_frame_on_critical_path = args.on_critical_path;
   }
-  SetPrioritizeCompositingAfterInput(false);
   main_thread_only().have_seen_a_frame = true;
 }
 
@@ -1337,6 +1336,11 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
       any_thread().default_gesture_prevented = true;
       UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
     }
+  }
+  if (result != WebInputEventResult::kNotHandled &&
+      result != WebInputEventResult::kHandledSuppressed &&
+      !PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
+    main_thread_only().did_handle_discrete_input_event = true;
   }
 }
 
@@ -2527,14 +2531,6 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   RecordTaskUkm(queue.get(), task, *task_timing);
 
-  // Assume this input will result in a frame, which we want to show ASAP.
-  if (queue &&
-      queue->GetPrioritisationType() ==
-          MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput) {
-    SetPrioritizeCompositingAfterInput(
-        scheduling_settings().prioritize_compositing_after_input);
-  }
-
   MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(queue.get(),
                                                         *task_timing);
 
@@ -2729,17 +2725,6 @@ MainThreadSchedulerImpl::scheduling_settings() const {
   return scheduling_settings_;
 }
 
-void MainThreadSchedulerImpl::SetPrioritizeCompositingAfterInput(
-    bool prioritize_compositing_after_input) {
-  if (main_thread_only().prioritize_compositing_after_input ==
-      prioritize_compositing_after_input) {
-    return;
-  }
-  main_thread_only().prioritize_compositing_after_input =
-      prioritize_compositing_after_input;
-  UpdateCompositorTaskQueuePriority();
-}
-
 TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
     const {
   if (main_thread_only().prioritize_compositing_after_input) {
@@ -2783,7 +2768,9 @@ void MainThreadSchedulerImpl::
     MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(
         MainThreadTaskQueue* queue,
         const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  bool current_should_prioritize_compositor_task_queue =
+  bool current_prioritize_compositer_after_input =
+      main_thread_only().prioritize_compositing_after_input;
+  bool current_prioritize_compositor_after_delay =
       main_thread_only().should_prioritize_compositor_task_queue_after_delay;
   if (queue &&
       queue->queue_type() == MainThreadTaskQueue::QueueType::kCompositor &&
@@ -2792,14 +2779,25 @@ void MainThreadSchedulerImpl::
     main_thread_only().have_seen_a_frame = false;
     main_thread_only().should_prioritize_compositor_task_queue_after_delay =
         false;
+    main_thread_only().prioritize_compositing_after_input = false;
+  } else if (scheduling_settings().prioritize_compositing_after_input &&
+             queue &&
+             queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
+             main_thread_only().did_handle_discrete_input_event) {
+    // Assume this input will result in a frame, which we want to show ASAP.
+    main_thread_only().prioritize_compositing_after_input = true;
   } else if (task_timing.end_time() - main_thread_only().last_frame_time >=
              kPrioritizeCompositingAfterDelay) {
     main_thread_only().should_prioritize_compositor_task_queue_after_delay =
         true;
   }
 
+  main_thread_only().did_handle_discrete_input_event = false;
+
   if (main_thread_only().should_prioritize_compositor_task_queue_after_delay !=
-      current_should_prioritize_compositor_task_queue) {
+          current_prioritize_compositor_after_delay ||
+      main_thread_only().prioritize_compositing_after_input !=
+          current_prioritize_compositer_after_input) {
     UpdateCompositorTaskQueuePriority();
   }
 }
