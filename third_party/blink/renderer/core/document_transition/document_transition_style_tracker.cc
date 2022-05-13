@@ -83,11 +83,6 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
   int bottom_offset = reference_bounding_rect.bottom() - target_rect.bottom();
   int left_offset = target_rect.x() - reference_bounding_rect.x();
 
-  DCHECK_GE(top_offset, 0);
-  DCHECK_GE(right_offset, 0);
-  DCHECK_GE(bottom_offset, 0);
-  DCHECK_GE(left_offset, 0);
-
   return String::Format("inset(%dpx %dpx %dpx %dpx)", top_offset, right_offset,
                         bottom_offset, left_offset);
 }
@@ -103,6 +98,10 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
     child_box->MapToVisualRectInAncestorSpace(box, overflow_rect);
     result.Unite(overflow_rect);
   }
+  // Clip self painting descendant overflow by the clipping rect, then add in
+  // the visual overflow from the own painting layer.
+  // TODO(vmpstr): After these steps, we should also clip by the clip-path.
+  result.Intersect(box->OverflowClipRect(PhysicalOffset()));
   result.Unite(box->PhysicalVisualOverflowRectIncludingFilters());
   return result;
 }
