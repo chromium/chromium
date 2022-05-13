@@ -104,14 +104,15 @@ bool MediaRouterDialogControllerViews::IsShowingMediaRouterDialog() const {
 void MediaRouterDialogControllerViews::Reset() {
   // If |ui_| is null, Reset() has already been called.
   if (ui_) {
-    if (IsShowingMediaRouterDialog() && GetActionController())
+    if (GetActionController())
       GetActionController()->OnDialogHidden();
     ui_.reset();
     MediaRouterDialogController::Reset();
   }
 }
 
-void MediaRouterDialogControllerViews::OnWidgetClosing(views::Widget* widget) {
+void MediaRouterDialogControllerViews::OnWidgetDestroying(
+    views::Widget* widget) {
   DCHECK(scoped_widget_observations_.IsObservingSource(widget));
   if (ui_)
     ui_->LogMediaSinkStatus();
