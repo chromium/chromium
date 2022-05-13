@@ -1374,6 +1374,10 @@
       status: "experimental",
     },
     {
+      name: "MachineLearningNeuralNetwork",
+      status: "test",
+    },
+    {
       name: "ManagedConfiguration",
       status: "stable",
     },

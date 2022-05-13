@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 386 tests; 120 PASS, 266 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "ReferenceError: MLGraphBuilder is not defined"
+Found 386 tests; 135 PASS, 251 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -137,12 +137,12 @@ PASS MLContext interface: context must not have property "compute"
 FAIL MLContext interface: context must inherit property "computeAsync(MLGraph, MLNamedArrayInputs, MLNamedArrayOutputs)" with the proper type assert_inherits: property "computeAsync" not found in prototype chain
 FAIL MLContext interface: calling computeAsync(MLGraph, MLNamedArrayInputs, MLNamedArrayOutputs) on context with too few arguments must throw TypeError assert_inherits: property "computeAsync" not found in prototype chain
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
-FAIL MLOperand interface: existence and properties of interface object assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
-FAIL MLOperand interface object length assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
-FAIL MLOperand interface object name assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
-FAIL MLOperand interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
-FAIL MLOperand interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
-FAIL MLOperand interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLOperand" expected property "MLOperand" missing
+PASS MLOperand interface: existence and properties of interface object
+PASS MLOperand interface object length
+PASS MLOperand interface object name
+PASS MLOperand interface: existence and properties of interface prototype object
+PASS MLOperand interface: existence and properties of interface prototype object's "constructor" property
+PASS MLOperand interface: existence and properties of interface prototype object's @@unscopables property
 FAIL MLOperand must be primary interface of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
 FAIL Stringification of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
 FAIL MLOperand must be primary interface of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
@@ -155,84 +155,84 @@ FAIL MLOperator interface: existence and properties of interface prototype objec
 FAIL MLOperator interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
 FAIL MLOperator must be primary interface of relu assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
 FAIL Stringification of relu assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: relu is not defined"
-FAIL MLGraphBuilder interface: existence and properties of interface object assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface object length assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface object name assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: member build Cannot use 'in' operator to search for 'build' in undefined
-FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation add(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation sub(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation mul(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation div(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation max(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation min(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation pow(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation abs(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation ceil(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation cos(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation exp(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation floor(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation log(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation neg(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation sin(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation tan(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation elu(optional MLEluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation gemm(MLOperand, MLOperand, optional MLGemmOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation hardSwish(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation hardSwish() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation relu(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation relu() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation reshape(MLOperand, sequence<long>) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation sigmoid(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation sigmoid() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation softmax(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation softsign() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation tanh() assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
-FAIL MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+PASS MLGraphBuilder interface: existence and properties of interface object
+PASS MLGraphBuilder interface object length
+PASS MLGraphBuilder interface object name
+PASS MLGraphBuilder interface: existence and properties of interface prototype object
+PASS MLGraphBuilder interface: existence and properties of interface prototype object's "constructor" property
+PASS MLGraphBuilder interface: existence and properties of interface prototype object's @@unscopables property
+PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
+FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
+FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
+PASS MLGraphBuilder interface: member build
+FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
+FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions) assert_own_property: interface prototype object missing non-static operation expected property "clamp" missing
+FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: interface prototype object missing non-static operation expected property "clamp" missing
+FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) assert_own_property: interface prototype object missing non-static operation expected property "concat" missing
+FAIL MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "conv2d" missing
+FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "convTranspose2d" missing
+PASS MLGraphBuilder interface: operation add(MLOperand, MLOperand)
+FAIL MLGraphBuilder interface: operation sub(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sub" missing
+FAIL MLGraphBuilder interface: operation mul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "mul" missing
+FAIL MLGraphBuilder interface: operation div(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "div" missing
+FAIL MLGraphBuilder interface: operation max(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "max" missing
+FAIL MLGraphBuilder interface: operation min(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "min" missing
+FAIL MLGraphBuilder interface: operation pow(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "pow" missing
+FAIL MLGraphBuilder interface: operation abs(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "abs" missing
+FAIL MLGraphBuilder interface: operation ceil(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "ceil" missing
+FAIL MLGraphBuilder interface: operation cos(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "cos" missing
+FAIL MLGraphBuilder interface: operation exp(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "exp" missing
+FAIL MLGraphBuilder interface: operation floor(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "floor" missing
+FAIL MLGraphBuilder interface: operation log(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "log" missing
+FAIL MLGraphBuilder interface: operation neg(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "neg" missing
+FAIL MLGraphBuilder interface: operation sin(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sin" missing
+FAIL MLGraphBuilder interface: operation tan(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tan" missing
+FAIL MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions) assert_own_property: interface prototype object missing non-static operation expected property "elu" missing
+FAIL MLGraphBuilder interface: operation elu(optional MLEluOptions) assert_own_property: interface prototype object missing non-static operation expected property "elu" missing
+FAIL MLGraphBuilder interface: operation gemm(MLOperand, MLOperand, optional MLGemmOptions) assert_own_property: interface prototype object missing non-static operation expected property "gemm" missing
+FAIL MLGraphBuilder interface: operation gru(MLOperand, MLOperand, MLOperand, long, long, optional MLGruOptions) assert_own_property: interface prototype object missing non-static operation expected property "gru" missing
+FAIL MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, long, optional MLGruCellOptions) assert_own_property: interface prototype object missing non-static operation expected property "gruCell" missing
+FAIL MLGraphBuilder interface: operation hardSigmoid(MLOperand, optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
+FAIL MLGraphBuilder interface: operation hardSigmoid(optional MLHardSigmoidOptions) assert_own_property: interface prototype object missing non-static operation expected property "hardSigmoid" missing
+FAIL MLGraphBuilder interface: operation hardSwish(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "hardSwish" missing
+FAIL MLGraphBuilder interface: operation hardSwish() assert_own_property: interface prototype object missing non-static operation expected property "hardSwish" missing
+FAIL MLGraphBuilder interface: operation instanceNormalization(MLOperand, optional MLInstanceNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "instanceNormalization" missing
+FAIL MLGraphBuilder interface: operation leakyRelu(MLOperand, optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
+FAIL MLGraphBuilder interface: operation leakyRelu(optional MLLeakyReluOptions) assert_own_property: interface prototype object missing non-static operation expected property "leakyRelu" missing
+FAIL MLGraphBuilder interface: operation matmul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "matmul" missing
+FAIL MLGraphBuilder interface: operation linear(MLOperand, optional MLLinearOptions) assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
+FAIL MLGraphBuilder interface: operation linear(optional MLLinearOptions) assert_own_property: interface prototype object missing non-static operation expected property "linear" missing
+FAIL MLGraphBuilder interface: operation pad(MLOperand, MLOperand, optional MLPadOptions) assert_own_property: interface prototype object missing non-static operation expected property "pad" missing
+FAIL MLGraphBuilder interface: operation averagePool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "averagePool2d" missing
+FAIL MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
+FAIL MLGraphBuilder interface: operation maxPool2d(MLOperand, optional MLPool2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "maxPool2d" missing
+FAIL MLGraphBuilder interface: operation reduceL1(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceL1" missing
+FAIL MLGraphBuilder interface: operation reduceL2(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceL2" missing
+FAIL MLGraphBuilder interface: operation reduceLogSum(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSum" missing
+FAIL MLGraphBuilder interface: operation reduceLogSumExp(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceLogSumExp" missing
+FAIL MLGraphBuilder interface: operation reduceMax(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMax" missing
+FAIL MLGraphBuilder interface: operation reduceMean(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMean" missing
+FAIL MLGraphBuilder interface: operation reduceMin(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceMin" missing
+FAIL MLGraphBuilder interface: operation reduceProduct(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceProduct" missing
+FAIL MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceSum" missing
+FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceSumSquare" missing
+FAIL MLGraphBuilder interface: operation relu(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "relu" missing
+FAIL MLGraphBuilder interface: operation relu() assert_own_property: interface prototype object missing non-static operation expected property "relu" missing
+FAIL MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "resample2d" missing
+FAIL MLGraphBuilder interface: operation reshape(MLOperand, sequence<long>) assert_own_property: interface prototype object missing non-static operation expected property "reshape" missing
+FAIL MLGraphBuilder interface: operation sigmoid(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sigmoid" missing
+FAIL MLGraphBuilder interface: operation sigmoid() assert_own_property: interface prototype object missing non-static operation expected property "sigmoid" missing
+FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<long>, sequence<long>, optional MLSliceOptions) assert_own_property: interface prototype object missing non-static operation expected property "slice" missing
+FAIL MLGraphBuilder interface: operation softmax(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "softmax" missing
+FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
+FAIL MLGraphBuilder interface: operation softplus(optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
+FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
+FAIL MLGraphBuilder interface: operation softsign() assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
+FAIL MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) assert_own_property: interface prototype object missing non-static operation expected property "split" missing
+FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: interface prototype object missing non-static operation expected property "squeeze" missing
+FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
+FAIL MLGraphBuilder interface: operation tanh() assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
+FAIL MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions) assert_own_property: interface prototype object missing non-static operation expected property "transpose" missing
 FAIL MLGraphBuilder must be primary interface of builder assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL Stringification of builder assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "input(DOMString, MLOperandDescriptor)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"

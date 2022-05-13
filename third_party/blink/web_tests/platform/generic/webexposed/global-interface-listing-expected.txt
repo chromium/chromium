@@ -5062,10 +5062,19 @@ interface ML
 interface MLContext
     attribute @@toStringTag
     method constructor
+interface MLGraphBuilder
+    attribute @@toStringTag
+    method add
+    method constant
+    method constructor
+    method input
 interface MLModelLoader
     attribute @@toStringTag
     method constructor
     method load
+interface MLOperand
+    attribute @@toStringTag
+    method constructor
 interface Magnetometer : Sensor
     attribute @@toStringTag
     getter x
