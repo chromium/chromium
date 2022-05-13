@@ -6004,6 +6004,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER" desc="about:browser-switch/internals, section URL Checker, the text shows in which browser will open the URL">
           Opens in: <ph name="OPEN_BROWSER">$1</ph>
         </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER_PROTOCOL_REASON" desc="about:browser-switch/internals, section URL Checker, the explaination reason for check result, when the entered URL are not supported, it will list out supported URL">
+          Reason: LBS only supports http://, https://, and file:// URLs.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER_RULE_REASON" desc="about:browser-switch/internals, section URL Checker, the explaination reason for check result, displayed when the entered URL matched the rule in provided list">
+          Reason: <ph name="RULE">$1<ex>example.com</ex></ph> was found in the "<ph name="LIST_NAME">$2<ex>Force open in</ex></ph>" list.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER_INVERT_RULE_REASON" desc="about:browser-switch/internals, section URL Checker, the explaination reason for check result, displayed when the entered URL matched the inverted rule in Force open in list">
+          Reason: The inverted rule <ph name="REVERT_RULE">$1<ex>!example.com</ex></ph> was found in the "Force open in" list.
+        </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_OPEN_BROWSER_DEFAULT_REASON" desc="about:browser-switch/internals, section URL Checker, the explaination reason for check result, displayed when the entered URL did not match any listed rule and default browser will not get switched">
+          Reason: LBS stays in <ph name="DEFAULT_OPEN_BROWSER">$1<ex>Chromium</ex></ph> by default.
+        </message>
         <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_INVALID_URL" desc="about:browser-switch/internals, section URL Checker, specific error message when the url is invalid">
           Invalid URL. Make sure it is formatted properly.
         </message>
