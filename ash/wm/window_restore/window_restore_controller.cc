@@ -434,9 +434,9 @@ void WindowRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   } else {
     to_be_shown_windows_.insert(window);
 
-    // Clear the pre minimized show state key in case for any reason the window
+    // Clear the restore show state key in case for any reason the window
     // did not restore its minimized state.
-    window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
+    window->ClearProperty(aura::client::kRestoreShowStateKey);
   }
 
   StackWindow(window);

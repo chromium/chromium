@@ -106,7 +106,7 @@ void DefaultState::AttachState(WindowState* window_state,
     aura::Window* window = window_state->window();
     window->SetProperty(
         aura::client::kShowStateKey,
-        window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+        window->GetProperty(aura::client::kRestoreShowStateKey));
   }
 
   ReenterToCurrentState(window_state, state_in_previous_mode);

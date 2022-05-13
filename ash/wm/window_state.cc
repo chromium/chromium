@@ -809,12 +809,6 @@ void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
 void WindowState::UpdateWindowPropertiesFromStateType() {
   ui::WindowShowState new_window_state =
       ToWindowShowState(current_state_->GetType());
-  // Clear |kPreMinimizedShowStateKey| property only when the window is actually
-  // Unminimized and not in tablet mode.
-  if (new_window_state != ui::SHOW_STATE_MINIMIZED && IsMinimized() &&
-      !IsTabletModeEnabled()) {
-    window()->ClearProperty(aura::client::kPreMinimizedShowStateKey);
-  }
   if (new_window_state != GetShowState()) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
     window_->SetProperty(aura::client::kShowStateKey, new_window_state);
@@ -1040,6 +1034,7 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
       kWindowStateRestoreHistoryLayerMap.end();
   if (!is_state_type_supported) {
     window_state_restore_history_.clear();
+    window_->ClearProperty(aura::client::kRestoreShowStateKey);
     return;
   }
 
@@ -1063,6 +1058,16 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
       (kWindowStateRestoreHistoryLayerMap.at(current_state_type) >
        kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) {
     window_state_restore_history_.push_back(previous_state_type);
+  }
+
+  // TODO(xdai): For now we don't save the restore history in tablet mode in the
+  // window property, so that when exiting tablet mode, the window can still
+  // restore back to its old window state (see the test case
+  // TabletModeWindowManagerTest.UnminimizeInTabletMode). We should revisit this
+  // logic.
+  if (!IsTabletModeEnabled()) {
+    window_->SetProperty(aura::client::kRestoreShowStateKey,
+                         chromeos::ToWindowShowState(GetRestoreWindowState()));
   }
 }
 

@@ -331,8 +331,11 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
       gfx::Rect bounds =
           GetSnappedWindowBoundsInParent(window, next_state_type);
       // We don't want Unminimize() to restore the pre-snapped state during the
-      // transition.
-      window->ClearProperty(aura::client::kPreMinimizedShowStateKey);
+      // transition. See crbug.com/1031313 for why we need this.
+      // kRestoreShowStateKey property will be updated properly after the window
+      // is snapped correctly.
+      if (window_state->IsMinimized())
+        window->ClearProperty(aura::client::kRestoreShowStateKey);
 
       window_state->UpdateWindowPropertiesFromStateType();
       VLOG(1) << "Processing State Transtion: event=" << event_type

@@ -897,17 +897,17 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   window_state->Maximize();
   window_state->Minimize();
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
   // Check that pre-minimized window show state is not cleared due to
   // unminimizing in tablet mode.
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
   window_state->Minimize();
   EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+            window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   window_state->Unminimize();

@@ -95,10 +95,11 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
             : window_state->GetStateType();
   }
 
-  // Populate the pre minimized show state field if the window is minimized.
+  // Populate the restore show state field that the minimize should restore back
+  // to if the window is minimized.
   if (window_state->IsMinimized()) {
     window_info->pre_minimized_show_state_type =
-        window->GetProperty(aura::client::kPreMinimizedShowStateKey);
+        window->GetProperty(aura::client::kRestoreShowStateKey);
   }
 
   if (window_state->IsSnapped()) {

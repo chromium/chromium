@@ -198,7 +198,7 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
         break;
       case chromeos::WindowStateType::kMinimized: {
         ui::WindowShowState pre_full_state =
-            window->GetProperty(aura::client::kPreMinimizedShowStateKey);
+            window->GetProperty(aura::client::kRestoreShowStateKey);
         if (pre_full_state != ui::SHOW_STATE_FULLSCREEN) {
           window->SetProperty(aura::client::kPreFullscreenShowStateKey,
                               pre_full_state);

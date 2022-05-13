@@ -136,14 +136,9 @@ AURA_EXPORT extern const aura::WindowProperty<gfx::NativeViewAccessible>* const
 AURA_EXPORT extern const WindowProperty<gfx::Size*>* const kPreferredSize;
 
 // A property key to store ui::WindowShowState for restoring a window from
-// minimized show state.
-// Used in Ash to remember the show state before the window was minimized.
-AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
-    kPreMinimizedShowStateKey;
-
-// A property key to store ui::WindowShowState for restoring a window from
 // fullscreen show state.
 // Used in Ash to remember the show state before the window was fullscreen.
+// TODO(xdai): Remove it in a following CL.
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
     kPreFullscreenShowStateKey;
 
@@ -160,14 +155,10 @@ AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
     kShowStateKey;
 
-// A property key to indicate if a window is currently being restored. Normally
-// restoring a window equals to changing window's state to normal window state.
-// This property will be used in ash to decide if we should use window state
-// restore stack to decide which window state the window should restore back to,
-// and it's not unnecessarily always the normal window state. As an example,
-// unminimizing a window will restore the window back to its pre-minimized
-// window state.
-AURA_EXPORT extern const WindowProperty<bool>* const kIsRestoringKey;
+// A property key to store ui::WindowShowState for a window to restore back to
+// from the current window show state.
+AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
+    kRestoreShowStateKey;
 
 // A property key to store key event dispatch policy. The default value is
 // false, which means IME receives a key event in PREDISPATCH phace before a

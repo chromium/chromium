@@ -225,9 +225,8 @@ TEST_F(ClientControlledStateTest, Minimize) {
 
   ::wm::Unminimize(widget()->GetNativeWindow());
   EXPECT_TRUE(widget()->IsMinimized());
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL,
-            widget()->GetNativeWindow()->GetProperty(
-                aura::client::kPreMinimizedShowStateKey));
+  EXPECT_EQ(ui::SHOW_STATE_NORMAL, widget()->GetNativeWindow()->GetProperty(
+                                       aura::client::kRestoreShowStateKey));
   EXPECT_EQ(kInitialBounds, widget()->GetWindowBoundsInScreen());
   EXPECT_EQ(WindowStateType::kMinimized, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kNormal, delegate()->new_state());

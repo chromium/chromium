@@ -89,7 +89,7 @@ void SetWindowFullscreen(aura::Window* window, bool fullscreen) {
   DCHECK(window);
   ui::WindowShowState current_show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  bool is_fullscreen = current_show_state == ui::SHOW_STATE_FULLSCREEN;
+  const bool is_fullscreen = current_show_state == ui::SHOW_STATE_FULLSCREEN;
   if (fullscreen == is_fullscreen)
     return;
   if (fullscreen) {
@@ -101,8 +101,7 @@ void SetWindowFullscreen(aura::Window* window, bool fullscreen) {
     // fullscreen before it was minimized, we will keep the
     // PreMinimizedShowState unchanged.
     if (pre_show_state == ui::SHOW_STATE_MINIMIZED) {
-      pre_show_state =
-          window->GetProperty(aura::client::kPreMinimizedShowStateKey);
+      pre_show_state = window->GetProperty(aura::client::kRestoreShowStateKey);
     }
     if (pre_show_state != ui::SHOW_STATE_FULLSCREEN) {
       window->SetProperty(aura::client::kPreFullscreenShowStateKey,
@@ -130,19 +129,14 @@ void SetWindowState(aura::Window* window, ui::WindowShowState state) {
 }
 
 void Restore(aura::Window* window) {
-  window->SetProperty(aura::client::kIsRestoringKey, true);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
-  window->ClearProperty(aura::client::kIsRestoringKey);
+  window->SetProperty(aura::client::kShowStateKey,
+                      window->GetProperty(aura::client::kRestoreShowStateKey));
 }
 
 void Unminimize(aura::Window* window) {
-  // TODO: change to call into Restore() function and remove
-  // kPreMinimizedShowStateKey key.
   DCHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
             ui::SHOW_STATE_MINIMIZED);
-  window->SetProperty(
-      aura::client::kShowStateKey,
-      window->GetProperty(aura::client::kPreMinimizedShowStateKey));
+  Restore(window);
 }
 
 aura::Window* GetActivatableWindow(aura::Window* window) {

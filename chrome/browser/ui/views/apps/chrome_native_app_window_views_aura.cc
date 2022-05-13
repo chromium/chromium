@@ -93,9 +93,10 @@ ui::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState() const {
     return ui::SHOW_STATE_FULLSCREEN;
   }
 
-  // Use kPreMinimizedShowStateKey in case a window is minimized/hidden.
+  // Use kRestoreShowStateKey to get the window restore show state in case a
+  // window is minimized/hidden.
   ui::WindowShowState restore_state = widget()->GetNativeWindow()->GetProperty(
-      aura::client::kPreMinimizedShowStateKey);
+      aura::client::kRestoreShowStateKey);
   return GetRestorableState(restore_state);
 }
 
