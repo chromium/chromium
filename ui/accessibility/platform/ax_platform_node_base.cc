@@ -1887,27 +1887,25 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 
 int AXPlatformNodeBase::GetSelectionAnchor(const AXTree::Selection* selection) {
   DCHECK(selection);
-  int32_t anchor_id = selection->anchor_object_id;
+  AXNodeID anchor_id = selection->anchor_object_id;
   AXPlatformNodeBase* anchor_object =
       static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(anchor_id));
-
   if (!anchor_object)
     return -1;
 
-  int anchor_offset = int{selection->anchor_offset};
-  return GetHypertextOffsetFromEndpoint(anchor_object, anchor_offset);
+  return GetHypertextOffsetFromEndpoint(anchor_object,
+                                        selection->anchor_offset);
 }
 
 int AXPlatformNodeBase::GetSelectionFocus(const AXTree::Selection* selection) {
   DCHECK(selection);
-  int32_t focus_id = selection->focus_object_id;
+  AXNodeID focus_id = selection->focus_object_id;
   AXPlatformNodeBase* focus_object =
       static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(focus_id));
   if (!focus_object)
     return -1;
 
-  int focus_offset = int{selection->focus_offset};
-  return GetHypertextOffsetFromEndpoint(focus_object, focus_offset);
+  return GetHypertextOffsetFromEndpoint(focus_object, selection->focus_offset);
 }
 
 void AXPlatformNodeBase::GetSelectionOffsets(int* selection_start,

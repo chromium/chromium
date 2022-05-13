@@ -2298,19 +2298,18 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectionRanges(IA2Range** ranges,
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   AXTree::Selection unignored_selection =
       GetDelegate()->GetUnignoredSelection();
-  int32_t anchor_id = unignored_selection.anchor_object_id;
+
+  AXNodeID anchor_id = unignored_selection.anchor_object_id;
   auto* anchor_node =
       static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(anchor_id));
   if (!anchor_node)
     return E_FAIL;
-  int anchor_offset = int{unignored_selection.anchor_offset};
 
-  int32_t focus_id = unignored_selection.focus_object_id;
+  AXNodeID focus_id = unignored_selection.focus_object_id;
   auto* focus_node =
       static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(focus_id));
   if (!focus_node)
     return E_FAIL;
-  int focus_offset = int{unignored_selection.focus_offset};
 
   if (!IsDescendant(anchor_node) || !IsDescendant(focus_node))
     return S_FALSE;  // No selection within this subtree.
@@ -2318,10 +2317,10 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectionRanges(IA2Range** ranges,
   *ranges = reinterpret_cast<IA2Range*>(CoTaskMemAlloc(sizeof(IA2Range)));
   anchor_node->AddRef();
   ranges[0]->anchor = static_cast<IAccessible*>(anchor_node);
-  ranges[0]->anchorOffset = anchor_offset;
+  ranges[0]->anchorOffset = unignored_selection.anchor_offset;
   focus_node->AddRef();
   ranges[0]->active = static_cast<IAccessible*>(focus_node);
-  ranges[0]->activeOffset = focus_offset;
+  ranges[0]->activeOffset = unignored_selection.focus_offset;
   *nRanges = 1;
   return S_OK;
 }
