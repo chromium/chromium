@@ -100,6 +100,7 @@ void ExternallyManagedAppManagerImpl::Shutdown() {
   pending_registrations_.clear();
   current_registration_.reset();
   pending_installs_.clear();
+  url_loader_.reset();
   // `current_install_` keeps a pointer to `web_contents_` so destroy it before
   // releasing the WebContents.
   current_install_.reset();

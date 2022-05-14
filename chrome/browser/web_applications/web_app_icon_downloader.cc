@@ -22,7 +22,9 @@ WebAppIconDownloader::WebAppIconDownloader(
     WebAppIconDownloaderCallback callback)
     : content::WebContentsObserver(web_contents),
       extra_favicon_urls_(std::move(extra_favicon_urls)),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  DCHECK(web_contents);
+}
 
 WebAppIconDownloader::~WebAppIconDownloader() = default;
 
