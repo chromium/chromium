@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimnetzwerk, kein Roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
+<translation id="1328223165223065150">Hintergrundfarbe</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
 <translation id="1367951781824006909">Datei auswählen</translation>
@@ -55,6 +56,7 @@
 <translation id="1442433966118452622">Bildquelle</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
 <translation id="1459693405370120464">Wetter</translation>
+<translation id="1459784442280469416">Auf USB speichern</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -63,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
 <translation id="150962533380566081">Ungültiger PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1512982610995527443">Gerät wird in 5 Sekunden heruntergefahren</translation>
+<translation id="1522984060396982789">Deine Reparatur war erfolgreich. Du kannst das Gerät herunterfahren oder weitere Aktionen ausführen.</translation>
 <translation id="152892567002884378">Lauter</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -105,6 +109,7 @@
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
+<translation id="1932611479324127242">Akku abschalten</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1977994649430373166">Google-Profilfoto</translation>
@@ -123,6 +128,7 @@
 <translation id="2138109643290557664">Einfach treiben lassen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
+<translation id="2154739667870063220">Neu starten</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
@@ -140,6 +146,7 @@
 <translation id="2240366984605217732">Layout</translation>
 <translation id="225692081236532131">Aktivierungsstatus</translation>
 <translation id="2271469253353559191">Zeitplan für dunklen Modus</translation>
+<translation id="2275586345903859204">Reparatur abgeschlossen</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
@@ -183,6 +190,7 @@
 <translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
+<translation id="2756652381241102009">Diagnose ausführen</translation>
 <translation id="2783010256799387990">BESTANDEN</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -332,6 +340,7 @@
 <translation id="4378551569595875038">Verbindung...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">„<ph name="DEVICE_NAME" />“ wird neu gestartet</translation>
+<translation id="4415951057168511744">Aktueller Avatar</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ist deaktiviert</translation>
 <translation id="4429881212383817840">Kerberos-Ticket läuft bald ab</translation>
@@ -368,6 +377,7 @@
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
+<translation id="4751272708893364980">RMA-Protokolle ansehen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4774530504324923332">Du benötigst einen RSU-fähigen Sicherheitsschlüssel, einen QR-Code-Scanner und ein zweites Gerät mit einer Internetverbindung</translation>
 <translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
@@ -451,9 +461,11 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
 <translation id="537872351913703572">Gerät wird an einen anderen Nutzer oder eine andere Organisation übergeben</translation>
+<translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5395600419410242651">Alle Daten löschen</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
+<translation id="5406131354638931058">Akku abschalten für Geräte, die versendet oder gelagert werden</translation>
 <translation id="5423849171846380976">Aktiviert</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
@@ -506,6 +518,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
+<translation id="5951259522948394825">Korrekte Platzierung aller Elemente bestätigen und Diagnosebericht anzeigen</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardhintergrund</translation>
 <translation id="6017514345406065928">Grün</translation>
@@ -726,6 +739,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8138405288920084977">LTE-Advanced</translation>
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
+<translation id="819552138404104974">RMA-Protokolle</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8217675307824400706">Verbindung herstellen</translation>
@@ -759,6 +773,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8456761643544401578">Automatischer dunkler Modus</translation>
 <translation id="8461329675984532579">Name des Homepageanbieters</translation>
 <translation id="8467104829907989997">Komponenten werden kalibriert...</translation>
+<translation id="8474030592808010086">Kabel des Geräts herausziehen, um den Akku abzuschalten</translation>
 <translation id="8475690821716466388">Das WLAN ist mit dem schwachen Protokoll WEP PSK gesichert</translation>
 <translation id="8477551185774834963">Die DNS-Latenz liegt etwas über dem zulässigen Grenzwert</translation>
 <translation id="8483248364096924578">IP-Adresse</translation>
@@ -804,6 +819,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8898840733695078011">Signalstärke</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">Ansehen, was korrigiert wurde</translation>
 <translation id="8919837981463578619">Fehlgeschlagen – Fach fehlt</translation>
 <translation id="8923267550422472772">Tag des Monats zum Zurücksetzen</translation>
 <translation id="8928727111548978589">Fehlgeschlagen – Kein Papier</translation>

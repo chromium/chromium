@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
 <translation id="1327977588028644528">Անցուղի</translation>
+<translation id="1328223165223065150">Պաստառի գույն</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
 <translation id="1367951781824006909">Ընտրել ֆայլ</translation>
@@ -55,6 +56,7 @@
 <translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
 <translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
+<translation id="1459784442280469416">Պահել USB կրիչի վրա</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
@@ -63,6 +65,8 @@
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="150962533380566081">Անվավեր PUK:</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
+<translation id="1512982610995527443">Սարքը 5 վայրկյանից կանջատվի</translation>
+<translation id="1522984060396982789">Նորոգումն ավարտված է։ Դուք կարող անջատել սարքը կամ կատարել լրացուցիչ գործողություններ։</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
@@ -105,6 +109,7 @@
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
+<translation id="1932611479324127242">Անջատել մարտկոցը</translation>
 <translation id="1947737735496445907">Տպված է</translation>
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1977994649430373166">Google պրոֆիլի լուսանկար</translation>
@@ -123,6 +128,7 @@
 <translation id="2138109643290557664">Տատանումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
+<translation id="2154739667870063220">Վերաբեռնել</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
@@ -140,6 +146,7 @@
 <translation id="2240366984605217732">Դասավորության փոխանջատիչ</translation>
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
 <translation id="2271469253353559191">Մուգ ռեժիմի ժամանակացույց</translation>
+<translation id="2275586345903859204">Վերանորոգումն ավարտված է</translation>
 <translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
 <translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
 <translation id="2320295602967756579">Միացնել բաց թեման</translation>
@@ -183,6 +190,7 @@
 <translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
+<translation id="2756652381241102009">Գործարկել դիագնոստիկան</translation>
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
@@ -332,6 +340,7 @@
 <translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> սարքը վերագործարկվում է</translation>
+<translation id="4415951057168511744">Ընթացիկ ավատարը</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />-ն անջատված է</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
@@ -368,6 +377,7 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4744944742468440486">Տեղեկություններ ձեր ընտրության վերաբերյալ</translation>
+<translation id="4751272708893364980">Տեսնել RMA մատյանները</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4774530504324923332">Ձեզ անհրաժեշտ է RSU աջակցող անվտանգության բանալի, QR կոդերի սկաներ և երկրորդ սարք՝ ինտերնետ կապով</translation>
 <translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
@@ -451,9 +461,11 @@
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
 <translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
 <translation id="537872351913703572">Սարքը կփոխանցվի այլ օգտատիրոջ կամ կազմակերպության</translation>
+<translation id="5389224261615877010">Ծիածան</translation>
 <translation id="5395600419410242651">Ջնջել բոլոր տվյալները</translation>
 <translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
+<translation id="5406131354638931058">Անջատել առաքվող կամ պահեստավորվող սարքերի մարտկոցները</translation>
 <translation id="5423849171846380976">Ակտիվացված է</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
@@ -506,6 +518,7 @@
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
+<translation id="5951259522948394825">Թույլ է տալիս համոզվել, որ ամեն ինչ կարգին է, և դիտել դիագնոստիկայի հաշվետվությունը։</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
@@ -726,6 +739,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">RMA մատյաններ</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8217675307824400706">Միացեք ցանցին</translation>
@@ -759,6 +773,7 @@
 <translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8467104829907989997">Բաղադրիչների չափաբերում…</translation>
+<translation id="8474030592808010086">Մարտկոցն անջատելու համար սարքն անջատեք հոսանքից։</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
@@ -804,6 +819,7 @@
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
+<translation id="8919792139048574232">Թույլ է տալիս տեսնել շտկումները</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
 <translation id="8923267550422472772">Ամսվա օրը, երբ տեղեկությունները պետք է զրոյացվեն</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>

@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家庭网络，非漫游</translation>
 <translation id="1327977588028644528">网关</translation>
+<translation id="1328223165223065150">壁纸颜色</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
 <translation id="1367951781824006909">选择文件</translation>
@@ -55,6 +56,7 @@
 <translation id="1442433966118452622">图片来源</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1459693405370120464">天气</translation>
+<translation id="1459784442280469416">保存至 USB</translation>
 <translation id="1468664791493211953">优惠</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 负责管理此设备，而且也许能够监控您的活动。</translation>
 <translation id="1478594628797167447">扫描器</translation>
@@ -63,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
+<translation id="1512982610995527443">设备将在 5 秒后关机</translation>
+<translation id="1522984060396982789">已成功修复。您可将设备关机或执行一些其他操作。</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
@@ -105,6 +109,7 @@
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
 <translation id="1908234395526491708">UDP 请求失败</translation>
+<translation id="1932611479324127242">切断电池供电</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1977994649430373166">Google 个人资料照片</translation>
@@ -123,6 +128,7 @@
 <translation id="2138109643290557664">一飘而过</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 张照片</translation>
+<translation id="2154739667870063220">重新启动</translation>
 <translation id="2157959690810728433">已加入队列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重试</translation>
 <translation id="2161394479394250669">取消打印任务</translation>
@@ -140,6 +146,7 @@
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
+<translation id="2275586345903859204">已修复完毕</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
@@ -183,6 +190,7 @@
 <translation id="2717139507051041123">启用深色模式</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
+<translation id="2756652381241102009">运行诊断</translation>
 <translation id="2783010256799387990">通过</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2805756323405976993">应用</translation>
@@ -332,6 +340,7 @@
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">当前头像</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
 <translation id="4428374560396076622">“<ph name="NETWORK_NAME" />”已关闭</translation>
 <translation id="4429881212383817840">Kerberos 票据即将过期</translation>
@@ -368,6 +377,7 @@
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">与您所选内容相关的信息</translation>
+<translation id="4751272708893364980">查看 RMA 日志</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4774530504324923332">您将需要一个已启用 RSU 的安全密钥、二维码扫描器和另一部联网设备</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
@@ -451,9 +461,11 @@
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
 <translation id="5376354385557966694">自动浅色模式</translation>
 <translation id="537872351913703572">设备将由另一用户或组织使用</translation>
+<translation id="5389224261615877010">彩虹色</translation>
 <translation id="5395600419410242651">清除所有数据</translation>
 <translation id="5400907029458559844">设备正在连接。</translation>
 <translation id="5401938042319910061">运行所有例程</translation>
+<translation id="5406131354638931058">为正配送或库存中的设备切断电池供电</translation>
 <translation id="5423849171846380976">已激活</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
@@ -506,6 +518,7 @@
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="594552776027197022">生成随机密钥对</translation>
+<translation id="5951259522948394825">确认一切都各就各位并查看诊断报告</translation>
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">默认壁纸</translation>
 <translation id="6017514345406065928">绿色</translation>
@@ -726,6 +739,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">RMA 日志</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8217675307824400706">连接到网络</translation>
@@ -759,6 +773,7 @@
 <translation id="8456761643544401578">自动深色模式</translation>
 <translation id="8461329675984532579">家用移动网络提供商名称</translation>
 <translation id="8467104829907989997">正在校准组件…</translation>
+<translation id="8474030592808010086">拔掉设备的电源线，以切断电池供电</translation>
 <translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="8483248364096924578">IP 地址</translation>
@@ -804,6 +819,7 @@
 <translation id="8898840733695078011">信号强度</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">查看已解决的问题</translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
 <translation id="8923267550422472772">每月重置流量使用情况的日期</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>

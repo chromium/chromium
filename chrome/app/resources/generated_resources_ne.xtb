@@ -3777,6 +3777,7 @@
 <translation id="4648491805942548247">अपर्याप्त अनुमतिहरू</translation>
 <translation id="4650591383426000695">आफ्नो <ph name="DEVICE_TYPE" /> बाट आफ्नो फोन छुटाउनुहोस्</translation>
 <translation id="4651484272688821107">डेमो मोडका स्रोतहरूमार्फत अनलाइन कम्पोनेन्ट लोड गर्न सकिएन।</translation>
+<translation id="4651921906638302153">यो खाता प्रयोग गरी साइन इन गर्न मिल्दैन</translation>
 <translation id="4652935475563630866">क्यामेराको सेटिङमा गरिएका परिवर्तन लागू गर्न Parallels Desktop बन्द गरेर फेरि खोल्नु पर्ने हुन्छ। अगाडि बढ्नका निम्ति Parallels Desktop बन्द गरेर फेरि खोल्नुहोस्।</translation>
 <translation id="4653405415038586100">Linux कन्फिगर गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="465406513924180949">तपाईं आफूले वेबमा रहेका सपिङ कार्टहरूमा हालेका वस्तुहरू खोज्न आफूलाई मद्दत गर्ने कार्टहरू देख्दै हुनुहुन्छ।
@@ -5432,6 +5433,7 @@
 <translation id="6327785803543103246">वेब प्रोक्सीको स्वत:खोज</translation>
 <translation id="6331818708794917058">साइटहरूले MIDI यन्त्रहरूमा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
 <translation id="6333064448949140209">फाइल डिबग प्रक्रियाका लागि Google मा पठाइने छ</translation>
+<translation id="6333170995003625229">तपाईंको इमेल ठेगाना वा पासवर्ड पुष्टि गर्न सकिएन। फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="6335920438823100346">Linux सुरु गर्न <ph name="MANAGER" /> का अनुसार तपाईंले आफ्नो डेटा ब्याकअप गरी यो Chromebook रिसेट गरेर फ्याक्ट्री सेटिङमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="6338981933082930623">सबै साइटहरू तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छन्</translation>
@@ -5840,6 +5842,7 @@
 <translation id="6735304988756581115">कूकीहरू र अन्य साइट डाटा देखाउनुहोस्...</translation>
 <translation id="6736243959894955139">ठेगाना</translation>
 <translation id="6737663862851963468">Kerberos को टिकट हटाउनुहोस्</translation>
+<translation id="6738430949033571771">खाता पुष्टि गरिँदै छ...</translation>
 <translation id="6739923123728562974">डेस्कटपको सर्टकट देखाउनुहोस्</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> रोकियो</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />तपाईंका प्रशासक<ph name="END_LINK" />ले सुरक्षित ब्राउजिङ निष्क्रिय पारेका छन्</translation>
@@ -7658,6 +7661,8 @@
 <translation id="8546306075665861288">छवि क्यास</translation>
 <translation id="8546930481464505581">टच बारलाई आफू अनुकूल पार्नुहोस्</translation>
 <translation id="8547013269961688403">फुल स्क्रिन म्याग्निफायर सक्षम पार्नुहोस्</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> <ph name="USER_EMAIL" /> व्यवस्थापन गर्नुहुन्छ। तपाईं यो इमेल ठेगानालाई अतिरिक्त खाताका रूपमा लिंक गर्न सक्नुहुन्न।<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />तपाईं <ph name="USER_EMAIL" /> प्रयोग गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो <ph name="DEVICE_TYPE" /> बाट साइन आउट गर्नुहोस्। त्यसपछि लग इन स्क्रिनको पुछारमा गई व्यक्ति समावेश गर्नुहोस् नामक विकल्प चयन गर्नुहोस्।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">शीर्ष-पङ्क्तिका कुञ्जीहरूको व्यवहार बदल्न खोज कुञ्जीलाई थिचिराख्नुहोस्</translation>
 <translation id="8549316893834449916">तपाईंले आफ्नो Chromebook मा साइन इन गर्न आफूले Gmail, Drive, YouTube तथा अन्य एपहरूमा प्रयोग गरेकै Google खाता प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="8551388862522347954">लाइसेन्सहरू</translation>

@@ -37,6 +37,7 @@
 <translation id="131421566576084655">ไม่มีวันที่รีเซ็ตปริมาณการใช้อินเทอร์เน็ตครั้งล่าสุด</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">เครือข่ายในประเทศ ไม่ใช่โรมมิ่ง</translation>
+<translation id="132712914231403017">ติดตั้งอิมเมจของเฟิร์มแวร์</translation>
 <translation id="1327977588028644528">เกตเวย์</translation>
 <translation id="1328223165223065150">สีวอลเปเปอร์</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
 <translation id="1643449475550628585">เปลี่ยนรูปภาพวอลเปเปอร์ทุกวัน</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
+<translation id="1645954272419197032">โปรดยืนยันข้อมูลอุปกรณ์</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
 <translation id="2008685064673031089">Prime Search</translation>
 <translation id="2016697457005847575">ลองทำตามขั้นตอนการแก้ปัญหา</translation>
+<translation id="2016848882344942759">--ไม่มีไวท์เลเบล--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">กำหนดเวลาโหมดมืด</translation>
 <translation id="2275586345903859204">ซ่อมเรียบร้อยแล้ว</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
+<translation id="2294753434210277304">เสียบที่จัดเก็บข้อมูลภายนอก เช่น ไดรฟ์ USB หรือการ์ด SD ซึ่งมีอิมเมจยูทิลิตีการกู้คืน Chromebook ที่ดาวน์โหลดมา</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
 <translation id="2320295602967756579">เปิดใช้ธีมสว่าง</translation>
 <translation id="2323506179655536734">ข้าม</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">คีย์การตรวจสอบสิทธิ์ TLS</translation>
 <translation id="2713444072780614174">สีขาว</translation>
 <translation id="2717139507051041123">เปิดใช้โหมดสีมืด</translation>
+<translation id="2727250716596204208">ไม่พบอิมเมจของเฟิร์มแวร์ เสียบที่จัดเก็บข้อมูลภายนอก เช่น ไดรฟ์ USB หรือการ์ด SD ซึ่งมีอิมเมจยูทิลิตีการกู้คืน Chromebook ที่ดาวน์โหลดมา</translation>
 <translation id="2740531572673183784">ตกลง</translation>
 <translation id="2751739896257479635">การตรวจสอบสิทธิ์ขั้นที่ 2 ของ EAP</translation>
 <translation id="2756652381241102009">เรียกใช้การวินิจฉัย</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
+<translation id="3137983112374760826">กำลังจัดสรรอุปกรณ์...</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
+<translation id="3383751554789092165">เปลี่ยนข้อมูลอุปกรณ์ตามความจำเป็น</translation>
 <translation id="3404249063913988450">เปิดใช้โปรแกรมรักษาหน้าจอ</translation>
 <translation id="3404770484521709967">คอมโพเนนต์ติดตั้งอย่างถูกต้อง</translation>
 <translation id="3413935475507503304">คลิก "ถัดไป" เพื่อดำเนินการอัปเดตต่อ</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
 <translation id="3771294271822695279">ไฟล์วิดีโอ</translation>
+<translation id="3774059845329307709">หมายเลขซีเรียล</translation>
 <translation id="3784455785234192852">ล็อก</translation>
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">ปลดล็อกซิมแล้ว</translation>
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
+<translation id="4568938274596692027">ติดตั้งเสร็จสมบูรณ์แล้ว กำลังเตรียมรีสตาร์ท...</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">อย่ารอช้า รีบเลือกรหัสผ่านใหม่</translation>
 <translation id="4891842000192098784">ประสิทธิภาพเมื่อเพิ่มแรงกดดัน</translation>
 <translation id="4897058166682006107">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างซ้าย <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4908030561598728899">กำลังติดตั้งเฟิร์มแวร์...</translation>
 <translation id="4915052247106771211">ตัวเลือกนี้จะรีเซ็ตอุปกรณ์เป็นการตั้งค่าเริ่มต้น (Powerwash)</translation>
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4917889632206600977">หยุดพิมพ์ - กระดาษหมด</translation>
@@ -615,8 +625,10 @@
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
+<translation id="6822504384524564824">ควรเปลี่ยน SKU ในกรณีที่คอมโพเนนต์ใหม่แตกต่างจากรายการเดิมที่ถูกแทนที่เท่านั้น ตัวอย่างเช่น ใช้หน้าจอสัมผัสแทนหน้าจอไม่สัมผัส หรืออัปเกรดหน่วยความจำจาก 8 GB เป็น 16 GB</translation>
 <translation id="6840315122969944400">การซ่อม <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>
+<translation id="6876833053687020046">หมายเลขชิ้นส่วน DRAM</translation>
 <translation id="6889786074662672253">ขณะรีสตาร์ท โปรดอย่าถอดปลั๊กอุปกรณ์ภายนอกเครื่องนี้หรือปิดคอมพิวเตอร์ คุณย่อหน้าต่างนี้ให้เล็กสุดได้ การดำเนินการอาจใช้เวลาสักครู่และอุปกรณ์ภายนอกอาจใช้ไม่ได้ในช่วงเวลานี้</translation>
 <translation id="6905724422583748843">กลับไปที่ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">ฝาเครื่องสแกนเปิดอยู่ ปิดฝาแล้วลองอีกครั้ง</translation>
@@ -664,6 +676,7 @@
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
 <translation id="741244894080940828">การแปลง</translation>
@@ -763,6 +776,7 @@
 <translation id="8364946094152050673">เนมเซิร์ฟเวอร์ว่างเปล่า</translation>
 <translation id="8372477600026034341">โฮสต์เพิ่มเติม</translation>
 <translation id="8378855320830505539">ภูมิภาค</translation>
+<translation id="8382302752385457774">ไวท์เลเบล</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดยองค์กร</translation>
 <translation id="8398927464629426868">อัตราการชาร์จหรือการคายประจุของอุปกรณ์ในปัจจุบัน</translation>
 <translation id="8422748173858722634">IMEI</translation>
