@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,14 +30,17 @@ HttpsUpgradeServiceFactory* HttpsUpgradeServiceFactory::GetInstance() {
 HttpsUpgradeServiceFactory::HttpsUpgradeServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "HttpsUpgradeService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
+}
 
 HttpsUpgradeServiceFactory::~HttpsUpgradeServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 HttpsUpgradeServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<HttpsUpgradeServiceImpl>(context);
+  return std::make_unique<HttpsUpgradeServiceImpl>(
+      ChromeBrowserState::FromBrowserState(context));
 }
 
 web::BrowserState* HttpsUpgradeServiceFactory::GetBrowserStateToUse(

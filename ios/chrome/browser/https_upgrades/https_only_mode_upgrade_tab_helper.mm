@@ -106,7 +106,7 @@ bool HttpsOnlyModeUpgradeTabHelper::IsTimerRunningForTesting() const {
 void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
   HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
       web_state()->GetBrowserState());
-  service->ClearAllowlist();
+  service->ClearAllowlistForTesting();
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(

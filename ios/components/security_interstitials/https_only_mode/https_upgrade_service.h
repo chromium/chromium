@@ -18,7 +18,8 @@ class HttpsUpgradeService : public KeyedService {
   // Allows future navigations to |host| over http://.
   virtual void AllowHttpForHost(const std::string& host) = 0;
 
-  virtual void ClearAllowlist() = 0;
+  // Clears persistent and non-persistent allowlist decisions.
+  virtual void ClearAllowlistForTesting() = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_UPGRADE_SERVICE_H_

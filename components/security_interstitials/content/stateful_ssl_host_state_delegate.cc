@@ -84,10 +84,6 @@ const char kSSLCertDecisionVersionKey[] = "version";
 
 const int kDefaultSSLCertDecisionVersion = 1;
 
-// Key for the expiration time of a decision in the per-site HTTP allowlist
-// content settings dictionary.
-const char kHTTPAllowlistExpirationTimeKey[] = "decision_expiration_time";
-
 // Records a new occurrence of |error|. The occurrence is stored in the
 // recurrent interstitial pref, which keeps track of the most recent timestamps
 // at which each error type occurred (up to the |threshold| most recent
@@ -207,10 +203,13 @@ StatefulSSLHostStateDelegate::StatefulSSLHostStateDelegate(
       browser_context_(browser_context),
       pref_service_(pref_service),
       host_content_settings_map_(host_content_settings_map),
+      https_only_mode_allowlist_(
+          host_content_settings_map,
+          clock_.get(),
+          base::Seconds(kDeltaDefaultExpirationInSeconds)),
       recurrent_interstitial_threshold_for_testing(-1),
       recurrent_interstitial_mode_for_testing(NOT_SET),
-      recurrent_interstitial_reset_time_for_testing(-1) {
-}
+      recurrent_interstitial_reset_time_for_testing(-1) {}
 
 StatefulSSLHostStateDelegate::~StatefulSSLHostStateDelegate() = default;
 
@@ -280,9 +279,7 @@ void StatefulSSLHostStateDelegate::Clear(
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SSL_CERT_DECISIONS, base::Time(), base::Time::Max(),
       pattern_filter);
-  host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::HTTP_ALLOWED, base::Time(), base::Time::Max(),
-      pattern_filter);
+  https_only_mode_allowlist_.Clear(pattern_filter);
 }
 
 content::SSLHostStateDelegate::CertJudgment
@@ -377,25 +374,10 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
       browser_context_->GetStoragePartition(
           web_contents->GetMainFrame()->GetSiteInstance(),
           /*can_create=*/false);
-  if (!storage_partition ||
-      storage_partition != browser_context_->GetDefaultStoragePartition()) {
-    // Decisions for non-default storage partitions are stored in memory only.
-    allowed_http_hosts_for_non_default_storage_partitions_.insert(host);
-    return;
-  }
-
-  // Store when the HTTP allowlist entry for this host should expire. This value
-  // must be stored inside a dictionary as content settings don't support
-  // directly storing a string value.
-  GURL url = GetSecureGURLForHost(host);
-  base::Time expiration_time =
-      clock_->Now() + base::Seconds(kDeltaDefaultExpirationInSeconds);
-  auto dict = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  dict->SetKey(kHTTPAllowlistExpirationTimeKey,
-               base::TimeToValue(expiration_time));
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED,
-      base::Value::FromUniquePtrValue(std::move(dict)));
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  https_only_mode_allowlist_.AllowHttpForHost(host, is_nondefault_storage);
 }
 
 bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
@@ -404,47 +386,24 @@ bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
   content::StoragePartition* storage_partition =
       browser_context_->GetStoragePartition(
           web_contents->GetMainFrame()->GetSiteInstance(),
-          false /* can_create */);
-  if (!storage_partition ||
-      storage_partition != browser_context_->GetDefaultStoragePartition()) {
-    return base::Contains(
-        allowed_http_hosts_for_non_default_storage_partitions_, host);
-  }
-
-  GURL url = GetSecureGURLForHost(host);
-  const ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-
-  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
-      url, url, ContentSettingsType::HTTP_ALLOWED, nullptr);
-  if (!value.is_dict()) {
-    return false;
-  }
-
-  auto* decision_expiration_value =
-      value.FindKey(kHTTPAllowlistExpirationTimeKey);
-  auto decision_expiration = base::ValueToTime(decision_expiration_value);
-  if (decision_expiration <= clock_->Now()) {
-    // Allowlist entry has expired.
-    return false;
-  }
-
-  return true;
+          /*can_create=*/false);
+  bool is_nondefault_storage =
+      !storage_partition ||
+      storage_partition != browser_context_->GetDefaultStoragePartition();
+  return https_only_mode_allowlist_.IsHttpAllowedForHost(host,
+                                                         is_nondefault_storage);
 }
 
 void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
     const std::string& host) {
   GURL url = GetSecureGURLForHost(host);
-
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, base::Value());
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED, base::Value());
-
   // Decisions for non-default storage partitions are stored separately in
   // memory; delete those as well.
   allowed_certs_for_non_default_storage_partitions_.erase(host);
-  allowed_http_hosts_for_non_default_storage_partitions_.erase(host);
+
+  https_only_mode_allowlist_.RevokeUserAllowExceptions(host);
 }
 
 bool StatefulSSLHostStateDelegate::HasAllowException(
@@ -533,6 +492,7 @@ void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
 void StatefulSSLHostStateDelegate::SetClockForTesting(
     std::unique_ptr<base::Clock> clock) {
   clock_ = std::move(clock);
+  https_only_mode_allowlist_.SetClockForTesting(clock_.get());
 }
 
 void StatefulSSLHostStateDelegate::SetRecurrentInterstitialThresholdForTesting(

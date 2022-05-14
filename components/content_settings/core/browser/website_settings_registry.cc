@@ -238,8 +238,7 @@ void WebsiteSettingsRegistry::Init() {
   Register(ContentSettingsType::HTTP_ALLOWED, "http-allowed", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-           DESKTOP | PLATFORM_ANDROID,
-           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           ALL_PLATFORMS, WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::FORMFILL_METADATA, "formfill-metadata",
            base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
            WebsiteSettingsInfo::LOSSY,

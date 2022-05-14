@@ -376,7 +376,9 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":constants",
     "//base",
+    "//components/content_settings/core/browser",
     "//components/lookalikes/core",
+    "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials/https_only_mode",

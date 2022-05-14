@@ -5,21 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
 
+#include <memory>
 #include <set>
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
-namespace web {
-class BrowserState;
-}
+class ChromeBrowserState;
 
 // HttpsUpgradeServiceImpl tracks the allowlist decisions for HTTPS-Only mode.
 // Decisions are scoped to the host.
 class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
  public:
-  HttpsUpgradeServiceImpl(web::BrowserState* context);
+  HttpsUpgradeServiceImpl(ChromeBrowserState* context);
   ~HttpsUpgradeServiceImpl() override;
 
   // Returns whether |host| can be loaded over http://.
@@ -28,13 +28,12 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
   // Allows future navigations to |host| over http://.
   void AllowHttpForHost(const std::string& host) override;
 
-  void ClearAllowlist() override;
+  void ClearAllowlistForTesting() override;
 
  private:
-  // Set of allowlisted hostnames.
-  std::set<std::string> allowed_http_hosts_;
-
-  web::BrowserState* context_;
+  std::unique_ptr<base::Clock> clock_;
+  ChromeBrowserState* context_;
+  security_interstitials::HttpsOnlyModeAllowlist allowlist_;
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_UPGRADE_SERVICE_IMPL_H_
