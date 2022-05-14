@@ -195,6 +195,8 @@ target(partition_alloc_target_type, "partition_alloc") {
   } else if (is_fuchsia) {
     sources += [
       "page_allocator_internals_fuchsia.h",
+      "partition_alloc_base/fuchsia/fuchsia_logging.cc",
+      "partition_alloc_base/fuchsia/fuchsia_logging.h",
       "partition_alloc_base/posix/safe_strerror.cc",
       "partition_alloc_base/posix/safe_strerror.h",
       "partition_alloc_base/rand_util_fuchsia.cc",
