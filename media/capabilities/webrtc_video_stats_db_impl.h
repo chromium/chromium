@@ -60,7 +60,9 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
   void ClearStats(base::OnceClosure clear_done_cb) override;
 
  private:
+  // Test classes are friends, see comment below.
   friend class WebrtcVideoStatsDBImplTest;
+  friend class WebrtcVideoPerfLPMFuzzerHelper;
 
   using PendingOpId = int;
 

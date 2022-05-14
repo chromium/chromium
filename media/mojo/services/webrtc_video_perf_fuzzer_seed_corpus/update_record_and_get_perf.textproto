@@ -1,0 +1,77 @@
+actions {
+  update_record {
+      features {
+        new {
+          id: 1
+          m_is_decode_stats: true
+          m_profile: 12
+          m_video_pixels: 2073600
+          m_hardware_accelerated: false
+        }
+      }
+      video_stats {
+        new {
+          id: 1
+          m_frames_processed: 400
+          m_key_frames_processed: 3
+          m_p99_processing_time_ms: 11.0
+        }
+      }
+  }
+}
+actions {
+  update_record {
+      features {
+        new {
+          id: 1
+          m_is_decode_stats: true
+          m_profile: 12
+          m_video_pixels: 8294400
+          m_hardware_accelerated: false
+        }
+      }
+      video_stats {
+        new {
+          id: 1
+          m_frames_processed: 600
+          m_key_frames_processed: 5
+          m_p99_processing_time_ms: 14.0
+        }
+      }
+  }
+}
+actions {
+  update_record {
+      features {
+        new {
+          id: 1
+          m_is_decode_stats: true
+          m_profile: 12
+          m_video_pixels: 0
+          m_hardware_accelerated: false
+        }
+      }
+      video_stats {
+        new {
+          id: 1
+          m_frames_processed: 0
+          m_key_frames_processed: 0
+          m_p99_processing_time_ms: 0.0
+        }
+      }
+  }
+}
+actions {
+  get_perf_info {
+      features {
+        new {
+          id: 1
+          m_is_decode_stats: true
+          m_profile: 12
+          m_video_pixels: 2073600
+          m_hardware_accelerated: false
+        }
+      }
+      frames_per_second: 60
+  }
+}

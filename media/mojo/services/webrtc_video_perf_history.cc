@@ -167,6 +167,7 @@ bool AreVideoStatsInvalid(const media::mojom::WebrtcVideoStats& video_stats) {
          video_stats.frames_processed >
              WebrtcVideoStatsDB::kFramesProcessedMaxValue ||
          video_stats.key_frames_processed > video_stats.frames_processed ||
+         isnan(video_stats.p99_processing_time_ms) ||
          video_stats.p99_processing_time_ms <
              WebrtcVideoStatsDB::kP99ProcessingTimeMinValueMs ||
          video_stats.p99_processing_time_ms >
@@ -206,9 +207,9 @@ void WebrtcVideoPerfHistory::InitDatabase() {
   // initialized during their lifetime.
   DCHECK_EQ(db_init_status_, UNINITIALIZED);
 
+  db_init_status_ = PENDING;
   db_->Initialize(base::BindOnce(&WebrtcVideoPerfHistory::OnDatabaseInit,
                                  weak_ptr_factory_.GetWeakPtr()));
-  db_init_status_ = PENDING;
 }
 
 void WebrtcVideoPerfHistory::OnDatabaseInit(bool success) {
