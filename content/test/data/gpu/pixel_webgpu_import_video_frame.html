@@ -24,7 +24,9 @@
         return;
       }
 
-      let source = await createFrameSource("hw_decoder", cnv.width, cnv.height);
+      const urlSearchParams = new URLSearchParams(window.location.search);
+
+      let source = await createFrameSource(urlSearchParams.get("sourceType"), cnv.width, cnv.height);
       if (!source) {
         console.error("Cannot get valid video frame - skipping test");
         domAutomationController.send("FAILURE");
