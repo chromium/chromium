@@ -25,6 +25,7 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -338,6 +339,51 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
           IDR_DEFAULT_FAVICON);
   EXPECT_TRUE(gfx::test::AreImagesEqual(default_favicon_image,
                                         gfx::Image(task->icon())));
+}
+
+class TabContentsTagFencedFrameTest : public TabContentsTagTest {
+ public:
+  TabContentsTagFencedFrameTest() = default;
+  ~TabContentsTagFencedFrameTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Tests that a fenced frame doesn't update the title of its web contents' task
+// via WebContentsTaskProvider::WebContentsEntry.
+IN_PROC_BROWSER_TEST_F(TabContentsTagFencedFrameTest,
+                       FencedFrameDoesNotUpdateTitle) {
+  MockWebContentsTaskManager task_manager;
+  EXPECT_TRUE(task_manager.tasks().empty());
+  task_manager.StartObserving();
+  ASSERT_EQ(1U, task_manager.tasks().size());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title3.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  const Task* primary_mainframe_task = task_manager.tasks().front();
+  EXPECT_EQ(Task::RENDERER, primary_mainframe_task->GetType());
+  EXPECT_EQ(primary_mainframe_task->title(), u"Tab: Title Of More Awesomeness");
+
+  // Create a fenced frame and load a URL.
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/title2.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // The navigation in the fenced frame should not change the title of the
+  // primary mainframe's task to "Title Of Awesomeness".
+  EXPECT_EQ(primary_mainframe_task->title(), u"Tab: Title Of More Awesomeness");
 }
 
 }  // namespace task_manager

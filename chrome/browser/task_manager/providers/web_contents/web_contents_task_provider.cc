@@ -252,10 +252,7 @@ void WebContentsTaskProvider::WebContentsEntry::OnRendererUnresponsive(
 
 void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // We only need to update tasks for main frame navigations.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // We only need to update tasks for primary main frame navigations.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
