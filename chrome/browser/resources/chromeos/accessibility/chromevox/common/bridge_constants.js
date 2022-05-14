@@ -13,7 +13,6 @@ goog.provide('BridgeTargets');
 
 /** @enum {string} */
 BridgeTargets = {
-  BRAILLE_COMMAND_HANDLER: 'BrailleCommandHandler',
   CHROMEVOX_BACKGROUND: 'ChromeVoxBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
@@ -40,6 +39,15 @@ BridgeConstants = {
     Action: {
       BACK_TRANSLATE: 'backTranslate',
       REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
+    },
+  },
+
+  BrailleCommandHandler: {
+    /** @public {BridgeTarget} */
+    TARGET: 'BrailleCommandHandler',
+    /** @enum {string} */
+    Action: {
+      SET_ENABLED: 'setEnabled',
     },
   },
 };
@@ -80,6 +88,8 @@ BridgeActions = {
 
 /**
  * The action that the message is requesting be performed.
- * @typedef {BridgeActions|BridgeConstants.BrailleBackground.Action}
+ * @typedef {BridgeActions |
+ *           BridgeConstants.BrailleBackground.Action |
+ *           BridgeConstants.BrailleCommandHandler.Action}
  */
 BridgeAction;
