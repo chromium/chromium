@@ -14,6 +14,7 @@ namespace views {
 class NativeViewHost;
 class NativeViewHostWrapper;
 class Widget;
+class WidgetDelegate;
 
 namespace test {
 
@@ -31,7 +32,7 @@ class NativeViewHostTestBase : public ViewsTestBase {
   void TearDown() override;
 
   // Create the |toplevel_| widget.
-  void CreateTopLevel();
+  void CreateTopLevel(WidgetDelegate* widget_delegate = nullptr);
 
   // Create a testing |host_| that tracks destructor calls.
   void CreateTestingHost();
@@ -58,12 +59,16 @@ class NativeViewHostTestBase : public ViewsTestBase {
 
   NativeViewHostWrapper* GetNativeWrapper();
 
+ protected:
+  int on_mouse_pressed_called_count() { return on_mouse_pressed_called_count_; }
+
  private:
   class NativeViewHostTesting;
 
   std::unique_ptr<Widget> toplevel_;
   std::unique_ptr<NativeViewHost> host_;
   int host_destroyed_count_ = 0;
+  int on_mouse_pressed_called_count_ = 0;
 };
 
 }  // namespace test
