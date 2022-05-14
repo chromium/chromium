@@ -3858,7 +3858,13 @@ void LocalFrameView::ScrollRectToVisibleInRemoteParent(
     const PhysicalRect& rect_to_scroll,
     mojom::blink::ScrollIntoViewParamsPtr params) {
   DCHECK(GetFrame().IsLocalRoot());
-  DCHECK(!GetFrame().IsMainFrame());
+  DCHECK(!GetFrame().IsOutermostMainFrame());
+
+  // If the scroll doesn't cross origin boundaries then it must already have
+  // been blocked for a scroll crossing an embedded frame tree boundary.
+  DCHECK(params->cross_origin_boundaries ||
+         (!GetFrame().IsMainFrame() || GetFrame().IsOutermostMainFrame()));
+
   DCHECK(params->cross_origin_boundaries ||
          GetFrame()
              .Tree()
@@ -3869,26 +3875,6 @@ void LocalFrameView::ScrollRectToVisibleInRemoteParent(
   PhysicalRect new_rect = ConvertToRootFrame(rect_to_scroll);
   GetFrame().GetLocalFrameHostRemote().ScrollRectToVisibleInParentFrame(
       gfx::RectF(new_rect), std::move(params));
-}
-
-bool LocalFrameView::AllowedToPropagateScrollIntoView(
-    const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  if (!params->cross_origin_boundaries) {
-    Frame* parent_frame = GetFrame().Tree().Parent();
-    if (parent_frame &&
-        !parent_frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-            GetFrame().GetSecurityContext()->GetSecurityOrigin())) {
-      return false;
-    }
-  }
-
-  if (params->type != mojom::blink::ScrollType::kProgrammatic)
-    return true;
-
-  if (!GetFrame().GetDocument())
-    return true;
-
-  return !GetFrame().GetDocument()->IsVerticalScrollEnforced();
 }
 
 void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {

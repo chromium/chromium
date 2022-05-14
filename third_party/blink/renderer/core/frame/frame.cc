@@ -371,6 +371,21 @@ bool Frame::IsInFencedFrameTree() const {
   }
 }
 
+bool Frame::IsFencedFrameRoot() const {
+  if (!blink::features::IsFencedFramesEnabled())
+    return false;
+
+  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
+    case blink::features::FencedFramesImplementationType::kMPArch:
+      return IsInFencedFrameTree() && IsMainFrame();
+    case blink::features::FencedFramesImplementationType::kShadowDOM:
+      return IsInFencedFrameTree() &&
+             this == &Tree().Top(FrameTreeBoundary::kFenced);
+    default:
+      return false;
+  }
+}
+
 absl::optional<mojom::blink::FencedFrameMode> Frame::GetFencedFrameMode()
     const {
   DCHECK(!IsDetached());

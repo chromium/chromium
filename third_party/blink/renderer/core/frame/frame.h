@@ -427,6 +427,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // FrameTree.
   bool IsInFencedFrameTree() const;
 
+  // Returns false if fenced frames are disabled. Otherwise, returns true if
+  // this frame is the main frame of a fenced frame tree. Works for both MPArch
+  // and ShadowDOM based fenced frames.
+  bool IsFencedFrameRoot() const;
+
   // Returns the mode set on the fenced frame if the frame is inside a fenced
   // frame tree. Otherwise returns `absl::nullopt`. This should not be called
   // on a detached frame.

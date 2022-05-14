@@ -6450,9 +6450,30 @@ void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
 void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
     const gfx::RectF& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
-  RenderFrameProxyHost* proxy = GetProxyToParent();
+  RenderFrameProxyHost* proxy = nullptr;
+
+  if (IsFencedFrameRoot()) {
+    // TODO(bokan): This is overy trusting of the renderer. We'll need some way
+    // to verify that the browser is the one that initiated this
+    // ScrollFocusedEditable process.
+    // https://crbug.com/1123606. I&S tracker row 484.
+    if (!params->for_focused_editable) {
+      local_frame_host_receiver_.ReportBadMessage(
+          "ScrollRectToVisibleInParentFrame can only be used for "
+          "is_for_editable from a fenced frame");
+      return;
+    }
+
+    proxy = blink::features::IsFencedFramesMPArchBased()
+                ? GetProxyToOuterDelegate()
+                : GetProxyToParent();
+  } else {
+    proxy = GetProxyToParent();
+  }
+
   if (!proxy)
     return;
+
   proxy->ScrollRectToVisible(rect_to_scroll, std::move(params));
 }
 
