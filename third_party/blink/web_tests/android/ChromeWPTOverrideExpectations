@@ -1531,7 +1531,6 @@ crbug.com/1050754 external/wpt/storage-access-api/hasStorageAccess.sub.window.ht
 crbug.com/1050754 external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure ]
 crbug.com/1050754 external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/streams/piping/abort.any.js [ Skip ]
-crbug.com/1050754 external/wpt/streams/piping/abort.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/streams/piping/close-propagation-backward.any.js [ Skip ]
 crbug.com/1050754 external/wpt/streams/piping/close-propagation-backward.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/streams/piping/close-propagation-forward.any.js [ Skip ]

@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+PASS a signal argument 'null' should cause pipeTo() to reject
+PASS a signal argument 'AbortSignal' should cause pipeTo() to reject
+PASS a signal argument 'true' should cause pipeTo() to reject
+PASS a signal argument '-1' should cause pipeTo() to reject
+PASS a signal argument '[object AbortSignal]' should cause pipeTo() to reject
+PASS an aborted signal should cause the writable stream to reject with an AbortError
+PASS (reason: 'null') all the error objects should be the same object
+PASS (reason: 'undefined') all the error objects should be the same object
+PASS (reason: 'error1: error1') all the error objects should be the same object
+PASS preventCancel should prevent canceling the readable
+PASS preventAbort should prevent aborting the readable
+PASS preventCancel and preventAbort should prevent canceling the readable and aborting the readable
+PASS (reason: 'null') abort should prevent further reads
+PASS (reason: 'undefined') abort should prevent further reads
+PASS (reason: 'error1: error1') abort should prevent further reads
+PASS (reason: 'null') all pending writes should complete on abort
+PASS (reason: 'undefined') all pending writes should complete on abort
+PASS (reason: 'error1: error1') all pending writes should complete on abort
+PASS a rejection from underlyingSource.cancel() should be returned by pipeTo()
+PASS a rejection from underlyingSink.abort() should be returned by pipeTo()
+PASS a rejection from underlyingSink.abort() should be preferred to one from underlyingSource.cancel()
+PASS abort signal takes priority over closed readable
+PASS abort signal takes priority over errored readable
+PASS abort signal takes priority over closed writable
+PASS abort signal takes priority over errored writable
+PASS abort should do nothing after the readable is closed
+PASS abort should do nothing after the readable is errored
+PASS abort should do nothing after the readable is errored, even with pending writes
+PASS abort should do nothing after the writable is errored
+FAIL pipeTo on a teed readable byte stream should only be aborted when both branches are aborted assert_true: pipeTo should not resolve yet expected true got false
+Harness: the test ran to completion.
+
