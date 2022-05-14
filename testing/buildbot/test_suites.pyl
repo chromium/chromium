@@ -4439,6 +4439,7 @@
       },
       'chrome_app_unittests': {},
       'chromedriver_unittests': {},
+      'color_unittests': {},
       'extensions_browsertests': {},
       'extensions_unittests': {},
       'filesystem_service_unittests': {},  # https://crbug.com/862712
