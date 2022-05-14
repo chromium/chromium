@@ -625,31 +625,30 @@ class InsetScrollIntoViewBrowserTest
 
 // Ensure that insetting the viewport causes the visual viewport to be resized
 // and focused editable scrolled into view. (https://crbug.com/927483)
-// TODO(bokan): Failing flakily on Windows. https://crbug.com/1323876.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InsetsCauseScrollToFocusedEditable \
-  DISABLED_InsetsCauseScrollToFocusedEditable
-#else
-#define MAYBE_InsetsCauseScrollToFocusedEditable \
-  InsetsCauseScrollToFocusedEditable
-#endif
 IN_PROC_BROWSER_TEST_P(InsetScrollIntoViewBrowserTest,
-                       MAYBE_InsetsCauseScrollToFocusedEditable) {
+                       InsetsCauseScrollToFocusedEditable) {
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
 
-  // Allow some fuzziness due to scrollbar.
-  const int kScrollbarApprox = 20;
-  ASSERT_NEAR(600, GetVisualViewport().height, kScrollbarApprox);
-  ASSERT_NEAR(600, GetLayoutViewportRect().height(), kScrollbarApprox);
-  ASSERT_EQ(1.f, GetVisualViewport().scale);
+  int visual_viewport_height_before = GetVisualViewport().height;
+  int layout_viewport_height_before = GetLayoutViewportRect().height();
+
+  // We expect the window to be 800x600px but allow some fuzziness due to
+  // differing scrollbars and window decorations on different platforms.
+  const int kEpsilon = 30;
+  EXPECT_NEAR(visual_viewport_height_before, 600, kEpsilon);
+  EXPECT_NEAR(layout_viewport_height_before, 600, kEpsilon);
+  EXPECT_EQ(1.f, GetVisualViewport().scale);
 
   RunTest();
 
-  // The visualViewport should have been insetted but not the root frame.
-  ASSERT_NEAR(200, GetVisualViewport().height, kScrollbarApprox);
-  ASSERT_NEAR(600, GetLayoutViewportRect().height(), kScrollbarApprox);
-  ASSERT_EQ(1.f, GetVisualViewport().scale);
+  // The visualViewport should have been insetted by 400px but not the root
+  // frame.
+  EXPECT_EQ(visual_viewport_height_before - GetVisualViewport().height, 400);
+  EXPECT_EQ(layout_viewport_height_before, GetLayoutViewportRect().height());
+  EXPECT_EQ(1.f, GetVisualViewport().scale);
 
+  // The rect where we expect the caret to appear must not not be below the
+  // inset region.
   ASSERT_LT(GetAcceptableCaretRect().bottom(), 200);
 }
 
