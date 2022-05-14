@@ -42,6 +42,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -67,6 +68,8 @@ public class TasksSurfaceMediatorUnitTest {
     private View.OnClickListener mLearnMoreOnClickListener;
     @Mock
     private IncognitoCookieControlsManager mCookieControlsManager;
+    @Mock
+    private FeedReliabilityLogger mFeedReliabilityLogger;
     @Captor
     private ArgumentCaptor<View.OnClickListener> mFakeboxClickListenerCaptor;
     @Captor
@@ -84,7 +87,7 @@ public class TasksSurfaceMediatorUnitTest {
 
         mMediator = new TasksSurfaceMediator(
                 mPropertyModel, mLearnMoreOnClickListener, mCookieControlsManager, true);
-        mMediator.initWithNative(mOmniboxStub);
+        mMediator.initWithNative(mOmniboxStub, mFeedReliabilityLogger);
     }
 
     @After
@@ -165,6 +168,7 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mVoiceRecognitionHandler, times(1))
                 .startVoiceRecognition(
                         eq(VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE));
+        verify(mFeedReliabilityLogger, times(1)).onVoiceSearch();
     }
 
     @Test

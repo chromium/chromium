@@ -417,7 +417,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
         }
         if (mTasksSurface != null) {
-            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get());
+            mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get(),
+                    mStartSurfaceMediator.getFeedReliabilityLogger());
         }
 
         if (mIsInitPending) {
@@ -427,7 +428,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mOmniboxStubSupplier.get());
+                    mActivity, mOmniboxStubSupplier.get(), /*feedReliabilityLogger=*/null);
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -634,7 +635,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mShareDelegateSupplier, mMultiWindowModeStateDispatcher, mContainerView);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mOmniboxStubSupplier.get());
+                    mActivity, mOmniboxStubSupplier.get(), /*feedReliabilityLogger=*/null);
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;
