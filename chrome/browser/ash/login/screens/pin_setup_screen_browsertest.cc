@@ -4,25 +4,20 @@
 
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 
-#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/screen_manager.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/user_manager/user_type.h"
@@ -43,73 +38,47 @@ const test::UIPath kPinKeyboardInput = {"pin-setup", "pinKeyboard",
 
 }  // namespace
 
-class PinSetupScreenTest
-    : public OobeBaseTest,
-      public testing::WithParamInterface<user_manager::UserType> {
+// Fixture to prepare oobe and the PIN setup screen. By default with this
+// fixture, the PIN setup screen shouldn't be shown. There are child classes
+// which perform the necessary setup so that the PIN setup screen is shown.
+class PinSetupScreenTest : public OobeBaseTest {
  public:
-  PinSetupScreenTest() {
-    if (GetParam() == user_manager::USER_TYPE_CHILD) {
-      fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
-      policy_server_ =
-          std::make_unique<EmbeddedPolicyTestServerMixin>(&mixin_host_);
-      user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
-          &mixin_host_, test_child_user_.account_id, policy_server_.get());
-    }
+  PinSetupScreenTest() { chromeos::UserDataAuthClient::InitializeFake(); }
 
-    chromeos::UserDataAuthClient::InitializeFake();
-  }
   ~PinSetupScreenTest() override = default;
 
-  void SetUpOnMainThread() override {
+  // This must be called very early (e.g. in the constructor) so that the
+  // hardware support flag before `PinSetupScreen` reads it.
+  static void SetHardwareSupport(bool is_supported) {
     FakeUserDataAuthClient::TestApi::Get()
-        ->set_supports_low_entropy_credentials(false);
+        ->set_supports_low_entropy_credentials(is_supported);
+  }
+
+  static void SetTabletMode(bool in_tablet_mode) {
+    ShellTestApi().SetTabletModeEnabledForTest(in_tablet_mode);
+  }
+
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
 
     original_callback_ = GetScreen()->get_exit_callback_for_testing();
     GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
         &PinSetupScreenTest::HandleScreenExit, base::Unretained(this)));
 
-    OobeBaseTest::SetUpOnMainThread();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    // Child users require a user policy, set up an empty one so the user can
-    // get through login.
-    if (GetParam() == user_manager::USER_TYPE_CHILD)
-      ASSERT_TRUE(user_policy_mixin_->RequestPolicyUpdate());
-
-    OobeBaseTest::SetUpInProcessBrowserTestFixture();
+    // Force the sync screen to be shown so that we don't jump to PIN setup
+    // screen (consuming auth session) in unbranded build
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
+    login_manager_mixin_.LoginAsNewRegularUser();
   }
 
   PinSetupScreen* GetScreen() {
     return WizardController::default_controller()->GetScreen<PinSetupScreen>();
   }
 
-  void LogIn() {
-    if (GetParam() == user_manager::USER_TYPE_CHILD) {
-      UserContext user_context =
-          LoginManagerMixin::CreateDefaultUserContext(test_child_user_);
-      user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
-      fake_gaia_->SetupFakeGaiaForChildUser(
-          test_child_user_.account_id.GetUserEmail(),
-          test_child_user_.account_id.GetGaiaId(),
-          FakeGaiaMixin::kFakeRefreshToken, true /*issue_any_scope_token*/);
-      login_manager_mixin_.AttemptLoginUsingAuthenticator(
-          user_context,
-          std::make_unique<StubAuthenticatorBuilder>(user_context));
-    } else {
-      login_manager_mixin_.LoginAsNewRegularUser();
-    }
-  }
-
   void EnterPin() { test::OobeJS().TypeIntoPath("654321", kPinKeyboardInput); }
 
   void ShowPinSetupScreen() {
-    // Force the sync screen to be shown so that we don't jump to PIN setup
-    // screen (consuming auth session) in unbranded build
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
-
-    LogIn();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     if (!screen_exited_) {
       LoginDisplayHost::default_host()->StartWizard(
@@ -120,6 +89,8 @@ class PinSetupScreenTest
   void WaitForScreenShown() {
     OobeScreenWaiter(PinSetupScreenView::kScreenId).Wait();
   }
+
+  void TapSkipButton() { test::OobeJS().TapOnPath(kSkipButton); }
 
   void WaitForScreenExit() {
     if (screen_exited_)
@@ -134,9 +105,6 @@ class PinSetupScreenTest
   bool screen_exited_ = false;
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  std::unique_ptr<FakeGaiaMixin> fake_gaia_;
-  std::unique_ptr<EmbeddedPolicyTestServerMixin> policy_server_;
-  std::unique_ptr<UserPolicyMixin> user_policy_mixin_;
 
  private:
   void HandleScreenExit(PinSetupScreen::Result result) {
@@ -149,36 +117,102 @@ class PinSetupScreenTest
 
   PinSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;
-
-  // Used for child account test.
-  const LoginManagerMixin::TestUserInfo test_child_user_{
-      AccountId::FromUserEmailGaiaId("user@test.com", "123456789"),
-      user_manager::USER_TYPE_CHILD};
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PinSetupScreenTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
-
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, Skipped) {
+// By default, oobe should skip the PIN setup screen.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, Skipped) {
   ShowPinSetupScreen();
-
   WaitForScreenExit();
+
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
+
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
-  ShellTestApi().SetTabletModeEnabledForTest(true);
+// Oobe should show the PIN setup screen if the device is in tablet mode.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowInTabletMode) {
+  SetTabletMode(true);
+
+  ShowPinSetupScreen();
+  TapSkipButton();
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+}
+
+// Fixture to pretend that we have hardware support for login.
+class PinSetupScreenTestLoginSupport : public PinSetupScreenTest {
+ public:
+  PinSetupScreenTestLoginSupport() { SetHardwareSupport(true); }
+
+  ~PinSetupScreenTestLoginSupport() override = default;
+};
+
+// Oobe should show the PIN setup screen if the TPM supports PIN for login.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport,
+                       ShowWithHardwareSupport) {
   ShowPinSetupScreen();
   WaitForScreenShown();
-
   test::OobeJS().TapOnPath(kSkipButton);
-
   WaitForScreenExit();
+
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+}
+
+// Oobe should skip the PIN setup screen if policies are set such that PIN
+// cannot be used for both login/unlock and web authn.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, NoPinPolicy) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
+  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
+
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
+}
+
+// Oobe should show the PIN setup screen if the unlock factor policy allows
+// PIN.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, PinForUnlockPolicy) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  base::Value::List unlock_factors;
+  unlock_factors.Append(base::Value("PIN"));
+  prefs->SetList(prefs::kQuickUnlockModeAllowlist, std::move(unlock_factors));
+  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
+
+  ShowPinSetupScreen();
+  TapSkipButton();
+  WaitForScreenExit();
+
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+}
+
+// Oobe should show the PIN setup screen if the web authn factor policy allows
+// PIN.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, PinForWebAuthnPolicy) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
+  base::Value::List web_authn_factors;
+  web_authn_factors.Append(base::Value("all"));
+  prefs->SetList(prefs::kWebAuthnFactors, std::move(web_authn_factors));
+
+  ShowPinSetupScreen();
+  TapSkipButton();
+  WaitForScreenExit();
+
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
+}
+
+// A series of test cases for skipping the PIN setup page at various stages in
+// the flow.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, SkipOnStart) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+  TapSkipButton();
+  WaitForScreenExit();
+
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Pin-setup.Skipped", 1);
@@ -191,8 +225,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
           1)));
 }
 
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
-  ShellTestApi().SetTabletModeEnabledForTest(true);
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, SkipInFlow) {
   ShowPinSetupScreen();
   WaitForScreenShown();
 
@@ -200,7 +233,7 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
   test::OobeJS().TapOnPath(kNextButton);
   test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
 
-  test::OobeJS().TapOnPath(kSkipButton);
+  TapSkipButton();
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
@@ -215,164 +248,8 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
           1)));
 }
 
-IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, FinishedFlow) {
-  ShellTestApi().SetTabletModeEnabledForTest(true);
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestLoginSupport, FinishedFlow) {
   ShowPinSetupScreen();
-  WaitForScreenShown();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
-
-  test::OobeJS().TapOnPath(kDoneButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
-          1)));
-}
-
-// Tests the PIN setup screen in the scenario when the device supports low
-// entropy credentials and PIN can be used for login.
-class PinForLoginSetupScreenTest : public PinSetupScreenTest {
- protected:
-  PinForLoginSetupScreenTest() {
-    // Enable PIN for login (overrides base class setting).
-    UserDataAuthClient::InitializeFake();
-
-    FakeUserDataAuthClient::TestApi::Get()
-        ->set_supports_low_entropy_credentials(true);
-  }
-  ~PinForLoginSetupScreenTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PinForLoginSetupScreenTest,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR,
-                                           user_manager::USER_TYPE_CHILD));
-
-// Tests that PIN setup is shown to Family Link users (but not to regular users)
-// on clamshell devices that support low entropy credentials.
-IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
-  ShowPinSetupScreen();
-
-  if (GetParam() == user_manager::USER_TYPE_CHILD) {
-    WaitForScreenShown();
-
-    EnterPin();
-    test::OobeJS().TapOnPath(kNextButton);
-    test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
-
-    EnterPin();
-    test::OobeJS().TapOnPath(kNextButton);
-    test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
-
-    test::OobeJS().TapOnPath(kDoneButton);
-
-    WaitForScreenExit();
-    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-    EXPECT_THAT(
-        histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-        ElementsAre(base::Bucket(
-            static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
-            1)));
-  } else {
-    WaitForScreenExit();
-    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 0);
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
-  }
-}
-
-// Tests that PIN setup is shown to Family Link and regular users in tablet
-// mode.
-IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
-  ShellTestApi().SetTabletModeEnabledForTest(true);
-  ShowPinSetupScreen();
-
-  WaitForScreenShown();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kBackButton})->Wait();
-
-  EnterPin();
-  test::OobeJS().TapOnPath(kNextButton);
-  test::OobeJS().CreateVisibilityWaiter(true, {kDoneButton})->Wait();
-
-  test::OobeJS().TapOnPath(kDoneButton);
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
-  EXPECT_THAT(
-      histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
-      ElementsAre(base::Bucket(
-          static_cast<int>(PinSetupScreen::UserAction::kDoneButtonClicked),
-          1)));
-}
-
-class PinSetupForManagedUsers : public PinForLoginSetupScreenTest {
- public:
-  void ManagedLogIn() {
-    // Force the sync screen to be shown so that we don't jump to PIN setup
-    // screen (consuming auth session) in unbranded build
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
-    policy_reset_ = PinSetupScreen::SetForceNoSkipBecauseOfPolicyForTests(true);
-    user_policy_mixin_->RequestPolicyUpdate();
-    fake_gaia_->SetupFakeGaiaForLogin(
-        managed_test_user_.account_id.GetUserEmail(),
-        managed_test_user_.account_id.GetGaiaId(),
-        FakeGaiaMixin::kFakeRefreshToken);
-    login_manager_mixin_.LoginWithDefaultContext(managed_test_user_);
-    OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
-    if (!screen_exited_) {
-      LoginDisplayHost::default_host()->StartWizard(
-          PinSetupScreenView::kScreenId);
-    }
-  }
-
- protected:
-  PinSetupForManagedUsers() : PinForLoginSetupScreenTest() {
-    policy_server_ =
-        std::make_unique<EmbeddedPolicyTestServerMixin>(&mixin_host_);
-    fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
-    user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
-        &mixin_host_, managed_test_user_.account_id, policy_server_.get());
-  }
-
- private:
-  std::unique_ptr<base::AutoReset<bool>> policy_reset_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  const LoginManagerMixin::TestUserInfo managed_test_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PinSetupForManagedUsers,
-                         ::testing::Values(user_manager::USER_TYPE_REGULAR));
-
-// Tests that PIN setup is shown to Managed users with enabled policies and
-// PIN login support.
-IN_PROC_BROWSER_TEST_P(PinSetupForManagedUsers, BasicFlow) {
-  ManagedLogIn();
   WaitForScreenShown();
 
   EnterPin();
