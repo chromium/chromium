@@ -386,20 +386,22 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
   if (saved_desk_util::IsSavedDesksEnabled()) {
+    int button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY;
+    if (!saved_desk_util::AreDesksTemplatesEnabled())
+      button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
+
     expanded_state_desks_templates_button_ =
         scroll_view_contents_->AddChildView(
             std::make_unique<ExpandedDesksBarButton>(
                 this, &kDesksTemplatesIcon,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
+                l10n_util::GetStringUTF16(button_text_id),
                 /*initially_enabled=*/true,
                 base::BindRepeating(
                     &DesksBarView::OnDesksTemplatesButtonPressed,
                     base::Unretained(this))));
     zero_state_desks_templates_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ZeroStateIconButton>(
-            &kDesksTemplatesIcon,
-            l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
+            &kDesksTemplatesIcon, l10n_util::GetStringUTF16(button_text_id),
             base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
                                 base::Unretained(this))));
   }
