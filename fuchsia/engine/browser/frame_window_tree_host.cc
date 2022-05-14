@@ -67,9 +67,11 @@ class FrameWindowTreeHost::WindowParentingClientImpl
 FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewToken view_token,
     scenic::ViewRefPair view_ref_pair,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    OnPixelScaleUpdateCallback on_pixel_scale_update)
     : view_ref_(DupViewRef(view_ref_pair.view_ref)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      on_pixel_scale_update_(std::move(on_pixel_scale_update)) {
   CreateCompositor();
 
   ui::PlatformWindowInitProperties properties =
@@ -84,9 +86,11 @@ FrameWindowTreeHost::FrameWindowTreeHost(
 FrameWindowTreeHost::FrameWindowTreeHost(
     fuchsia::ui::views::ViewCreationToken view_creation_token,
     scenic::ViewRefPair view_ref_pair,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    OnPixelScaleUpdateCallback on_pixel_scale_update)
     : view_ref_(DupViewRef(view_ref_pair.view_ref)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      on_pixel_scale_update_(std::move(on_pixel_scale_update)) {
   CreateCompositor();
 
   ui::PlatformWindowInitProperties properties =
@@ -141,4 +145,6 @@ void FrameWindowTreeHost::OnWindowBoundsChanged(const BoundsChange& bounds) {
 void FrameWindowTreeHost::OnScenicPixelScale(ui::PlatformWindow* window,
                                              float scale) {
   scenic_pixel_scale_ = scale;
+  if (on_pixel_scale_update_)
+    on_pixel_scale_update_.Run(scenic_pixel_scale_);
 }

@@ -40,6 +40,8 @@ class MockSemanticProvider : public AXFuchsiaSemanticProvider {
 
   float GetPixelScale() const override { return pixel_scale_; }
 
+  void SetPixelScale(float pixel_scale) override { pixel_scale_ = pixel_scale; }
+
   const absl::optional<fuchsia::accessibility::semantics::Node>& last_update()
       const {
     return last_update_;
@@ -51,8 +53,6 @@ class MockSemanticProvider : public AXFuchsiaSemanticProvider {
   last_event() const {
     return last_event_;
   }
-
-  void set_pixel_scale(float pixel_scale) { pixel_scale_ = pixel_scale; }
 
  private:
   absl::optional<fuchsia::accessibility::semantics::Node> last_update_;
@@ -99,7 +99,6 @@ class AccessibilityBridgeFuchsiaTest : public ::testing::Test {
     auto view_ref_pair = scenic::ViewRefPair::New();
     accessibility_bridge_ = std::make_unique<AccessibilityBridgeFuchsiaImpl>(
         /*root_window=*/nullptr, std::move(view_ref_pair.view_ref),
-        base::BindRepeating([]() { return 1.0f; }),
         base::RepeatingCallback<void(bool)>(),
         base::RepeatingCallback<bool(zx_status_t)>(), inspect::Node());
     accessibility_bridge_->set_semantic_provider_for_test(

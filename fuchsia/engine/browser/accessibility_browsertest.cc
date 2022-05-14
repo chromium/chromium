@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(FuchsiaFrameAccessibilityTest, HitTest) {
 
   float scale_factor = 20.f;
   // Make the bridge use scaling in hit test calculations.
-  frame_impl_->set_device_scale_factor_for_test(scale_factor);
+  frame_impl_->OnPixelScaleUpdate(scale_factor);
 
   // Downscale the target point, since the hit test calculation will scale it
   // back up.

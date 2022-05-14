@@ -34,6 +34,7 @@
 #include "fuchsia/engine/browser/frame_permission_controller.h"
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 #include "fuchsia/engine/browser/theme_manager.h"
+#include "fuchsia/engine/web_engine_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
@@ -53,9 +54,9 @@ class MediaPlayerImpl;
 class NavigationPolicyHandler;
 
 // Implementation of fuchsia.web.Frame based on content::WebContents.
-class FrameImpl : public fuchsia::web::Frame,
-                  public content::WebContentsObserver,
-                  public content::WebContentsDelegate {
+class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
+                                    public content::WebContentsObserver,
+                                    public content::WebContentsDelegate {
  public:
   // Returns FrameImpl that owns the |web_contents| or nullptr if the
   // |web_contents| is nullptr. Returns nullptr if there is no FrameImpl that
@@ -153,6 +154,7 @@ class FrameImpl : public fuchsia::web::Frame,
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, NoNavigationObserverAttached);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, ReloadFrame);
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, Stop);
+  FRIEND_TEST_ALL_PREFIXES(FuchsiaFrameAccessibilityTest, HitTest);
 
   // Used for storing awaiting popup frames in |pending_popups_|
   struct PendingPopup {
@@ -345,7 +347,7 @@ class FrameImpl : public fuchsia::web::Frame,
       const content::GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
-  float GetDeviceScaleFactor();
+  void OnPixelScaleUpdate(float pixel_scale);
   void SetAccessibilityEnabled(bool enabled);
 
   const std::unique_ptr<content::WebContents> web_contents_;

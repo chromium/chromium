@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 namespace {
@@ -117,8 +118,7 @@ class AXFuchsiaSemanticProviderTest
     delegate_ = std::make_unique<AXFuchsiaSemanticProviderDelegate>();
 
     semantic_provider_ = std::make_unique<ui::AXFuchsiaSemanticProviderImpl>(
-        std::move(view_ref_pair.view_ref),
-        base::BindRepeating([]() { return 2.0f; }), delegate_.get());
+        std::move(view_ref_pair.view_ref), delegate_.get());
 
     // Spin the loop to allow registration with the SemanticsManager to be
     // processed.
@@ -146,6 +146,7 @@ class AXFuchsiaSemanticProviderTest
   void UpdateSemanticNodes(
       std::vector<fuchsia::accessibility::semantics::Node> nodes) final {
     num_update_semantic_nodes_called_++;
+    node_updates_.push_back(std::move(nodes));
   }
   void DeleteSemanticNodes(std::vector<uint32_t> node_ids) final {
     num_delete_semantic_nodes_called_++;
@@ -155,6 +156,11 @@ class AXFuchsiaSemanticProviderTest
       fuchsia::accessibility::semantics::SemanticEvent semantic_event,
       SendSemanticEventCallback callback) override {
     callback();
+  }
+
+  const std::vector<std::vector<fuchsia::accessibility::semantics::Node>>&
+  node_updates() {
+    return node_updates_;
   }
 
   // Required because of |test_context_|.
@@ -177,6 +183,10 @@ class AXFuchsiaSemanticProviderTest
       semantic_tree_binding_;
   std::unique_ptr<AXFuchsiaSemanticProviderDelegate> delegate_;
   std::unique_ptr<ui::AXFuchsiaSemanticProviderImpl> semantic_provider_;
+
+  // Node updates batched per API call to UpdateSemanticNodes().
+  std::vector<std::vector<fuchsia::accessibility::semantics::Node>>
+      node_updates_;
 };
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsConnectionClosed) {
@@ -205,6 +215,8 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnAccessibilityAction) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnHitTest) {
+  semantic_provider_->SetPixelScale(2.f);
+
   // Note that the point is sent here and will be converted according to the
   // device scale used. Only then it gets sent to the handler, which receives
   // the value already with the proper scaling.
@@ -488,6 +500,93 @@ TEST_F(AXFuchsiaSemanticProviderTest, ClearsTree) {
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
+}
+
+TEST_F(AXFuchsiaSemanticProviderTest, UpdateScaleFactor) {
+  // Send an initial root node update. At this point, the pixel scale is 1, the
+  // root node's transform will be the identity matrix. Thus, the resulting
+  // update sent to fuchsia should not contain a transform.
+  {
+    Node node;
+    node.set_node_id(0u);
+    // Set child_ids to make sure they're not overwritten later.
+    node.set_child_ids({1u});
+    semantic_provider_->Update(std::move(node));
+    Node child;
+    child.set_node_id(1u);
+    semantic_provider_->Update(std::move(child));
+  }
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the first update sent to fuchsia reflects a pixel scale of 1.
+  {
+    ASSERT_EQ(node_updates().size(), 1u);
+    const auto& first_update_batch = node_updates()[0];
+    ASSERT_EQ(first_update_batch.size(), 2u);
+    EXPECT_EQ(first_update_batch[0].node_id(), 0u);
+    const fuchsia::accessibility::semantics::Node& node = first_update_batch[0];
+    ASSERT_TRUE(node.has_node_to_container_transform());
+    const auto& transform = node.node_to_container_transform().matrix;
+    EXPECT_EQ(transform[0], 1.f);
+    EXPECT_EQ(transform[5], 1.f);
+    ASSERT_EQ(node.child_ids().size(), 1u);
+    EXPECT_EQ(node.child_ids()[0], 1u);
+  }
+
+  // Now, set a new pixel scale != 1. This step should force an update to
+  // fuchsia.
+  const auto kPixelScale = 0.5f;
+  semantic_provider_->SetPixelScale(kPixelScale);
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the root node's node_to_conatiner_transform field was set when
+  // the pixel scale was updated.
+  {
+    ASSERT_EQ(node_updates().size(), 2u);
+    const auto& second_update_batch = node_updates()[1];
+    ASSERT_EQ(second_update_batch.size(), 1u);
+    const fuchsia::accessibility::semantics::Node& node =
+        second_update_batch[0];
+    EXPECT_EQ(node.node_id(), 0u);
+    ASSERT_TRUE(node.has_node_to_container_transform());
+    const auto& transform = node.node_to_container_transform().matrix;
+    EXPECT_EQ(transform[0], 1.f / kPixelScale);
+    EXPECT_EQ(transform[5], 1.f / kPixelScale);
+    ASSERT_EQ(node.child_ids().size(), 1u);
+    EXPECT_EQ(node.child_ids()[0], 1u);
+  }
+
+  // Finally, send one more update, and verify that the semantic provider
+  // accounted for the new pixel scale in the root node's transform.
+  {
+    Node node;
+    node.set_node_id(0u);
+    node.set_child_ids({1u});
+    semantic_provider_->Update(std::move(node));
+  }
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
+  // Check that the root node's node_to_conatiner_transform field was set using
+  // the new pixel scale.
+  {
+    ASSERT_EQ(node_updates().size(), 3u);
+    const auto& third_update_batch = node_updates()[2];
+    ASSERT_EQ(third_update_batch.size(), 1u);
+    const fuchsia::accessibility::semantics::Node& node = third_update_batch[0];
+    EXPECT_EQ(node.node_id(), 0u);
+    ASSERT_TRUE(node.has_node_to_container_transform());
+    const auto& transform = node.node_to_container_transform().matrix;
+    EXPECT_EQ(transform[0], 1.f / kPixelScale);
+    EXPECT_EQ(transform[5], 1.f / kPixelScale);
+    ASSERT_EQ(node.child_ids().size(), 1u);
+    EXPECT_EQ(node.child_ids()[0], 1u);
+  }
 }
 
 }  // namespace

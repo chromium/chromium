@@ -5,11 +5,13 @@
 #include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 
 #include <lib/sys/cpp/component_context.h>
+#include <lib/ui/scenic/cpp/commands.h>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 namespace {
@@ -61,10 +63,8 @@ AXFuchsiaSemanticProviderImpl::Delegate::~Delegate() = default;
 
 AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
     fuchsia::ui::views::ViewRef view_ref,
-    base::RepeatingCallback<float()> get_pixel_scale,
     Delegate* delegate)
     : view_ref_(std::move(view_ref)),
-      get_pixel_scale_(std::move(get_pixel_scale)),
       delegate_(delegate),
       semantic_listener_binding_(this) {
   sys::ComponentContext* component_context = base::ComponentContextForProcess();
@@ -92,7 +92,24 @@ bool AXFuchsiaSemanticProviderImpl::Update(
 
   DCHECK(node.has_node_id());
 
-  if (node.node_id() != kFuchsiaRootNodeId) {
+  // If the updated node is the root, we need to account for the pixel scale in
+  // its transform.
+  //
+  // Otherwise, we need to update our connectivity book-keeping.
+  if (node.node_id() == kFuchsiaRootNodeId) {
+    gfx::Transform transform;
+    transform.PostScale(1 / pixel_scale_, 1 / pixel_scale_);
+
+    // Convert to fuchsia's transform type.
+    std::array<float, 16> mat = {};
+    transform.matrix().getColMajor(mat.data());
+    fuchsia::ui::gfx::Matrix4Value fuchsia_transform =
+        scenic::NewMatrix4Value(mat);
+
+    // The root node will never have an offset container, so its transform will
+    // always be the identity matrix. Thus, we can safely overwrite it here.
+    node.set_node_to_container_transform(std::move(fuchsia_transform.value));
+  } else {
     auto found_not_reachable = not_reachable_.find(node.node_id());
     const bool is_not_reachable = found_not_reachable != not_reachable_.end();
     const absl::optional<uint32_t> parent_node_id =
@@ -211,10 +228,9 @@ void AXFuchsiaSemanticProviderImpl::OnAccessibilityActionRequested(
 
 void AXFuchsiaSemanticProviderImpl::HitTest(fuchsia::math::PointF local_point,
                                             HitTestCallback callback) {
-  float pixel_scale = get_pixel_scale_.Run();
   fuchsia::math::PointF point;
-  point.x = local_point.x * pixel_scale;
-  point.y = local_point.y * pixel_scale;
+  point.x = local_point.x * pixel_scale_;
+  point.y = local_point.y * pixel_scale_;
 
   delegate_->OnHitTest(point, std::move(callback));
   return;
@@ -307,10 +323,24 @@ void AXFuchsiaSemanticProviderImpl::OnCommitComplete() {
 }
 
 float AXFuchsiaSemanticProviderImpl::GetPixelScale() const {
-  if (get_pixel_scale_)
-    return get_pixel_scale_.Run();
+  return pixel_scale_;
+}
 
-  return 1.f;
+void AXFuchsiaSemanticProviderImpl::SetPixelScale(float pixel_scale) {
+  pixel_scale_ = pixel_scale;
+
+  // If the root node exists, then we need to update its transform to reflect
+  // the new pixel scale.
+  if (nodes_.find(kFuchsiaRootNodeId) == nodes_.end())
+    return;
+
+  // We need to fill the `child_ids` field to prevent Update() from trampling
+  // our connectivity bookkeeping. Update() will handle setting the
+  // `node_to_container_transform` field.
+  fuchsia::accessibility::semantics::Node root_node_update;
+  root_node_update.set_node_id(kFuchsiaRootNodeId);
+  root_node_update.set_child_ids(nodes_[kFuchsiaRootNodeId].children);
+  Update(std::move(root_node_update));
 }
 
 }  // namespace ui

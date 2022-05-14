@@ -19,12 +19,16 @@ class WebContents;
 class FrameWindowTreeHost final : public aura::WindowTreeHostPlatform,
                                   public ui::ScenicWindowDelegate {
  public:
+  using OnPixelScaleUpdateCallback = base::RepeatingCallback<void(float)>;
+
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
                       scenic::ViewRefPair view_ref_pair,
-                      content::WebContents* web_contents);
+                      content::WebContents* web_contents,
+                      OnPixelScaleUpdateCallback on_pixel_scale_update);
   FrameWindowTreeHost(fuchsia::ui::views::ViewCreationToken view_creation_token,
                       scenic::ViewRefPair view_ref_pair,
-                      content::WebContents* web_contents);
+                      content::WebContents* web_contents,
+                      OnPixelScaleUpdateCallback on_pixel_scale_update);
   ~FrameWindowTreeHost() override;
 
   FrameWindowTreeHost(const FrameWindowTreeHost&) = delete;
@@ -51,6 +55,7 @@ class FrameWindowTreeHost final : public aura::WindowTreeHostPlatform,
   std::unique_ptr<WindowParentingClientImpl> window_parenting_client_;
   content::WebContents* const web_contents_;
   float scenic_pixel_scale_ = 1.0;
+  OnPixelScaleUpdateCallback on_pixel_scale_update_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_WINDOW_TREE_HOST_H_

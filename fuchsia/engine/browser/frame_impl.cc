@@ -632,8 +632,6 @@ void FrameImpl::ConnectToAccessibilityBridge() {
     v2_accessibility_bridge_ =
         std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
             root_window(), window_tree_host_->CreateViewRef(),
-            base::BindRepeating(&FrameImpl::GetDeviceScaleFactor,
-                                base::Unretained(this)),
             base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
                                 base::Unretained(this)),
             base::BindRepeating(&FrameImpl::OnAccessibilityError,
@@ -950,7 +948,9 @@ void FrameImpl::SetupWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
-      std::move(view_token), std::move(view_ref_pair), web_contents_.get());
+      std::move(view_token), std::move(view_ref_pair), web_contents_.get(),
+      base::BindRepeating(&FrameImpl::OnPixelScaleUpdate,
+                          base::Unretained(this)));
 
   InitWindowTreeHost();
 }
@@ -962,7 +962,9 @@ void FrameImpl::SetupWindowTreeHost(
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
       std::move(view_creation_token), std::move(view_ref_pair),
-      web_contents_.get());
+      web_contents_.get(),
+      base::BindRepeating(&FrameImpl::OnPixelScaleUpdate,
+                          base::Unretained(this)));
 
   InitWindowTreeHost();
 }
@@ -1378,13 +1380,6 @@ void FrameImpl::EnableExplicitSitesFilter(std::string error_page) {
   explicit_sites_filter_error_page_ = std::move(error_page);
 }
 
-float FrameImpl::GetDeviceScaleFactor() {
-  if (device_scale_factor_for_test_)
-    return *device_scale_factor_for_test_;
-
-  return window_tree_host_->scenic_scale_factor();
-}
-
 void FrameImpl::SetAccessibilityEnabled(bool enabled) {
   auto* browser_accessibility_state =
       content::BrowserAccessibilityState::GetInstance();
@@ -1394,5 +1389,11 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
   } else {
     browser_accessibility_state->RemoveAccessibilityModeFlags(
         ui::kAXModeComplete);
+  }
+}
+
+void FrameImpl::OnPixelScaleUpdate(float pixel_scale) {
+  if (v2_accessibility_bridge_) {
+    v2_accessibility_bridge_->SetPixelScale(pixel_scale);
   }
 }

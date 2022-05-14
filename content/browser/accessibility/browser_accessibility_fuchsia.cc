@@ -370,13 +370,6 @@ fuchsia::ui::gfx::mat4 BrowserAccessibilityFuchsia::GetFuchsiaTransform()
   if (GetData().relative_bounds.transform)
     transform = *GetData().relative_bounds.transform;
 
-  // If this node is the root of its AXTree, apply the inverse device scale
-  // factor.
-  if (manager()->GetRoot() == this) {
-    transform.PostScale(1 / manager()->device_scale_factor(),
-                        1 / manager()->device_scale_factor());
-  }
-
   // Convert to fuchsia's transform type.
   std::array<float, 16> mat = {};
   transform.matrix().getColMajor(mat.data());
