@@ -123,7 +123,7 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
           entry->GetProfileThemeColors().profile_highlight_color));
   const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
   gfx::Image icon =
-      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
+      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
   dict.SetStringKey("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
   dict.SetBoolKey("isManaged",

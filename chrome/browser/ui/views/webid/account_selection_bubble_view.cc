@@ -420,8 +420,7 @@ void AccountSelectionBubbleView::OnAccountImageFetched(
             letter, kDesiredAvatarSize));
   } else {
     avatar = ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-        image, /*is_rectangle=*/true, kDesiredAvatarSize, kDesiredAvatarSize,
-        profiles::SHAPE_CIRCLE));
+        image, kDesiredAvatarSize, kDesiredAvatarSize, profiles::SHAPE_CIRCLE));
   }
   image_view->SetImage(avatar);
 }

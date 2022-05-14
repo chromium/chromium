@@ -91,8 +91,8 @@ gfx::Image MoveToAccountStoreBubbleController::GetProfileIcon(int size) {
         profiles::GetPlaceholderAvatarIconResourceID());
   }
   return profiles::GetSizedAvatarIcon(account_icon,
-                                      /*is_rectangle=*/true, /*width=*/size,
-                                      /*height=*/size, profiles::SHAPE_CIRCLE);
+                                      /*width=*/size, /*height=*/size,
+                                      profiles::SHAPE_CIRCLE);
 }
 
 void MoveToAccountStoreBubbleController::ReportInteractions() {

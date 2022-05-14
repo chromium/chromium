@@ -333,10 +333,8 @@ ui::ImageModel SaveUpdateBubbleController::GetPrimaryAccountAvatar(
     account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
         profiles::GetPlaceholderAvatarIconResourceID());
   }
-  return ui::ImageModel::FromImage(
-      profiles::GetSizedAvatarIcon(account_icon,
-                                   /*is_rectangle=*/true, icon_size_dip,
-                                   icon_size_dip, profiles::SHAPE_CIRCLE));
+  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+      account_icon, icon_size_dip, icon_size_dip, profiles::SHAPE_CIRCLE));
 }
 
 bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {

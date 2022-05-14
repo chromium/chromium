@@ -594,8 +594,7 @@ void AddAvatarToLastMenuItem(const gfx::Image& icon,
   int target_dip_height = icon.Height();
   gfx::CalculateFaviconTargetSize(&target_dip_width, &target_dip_height);
   gfx::Image sized_icon = profiles::GetSizedAvatarIcon(
-      icon, true /* is_rectangle */, target_dip_width, target_dip_height,
-      profiles::SHAPE_CIRCLE);
+      icon, target_dip_width, target_dip_height, profiles::SHAPE_CIRCLE);
   menu->SetIcon(menu->GetItemCount() - 1,
                 ui::ImageModel::FromImage(sized_icon));
 }

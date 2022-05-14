@@ -355,7 +355,7 @@ std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
   return webui::GetBitmapDataUrl(
       profiles::GetSizedAvatarIcon(
           icon.value_or(GetProfileEntry()->GetAvatarIcon(avatar_icon_size)),
-          true, avatar_icon_size, avatar_icon_size)
+          avatar_icon_size, avatar_icon_size)
           .AsBitmap());
 }
 

@@ -138,10 +138,9 @@ class ManageProfileHandlerTest : public testing::Test {
 
     const gfx::Image* avatar_icon = entry()->GetGAIAPicture();
     ASSERT_TRUE(avatar_icon);
-    EXPECT_EQ(
-        *icon.FindStringKey("url"),
-        webui::GetBitmapDataUrl(
-            profiles::GetAvatarIconForWebUI(*avatar_icon, true).AsBitmap()));
+    EXPECT_EQ(*icon.FindStringKey("url"),
+              webui::GetBitmapDataUrl(
+                  profiles::GetAvatarIconForWebUI(*avatar_icon).AsBitmap()));
     EXPECT_TRUE(!icon.FindStringKey("label")->empty());
     EXPECT_EQ(*icon.FindBoolPath("selected"), gaia_selected);
   }

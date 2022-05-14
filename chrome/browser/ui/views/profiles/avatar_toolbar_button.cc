@@ -324,7 +324,7 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
     case State::kSyncPaused:
     case State::kNormal:
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-          delegate_->GetProfileAvatarImage(gaia_account_image, icon_size), true,
+          delegate_->GetProfileAvatarImage(gaia_account_image, icon_size),
           icon_size, icon_size, profiles::SHAPE_CIRCLE));
   }
   NOTREACHED();

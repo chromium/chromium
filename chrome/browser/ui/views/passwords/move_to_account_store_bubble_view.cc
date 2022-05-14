@@ -166,8 +166,8 @@ void ImageWithBadge::Render() {
 
   gfx::Image rounded_badge = profiles::GetSizedAvatarIcon(
       gfx::Image(GetBadge()),
-      /*is_rectangle=*/true, /*width=*/gfx::kFaviconSize,
-      /*height=*/gfx::kFaviconSize, profiles::SHAPE_CIRCLE);
+      /*width=*/gfx::kFaviconSize, /*height=*/gfx::kFaviconSize,
+      profiles::SHAPE_CIRCLE);
 
   gfx::ImageSkia rounded_badge_with_background_and_border =
       gfx::CanvasImageSource::MakeImageSkia<BackgroundBorderAdderImageSource>(
