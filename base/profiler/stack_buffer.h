@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/memory/aligned_memory.h"
 
 namespace base {
 
@@ -25,7 +26,7 @@ class BASE_EXPORT StackBuffer {
   // encounter this exceptional case for leaf frames.
   static constexpr size_t kPlatformStackAlignment = 2 * sizeof(uintptr_t);
 
-  StackBuffer(size_t buffer_size);
+  explicit StackBuffer(size_t buffer_size);
 
   StackBuffer(const StackBuffer&) = delete;
   StackBuffer& operator=(const StackBuffer&) = delete;
@@ -34,25 +35,19 @@ class BASE_EXPORT StackBuffer {
 
   // Returns a kPlatformStackAlignment-aligned pointer to the stack buffer.
   uintptr_t* buffer() const {
-    // Return the first address in the buffer aligned to
-    // kPlatformStackAlignment. The buffer is guaranteed to have enough space
-    // for size() bytes beyond this value.
-    return reinterpret_cast<uintptr_t*>(
-        (reinterpret_cast<uintptr_t>(buffer_.get()) + kPlatformStackAlignment -
-         1) &
-        ~(kPlatformStackAlignment - 1));
+    // Aligned during allocation.
+    return buffer_.get();
   }
 
   // Size in bytes.
   size_t size() const { return size_; }
 
  private:
-  // The buffer to store the stack.
-  const std::unique_ptr<uint8_t[]> buffer_;
-
-  // The size in bytes of the requested buffer allocation. The actual allocation
-  // is larger to accommodate alignment requirements.
+  // The size in bytes of the requested buffer allocation.
   const size_t size_;
+
+  // The buffer to store the stack. Already aligned.
+  const std::unique_ptr<uintptr_t, AlignedFreeDeleter> buffer_;
 };
 
 }  // namespace base

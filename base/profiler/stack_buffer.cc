@@ -4,13 +4,18 @@
 
 #include "base/profiler/stack_buffer.h"
 
+#include "base/bits.h"
+
 namespace base {
 
 constexpr size_t StackBuffer::kPlatformStackAlignment;
 
 StackBuffer::StackBuffer(size_t buffer_size)
-    : buffer_(new uint8_t[buffer_size + kPlatformStackAlignment - 1]),
-      size_(buffer_size) {}
+    : size_(buffer_size),
+      buffer_(static_cast<uintptr_t*>(
+          AlignedAlloc(size_, kPlatformStackAlignment))) {
+  static_assert(bits::IsPowerOfTwo(kPlatformStackAlignment));
+}
 
 StackBuffer::~StackBuffer() = default;
 

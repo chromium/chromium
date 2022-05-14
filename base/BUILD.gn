@@ -3158,6 +3158,7 @@ test("base_unittests") {
     "profiler/metadata_recorder_unittest.cc",
     "profiler/module_cache_unittest.cc",
     "profiler/sample_metadata_unittest.cc",
+    "profiler/stack_buffer_unittest.cc",
     "profiler/stack_copier_suspend_unittest.cc",
     "profiler/stack_copier_unittest.cc",
     "profiler/stack_sampler_impl_unittest.cc",
