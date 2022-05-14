@@ -117,6 +117,10 @@ assert(
     !enable_platform_encrypted_hevc || enable_platform_hevc,
     "enable_platform_hevc=true is required for enable_platform_encrypted_hevc=true.")
 
+assert(
+    !enable_platform_hevc_decoding || enable_platform_hevc,
+    "enable_platform_hevc=true is required for enable_platform_hevc_decoding=true.")
+
 # Use a second declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
   # Enables runtime selection of PulseAudio library.

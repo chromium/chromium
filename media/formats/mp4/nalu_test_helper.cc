@@ -10,7 +10,7 @@
 #include "media/video/h264_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#include "media/video/h265_parser.h"
+#include "media/video/h265_nalu_parser.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 namespace media {
