@@ -15,13 +15,9 @@ goog.provide('ValueSpan');
 goog.require('LibLouis.FormType');
 goog.require('Spannable');
 
-/**
- * Attached to the value region of a braille spannable.
- */
+/** Attached to the value region of a braille spannable. */
 ValueSpan = class {
-  /**
-   * @param {number} offset The offset of the span into the value.
-   */
+  /** @param {number} offset The offset of the span into the value. */
   constructor(offset) {
     /**
      * The offset of the span into the value.
@@ -53,12 +49,8 @@ Spannable.registerSerializableSpan(
     ValueSpan, 'ValueSpan', ValueSpan.fromJson, ValueSpan.prototype.toJson);
 
 
-/**
- * Attached to the selected text within a value.
- */
-ValueSelectionSpan = class {
-  constructor() {}
-};
+/** Attached to the selected text within a value. */
+ValueSelectionSpan = class {};
 
 
 Spannable.registerStatelessSerializableSpan(
@@ -78,13 +70,9 @@ ExtraCellsSpan = class {
 };
 
 
-/**
- * Indicates a text form during translation in Liblouis.
- */
+/** Indicates a text form during translation in Liblouis. */
 BrailleTextStyleSpan = class {
-  /**
-   * @param {LibLouis.FormType} formType
-   */
+  /** @param {LibLouis.FormType} formType */
   constructor(formType) {
     /** @type {LibLouis.FormType} */
     this.formType = formType;
