@@ -168,7 +168,7 @@ std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {
   // Add the GAIA picture to the beginning of the list if it is available.
   const gfx::Image* icon = entry->GetGAIAPicture();
   if (icon) {
-    gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon, true);
+    gfx::Image avatar_icon = profiles::GetAvatarIconForWebUI(*icon);
     auto gaia_picture_info = profiles::GetAvatarIconAndLabelDict(
         /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
         /*label=*/

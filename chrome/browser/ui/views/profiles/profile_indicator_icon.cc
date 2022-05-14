@@ -21,9 +21,9 @@ void ProfileIndicatorIcon::OnPaint(gfx::Canvas* canvas) {
 
   if (old_height_ != height() || modified_icon_.isNull()) {
     old_height_ = height();
-    modified_icon_ = *profiles::GetAvatarIconForTitleBar(base_icon_, false,
-                                                         width(), height())
-                          .ToImageSkia();
+    modified_icon_ =
+        *profiles::GetAvatarIconForTitleBar(base_icon_, width(), height())
+             .ToImageSkia();
   }
 
   // Scale the image to fit the width of the button.

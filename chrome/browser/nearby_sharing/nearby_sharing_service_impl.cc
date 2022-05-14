@@ -4010,12 +4010,8 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
       wifi_credentials.set_wifi_password(wifi_password);
 
       // Automatically set up the Wi-Fi network for the user.
-      wifi_network_handler_->ConfigureWifiNetwork(
-          wifi_credentials,
-          base::BindOnce([](const absl::optional<std::string>& network_guid,
-                            const std::string& error_message) {
-            // TODO(crisrael): Add metrics
-          }));
+      wifi_network_handler_->ConfigureWifiNetwork(wifi_credentials,
+                                                  base::DoNothing());
     }
   }
   return true;

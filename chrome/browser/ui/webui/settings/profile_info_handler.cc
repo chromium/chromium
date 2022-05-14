@@ -160,7 +160,7 @@ ProfileInfoHandler::GetAccountNameAndIcon() {
     // work here, sends less over IPC, and is more stable with returned results.
     int kAvatarIconSize = 40.f * web_ui()->GetDeviceScaleFactor();
     gfx::Image icon = profiles::GetSizedAvatarIcon(
-        entry->GetAvatarIcon(), true, kAvatarIconSize, kAvatarIconSize);
+        entry->GetAvatarIcon(), kAvatarIconSize, kAvatarIconSize);
     icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

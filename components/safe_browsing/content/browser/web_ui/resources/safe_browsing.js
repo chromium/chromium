@@ -2,12 +2,10 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
-decorate('tabbox', TabBox);
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
 /**
  * Asks the C++ SafeBrowsingUIHandler to get the lists of Safe Browsing
@@ -193,10 +191,9 @@ function initialize() {
   };
 
   // When the tab updates, update the anchor
-  $('tabbox').addEventListener('selectedChange', function() {
-    const tabbox = $('tabbox');
-    const tabs = tabbox.querySelector('tabs').children;
-    const selectedTab = tabs[tabbox.selectedIndex];
+  $('tabbox').addEventListener('selected-index-change', e => {
+    const tabs = document.querySelectorAll('div[slot=\'tab\']');
+    const selectedTab = tabs[e.detail];
     window.location.hash = 'tab-' + selectedTab.id;
   }, true);
 }
@@ -435,8 +432,11 @@ function addReferringAppInfo(info) {
 }
 
 function showTab(tabId) {
-  if ($(tabId)) {
-    $(tabId).selected = 'selected';
+  const tabs = document.querySelectorAll('div[slot=\'tab\']');
+  const index = Array.from(tabs).findIndex(t => t.id === tabId);
+  if (index !== -1) {
+    document.querySelector('cr-tab-box')
+        .setAttribute('selected-index', index.toString());
   }
 }
 

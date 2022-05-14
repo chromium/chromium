@@ -120,24 +120,16 @@ class AvatarImageSource : public gfx::CanvasImageSource {
     POSITION_BOTTOM_CENTER,
   };
 
-  enum AvatarBorder {
-    BORDER_NONE,
-    BORDER_NORMAL,
-    BORDER_ETCHED,
-  };
-
   AvatarImageSource(gfx::ImageSkia avatar,
                     const gfx::Size& canvas_size,
                     int width,
                     AvatarPosition position,
-                    AvatarBorder border,
                     profiles::AvatarShape shape);
 
   AvatarImageSource(gfx::ImageSkia avatar,
                     const gfx::Size& canvas_size,
                     int width,
-                    AvatarPosition position,
-                    AvatarBorder border);
+                    AvatarPosition position);
 
   AvatarImageSource(const AvatarImageSource&) = delete;
   AvatarImageSource& operator=(const AvatarImageSource&) = delete;
@@ -153,7 +145,6 @@ class AvatarImageSource : public gfx::CanvasImageSource {
   const int width_;
   const int height_;
   const AvatarPosition position_;
-  const AvatarBorder border_;
   const profiles::AvatarShape shape_;
 };
 
@@ -161,14 +152,12 @@ AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                                      const gfx::Size& canvas_size,
                                      int width,
                                      AvatarPosition position,
-                                     AvatarBorder border,
                                      profiles::AvatarShape shape)
     : gfx::CanvasImageSource(canvas_size),
       canvas_size_(canvas_size),
       width_(width),
       height_(GetScaledAvatarHeightForWidth(width, avatar)),
       position_(position),
-      border_(border),
       shape_(shape) {
   avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
       avatar, skia::ImageOperations::RESIZE_BEST,
@@ -178,13 +167,11 @@ AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                                      const gfx::Size& canvas_size,
                                      int width,
-                                     AvatarPosition position,
-                                     AvatarBorder border)
+                                     AvatarPosition position)
     : AvatarImageSource(avatar,
                         canvas_size,
                         width,
                         position,
-                        border,
                         profiles::SHAPE_SQUARE) {}
 
 AvatarImageSource::~AvatarImageSource() {
@@ -224,73 +211,6 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 #endif
 
   canvas->DrawImageInt(avatar_, x, y);
-
-  // The border should be square.
-  int border_size = std::max(width_, height_);
-  // Reset the x and y for the square border.
-  x = (canvas_size_.width() - border_size) / 2;
-  y = (canvas_size_.height() - border_size) / 2;
-
-  if (border_ == BORDER_NORMAL) {
-    // Draw a gray border on the inside of the avatar.
-    SkColor border_color = SkColorSetARGB(83, 0, 0, 0);
-
-    // Offset the rectangle by a half pixel so the border is drawn within the
-    // appropriate pixels no matter the scale factor. Subtract 1 from the right
-    // and bottom sizes to specify the endpoints, yielding -0.5.
-    SkPath path;
-    path.addRect(SkFloatToScalar(x + 0.5f),  // left
-                 SkFloatToScalar(y + 0.5f),  // top
-                 SkFloatToScalar(x + border_size - 0.5f),   // right
-                 SkFloatToScalar(y + border_size - 0.5f));  // bottom
-
-    cc::PaintFlags flags;
-    flags.setColor(border_color);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(SkIntToScalar(1));
-
-    canvas->DrawPath(path, flags);
-  } else if (border_ == BORDER_ETCHED) {
-    // Give the avatar an etched look by drawing a highlight on the bottom and
-    // right edges.
-    SkColor shadow_color = SkColorSetARGB(83, 0, 0, 0);
-    SkColor highlight_color = SkColorSetARGB(96, 255, 255, 255);
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(SkIntToScalar(1));
-
-    SkPath path;
-
-    // Left and top shadows. To support higher scale factors than 1, position
-    // the orthogonal dimension of each line on the half-pixel to separate the
-    // pixel. For a vertical line, this means adding 0.5 to the x-value.
-    path.moveTo(SkFloatToScalar(x + 0.5f), SkIntToScalar(y + height_));
-
-    // Draw up to the top-left. Stop with the y-value at a half-pixel.
-    path.rLineTo(SkIntToScalar(0), SkFloatToScalar(-height_ + 0.5f));
-
-    // Draw right to the top-right, stopping within the last pixel.
-    path.rLineTo(SkFloatToScalar(width_ - 0.5f), SkIntToScalar(0));
-
-    flags.setColor(shadow_color);
-    canvas->DrawPath(path, flags);
-
-    path.reset();
-
-    // Bottom and right highlights. Note that the shadows own the shared corner
-    // pixels, so reduce the sizes accordingly.
-    path.moveTo(SkIntToScalar(x + 1), SkFloatToScalar(y + height_ - 0.5f));
-
-    // Draw right to the bottom-right.
-    path.rLineTo(SkFloatToScalar(width_ - 1.5f), SkIntToScalar(0));
-
-    // Draw up to the top-right.
-    path.rLineTo(SkIntToScalar(0), SkFloatToScalar(-height_ + 1.5f));
-
-    flags.setColor(highlight_color);
-    canvas->DrawPath(path, flags);
-  }
 }
 
 class ImageWithBackgroundSource : public gfx::CanvasImageSource {
@@ -373,44 +293,32 @@ ui::ImageModel GetGuestAvatar(int size) {
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
                               int width,
                               int height,
                               AvatarShape shape) {
-  if (!is_rectangle && image.Height() <= height)
-    return image;
-
   gfx::Size size(width, height);
 
-  // Source for a centered, sized icon. GAIA images get a border.
+  // Source for a centered, sized icon.
   std::unique_ptr<gfx::ImageSkiaSource> source(
       new AvatarImageSource(*image.ToImageSkia(), size, std::min(width, height),
-                            AvatarImageSource::POSITION_CENTER,
-                            AvatarImageSource::BORDER_NONE, shape));
+                            AvatarImageSource::POSITION_CENTER, shape));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), size));
 }
 
-gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
-                              int width,
-                              int height) {
-  return GetSizedAvatarIcon(image, is_rectangle, width, height,
-                            profiles::SHAPE_SQUARE);
+gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height) {
+  return GetSizedAvatarIcon(image, width, height, profiles::SHAPE_SQUARE);
 }
 
-gfx::Image GetAvatarIconForWebUI(const gfx::Image& image,
-                                 bool is_rectangle) {
-  return GetSizedAvatarIcon(image, is_rectangle, kAvatarIconSize,
-                            kAvatarIconSize);
+gfx::Image GetAvatarIconForWebUI(const gfx::Image& image) {
+  return GetSizedAvatarIcon(image, kAvatarIconSize, kAvatarIconSize);
 }
 
 gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
-                                    bool is_gaia_image,
                                     int dst_width,
                                     int dst_height) {
   // The image requires no border or resizing.
-  if (!is_gaia_image && image.Height() <= kAvatarIconSize)
+  if (image.Height() <= kAvatarIconSize)
     return image;
 
   int size = std::min({kAvatarIconSize, dst_width, dst_height});
@@ -420,9 +328,7 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
   // with an etched border (for GAIA images).
   std::unique_ptr<gfx::ImageSkiaSource> source(
       new AvatarImageSource(*image.ToImageSkia(), dst_size, size,
-                            AvatarImageSource::POSITION_BOTTOM_CENTER,
-                            is_gaia_image ? AvatarImageSource::BORDER_ETCHED
-                                          : AvatarImageSource::BORDER_NONE));
+                            AvatarImageSource::POSITION_BOTTOM_CENTER));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), dst_size));
 }
@@ -441,9 +347,8 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon =
       entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
-  return profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
-                                      kMenuAvatarIconSize, kMenuAvatarIconSize,
-                                      profiles::SHAPE_CIRCLE);
+  return profiles::GetSizedAvatarIcon(
+      icon, kMenuAvatarIconSize, kMenuAvatarIconSize, profiles::SHAPE_CIRCLE);
 }
 #endif
 

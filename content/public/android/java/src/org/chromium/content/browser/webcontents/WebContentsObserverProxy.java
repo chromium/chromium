@@ -7,6 +7,7 @@ package org.chromium.content.browser.webcontents;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -122,70 +123,119 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didStartNavigation(NavigationHandle navigation) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didStartNavigation(navigation);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didStartNavigation observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didStartNavigation(navigation);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didRedirectNavigation(NavigationHandle navigation) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didRedirectNavigation(navigation);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didRedirectNavigation observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didRedirectNavigation(navigation);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didFinishNavigation(NavigationHandle navigation) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didFinishNavigation(navigation);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didFinishNavigation observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didFinishNavigation(navigation);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didStartLoading(GURL url) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didStartLoading(url);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didStartLoading observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didStartLoading(url);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didStopLoading(GURL url, boolean isKnownValid) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didStopLoading(url, isKnownValid);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didStopLoading observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didStopLoading(url, isKnownValid);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void loadProgressChanged(float progress) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().loadProgressChanged(progress);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::loadProgressChanged observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.loadProgressChanged(progress);
+            }
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didChangeVisibleSecurityState() {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didChangeVisibleSecurityState();
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didChangeVisibleSecurityState observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didChangeVisibleSecurityState();
+            }
         }
         finishObserverCall();
     }
@@ -234,10 +284,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void titleWasSet(String title) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().titleWasSet(title);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::titleWasSet observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.titleWasSet(title);
+            }
         }
         finishObserverCall();
     }
@@ -261,12 +318,19 @@ class WebContentsObserverProxy extends WebContentsObserver {
     }
 
     @Override
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didFinishLoad(
-                    rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::didStartNavigation observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.didFinishLoad(
+                        rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
+            }
         }
         finishObserverCall();
     }
@@ -291,10 +355,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void navigationEntryCommitted(LoadCommittedDetails details) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().navigationEntryCommitted(details);
+            WebContentsObserver observer = mObserversIterator.next();
+            String s = "WebContentsObserverProxy::navigationEntryComitted observer:"
+                    + observer.getClass().getName();
+            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
+                observer.navigationEntryCommitted(details);
+            }
         }
         finishObserverCall();
     }

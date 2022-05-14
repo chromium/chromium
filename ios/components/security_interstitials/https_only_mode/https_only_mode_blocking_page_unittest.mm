@@ -14,6 +14,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -58,22 +59,6 @@ class FakeWebState : public web::FakeWebState {
 };
 
 }  // namespace
-
-class FakeHttpsUpgradeService : public HttpsUpgradeService {
- public:
-  bool IsHttpAllowedForHost(const std::string& host) const override {
-    return base::Contains(allowed_http_hosts_, host);
-  }
-
-  void AllowHttpForHost(const std::string& host) override {
-    allowed_http_hosts_.insert(host);
-  };
-
-  void ClearAllowlist() override { allowed_http_hosts_.clear(); }
-
- private:
-  std::set<std::string> allowed_http_hosts_;
-};
 
 // Test fixture for HttpsOnlyModeBlockingPage.
 class HttpsOnlyModeBlockingPageTest : public PlatformTest {

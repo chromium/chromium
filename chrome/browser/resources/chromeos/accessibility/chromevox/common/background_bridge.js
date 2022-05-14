@@ -45,8 +45,8 @@ BackgroundBridge.BrailleCommandHandler = {
    */
   async setEnabled(enabled) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.BRAILLE_COMMAND_HANDLER, BridgeActions.SET_ENABLED,
-        enabled);
+        BridgeConstants.BrailleCommandHandler.TARGET,
+        BridgeConstants.BrailleCommandHandler.Action.SET_ENABLED, enabled);
   },
 };
 

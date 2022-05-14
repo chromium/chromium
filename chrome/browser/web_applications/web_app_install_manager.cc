@@ -83,6 +83,7 @@ void WebAppInstallManager::Shutdown() {
     TaskQueue empty;
     task_queue_.swap(empty);
   }
+  url_loader_.reset();
   web_contents_.reset();
 }
 
@@ -329,7 +330,7 @@ void WebAppInstallManager::
   // The install task or web contents getting destroyed indicates we could be
   // shutting down; don't enqueue another task.
   if (code == webapps::InstallResultCode::kWebContentsDestroyed ||
-      code == webapps::InstallResultCode::kInstallTaskDestroyed) {
+      code == webapps::InstallResultCode::kInstallTaskDestroyed || !started_) {
     return;
   }
 

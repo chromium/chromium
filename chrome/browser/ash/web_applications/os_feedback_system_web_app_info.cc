@@ -21,10 +21,16 @@
 #include "ui/display/screen.h"
 
 namespace {
+
 // All Feedback Tool window will be a fixed 600px*640px portal per
 // specification.
 constexpr int kFeedbackAppDefaultWidth = 600;
 constexpr int kFeedbackAppDefaultHeight = 640;
+
+bool IsUserFeedbackAllowed(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+}
+
 }  // namespace
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSFeedbackSystemWebApp() {
@@ -79,6 +85,15 @@ bool OSFeedbackAppDelegate::ShouldAllowMaximize() const {
 bool OSFeedbackAppDelegate::ShouldAllowResize() const {
   return false;
 }
+
+bool OSFeedbackAppDelegate::ShouldShowInLauncher() const {
+  return IsUserFeedbackAllowed(profile());
+}
+
+bool OSFeedbackAppDelegate::ShouldShowInSearch() const {
+  return ShouldShowInLauncher();
+}
+
 gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForOSFeedbackApp(browser);
 }
@@ -90,7 +105,7 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
     const apps::AppLaunchParams& params) const {
   // This check is needed to enforce the policy no matter how and from where the
   // feedback tool is to be launched.
-  if (!profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed)) {
+  if (!IsUserFeedbackAllowed(profile)) {
     return nullptr;
   }
   // TODO(xiangdongkong): Take a screenshot and launch the app afterward.

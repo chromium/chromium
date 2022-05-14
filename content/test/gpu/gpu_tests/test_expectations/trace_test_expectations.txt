@@ -126,19 +126,6 @@ crbug.com/1129879 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 crbug.com/1129879 [ chromeos ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ fuchsia ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
 
-# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
-crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976497 [ android ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
-
-# Tests that crash on gpu-fyi-win10-nvidia-rel-32
-crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
-crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -193,17 +180,8 @@ crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Vi
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
 crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
 
-# WebGPU pixel tests hang on mac bots which mostly run older versions of mac os.
-crbug.com/1213170 [ mac ] TraceTest_WebGPU* [ Failure ]
-
-# WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
-crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPU* [ Failure ]
-
 # Flakes on linux-rel.
 crbug.com/1216377 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
-
-# Cannot generate correct rendering results on windows.
-crbug.com/1238570 [ win ] TraceTest_WebGPUImportVideoFrame [ Failure ]
 
 # New flakes seen on Nexus 5X bot.
 crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]

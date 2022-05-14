@@ -14,6 +14,8 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
+    "https_only_mode_allowlist.cc",
+    "https_only_mode_allowlist.h",
     "https_only_mode_metrics.cc",
     "https_only_mode_metrics.h",
     "https_only_mode_ui_util.cc",
@@ -48,6 +50,7 @@ static_library("core") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/content_settings/core/browser",
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/metrics",

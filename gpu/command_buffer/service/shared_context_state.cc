@@ -37,6 +37,7 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -473,11 +474,6 @@ bool SharedContextState::InitializeGL(
     MakeCurrent(nullptr);
   }
 
-  bool is_native_vulkan =
-      gpu_preferences.use_vulkan == gpu::VulkanImplementationName::kNative ||
-      gpu_preferences.use_vulkan ==
-          gpu::VulkanImplementationName::kForcedNative;
-
   bool gl_supports_memory_object =
       gl::g_current_gl_driver->ext.b_GL_EXT_memory_object_fd ||
       gl::g_current_gl_driver->ext.b_GL_EXT_memory_object_win32 ||
@@ -486,10 +482,17 @@ bool SharedContextState::InitializeGL(
       gl::g_current_gl_driver->ext.b_GL_EXT_semaphore_fd ||
       gl::g_current_gl_driver->ext.b_GL_EXT_semaphore_win32 ||
       gl::g_current_gl_driver->ext.b_GL_ANGLE_semaphore_fuchsia;
+
   bool vk_supports_external_memory = false;
   bool vk_supports_external_semaphore = false;
+  gpu::VulkanImplementationName vulkan_implementation =
+      gpu::VulkanImplementationName::kNone;
 #if BUILDFLAG(ENABLE_VULKAN)
   if (vk_context_provider_) {
+    vulkan_implementation =
+        vk_context_provider_->GetVulkanImplementation()->use_swiftshader()
+            ? gpu::VulkanImplementationName::kSwiftshader
+            : gpu::VulkanImplementationName::kNative;
     const auto& extensions =
         vk_context_provider_->GetDeviceQueue()->enabled_extensions();
 #if BUILDFLAG(IS_WIN)
@@ -525,10 +528,19 @@ bool SharedContextState::InitializeGL(
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-  // Swiftshader GL and Vulkan report supporting external objects extensions,
-  // but they don't.
+  const bool is_native_vulkan_and_gl =
+      vulkan_implementation == gpu::VulkanImplementationName::kNative &&
+      !gl::g_current_gl_version->is_swiftshader &&
+      !gl::g_current_gl_version->is_angle_swiftshader;
+
+  // Swiftshader GL reports supporting external objects extensions, but doesn't.
+  // However, Swiftshader Vulkan and ANGLE can interop using external objects.
+  const bool is_swiftshader_vulkan_and_gl =
+      vulkan_implementation == gpu::VulkanImplementationName::kSwiftshader &&
+      gl::g_current_gl_version->is_angle_swiftshader;
+
   support_vulkan_external_object_ =
-      !gl::g_current_gl_version->is_swiftshader && is_native_vulkan &&
+      (is_native_vulkan_and_gl || is_swiftshader_vulkan_and_gl) &&
       gl_supports_memory_object && gl_supports_semaphore &&
       vk_supports_external_memory && vk_supports_external_semaphore;
 

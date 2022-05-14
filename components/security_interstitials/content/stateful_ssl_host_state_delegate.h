@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 
 class HostContentSettingsMap;
@@ -174,17 +175,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   std::map<int /* error code */, int /* count */> recurrent_errors_;
 
   // Tracks sites that are allowed to load over HTTP when HTTPS-First Mode is
-  // enabled, for non-default storage partitions. Allowed hosts are exact
-  // hostname matches -- subdomains of a host on the allowlist must be
-  // separately allowlisted.
-  //
-  // In most cases, HTTP interstitial decisions are stored in ContentSettings
-  // and persisted to disk, like cert decisions. Similar to cert decisions, for
-  // non-default StoragePartitions the decisions should be isolated from normal
-  // browsing and don't need to be persisted to disk. For these cases, track
-  // allowlist decisions purely in memory.
-  std::set<std::string /* host */>
-      allowed_http_hosts_for_non_default_storage_partitions_;
+  // enabled. Allowed hosts are exact hostname matches -- subdomains of a host
+  // on the allowlist must be separately allowlisted.
+  security_interstitials::HttpsOnlyModeAllowlist https_only_mode_allowlist_;
 
   int recurrent_interstitial_threshold_for_testing;
   enum RecurrentInterstitialMode recurrent_interstitial_mode_for_testing;

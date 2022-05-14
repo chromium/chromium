@@ -209,7 +209,7 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
   profile_entry.SetBoolKey("isManaged",
                            AccountInfo::IsManaged(entry->GetHostedDomain()));
   gfx::Image icon =
-      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
+      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);
   std::string icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
   profile_entry.SetStringKey("avatarIcon", icon_url);

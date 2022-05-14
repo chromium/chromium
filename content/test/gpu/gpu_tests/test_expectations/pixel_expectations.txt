@@ -178,6 +178,24 @@ crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 # WebGPU's copyExternalImage is broken on mac10.12
 crbug.com/1311710 [ mac-10.12 ] Pixel_WebGPUCopyExternalImage* [ Failure ]
 
+# WebGPU SwiftShader tests are only supported on Linux with SkiaRenderer Vulkan.
+crbug.com/1307787 [ linux skia-renderer-gl ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ linux skia-renderer-dawn ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ linux skia-renderer-disabled ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ android ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ chromeos ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ fuchsia ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ mac ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ win ] Pixel_WebGPUSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ linux skia-renderer-gl ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ linux skia-renderer-dawn ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ linux skia-renderer-disabled ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ android ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ chromeos ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ fuchsia ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ mac ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

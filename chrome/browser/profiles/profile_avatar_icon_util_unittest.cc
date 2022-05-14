@@ -33,41 +33,21 @@ void VerifyScaling(gfx::Image& image, gfx::Size& size) {
 }
 
 TEST(ProfileInfoUtilTest, SizedMenuIcon) {
-  // Test that an avatar icon isn't changed.
-  const gfx::Image& profile_image(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_0));
-  gfx::Image result =
-      profiles::GetSizedAvatarIcon(profile_image, false, 50, 50);
-
-  EXPECT_FALSE(gfx::test::IsEmpty(result));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture (e.g., GAIA image) is changed.
   gfx::Image rect_picture(gfx::test::CreateImage());
 
   gfx::Size size(30, 20);
-  gfx::Image result2 = profiles::GetSizedAvatarIcon(
-      rect_picture, true, size.width(), size.height());
+  gfx::Image result =
+      profiles::GetSizedAvatarIcon(rect_picture, size.width(), size.height());
 
-  VerifyScaling(result2, size);
+  VerifyScaling(result, size);
 }
 
 TEST(ProfileInfoUtilTest, WebUIIcon) {
-  // Test that an avatar icon isn't changed.
-  const gfx::Image& profile_image(
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PROFILE_AVATAR_0));
-  gfx::Image result = profiles::GetAvatarIconForWebUI(profile_image, false);
-  EXPECT_FALSE(gfx::test::IsEmpty(result));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture is changed.
   gfx::Image rect_picture(gfx::test::CreateImage());
   gfx::Size size(profiles::kAvatarIconSize, profiles::kAvatarIconSize);
-  gfx::Image result2 = profiles::GetAvatarIconForWebUI(rect_picture, true);
+  gfx::Image result = profiles::GetAvatarIconForWebUI(rect_picture);
 
-  VerifyScaling(result2, size);
+  VerifyScaling(result, size);
 }
 
 TEST(ProfileInfoUtilTest, TitleBarIcon) {
@@ -78,19 +58,10 @@ TEST(ProfileInfoUtilTest, TitleBarIcon) {
   const gfx::Image& profile_image(
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           IDR_PROFILE_AVATAR_0));
-  gfx::Image result = profiles::GetAvatarIconForTitleBar(
-      profile_image, false, width, height);
+  gfx::Image result =
+      profiles::GetAvatarIconForTitleBar(profile_image, width, height);
   EXPECT_FALSE(gfx::test::IsEmpty(result));
   EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, result));
-
-  // Test that a rectangular picture is changed.
-  gfx::Image rect_picture(gfx::test::CreateImage());
-
-  gfx::Size size(width, height);
-  gfx::Image result2 = profiles::GetAvatarIconForTitleBar(
-      rect_picture, true, width, height);
-
-  VerifyScaling(result2, size);
 }
 
 }  // namespace

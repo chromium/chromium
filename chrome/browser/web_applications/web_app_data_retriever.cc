@@ -213,7 +213,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
 void WebAppDataRetriever::CallCallbackOnError() {
   Observe(nullptr);
   DCHECK(ShouldStopRetrieval());
-
+  icon_downloader_.reset();
   fallback_install_info_.reset();
 
   // Call a callback as a tail call. The callback may destroy |this|.

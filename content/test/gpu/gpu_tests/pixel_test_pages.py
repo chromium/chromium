@@ -9,6 +9,8 @@ from __future__ import print_function
 
 import os
 
+from enum import Enum
+
 from gpu_tests import common_browser_args as cba
 from gpu_tests import skia_gold_matching_algorithms as algo
 
@@ -129,11 +131,6 @@ class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name):
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
-
-    webgpu_args = [
-        cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
-    ]
-    webgpu_args_compiler = webgpu_args + ['--disable-metal-shader-cache']
 
     # The optimizer script spat out pretty similar values for most MP4 tests, so
     # combine into a single set of parameters.
@@ -350,83 +347,124 @@ class PixelTestPages():
                       base_name + '_WebGLPreservedAfterTabSwitch',
                       test_rect=[0, 0, 300, 300],
                       optional_action='SwitchTabsAndCopyImage'),
-        PixelTestPage('pixel_webgpu_import_webgl_canvas.html',
-                      base_name + '_WebGPUImportWebGLCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                      base_name + '_WebGPUImport2DCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_import_2d_canvas.html',
-                      base_name + '_WebGPUImportUnaccelerated2DCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args +
-                      [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-        PixelTestPage('pixel_webgpu_import_webgpu_canvas.html',
-                      base_name + '_WebGPUImportWebGPUCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_import_video_frame.html',
-                      base_name + '_WebGPUImportVideoFrame',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_import_video_frame.html',
-                      base_name + '_WebGPUImportVideoFrameUnaccelerated',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args +
-                      [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-        PixelTestPage('pixel_webgpu_import_video_frame_offscreen_canvas.html',
-                      base_name + '_WebGPUImportVideoFrameOffscreenCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage(
-            'pixel_webgpu_import_video_frame_offscreen_canvas.html',
-            base_name + '_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas',
-            test_rect=[0, 0, 400, 200],
-            browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
-        PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
-                      base_name + '_WebGPUWebGLTexImage2D',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_canvas2d_drawimage.html',
-                      base_name + '_WebGPUCanvas2DDrawImage',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_image.html',
-                      base_name + '_WebGPUToDataURL',
-                      test_rect=[0, 0, 400, 300],
-                      browser_args=webgpu_args_compiler),
-        PixelTestPage('pixel_webgpu_cached_swap_buffer_invalidated.html',
-                      base_name +
-                      '_WebGPUCachedSwapBufferInvalidatedShouldBeBlank',
-                      test_rect=[0, 0, 300, 300],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_2d_canvas.html',
-                      base_name + '_WebGPUCopyExternalImage2DCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_imageData.html',
-                      base_name + '_WebGPUCopyExternalImageImageData',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_imageBitmap.html',
-                      base_name + '_WebGPUCopyExternalImageImageBitmap',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_offscreenCanvas.html',
-                      base_name + '_WebGPUCopyExternalImageOffscreenCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_webgl_canvas.html',
-                      base_name + '_WebGPUCopyExternalImageWebGLCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
-        PixelTestPage('pixel_webgpu_copy_externalImage_webgpu_canvas.html',
-                      base_name + '_WebGPUCopyExternalImageWebGPUCanvas',
-                      test_rect=[0, 0, 400, 200],
-                      browser_args=webgpu_args),
     ]
+
+  @staticmethod
+  def WebGPUPages(base_name):
+    class Mode(Enum):
+      WEBGPU_DEFAULT = 0
+      WEBGPU_SWIFTSHADER = 1
+      VULKAN_SWIFTSHADER = 2
+
+    def webgpu_pages_helper(base_name, mode):
+      webgpu_args = [
+          cba.ENABLE_UNSAFE_WEBGPU,
+          cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+      ]
+      video_frame_query_params = '?sourceType=hw_decoder'
+      if mode == Mode.WEBGPU_SWIFTSHADER:
+        base_name += '_WebGPUSwiftShader'
+        webgpu_args += [
+            '--enable-features=UseSkiaRenderer,Vulkan',
+            '--use-webgpu-adapter=swiftshader'
+        ]
+        video_frame_query_params = '?sourceType=sw_decoder'
+      elif mode == Mode.VULKAN_SWIFTSHADER:
+        base_name += '_VulkanSwiftShader'
+        webgpu_args += [
+            '--enable-features=UseSkiaRenderer,Vulkan',
+            '--use-angle=swiftshader', '--use-vulkan=swiftshader',
+            '--use-webgpu-adapter=swiftshader', '--disable-vulkan-surface'
+        ]
+        video_frame_query_params = '?sourceType=sw_decoder'
+
+      return [
+          PixelTestPage('pixel_webgpu_import_webgl_canvas.html',
+                        base_name + '_WebGPUImportWebGLCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
+                        base_name + '_WebGPUImport2DCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_import_2d_canvas.html',
+                        base_name + '_WebGPUImportUnaccelerated2DCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args +
+                        [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+          PixelTestPage('pixel_webgpu_import_webgpu_canvas.html',
+                        base_name + '_WebGPUImportWebGPUCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_import_video_frame.html' +
+                        video_frame_query_params,
+                        base_name + '_WebGPUImportVideoFrame',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage(
+              'pixel_webgpu_import_video_frame.html' + video_frame_query_params,
+              base_name + '_WebGPUImportVideoFrameUnaccelerated',
+              test_rect=[0, 0, 400, 200],
+              browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+          PixelTestPage(
+              'pixel_webgpu_import_video_frame_offscreen_canvas.html' +
+              video_frame_query_params,
+              base_name + '_WebGPUImportVideoFrameOffscreenCanvas',
+              test_rect=[0, 0, 400, 200],
+              browser_args=webgpu_args),
+          PixelTestPage(
+              'pixel_webgpu_import_video_frame_offscreen_canvas.html' +
+              video_frame_query_params,
+              base_name + '_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas',
+              test_rect=[0, 0, 400, 200],
+              browser_args=webgpu_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+          PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
+                        base_name + '_WebGPUWebGLTexImage2D',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_canvas2d_drawimage.html',
+                        base_name + '_WebGPUCanvas2DDrawImage',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_image.html',
+                        base_name + '_WebGPUToDataURL',
+                        test_rect=[0, 0, 400, 300],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_cached_swap_buffer_invalidated.html',
+                        base_name +
+                        '_WebGPUCachedSwapBufferInvalidatedShouldBeBlank',
+                        test_rect=[0, 0, 300, 300],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_2d_canvas.html',
+                        base_name + '_WebGPUCopyExternalImage2DCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_imageData.html',
+                        base_name + '_WebGPUCopyExternalImageImageData',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_imageBitmap.html',
+                        base_name + '_WebGPUCopyExternalImageImageBitmap',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_offscreenCanvas.html',
+                        base_name + '_WebGPUCopyExternalImageOffscreenCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_webgl_canvas.html',
+                        base_name + '_WebGPUCopyExternalImageWebGLCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+          PixelTestPage('pixel_webgpu_copy_externalImage_webgpu_canvas.html',
+                        base_name + '_WebGPUCopyExternalImageWebGPUCanvas',
+                        test_rect=[0, 0, 400, 200],
+                        browser_args=webgpu_args),
+      ]
+
+    return (webgpu_pages_helper(base_name, mode=Mode.WEBGPU_DEFAULT) +
+            webgpu_pages_helper(base_name, mode=Mode.WEBGPU_SWIFTSHADER) +
+            webgpu_pages_helper(base_name, mode=Mode.VULKAN_SWIFTSHADER))
+
 
   # Pages that should be run with GPU rasterization enabled.
   @staticmethod

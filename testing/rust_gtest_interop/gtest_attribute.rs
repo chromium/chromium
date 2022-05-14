@@ -341,6 +341,11 @@ pub fn gtest(
 /// #[extern_test_suite("GoatTestSuite")]
 /// unsafe impl rust_gtest_interop::TestSuite for ffi::GoatTestSuite {}
 /// ```
+///
+/// # Internals
+/// The #[cpp_prefix("STRING_")] attribute can follow `#[extern_test_suite()]` to control the
+/// path to the C++ Gtest factory function. This is used for connecting to different C++ macros
+/// than the usual RUST_GTEST_TEST_SUITE_FACTORY().
 #[proc_macro_attribute]
 pub fn extern_test_suite(
     arg_stream: proc_macro::TokenStream,
@@ -377,13 +382,56 @@ pub fn extern_test_suite(
         }
     };
 
-    let trait_impl = syn::parse_macro_input!(input as syn::ItemImpl);
+    /// Parses `#[cpp_prefix("PREFIX_STRING_")]` and returns `"PREFIX_STRING_"`.
+    fn parse_cpp_prefix(attr: &syn::Attribute) -> Result<String, TokenStream> {
+        let parsed = match attr.parse_meta() {
+            Ok(syn::Meta::List(list)) if list.nested.len() == 1 => match &list.nested[0] {
+                syn::NestedMeta::Lit(syn::Lit::Str(lit_str)) => Ok(lit_str.value()),
+                x => Err(x.span()),
+            },
+            Ok(x) => Err(x.span()),
+            Err(x) => Err(x.span()),
+        };
+        parsed.map_err(|span| {
+            quote_spanned! { span =>
+                compile_error!(
+                    "invalid syntax for extern_test_suite macro, \
+                    expected `#[cpp_prefix("PREFIX_STRING_")]`");
+            }
+        })
+    }
+
+    let mut trait_impl = syn::parse_macro_input!(input as syn::ItemImpl);
     if !trait_impl.items.is_empty() {
         return quote_spanned! {trait_impl.items[0].span() => compile_error!(
             "expected empty trait impl"
         )}
         .into();
     }
+
+    let mut cpp_prefix = RUST_GTEST_FACTORY_PREFIX.to_owned();
+
+    // Look through other attributes on `trait_impl`, parse the ones related to Gtests, and put
+    // the rest back into `attrs`.
+    trait_impl.attrs = {
+        let mut keep = Vec::new();
+        for attr in std::mem::take(&mut trait_impl.attrs) {
+            if attr.path.is_ident("cpp_prefix") {
+                cpp_prefix = match parse_cpp_prefix(&attr) {
+                    Ok(tokens) => tokens,
+                    Err(error_tokens) => return error_tokens.into(),
+                };
+            } else {
+                keep.push(attr)
+            }
+        }
+        keep
+    };
+
+    // No longer mut.
+    let trait_impl = trait_impl;
+    let cpp_prefix = cpp_prefix;
+
     let trait_name = match &trait_impl.trait_ {
         Some((_, path, _)) => path,
         None => {
@@ -406,8 +454,7 @@ pub fn extern_test_suite(
     // TODO(danakj): We should generate a C++ mangled name here, then we don't require
     // the function to be `extern "C"` (or have the author write the mangled name
     // themselves).
-    let cpp_fn_name =
-        format_ident!("{}{}", RUST_GTEST_FACTORY_PREFIX, cpp_type.into_token_stream().to_string());
+    let cpp_fn_name = format_ident!("{}{}", cpp_prefix, cpp_type.into_token_stream().to_string());
 
     let output = quote! {
         unsafe impl #trait_name for #rust_type {

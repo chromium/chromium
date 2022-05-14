@@ -518,8 +518,17 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
              @"Timer is still running");
 
-  // Allowlist decisions shouldn't carry over to incognito. Open an incognito
-  // tab and try there.
+  // Open a new tab and go to the same URL. Should load the page without an
+  // interstitial.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+  [self assertFailedUpgrade:1];
+
+  // Open an incognito tab and try there. Should show the interstitial as
+  // allowlist decisions don't carry over to incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey
@@ -533,8 +542,11 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   // Reload. Since the URL is now allowlisted, this should immediately load
   // HTTP without trying to upgrade.
-  [ChromeEarlGrey reload];
+  [ChromeEarlGreyUI reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+
+  // TODO(crbug.com/1302509): Clear the browsing data. This should clear all
+  // allowlist decisions.
 }
 
 // Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses

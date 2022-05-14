@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #include "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
+#include "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -30,22 +31,6 @@ std::unique_ptr<KeyedService> BuildFakePrerenderService(
     web::BrowserState* context) {
   return std::make_unique<FakePrerenderService>();
 }
-
-class FakeHttpsUpgradeService : public HttpsUpgradeService {
- public:
-  bool IsHttpAllowedForHost(const std::string& host) const override {
-    return base::Contains(allowed_http_hosts_, host);
-  }
-
-  void AllowHttpForHost(const std::string& host) override {
-    allowed_http_hosts_.insert(host);
-  };
-
-  void ClearAllowlist() override { allowed_http_hosts_.clear(); }
-
- private:
-  std::set<std::string> allowed_http_hosts_;
-};
 
 std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
     web::BrowserState* context) {
@@ -76,7 +61,7 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     HttpsUpgradeService* service =
         HttpsUpgradeServiceFactory::GetForBrowserState(
             web_state_.GetBrowserState());
-    service->ClearAllowlist();
+    service->ClearAllowlistForTesting();
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the

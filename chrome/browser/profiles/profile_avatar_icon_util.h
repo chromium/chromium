@@ -69,24 +69,18 @@ ui::ImageModel GetGuestAvatar(int size = 256);
 // done on the width/height so make sure they're reasonable values; in the
 // range of 16-256 is probably best.
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
                               int width,
                               int height,
                               AvatarShape shape);
 
-gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
-                              int width,
-                              int height);
+gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height);
 
 // Returns a version of |image| suitable for use in WebUI.
-gfx::Image GetAvatarIconForWebUI(const gfx::Image& image,
-                                 bool is_rectangle);
+gfx::Image GetAvatarIconForWebUI(const gfx::Image& image);
 
 // Returns a version of |image| suitable for use in title bars. The returned
 // image is scaled to fit |dst_width| and |dst_height|.
 gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
-                                    bool is_rectangle,
                                     int dst_width,
                                     int dst_height);
 
