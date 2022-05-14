@@ -54,6 +54,7 @@ function setVideoSize() {
 }
 
 function main() {
+  let t0Ms = performance.now();
   video = document.getElementById('video');
   video.loop = true;
   video.muted = true;  // No need to exercise audio paths.
@@ -72,16 +73,37 @@ function main() {
   // callback before starting playback. Since these videos loop there should
   // always be frames being generated.
   video.requestVideoFrameCallback((_, f) => {
-    logOutput(`First frame: ${f.width}x${f.height}, ts: ${f.mediaTime}`);
+    let elapsedMs = performance.now() - t0Ms;
+    logOutput(`First VideoFrameCallback: ${f.width}x${f.height}, video ts: ${
+        f.mediaTime}, TimeStamp:${elapsedMs}ms`);
 
-    // Trace tests on Windows need some time to collect statistics from the
-    // overlay system, so allow delay before verifying the stats. A 1000ms is
-    // about ~30 swaps at 30Hz.
-    setTimeout(_ => {
-      if (abort)
-        return;
-      logOutput('Test complete.');
-      domAutomationController.send('SUCCESS');
-    }, getTimeDelay());
+    // Make sure a few frames have be swapped completely.
+    // add "--enable-features=ReportFCPOnlyOnSuccessfulCommit" along with
+    // gpu_benchmarking to ensure completion event is triggered only on
+    // a succdessful commit.
+    chrome.gpuBenchmarking.addSwapCompletionEventListener(
+        waitForSwapsToComplete);
   });
+
+  let g_swaps_completion = 4;
+  function waitForSwapsToComplete() {
+    g_swaps_completion--;
+    if (g_swaps_completion >= 0) {
+      chrome.gpuBenchmarking.addSwapCompletionEventListener(
+          waitForSwapsToComplete);
+    } else {
+      let elapsedMs = performance.now() - t0Ms;
+      logOutput(`TimeStamp after 4 swaps:${elapsedMs}ms `);
+      // Trace tests on Windows need some time to collect statistics from the
+      // overlay system, so allow delay before verifying the stats. A 1000ms is
+      // about ~30 swaps at 30Hz.
+      setTimeout(_ => {
+        if (abort)
+          return;
+        elapsedMs = performance.now() - t0Ms;
+        logOutput(`Test complete. TimeStamp:${elapsedMs}ms`);
+        domAutomationController.send('SUCCESS');
+      }, getTimeDelay());
+    }
+  }
 }
