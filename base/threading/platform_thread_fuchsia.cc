@@ -117,12 +117,13 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
 
     case ThreadPriority::DISPLAY:
       ScheduleAsMediaThread("chromium.base.threading.display",
-                            kDisplaySchedulingPeriod, kAudioSchedulingCapacity);
+                            kDisplaySchedulingPeriod,
+                            kDisplaySchedulingCapacity);
       break;
 
     case ThreadPriority::REALTIME_AUDIO:
       ScheduleAsMediaThread("chromium.base.threading.realtime-audio",
-                            kAudioSchedulingPeriod, kDisplaySchedulingCapacity);
+                            kAudioSchedulingPeriod, kAudioSchedulingCapacity);
       break;
   }
 
