@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -97,9 +95,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     /** Gives {@link Tab} a way to interact with the Android window. */
     private WindowAndroid mWindowAndroid;
-
-    /** The current native page (e.g. chrome-native://newtab), or {@code null} if there is none. */
-    private NativePage mNativePage;
 
     /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
     private WebContents mWebContents;
@@ -172,16 +167,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     /** Whether the renderer is currently unresponsive. */
     private boolean mIsRendererUnresponsive;
-
-    /**
-     * Whether didCommitProvisionalLoadForFrame() hasn't yet been called for the current native page
-     * (page A). To decrease latency, we show native pages in both loadUrl() and
-     * didCommitProvisionalLoadForFrame(). However, we mustn't show a new native page (page B) in
-     * loadUrl() if the current native page hasn't yet been committed. Otherwise, we'll show each
-     * page twice (A, B, A, B): the first two times in loadUrl(), the second two times in
-     * didCommitProvisionalLoadForFrame().
-     */
-    private boolean mIsNativePageCommitPending;
 
     private TabDelegateFactory mDelegateFactory;
 
@@ -303,10 +288,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         if (window != null) {
             updateWindowAndroid(window);
             if (tabDelegateFactory != null) setDelegateFactory(tabDelegateFactory);
-
-            // Reload the NativePage (if any), since the old NativePage has a reference to the old
-            // activity.
-            if (isNativePage()) maybeShowNativePage(getUrl().getSpec(), true);
         }
 
         // Notify the event to observers only when we do the reparenting task, not when we simply
@@ -339,8 +320,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     public View getView() {
         if (mCustomView != null) return mCustomView;
 
-        if (mNativePage != null && !mNativePage.isFrozen()) return mNativePage.getView();
-
         return mContentView;
     }
 
@@ -364,9 +343,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
         GURL url = getWebContents() != null ? getWebContents().getVisibleUrl() : GURL.emptyGURL();
 
-        // If we have a ContentView, or a NativePage, or the url is not empty, we have a WebContents
+        // If we have a ContentView, or the url is not empty, we have a WebContents
         // so cache the WebContent's url. If not use the cached version.
-        if (getWebContents() != null || isNativePage() || !url.getSpec().isEmpty()) {
+        if (getWebContents() != null || !url.getSpec().isEmpty()) {
             CriticalPersistedTabData.from(this).setUrl(url);
         }
 
@@ -394,13 +373,13 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public NativePage getNativePage() {
-        return mNativePage;
+        return null;
     }
 
     @Override
     @CalledByNative
     public boolean isNativePage() {
-        return mNativePage != null;
+        return false;
     }
 
     @Override
@@ -410,12 +389,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void freezeNativePage() {
-        if (mNativePage == null || mNativePage.isFrozen()
-                || mNativePage.getView().getParent() != null) {
-            return;
-        }
-        mNativePage = FrozenNativePage.freeze(mNativePage);
-        updateInteractableState();
     }
 
     @Override
@@ -457,7 +430,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     @Override
     public boolean isFrozen() {
-        return !isNativePage() && getWebContents() == null;
+        return getWebContents() == null;
     }
 
     @CalledByNative
@@ -470,11 +443,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     public int loadUrl(LoadUrlParams params) {
         try {
             TraceEvent.begin("Tab.loadUrl");
-            // TODO(tedchoc): When showing the android NTP, delay the call to
-            // TabImplJni.get().loadUrl until the android view has entirely rendered.
-            if (!mIsNativePageCommitPending) {
-                mIsNativePageCommitPending = maybeShowNativePage(params.getUrl(), false);
-            }
 
             if ("chrome://java-crash/".equals(params.getUrl())) {
                 return handleJavaCrash();
@@ -563,11 +531,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void reload() {
-        NativePage nativePage = getNativePage();
-        if (nativePage != null) {
-            nativePage.reload();
-            return;
-        }
 
         // TODO(dtrainor): Should we try to rebuild the ContentView if it's frozen?
         if (OfflinePageUtils.isOfflinePage(this)) {
@@ -669,13 +632,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             if (getWebContents() != null) getWebContents().onShow();
 
-            // If the NativePage was frozen while in the background (see NativePageAssassin),
-            // recreate the NativePage now.
-            NativePage nativePage = getNativePage();
-            if (nativePage != null && nativePage.isFrozen()) {
-                maybeShowNativePage(nativePage.getUrl(), true);
-            }
-            NativePageAssassin.getInstance().tabShown(this);
             TabImportanceManager.tabShown(this);
 
             // If the page is still loading, update the progress bar (otherwise it would not show
@@ -703,9 +659,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             updateInteractableState();
 
             if (getWebContents() != null) getWebContents().onHide();
-
-            // Allow this tab's NativePage to be frozen if it stays hidden for a while.
-            NativePageAssassin.getInstance().tabHidden(this);
 
             for (TabObserver observer : mObservers) observer.onHidden(this, type);
         } finally {
@@ -744,7 +697,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
         mUserDataHost.destroy();
         mTabViewManager.destroy();
-        hideNativePage(false, null);
         destroyWebContents(true);
 
         TabImportanceManager.tabDestroyed(this);
@@ -982,11 +934,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     /**
-     * Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view.
+     * Hides the current {@link }, if any, and shows the {@link WebContents}'s view.
      */
     void showRenderedPage() {
         updateTitle();
-        if (mNativePage != null) hideNativePage(true, null);
     }
 
     void updateWindowAndroid(WindowAndroid windowAndroid) {
@@ -1077,11 +1028,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param transitionType The transition type to the current URL.
      */
     void handleDidFinishNavigation(GURL url, int transitionType) {
-        mIsNativePageCommitPending = false;
-        boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
-        if (!maybeShowNativePage(url.getSpec(), isReload)) {
-            showRenderedPage();
-        }
+        showRenderedPage();
     }
 
     /**
@@ -1096,9 +1043,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Add a new navigation entry for the current URL and page title.
      */
     void pushNativePageStateToNavigationEntry() {
-        assert mNativeTabAndroid != 0 && getNativePage() != null;
-        TabImplJni.get().setActiveNavigationEntryTitleForUrl(
-                mNativeTabAndroid, getNativePage().getUrl(), getNativePage().getTitle());
     }
 
     /**
@@ -1146,29 +1090,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     /**
-     * Shows a native page for url if it's a valid chrome-native URL. Otherwise, does nothing.
-     * @param url The url of the current navigation.
-     * @param forceReload If true, the current native page (if any) will not be reused, even if it
-     *                    matches the URL.
-     * @return True, if a native page was displayed for url.
-     */
-    boolean maybeShowNativePage(String url, boolean forceReload) {
-        // While detached for reparenting we don't have an owning Activity, or TabModelSelector,
-        // so we can't create the native page. The native page will be created once reparenting is
-        // completed.
-        if (isDetached(this)) return false;
-        NativePage candidateForReuse = forceReload ? null : getNativePage();
-        NativePage nativePage = mDelegateFactory.createNativePage(url, candidateForReuse, this);
-        if (nativePage != null) {
-            showNativePage(nativePage);
-            notifyPageTitleChanged();
-            notifyFaviconChanged();
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Calls onContentChanged on all TabObservers and updates accessibility visibility.
      */
     void notifyContentChanged() {
@@ -1188,9 +1109,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // When restoring the tabs, the title will no longer be populated, so request it from the
         // WebContents or NativePage (if present).
         String title = "";
-        if (isNativePage()) {
-            title = mNativePage.getTitle();
-        } else if (getWebContents() != null) {
+        if (getWebContents() != null) {
             title = getWebContents().getTitle();
         }
         updateTitle(title);
@@ -1384,23 +1303,23 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return new TabWebContentsDelegateAndroidImpl(this, delegate);
     }
 
-    /**
-     * Shows the given {@code nativePage} if it's not already showing.
-     * @param nativePage The {@link NativePage} to show.
-     */
-    private void showNativePage(NativePage nativePage) {
-        assert nativePage != null;
-        if (mNativePage == nativePage) return;
-        hideNativePage(true, () -> {
-            mNativePage = nativePage;
-            if (!mNativePage.isFrozen()) {
-                mNativePage.getView().addOnAttachStateChangeListener(mAttachStateChangeListener);
-            }
-            pushNativePageStateToNavigationEntry();
-
-            updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
-        });
-    }
+//    /**
+//     * Shows the given {@code nativePage} if it's not already showing.
+//     * @param nativePage The {@link NativePage} to show.
+//     */
+//    private void showNativePage(NativePage nativePage) {
+//        assert nativePage != null;
+//        if (mNativePage == nativePage) return;
+//        hideNativePage(true, () -> {
+//            mNativePage = nativePage;
+//            if (!mNativePage.isFrozen()) {
+//                mNativePage.getView().addOnAttachStateChangeListener(mAttachStateChangeListener);
+//            }
+//            pushNativePageStateToNavigationEntry();
+//
+//            updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
+//        });
+//    }
 
     /**
      * Hide and destroy the native page if it was being shown.
@@ -1409,16 +1328,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      *        native page. This is necessary to keep the tasks to perform in order.
      */
     private void hideNativePage(boolean notify, Runnable postHideTask) {
-        NativePage previousNativePage = mNativePage;
-        if (mNativePage != null) {
-            if (!mNativePage.isFrozen()) {
-                mNativePage.getView().removeOnAttachStateChangeListener(mAttachStateChangeListener);
-            }
-            mNativePage = null;
-        }
         if (postHideTask != null) postHideTask.run();
         if (notify) notifyContentChanged();
-        destroyNativePageInternal(previousNativePage);
     }
 
     /**
@@ -1579,13 +1490,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     private static WebContentsAccessibility getWebContentsAccessibility(WebContents webContents) {
         return webContents != null ? WebContentsAccessibility.fromWebContents(webContents) : null;
-    }
-
-    private void destroyNativePageInternal(NativePage nativePage) {
-        if (nativePage == null) return;
-        assert nativePage != mNativePage : "Attempting to destroy active page.";
-
-        nativePage.destroy();
     }
 
     /**

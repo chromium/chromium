@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -90,8 +89,6 @@ public class StatusBarColorController
     private @ColorInt int mScrimColor;
     private float mStatusBarScrimFraction;
 
-    private float mToolbarUrlExpansionPercentage;
-    private boolean mShouldUpdateStatusBarColorForNTP;
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
 
@@ -105,7 +102,7 @@ public class StatusBarColorController
      * @param layoutManagerSupplier Supplies the layout manager.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
-     * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
+     * @param topUiThemeColorProvider The {@link } for top UI.
      */
     public StatusBarColorController(Window window, boolean isTablet, Context context,
             StatusBarColorProvider statusBarColorProvider,
@@ -136,15 +133,6 @@ public class StatusBarColorController
 
             @Override
             public void onContentChanged(Tab tab) {
-                final boolean newShouldUpdateStatusBarColorForNTP = isStandardNTP();
-                // Also update the status bar color if the content was previously an NTP, because an
-                // NTP can use a different status bar color than the default theme color. In this
-                // case, the theme color might not change, and thus #onDidChangeThemeColor might
-                // not get called.
-                if (mShouldUpdateStatusBarColorForNTP || newShouldUpdateStatusBarColorForNTP) {
-                    updateStatusBarColor();
-                }
-                mShouldUpdateStatusBarColorForNTP = newShouldUpdateStatusBarColorForNTP;
             }
 
             @Override
@@ -159,13 +147,11 @@ public class StatusBarColorController
                 // Make sure that #mCurrentTab is cleared because #onObservingDifferentTab() might
                 // not be notified early enough when #onUrlExpansionPercentageChanged() is called.
                 mCurrentTab = null;
-                mShouldUpdateStatusBarColorForNTP = false;
             }
 
             @Override
             protected void onObservingDifferentTab(Tab tab, boolean hint) {
                 mCurrentTab = tab;
-                mShouldUpdateStatusBarColorForNTP = isStandardNTP();
 
                 // |tab == null| means we're switching tabs - by the tab switcher or by swiping
                 // on the omnibox. These cases are dealt with differently, elsewhere.
@@ -232,8 +218,6 @@ public class StatusBarColorController
     // TopToolbarCoordinator.UrlExpansionObserver implementation.
     @Override
     public void onUrlExpansionProgressChanged(float fraction) {
-        mToolbarUrlExpansionPercentage = fraction;
-        if (mShouldUpdateStatusBarColorForNTP) updateStatusBarColor();
     }
 
     // StatusIndicatorCoordinator.StatusIndicatorObserver implementation.
@@ -311,15 +295,6 @@ public class StatusBarColorController
                     : mStandardPrimaryBgColor;
         }
 
-        // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we
-        // use the tab theme color regardless of the URL expansion percentage.
-        if (isLocationBarShownInNTP()) {
-            if (shouldDarkenStatusBarColor()) return Color.BLACK;
-
-            return ColorUtils.getColorWithOverlay(mTopUiThemeColor.getBackgroundColor(mCurrentTab),
-                    mTopUiThemeColor.getThemeColor(), mToolbarUrlExpansionPercentage);
-        }
-
         // Return status bar color to match the toolbar.
         return mTopUiThemeColor.getThemeColorOrFallback(
                 mCurrentTab, calculateDefaultStatusBarColor());
@@ -349,13 +324,6 @@ public class StatusBarColorController
         ApiCompatibilityUtils.setStatusBarColor(mWindow, color);
     }
 
-    /**
-     * Takes status bar indicator into account in status bar color computation.
-     * @param color The status bar color without the status indicator's color taken into
-     *              consideration. (as specified in
-     *              {@link getStatusBarColorWithoutStatusIndicator()}).
-     * @return The resulting color.
-     */
     private @ColorInt int applyStatusBarIndicatorColor(@ColorInt int darkenedBaseColor) {
         if (mStatusIndicatorColor == UNDEFINED_STATUS_BAR_COLOR) return darkenedBaseColor;
 
@@ -392,19 +360,4 @@ public class StatusBarColorController
         return (Build.VERSION.SDK_INT < Build.VERSION_CODES.M);
     }
 
-    /**
-     * @return Whether or not the current tab is a new tab page in standard mode.
-     */
-    private boolean isStandardNTP() {
-        return mCurrentTab != null && mCurrentTab.getNativePage() instanceof NewTabPage;
-    }
-
-    /**
-     * @return Whether or not the fake location bar is shown on the current NTP.
-     */
-    private boolean isLocationBarShownInNTP() {
-        if (!isStandardNTP()) return false;
-        final NewTabPage newTabPage = (NewTabPage) mCurrentTab.getNativePage();
-        return newTabPage != null && newTabPage.isLocationBarShownInNTP();
-    }
 }

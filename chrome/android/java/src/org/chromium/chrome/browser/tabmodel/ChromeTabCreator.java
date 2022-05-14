@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -35,7 +33,6 @@ import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -47,26 +44,6 @@ import org.chromium.url.GURL;
  * This class creates various kinds of new tabs and adds them to the right {@link TabModel}.
  */
 public class ChromeTabCreator extends TabCreator {
-    /**Interface to handle showing overview instead of NTP if needed. */
-    public interface OverviewNTPCreator {
-        /**
-         * Handles showing the StartSurface instead of the NTP if needed.
-         * @param isNTP Whether tab with NTP should be created.
-         * @param isIncognito Whether tab is created in incognito.
-         * @param parentTab The parent tab of the tab creation.
-         * @param launchOrigin The {@link NewTabPageLaunchOrigin} that launched the NTP.
-         * @return Whether NTP creation was handled.
-         */
-        boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab,
-                @NewTabPageLaunchOrigin int launchOrigin);
-
-        /**
-         * Called before the Tab's initialization.
-         * @param tab The newly created Tab.
-         * @param url The URL to load.
-         */
-        void preTabInitialization(Tab tab, String url);
-    }
 
     private static final String TAG = "ChromeTabCreator";
 
@@ -78,8 +55,6 @@ public class ChromeTabCreator extends TabCreator {
     private TabModel mTabModel;
     private TabModelOrderController mOrderController;
     private Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
-    @Nullable
-    private final OverviewNTPCreator mOverviewNTPCreator;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
@@ -87,7 +62,7 @@ public class ChromeTabCreator extends TabCreator {
     public ChromeTabCreator(Activity activity, WindowAndroid nativeWindow,
             StartupTabPreloader startupTabPreloader,
             Supplier<TabDelegateFactory> tabDelegateFactory, boolean incognito,
-            OverviewNTPCreator overviewNTPCreator, AsyncTabParamsManager asyncTabParamsManager,
+            AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
@@ -95,7 +70,6 @@ public class ChromeTabCreator extends TabCreator {
         mNativeWindow = nativeWindow;
         mTabDelegateFactorySupplier = tabDelegateFactory;
         mIncognito = incognito;
-        mOverviewNTPCreator = overviewNTPCreator;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
@@ -147,12 +121,6 @@ public class ChromeTabCreator extends TabCreator {
      */
     private Tab createNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
             int position, Intent intent) {
-        if (mOverviewNTPCreator != null
-                && mOverviewNTPCreator.handleCreateNTPIfNeeded(
-                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito, parent,
-                        NewTabPageUtils.decodeOriginFromNtpUrl(loadUrlParams.getUrl()))) {
-            return null;
-        }
         try {
             TraceEvent.begin("ChromeTabCreator.createNewTab");
             int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
@@ -229,12 +197,6 @@ public class ChromeTabCreator extends TabCreator {
                 if (tab == null) {
                     TraceEvent.begin("ChromeTabCreator.loadUrl");
                     Callback<Tab> action = null;
-                    if (mOverviewNTPCreator != null) {
-                        action = (newTab) -> {
-                            mOverviewNTPCreator.preTabInitialization(
-                                    newTab, loadUrlParams.getUrl());
-                        };
-                    }
                     tab = TabBuilder.createLiveTab(!openInForeground)
                                   .setParent(parent)
                                   .setIncognito(mIncognito)

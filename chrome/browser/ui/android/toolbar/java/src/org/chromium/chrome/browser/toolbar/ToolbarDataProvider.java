@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,10 +26,6 @@ public interface ToolbarDataProvider {
      */
     @NonNull
     String getCurrentUrl();
-
-    /** Returns the delegate for the NewTabPage shown for the current tab. */
-    @NonNull
-    NewTabPageDelegate getNewTabPageDelegate();
 
     /**
      * @return Whether the toolbar is currently being displayed for incognito.

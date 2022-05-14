@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -430,13 +429,6 @@ public class ToolbarTablet
      * Called when the currently visible New Tab Page changes.
      */
     private void updateNtp() {
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-        ntpDelegate.setSearchBoxScrollListener((scrollFraction) -> {
-            // Fade the search box out in the first 40% of the scrolling transition.
-            float alpha = Math.max(1f - scrollFraction * 2.5f, 0f);
-            ntpDelegate.setSearchBoxAlpha(alpha);
-            ntpDelegate.setSearchProviderLogoAlpha(alpha);
-        });
     }
 
     @Override

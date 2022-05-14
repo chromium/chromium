@@ -75,7 +75,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Nullable
     private Activity mActivity;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
-    private final boolean mIsCustomTab;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final FullscreenManager mFullscreenManager;
     private final TabCreatorManager mTabCreatorManager;
@@ -84,7 +83,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public ActivityTabWebContentsDelegateAndroid(Tab tab, Activity activity,
-            ChromeActivityNativeDelegate chromeActivityNativeDelegate, boolean isCustomTab,
+            ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager, TabCreatorManager tabCreatorManager,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
@@ -93,7 +92,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         mTab = tab;
         mActivity = activity;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
-        mIsCustomTab = isCustomTab;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mFullscreenManager = fullscreenManager;
         mTabCreatorManager = tabCreatorManager;
@@ -411,7 +409,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean isCustomTab() {
-        return mIsCustomTab;
+        return false;
     }
 
     private void showRepostFormWarningTabModalDialog() {

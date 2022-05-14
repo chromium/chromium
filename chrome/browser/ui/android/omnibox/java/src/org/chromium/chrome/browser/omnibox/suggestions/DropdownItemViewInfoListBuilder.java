@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestion
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -97,8 +96,6 @@ class DropdownItemViewInfoListBuilder {
         registerSuggestionProcessor(
                 new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
         registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
-        registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, iconBridgeSupplier,
-                mExploreIconProvider, GlobalDiscardableReferencePool.getReferencePool()));
         registerSuggestionProcessor(new BasicSuggestionProcessor(
                 context, host, textProvider, iconBridgeSupplier, mBookmarkState));
     }

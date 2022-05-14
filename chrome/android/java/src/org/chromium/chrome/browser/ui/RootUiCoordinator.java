@@ -179,7 +179,6 @@ public class RootUiCoordinator
 
     private ScrimCoordinator mScrimCoordinator;
     private DirectActionInitializer mDirectActionInitializer;
-    private List<ButtonDataProvider> mButtonDataProviders;
     private ChromeActionModeHandler mChromeActionModeHandler;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
@@ -472,14 +471,6 @@ public class RootUiCoordinator
             }
             BottomSheetControllerFactory.detach(mBottomSheetController);
             mBottomSheetController.destroy();
-        }
-
-        if (mButtonDataProviders != null) {
-            for (ButtonDataProvider provider : mButtonDataProviders) {
-                provider.destroy();
-            }
-
-            mButtonDataProviders = null;
         }
 
         if (mScrimCoordinator != null) mScrimCoordinator.destroy();
@@ -847,7 +838,7 @@ public class RootUiCoordinator
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
                     mTabObscuringHandlerSupplier.get(), mShareDelegateSupplier,
-                    mButtonDataProviders, mActivityTabProvider,
+                    mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback,
                     mProfileSupplier, mCanAnimateBrowserControls,
                     mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,

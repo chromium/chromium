@@ -12,8 +12,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.junit.Assert;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -48,6 +46,7 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.junit.Assert;
 
 import java.util.List;
 import java.util.Locale;
@@ -463,7 +462,6 @@ public class ChromeTabUtils {
 
         Tab tab = activity.getActivityTab();
         waitForTabPageLoaded(tab, (String) null);
-        if (waitForNtpLoad) NewTabPageTestUtils.waitForNtpLoaded(tab);
         instrumentation.waitForIdleSync();
         Log.d(TAG, "newTabFromMenu <<");
     }

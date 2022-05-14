@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.test.util;
 
-import org.junit.Assert;
-
-import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalEntry;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabSaver;
@@ -28,30 +24,7 @@ public class TabRestoreServiceUtils {
      * Clears all TabRestoreService entries.
      */
     public static void clearEntries(TabModelSelector tabModelSelector) {
-        int[] tabCount = new int[1];
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final TabModel tabModel = tabModelSelector.getModel(false);
-            final RecentlyClosedBridge bridge =
-                    new RecentlyClosedBridge(tabModel.getProfile(), tabModelSelector);
-            bridge.clearRecentlyClosedEntries();
-            tabCount[0] = bridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT).size();
-            bridge.destroy();
-        });
-        Assert.assertEquals("TabRestoreService not cleared", 0, tabCount[0]);
-    }
 
-    /**
-     * Fetches entries from the TabRestoreService::entries().
-     */
-    public static List<RecentlyClosedEntry> getEntries(TabModelSelector tabModelSelector) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            final TabModel tabModel = tabModelSelector.getModel(false);
-            final RecentlyClosedBridge bridge =
-                    new RecentlyClosedBridge(tabModel.getProfile(), tabModelSelector);
-            List<RecentlyClosedEntry> entries = bridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT);
-            bridge.destroy();
-            return entries;
-        });
     }
 
     /**

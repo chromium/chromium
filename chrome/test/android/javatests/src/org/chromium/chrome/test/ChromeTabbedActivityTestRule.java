@@ -13,8 +13,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.text.TextUtils;
 
-import org.junit.Assert;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
@@ -31,9 +29,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.junit.Assert;
 
 import java.util.concurrent.TimeoutException;
 
@@ -156,7 +154,6 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         Tab tab = getActivity().getActivityTab();
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Log.d(TAG, "newIncognitoTabFromMenu <<");
         return tab;

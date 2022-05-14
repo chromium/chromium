@@ -11,7 +11,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -47,7 +45,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private IncognitoStateProvider mIncognitoStateProvider;
     private BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
-    private @Nullable IncognitoToggleTabLayout mIncognitoToggleTabLayout;
     // The following view is used as a variation for mNewTabImageButton. When this view is showing
     // as the button for creating new tab, the incognito toggle is hidden.
     private @Nullable View mNewTabViewButton;
@@ -127,10 +124,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             mToggleTabStackButton.destroy();
             mToggleTabStackButton = null;
         }
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.destroy();
-            mIncognitoToggleTabLayout = null;
-        }
     }
 
     /**
@@ -138,10 +131,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      * @param inTabSwitcherMode Whether or not tab switcher mode should be shown or hidden.
      */
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
-        // TODO(https://crbug.com/914868): Use consistent logic here for setting clickable/enabled
-        // on mIncognitoToggleTabLayout & mNewTabButton?
         if (!inTabSwitcherMode) {
-            if (mIncognitoToggleTabLayout != null) mIncognitoToggleTabLayout.setClickable(false);
         } else {
             if (mNewTabImageButton != null) mNewTabImageButton.setEnabled(true);
             if (mNewTabViewButton != null) mNewTabViewButton.setEnabled(true);
@@ -174,10 +164,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
                 if (!inTabSwitcherMode) {
                     setVisibility(View.GONE);
-                }
-
-                if (mIncognitoToggleTabLayout != null) {
-                    mIncognitoToggleTabLayout.setClickable(true);
                 }
 
                 mVisiblityAnimator = null;
@@ -216,9 +202,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setTabCountProvider(tabCountProvider);
         }
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
     }
 
     /**
@@ -227,9 +210,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      */
     void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabModelSelector(selector);
-        }
     }
 
     /**
@@ -338,25 +318,11 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     private void inflateIncognitoToggle() {
-        ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
-        mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
 
-        if (mTabCountProvider != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(mTabCountProvider);
-        }
-
-        if (mTabModelSelector != null) {
-            mIncognitoToggleTabLayout.setTabModelSelector(mTabModelSelector);
-        }
     }
 
     private void setIncognitoToggleVisibility(boolean showIncognitoToggle) {
         if (!shouldShowIncognitoToggle()) return;
-        if (mIncognitoToggleTabLayout == null) {
-            if (showIncognitoToggle) inflateIncognitoToggle();
-        } else {
-            mIncognitoToggleTabLayout.setVisibility(showIncognitoToggle ? View.VISIBLE : View.GONE);
-        }
     }
 
     private void setToggleTabStackButtonVisibility(boolean showToggleTabStackButton) {

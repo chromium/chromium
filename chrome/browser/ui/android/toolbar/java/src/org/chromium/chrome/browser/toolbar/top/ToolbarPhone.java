@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -519,13 +518,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        // Forward touch events to the NTP if the toolbar is moved away but the search box hasn't
-        // reached the top of the page yet.
-        if (mNtpSearchBoxTranslation.y < 0
-                && mLocationBar.getPhoneCoordinator().getTranslationY() > 0) {
-            return getToolbarDataProvider().getNewTabPageDelegate().dispatchTouchEvent(ev);
-        }
-
         return super.onTouchEvent(ev);
     }
 
@@ -1038,8 +1030,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         Tab currentTab = getToolbarDataProvider().getTab();
         if (currentTab != null) {
-            getToolbarDataProvider().getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
-                    mUrlFocusChangeFraction);
             if (isLocationBarShownInNTP()
                     && !getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
                 updateNtpTransitionAnimation();
@@ -1175,8 +1165,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mToolbarShadow.setAlpha(alpha);
         }
 
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-        ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
         int locationBarTranslationY = Math.max(
                 0, (mNtpSearchBoxBounds.top - mLocationBar.getPhoneCoordinator().getTop()));
         mLocationBar.getPhoneCoordinator().setTranslationY(locationBarTranslationY);
@@ -1208,8 +1196,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         float relativeAlpha = mLocationBarBackgroundAlpha / 255f;
         mLocationBar.getPhoneCoordinator().setAlpha(relativeAlpha);
 
-        // The search box on the NTP is visible if our omnibox is invisible, and vice-versa.
-        ntpDelegate.setSearchBoxAlpha(1f - relativeAlpha);
         if (!mForceDrawLocationBarBackground) {
             if (mActiveLocationBarBackground instanceof NtpSearchBoxDrawable) {
                 ((NtpSearchBoxDrawable) mActiveLocationBarBackground).resetBoundsToLastNonToolbar();
@@ -2299,33 +2285,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void updateNtpAnimationState() {
-        NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
 
-        // Store previous NTP scroll before calling reset as that clears this value.
-        boolean wasShowingNtp = ntpDelegate.wasShowingNtp();
-        float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
-
-        resetNtpAnimationValues();
-        ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
-        if (ntpDelegate.isLocationBarShown()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                NtpSearchBoxDrawable ntpSearchBox = new NtpSearchBoxDrawable(getContext(), this);
-                ntpDelegate.setSearchBoxBackground(ntpSearchBox);
-                mActiveLocationBarBackground = ntpSearchBox;
-            }
-
-            requestLayout();
-        } else if (wasShowingNtp) {
-            // Convert the previous NTP scroll progress to URL focus progress because that
-            // will give a nicer transition animation from the expanded NTP omnibox to the
-            // collapsed normal omnibox on other non-NTP pages.
-            if (mTabSwitcherState == STATIC_TAB && previousNtpScrollFraction > 0f) {
-                mUrlFocusChangeFraction =
-                        Math.max(previousNtpScrollFraction, mUrlFocusChangeFraction);
-                triggerUrlFocusAnimation(false);
-            }
-            requestLayout();
-        }
     }
 
     @Override
@@ -2353,7 +2313,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private boolean isLocationBarShownInNTP() {
-        return getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
+        return false;
     }
 
     private boolean isLocationBarCurrentlyShown() {
@@ -2577,11 +2537,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             return;
         }
 
-        boolean transitioningAwayFromLocationBarInNTP =
-                getToolbarDataProvider().getNewTabPageDelegate().transitioningAwayFromLocationBar();
-
-        if (mTabSwitcherState == STATIC_TAB && !mUrlFocusChangeInProgress && !urlHasFocus()
-                && !transitioningAwayFromLocationBarInNTP) {
+        if (mTabSwitcherState == STATIC_TAB && !mUrlFocusChangeInProgress && !urlHasFocus()) {
             runHideOptionalButtonsAnimators();
         } else {
             mOptionalButton.setVisibility(View.GONE);
@@ -2838,28 +2794,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * @return The offset for the location bar when showing the dse icon.
      */
     private int getLocationBarOffsetForFocusAnimation(boolean hasFocus) {
-        StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
-        if (statusCoordinator == null) return 0;
-
-        // No offset is required if the experiment is disabled.
-        if (!SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(
-                    getToolbarDataProvider().isIncognito())) {
-            return 0;
-        }
-
-        // On non-NTP pages, there will always be an icon when unfocused.
-        if (!getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) return 0;
-
-        // This offset is only required when the focus animation is running.
-        if (!hasFocus) return 0;
-
-        // We're on the NTP with the fakebox showing.
-        // The value returned changes based on if the layout is LTR OR RTL.
-        // For LTR, the value is negative because we are making space on the left-hand side.
-        // For RTL, the value is positive because we are pushing the icon further to the
-        // right-hand side.
-        int offset = statusCoordinator.getStatusIconWidth() - getAdditionalOffsetForNTP();
-        return mLocationBar.isLayoutRtl() ? offset : -offset;
+        return 0;
     }
 
     /**

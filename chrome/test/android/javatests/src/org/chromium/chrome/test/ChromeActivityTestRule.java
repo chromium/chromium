@@ -12,12 +12,6 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.internal.runner.listener.InstrumentationResultPrinter;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
@@ -40,9 +34,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -55,6 +47,11 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import java.util.Calendar;
 import java.util.List;
@@ -206,11 +203,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         Tab tab = getActivity().getActivityTab();
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
-
-        if (tab != null && UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
-                && !getActivity().isInOverviewMode()) {
-            NewTabPageTestUtils.waitForNtpLoaded(tab);
-        }
 
         Assert.assertTrue(waitForDeferredStartup());
 

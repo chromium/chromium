@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,8 +50,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     private NextTabPolicySupplier mNextTabPolicySupplier;
 
     private TabContentManager mTabContentManager;
-
-    private RecentlyClosedBridge mRecentlyClosedBridge;
 
     private Tab mVisibleTab;
 
@@ -112,7 +109,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(false);
         ChromeTabCreator incognitoTabCreator =
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
-        mRecentlyClosedBridge = new RecentlyClosedBridge(Profile.getLastUsedRegularProfile(), this);
         TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
                 mActivityType, regularTabCreator, incognitoTabCreator, mOrderController,
                 tabContentProvider, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
@@ -178,15 +174,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
-        assert tabModel
-                == getModel(false) : "Trying to restore a tab from an off-the-record tab model.";
-        mRecentlyClosedBridge.openMostRecentlyClosedEntry(tabModel);
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        if (mRecentlyClosedBridge != null) mRecentlyClosedBridge.destroy();
     }
 
     /**

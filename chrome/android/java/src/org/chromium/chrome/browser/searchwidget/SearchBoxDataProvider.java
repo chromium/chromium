@@ -11,7 +11,6 @@ import androidx.annotation.ColorRes;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
@@ -80,11 +79,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public int getPrimaryColor() {
         return mPrimaryColor;
-    }
-
-    @Override
-    public NewTabPageDelegate getNewTabPageDelegate() {
-        return NewTabPageDelegate.EMPTY;
     }
 
     @Override

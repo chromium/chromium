@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.ntp.ForeignSessionHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -108,9 +107,6 @@ public class SessionsInvalidationManager implements ApplicationStatus.Applicatio
 
         mEnableSessionInvalidationsRunner.setRunnable(() -> {
             mIsSessionInvalidationsEnabled = isEnabled;
-            ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
-            foreignSessionHelper.setInvalidationsForSessionsEnabled(isEnabled);
-            foreignSessionHelper.destroy();
         }, delayMs);
         mEnableSessionInvalidationsRunner.resume();
     }

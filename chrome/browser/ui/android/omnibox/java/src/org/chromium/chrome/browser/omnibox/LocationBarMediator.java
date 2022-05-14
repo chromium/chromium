@@ -102,16 +102,6 @@ class LocationBarMediator
         boolean isEnabled(Tab tab);
     }
 
-    /** Uma methods for omnibox. */
-    public interface OmniboxUma {
-        /**
-         * Record the NTP navigation events on omnibox.
-         * @param url The URL to which the user navigated.
-         * @param transition The transition type of the navigation.
-         */
-        void recordNavigationOnNtp(String url, int transition);
-    }
-
     private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
             new Property<LocationBarMediator, Float>(Float.class, "") {
                 @Override
@@ -165,7 +155,6 @@ class LocationBarMediator
     private final Rect mRootViewBounds = new Rect();
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
-    private final OmniboxUma mOmniboxUma;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -197,7 +186,7 @@ class LocationBarMediator
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
             @NonNull Runnable launchAssistanceSettingsAction,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
+            @NonNull SaveOfflineButtonState saveOfflineButtonState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
@@ -220,7 +209,6 @@ class LocationBarMediator
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
         mSaveOfflineButtonState = saveOfflineButtonState;
-        mOmniboxUma = omniboxUma;
         mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
     }
 
@@ -329,8 +317,7 @@ class LocationBarMediator
     /* package */ void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         if (mIsTablet) {
-            mLocationBarDataProvider.getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
-                    fraction);
+
         } else {
             // Determine when the focus state changes as a result of ntp scrolling.
             boolean isLocationBarFocusedFromNtpScroll =
@@ -477,7 +464,6 @@ class LocationBarMediator
 
         if (currentTab != null
                 && (currentTab.isNativePage() || UrlUtilities.isNTPUrl(currentTab.getUrl()))) {
-            mOmniboxUma.recordNavigationOnNtp(url, transition);
             // Passing in an empty string should not do anything unless the user is at the NTP.
             // Since the NTP has no url, pressing enter while clicking on the URL bar should refresh
             // the page as it does when you click and press enter on any other site.
@@ -649,11 +635,6 @@ class LocationBarMediator
             if (mUrlFocusChangeAnimator != null && mUrlFocusChangeAnimator.isRunning()) {
                 mUrlFocusChangeAnimator.cancel();
                 mUrlFocusChangeAnimator = null;
-            }
-
-            if (mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
-                finishUrlFocusChange(hasFocus, /* shouldShowKeyboard= */ hasFocus);
-                return;
             }
 
             mLocationBarLayout.getRootView().getLocalVisibleRect(mRootViewBounds);

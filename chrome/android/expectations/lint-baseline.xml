@@ -6790,61 +6790,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: FaviconLocality.LOCAL, FaviconLocality.FOREIGN"
-        errorLine1="            new ArrayMap&lt;>(FaviconLocality.NUM_ENTRIES);"
-        errorLine2="                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="123"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.OPEN_ALL, OtherSessionsActions.HAS_FOREIGN_DATA, OtherSessionsActions.HIDE_FOR_NOW"
-        errorLine1="                        OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.NUM_ENTRIES);"
-        errorLine2="                                                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="328"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.OPEN_ALL, OtherSessionsActions.HAS_FOREIGN_DATA, OtherSessionsActions.HIDE_FOR_NOW"
-        errorLine1="                        OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.NUM_ENTRIES);"
-        errorLine2="                                                                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="331"
-            column="83"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.OPEN_ALL, OtherSessionsActions.HAS_FOREIGN_DATA, OtherSessionsActions.HIDE_FOR_NOW"
-        errorLine1="                    OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.NUM_ENTRIES);"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="344"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.OPEN_ALL, OtherSessionsActions.HAS_FOREIGN_DATA, OtherSessionsActions.HIDE_FOR_NOW"
-        errorLine1="                        OtherSessionsActions.OPEN_ALL, OtherSessionsActions.NUM_ENTRIES);"
-        errorLine2="                                                                            ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="355"
-            column="77"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: OtherSessionsActions.MENU_INITIALIZED, OtherSessionsActions.LINK_CLICKED, OtherSessionsActions.COLLAPSE_SESSION, OtherSessionsActions.EXPAND_SESSION, OtherSessionsActions.OPEN_ALL, OtherSessionsActions.HAS_FOREIGN_DATA, OtherSessionsActions.HIDE_FOR_NOW"
         errorLine1="                        OtherSessionsActions.HIDE_FOR_NOW, OtherSessionsActions.NUM_ENTRIES);"
         errorLine2="                                                                                ~~~~~~~~~~~">

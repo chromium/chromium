@@ -224,7 +224,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
-#include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
 #include "chrome/browser/android/usage_stats/usage_stats_bridge.h"
@@ -1396,7 +1395,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   OomInterventionDecider::RegisterProfilePrefs(registry);
   PartnerBookmarksShim::RegisterProfilePrefs(registry);
   query_tiles::RegisterPrefs(registry);
-  RecentTabsPagePrefs::RegisterProfilePrefs(registry);
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   video_tutorials::RegisterPrefs(registry);

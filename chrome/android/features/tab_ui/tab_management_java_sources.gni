@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 public_tab_management_java_sources = [
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/mv_tiles/MostVisitedTileNavigationDelegate.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/pseudotab/PseudoTab.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/pseudotab/TabAttributeCache.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialog.java",

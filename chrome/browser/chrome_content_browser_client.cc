@@ -389,7 +389,6 @@
 #include "chrome/android/features/dev_ui/buildflags.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
-#include "chrome/browser/android/ntp/new_tab_page_url_handler.h"
 #include "chrome/browser/android/service_tab_launcher.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -3740,9 +3739,7 @@ void ChromeContentBrowserClient::BrowserURLHandlerCreated(
                           BrowserURLHandler::null_handler());
 
 #if BUILDFLAG(IS_ANDROID)
-  // Handler to rewrite chrome://newtab on Android.
-  handler->AddHandlerPair(&chrome::android::HandleAndroidNativePageURL,
-                          BrowserURLHandler::null_handler());
+
 #else   // BUILDFLAG(IS_ANDROID)
   // Handler to rewrite chrome://newtab for InstantExtended.
   handler->AddHandlerPair(&search::HandleNewTabURLRewrite,

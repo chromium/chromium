@@ -56,10 +56,6 @@ public interface LocationBarDataProvider {
     @NonNull
     String getCurrentUrl();
 
-    /** Returns the delegate for the NewTabPage shown for the current tab. */
-    @NonNull
-    NewTabPageDelegate getNewTabPageDelegate();
-
     /** Returns whether the currently active page is loading. */
     default boolean isLoading() {
         if (isInOverviewAndShowingOmnibox()) return false;

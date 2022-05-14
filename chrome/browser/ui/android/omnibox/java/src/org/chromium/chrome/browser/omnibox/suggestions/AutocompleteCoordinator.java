@@ -33,14 +33,12 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -190,11 +188,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         parent -> new BaseSuggestionView<View>(
                                 parent.getContext(), R.layout.omnibox_basic_suggestion),
                         new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
-
-                adapter.registerType(
-                        OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-                        MostVisitedTilesProcessor::createView,
-                        BaseCarouselSuggestionViewBinder::bind);
 
                 adapter.registerType(
                         OmniboxSuggestionUiType.HEADER,

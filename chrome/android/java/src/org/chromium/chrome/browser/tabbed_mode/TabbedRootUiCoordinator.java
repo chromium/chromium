@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
-import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -122,7 +121,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
     private LinkToTextIPHController mLinkToTextIPHController;
     private CrowIphController mCrowIphController;
-    private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -579,8 +577,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 }, MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController =
                 new LinkToTextIPHController(mActivityTabProvider, mTabModelSelectorSupplier.get());
-        mAddToHomescreenMostVisitedTileObserver = new AddToHomescreenMostVisitedTileClickObserver(
-                mActivityTabProvider, mAddToHomescreenIPHController);
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
                         mActivity, mAppMenuCoordinator.getAppMenuHandler(),

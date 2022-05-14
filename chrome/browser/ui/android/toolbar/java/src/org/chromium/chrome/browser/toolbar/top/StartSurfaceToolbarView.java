@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
@@ -17,7 +16,6 @@ import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewStub;
 import android.view.animation.BaseInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
@@ -33,7 +31,6 @@ import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.HomeButton;
-import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -69,8 +66,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private View mTabSwitcherButtonView;
 
     @Nullable
-    private IncognitoToggleTabLayout mIncognitoToggleTabLayout;
-    @Nullable
     private ImageButton mIdentityDiscButton;
     private ColorStateList mLightIconTint;
     private ColorStateList mDarkIconTint;
@@ -90,13 +85,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mIsLogoVisible;
     private boolean mIsNewTabViewVisible;
     private boolean mIsHomeButtonVisible;
-    private boolean mIsIncognitoToggleVisible;
-    private boolean mIsTabSwitcherButtonVisible;
     private boolean mIsIdentityDiscButtonVisible;
-    private float mTabSwitcherButtonX;
     private int mToolbarButtonWidthPx;
-    private float mIncognitoToggleX;
-    private Rect mIncognitoToggleIndicatorBounds;
 
     public StartSurfaceToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -108,8 +98,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         mNewTabViewWithText = findViewById(R.id.new_tab_view);
         mNewTabButton = findViewById(R.id.new_tab_button);
         mHomeButton = findViewById(R.id.home_button_on_tab_switcher);
-        ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
-        mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
         mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
         mTabSwitcherButtonView = findViewById(R.id.start_tab_switcher_button);
@@ -253,7 +241,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      */
     void setButtonClickableState(boolean isClickable) {
         mNewTabViewWithText.setClickable(isClickable);
-        mIncognitoToggleTabLayout.setClickable(isClickable);
     }
 
     /**
@@ -263,10 +250,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isVisible Whether the Incognito toggle tab layout is visible.
      */
     void setIncognitoToggleTabVisibility(boolean isVisible) {
-        mIsIncognitoToggleVisible = isVisible;
-        if (!mShowTransitionAnimations) {
-            mIncognitoToggleTabLayout.setVisibility(getVisibility(isVisible));
-        }
+
     }
 
     /**
@@ -363,7 +347,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isVisible Whether the tab switcher button is visible.
      */
     void setTabSwitcherButtonVisibility(boolean isVisible) {
-        mIsTabSwitcherButtonVisible = isVisible;
         if (!mShowTransitionAnimations) {
             mTabSwitcherButtonView.setVisibility(getVisibility(isVisible));
         }
@@ -374,9 +357,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param tabCountProvider The {@link TabCountProvider} to update the incognito toggle view.
      */
     void setTabCountProvider(TabCountProvider tabCountProvider) {
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
     }
 
     /**
@@ -384,9 +364,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param selector  A {@link TabModelSelector} to provide information about open tabs.
      */
     void setTabModelSelector(TabModelSelector selector) {
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabModelSelector(selector);
-        }
     }
 
     void setShowAnimation(boolean showAnimation) {
@@ -509,27 +486,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         addFadeAnimator(mIdentityDiscButton, mIsIdentityDiscButtonVisible, MEDIUM_DURATION_MS,
                 /* delay = */ 0, Interpolators.LINEAR_INTERPOLATOR);
 
-        if (mIncognitoToggleTabLayout.getVisibility() == getVisibility(mIsIncognitoToggleVisible)) {
-            // If the visibility of incognito toggle layout isn't changed, we need to animate
-            // the tab switcher button view itself.
-            addScaleAnimators(mTabSwitcherButtonView, mIsTabSwitcherButtonVisible,
-                    MEDIUM_DURATION_MS, mIsTabSwitcherButtonVisible ? SHORT_DELAY_MS : 0,
-                    mIsTabSwitcherButtonVisible ? Interpolators.DECELERATE_INTERPOLATOR
-                                                : Interpolators.ACCELERATE_INTERPOLATOR);
-            addFadeAnimator(mTabSwitcherButtonView, mIsTabSwitcherButtonVisible, MEDIUM_DURATION_MS,
-                    mIsTabSwitcherButtonVisible ? MEDIUM_DELAY_MS : 0,
-                    Interpolators.LINEAR_INTERPOLATOR);
-        } else {
-            // If the visibility of incognito toggle layout is changed, we show its fade animations
-            // and moving animations and update the visibility of the tab switcher button in {@link
-            // finishMoveIncognitoToggleAnimation}.
-            addFadeAnimator(mIncognitoToggleTabLayout.getIncognitoButtonIcon(),
-                    mIsIncognitoToggleVisible,
-                    mIsIncognitoToggleVisible ? FAST_DURATION_MS : SUPER_FAST_DURATION_MS,
-                    mIsIncognitoToggleVisible ? SHORT_DELAY_MS : 0,
-                    Interpolators.LINEAR_INTERPOLATOR);
-            addMoveIncognitoToggleAnimator(mIsIncognitoToggleVisible);
-        }
     }
 
     private void addScaleAnimators(View targetView, boolean showTargetView, long duration,
@@ -577,8 +533,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     private void addFadeAnimator(View targetView, boolean showTargetView, long duration, long delay,
             Interpolator interpolator) {
-        if (targetView.getVisibility() == getVisibility(showTargetView)
-                && targetView != mIncognitoToggleTabLayout.getIncognitoButtonIcon()) {
+        if (targetView.getVisibility() == getVisibility(showTargetView)) {
             return;
         }
         // Show the fade-in and fade-out animation. Set visibility as VISIBLE here to show the
@@ -604,87 +559,14 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     private void finishFadeAnimator(View targetView, boolean showTargetView) {
-        // If targetView is the incognito button icon in incognito toggle layout, we cannot set it
-        // gone because it will cause the incognito toggle distorted. The alpha will be reset in
-        // finishMoveIncognitoToggleAnimator() after incognito toggle layout visibility is set.
-        if (targetView == mIncognitoToggleTabLayout.getIncognitoButtonIcon()) return;
         targetView.setVisibility(getVisibility(showTargetView));
         targetView.setAlpha(1.0f);
-    }
-
-    private void addMoveIncognitoToggleAnimator(boolean showIncognitoToggle) {
-        if (mIncognitoToggleTabLayout.getVisibility() == getVisibility(showIncognitoToggle)) return;
-        mIncognitoToggleTabLayout.setVisibility(View.VISIBLE);
-        mTabSwitcherButtonView.setVisibility(View.GONE);
-
-        // Add the animation for toggle indicator width change.
-        ValueAnimator valueAnimator =
-                ValueAnimator.ofInt(showIncognitoToggle ? 0 : mToolbarButtonWidthPx / 2,
-                        showIncognitoToggle ? mToolbarButtonWidthPx / 2 : 0);
-        valueAnimator.addUpdateListener(animator -> {
-            mIncognitoToggleTabLayout.setTabIndicatorFullWidth(false);
-            mIncognitoToggleTabLayout.getTabSelectedIndicator().setBounds(
-                    mToolbarButtonWidthPx / 2 - (int) valueAnimator.getAnimatedValue(),
-                    mIncognitoToggleIndicatorBounds.top,
-                    mToolbarButtonWidthPx / 2 + (int) valueAnimator.getAnimatedValue(),
-                    mIncognitoToggleIndicatorBounds.bottom);
-        });
-        valueAnimator.setDuration(showIncognitoToggle ? SLOW_DURATION_MS : SUPER_FAST_DURATION_MS);
-        if (ARE_INTERPOLATORS_ENABLED) {
-            valueAnimator.setInterpolator(showIncognitoToggle
-                            ? Interpolators.DECELERATE_INTERPOLATOR
-                            : Interpolators.ACCELERATE_INTERPOLATOR);
-        }
-        mAnimators.add(valueAnimator);
-
-        // Add the animation for incognito toggle moving.
-        mIncognitoToggleTabLayout.setX(
-                showIncognitoToggle ? mTabSwitcherButtonX : mIncognitoToggleX);
-        Animator xAnimator =
-                ObjectAnimator
-                        .ofFloat(mIncognitoToggleTabLayout, X,
-                                showIncognitoToggle ? mIncognitoToggleX : mTabSwitcherButtonX)
-                        .setDuration(StartSurfaceToolbarView.SLOW_DURATION_MS);
-        if (ARE_INTERPOLATORS_ENABLED) {
-            xAnimator.setInterpolator(Interpolators.ACCELERATE_DECELERATE_INTERPOLATOR);
-        }
-        xAnimator.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onCancel(Animator animator) {
-                finishMoveIncognitoToggleAnimator(showIncognitoToggle);
-            }
-            @Override
-            public void onEnd(Animator animator) {
-                finishMoveIncognitoToggleAnimator(showIncognitoToggle);
-            }
-        });
-        mAnimators.add(xAnimator);
-    }
-
-    private void finishMoveIncognitoToggleAnimator(boolean showIncognitoToggle) {
-        mTabSwitcherButtonView.setVisibility(getVisibility(mIsTabSwitcherButtonVisible));
-        mIncognitoToggleTabLayout.setVisibility(getVisibility(showIncognitoToggle));
-        mIncognitoToggleTabLayout.getIncognitoButtonIcon().setAlpha(1.0f);
-        mIncognitoToggleTabLayout.setX(mIncognitoToggleX);
-        mIncognitoToggleTabLayout.getTabSelectedIndicator().setBounds(
-                showIncognitoToggle ? 0 : mToolbarButtonWidthPx / 2,
-                mIncognitoToggleIndicatorBounds.top,
-                showIncognitoToggle ? mToolbarButtonWidthPx : mToolbarButtonWidthPx / 2,
-                mIncognitoToggleIndicatorBounds.bottom);
-        mIncognitoToggleTabLayout.setTabIndicatorFullWidth(true);
     }
 
     private void setIncognitoToggleTabSwitcherButtonXs() {
         int screenWidthPx = dpToPx(getResources().getConfiguration().screenWidthDp);
         mToolbarButtonWidthPx =
                 getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width);
-        mIncognitoToggleX = (float) screenWidthPx / 2 - mToolbarButtonWidthPx;
-        mTabSwitcherButtonX = screenWidthPx - mToolbarButtonWidthPx * 2;
-        if (mIncognitoToggleIndicatorBounds == null
-                && mIncognitoToggleTabLayout.getTabSelectedIndicator() != null) {
-            mIncognitoToggleIndicatorBounds =
-                    mIncognitoToggleTabLayout.getTabSelectedIndicator().getBounds();
-        }
     }
 
     private int getVisibility(boolean isVisible) {

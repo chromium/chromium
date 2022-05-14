@@ -25,30 +25,21 @@ public class OptionalBrowsingModeButtonController {
     private final UserEducationHelper mUserEducationHelper;
     private final Map<ButtonDataProvider, ButtonDataProvider.ButtonDataObserver> mObserverMap;
     private ButtonDataProvider mCurrentProvider;
-    private List<ButtonDataProvider> mButtonDataProviders;
     private final ToolbarLayout mToolbarLayout;
     private final Supplier<Tab> mTabSupplier;
 
     /**
      * Creates a new OptionalBrowsingModeButtonController.
-     * @param buttonDataProviders List of button data providers in precedence order.
      * @param userEducationHelper Helper for displaying in-product help on a button.
      * @param toolbarLayout Toolbar layout where buttons will be displayed.
      */
-    OptionalBrowsingModeButtonController(List<ButtonDataProvider> buttonDataProviders,
-            UserEducationHelper userEducationHelper, ToolbarLayout toolbarLayout,
+    OptionalBrowsingModeButtonController(UserEducationHelper userEducationHelper,
+                                         ToolbarLayout toolbarLayout,
             Supplier<Tab> tabSupplier) {
-        mButtonDataProviders = buttonDataProviders;
         mUserEducationHelper = userEducationHelper;
         mToolbarLayout = toolbarLayout;
         mTabSupplier = tabSupplier;
-        mObserverMap = new HashMap<>(buttonDataProviders.size());
-        for (ButtonDataProvider provider : buttonDataProviders) {
-            ButtonDataProvider.ButtonDataObserver callback =
-                    (hint) -> buttonDataProviderChanged(provider, hint);
-            provider.addObserver(callback);
-            mObserverMap.put(provider, callback);
-        }
+        mObserverMap = new HashMap<>();
     }
 
     public void destroy() {
@@ -86,20 +77,7 @@ public class OptionalBrowsingModeButtonController {
      * Show the highest precedence optional button, hiding the optional button if none can be shown.
      */
     private void showHighestPrecedenceOptionalButton() {
-        if (mButtonDataProviders == null) return;
-        for (ButtonDataProvider provider : mButtonDataProviders) {
-            ButtonData buttonData = provider.get(mTabSupplier.get());
-            if (buttonData != null && buttonData.canShow()) {
-                // Same-provider updates are handled in updateCurrentOptionalButton; the below check
-                // prevents us from pointlessly updating with the same button data.
-                if (provider == mCurrentProvider) return;
-                setCurrentOptionalButton(provider, buttonData);
-                return;
-            }
-        }
 
-        // If no buttons can show, hide the currently showing button.
-        hideCurrentOptionalButton();
     }
 
     /**
@@ -137,9 +115,4 @@ public class OptionalBrowsingModeButtonController {
         }
     }
 
-    /** Returns the list of {@link ButtonDataProvider}s. */
-    @VisibleForTesting
-    public List<ButtonDataProvider> getButtonDataProvidersForTesting() {
-        return mButtonDataProviders;
-    }
 }

@@ -100,9 +100,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
      * @param toolbarLayout The {@link ToolbarLayout}.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
-     * @param buttonDataProviders List of classes that wish to display an optional button in the
-     *         browsing mode toolbar.
-     * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
@@ -130,7 +127,6 @@ public class TopToolbarCoordinator implements Toolbar {
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer, ViewStub toolbarStub,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, UserEducationHelper userEducationHelper,
-            List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
@@ -153,8 +149,8 @@ public class TopToolbarCoordinator implements Toolbar {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
-        mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
-                userEducationHelper, mToolbarLayout, () -> toolbarDataProvider.getTab());
+        mOptionalButtonController = new OptionalBrowsingModeButtonController(userEducationHelper,
+                mToolbarLayout, () -> toolbarDataProvider.getTab());
         mResourceManagerSupplier = resourceManagerSupplier;
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;

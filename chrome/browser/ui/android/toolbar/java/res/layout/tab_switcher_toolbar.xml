@@ -60,15 +60,6 @@
         android:visibility="gone"
         android:contentDescription="@null"/>
 
-    <ViewStub
-        android:id="@+id/incognito_tabs_stub"
-        android:inflatedId="@+id/incognito_toggle_tabs"
-        android:layout="@layout/incognito_toggle_tabs"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginBottom="4dp"/>
-
     <LinearLayout
         android:id="@+id/tab_switcher_switches_and_menu"
         android:orientation="horizontal"

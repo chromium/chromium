@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
-import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -123,10 +122,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      * @param launchAssistanceSettingsAction Runnable launching settings for voice assistance.
      * @param pageInfoAction Displays page info popup.
-     * @param spareRendererCallback Callback to warm up a spare renderer.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
      * @param saveOfflineButtonState Whether the 'save offline' button should be enabled.
-     * @param omniboxUma Interface for logging UMA histogram.
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
      * @param isToolbarMicEnabledSupplier Whether toolbar mic is enabled or not.
@@ -151,7 +148,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Tab> bringTabToFrontCallback,
-            @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
+            @NonNull SaveOfflineButtonState saveOfflineButtonState,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
@@ -175,7 +172,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 privacyPreferencesManager, overrideUrlLoadingDelegate, LocaleManager.getInstance(),
                 mTemplateUrlServiceSupplier, backKeyBehavior, windowAndroid,
                 isTablet() && isTabletLayout(), searchEngineLogoUtils, LensController.getInstance(),
-                launchAssistanceSettingsAction, saveOfflineButtonState, omniboxUma,
+                launchAssistanceSettingsAction, saveOfflineButtonState,
                 isToolbarMicEnabledSupplier);
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();

@@ -97,6 +97,6 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      *         animating.
      */
     private boolean showScrimAfterAnimationCompletes() {
-        return mLocationBarDataProvider.getNewTabPageDelegate().isLocationBarShown();
+        return false;
     }
 }

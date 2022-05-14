@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -145,7 +144,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     private final Context mContext;
-    private final NewTabPageDelegate mNtpDelegate;
     private final @NonNull UrlFormatter mUrlFormatter;
     private final @NonNull ProfileProvider mProfileProvider;
     private final @NonNull OfflineStatus mOfflineStatus;
@@ -187,12 +185,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @param offlineStatus Offline-related status provider.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      */
-    public LocationBarModel(Context context, NewTabPageDelegate newTabPageDelegate,
+    public LocationBarModel(Context context,
             @NonNull UrlFormatter urlFormatter, @NonNull ProfileProvider profileProvider,
             @NonNull OfflineStatus offlineStatus,
             @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         mContext = context;
-        mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
         mProfileProvider = profileProvider;
         mOfflineStatus = offlineStatus;
@@ -308,11 +305,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.hintZeroSuggestRefresh();
         }
-    }
-
-    @Override
-    public NewTabPageDelegate getNewTabPageDelegate() {
-        return mNtpDelegate;
     }
 
     void notifyNtpStartedLoading() {
@@ -670,7 +662,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         boolean skipIconForNeutralState =
                 !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
-                || mNtpDelegate.isCurrentlyVisible() || isInOverviewAndShowingOmnibox();
+                        || isInOverviewAndShowingOmnibox();
 
         boolean useLockIconEnabled = false;
         if (mNativeLocationBarModelAndroid != 0) {

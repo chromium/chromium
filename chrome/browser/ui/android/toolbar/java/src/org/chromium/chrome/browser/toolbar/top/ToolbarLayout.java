@@ -32,7 +32,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -272,11 +271,6 @@ public abstract class ToolbarLayout
             @Override
             public UrlBarData getUrlBarData() {
                 return UrlBarData.EMPTY;
-            }
-
-            @Override
-            public NewTabPageDelegate getNewTabPageDelegate() {
-                return NewTabPageDelegate.EMPTY;
             }
 
             @Override

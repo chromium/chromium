@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.features.tasks.TasksSurface;
 
@@ -150,20 +149,6 @@ public interface StartSurface {
          */
         void showOverview(boolean animate);
 
-        /**
-         * Sets the state {@link StartSurfaceState} and {@link NewTabPageLaunchOrigin}.
-         * @param state The {@link StartSurfaceState} to show.
-         * @param launchOrigin The {@link NewTabPageLaunchOrigin} representing what launched the
-         *         start surface.
-         */
-        void setOverviewState(
-                @StartSurfaceState int state, @NewTabPageLaunchOrigin int launchOrigin);
-
-        /**
-         * Sets the state {@link StartSurfaceState} without changing the existing {@link
-         * NewTabPageLaunchOrigin}.
-         * @param state The {@link StartSurfaceState} to show.
-         */
         void setOverviewState(@StartSurfaceState int state);
 
         /**
