@@ -196,7 +196,7 @@ void BookmarkBubbleView::ShowBubble(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK),
               ui::DialogModelButton::Params().AddAccelerator(
                   ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
-          .AddDialogExtraButton(
+          .AddExtraButton(
               base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
                                   base::Unretained(bubble_delegate)),
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS),

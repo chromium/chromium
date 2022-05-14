@@ -287,12 +287,19 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called after
   // the Widget is created and still be picked up. Moving this to
   // OnWidgetInitialized() will not work until then.
-  auto* extra_button = model_->extra_button(GetPassKey());
-  if (extra_button) {
+  if (ui::DialogModelButton* extra_button =
+          model_->extra_button(GetPassKey())) {
+    DCHECK(!model_->extra_link(GetPassKey()));
     SetExtraView(std::make_unique<MdTextButton>(
         base::BindRepeating(&ui::DialogModelButton::OnPressed,
                             base::Unretained(extra_button), GetPassKey()),
         extra_button->label(GetPassKey())));
+  } else if (ui::DialogModelLabel::Link* extra_link =
+                 model_->extra_link(GetPassKey())) {
+    auto link = std::make_unique<views::Link>(
+        l10n_util::GetStringUTF16(extra_link->message_id));
+    link->SetCallback(extra_link->callback);
+    SetExtraView(std::move(link));
   }
 
   SetButtons(button_mask);

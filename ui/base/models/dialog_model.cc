@@ -58,12 +58,22 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
   return *this;
 }
 
-DialogModel::Builder& DialogModel::Builder::AddDialogExtraButton(
+DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     std::u16string label,
     const DialogModelButton::Params& params) {
+  DCHECK(!model_->extra_button_);
+  DCHECK(!model_->extra_link_);
   model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
                                 std::move(callback), std::move(label), params);
+  return *this;
+}
+
+DialogModel::Builder& DialogModel::Builder::AddExtraLink(
+    ui::DialogModelLabel::Link link) {
+  DCHECK(!model_->extra_button_);
+  DCHECK(!model_->extra_link_);
+  model_->extra_link_.emplace(std::move(link));
   return *this;
 }
 

@@ -55,12 +55,12 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
   // dialogs are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
-          .AddDialogExtraButton(
-              base::BindLambdaForTesting([&](const Event& event) {
-                ++callback_count;
-                last_event = std::make_unique<KeyEvent>(*event.AsKeyEvent());
-              }),
-              std::u16string())
+          .AddExtraButton(base::BindLambdaForTesting([&](const Event& event) {
+                            ++callback_count;
+                            last_event =
+                                std::make_unique<KeyEvent>(*event.AsKeyEvent());
+                          }),
+                          std::u16string())
           .Build());
 
   KeyEvent first_event(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
@@ -101,7 +101,7 @@ class DialogModelDialogButtonTest : public testing::Test {
       case TestDialogModelHost::ButtonId::kExtra:
         // Wrap the callback into a repeating callback that'll only be called
         // once so the same verification can be used for the extra button.
-        builder.AddDialogExtraButton(
+        builder.AddExtraButton(
             base::BindRepeating(
                 [](base::OnceClosure* callback, const Event& event) {
                   std::move(*callback).Run();

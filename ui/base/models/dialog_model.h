@@ -192,10 +192,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     // Use of the extra button in new dialogs are discouraged. If this is deemed
     // necessary please double-check with UX before adding any new dialogs with
     // them.
-    Builder& AddDialogExtraButton(
+    Builder& AddExtraButton(
         base::RepeatingCallback<void(const Event&)> callback,
         std::u16string label,
         const DialogModelButton::Params& params = DialogModelButton::Params());
+
+    // Adds an extra link to the dialog.
+    Builder& AddExtraLink(ui::DialogModelLabel::Link link);
 
     // Adds body text. See DialogModel::AddBodyText().
     Builder& AddBodyText(const DialogModelLabel& label) {
@@ -371,6 +374,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return extra_button_.has_value() ? &extra_button_.value() : nullptr;
   }
 
+  DialogModelLabel::Link* extra_link(base::PassKey<DialogModelHost>) {
+    return extra_link_.has_value() ? &extra_link_.value() : nullptr;
+  }
+
   bool close_on_deactivate(base::PassKey<DialogModelHost>) const {
     return close_on_deactivate_;
   }
@@ -406,6 +413,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   absl::optional<DialogModelButton> ok_button_;
   absl::optional<DialogModelButton> cancel_button_;
   absl::optional<DialogModelButton> extra_button_;
+  absl::optional<DialogModelLabel::Link> extra_link_;
 
   base::OnceClosure accept_action_callback_;
   base::OnceClosure cancel_action_callback_;
