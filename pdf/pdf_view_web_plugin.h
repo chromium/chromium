@@ -289,10 +289,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
-  // Initializes the plugin using the `engine` provided by tests. Lets
-  // `CreateUrlLoaderInternal()` return `loader` on its first call.
-  bool InitializeForTesting(std::unique_ptr<PDFiumEngine> engine,
-                            std::unique_ptr<UrlLoader> loader);
+  // Initializes the plugin using the `engine` provided by tests.
+  bool InitializeForTesting(std::unique_ptr<PDFiumEngine> engine);
 
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
 
@@ -463,10 +461,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The indices of pages to print.
   std::vector<int> pages_to_print_;
-
-  // If non-null, the UrlLoader that CreateUrlLoaderInternal() returns for
-  // testing purposes.
-  std::unique_ptr<UrlLoader> test_loader_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

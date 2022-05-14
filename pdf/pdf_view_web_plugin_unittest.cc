@@ -36,8 +36,10 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
+#include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -149,14 +151,45 @@ blink::WebMouseEvent CreateDefaultMouseDownEvent() {
   return web_event;
 }
 
+class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
+ public:
+  MockWebAssociatedURLLoader() {
+    ON_CALL(*this, LoadAsynchronously)
+        .WillByDefault([](const blink::WebURLRequest& /*request*/,
+                          blink::WebAssociatedURLLoaderClient* client) {
+          // TODO(crbug.com/1322928): Must trigger callback to free `UrlLoader`.
+          client->DidReceiveResponse(blink::WebURLResponse());
+          client->DidFinishLoading();
+        });
+  }
+
+  // blink::WebAssociatedURLLoader:
+  MOCK_METHOD(void,
+              LoadAsynchronously,
+              (const blink::WebURLRequest&,
+               blink::WebAssociatedURLLoaderClient*),
+              (override));
+  MOCK_METHOD(void, Cancel, (), (override));
+  MOCK_METHOD(void, SetDefersLoading, (bool), (override));
+  MOCK_METHOD(void,
+              SetLoadingTaskRunner,
+              (base::SingleThreadTaskRunner*),
+              (override));
+};
+
 class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
  public:
   void SetPlugin(PdfViewWebPlugin* web_plugin) {
     web_plugin_ = web_plugin;
 
+    ON_CALL(*this, CreateAssociatedURLLoader).WillByDefault([]() {
+      return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+    });
     ON_CALL(*this, UpdateTextInputState)
         .WillByDefault(Invoke(
             this, &FakePdfViewWebPluginClient::UpdateTextInputStateFromPlugin));
+    ON_CALL(*this, HasFrame).WillByDefault(Return(true));
+
     UpdateTextInputStateFromPlugin();
   }
 
@@ -265,20 +298,6 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
 };
 
-class MockUrlLoader : public UrlLoader {
- public:
-  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
-  MOCK_METHOD(void,
-              Open,
-              (const UrlRequest&, base::OnceCallback<void(int)>),
-              (override));
-  MOCK_METHOD(void,
-              ReadResponseBody,
-              (base::span<char>, base::OnceCallback<void(int)>),
-              (override));
-  MOCK_METHOD(void, Close, (), (override));
-};
-
 }  // namespace
 
 class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
@@ -328,17 +347,13 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 
     auto engine = CreateEngine();
     engine_ptr_ = engine.get();
-    EXPECT_TRUE(
-        plugin_->InitializeForTesting(std::move(engine), CreateLoader()));
+    EXPECT_TRUE(plugin_->InitializeForTesting(std::move(engine)));
   }
 
   // Allow derived test classes to create their own custom TestPDFiumEngine.
   virtual std::unique_ptr<TestPDFiumEngine> CreateEngine() {
     return std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
   }
-
-  // Allow derived test classes to create their own custom loaders.
-  virtual std::unique_ptr<UrlLoader> CreateLoader() { return nullptr; }
 
   void SetDocumentDimensions(const gfx::Size& dimensions) {
     EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
@@ -445,8 +460,7 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
               RequestTouchEventType(
                   blink::WebPluginContainer::kTouchEventRequestTypeRaw));
 
-  EXPECT_TRUE(
-      plugin_->InitializeForTesting(std::move(engine), /*loader=*/nullptr));
+  EXPECT_TRUE(plugin_->InitializeForTesting(std::move(engine)));
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
@@ -906,30 +920,19 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
   plugin_->NotifyNumberOfFindResultsChanged(/*total=*/5, /*final_result=*/true);
 }
 
-class PdfViewWebPluginWithoutDocInfoTest : public PdfViewWebPluginTest {
- public:
-  std::unique_ptr<UrlLoader> CreateLoader() override {
-    return std::make_unique<NiceMock<MockUrlLoader>>();
-  }
+TEST_F(PdfViewWebPluginTest, DocumentLoadCompletePostMessages) {
+  base::Value::Dict metadata;
+  metadata.Set("fileSize", "0 B");
+  metadata.Set("linearized", false);
+  metadata.Set("pageSize", "Varies");
+  metadata.Set("canSerializeDocument", true);
 
-  static base::Value::Dict CreateExpectedNoMetadataResponse() {
-    base::Value::Dict metadata;
-    metadata.Set("fileSize", "0 B");
-    metadata.Set("linearized", false);
-    metadata.Set("pageSize", "Varies");
-    metadata.Set("canSerializeDocument", true);
+  base::Value::Dict message;
+  message.Set("type", "metadata");
+  message.Set("metadataData", std::move(metadata));
 
-    base::Value::Dict message;
-    message.Set("type", "metadata");
-    message.Set("metadataData", std::move(metadata));
-    return message;
-  }
-};
-
-TEST_F(PdfViewWebPluginWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
-  const base::Value::Dict expect_metadata = CreateExpectedNoMetadataResponse();
   EXPECT_CALL(*client_ptr_, PostMessage);
-  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   plugin_->DocumentLoadComplete();
 }
 
@@ -1018,9 +1021,6 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
 
   std::unique_ptr<TestPDFiumEngine> CreateEngine() override {
     return std::make_unique<TestPDFiumEngineWithDocInfo>(plugin_.get());
-  }
-  std::unique_ptr<UrlLoader> CreateLoader() override {
-    return std::make_unique<NiceMock<MockUrlLoader>>();
   }
 
   static base::Value::Dict CreateExpectedAttachmentsResponse() {

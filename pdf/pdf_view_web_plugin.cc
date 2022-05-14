@@ -173,9 +173,7 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
 }
 
 bool PdfViewWebPlugin::InitializeForTesting(
-    std::unique_ptr<PDFiumEngine> engine,
-    std::unique_ptr<UrlLoader> loader) {
-  test_loader_ = std::move(loader);
+    std::unique_ptr<PDFiumEngine> engine) {
   return InitializeCommon(std::move(engine));
 }
 
@@ -759,9 +757,6 @@ base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
 }
 
 std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
-  if (test_loader_)
-    return std::move(test_loader_);
-
   auto loader = std::make_unique<BlinkUrlLoader>(weak_factory_.GetWeakPtr());
   loader->GrantUniversalAccess();
   return loader;
