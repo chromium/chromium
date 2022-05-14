@@ -95,3 +95,13 @@ fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclass>) {
     expect_false!(suite.as_mut().get_false());
     expect_eq!(2, suite.as_ref().num_calls());
 }
+
+#[gtest(Test, WithCustomTemplateTestSuite)]
+#[gtest_suite(rust_gtest_interop_test_support::TestSubclassWithCustomTemplate)]
+fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclassWithCustomTemplate>) {
+    expect_eq!(0, suite.as_ref().num_calls());
+    expect_eq!(3, suite.as_mut().get_three());
+    expect_eq!(1, suite.as_ref().num_calls());
+    expect_eq!(4, suite.as_mut().get_four());
+    expect_eq!(2, suite.as_ref().num_calls());
+}

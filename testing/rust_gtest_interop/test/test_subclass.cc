@@ -4,16 +4,14 @@
 
 #include "testing/rust_gtest_interop/test/test_subclass.h"
 
-namespace {
-size_t g_num_subclass_created = 0;
-}
-
 namespace rust_gtest_interop {
 
-TestSubclass::TestSubclass() {
-  ++g_num_subclass_created;
-}
+TestSubclass::TestSubclass() = default;
 
 RUST_GTEST_TEST_SUITE_FACTORY(TestSubclass);
+
+TestSubclassWithCustomTemplate::TestSubclassWithCustomTemplate() = default;
+
+RUST_CUSTOM_TEMPLATE_TEST_SUITE_FACTORY(TestSubclassWithCustomTemplate);
 
 }  // namespace rust_gtest_interop
