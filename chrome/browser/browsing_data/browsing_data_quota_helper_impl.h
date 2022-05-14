@@ -52,22 +52,17 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
   // Callback function for QuotaManager::GetStorageKeysForType.
-  void GotStorageKeys(PendingHosts* pending_hosts,
+  void GotStorageKeys(QuotaInfoMap* quota_info,
                       base::OnceClosure completion,
                       blink::mojom::StorageType type,
                       const std::set<blink::StorageKey>& storage_keys);
 
-  // Calls QuotaManager::GetHostUsage for each (origin, type) pair.
-  void OnGetOriginsComplete(FetchResultCallback callback,
-                            PendingHosts* pending_hosts);
-
-  // Callback function for QuotaManager::GetHostUsage.
-  void GotHostUsage(QuotaInfoMap* quota_info,
-                    base::OnceClosure completion,
-                    const std::string& host,
-                    blink::mojom::StorageType type,
-                    int64_t usage,
-                    blink::mojom::UsageBreakdownPtr usage_breakdown);
+  // Callback function for QuotaManager::GetStorageKeyUsage.
+  void GotStorageKeyUsage(QuotaInfoMap* quota_info,
+                          const blink::StorageKey& storage_key,
+                          blink::mojom::StorageType type,
+                          int64_t usage,
+                          blink::mojom::UsageBreakdownPtr usage_breakdown);
 
   // Called when all QuotaManager::GetHostUsage requests are complete.
   void OnGetHostsUsageComplete(FetchResultCallback callback,
