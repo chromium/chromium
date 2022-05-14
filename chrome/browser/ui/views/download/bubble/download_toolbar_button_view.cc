@@ -86,7 +86,8 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   int diameter = 2 * kProgressRingRadius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
-  if (icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
+  if (icon_info.icon_state == download::DownloadIconState::kDeepScanning ||
+      !progress_info.progress_certain) {
     if (!scanning_animation_.is_animating()) {
       scanning_animation_.Reset();
       scanning_animation_.Show();
