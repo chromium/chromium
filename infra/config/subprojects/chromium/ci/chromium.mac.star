@@ -117,7 +117,7 @@ ci.builder(
         short_name = "a64",
     ),
     cpu = cpu.ARM64,
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
 )
 
 ci.builder(
@@ -142,7 +142,7 @@ ci.builder(
         category = "release|arm64",
         short_name = "bld",
     ),
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
 )
 
 ci.thin_tester(
