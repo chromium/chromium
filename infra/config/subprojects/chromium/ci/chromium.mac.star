@@ -103,7 +103,7 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
 )
 
 ci.builder(
@@ -117,7 +117,7 @@ ci.builder(
         short_name = "a64",
     ),
     cpu = cpu.ARM64,
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
 )
 
 ci.builder(
