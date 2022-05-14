@@ -49,8 +49,9 @@ namespace {
 // Version 6 - 2021-04-27 - https://crrev.com/c/2757450
 // Version 7 - 2021-05-20 - https://crrev.com/c/2910136
 // Version 8 - 2021-09-01 - https://crrev.com/c/3119831
-const int kQuotaDatabaseCurrentSchemaVersion = 8;
-const int kQuotaDatabaseCompatibleVersion = 8;
+// Version 9 - 2022-05-13 - https://crrev.com/c/3601253
+const int kQuotaDatabaseCurrentSchemaVersion = 9;
+const int kQuotaDatabaseCompatibleVersion = 9;
 
 // Definitions for database schema.
 const char kHostQuotaTable[] = "quota";
@@ -83,7 +84,7 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      " PRIMARY KEY(host, type))"
      " WITHOUT ROWID"},
     {kBucketTable,
-     "(id INTEGER PRIMARY KEY,"
+     "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
      " storage_key TEXT NOT NULL,"
      " host TEXT NOT NULL,"
      " type INTEGER NOT NULL,"
@@ -92,13 +93,16 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      " last_accessed INTEGER NOT NULL,"
      " last_modified INTEGER NOT NULL,"
      " expiration INTEGER NOT NULL,"
-     " quota INTEGER NOT NULL)"}};
+     " quota INTEGER NOT NULL,"
+     " persistent INTEGER NOT NULL,"
+     " durability INTEGER NOT NULL)"
+     " STRICT"}};
 const size_t QuotaDatabase::kTableCount = std::size(QuotaDatabase::kTables);
 
 // static
 const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
     {"buckets_by_storage_key", kBucketTable, "(storage_key, type, name)", true},
-    {"buckets_by_host", kBucketTable, "(type, host)", false},
+    {"buckets_by_host", kBucketTable, "(host, type)", false},
     {"buckets_by_last_accessed", kBucketTable, "(type, last_accessed)", false},
     {"buckets_by_last_modified", kBucketTable, "(type, last_modified)", false},
     {"buckets_by_expiration", kBucketTable, "(expiration)", false},
@@ -483,15 +487,17 @@ QuotaError QuotaDatabase::RegisterInitialStorageKeyInfo(
               "last_accessed,"
               "last_modified,"
               "expiration,"
-              "quota) "
-            "VALUES (?, ?, ?, ?, 0, 0, 0, ?, 0)";
+              "quota,"
+              "persistent,"
+              "durability) "
+            "VALUES (?, ?, ?, ?, 0, 0, 0, ?, 0, 0, 0)";
       // clang-format on
       sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
       statement.BindString(0, storage_key.Serialize());
       statement.BindString(1, storage_key.origin().host());
       statement.BindInt(2, static_cast<int>(storage_type));
       statement.BindString(3, kDefaultBucketName);
-      statement.BindTime(4, base::Time::Max());
+      statement.BindTime(4, base::Time());
 
       if (!statement.Run())
         return QuotaError::kDatabaseError;
@@ -1101,8 +1107,10 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
         "last_accessed,"
         "last_modified,"
         "expiration,"
-        "quota) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "quota,"
+        "persistent,"
+        "durability) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, storage_key.Serialize());
@@ -1112,7 +1120,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
   statement.BindInt(4, use_count);
   statement.BindTime(5, last_accessed);
   statement.BindTime(6, last_modified);
-  const base::Time expires = expiration.value_or(base::Time::Max());
+  const base::Time expires = expiration.value_or(base::Time());
   statement.BindTime(7, expires);
   statement.BindInt64(8, quota);
 

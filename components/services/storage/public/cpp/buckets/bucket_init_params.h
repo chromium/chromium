@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInitParams {
 
   blink::StorageKey storage_key;
   std::string name{kDefaultBucketName};
-  base::Time expiration = base::Time::Max();
+  base::Time expiration = base::Time();
   int64_t quota = 0;
 };
 

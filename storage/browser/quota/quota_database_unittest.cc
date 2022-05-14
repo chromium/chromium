@@ -153,8 +153,10 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "last_accessed,"
               "last_modified,"
               "expiration,"
-              "quota) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0)";
+              "quota,"
+              "persistent,"
+              "durability) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(

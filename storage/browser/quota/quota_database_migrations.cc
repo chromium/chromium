@@ -8,14 +8,65 @@
 
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/quota_database.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 
 namespace storage {
+
+namespace {
+
+// Overwrites the buckets table with the new_buckets table after data has been
+// copied from the former into the latter.
+bool OverwriteBucketsTableSetUpIndexes(sql::Database* db) {
+  // Replace buckets table with new table.
+  static constexpr char kDeleteBucketTableSql[] = "DROP TABLE buckets";
+  if (!db->Execute(kDeleteBucketTableSql))
+    return false;
+
+  static constexpr char kRenameBucketTableSql[] =
+      "ALTER TABLE new_buckets RENAME to buckets";
+  if (!db->Execute(kRenameBucketTableSql))
+    return false;
+
+  // Create indices on new table.
+  // clang-format off
+  static constexpr char kStorageKeyIndexSql[] =
+      "CREATE UNIQUE INDEX buckets_by_storage_key "
+        "ON buckets(storage_key, type, name)";
+  // clang-format on
+  if (!db->Execute(kStorageKeyIndexSql))
+    return false;
+
+  static constexpr char kHostIndexSql[] =
+      "CREATE INDEX buckets_by_host ON buckets(host, type)";
+  if (!db->Execute(kHostIndexSql))
+    return false;
+
+  static constexpr char kLastAccessedIndexSql[] =
+      "CREATE INDEX buckets_by_last_accessed ON buckets(type, last_accessed)";
+  if (!db->Execute(kLastAccessedIndexSql))
+    return false;
+
+  static constexpr char kLastModifiedIndexSql[] =
+      "CREATE INDEX buckets_by_last_modified ON buckets(type, last_modified)";
+  if (!db->Execute(kLastModifiedIndexSql))
+    return false;
+
+  static constexpr char kExpirationIndexSql[] =
+      "CREATE INDEX buckets_by_expiration ON buckets(expiration)";
+  if (!db->Execute(kExpirationIndexSql))
+    return false;
+
+  return true;
+}
+
+}  // namespace
 
 // static
 bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
@@ -41,7 +92,12 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
       return false;
   }
 
-  return quota_database.meta_table_->GetVersionNumber() == 8;
+  if (quota_database.meta_table_->GetVersionNumber() == 8) {
+    if (!MigrateFromVersion8ToVersion9(quota_database))
+      return false;
+  }
+
+  return quota_database.meta_table_->GetVersionNumber() == 9;
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
@@ -219,9 +275,9 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
       db->GetCachedStatement(SQL_FROM_HERE, kInsertBucketSql));
 
   // Transfer bucket data to the new table one at a time with new host data.
-  BucketId lastBucketId(0);
+  BucketId last_bucket_id(0);
   while (true) {
-    select_statement.BindInt64(0, lastBucketId.value());
+    select_statement.BindInt64(0, last_bucket_id.value());
     if (!select_statement.Step())
       break;
 
@@ -255,51 +311,117 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
 
     select_statement.Reset(/*clear_bound_vars=*/true);
     insert_statement.Reset(/*clear_bound_vars=*/true);
-    lastBucketId = bucket_id;
+    last_bucket_id = bucket_id;
   }
 
-  // Replace buckets table with new table.
-  static constexpr char kDeleteBucketTableSql[] = "DROP TABLE buckets";
-  if (!db->Execute(kDeleteBucketTableSql))
-    return false;
-
-  static constexpr char kRenameBucketTableSql[] =
-      "ALTER TABLE new_buckets RENAME to buckets";
-  if (!db->Execute(kRenameBucketTableSql))
-    return false;
-
-  // Create indices on new table.
-  // clang-format off
-  static constexpr char kStorageKeyIndexSql[] =
-      "CREATE UNIQUE INDEX buckets_by_storage_key "
-        "ON buckets(storage_key, type, name)";
-  // clang-format on
-  if (!db->Execute(kStorageKeyIndexSql))
-    return false;
-
-  static constexpr char kHostIndexSql[] =
-      "CREATE INDEX buckets_by_host ON buckets(host, type)";
-  if (!db->Execute(kHostIndexSql))
-    return false;
-
-  static constexpr char kLastAccessedIndexSql[] =
-      "CREATE INDEX buckets_by_last_accessed ON buckets(type, last_accessed)";
-  if (!db->Execute(kLastAccessedIndexSql))
-    return false;
-
-  static constexpr char kLastModifiedIndexSql[] =
-      "CREATE INDEX buckets_by_last_modified ON buckets(type, last_modified)";
-  if (!db->Execute(kLastModifiedIndexSql))
-    return false;
-
-  static constexpr char kExpirationIndexSql[] =
-      "CREATE INDEX buckets_by_expiration ON buckets(expiration)";
-  if (!db->Execute(kExpirationIndexSql))
+  if (!OverwriteBucketsTableSetUpIndexes(db))
     return false;
 
   // Mark database as up to date.
   quota_database.meta_table_->SetVersionNumber(8);
   quota_database.meta_table_->SetCompatibleVersionNumber(8);
+  return transaction.Commit();
+}
+
+bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
+    QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
+
+  sql::Database* db = quota_database.db_.get();
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create new buckets table.
+  // clang-format off
+  static constexpr char kNewBucketsTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_buckets("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "storage_key TEXT NOT NULL, "
+        "host TEXT NOT NULL, "
+        "type INTEGER NOT NULL, "
+        "name TEXT NOT NULL, "
+        "use_count INTEGER NOT NULL, "
+        "last_accessed INTEGER NOT NULL, "
+        "last_modified INTEGER NOT NULL, "
+        "expiration INTEGER NOT NULL, "
+        "quota INTEGER NOT NULL, "
+        "persistent INTEGER NOT NULL, "
+        "durability INTEGER NOT NULL) "
+        "STRICT";
+  // clang-format on
+  if (!db->Execute(kNewBucketsTableSql))
+    return false;
+
+  // clang-format off
+  static constexpr char kSelectBucketSql[] =
+      "SELECT "
+          "id,storage_key,host,type,name,use_count,last_accessed,last_modified,"
+          "expiration,quota "
+        "FROM buckets "
+        "WHERE id > ? "
+        "ORDER BY id "
+        "LIMIT 1";
+  // clang-format on
+  sql::Statement select_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kSelectBucketSql));
+
+  // clang-format off
+  static constexpr char kInsertBucketSql[] =
+      "INSERT into new_buckets("
+          "id,storage_key,host,type,name,use_count,last_accessed,last_modified,"
+          "expiration,quota,persistent,durability)"
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+  // clang-format on
+  sql::Statement insert_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kInsertBucketSql));
+
+  // Transfer bucket data to the new table one at a time with new
+  // persistence/durability (default) values.
+  BucketId last_bucket_id(0);
+  while (true) {
+    select_statement.BindInt64(0, last_bucket_id.value());
+    if (!select_statement.Step())
+      break;
+
+    last_bucket_id = BucketId(select_statement.ColumnInt64(0));
+
+    insert_statement.BindInt64(0, select_statement.ColumnInt64(0));
+    insert_statement.BindString(1, select_statement.ColumnString(1));
+    insert_statement.BindString(2, select_statement.ColumnString(2));
+    insert_statement.BindInt(3, select_statement.ColumnInt(3));
+    const std::string bucket_name = select_statement.ColumnString(4);
+    insert_statement.BindString(4, bucket_name);
+    insert_statement.BindInt(5, select_statement.ColumnInt(5));
+    insert_statement.BindTime(6, select_statement.ColumnTime(6));
+    insert_statement.BindTime(7, select_statement.ColumnTime(7));
+    // Prior to version 9, the default value for `expiration` was
+    // base::Time::Max(), and the value was unused. For version 9+, the default
+    // value is base::Time(). Reset old values to the new default.
+    insert_statement.BindTime(8, base::Time());
+    insert_statement.BindInt(9, select_statement.ColumnInt(9));
+    insert_statement.BindBool(10, false);
+    // The default durability depends on whether the bucket is default. As of
+    // the time of this migration, non-default buckets are not supported without
+    // a flag, but check the name anyway for correctness.
+    insert_statement.BindInt(
+        11, static_cast<int>(bucket_name == kDefaultBucketName
+                                 ? blink::mojom::BucketDurability::kStrict
+                                 : blink::mojom::BucketDurability::kRelaxed));
+
+    if (!insert_statement.Run())
+      return false;
+
+    select_statement.Reset(/*clear_bound_vars=*/true);
+    insert_statement.Reset(/*clear_bound_vars=*/true);
+  }
+
+  if (!OverwriteBucketsTableSetUpIndexes(db))
+    return false;
+
+  // Mark database as up to date.
+  quota_database.meta_table_->SetVersionNumber(9);
+  quota_database.meta_table_->SetCompatibleVersionNumber(9);
   return transaction.Commit();
 }
 
