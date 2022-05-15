@@ -351,6 +351,7 @@ void PdfViewPluginBase::SubmitForm(const std::string& url,
                                    const void* data,
                                    int length) {
   // `url` might be a relative URL. Resolve it against the document's URL.
+  // TODO(crbug.com/1322928): Probably redundant with `Client::CompleteURL()`.
   GURL resolved_url = GURL(GetURL()).Resolve(url);
   if (!resolved_url.is_valid())
     return;

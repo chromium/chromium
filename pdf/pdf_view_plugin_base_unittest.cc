@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -52,7 +51,6 @@ using ::testing::IsTrue;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
-using ::testing::StrEq;
 
 // Keep it in-sync with the `kFinalFallbackName` returned by
 // net::GetSuggestedFilename().
@@ -1276,76 +1274,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, GetAccessibilityDocInfo) {
   EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_TRUE(doc_info.text_accessible);
   EXPECT_TRUE(doc_info.text_copyable);
-}
-
-class PdfViewPluginBaseSubmitFormTest : public PdfViewPluginBaseTest {
- public:
-  void SubmitForm(const std::string& url,
-                  base::StringPiece form_data = "data") {
-    EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).WillOnce([this]() {
-      auto mock_loader = std::make_unique<NiceMock<MockUrlLoader>>();
-      EXPECT_CALL(*mock_loader, Open).WillOnce(testing::SaveArg<0>(&request_));
-      return mock_loader;
-    });
-
-    fake_plugin_.SubmitForm(url, form_data.data(), form_data.size());
-  }
-
-  void SubmitFailingForm(const std::string& url) {
-    EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).Times(0);
-    constexpr char kFormData[] = "form data";
-    fake_plugin_.SubmitForm(url, kFormData, std::size(kFormData));
-  }
-
- protected:
-  UrlRequest request_;
-};
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, RequestMethodAndBody) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return("https://www.example.com/path/to/the.pdf"));
-  constexpr char kFormData[] = "form data";
-  SubmitForm(/*url=*/"", kFormData);
-  EXPECT_EQ(request_.method, "POST");
-  EXPECT_THAT(request_.body, StrEq(kFormData));
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, RelativeUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return("https://www.example.com/path/to/the.pdf"));
-  SubmitForm("relative_endpoint");
-  EXPECT_EQ(request_.url, "https://www.example.com/path/to/relative_endpoint");
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, NoRelativeUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return("https://www.example.com/path/to/the.pdf"));
-  SubmitForm("");
-  EXPECT_EQ(request_.url, "https://www.example.com/path/to/the.pdf");
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, AbsoluteUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return("https://a.example.com/path/to/the.pdf"));
-  SubmitForm("https://b.example.com/relative_endpoint");
-  EXPECT_EQ(request_.url, "https://b.example.com/relative_endpoint");
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, EmptyDocumentUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL).WillOnce(Return(std::string()));
-  SubmitFailingForm("relative_endpoint");
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, RelativeUrlInvalidDocumentUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return(R"(https://www.%B%Ad.com/path/to/the.pdf)"));
-  SubmitFailingForm("relative_endpoint");
-}
-
-TEST_F(PdfViewPluginBaseSubmitFormTest, AbsoluteUrlInvalidDocumentUrl) {
-  EXPECT_CALL(fake_plugin_, GetURL)
-      .WillOnce(Return(R"(https://www.%B%Ad.com/path/to/the.pdf)"));
-  SubmitFailingForm("https://wwww.example.com");
 }
 
 }  // namespace chrome_pdf
