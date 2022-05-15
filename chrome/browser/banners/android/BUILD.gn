@@ -19,7 +19,6 @@ android_library("java") {
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/user_education:java",
     "//components/feature_engagement/public:public_java",
     "//components/webapps/browser/android:java",
@@ -41,49 +40,4 @@ android_resources("java_resources") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java" ]
-}
-
-android_library("javatests") {
-  testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/banners/AppBannerManagerTest.java",
-  ]
-  deps = [
-    ":java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//build/android:build_java",
-    "//chrome/android:chrome_java",
-    "//chrome/android:chrome_test_util_java",
-    "//chrome/browser/android/browserservices/intents:java",
-    "//chrome/browser/feature_engagement:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/tabmodel:java",
-    "//chrome/browser/ui/android/appmenu/test:test_support_java",
-    "//chrome/browser/webapps/android:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//components/feature_engagement/public:public_java",
-    "//components/infobars/android:java",
-    "//components/messages/android:java",
-    "//components/messages/android/internal:java",
-    "//components/messages/android/test:test_support_java",
-    "//components/signin/public/android:signin_java_test_support",
-    "//components/site_engagement/content/android:java",
-    "//components/webapps/browser/android:java",
-    "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
-    "//net/android:net_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit:junit",
-    "//third_party/mockito:mockito_java",
-    "//third_party/ub-uiautomator:ub_uiautomator_java",
-    "//ui/android:ui_full_java",
-    "//ui/android:ui_java_test_support",
-  ]
 }

@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -40,8 +39,6 @@ class MenuButtonProperties {
     }
 
     public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
-    public static final WritableObjectPropertyKey<AppMenuButtonHelper> APP_MENU_BUTTON_HELPER =
-            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_CLICKABLE = new WritableBooleanPropertyKey();
@@ -56,7 +53,7 @@ class MenuButtonProperties {
             new WritableObjectPropertyKey<>(true);
     public static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA, APP_MENU_BUTTON_HELPER,
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA,
             CONTENT_DESCRIPTION, IS_CLICKABLE, IS_HIGHLIGHTING, IS_VISIBLE, STATE_SUPPLIER,
             SHOW_UPDATE_BADGE, THEME, TRANSLATION_X};
 }

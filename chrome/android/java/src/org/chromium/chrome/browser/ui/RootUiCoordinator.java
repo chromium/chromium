@@ -75,24 +75,17 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
-import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
-import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -121,7 +114,6 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -135,16 +127,13 @@ import java.util.function.Consumer;
  */
 public class RootUiCoordinator
         implements DestroyObserver, InflationObserver, NativeInitObserver,
-                   MenuOrKeyboardActionController.MenuOrKeyboardActionHandler, AppMenuBlocker {
+                   MenuOrKeyboardActionController.MenuOrKeyboardActionHandler {
     private final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
             new TabObscuringHandlerSupplier();
     private final JankTracker mJankTracker;
 
     protected AppCompatActivity mActivity;
-    protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-    private final AccessibilityVisibilityHandler mAccessibilityVisibilityHandler;
-    private final @Nullable AutofillSessionLifetimeController mAutofillSessionLifetimeController;
     protected final ActivityWindowAndroid mWindowAndroid;
 
     protected final ActivityTabProvider mActivityTabProvider;
@@ -186,7 +175,6 @@ public class RootUiCoordinator
     private final ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier = new ObservableSupplierImpl<>();
     protected final ObservableSupplier<Profile> mProfileSupplier;
-    private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mContextualSearchSuppressor;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
@@ -198,7 +186,6 @@ public class RootUiCoordinator
     private MessageContainerCoordinator mMessageContainerCoordinator;
     @Nullable
     private ChromeMessageQueueMediator mMessageQueueMediator;
-    private LayoutManagerImpl mLayoutManager;
     protected OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
     protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
@@ -211,7 +198,6 @@ public class RootUiCoordinator
     protected final ObservableSupplier<LayoutManagerImpl> mLayoutManagerImplSupplier;
     protected final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     protected final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final AppMenuBlocker mAppMenuBlocker;
     private final BooleanSupplier mSupportsAppMenuSupplier;
     protected final BooleanSupplier mSupportsFindInPageSupplier;
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
@@ -222,7 +208,6 @@ public class RootUiCoordinator
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
-    private final AppMenuDelegate mAppMenuDelegate;
     private final StatusBarColorProvider mStatusBarColorProvider;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
@@ -250,7 +235,6 @@ public class RootUiCoordinator
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
      * @param activityThemeColorSupplier Supplies the activity color theme.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
-     * @param appMenuBlocker Controls the app menu blocking.
      * @param supportsAppMenuSupplier Supplies the support state for the app menu.
      * @param supportsFindInPage Supplies the support state for find in page.
      * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
@@ -261,7 +245,6 @@ public class RootUiCoordinator
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
-     * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
      * @param intentRequestTracker Tracks intent requests.
      * @param tabReparentingControllerSupplier Supplier of the {@link TabReparentingController}.
@@ -284,7 +267,6 @@ public class RootUiCoordinator
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<Integer> activityThemeColorSupplier,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
             @NonNull BooleanSupplier supportsFindInPage,
             @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
@@ -294,7 +276,6 @@ public class RootUiCoordinator
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
-            @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
@@ -309,7 +290,6 @@ public class RootUiCoordinator
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        mAppMenuBlocker = appMenuBlocker;
         mSupportsAppMenuSupplier = supportsAppMenuSupplier;
         mSupportsFindInPageSupplier = supportsFindInPage;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
@@ -320,7 +300,6 @@ public class RootUiCoordinator
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
-        mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorProvider = statusBarColorProvider;
         mIntentRequestTracker = intentRequestTracker;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
@@ -343,19 +322,7 @@ public class RootUiCoordinator
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
-        mAccessibilityVisibilityHandler =
-                new AccessibilityVisibilityHandler(mActivityLifecycleDispatcher,
-                        mActivityTabProvider, mTabObscuringHandlerSupplier.get());
-        // While Autofill is supported on Android O, meaningful Autofill interactions in Chrome
-        // require the compatibility mode introduced in Android P.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mAutofillSessionLifetimeController = new AutofillSessionLifetimeController(
-                    activity, mActivityLifecycleDispatcher, mActivityTabProvider);
-        } else {
-            mAutofillSessionLifetimeController = null;
-        }
         mProfileSupplier = profileSupplier;
-        mAppMenuSupplier = new OneshotSupplierImpl<>();
         mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mActionModeControllerCallback = new ToolbarActionModeCallback();
 
@@ -449,12 +416,6 @@ public class RootUiCoordinator
             mToolbarManager = null;
         }
 
-        if (mAppMenuCoordinator != null) {
-            mAppMenuCoordinator.unregisterAppMenuBlocker(this);
-            mAppMenuCoordinator.unregisterAppMenuBlocker(mAppMenuBlocker);
-            mAppMenuCoordinator.destroy();
-        }
-
         if (mTopUiThemeColorProvider != null) {
             mTopUiThemeColorProvider.destroy();
             mTopUiThemeColorProvider = null;
@@ -535,15 +496,6 @@ public class RootUiCoordinator
         initAppMenu();
         initDirectActionInitializer();
         initContextualSearchSuppressor();
-        if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
-            mModalDialogManagerObserver = new ModalDialogManagerObserver() {
-                @Override
-                public void onDialogAdded(PropertyModel model) {
-                    mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
-                }
-            };
-            mModalDialogManagerSupplier.get().addObserver(mModalDialogManagerObserver);
-        }
         mChromeActionModeHandler = new ChromeActionModeHandler(mActivityTabProvider,
                 mToolbarManager::onActionBarVisibilityChanged, (searchText) -> {
                     if (mTabModelSelectorSupplier.get() == null) return;
@@ -699,10 +651,7 @@ public class RootUiCoordinator
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == R.id.show_menu && mAppMenuCoordinator != null) {
-            mAppMenuCoordinator.showAppMenuForKeyboardEvent();
-            return true;
-        } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {
+        if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {
             onShareMenuItemSelected(id == R.id.direct_share_menu_id,
                     mTabModelSelectorSupplier.get().isIncognitoSelected());
             return true;
@@ -714,19 +663,6 @@ public class RootUiCoordinator
         }
 
         return false;
-    }
-
-    // AppMenuBlocker implementation
-
-    @Override
-    public boolean canShowAppMenu() {
-        // Do not show the menu if Contextual Search panel is opened.
-        if (mContextualSearchManagerSupplier.get() != null
-                && mContextualSearchManagerSupplier.get().isSearchPanelOpened()) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -760,7 +696,6 @@ public class RootUiCoordinator
 
     // Protected class methods
     protected void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
-        mLayoutManager = layoutManager;
         if (mOverlayPanelManager != null) {
             mOverlayPanelManager.removeObserver(mOverlayPanelManagerObserver);
         }
@@ -841,11 +776,11 @@ public class RootUiCoordinator
                     mActivityTabProvider,
                     mScrimCoordinator, mActionModeControllerCallback,
                     mProfileSupplier, mCanAnimateBrowserControls,
-                    mLayoutStateProviderOneShotSupplier, mAppMenuSupplier,
+                    mLayoutStateProviderOneShotSupplier,
                     shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier,
                     mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
                     mPromoShownOneshotSupplier, mWindowAndroid, mIsInOverviewModeSupplier,
-                    mModalDialogManagerSupplier, mStatusBarColorController, mAppMenuDelegate,
+                    mModalDialogManagerSupplier, mStatusBarColorController,
                     mActivityLifecycleDispatcher, mStartSurfaceParentTabSupplier,
                     mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
@@ -939,27 +874,10 @@ public class RootUiCoordinator
     }
 
     private void initAppMenu() {
-        // TODO(https://crbug.com/931496): Revisit this as part of the broader
-        // discussion around activity-specific UI customizations.
-        if (mSupportsAppMenuSupplier.getAsBoolean()) {
-            mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
-                    mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
-                    mActivity.getWindow().getDecorView(),
-                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
-            AppMenuCoordinatorFactory.setExceptionReporter(
-                    (throwable)
-                            -> ChromePureJavaExceptionReporter.reportJavaException(
-                                    (Throwable) throwable));
 
-            mAppMenuCoordinator.registerAppMenuBlocker(this);
-            mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
-
-            mAppMenuSupplier.set(mAppMenuCoordinator);
-        }
     }
 
     private void hideAppMenu() {
-        if (mAppMenuCoordinator != null) mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
     }
 
     /**
@@ -1109,22 +1027,4 @@ public class RootUiCoordinator
         mBottomSheetController.addObserver(mContextualSearchSuppressor);
     }
 
-    // Testing methods
-
-    @VisibleForTesting
-    public AppMenuCoordinator getAppMenuCoordinatorForTesting() {
-        return mAppMenuCoordinator;
-    }
-
-    @VisibleForTesting
-    public ScrimCoordinator getScrimCoordinatorForTesting() {
-        return mScrimCoordinator;
-    }
-
-    @VisibleForTesting
-    public void destroyActivityForTesting() {
-        // Actually destroying or finishing the activity hinders the shutdown process after
-        // a test is done. Just null it out to give an effect of |onDestroy| being invoked.
-        mActivity = null;
-    }
 }

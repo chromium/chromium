@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -88,7 +87,6 @@ public abstract class ToolbarLayout
 
     private ThemeColorProvider mThemeColorProvider;
     private MenuButtonCoordinator mMenuButtonCoordinator;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
@@ -148,13 +146,6 @@ public abstract class ToolbarLayout
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.setIsAndroidViewVisible(visibility == View.VISIBLE);
         }
-    }
-
-    /**
-     * @param appMenuButtonHelper The helper for managing menu button interactions.
-     */
-    void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mAppMenuButtonHelper = appMenuButtonHelper;
     }
 
     // TODO(pnoland, https://crbug.com/865801): Move this from ToolbarLayout to forthcoming
@@ -364,13 +355,6 @@ public abstract class ToolbarLayout
 
     void getPositionRelativeToContainer(View containerView, int[] position) {
         ViewUtils.getRelativeDrawPosition(containerView, this, position);
-    }
-
-    /**
-     * @return The helper for menu button UI interactions.
-     */
-    AppMenuButtonHelper getMenuButtonHelper() {
-        return mAppMenuButtonHelper;
     }
 
     /**
@@ -657,8 +641,7 @@ public abstract class ToolbarLayout
     void setTextureCaptureMode(boolean textureMode) {}
 
     boolean shouldIgnoreSwipeGesture() {
-        if (mUrlHasFocus || mFindInPageToolbarShowing) return true;
-        return mAppMenuButtonHelper != null && mAppMenuButtonHelper.isAppMenuActive();
+        return true;
     }
 
     /**

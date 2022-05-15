@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -52,11 +51,9 @@ public class AddToHomescreenIPHController {
     private static final String VARIATION_KEY_USE_MESSAGE = "use_message";
 
     private Activity mActivity;
-    private AppMenuHandler mAppMenuHandler;
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
     private final @IdRes int mHighlightMenuItemId;
-    private final Supplier<View> mMenuButtonView;
     private final MessageDispatcher mMessageDispatcher;
     private final UserEducationHelper mUserEducationHelper;
     private final Tracker mTracker;
@@ -69,21 +66,17 @@ public class AddToHomescreenIPHController {
      * @param activity The associated activity.
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the dialog.
-     * @param appMenuHandler The {@link AppMenuHandler}.
      * @param highlightMenuItemId The resource id of 'Add to Home screen' in the app menu.
-     * @param menuButtonView The view representing the menu button.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
     public AddToHomescreenIPHController(Activity activity, WindowAndroid windowAndroid,
-            ModalDialogManager modalDialogManager, AppMenuHandler appMenuHandler,
-            @IdRes int highlightMenuItemId, Supplier<View> menuButtonView,
+            ModalDialogManager modalDialogManager,
+            @IdRes int highlightMenuItemId,
             MessageDispatcher messageDispatcher) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
-        mAppMenuHandler = appMenuHandler;
         mHighlightMenuItemId = highlightMenuItemId;
-        mMenuButtonView = menuButtonView;
         mMessageDispatcher = messageDispatcher;
         mTracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
@@ -113,7 +106,6 @@ public class AddToHomescreenIPHController {
      */
     public void destroy() {
         mActivity = null;
-        mAppMenuHandler = null;
     }
 
     private static boolean canShowAddToHomescreenMenuItem(Context context, Tab tab) {
@@ -149,15 +141,6 @@ public class AddToHomescreenIPHController {
     }
 
     private void showTextBubbleIPH() {
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mActivity.getResources(),
-                        FeatureConstants.ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE,
-                        R.string.iph_bubble_add_to_home_screen,
-                        R.string.iph_bubble_add_to_home_screen_accessibility)
-                        .setAnchorView(mMenuButtonView.get())
-                        .setOnShowCallback(this::turnOnTextBubbleHighlightForMenuItem)
-                        .setOnDismissCallback(this::turnOffTextBubbleHighlightForMenuItem)
-                        .build());
     }
 
     private void showMessageIPH(Tab tab) {
@@ -216,12 +199,8 @@ public class AddToHomescreenIPHController {
     }
 
     private void turnOnTextBubbleHighlightForMenuItem() {
-        if (mAppMenuHandler == null) return;
-        mAppMenuHandler.setMenuHighlight(mHighlightMenuItemId);
     }
 
     private void turnOffTextBubbleHighlightForMenuItem() {
-        if (mAppMenuHandler == null) return;
-        mAppMenuHandler.clearMenuHighlight();
     }
 }

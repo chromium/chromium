@@ -50,7 +50,6 @@ android_library("junit") {
     "//chrome/android/webapk/libs/common:splash_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//chrome/browser/android/browserservices/constants:java",
-    "//chrome/test/android:chrome_java_test_support",
     "//components/webapk/android/libs/common:java",
     "//components/webapps/browser/android:java",
     "//services/device/public/mojom:mojom_java",

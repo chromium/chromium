@@ -35,7 +35,6 @@ static_library("test_support") {
 
     deps += [
       "//chrome/test:test_support_jni_headers",
-      "//chrome/test:test_support_ui_android",
     ]
   }
 

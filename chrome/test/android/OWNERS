@@ -1,3 +1,0 @@
-file://chrome/android/OWNERS
-
-per-file BUILD.gn=*

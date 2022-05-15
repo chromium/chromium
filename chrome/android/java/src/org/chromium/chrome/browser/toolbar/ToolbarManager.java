@@ -111,9 +111,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
-import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -144,14 +141,12 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
-import java.util.List;
-
 /**
  * Contains logic for managing the toolbar visual component.  This class manages the interactions
  * with the rest of the application to ensure the toolbar is always visually up to date.
  */
 public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserver, TintObserver,
-                                       MenuButtonDelegate, ChromeAccessibilityUtil.Observer {
+                                       ChromeAccessibilityUtil.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TabCountProvider mTabCountProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -200,7 +195,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final Handler mHandler = new Handler();
     private final AppCompatActivity mActivity;
     private final WindowAndroid mWindowAndroid;
-    private final AppMenuDelegate mAppMenuDelegate;
     private final CompositorViewHolder mCompositorViewHolder;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
@@ -316,7 +310,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param isInOverviewModeSupplier Supplies whether the app is currently in overview mode.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param statusBarColorController The {@link StatusBarColorController} for the app.
-     * @param appMenuDelegate Allows interacting with the app menu.
      * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle.
      * @param startSurfaceParentTabSupplier Supplies the StartSurface's parent tab.
      * @param bottomSheetController Controls the state of the bottom sheet.
@@ -340,7 +333,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ObservableSupplier<Profile> profileSupplier,
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
@@ -348,7 +340,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
             Supplier<Boolean> isInOverviewModeSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate,
+            StatusBarColorController statusBarColorController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BottomSheetController bottomSheetController,
@@ -374,7 +366,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
-        mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorController = statusBarColorController;
         mUrlFocusChangedCallback = urlFocusChangedCallback;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -468,14 +459,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         Runnable onMenuButtonClicked =
                 () -> UpdateMenuItemHelper.getInstance().onMenuButtonClicked();
 
-        mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
+        mMenuButtonCoordinator = new MenuButtonCoordinator(
                 mControlsVisibilityDelegate, mWindowAndroid, this::setUrlBarFocus,
                 requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
                 menuButtonThemeColorProvider, menuButtonStateSupplier, onMenuButtonClicked,
                 R.id.menu_button_wrapper);
         if (shouldShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
 
-        mOverviewModeMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
+        mOverviewModeMenuButtonCoordinator = new MenuButtonCoordinator(
                 mControlsVisibilityDelegate, mWindowAndroid, this::setUrlBarFocus,
                 requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
                 overviewModeThemeColorProvider, menuButtonStateSupplier, onMenuButtonClicked,
@@ -875,7 +866,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 new UserEducationHelper(mActivity, mHandler),
                 browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, mOverviewModeMenuButtonCoordinator,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
+                mTabModelSelectorSupplier,
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 mHomepageManagedByPolicySupplier,
                 (client) -> {
@@ -1024,7 +1015,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar.initializeWithNative(layoutManager::requestUpdate, tabSwitcherClickHandler,
                 newTabClickHandler, bookmarkClickHandler, customTabsBackClickHandler,
-                mAppMenuDelegate, layoutManager, mActivityTabProvider, mBrowserControlsSizer,
+                layoutManager, mActivityTabProvider, mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
 
         mToolbar.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
@@ -1101,11 +1092,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public Toolbar getToolbar() {
         return mToolbar;
-    }
-
-    @Override
-    public @Nullable View getMenuButtonView() {
-        return mMenuButtonCoordinator.getMenuButton().getImageButton();
     }
 
     /**

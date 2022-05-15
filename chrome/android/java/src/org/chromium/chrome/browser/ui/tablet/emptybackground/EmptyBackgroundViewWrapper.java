@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 import java.util.List;
@@ -45,7 +44,6 @@ public class EmptyBackgroundViewWrapper {
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     private EmptyBackgroundViewTablet mBackgroundView;
-    private final @Nullable AppMenuHandler mMenuHandler;
 
     /**
      * Creates a {@link EmptyBackgroundViewWrapper} instance that will lazily inflate.
@@ -53,18 +51,15 @@ public class EmptyBackgroundViewWrapper {
      * @param tabCreator A {@link TabCreator} that will be used to open the New Tab Page.
      * @param activity An {@link Activity} that represents a parent of th
      *         {@link android.view.ViewStub}.
-     * @param menuHandler A {@link AppMenuHandler} to handle menu touch events.
      * @param snackbarManager The {@link SnackbarManager} to show the undo snackbar when the empty
      *         background is visible.
      * @param layoutStateProviderSupplier An {@link ObservableSupplier} for the
      *         {@link LayoutManager} associated with the containing activity.
      */
     public EmptyBackgroundViewWrapper(TabModelSelector selector, TabCreator tabCreator,
-            Activity activity, @Nullable AppMenuHandler menuHandler,
-            SnackbarManager snackbarManager,
+            Activity activity, SnackbarManager snackbarManager,
             ObservableSupplier<LayoutManager> layoutStateProviderSupplier) {
         mActivity = activity;
-        mMenuHandler = menuHandler;
         mTabModelSelector = selector;
         mTabCreator = tabCreator;
         mSnackbarManager = snackbarManager;
@@ -148,7 +143,6 @@ public class EmptyBackgroundViewWrapper {
                                   .inflate();
         mBackgroundView.setTabModelSelector(mTabModelSelector);
         mBackgroundView.setTabCreator(mTabCreator);
-        if (mMenuHandler != null) mBackgroundView.setMenuOnTouchListener(mMenuHandler);
         mBackgroundView.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
             public void onViewDetachedFromWindow(View v) {

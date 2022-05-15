@@ -324,18 +324,18 @@ static_library("test_support") {
   }
 
   if (is_android) {
-    public_deps += [
-      ":test_support_ui_android",
-      "//chrome:chrome_android_core",
-      "//components/feed/core/v2:feed_core_stubs",
-    ]
-    if (enable_vr) {
-      public_deps += [ "//chrome/browser/android/vr:test_support" ]
-
-      # Add a dummy implementation of RegisterJni to satisfy the linker.
-      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
-    }
-    allow_circular_includes_from = [ ":test_support_ui_android" ]
+#    public_deps += [
+#      ":test_support_ui_android",
+#      "//chrome:chrome_android_core",
+#      "//components/feed/core/v2:feed_core_stubs",
+#    ]
+#    if (enable_vr) {
+#      public_deps += [ "//chrome/browser/android/vr:test_support" ]
+#
+#      # Add a dummy implementation of RegisterJni to satisfy the linker.
+#      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
+#    }
+#    allow_circular_includes_from = [ ":test_support_ui_android" ]
   } else {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
@@ -754,316 +754,6 @@ if (is_win) {
       "//base",
       "//chrome/credential_provider/common:common_constants",
     ]
-  }
-}
-
-if (is_android) {
-  test("android_browsertests") {
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [
-      "HAS_OUT_OF_PROC_TEST_RUNNER",
-      "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    ]
-    use_default_launcher = false
-    android_manifest =
-        "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
-    android_manifest_dep = ":android_browsertests_manifest"
-
-    deps = [
-      ":android_browsertests_assets",
-      ":android_browsertests_java",
-      ":browser_tests_runner",
-      ":sync_integration_test_support",
-      ":sync_integration_test_support_java",
-      ":test_support",
-      ":test_support_java",
-      ":test_support_ui_android",
-      "//build:chromeos_buildflags",
-      "//chrome:chrome_android_core",
-      "//chrome/android:delegate_public_impl_java",
-      "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/continuous_search:browser_tests",
-      "//chrome/browser/flags:flags_android",
-      "//chrome/browser/metrics:test_support",
-      "//chrome/browser/payments:browser_tests",
-      "//chrome/browser/policy:browser_tests",
-      "//chrome/browser/prerender:browser_tests",
-      "//chrome/browser/privacy_budget:browser_tests",
-      "//chrome/browser/profiling_host:profiling_browsertests",
-      "//chrome/browser/webaudio:browser_tests",
-      "//components/blocked_content",
-      "//components/browser_ui/widget/android:java",
-      "//components/content_settings/browser:browser",
-      "//components/crash/android:crashpad_main",
-      "//components/infobars/content",
-      "//components/metrics/demographics",
-      "//components/metrics/demographics:test_support",
-      "//components/metrics_services_manager",
-      "//components/page_load_metrics/browser:test_support",
-      "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
-      "//components/safe_browsing/core/browser/db:v4_database",
-      "//components/safe_browsing/core/common",
-      "//components/security_interstitials/core:unsafe_resource",
-      "//components/security_state/content/android",
-      "//components/subresource_filter/core/browser:test_support",
-      "//components/subresource_filter/core/common:test_support",
-      "//components/sync/test/fake_server",
-      "//components/ukm:test_support",
-      "//components/ukm:ukm_test_helper",
-      "//components/ukm/content",
-      "//components/unified_consent",
-      "//components/webapps/browser",
-
-      # TODO(crbug.com/961849): This is needed for ShellManager which is what
-      # the ChromeBrowserTestsActivity is using to build the java UI. It's
-      # likely we want to replace it with something new that uses ChromeWindow
-      # and CompositorViewHolder instead.
-      "//content/shell:content_shell_lib",
-      "//content/test:android_test_message_pump_support",
-      "//testing/android/native_test:native_test_support",
-    ]
-
-    sources = [
-      "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
-      "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
-      "../browser/autofill/autofill_uitest_util.cc",
-      "../browser/autofill/autofill_uitest_util.h",
-      "../browser/browsing_data/access_context_audit_browsertest.cc",
-      "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
-      "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
-      "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
-      "../browser/engagement/important_sites_util_browsertest.cc",
-      "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
-      "../browser/metrics/startup_metrics_browsertest.cc",
-      "../browser/metrics/ukm_browsertest.cc",
-      "../browser/net/cert_verify_proc_browsertest.cc",
-      "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_android_browsertest.cc",
-      "../browser/password_manager/android/password_manager_android_browsertest.cc",
-      "../browser/password_manager/passwords_navigation_observer.cc",
-      "../browser/password_manager/passwords_navigation_observer.h",
-      "../browser/policy/policy_prefs_browsertest.cc",
-      "../browser/profiles/profile_browsertest_android.cc",
-      "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
-      "../browser/safe_browsing/test_safe_browsing_database_helper.h",
-      "../browser/ssl/chrome_security_state_client_browsertest.cc",
-      "../browser/ssl/crlset_browsertest.cc",
-      "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
-      "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
-      "../browser/ui/autofill/payments/offer_notification_infobar_controller_impl_browsertest.cc",
-      "../browser/ui/webui/policy/policy_ui_browsertest.cc",
-      "../renderer/autofill/fake_mojo_password_manager_driver.cc",
-      "../renderer/autofill/fake_mojo_password_manager_driver.h",
-      "../renderer/autofill/fake_password_generation_driver.cc",
-      "../renderer/autofill/fake_password_generation_driver.h",
-      "../renderer/autofill/password_autofill_agent_browsertest.cc",
-      "../renderer/autofill/password_generation_agent_browsertest.cc",
-      "../renderer/autofill/password_generation_test_utils.cc",
-      "../renderer/autofill/password_generation_test_utils.h",
-      "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
-      "android/browsertests_apk/android_browsertests_jni_onload.cc",
-      "base/android/android_browser_test_browsertest_android.cc",
-    ]
-
-    deps += [
-      "//components/autofill/content/renderer:test_support",
-      "//components/browsing_data/core:core",
-      "//components/enterprise:enterprise",
-      "//components/enterprise:test_support",
-      "//components/invalidation/impl:test_support",
-      "//components/messages/android:android",
-      "//components/messages/android:feature_flags",
-      "//components/messages/android/test:test_support_cpp",
-      "//components/messages/android/test:test_support_java",
-      "//components/password_manager/content/browser:browser",
-      "//components/policy:chrome_settings_proto_generated_compile",
-      "//components/policy/core/browser:test_support",
-      "//components/safe_browsing/content/renderer/phishing_classifier:phishing_classifier",
-      "//components/safe_browsing/core/common/fbs:client_model",
-      "//components/safe_browsing/core/common/proto:client_model_proto",
-      "//components/spellcheck:buildflags",
-      "//components/spellcheck/renderer:renderer",
-      "//components/user_manager:user_manager",
-    ]
-
-    # Add unwind tables in android_browsertests apk to support enabling
-    # sampling profiler. The unwind tables are generated from debug info in the
-    # binary. Removing "default_symbols" and adding symbols config removes the
-    # "strip_debug" config that strips the debug info, on android_browsertests
-    # apk.
-    if (enable_arm_cfi_table) {
-      sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-      deps += [
-        "//chrome/android/modules/stack_unwinder/internal:java",
-        "//chrome/android/modules/stack_unwinder/internal:stack_unwinder_for_testing",
-      ]
-      configs -= [ "//build/config/compiler:default_symbols" ]
-      if (symbol_level == 2) {
-        configs += [ "//build/config/compiler:symbols" ]
-      } else {
-        configs += [ "//build/config/compiler:minimal_symbols" ]
-      }
-      add_unwind_tables_in_apk = true
-    }
-
-    if (enable_arcore) {
-      # If AR is supported, we should also include WebXR's AR enterprise policy
-      # browsertest. The test should not be enabled when AR features are not
-      # enabled, since we won't be able to distinguish whether the test cases
-      # are failing due to absence of AR, or due to an issue with propagating
-      # the enterprise policy setting.
-      sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
-    }
-
-    data = [
-      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
-      "$root_gen_dir/components/components_resources.pak",
-      "$root_gen_dir/components/dev_ui_components_resources.pak",
-      "$root_out_dir/browser_tests.pak",
-      "//components/test/data/ads_observer/",
-      "//components/test/data/payments/",
-      "//chrome/test/data/android/customtabs/",
-      "//chrome/test/data/banners/",
-      "//chrome/test/data/policy/",
-      "//chrome/test/data/ssl/",
-      "//content/test/data/",
-    ]
-
-    if (dfmify_dev_ui) {
-      # If DevUI DFM is on, include Java classes and native resource split so
-      # that DevUI page tests would work.
-      deps += [
-        "//chrome/android/features/dev_ui:java",
-        "//chrome/android/modules/dev_ui/provider:java",
-      ]
-    }
-  }
-
-  test("android_sync_integration_tests") {
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    use_default_launcher = false
-    android_manifest =
-        "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
-    android_manifest_dep = ":android_browsertests_manifest"
-
-    deps = [
-      ":android_browsertests_assets",
-      ":android_browsertests_java",
-      ":browser_tests_runner",
-      ":sync_integration_test_support",
-      ":sync_integration_test_support_java",
-      ":test_support",
-      ":test_support_java",
-      ":test_support_ui_android",
-      "//chrome:chrome_android_core",
-      "//chrome/android:delegate_public_impl_java",
-      "//components/bookmarks/browser",
-      "//components/sync:test_support_nigori",
-      "//components/sync/test/fake_server:fake_server",
-      "//components/sync_bookmarks",
-      "//components/sync_device_info:test_support",
-      "//components/undo",
-      "//content/test:android_test_message_pump_support",
-      "//testing/android/native_test:native_test_support",
-    ]
-
-    sources = sync_integration_tests_sources +
-              [ "android/browsertests_apk/android_browsertests_jni_onload.cc" ]
-
-    data = [
-      "//chrome/test/data/sync/",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
-      "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
-      "$root_gen_dir/components/components_resources.pak",
-      "$root_gen_dir/components/dev_ui_components_resources.pak",
-    ]
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
-  }
-
-  static_library("test_support_ui_android") {
-    configs += [ "//build/config:precompiled_headers" ]
-    testonly = true
-
-    sources = [
-      "../browser/ssl/cert_verifier_platform_browser_test.cc",
-      "../browser/ssl/cert_verifier_platform_browser_test.h",
-      "base/android/android_browser_test.cc",
-      "base/android/android_browser_test.h",
-    ]
-    public_deps = [ "//content/test:test_support" ]
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/ui",
-      "//content/public/browser",
-    ]
-  }
-
-  android_assets("android_browsertests_assets") {
-    testonly = true
-    disable_compression = true
-    sources = []
-    deps = []
-
-    # These are grit() rules so they are in $root_gen_dir.
-    deps += [ "//components/resources" ]
-    sources += [
-      "$root_gen_dir/components/components_resources.pak",
-      "$root_gen_dir/components/dev_ui_components_resources.pak",
-    ]
-
-    # These are repack() rules so they are in $root_out_dir.
-    deps += [ "//chrome:browser_tests_pak" ]
-    sources += [ "$root_out_dir/browser_tests.pak" ]
-
-    # These are assets rules so we can just depend on them.
-    deps += [
-      "//chrome/android:chrome_apk_pak_assets",
-      "//third_party/icu:icu_assets",
-    ]
-
-    if (use_v8_context_snapshot) {
-      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    } else {
-      deps += [ "//v8:v8_external_startup_data_assets" ]
-    }
-  }
-
-  android_library("android_browsertests_java") {
-    testonly = true
-    deps = [
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//build/android:build_java",
-      "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
-      "//chrome/android:base_module_java",
-      "//chrome/android:chrome_all_java",
-      "//chrome/browser/tabmodel:java",
-      "//components/crash/android:handler_java",
-      "//components/crash/android:java",
-      "//components/module_installer/android:module_installer_java",
-      "//content/public/android:content_java",
-      "//content/public/test/android:android_test_message_pump_support_java",
-      "//content/shell/android:content_shell_browsertests_java",
-      "//testing/android/native_test:native_test_java",
-      "//ui/android:ui_full_java",
-    ]
-    sources = [
-      "android/browsertests_apk/src/org/chromium/android_browsertests_apk/ChromeBrowserTestsActivity.java",
-      "android/browsertests_apk/src/org/chromium/android_browsertests_apk/ChromeBrowserTestsApplication.java",
-      "android/browsertests_apk/src/org/chromium/android_browsertests_apk/ChromeBrowserTestsInstrumentationTestRunner.java",
-    ]
-  }
-
-  jinja_template("android_browsertests_manifest") {
-    testonly = true
-    input = "//chrome/test/android/browsertests_apk/AndroidManifest.xml.jinja2"
-    output =
-        "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
   }
 }
 
@@ -9436,31 +9126,6 @@ if (!is_android) {
   }
 }
 
-if (is_android) {
-  android_library("sync_integration_test_support_java") {
-    testonly = true
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-      "//build/android:build_java",
-      "//chrome/android:chrome_all_java",
-      "//chrome/browser/profiles/android:java",
-      "//chrome/test/android:chrome_java_test_support",
-      "//components/signin/public/android:java",
-      "//components/sync/android:sync_java",
-      "//content/public/test/android:content_java_test_support",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/junit",
-    ]
-    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
-  }
-
-  generate_jni("sync_integration_test_support_jni_headers") {
-    testonly = true
-    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
-  }
-}
-
 # For Android, this target has to be built along with the
 # sync_integration_test_support_java target from the test target dependencies.
 source_set("sync_integration_test_support") {
@@ -9625,7 +9290,7 @@ source_set("sync_integration_test_support") {
     ]
   }
   if (is_android) {
-    deps += [ ":sync_integration_test_support_jni_headers" ]
+
   } else {
     deps += [
       "//chrome/browser/web_applications:web_applications_test_support",

@@ -66,7 +66,6 @@ android_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/tab:java",
-    "//chrome/test/android:chrome_java_test_support",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",

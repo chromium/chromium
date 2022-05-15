@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
@@ -168,9 +167,6 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -238,7 +234,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         extends AsyncInitializationActivity
         implements TabCreatorManager, PolicyChangeListener, ContextualSearchTabPromotionDelegate,
                    SnackbarManageable, SceneChangeObserver,
-                   StatusBarColorController.StatusBarColorProvider, AppMenuDelegate, AppMenuBlocker,
+                   StatusBarColorController.StatusBarColorProvider,
                    MenuOrKeyboardActionController, CompositorViewHolder.Initializer,
                    TabModelInitializer {
     private static final String TAG = "ChromeActivity";
@@ -486,12 +482,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mBrowserControlsManagerSupplier.get(), getWindowAndroid(),
                 new DummyJankTracker(), getLifecycleDispatcher(), getLayoutManagerSupplier(),
                  /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
-                getModalDialogManagerSupplier(), /* appMenuBlocker= */ this,
+                getModalDialogManagerSupplier(),
                 this::supportsAppMenu, this::supportsFindInPage, mTabCreatorManagerSupplier,
                 getFullscreenManager(), mCompositorViewHolderSupplier,
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
-                this::isWarmOnResume, /* appMenuDelegate= */ this,
+                this::isWarmOnResume,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 mTabReparentingControllerSupplier, false);
         // clang-format on
@@ -869,13 +865,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mLaunchCauseMetrics = createLaunchCauseMetrics();
         }
         return mLaunchCauseMetrics;
-    }
-
-    @Override
-    public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
-        return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
-                getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), null, null);
     }
 
     /**
@@ -1694,19 +1683,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
-    public boolean onOptionsItemSelected(int itemId, @Nullable Bundle menuItemData) {
-        mMenuItemData = menuItemData;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            mManualFillingComponentSupplier.get().dismiss();
-        }
-        return onMenuOrKeyboardAction(itemId, true);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item != null) {
-            if (onOptionsItemSelected(item.getItemId(), null)) return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -1722,21 +1699,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public boolean shouldShowOverviewPageOnStart() {
         return false;
-    }
-
-    @CallSuper
-    @Override
-    public boolean canShowAppMenu() {
-        if (isActivityFinishingOrDestroyed()) return false;
-
-        @ActivityState
-        int state = ApplicationStatus.getStateForActivity(this);
-        boolean inMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(this);
-        if (state != ActivityState.RESUMED && (!inMultiWindow || state != ActivityState.PAUSED)) {
-            return false;
-        }
-
-        return true;
     }
 
     protected IntentHandlerDelegate createIntentHandlerDelegate() {

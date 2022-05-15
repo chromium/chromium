@@ -133,7 +133,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
-import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
@@ -166,7 +165,6 @@ import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -1517,12 +1515,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mJankTracker, getLifecycleDispatcher(), getLayoutManagerSupplier(),
                 /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
                 getModalDialogManagerSupplier(),
-                /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,
+                this::supportsAppMenu, this::supportsFindInPage,
                 getTabCreatorManagerSupplier(), getFullscreenManager(),
                 getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
                 this::getSnackbarManager, getActivityType(), this::shouldShowOverviewPageOnStart,
                 this::isWarmOnResume,
-                /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, mEphemeralTabCoordinatorSupplier,
                 getIntentRequestTracker(), getControlContainerHeightResource(),
                 mInsetObserverViewSupplier, this::backShouldCloseTab,
@@ -1723,15 +1720,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new TabbedActivityLaunchCauseMetrics(this);
-    }
-
-    @Override
-    public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
-        return new TabbedAppMenuPropertiesDelegate(this, getActivityTabProvider(),
-                getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), this, mLayoutStateProviderSupplier,
-                ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
-                getModalDialogManager(), getSnackbarManager());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {
@@ -2434,22 +2422,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabModelSelectorSupplier(), this::getBrowserControlsManager,
                 this::getFullscreenManager);
         return manager;
-    }
-
-    // App Menu related code -----------------------------------------------------------------------
-
-    @Override
-    public boolean canShowAppMenu() {
-        // The popup menu relies on the model created during the full UI initialization, so do not
-        // attempt to show the menu until the UI creation has finished.
-        if (!mUIWithNativeInitialized) return false;
-
-        // If the current active tab is showing a tab modal dialog, an app menu shouldn't be shown
-        // in any cases, e.g. when a hardware menu button is clicked.
-        Tab tab = getActivityTab();
-        if (tab != null && ChromeTabModalPresenter.isDialogShowing(tab)) return false;
-
-        return super.canShowAppMenu();
     }
 
     @Override

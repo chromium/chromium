@@ -30,7 +30,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
@@ -46,8 +45,6 @@ public class MenuButton extends FrameLayout implements TintObserver {
     /** The view for the update badge. */
     private ImageView mUpdateBadgeView;
     private @BrandedColorScheme int mBrandedColorScheme;
-
-    private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private boolean mHighlightingMenu;
     private PulseDrawable mHighlightDrawable;
@@ -72,12 +69,6 @@ public class MenuButton extends FrameLayout implements TintObserver {
         mMenuImageButton = findViewById(R.id.menu_button);
         mUpdateBadgeView = findViewById(R.id.menu_badge);
         mOriginalBackground = getBackground();
-    }
-
-    public void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mAppMenuButtonHelper = appMenuButtonHelper;
-        mMenuImageButton.setOnTouchListener(mAppMenuButtonHelper);
-        mMenuImageButton.setAccessibilityDelegate(mAppMenuButtonHelper.getAccessibilityDelegate());
     }
 
     public ImageButton getImageButton() {

@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
@@ -80,9 +79,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -197,7 +193,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
      * @param activityThemeColorSupplier Supplies the activity color theme.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
-     * @param appMenuBlocker Controls the app menu blocking.
      * @param supportsAppMenuSupplier Supplies the support state for the app menu.
      * @param supportsFindInPage Supplies the support state for find in page.
      * @param tabCreatorManagerSupplier Supplies the {@link TabCreatorManager}.
@@ -208,7 +203,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
-     * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
@@ -237,7 +231,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<Integer> activityThemeColorSupplier,
             @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull AppMenuBlocker appMenuBlocker,
             @NonNull BooleanSupplier supportsAppMenuSupplier,
             @NonNull BooleanSupplier supportsFindInPage,
             @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
@@ -247,7 +240,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
-            @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull ObservableSupplierImpl<EphemeralTabCoordinator>
                     ephemeralTabCoordinatorSupplier,
@@ -262,10 +254,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 layoutStateProviderOneshotSupplier, startSurfaceParentTabSupplier,
                 browserControlsManager, windowAndroid, jankTracker, activityLifecycleDispatcher,
                 layoutManagerSupplier, menuOrKeyboardActionController, activityThemeColorSupplier,
-                modalDialogManagerSupplier, appMenuBlocker, supportsAppMenuSupplier,
+                modalDialogManagerSupplier, supportsAppMenuSupplier,
                 supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,
                 compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
-                activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
+                activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier,
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 initializeUiWithIncognitoColors);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
@@ -431,12 +423,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            AppMenuHandler appMenuHandler =
-                    mAppMenuCoordinator == null ? null : mAppMenuCoordinator.getAppMenuHandler();
             mEmptyBackgroundViewWrapper =
                     new EmptyBackgroundViewWrapper(mTabModelSelectorSupplier.get(),
                             mTabCreatorManagerSupplier.get().getTabCreator(false), mActivity,
-                            appMenuHandler, mSnackbarManagerSupplier.get(), mLayoutManagerSupplier);
+                            mSnackbarManagerSupplier.get(), mLayoutManagerSupplier);
             mEmptyBackgroundViewWrapper.initialize();
         }
 
@@ -530,9 +520,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initializeIPH(boolean intentWithEffect) {
         if (mActivity == null) return;
         mToolbarButtonInProductHelpController = new ToolbarButtonInProductHelpController(mActivity,
-                mWindowAndroid, mAppMenuCoordinator, mActivityLifecycleDispatcher,
+                mWindowAndroid, mActivityLifecycleDispatcher,
                 mActivityTabProvider, mIsInOverviewModeSupplier,
-                mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
+                mToolbarManager.getSecurityIconView());
         boolean didTriggerPromo = false;
 
         if (!didTriggerPromo) {
@@ -547,15 +537,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             didTriggerPromo = triggerPromo(intentWithEffect);
         }
 
-        if (!didTriggerPromo) {
-            mToolbarButtonInProductHelpController.showColdStartIPH();
-            if (MultiWindowUtils.instanceSwitcherEnabled()
-                    && MultiWindowUtils.shouldShowManageWindowsMenu()) {
-                MultiInstanceIphController.maybeShowInProductHelp(mActivity,
-                        getToolbarManager().getMenuButtonView(),
-                        mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
-            }
-        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             mPromoShownOneshotSupplier.set(didTriggerPromo);
         }
@@ -567,25 +548,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             assert mOfflineIndicatorInProductHelpController == null;
             mOfflineIndicatorInProductHelpController =
                     new OfflineIndicatorInProductHelpController(mActivity, mToolbarManager,
-                            mAppMenuCoordinator.getAppMenuHandler(), mStatusIndicatorCoordinator);
+                            mStatusIndicatorCoordinator);
         }
 
         mAddToHomescreenIPHController = new AddToHomescreenIPHController(mActivity, mWindowAndroid,
-                mModalDialogManagerSupplier.get(), mAppMenuCoordinator.getAppMenuHandler(),
-                R.id.add_to_homescreen_id, () -> {
-                    return mToolbarManager.getMenuButtonView();
-                }, MessageDispatcherProvider.from(mWindowAndroid));
+                mModalDialogManagerSupplier.get(),
+                R.id.add_to_homescreen_id, MessageDispatcherProvider.from(mWindowAndroid));
         mLinkToTextIPHController =
                 new LinkToTextIPHController(mActivityTabProvider, mTabModelSelectorSupplier.get());
         mAppBannerInProductHelpController =
                 AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
-                        mActivity, mAppMenuCoordinator.getAppMenuHandler(),
-                        () -> mToolbarManager.getMenuButtonView(), R.id.add_to_homescreen_id);
+                        mActivity, R.id.add_to_homescreen_id);
         AppBannerInProductHelpControllerFactory.attach(
                 mWindowAndroid, mAppBannerInProductHelpController);
         mCrowIphController = new CrowIphController(mActivity,
-                mAppMenuCoordinator.getAppMenuHandler(), new CrowButtonDelegateImpl(),
-                mActivityTabProvider, mToolbarManager.getMenuButtonView());
+                new CrowButtonDelegateImpl(), mActivityTabProvider);
     }
 
     private void updateTopControlsHeight(boolean animate) {

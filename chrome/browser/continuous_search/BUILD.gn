@@ -18,9 +18,7 @@ source_set("browser_tests") {
     "//url",
   ]
 
-  if (is_android) {
-    deps += [ "//chrome/test:test_support_ui_android" ]
-  } else {
+  if (!is_android) {
     deps += [ "//chrome/test:test_support_ui" ]
   }
 
@@ -128,7 +126,6 @@ if (is_android) {
 
     sources = [
       "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchChipViewTest.java",
-      "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelperTest.java",
       "android/javatests/org/chromium/chrome/browser/continuous_search/ContinuousSearchUiTest.java",
     ]
 
@@ -142,7 +139,6 @@ if (is_android) {
       "//chrome/browser/continuous_search/internal:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
-      "//chrome/test/android:chrome_java_test_support",
       "//components/embedder_support/android:util_java",
       "//components/url_formatter/android:url_formatter_java",
       "//content/public/android:content_java",
@@ -188,7 +184,6 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/layouts:java",
       "//chrome/browser/ui/android/theme:java",
-      "//chrome/test/android:chrome_java_test_support",
       "//components/browser_ui/widget/android:java",
       "//components/url_formatter/android:url_formatter_java",
       "//content/public/android:content_java",

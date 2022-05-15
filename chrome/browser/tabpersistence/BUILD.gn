@@ -32,7 +32,6 @@ java_library("junit") {
     "//base/test:test_support_java",
     "//build/android:build_java",
     "//chrome/browser/tab:java",
-    "//chrome/test/android:chrome_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",

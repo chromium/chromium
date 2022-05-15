@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.IdRes;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -18,10 +17,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class AppBannerInProductHelpControllerFactory {
     public static AppBannerInProductHelpController createAppBannerInProductHelpController(
-            Activity activity, AppMenuHandler appMenuHandler, Supplier<View> menuButtonView,
-            @IdRes int higlightMenuItemId) {
+            Activity activity, @IdRes int higlightMenuItemId) {
         return new AppBannerInProductHelpController(
-                activity, appMenuHandler, menuButtonView, higlightMenuItemId);
+                activity, higlightMenuItemId);
     }
 
     public static void attach(

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
-import static android.view.View.LAYOUT_DIRECTION_RTL;
-
 import android.animation.Animator;
 import android.app.Activity;
 import android.graphics.Canvas;
@@ -15,20 +13,18 @@ import android.view.View.OnKeyListener;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import static android.view.View.LAYOUT_DIRECTION_RTL;
 
 /**
  * Root component for the app menu button on the toolbar. Owns the MenuButton view and handles
@@ -42,13 +38,10 @@ public class MenuButtonCoordinator {
     private final Activity mActivity;
     private final PropertyModel mPropertyModel;
     private MenuButtonMediator mMediator;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
     private MenuButton mMenuButton;
     private PropertyModelChangeProcessor mChangeProcessor;
 
     /**
-     *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
-     *         app menu MVC components.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
      *         controls.
      * @param windowAndroid The WindowAndroid instance.
@@ -63,7 +56,7 @@ public class MenuButtonCoordinator {
      * @param onMenuButtonClicked Runnable to run on menu button click.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
      */
-    public MenuButtonCoordinator(OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
+    public MenuButtonCoordinator(
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             WindowAndroid windowAndroid, SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
@@ -85,10 +78,8 @@ public class MenuButtonCoordinator {
                 ()
                         -> mActivity.isFinishing() || mActivity.isDestroyed(),
                 requestRenderRunnable, themeColorProvider, isInOverviewModeSupplier,
-                controlsVisibilityDelegate, setUrlBarFocusFunction, appMenuCoordinatorSupplier,
+                controlsVisibilityDelegate, setUrlBarFocusFunction,
                 windowAndroid, menuButtonStateSupplier, onMenuButtonClicked);
-        mMediator.getMenuButtonHelperSupplier().addObserver(
-                (helper) -> mAppMenuButtonHelper = helper);
         if (mMenuButton != null) {
             mChangeProcessor = PropertyModelChangeProcessor.create(
                     mPropertyModel, mMenuButton, new MenuButtonViewBinder());
@@ -133,8 +124,7 @@ public class MenuButtonCoordinator {
      * @return Whether the app menu was shown as a result of this action.
      */
     public boolean onEnterKeyPress() {
-        if (mAppMenuButtonHelper == null || mMenuButton == null) return false;
-        return mAppMenuButtonHelper.onEnterKeyPress(mMenuButton.getImageButton());
+        return false;
     }
 
     /**
@@ -181,18 +171,11 @@ public class MenuButtonCoordinator {
         }
 
         mMenuButton = null;
-        mAppMenuButtonHelper = null;
     }
 
     /** @return Observer for menu state change. */
     public @Nullable Runnable getStateObserver() {
         return mMediator != null ? mMediator::updateStateChanged : null;
-    }
-
-    @Nullable
-    public ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
-        if (mMediator == null) return null;
-        return mMediator.getMenuButtonHelperSupplier();
     }
 
     /**

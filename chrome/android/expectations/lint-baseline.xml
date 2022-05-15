@@ -3435,28 +3435,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: AppMenuHighlightItem.UNKNOWN, AppMenuHighlightItem.DOWNLOADS, AppMenuHighlightItem.BOOKMARKS, AppMenuHighlightItem.TRANSLATE, AppMenuHighlightItem.ADD_TO_HOMESCREEN, AppMenuHighlightItem.DOWNLOAD_THIS_PAGE, AppMenuHighlightItem.BOOKMARK_THIS_PAGE, AppMenuHighlightItem.DATA_REDUCTION_FOOTER"
-        errorLine1="                getUmaEnumForMenuItem(menuItemId), AppMenuHighlightItem.NUM_ENTRIES);"
-        errorLine2="                                                                        ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl.java"
-            line="975"
-            column="73"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: AppMenuHighlightItem.UNKNOWN, AppMenuHighlightItem.DOWNLOADS, AppMenuHighlightItem.BOOKMARKS, AppMenuHighlightItem.TRANSLATE, AppMenuHighlightItem.ADD_TO_HOMESCREEN, AppMenuHighlightItem.DOWNLOAD_THIS_PAGE, AppMenuHighlightItem.BOOKMARK_THIS_PAGE, AppMenuHighlightItem.DATA_REDUCTION_FOOTER"
-        errorLine1="                getUmaEnumForMenuItem(menuItemId), AppMenuHighlightItem.NUM_ENTRIES);"
-        errorLine2="                                                                        ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl.java"
-            line="981"
-            column="73"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Icon.NONE, Icon.CLEAR, Icon.DONE, Icon.REFRESH"
         errorLine1="            case AssistantChip.Icon.OVERFLOW:"
         errorLine2="                                    ~~~~~~~~">
@@ -8084,17 +8062,6 @@
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java"
             line="555"
             column="55"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        mHandler.onOptionsItemSelected(id, mHighlightedItemId != null &amp;&amp; mHighlightedItemId == id);"
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="386"
-            column="18"/>
     </issue>
 
     <issue

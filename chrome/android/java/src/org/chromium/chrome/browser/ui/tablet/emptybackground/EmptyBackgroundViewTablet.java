@@ -12,14 +12,10 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.incognitotoggle.IncognitoToggleButtonTablet;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -86,18 +82,6 @@ public class EmptyBackgroundViewTablet extends FrameLayout {
      */
     public void setTabCreator(TabCreator tabCreator) {
         mTabCreator = tabCreator;
-    }
-
-    /**
-     * Creates an on touch listener for the menu button using the given menu handler.
-     * @param menuHandler The menu handler to be used for showing the pop up menu.
-     */
-    public void setMenuOnTouchListener(final AppMenuHandler menuHandler) {
-        final ImageButton menuBtn = findViewById(R.id.empty_menu_button);
-        final AppMenuButtonHelper menuPopupButtonHelper = menuHandler.createAppMenuButtonHelper();
-        menuBtn.setOnTouchListener(menuPopupButtonHelper);
-        menuPopupButtonHelper.setOnAppMenuShownListener(
-                () -> RecordUserAction.record("MobileToolbarShowMenu"));
     }
 
     public void setEmptyContainerState(boolean shouldShow) {

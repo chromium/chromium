@@ -24,7 +24,6 @@ commerce_subscriptions_junit_test_deps = [
   "//chrome/browser/profiles/android:java",
   "//chrome/browser/tab:java",
   "//chrome/browser/tabmodel:java",
-  "//chrome/test/android:chrome_java_test_support",
   "//components/browser_ui/notifications/android:test_support_java",
   "//content/public/android:content_full_java",
   "//third_party/android_deps:robolectric_all_java",
@@ -39,7 +38,6 @@ commerce_subscriptions_junit_test_deps = [
 
 commerce_subscriptions_java_test_sources = [
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxyUnitTest.java",
-  "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorageTest.java",
   "//chrome/browser/commerce/subscriptions/test/android/java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsLoadCallbackHelper.java",
 ]
 
@@ -54,7 +52,6 @@ commerce_subscriptions_java_test_deps = [
   "//chrome/browser/flags:java",
   "//chrome/browser/profiles/android:java",
   "//chrome/browser/tabmodel:java",
-  "//chrome/test/android:chrome_java_test_support",
   "//content/public/test/android:content_java_test_support",
   "//third_party/androidx:androidx_test_core_java",
   "//third_party/androidx:androidx_test_runner_java",
