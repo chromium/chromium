@@ -1025,7 +1025,8 @@ const char kEnableGpuServiceLoggingDescription[] =
 
 const char kEnableIphName[] = "Enable IPH";
 const char kEnableIphDescription[] =
-    "Enables the ability to show IPH. When disabled, IPHs are disabled system wide.";
+    "Enables the ability to show IPH. When disabled, IPHs are disabled system "
+    "wide.";
 
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
@@ -4312,6 +4313,12 @@ const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "
     "streaming";
+
+const char kMoreVideoCaptureBuffersName[] = "More Video Capture Buffers";
+const char kMoreVideoCaptureBuffersDescription[] =
+    "This flag enables using a larger amount Chrome-allocated buffers for "
+    "video capture. This larger amount is needed for deeper pipelines, e.g. "
+    "sophisticated camera effects.";
 
 const char kForceControlFaceAeName[] = "Force control face AE";
 const char kForceControlFaceAeDescription[] =

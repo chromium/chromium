@@ -56760,6 +56760,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
   <int value="-633955136" label="ShowScrollableMVTOnNTPAndroid:disabled"/>
   <int value="-633274640" label="WebRTCPipeWireCapturer:enabled"/>
+  <int value="-633143294" label="MoreVideoCaptureBuffers:enabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
@@ -58104,6 +58105,7 @@ from previous Chrome versions.
   <int value="296215399" label="WindowsMixedReality:disabled"/>
   <int value="296296761" label="MediaFoundationVideoCapture:disabled"/>
   <int value="297095559" label="ShowBluetoothDebugLogToggle:disabled"/>
+  <int value="297354085" label="MoreVideoCaptureBuffers:disabled"/>
   <int value="297750703" label="DesktopPWAsAppIconShortcutsMenu:enabled"/>
   <int value="299466814" label="ChromeWhatsNewUI:enabled"/>
   <int value="299792415" label="OmniboxSuggestionTransparencyOptions:enabled"/>

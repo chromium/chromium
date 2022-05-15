@@ -2464,6 +2464,9 @@ extern const char kDesksTrackpadSwipeImprovementsDescription[];
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 
+extern const char kMoreVideoCaptureBuffersName[];
+extern const char kMoreVideoCaptureBuffersDescription[];
+
 extern const char kForceControlFaceAeName[];
 extern const char kForceControlFaceAeDescription[];
 

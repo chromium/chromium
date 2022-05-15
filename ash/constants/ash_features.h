@@ -409,6 +409,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMojoDBusRelay;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMultilingualTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kNearbyKeepAliveFix;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kMoreVideoCaptureBuffers;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNewLockScreenReauthLayout;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kNightLight;
 COMPONENT_EXPORT(ASH_CONSTANTS)

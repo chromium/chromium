@@ -1158,6 +1158,10 @@ const base::Feature kPipRoundedCorners{"PipRoundedCorners",
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables to allocate more video capture buffers.
+const base::Feature kMoreVideoCaptureBuffers{"MoreVideoCaptureBuffers",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables a bubble-based launcher in clamshell mode. Changes the suggestions
 // that appear in the launcher in both clamshell and tablet modes. Removes pages
 // from the apps grid. This feature was previously named "AppListBubble".
