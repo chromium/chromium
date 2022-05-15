@@ -118,9 +118,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& subject,
              const std::string& body) override;
   void Print() override;
-  void SubmitForm(const std::string& url,
-                  const void* data,
-                  int length) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
@@ -461,9 +458,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `LoadUrl()` result for print preview.
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
 
-  // Handles `Open()` result for `form_loader_`.
-  void DidFormOpen(int32_t result);
-
   // Performs tasks necessary when the document is loaded in print preview mode.
   void OnPrintPreviewLoaded();
 
@@ -594,9 +588,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Whether the document is in edit mode.
   bool edit_mode_ = false;
-
-  // Used for submitting forms.
-  std::unique_ptr<UrlLoader> form_loader_;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
   absl::optional<blink::WebPrintParams> print_params_;

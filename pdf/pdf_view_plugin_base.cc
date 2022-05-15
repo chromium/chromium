@@ -25,7 +25,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -345,25 +344,6 @@ void PdfViewPluginBase::Print() {
     return;
 
   InvokePrintDialog();
-}
-
-void PdfViewPluginBase::SubmitForm(const std::string& url,
-                                   const void* data,
-                                   int length) {
-  // `url` might be a relative URL. Resolve it against the document's URL.
-  // TODO(crbug.com/1322928): Probably redundant with `Client::CompleteURL()`.
-  GURL resolved_url = GURL(GetURL()).Resolve(url);
-  if (!resolved_url.is_valid())
-    return;
-
-  UrlRequest request;
-  request.url = resolved_url.spec();
-  request.method = "POST";
-  request.body.assign(static_cast<const char*>(data), length);
-
-  form_loader_ = CreateUrlLoaderInternal();
-  form_loader_->Open(
-      request, base::BindOnce(&PdfViewPluginBase::DidFormOpen, GetWeakPtr()));
 }
 
 std::unique_ptr<UrlLoader> PdfViewPluginBase::CreateUrlLoader() {
@@ -1542,12 +1522,6 @@ void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                  PDFiumFormFiller::ScriptOption::kNoJavaScript);
   preview_engine_->PluginSizeUpdated({});
   preview_engine_->HandleDocumentLoad(std::move(loader), GetURL());
-}
-
-void PdfViewPluginBase::DidFormOpen(int32_t result) {
-  // TODO(crbug.com/719344): Process response.
-  LOG_IF(ERROR, result != kSuccess) << "DidFormOpen failed: " << result;
-  form_loader_.reset();
 }
 
 void PdfViewPluginBase::OnPrintPreviewLoaded() {

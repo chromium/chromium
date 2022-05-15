@@ -252,6 +252,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
+  void SubmitForm(const std::string& url,
+                  const void* data,
+                  int length) override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
@@ -334,6 +337,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Sends whether to do smooth scrolling.
   void SendSetSmoothScrolling();
+
+  // Handles `Open()` result for `form_loader_`.
+  void DidFormOpen(int32_t result);
 
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();
@@ -440,6 +446,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The plugin rect in CSS pixels.
   gfx::Rect css_plugin_rect_;
+
+  // Used for submitting forms.
+  std::unique_ptr<UrlLoader> form_loader_;
 
   // May be null in unit tests.
   std::unique_ptr<PdfAccessibilityDataHandler> const

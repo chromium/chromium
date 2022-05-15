@@ -17,6 +17,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -634,6 +635,31 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
       ->Prompt(blink::WebString::FromUTF8(question),
                blink::WebString::FromUTF8(default_answer))
       .Utf8();
+}
+
+void PdfViewWebPlugin::SubmitForm(const std::string& url,
+                                  const void* data,
+                                  int length) {
+  // `url` might be a relative URL. Resolve it against the document's URL.
+  // TODO(crbug.com/1322928): Probably redundant with `Client::CompleteURL()`.
+  GURL resolved_url = GURL(GetURL()).Resolve(url);
+  if (!resolved_url.is_valid())
+    return;
+
+  UrlRequest request;
+  request.url = resolved_url.spec();
+  request.method = "POST";
+  request.body.assign(static_cast<const char*>(data), length);
+
+  form_loader_ = CreateUrlLoaderInternal();
+  form_loader_->Open(request, base::BindOnce(&PdfViewWebPlugin::DidFormOpen,
+                                             weak_factory_.GetWeakPtr()));
+}
+
+void PdfViewWebPlugin::DidFormOpen(int32_t result) {
+  // TODO(crbug.com/719344): Process response.
+  LOG_IF(ERROR, result != kSuccess) << "DidFormOpen failed: " << result;
+  form_loader_.reset();
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
