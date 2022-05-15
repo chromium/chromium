@@ -135,6 +135,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1715293566947629045">Disabling profile. Wait a few minutes.</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
+<translation id="1733996486177697563">Switch between Dark and Light theme. Touch and hold on the desktop, then select Wallpaper and style.</translation>
 <translation id="1736898441010944794">'<ph name="NAME" />' visible to Bluetooth devices.</translation>
 <translation id="174102739345480129">Marker is off.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
@@ -264,6 +265,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2582112259361606227">Restart to update</translation>
+<translation id="2586561057878260610">Press Ctrl + W to combine with <ph name="DESK_NAME" />. Press Ctrl + Shift + W to close desk and windows.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
@@ -669,6 +671,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
+<translation id="4938176435186993759">Hide all suggestions</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
@@ -735,6 +738,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
+<translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
@@ -756,6 +760,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5520229639206813572">Your administrator has removed all eSIM profiles. Contact your administrator for more info.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> is connecting.</translation>
 <translation id="5532994612895037630">Tap anywhere to record full screen</translation>
+<translation id="5536723544185013515">Recent apps; navigate with left or right arrow keys to access all recent apps</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
@@ -783,6 +788,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5682642926269496722">The Google Assistant is not available for current user account.</translation>
 <translation id="5689633613396158040">Night Light makes it easier to look at your screen or read in dim light. Tap to change what time Night Light turns on, or turn it off completely.</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
+<translation id="570390244361237317">All apps; navigate with arrow keys to access all apps</translation>
 <translation id="5707775774148071965">Your device supports a higher data rate than your cable. Device performance may be limited.</translation>
 <translation id="5710450975648804523">Do Not Disturb is on</translation>
 <translation id="571295407079589142">Mobile data is turned off</translation>

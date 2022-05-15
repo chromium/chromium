@@ -3780,6 +3780,7 @@
 <translation id="4648491805942548247">Թույլտվությունները բավարար չեն</translation>
 <translation id="4650591383426000695">Անջատեք ձեր հեռախոսը <ph name="DEVICE_TYPE" /> սարքից</translation>
 <translation id="4651484272688821107">Չհաջողվեց առցանց բաղադրիչը բեռնել դեմո ռեժիմի ռեսուրսներով։</translation>
+<translation id="4651921906638302153">Չհաջողվեց մտնել այս հաշիվ</translation>
 <translation id="4652935475563630866">Վերագործարկեք Parallels Desktop-ը, որպեսզի տեսախցիկի կարգավորումը փոխվի, և դուք կարողանաք շարունակել աշխատանքը։</translation>
 <translation id="4653405415038586100">Չհաջողվեց կարգավորել Լինուքսը</translation>
 <translation id="465406513924180949">Այս զամբյուղները կօգնեն ձեզ համացանցում արագ անցնել գնումների զամբյուղներ, որտեղ ապրանքներ եք թողել։
@@ -5435,6 +5436,7 @@
 <translation id="6327785803543103246">Պրոքսի սերվերի ինքնահայտնաբերում</translation>
 <translation id="6331818708794917058">Կայքերը կարող են MIDI սարքերին միանալու թույլտվություն խնդրել</translation>
 <translation id="6333064448949140209">Վրիպազերծման համար ֆայլը կուղարկվի Google-ին</translation>
+<translation id="6333170995003625229">Չհաջողվեց հաստատել ձեր էլ․ հասցեն կամ գաղտնաբառը։ Նորից մտեք հաշիվ։</translation>
 <translation id="6335920438823100346">Լինուքսը գործարկելու համար (կանոնի աղբյուրը՝ <ph name="MANAGER" />) անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="6338981933082930623">Բոլոր կայքերը կարող են գովազդ ցուցադրել</translation>
@@ -5845,6 +5847,7 @@
 <translation id="6735304988756581115">Ցույց տալ քուքիները և կայքի այլ տվյալները…</translation>
 <translation id="6736243959894955139">Հասցե</translation>
 <translation id="6737663862851963468">Հեռացնել Kerberos տոմսը</translation>
+<translation id="6738430949033571771">Հաշվի հաստատում…</translation>
 <translation id="6739923123728562974">Ցուցադրել աշխատասեղանի դյուրանցումը</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" />-ի ներբեռնումը դադարեցված է</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Ձեր ադմինիստրատորը<ph name="END_LINK" /> անջատել է անվտանգ դիտարկումը</translation>
@@ -7661,6 +7664,8 @@
 <translation id="8546306075665861288">Պատկերների քեշ</translation>
 <translation id="8546930481464505581">Հարմարեցնել հպման գոտին</translation>
 <translation id="8547013269961688403">Միացնել լիաէկրան խոշորացույցը</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Այս հասցեն (<ph name="USER_EMAIL" />) կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։ Դուք չեք կարող այս էլ․ հասցեն ավելացնել որպես լրացուցիչ հաշիվ։<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Որպեսզի օգտագործեք <ph name="USER_EMAIL" /> հասցեն, նախ դուրս եկեք հաշվից <ph name="DEVICE_TYPE" /> սարքում։ Մուտքի էկրանի ներքևի մասում ընտրեք «Ավելացնել օգտատեր»։<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Վերևի շարքի ստեղները փոխարկելու համար սեղմած պահեք որոնման ստեղնը</translation>
 <translation id="8549316893834449916">Chromebook մուտք կգործեք նույն Google հաշվով, որն օգտագործում եք Gmail, Drive, YouTube և այլ ծառայություններում։</translation>
 <translation id="8551388862522347954">Լիցենզիաներ</translation>

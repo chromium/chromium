@@ -326,6 +326,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
 <translation id="2981684127883932071">Đang hiển thị mục đề xuất</translation>
+<translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
 <translation id="2995447421581609334">Hiển thị các thiết bị truyền.</translation>
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
@@ -464,6 +465,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, và <ph name="UNAVAILABLE_APPS_COUNT" /> ứng dụng khác không có trên thiết bị này.</translation>
 <translation id="3735740477244556633">Sắp xếp theo</translation>
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
+<translation id="3761848338953536304">Quản trị viên của bạn đang yêu cầu bạn tắt chế độ Khoá SIM</translation>
 <translation id="3765841986579723851">Chỉnh sửa hôm nay</translation>
 <translation id="3771549900096082774">Chế độ tương phản cao</translation>
 <translation id="3773700760453577392">Quản trị viên không cho phép <ph name="USER_EMAIL" /> thực hiện đăng nhập nhiều tài khoản. Tất cả người dùng phải đăng xuất để tiếp tục.</translation>
@@ -828,6 +830,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="598407983968395253">Sử dụng mẫu</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="5992218262414051481">Đã bật Chế độ tương phản cao. Nhấn lại Ctrl+Search+H để tắt.</translation>
+<translation id="6009656393242168182">Tắt chế độ Khoá SIM</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
@@ -862,6 +865,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6166852626429024716">Tìm kiếm trong thiết bị, ứng dụng, tùy chọn cài đặt, trên web...</translation>
 <translation id="6179832488876878285">Bạn có thể ghim các tệp quan trọng của mình ở đây. Hãy mở ứng dụng Files để bắt đầu.</translation>
+<translation id="6182592640011875895">Mở không gian làm việc</translation>
 <translation id="619279033188484792">Xem thông báo, nội dung phương tiện và ảnh mới đây của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Sạc đầy ngay</translation>
 <translation id="6220928844947387476">Giờ đây bạn có thể ghi hình đồng thời cả chính mình và màn hình</translation>
@@ -1168,6 +1172,7 @@ Mới cài đặt</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
 <translation id="8061464966246066292">Độ tương phản cao</translation>
+<translation id="8083540854303889870">Lưu để dùng sau</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Bật, tất cả</translation>
 <translation id="8120151603115102514">Điện thoại của bạn không có màn hình khoá. Hãy nhập mật khẩu để mở khoá chiếc Chromebook của bạn.</translation>

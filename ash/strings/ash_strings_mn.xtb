@@ -327,6 +327,7 @@
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2981684127883932071">Зөвлөмжийг үзүүлж байна</translation>
+<translation id="2985148236010982088">Бүх аппыг харах</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
 <translation id="2995447421581609334">Дамжуулагч төхөөрөмжийг харуулна уу.</translation>
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
@@ -465,6 +466,7 @@
 <translation id="3726171378575546917">Энэ төхөөрөмж дээр <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> болон өөр <ph name="UNAVAILABLE_APPS_COUNT" /> апп байхгүй байна.</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3742055079367172538">Дэлгэцний зургийг авсан болно (Screenshot)</translation>
+<translation id="3761848338953536304">Танай администратор таныг SIM түгжих тохиргоог унтраахыг хүсэж байна</translation>
 <translation id="3765841986579723851">Өнөөдөр зассан</translation>
 <translation id="3771549900096082774">Өндөр ялгаралтай горим</translation>
 <translation id="3773700760453577392">Админ <ph name="USER_EMAIL" />-д олон зэрэг нэвтрэхийг зөвшөөрөөгүй байна. 
@@ -832,6 +834,7 @@
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
 <translation id="5992218262414051481">Өндөр ялгаралтай горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H-г дахин дарна уу.</translation>
+<translation id="6009656393242168182">SIM-н түгжээний тохиргоогоо идэвхгүй болгох</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>
@@ -866,6 +869,7 @@
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
 <translation id="6179832488876878285">Та чухал файлуудаа энд бэхлэх боломжтой. Эхлүүлэхийн тулд Файлс аппыг нээнэ үү.</translation>
+<translation id="6182592640011875895">Дэлгэцийг нээх</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> дээрээ утасныхаа саяхны зургууд, медиа болон мэдэгдлүүдийг харна уу</translation>
 <translation id="619335566042889110">Одоо бүрэн цэнэглээрэй</translation>
 <translation id="6220928844947387476">Та одоо өөрийгөө болон дэлгэцээ зэрэг бичих боломжтой</translation>
@@ -1172,6 +1176,7 @@
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8054466585765276473">Цэнэгний хугацааг тооцож байна.</translation>
 <translation id="8061464966246066292">Өндөр ялгарал</translation>
+<translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
 <translation id="8098591350844501178">Дэлгэцийг <ph name="RECEIVER_NAME" />-д дамжуулахыг зогсоох</translation>
 <translation id="8113423164597455979">Бүх аппд и.тэй</translation>
 <translation id="8120151603115102514">Таны утсанд түгжигдсэн дэлгэц байхгүй байна. Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу.</translation>

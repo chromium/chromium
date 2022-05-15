@@ -3801,6 +3801,7 @@
 <translation id="4648491805942548247">Хангалтгүй зөвшөөрөл</translation>
 <translation id="4650591383426000695">Утсаа <ph name="DEVICE_TYPE" />-с салгах</translation>
 <translation id="4651484272688821107">Демо горимын эх сурвалжтай онлайн бүрэлдэхүүн хэсгийг ачаалж чадсангүй.</translation>
+<translation id="4651921906638302153">Энэ бүртгэлээр нэвтрэх боломжгүй</translation>
 <translation id="4652935475563630866">Камерын тохиргоон дахь өөрчлөлт нь Parallels Desktop-г дахин ачаалахыг шаарддаг. Үргэлжлүүлэхийн тулд Parallels Desktop-г дахин ачаална уу.</translation>
 <translation id="4653405415038586100">Linux-г тохируулахад алдаа гарлаа</translation>
 <translation id="465406513924180949">Та веб дээр худалдан авалтын сагсандаа үлдээсэн зүйлс рүүгээ хялбархан буцахад тань туслах сагснуудыг харж байна.
@@ -5460,6 +5461,7 @@
 <translation id="6327785803543103246">Веб прокси автоматаар илрүүлэх</translation>
 <translation id="6331818708794917058">Сайтууд MIDI төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="6333064448949140209">Файлыг дебаг хийхээр Google-д илгээж байна</translation>
+<translation id="6333170995003625229">Таны имэйл хаяг эсвэл нууц үгийг баталгаажуулж чадсангүй. Дахин нэвтрэхээр оролдоно уу.</translation>
 <translation id="6335920438823100346">Linux-г эхлүүлэхийн тулд <ph name="MANAGER" /> танаас өгөгдлөө хуулбарлаж, энэ Chromebook-г үйлдвэрийн тохиргоонд шинэчлэхийг шаардаж байна.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB дебагийг идэвхгүй болгосон. Энэ нь таны <ph name="DEVICE_TYPE" />-г 24 цагийн дотор шинэчилнэ. Хадгалахыг хүссэн дурын файлуудаа хуулбарлана уу.</translation>
 <translation id="6338981933082930623">Бүх сайт танд дурын зар харуулах боломжтой</translation>
@@ -5868,6 +5870,7 @@
 <translation id="6735304988756581115">Cookies болон бусад сайтын мэдээллийг харуулах ...</translation>
 <translation id="6736243959894955139">Хаяг</translation>
 <translation id="6737663862851963468">Kerberos тасалбарыг хасах</translation>
+<translation id="6738430949033571771">Бүртгэлийг баталгаажуулж байна...</translation>
 <translation id="6739923123728562974">Дэлгэцийн товчлолыг харуулах</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" />-г түр зогсоосон</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Таны администратор<ph name="END_LINK" /> Аюулгүй хайлтыг унтраасан</translation>
@@ -7687,6 +7690,8 @@
 <translation id="8546306075665861288">Зургийн кэш</translation>
 <translation id="8546930481464505581">Хүрэх мөрийг өөрчлөх</translation>
 <translation id="8547013269961688403">Бүтэн дэлгэцийн томруулагчийг идэвхжүүлэх</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" />-г <ph name="MANAGER" />-с удирддаг. Та энэ имэйлийг нэмэлт бүртгэлээр нэмэх боломжгүй.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" />-г ашиглахын тулд эхлээд өөрийн <ph name="DEVICE_TYPE" />-с гарна уу. Дараа нь нэвтрэлтийн дэлгэцийн доод хэсгээс Хүн нэмэхийг сонгоно уу.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Дээд мөрний түлхүүрийн функцийг сэлгэхийн тулд Хайлтын түлхүүрийг дарна уу</translation>
 <translation id="8549316893834449916">Та Chromebook- дээ нэвтрэхдээ Gmail, Драйв, YouTube болон бусад зүйлд нэвтрэхдээ ашигладаг Google Бүртгэлээ ашиглана.</translation>
 <translation id="8551388862522347954">Лиценз</translation>
