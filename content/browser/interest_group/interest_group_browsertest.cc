@@ -2454,36 +2454,36 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   AttachInterestGroupObserver();
 
   EXPECT_EQ(
-      kSuccess,
-      JoinInterestGroupAndVerify(blink::InterestGroup(
-          /*expiry=*/base::Time(),
-          /*owner=*/test_origin,
-          /*name=*/"cars",
-          /*priority=*/0.0,
-          /*bidding_url=*/
-          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-          /*bidding_wasm_helper_url=*/absl::nullopt,
-          /*daily_update_url=*/absl::nullopt,
-          /*trusted_bidding_signals_url=*/absl::nullopt,
-          /*trusted_bidding_signals_keys=*/absl::nullopt,
-          /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
-          /*ads=*/
-          {{{GURL("https://example.com/render"),
-             "{ad:'metadata', here:[1,2]}"}}},
-          /*ad_components=*/absl::nullopt)));
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "decisionLogicUrl 'https://b.test/foo' for AuctionAdConfig with seller "
+      "'https://a.test/' must match seller origin.",
+      RunAuctionAndWait(R"({
+    seller: "https://a.test/",
+    decisionLogicUrl: "https://b.test/foo",
+    interestGroupBuyers: ["https://c.test/"],
+                        })"));
+  WaitForAccessObserved({});
+}
 
-  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
-                         R"({
-    seller: $1,
-    decisionLogicUrl: $2,
-    interestGroupBuyers: [$1],
-                         })",
-                         test_origin,
-                         https_server_->GetURL(
-                             "b.test", "/interest_group/decision_logic.js"))));
-  WaitForAccessObserved({
-      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
-  });
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionTrustedScoringSignalsUrlDifferentFromSeller) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "trustedScoringSignalsUrl 'https://b.test/foo' for AuctionAdConfig with "
+      "seller 'https://a.test/' must match seller origin.",
+      RunAuctionAndWait(R"({
+    seller: "https://a.test/",
+    decisionLogicUrl: "https://a.test/foo",
+    trustedScoringSignalsUrl: "https://b.test/foo",
+    interestGroupBuyers: ["https://c.test/"],
+                        })"));
+  WaitForAccessObserved({});
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

@@ -533,7 +533,19 @@ bool CopyDecisionLogicUrlFromIdlToMojo(const ExecutionContext& context,
         "cannot be resolved to a valid URL."));
     return false;
   }
-  // TODO(https://crbug.com/1271540): Validate against seller origin.
+
+  // Need to check scheme of the URL in addition to comparing origins because
+  // FLEDGE currently only supports HTTPS URLs, and some non-HTTPS URLs can have
+  // HTTPS origins.
+  if (decision_logic_url.Protocol() != url::kHttpsScheme ||
+      !output.seller->IsSameOriginWith(
+          SecurityOrigin::Create(decision_logic_url).get())) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "decisionLogicUrl", input.decisionLogicUrl(),
+        "must match seller origin."));
+    return false;
+  }
+
   output.decision_logic_url = decision_logic_url;
   return true;
 }
@@ -553,7 +565,19 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
         "cannot be resolved to a valid URL."));
     return false;
   }
-  // TODO(https://crbug.com/1271540): Validate against seller origin.
+
+  // Need to check scheme of the URL in addition to comparing origins because
+  // FLEDGE currently only supports HTTPS URLs, and some non-HTTPS URLs can have
+  // HTTPS origins.
+  if (trusted_scoring_signals_url.Protocol() != url::kHttpsScheme ||
+      !output.seller->IsSameOriginWith(
+          SecurityOrigin::Create(trusted_scoring_signals_url).get())) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "trustedScoringSignalsUrl", input.trustedScoringSignalsUrl(),
+        "must match seller origin."));
+    return false;
+  }
+
   output.trusted_scoring_signals_url = trusted_scoring_signals_url;
   return true;
 }
@@ -1345,20 +1369,20 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
   auto mojo_config = mojom::blink::AuctionAdConfig::New();
 
   // For finalizing an Ad PARAKEET only really cares about the decisionLogicUrl,
-  // auctionSignals, sellerSignals, and perBuyerSignals. We can ignore
+  // auctionSignals, sellerSignals, and perBuyerSignals. Also need seller, since
+  // it's used to validate the decision logic URL. We can ignore
   // copying/validating other fields on AuctionAdConfig.
-  if (!CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
-                                         *mojo_config))
+  if (!CopySellerFromIdlToMojo(exception_state, *config, *mojo_config) ||
+      !CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
+                                         *mojo_config) ||
+      !CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                       *mojo_config) ||
+      !CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                      *mojo_config) ||
+      !CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                        *mojo_config)) {
     return ScriptPromise();
-  if (!CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                       *mojo_config))
-    return ScriptPromise();
-  if (!CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                      *mojo_config))
-    return ScriptPromise();
-  if (!CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                        *mojo_config))
-    return ScriptPromise();
+  }
 
   if (!ValidateAdsObject(exception_state, ads))
     return ScriptPromise();

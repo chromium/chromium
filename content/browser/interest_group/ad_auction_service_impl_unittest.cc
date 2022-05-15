@@ -697,15 +697,23 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     interest_service.FlushForTesting();
   }
 
-  void FinalizeAd(std::string guid,
-                  blink::mojom::AuctionAdConfigPtr config,
-                  AdAuctionServiceImpl::FinalizeAdCallback callback) {
+  // Finalizes an ad and expects the Mojo pipe to be closed without invoking the
+  // callback, as should be done in the case of a bad Mojo message.
+  void FinalizeAdAndExpectPipeClosed(const std::string& guid,
+                                     blink::mojom::AuctionAdConfigPtr config) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
         main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
-    interest_service->FinalizeAd(guid, std::move(config), std::move(callback));
-    interest_service.FlushForTesting();
+    base::RunLoop run_loop;
+    interest_service.set_disconnect_handler(run_loop.QuitClosure());
+    interest_service->FinalizeAd(
+        guid, std::move(config),
+        base::BindLambdaForTesting(
+            [&](const absl::optional<GURL>& creative_url) {
+              ADD_FAILURE() << "Callback unexpectedly invoked.";
+            }));
+    run_loop.Run();
   }
 
  protected:
@@ -4907,22 +4915,17 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpFallback) {
   ASSERT_TRUE(callback_fired);
 }
 
-// An empty config will cause FinalizeAd to fail and run the supplied callback.
+// An empty config should be treated as a bad message.
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsEmptyConfig) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
   mojo_config->auction_ad_config_non_shared_params =
       blink::mojom::AuctionAdConfigNonSharedParams::New();
 
-  bool callback_fired = false;
-  FinalizeAd(
-      /*guid=*/std::string("1234"), std::move(mojo_config),
-      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
-        ASSERT_FALSE(creative_url.has_value());
-        callback_fired = true;
-      }));
-  ASSERT_TRUE(callback_fired);
+  FinalizeAdAndExpectPipeClosed(
+      /*guid=*/std::string("1234"), std::move(mojo_config));
 }
 
+// An HTTP decision logic URL should be treated as a bad message.
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsHTTPDecisionUrl) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
   mojo_config->auction_ad_config_non_shared_params =
@@ -4930,17 +4933,11 @@ TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsHTTPDecisionUrl) {
   mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
   mojo_config->decision_logic_url = GURL("http://site.test/");
 
-  bool callback_fired = false;
-  FinalizeAd(
-      /*guid=*/"1234", std::move(mojo_config),
-      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
-        ASSERT_FALSE(creative_url.has_value());
-        callback_fired = true;
-      }));
-  ASSERT_TRUE(callback_fired);
+  FinalizeAdAndExpectPipeClosed(
+      /*guid=*/"1234", std::move(mojo_config));
 }
 
-// An empty GUID should trigger any FinalizeAd request to fail.
+// An empty GUID should be treated as a bad message.
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsMissingGuid) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
   mojo_config->auction_ad_config_non_shared_params =
@@ -4948,14 +4945,8 @@ TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsMissingGuid) {
   mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
   mojo_config->decision_logic_url = GURL("https://site.test/");
 
-  bool callback_fired = false;
-  FinalizeAd(
-      /*guid=*/std::string(), std::move(mojo_config),
-      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
-        ASSERT_FALSE(creative_url.has_value());
-        callback_fired = true;
-      }));
-  ASSERT_TRUE(callback_fired);
+  FinalizeAdAndExpectPipeClosed(
+      /*guid=*/std::string(), std::move(mojo_config));
 }
 
 class AdAuctionServiceImplNumAuctionLimitTest
