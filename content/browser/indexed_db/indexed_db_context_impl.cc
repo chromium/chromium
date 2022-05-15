@@ -147,7 +147,7 @@ DefaultBucketFilePerThirdPartyBucketId(const base::FilePath& third_party_path) {
 // static
 void IndexedDBContextImpl::ReleaseOnIDBSequence(
     scoped_refptr<IndexedDBContextImpl>&& context) {
-  if (!context->idb_task_runner_->RunsTasksInCurrentSequence()) {
+  if (!context->IDBTaskRunner()->RunsTasksInCurrentSequence()) {
     IndexedDBContextImpl* context_ptr = context.get();
     context_ptr->IDBTaskRunner()->ReleaseSoon(FROM_HERE, std::move(context));
   }
@@ -194,38 +194,32 @@ IndexedDBContextImpl::IndexedDBContextImpl(
       std::move(quota_client_remote),
       storage::QuotaClientType::kIndexedDatabase,
       {blink::mojom::StorageType::kTemporary});
+  IDBTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&IndexedDBContextImpl::BindPipesOnIDBSequence,
+                                weak_factory_.GetWeakPtr(),
+                                std::move(quota_client_receiver),
+                                std::move(blob_storage_context),
+                                std::move(file_system_access_context)));
+}
 
-  // This is safe because the IndexedDBContextImpl must be destructed on the
-  // IDBTaskRunner, and this task will always happen before that.
-  idb_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](mojo::Remote<storage::mojom::BlobStorageContext>*
-                 blob_storage_context,
-             mojo::Remote<storage::mojom::FileSystemAccessContext>*
-                 file_system_access_context,
-             mojo::Receiver<storage::mojom::QuotaClient>* quota_client_receiver,
-             mojo::PendingRemote<storage::mojom::BlobStorageContext>
-                 pending_blob_storage_context,
-             mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-                 pending_file_system_access_context,
-             mojo::PendingReceiver<storage::mojom::QuotaClient>
-                 quota_client_pending_receiver) {
-            quota_client_receiver->Bind(
-                std::move(quota_client_pending_receiver));
-            if (pending_blob_storage_context) {
-              blob_storage_context->Bind(
-                  std::move(pending_blob_storage_context));
-            }
-            if (pending_file_system_access_context) {
-              file_system_access_context->Bind(
-                  std::move(pending_file_system_access_context));
-            }
-          },
-          &blob_storage_context_, &file_system_access_context_,
-          &quota_client_receiver_, std::move(blob_storage_context),
-          std::move(file_system_access_context),
-          std::move(quota_client_receiver)));
+void IndexedDBContextImpl::BindPipesOnIDBSequence(
+    mojo::PendingReceiver<storage::mojom::QuotaClient>
+        pending_quota_client_receiver,
+    mojo::PendingRemote<storage::mojom::BlobStorageContext>
+        pending_blob_storage_context,
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+        pending_file_system_access_context) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+  if (pending_quota_client_receiver) {
+    quota_client_receiver_.Bind(std::move(pending_quota_client_receiver));
+  }
+  if (pending_blob_storage_context) {
+    blob_storage_context_.Bind(std::move(pending_blob_storage_context));
+  }
+  if (pending_file_system_access_context) {
+    file_system_access_context_.Bind(
+        std::move(pending_file_system_access_context));
+  }
 }
 
 void IndexedDBContextImpl::Bind(
@@ -604,7 +598,7 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
 }
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
-  idb_task_runner_->PostTask(
+  IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<IndexedDBContextImpl> context) {
                        if (context)
@@ -1024,7 +1018,7 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {
-  DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
   if (force_keep_session_state_)
     return;
@@ -1076,7 +1070,7 @@ void IndexedDBContextImpl::Shutdown() {
   if (is_incognito())
     return;
 
-  idb_task_runner_->PostTask(
+  IDBTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &IndexedDBContextImpl::InitializeFromFilesIfNeeded,
