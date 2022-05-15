@@ -829,23 +829,18 @@ void ElementRuleCollector::DidMatchRule(
          dynamic_pseudo == kPseudoIdAfter) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent))
       return;
-    if (!rule_data->Rule()->Properties().IsEmpty()) {
-      style_->SetHasPseudoElementStyle(dynamic_pseudo);
-      if (dynamic_pseudo == kPseudoIdHighlight) {
-        DCHECK(result.custom_highlight_name);
-        style_->SetHasCustomHighlightName(result.custom_highlight_name);
-      }
-    }
-  } else {
-    matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,
-                                         style_sheet_index, style_sheet));
+    if (rule_data->Rule()->Properties().IsEmpty())
+      return;
 
-    if (IsHighlightPseudoElement(GetPseudoId())) {
+    style_->SetHasPseudoElementStyle(dynamic_pseudo);
+
+    if (IsHighlightPseudoElement(dynamic_pseudo)) {
       // Determine whether the selector definitely matches the highlight pseudo
       // of all elements, without any namespace limits or other conditions.
       bool universal = false;
       const CSSSelector& selector = rule_data->Selector();
-      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) == GetPseudoId()) {
+      if (CSSSelector::GetPseudoId(selector.GetPseudoType()) ==
+          dynamic_pseudo) {
         // When there is no default @namespace, *::selection and *|*::selection
         // are stored without the star, so we are universal if there’s nothing
         // before (e.g. x::selection) and nothing after (e.g. y ::selection).
@@ -857,15 +852,23 @@ void ElementRuleCollector::DidMatchRule(
         // (the only universal form) is stored as g_star_atom|*::selection.
         universal =
             next->IsLastInTagHistory() &&
-            CSSSelector::GetPseudoId(next->GetPseudoType()) == GetPseudoId() &&
+            CSSSelector::GetPseudoId(next->GetPseudoType()) == dynamic_pseudo &&
             selector.Match() == CSSSelector::kTag &&
             selector.TagQName().LocalName().IsNull() &&
             selector.TagQName().Prefix() == g_star_atom;
       }
 
       if (!universal)
-        result_.SetMatchesNonUniversalHighlights();
+        style_->SetHasNonUniversalHighlightPseudoStyles(true);
+
+      if (dynamic_pseudo == kPseudoIdHighlight) {
+        DCHECK(result.custom_highlight_name);
+        style_->SetHasCustomHighlightName(result.custom_highlight_name);
+      }
     }
+  } else {
+    matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,
+                                         style_sheet_index, style_sheet));
   }
 }
 

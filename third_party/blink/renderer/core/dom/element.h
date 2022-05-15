@@ -1534,6 +1534,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void PseudoStateChanged(CSSSelector::PseudoType pseudo,
                           AffectedByPseudoStateChange&&);
 
+  // Highlight pseudos inherit all properties from the corresponding highlight
+  // in the parent, but virtually all existing content uses universal rules
+  // like *::selection. To improve runtime and keep copy-on-write inheritance,
+  // avoid recalc if neither parent nor child matched any non-universal rules.
+  bool CanSkipRecalcForHighlightPseudos(const ComputedStyle& new_style) const;
+
   Member<ElementData> element_data_;
 };
 

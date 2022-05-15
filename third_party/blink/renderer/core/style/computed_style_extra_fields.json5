@@ -250,6 +250,15 @@
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
     },
+    {
+      name: "HasNonUniversalHighlightPseudoStyles",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      custom_copy: true,
+      custom_compare: true,
+    },
     // Used by ::highlight
     {
       name: "PseudoArgument",
@@ -776,17 +785,6 @@
       name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
-    },
-    // If this highlight pseudo matches only universal highlight rules (like
-    // ::selection) for both this element and our child, then the child need
-    // not apply any matched properties, because the result will be the same.
-    {
-      name: "DidMatchNonUniversalHighlights",
-      field_template: "primitive",
-      field_group: "inherited",
-      type_name: "bool",
-      default_value: "false",
-      inherited: true,
     },
     {
       name: "ColorIsCurrentColor",

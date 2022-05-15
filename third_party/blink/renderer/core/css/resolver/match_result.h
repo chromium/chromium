@@ -169,12 +169,6 @@ class CORE_EXPORT MatchResult {
   bool ConditionallyAffectsAnimations() const {
     return conditionally_affects_animations_;
   }
-  void SetMatchesNonUniversalHighlights() {
-    matches_non_universal_highlights_ = true;
-  }
-  bool MatchesNonUniversalHighlights() const {
-    return matches_non_universal_highlights_;
-  }
 
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
@@ -197,7 +191,6 @@ class CORE_EXPORT MatchResult {
   bool depends_on_viewport_container_queries_{false};
   bool depends_on_rem_container_queries_{false};
   bool conditionally_affects_animations_{false};
-  bool matches_non_universal_highlights_{false};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};
 };

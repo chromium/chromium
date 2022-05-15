@@ -1217,40 +1217,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
       state.SetHadNoMatchedProperties();
       return;
     }
-
-    bool skip_apply_highlight = false;
-
-    // Highlight pseudos inherit all properties from the corresponding highlight
-    // in the parent, but virtually all existing content uses universal rules
-    // like *::selection. To ensure copy-on-write inheritance still works, avoid
-    // reapplying styles if both parent and child only matched universal rules.
-    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-        IsHighlightPseudoElement(style_request.pseudo_id)) {
-      // If the parent matched any non-universal highlight rules, then we need
-      // to apply, in case there are universal highlight rules.
-      bool parent_non_universal =
-          state.Style()->DidMatchNonUniversalHighlights();
-
-      // If we matched any non-universal highlight rules, then we need to apply
-      // and our children also need to apply (see above).
-      bool self_non_universal =
-          collector.MatchedResult().MatchesNonUniversalHighlights();
-
-      if (parent_non_universal || self_non_universal) {
-        // Set or reset the did-match-non-universal flag only if necessary.
-        state.Style()->SetDidMatchNonUniversalHighlights(self_non_universal);
-      } else if (element->parentNode() !=
-                 element->ContainingTreeScope().RootNode()) {
-        // The root node of the tree scope needs to apply, in case there are
-        // only universal highlight rules.
-        skip_apply_highlight = true;
-      }
-    }
-
-    if (skip_apply_highlight) {
-      StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
-      return;
-    }
   }
 
   // Preserve the text autosizing multiplier on style recalc. Autosizer will
@@ -1838,8 +1804,20 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
       is_inherited_cache_hit = true;
     }
     if (!IsForcedColorsModeEnabled() || is_inherited_cache_hit) {
+      bool non_universal_highlights =
+          state.Style()->HasNonUniversalHighlightPseudoStyles();
+
       state.Style()->CopyNonInheritedFromCached(
           *cached_matched_properties->computed_style);
+
+      // Restore the non-universal highlight pseudo flag that was set while
+      // collecting matching rules. These fields are in a raredata field group,
+      // so CopyNonInheritedFromCached will clobber them despite custom_copy.
+      // TODO(crbug.com/1024156): do this for CustomHighlightNames too, so we
+      // can remove the cache-busting for ::highlight() in IsStyleCacheable
+      state.Style()->SetHasNonUniversalHighlightPseudoStyles(
+          non_universal_highlights);
+
       // If the child style is a cache hit, we'll never reach StyleBuilder::
       // ApplyProperty, hence we'll never set the flag on the parent.
       if (state.Style()->HasExplicitInheritance())
