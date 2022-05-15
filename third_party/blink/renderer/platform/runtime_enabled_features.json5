@@ -649,6 +649,7 @@
       //
       // https://drafts.csswg.org/mediaqueries-4/#mq-syntax
       name: "CSSMediaQueries4",
+      status: "stable",
     },
     {
       name: "CSSMixBlendModePlusLighter",

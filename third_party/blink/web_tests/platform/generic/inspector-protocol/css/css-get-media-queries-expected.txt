@@ -166,8 +166,8 @@ mediaRule #12
 mediaRule #13
     text: not all
     source: mediaRule
-    range: {"endColumn":9,"endLine":29,"startColumn":7,"startLine":29}
-    computedText: ()
+    range: {"endColumn":10,"endLine":29,"startColumn":7,"startLine":29}
+    computedText: (])
     mediaList is empty
 mediaRule #14
     text: print and (min-width: 8.5in)
