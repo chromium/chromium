@@ -433,22 +433,17 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
   // Simualte a keyboard coming up, insetting the viewport by its height.
   void SetAuraOnScreenKeyboardInset(int keyboard_height) {
 #if defined(USE_AURA)
-    RenderWidgetHostViewChildFrame* child_render_widget_host_view_child_frame =
-        static_cast<RenderWidgetHostViewChildFrame*>(InnerMostFrameTreeNode()
-                                                         ->current_frame_host()
-                                                         ->GetRenderWidgetHost()
-                                                         ->GetView());
+    RenderWidgetHostViewBase* inner_most_view = InnerMostFrameTreeNode()
+                                                    ->current_frame_host()
+                                                    ->GetRenderWidgetHost()
+                                                    ->GetView();
 
-    RenderWidgetHostViewAura* parent_render_widget_host_aura =
-        static_cast<RenderWidgetHostViewAura*>(
-            child_render_widget_host_view_child_frame->GetRootView());
+    RenderWidgetHostViewBase* root_view = inner_most_view->GetRootView();
 
     // Set the pointer type to simulate the keyboard appearing as a result of
     // the user tapping on an editable element.
-    parent_render_widget_host_aura->SetLastPointerType(
-        ui::EventPointerType::kTouch);
-    parent_render_widget_host_aura->SetInsets(
-        gfx::Insets::TLBR(0, 0, keyboard_height, 0));
+    root_view->SetLastPointerType(ui::EventPointerType::kTouch);
+    root_view->SetInsets(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
 #else
     NOTREACHED();
 #endif
