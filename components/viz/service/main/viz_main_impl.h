@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -120,7 +121,7 @@ class VizMainImpl : public mojom::VizMain,
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      mojo::ScopedSharedBufferHandle activity_flags,
+      base::UnsafeSharedMemoryRegion activity_flags_region,
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
 #if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(

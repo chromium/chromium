@@ -172,7 +172,7 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    mojo::ScopedSharedBufferHandle activity_flags,
+    base::UnsafeSharedMemoryRegion activity_flags_region,
     gfx::FontRenderParams::SubpixelRendering subpixel_rendering) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
@@ -208,7 +208,7 @@ void VizMainImpl::CreateGpuService(
 
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
-      gpu::GpuProcessActivityFlags(std::move(activity_flags)),
+      gpu::GpuProcessActivityFlags(std::move(activity_flags_region)),
       gpu_init_->TakeDefaultOffscreenSurface(),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
       dependencies_.shutdown_event);

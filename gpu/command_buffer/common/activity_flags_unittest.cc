@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/common/activity_flags.h"
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -15,7 +16,7 @@ TEST(ActivityFlagsTest, BasicUsage) {
       host_flags.IsFlagSet(ActivityFlagsBase::FLAG_LOADING_PROGRAM_BINARY));
 
   // Create the service activity flags from host memory.
-  GpuProcessActivityFlags service_flags(host_flags.CloneHandle());
+  GpuProcessActivityFlags service_flags(host_flags.CloneRegion());
 
   // Ensure we can set and re-set flags.
   {
@@ -30,8 +31,7 @@ TEST(ActivityFlagsTest, BasicUsage) {
 
 TEST(ActivityFlagsTest, NotInitialized) {
   // Get the service activity flags without providing host memory.
-  auto buffer = mojo::ScopedSharedBufferHandle();
-  GpuProcessActivityFlags service_flags(std::move(buffer));
+  GpuProcessActivityFlags service_flags{base::UnsafeSharedMemoryRegion()};
 
   // Set/Unset should not crash.
   {

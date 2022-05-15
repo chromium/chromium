@@ -136,7 +136,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
-      std::move(discardable_manager_remote), activity_flags_.CloneHandle(),
+      std::move(discardable_manager_remote), activity_flags_.CloneRegion(),
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if defined(USE_OZONE)
