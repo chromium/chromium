@@ -412,12 +412,14 @@ void TraceEventMetadataSource::GenerateMetadata(
   perfetto::TraceWriter* trace_writer;
 #endif
   bool privacy_filtering_enabled;
+  base::trace_event::TraceRecordMode record_mode;
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     trace_writer = trace_writer_.get();
 #endif
     privacy_filtering_enabled = privacy_filtering_enabled_;
+    record_mode = parsed_chrome_config_->GetTraceRecordMode();
   }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -451,9 +453,11 @@ void TraceEventMetadataSource::GenerateMetadata(
       }
     }
 
-    // Force flush the packets since the default flush happens at end of trace,
-    // and the trace writer's chunk could then be discarded (in kDiscard mode).
-    ctx.Flush();
+    // When not using ring buffer mode (but instead record-until-full / discard
+    // mode), force flush the packets since the default flush happens at end of
+    // the trace, and the trace writer's chunk could then be discarded.
+    if (record_mode != base::trace_event::RECORD_CONTINUOUSLY)
+      ctx.Flush();
   });
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   for (auto& generator : *packet_generators) {
@@ -487,9 +491,10 @@ void TraceEventMetadataSource::GenerateMetadata(
     trace_packet->Finalize();
   }
 
-  // Force flush the packets since the default flush happens at end of trace,
-  // and the trace writer's chunk could then be discarded (in kDiscard mode).
-  trace_writer->Flush();
+  // In kDiscard mode, force flush the packets since the default flush happens
+  // at end of trace, and the trace writer's chunk could then be discarded.
+  if (record_mode != base::trace_event::RECORD_CONTINUOUSLY)
+    trace_writer->Flush();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
@@ -805,6 +810,7 @@ void TraceEventDataSource::SetupStartupTracing(
 
     producer_ = producer;
     privacy_filtering_enabled_ = privacy_filtering_enabled;
+    record_mode_ = trace_config.GetTraceRecordMode();
 
     SetStartupTracingFlagsWhileLocked();
 
@@ -973,6 +979,9 @@ void TraceEventDataSource::StartTracingInternal(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+  auto trace_config =
+      TraceConfig(data_source_config.chrome_config().trace_config());
+
   bool startup_tracing_active;
   uint32_t session_id;
   {
@@ -991,6 +1000,8 @@ void TraceEventDataSource::StartTracingInternal(
     }
 
     privacy_filtering_enabled_ = should_enable_filtering;
+    record_mode_ = trace_config.GetTraceRecordMode();
+
     producer_ = producer;
     target_buffer_ = data_source_config.target_buffer();
     session_id = IncrementSessionIdOrClearStartupFlagWhileLocked();
@@ -999,9 +1010,6 @@ void TraceEventDataSource::StartTracingInternal(
       trace_writer_ = CreateTraceWriterLocked();
     }
   }
-
-  auto trace_config =
-      TraceConfig(data_source_config.chrome_config().trace_config());
 
   // SetupStartupTracing() will not setup a new startup session after we set
   // |producer_| above, so accessing |startup_tracing_active| outside the lock
@@ -1066,21 +1074,27 @@ void TraceEventDataSource::StopTracingImpl(
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   stop_complete_callback_ = std::move(stop_complete_callback);
 
-  auto on_tracing_stopped_callback =
-      [](TraceEventDataSource* data_source,
-         const scoped_refptr<base::RefCountedString>&, bool has_more_events) {
-        if (has_more_events) {
-          return;
-        }
-        data_source->OnStopTracingDone();
-      };
-
   bool was_enabled = TraceLog::GetInstance()->IsEnabled();
   if (was_enabled) {
     // Write metadata events etc.
     LogHistograms();
     TraceLog::GetInstance()->SetDisabled();
   }
+
+  auto on_tracing_stopped_callback =
+      [](TraceEventDataSource* data_source,
+         perfetto::TraceWriter* trace_writer_raw,
+         const scoped_refptr<base::RefCountedString>&, bool has_more_events) {
+        if (has_more_events) {
+          return;
+        }
+        std::unique_ptr<perfetto::TraceWriter> trace_writer(trace_writer_raw);
+        if (trace_writer) {
+          trace_writer->Flush();
+          data_source->ReturnTraceWriter(std::move(trace_writer));
+        }
+        data_source->OnStopTracingDone();
+      };
 
   std::unique_ptr<perfetto::TraceWriter> trace_writer;
   {
@@ -1092,9 +1106,9 @@ void TraceEventDataSource::StopTracingImpl(
       // current StopTracing call should have a matching start call. The service
       // never calls consecutive start or stop. It is ok to ignore the start
       // here since the session has already ended, before we finished flushing.
-      flush_complete_task_ =
-          base::BindOnce(std::move(on_tracing_stopped_callback), this,
-                         scoped_refptr<base::RefCountedString>(), false);
+      flush_complete_task_ = base::BindOnce(
+          std::move(on_tracing_stopped_callback), base::Unretained(this),
+          nullptr, scoped_refptr<base::RefCountedString>(), false);
       return;
     }
     // Prevent recreation of ThreadLocalEventSinks after flush.
@@ -1104,9 +1118,11 @@ void TraceEventDataSource::StopTracingImpl(
     flushing_trace_log_ = was_enabled;
     trace_writer = std::move(trace_writer_);
   }
-  if (trace_writer) {
-    ReturnTraceWriter(std::move(trace_writer));
-  }
+
+  // Keep the trace writer around until the stop is complete, so that it is
+  // flushed last and its data has a high likelihood of making it into the
+  // buffer when in ring-buffer mode.
+  perfetto::TraceWriter* trace_writer_raw = trace_writer.release();
 
   if (was_enabled) {
     // TraceLog::SetDisabled will cause metadata events to be written; make
@@ -1120,11 +1136,12 @@ void TraceEventDataSource::StopTracingImpl(
 
     // Flush the remaining threads via TraceLog. We call CancelTracing because
     // we don't want/need TraceLog to do any of its own JSON serialization.
-    TraceLog::GetInstance()->CancelTracing(base::BindRepeating(
-        on_tracing_stopped_callback, base::Unretained(this)));
+    TraceLog::GetInstance()->CancelTracing(
+        base::BindRepeating(on_tracing_stopped_callback, base::Unretained(this),
+                            base::Unretained(trace_writer_raw)));
   } else {
-    on_tracing_stopped_callback(this, scoped_refptr<base::RefCountedString>(),
-                                false);
+    on_tracing_stopped_callback(this, trace_writer_raw,
+                                scoped_refptr<base::RefCountedString>(), false);
   }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -1444,6 +1461,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // the writer is only destroyed on the perfetto sequence in this case.
   perfetto::TraceWriter* writer;
   bool privacy_filtering_enabled;
+  base::trace_event::TraceRecordMode record_mode;
 #if BUILDFLAG(IS_ANDROID)
   bool is_system_producer;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1451,6 +1469,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
     AutoLockWithDeferredTaskPosting lock(lock_);
     writer = trace_writer_.get();
     privacy_filtering_enabled = privacy_filtering_enabled_;
+    record_mode = record_mode_;
 #if BUILDFLAG(IS_ANDROID)
     is_system_producer =
         producer_ == PerfettoTracedProcess::Get()->system_producer();
@@ -1460,6 +1479,12 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   if (!writer) {
     return;
   }
+
+  // In ring buffer mode, flush any prior packets now, so that they can be
+  // overridden and cleared away by later data, and so that new packets are
+  // fully contained within one chunk (reducing data loss risk).
+  if (record_mode == base::trace_event::RECORD_CONTINUOUSLY)
+    trace_writer_->Flush();
 
   int process_id = TraceLog::GetInstance()->process_id();
   if (process_id == base::kNullProcessId) {
@@ -1533,11 +1558,20 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   // TODO(eseckler): Set other fields on |chrome_process|.
 
+  // Start a new empty packet to enable scraping of the old one from the SMB in
+  // case the process crashes.
   trace_packet = TracePacketHandle();
+  writer->NewTracePacket();
 
   EmitRecurringUpdates();
 
-  writer->Flush();
+  // Flush the current chunk right after writing the packet when in discard
+  // buffering mode. Otherwise there's a risk that the chunk will miss the
+  // buffer and process metadata is lost. We don't do this in ring buffer mode
+  // and instead flush before writing the latest packet then, to make it more
+  // likely that the latest packet's chunk remains in the ring buffer.
+  if (record_mode != base::trace_event::RECORD_CONTINUOUSLY)
+    writer->Flush();
 }
 
 bool TraceEventDataSource::IsPrivacyFilteringEnabled() {

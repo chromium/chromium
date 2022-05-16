@@ -306,6 +306,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       monitored_histograms_;
   bool privacy_filtering_enabled_ = false;
+  base::trace_event::TraceRecordMode record_mode_ =
+      base::trace_event::RECORD_UNTIL_FULL;
   std::string process_name_;
   int process_id_ = base::kNullProcessId;
   base::ActionCallback user_action_callback_ =
