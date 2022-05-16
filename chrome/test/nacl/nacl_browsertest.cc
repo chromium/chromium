@@ -43,7 +43,13 @@ namespace {
 #  define MAYBE_SysconfNprocessorsOnln SysconfNprocessorsOnln
 #endif
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, SimpleLoad, {
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SimpleLoad DISABLED_SimpleLoad
+#else
+#define MAYBE_SimpleLoad SimpleLoad
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_SimpleLoad, {
   RunLoadTest(FILE_PATH_LITERAL("nacl_load_test.html"));
 })
 
@@ -52,7 +58,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatus0, {
       "pm_exit_status_test.html?trigger=exit0&expected_exit=0"));
 })
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_ExitStatus254 DISABLED_ExitStatus254
 #else
@@ -68,7 +74,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, ExitStatusNeg2, {
       "pm_exit_status_test.html?trigger=exitneg2&expected_exit=254"));
 })
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if defined(ADDRESS_SANITIZER) || \
     (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS))
 #define MAYBE_PPAPICore DISABLED_PPAPICore
@@ -79,7 +85,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPICore, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppb_core.html"));
 })
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PPAPIPPBInstance DISABLED_PPAPIPPBInstance
 #else
@@ -89,7 +95,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPBInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppb_instance.html"));
 })
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PPAPIPPPInstance DISABLED_PPAPIPPPInstance
 #else
@@ -99,7 +105,7 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_PPAPIPPPInstance, {
   RunNaClIntegrationTest(FILE_PATH_LITERAL("ppapi_ppp_instance.html"));
 })
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_ProgressEvents DISABLED_ProgressEvents
 #else
@@ -362,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclDebug,
       "pnacl_debug_url.html?nmf_file=pnacl_no_debug.nmf"));
 }
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PnaclDebugURLFlagOff DISABLED_PnaclDebugURLFlagOff
 #else
@@ -443,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
   RunLoadTest(FILE_PATH_LITERAL("pnacl_options.html?use_nmf=o_large"));
 }
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
 #define MAYBE_PnaclDyncodeSyscallDisabled DISABLED_PnaclDyncodeSyscallDisabled
 #else
@@ -456,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
       "pnacl_dyncode_syscall_disabled.html"));
 }
 
-// TODO(1059468): Flaky on Win7 (32).
+// TODO(https://crbug.com/1059468): Flaky on Win7 (32).
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_32_BITS)
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
                        MAYBE_PNACL(PnaclExceptionHandlingDisabled)) {
