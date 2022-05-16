@@ -334,27 +334,6 @@ ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 }  // namespace partition_alloc
 
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::partition_alloc::IsConfigurablePoolAvailable;
-using ::partition_alloc::IsManagedByPartitionAlloc;
-using ::partition_alloc::IsManagedByPartitionAllocBRPPool;
-using ::partition_alloc::IsManagedByPartitionAllocConfigurablePool;
-using ::partition_alloc::IsManagedByPartitionAllocRegularPool;
-
-namespace internal {
-
-using ::partition_alloc::internal::GetPool;
-using ::partition_alloc::internal::GetPoolAndOffset;
-using ::partition_alloc::internal::OffsetInBRPPool;
-using ::partition_alloc::internal::PartitionAddressSpace;
-
-}  // namespace internal
-
-}  // namespace base
-
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_

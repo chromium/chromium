@@ -150,8 +150,8 @@ struct MTECheckedPtrImplPartitionAllocSupport {
     // allocated by PartitionAlloc, from normal buckets pool.
     //
     // TODO(crbug.com/1307514): Allow direct-map buckets.
-    return IsManagedByPartitionAlloc(as_uintptr) &&
-           IsManagedByNormalBuckets(as_uintptr);
+    return partition_alloc::IsManagedByPartitionAlloc(as_uintptr) &&
+           partition_alloc::IsManagedByNormalBuckets(as_uintptr);
   }
 
   // Returns pointer to the tag that protects are pointed by |ptr|.
@@ -294,7 +294,8 @@ struct BackupRefPtrImpl {
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
     // This covers the nullptr case, as address 0 is never in GigaCage.
-    bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
+    bool is_in_brp_pool =
+        partition_alloc::IsManagedByPartitionAllocBRPPool(address);
 
     // There are many situations where the compiler can prove that
     // ReleaseWrappedPtr is called on a value that is always nullptr, but the
@@ -355,7 +356,8 @@ struct BackupRefPtrImpl {
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
     else {
-      AddressPoolManagerBitmap::BanSuperPageFromBRPPool(address);
+      partition_alloc::internal::AddressPoolManagerBitmap::
+          BanSuperPageFromBRPPool(address);
     }
 #endif
 

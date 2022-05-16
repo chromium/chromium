@@ -23,7 +23,7 @@ namespace base::internal {
 template <bool AllowDangling>
 void BackupRefPtrImpl<AllowDangling>::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(address));
+  CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
   uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   if constexpr (AllowDangling)
@@ -35,7 +35,7 @@ void BackupRefPtrImpl<AllowDangling>::AcquireInternal(uintptr_t address) {
 template <bool AllowDangling>
 void BackupRefPtrImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(address));
+  CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
   uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   if constexpr (AllowDangling) {
@@ -50,7 +50,7 @@ void BackupRefPtrImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
 template <bool AllowDangling>
 bool BackupRefPtrImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  CHECK(IsManagedByPartitionAllocBRPPool(address));
+  CHECK(partition_alloc::IsManagedByPartitionAllocBRPPool(address));
 #endif
   uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   return PartitionRefCountPointer(slot_start)->IsAlive();
