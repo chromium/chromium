@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""This script is used by chrome_tests.gypi's js2webui action to maintain the
-argument lists and to generate inlinable tests.
+"""Wrapper for using the V8 shell in js2gtest.gni's js2gtest template
+to maintain the argument lists and to generate inlinable tests.
 """
 
 from __future__ import print_function

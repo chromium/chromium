@@ -9,13 +9,13 @@
  * @author scr@chromium.org (Sheridan Rawlins)
  * @see WebUI testing: http://goo.gl/ZWFXF
  * @see gtest documentation: http://goo.gl/Ujj3H
- * @see chrome/chrome_tests.gypi
+ * @see chrome/test/base/js2gtest.gni
  * @see chrome/test/base/js2gtest.js
- * @see tools/gypv8sh.py
+ * @see chrome/test/base/v8sh.py
  */
 
-// Arguments from rules in chrome_tests.gypi are passed in through
-// python script gypv8sh.py.
+// Arguments from the js2gtest template in chrome/test/base/js2gtest.gni
+// are passed in through python script v8sh.py.
 if (arguments.length != 6) {
   print(
       'usage: ' + arguments[0] +
