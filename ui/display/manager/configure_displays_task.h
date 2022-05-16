@@ -33,7 +33,7 @@ struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
   gfx::Point origin;
 };
 
-using RequestAndStatusList = std::pair<DisplayConfigureRequest, bool>;
+using RequestAndStatusList = std::pair<const DisplayConfigureRequest*, bool>;
 
 // ConfigureDisplaysTask is in charge of applying the display configuration as
 // requested by Ash. If the original request fails, the task will attempt to
@@ -68,8 +68,6 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   };
 
   using ResponseCallback = base::OnceCallback<void(Status)>;
-  using PartitionedRequestsQueue =
-      std::queue<std::vector<DisplayConfigureRequest>>;
 
   ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
                         const std::vector<DisplayConfigureRequest>& requests,
@@ -88,6 +86,16 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   void OnDisplaySnapshotsInvalidated() override;
 
  private:
+  struct RequestToOriginalMode {
+    RequestToOriginalMode(DisplayConfigureRequest* request,
+                          const DisplayMode* original_mode);
+
+    DisplayConfigureRequest* request;
+    const DisplayMode* const original_mode;
+  };
+  using PartitionedRequestsQueue =
+      std::queue<std::vector<RequestToOriginalMode>>;
+
   // Deals with the aftermath of the initial configuration, which attempts to
   // configure all displays together.
   // Upon failure, partitions the original request from Ash into smaller
@@ -115,17 +123,17 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // Downgrade the request with the highest bandwidth requirement AND
   // alternative modes in |requests_| (excluding internal displays and disable
   // requests). Return false if no request was downgraded.
-  bool DowngradeLargestRequestWithAlternativeModes();
+  bool DowngradeDisplayRequestGroup();
 
   NativeDisplayDelegate* delegate_;  // Not owned.
 
-  // Initially, |requests_| holds the configuration request submitted by Ash.
-  // During retry, |requests_| will represent a group of displays that are
-  // currently attempting configuration.
+  // Holds the next configuration request to attempt modeset.
   std::vector<DisplayConfigureRequest> requests_;
 
   // A queue of display requests grouped by their
-  // |requests_[index]->display->base_connector_id()|.
+  // |requests_[index]->display->base_connector_id()|. These request groups are
+  // used to downgrade displays' modes stored in |requests_| when the original
+  // request fails to modeset and a the fallback logic is triggered.
   PartitionedRequestsQueue pending_display_group_requests_;
 
   // The final requests and their configuration status for UMA.
