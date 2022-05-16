@@ -475,35 +475,53 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
   }
 }
 
+// Go through all properties that were found during the analyze phase
+// (e.g. in AnalyzeMatchResult()) and actually apply them. We need to do this
+// in a second phase so that we know which ones actually won the cascade
+// before we start applying, as some properties can affect others.
+//
+// TODO(sesse): See if we can make this more efficient by iterating
+// directly over the BackingVector instead. In particular, that would
+// remove the Find() calls into map_.
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
-  int index = 0;
-  for (const MatchedProperties& properties :
-       match_result_.GetMatchedProperties()) {
-    ExpandCascade(
-        properties, GetDocument(), resolver.filter_, index++,
-        [this, &resolver](CascadePriority cascade_priority,
-                          const CSSProperty& css_property,
-                          const CSSValue& css_value, uint16_t tree_order) {
-          auto priority =
-              CascadePriority(cascade_priority, resolver.generation_);
-          const CSSProperty& property = ResolveSurrogate(css_property);
-          CascadePriority* p = map_.Find(property.GetCSSPropertyName());
-          if (!p || *p >= priority)
-            return;
-          *p = priority;
-          CascadeOrigin origin = priority.GetOrigin();
-          const CSSValue* value =
-              Resolve(property, css_value, priority, origin, resolver);
-          // TODO(futhark): Use a user scope TreeScope to support tree-scoped
-          // names for animations in user stylesheets.
-          const TreeScope* tree_scope = nullptr;
-          if (origin == CascadeOrigin::kAuthor)
-            tree_scope = &match_result_.ScopeFromTreeOrder(tree_order);
-          else if (origin == CascadeOrigin::kAuthorPresentationalHint)
-            tree_scope = &GetDocument();
-          StyleBuilder::ApplyProperty(property, state_,
-                                      ScopedCSSValue(*value, tree_scope));
-        });
+  // We only need to apply the resolver part of the filter here;
+  // the rest have been applied in the previous pass.
+  CascadeFilter filter = resolver.filter_;
+  for (CSSPropertyID id : map_.NativeBitset()) {
+    CascadePriority* p = map_.FindKnownToExist(id);
+    const CascadePriority priority = *p;
+    if (priority.GetGeneration() >= resolver.generation_) {
+      // Already applied this generation.
+      // Also checked in LookupAndApplyDeclaration,
+      // but done here to get a fast exit.
+      continue;
+    }
+    if (IsInterpolation(priority)) {
+      continue;
+    }
+
+    const CSSProperty& property = CSSProperty::Get(id);
+    if (filter.Rejects(property)) {
+      continue;
+    }
+    LookupAndApplyDeclaration(property, p, resolver);
+  }
+
+  for (const auto& [name, priority_list] : map_.GetCustomMap()) {
+    CascadePriority* p = map_.Find(name);
+    CascadePriority priority = *p;
+    if (priority.GetGeneration() >= resolver.generation_) {
+      continue;
+    }
+    if (IsInterpolation(priority)) {
+      continue;
+    }
+
+    CustomProperty property(name.ToAtomicString(), GetDocument());
+    if (filter.Rejects(property)) {
+      continue;
+    }
+    LookupAndApplyDeclaration(property, p, resolver);
   }
 }
 
@@ -593,13 +611,9 @@ void StyleCascade::LookupAndApply(const CSSProperty& property,
   CSSPropertyName name = property.GetCSSPropertyName();
   DCHECK(!resolver.IsLocked(property));
 
-  CascadePriority* p = map_.Find(name);
-  if (!p)
+  CascadePriority* priority = map_.Find(name);
+  if (!priority)
     return;
-  CascadePriority priority(*p, resolver.generation_);
-  if (*p >= priority)
-    return;
-  *p = priority;
 
   if (resolver.filter_.Rejects(property))
     return;
@@ -608,30 +622,35 @@ void StyleCascade::LookupAndApply(const CSSProperty& property,
 }
 
 void StyleCascade::LookupAndApplyValue(const CSSProperty& property,
-                                       CascadePriority priority,
+                                       CascadePriority* priority,
                                        CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
 
-  if (priority.GetOrigin() < CascadeOrigin::kAnimation)
+  if (priority->GetOrigin() < CascadeOrigin::kAnimation)
     LookupAndApplyDeclaration(property, priority, resolver);
-  else if (priority.GetOrigin() >= CascadeOrigin::kAnimation)
+  else if (priority->GetOrigin() >= CascadeOrigin::kAnimation)
     LookupAndApplyInterpolation(property, priority, resolver);
 }
 
 void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
-                                             CascadePriority priority,
+                                             CascadePriority* priority,
                                              CascadeResolver& resolver) {
+  if (priority->GetGeneration() >= resolver.generation_) {
+    // Already applied this generation.
+    return;
+  }
+  *priority = CascadePriority(*priority, resolver.generation_);
   DCHECK(!property.IsSurrogate());
-  DCHECK(priority.GetOrigin() < CascadeOrigin::kAnimation);
-  const CSSValue* value = ValueAt(match_result_, priority.GetPosition());
+  DCHECK(priority->GetOrigin() < CascadeOrigin::kAnimation);
+  const CSSValue* value = ValueAt(match_result_, priority->GetPosition());
   DCHECK(value);
-  CascadeOrigin origin = priority.GetOrigin();
-  value = Resolve(property, *value, priority, origin, resolver);
+  CascadeOrigin origin = priority->GetOrigin();
+  value = Resolve(property, *value, *priority, origin, resolver);
   DCHECK(!value->IsVariableReferenceValue());
   DCHECK(!value->IsPendingSubstitutionValue());
   const TreeScope* tree_scope{nullptr};
   if (origin == CascadeOrigin::kAuthor)
-    tree_scope = &TreeScopeAt(match_result_, priority.GetPosition());
+    tree_scope = &TreeScopeAt(match_result_, priority->GetPosition());
   else if (origin == CascadeOrigin::kAuthorPresentationalHint)
     tree_scope = &GetDocument();
   StyleBuilder::ApplyProperty(property, state_,
@@ -639,8 +658,14 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
-                                               CascadePriority priority,
+                                               CascadePriority* priority,
                                                CascadeResolver& resolver) {
+  if (priority->GetGeneration() >= resolver.generation_) {
+    // Already applied this generation.
+    return;
+  }
+  *priority = CascadePriority(*priority, resolver.generation_);
+
   DCHECK(!property.IsSurrogate());
 
   // Interpolations for -internal-visited properties are applied via the
@@ -649,14 +674,14 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
   // TODO(crbug.com/1062217): Interpolate visited colors separately
   if (property.IsVisited())
     return;
-  DCHECK(priority.GetOrigin() >= CascadeOrigin::kAnimation);
-  wtf_size_t index = DecodeInterpolationIndex(priority.GetPosition());
+  DCHECK(priority->GetOrigin() >= CascadeOrigin::kAnimation);
+  wtf_size_t index = DecodeInterpolationIndex(priority->GetPosition());
   DCHECK_LE(index, interpolations_.GetEntries().size());
   const ActiveInterpolationsMap& map = *interpolations_.GetEntries()[index].map;
-  PropertyHandle handle = ToPropertyHandle(property, priority);
+  PropertyHandle handle = ToPropertyHandle(property, *priority);
   const auto& entry = map.find(handle);
   DCHECK_NE(entry, map.end());
-  ApplyInterpolation(property, priority, *entry->value, resolver);
+  ApplyInterpolation(property, *priority, *entry->value, resolver);
 }
 
 bool StyleCascade::IsRootElement() const {

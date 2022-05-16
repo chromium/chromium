@@ -222,13 +222,13 @@ class CORE_EXPORT StyleCascade {
   void LookupAndApply(const CSSPropertyName&, CascadeResolver&);
   void LookupAndApply(const CSSProperty&, CascadeResolver&);
   void LookupAndApplyValue(const CSSProperty&,
-                           CascadePriority,
+                           CascadePriority*,
                            CascadeResolver&);
   void LookupAndApplyDeclaration(const CSSProperty&,
-                                 CascadePriority,
+                                 CascadePriority*,
                                  CascadeResolver&);
   void LookupAndApplyInterpolation(const CSSProperty&,
-                                   CascadePriority,
+                                   CascadePriority*,
                                    CascadeResolver&);
 
   // Whether or not we are calculating the style for the root element.
