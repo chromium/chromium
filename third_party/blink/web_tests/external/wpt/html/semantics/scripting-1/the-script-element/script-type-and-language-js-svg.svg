@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<title>Script @type and @language: JavaScript types</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#scriptingLanguages">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/#prepare-a-script">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="script-placeholder"></div>
-<script src="resources/script-type-and-language-js.js"></script>
-
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+<metadata>
+  <h:link rel="help" href="https://html.spec.whatwg.org/multipage/#scriptingLanguages" />
+  <h:link rel="help" href="https://html.spec.whatwg.org/multipage/#prepare-a-script" />
+</metadata>
+<h:script src="/resources/testharness.js"/>
+<h:script src="/resources/testharnessreport.js"/>
+<h:div id="script-placeholder"/>
+<h:script src="resources/script-type-and-language-js.js"/>
 <script>window.ran = false;</script>
 <script type="javascript">window.ran = true;</script>
 <script>testParserInsertedDidNotRun('type=javascript');</script>
@@ -33,3 +34,4 @@
 <script>testParserInsertedDidNotRun('type=ecmascript');</script>
 <script type="jscript">window.ran = true;</script>
 <script>testParserInsertedDidNotRun('type=jscript');</script>
+</svg>
