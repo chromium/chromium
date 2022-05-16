@@ -12,17 +12,29 @@
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
-    bool will_reply)
-    : expected_message_(expected_message), will_reply_(will_reply) {
+    ReplyBehavior reply_behavior)
+    : expected_message_(expected_message), reply_behavior_(reply_behavior) {
   test_api_observation_.Observe(
       extensions::TestApiObserverRegistry::GetInstance());
 }
 
-ExtensionTestMessageListener::ExtensionTestMessageListener(bool will_reply)
-    : will_reply_(will_reply) {
+ExtensionTestMessageListener::ExtensionTestMessageListener(
+    ReplyBehavior reply_behavior)
+    : reply_behavior_(reply_behavior) {
   test_api_observation_.Observe(
       extensions::TestApiObserverRegistry::GetInstance());
 }
+
+ExtensionTestMessageListener::ExtensionTestMessageListener(
+    const std::string& expected_message,
+    bool will_reply)
+    : ExtensionTestMessageListener(
+          expected_message,
+          will_reply ? ReplyBehavior::kWillReply : ReplyBehavior::kWontReply) {}
+
+ExtensionTestMessageListener::ExtensionTestMessageListener(bool will_reply)
+    : ExtensionTestMessageListener(will_reply ? ReplyBehavior::kWillReply
+                                              : ReplyBehavior::kWontReply) {}
 
 ExtensionTestMessageListener::~ExtensionTestMessageListener() {
   DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
@@ -100,7 +112,7 @@ bool ExtensionTestMessageListener::OnTestMessage(
     failed_ = is_failure_message;
     had_user_gesture_ = function->user_gesture();
 
-    if (will_reply_) {
+    if (reply_behavior_ == ReplyBehavior::kWillReply) {
       listener_will_respond = true;
       function_ = function;
     }
