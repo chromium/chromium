@@ -19,8 +19,87 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/skia/include/effects/SkColorMatrix.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 
 namespace blink {
+
+namespace {
+void GetYUVToRGBMatrix(gfx::ColorSpace colorSpace, float matrix[12]) {
+  // Get the appropriate YUV to RGB conversion matrix.
+  SkYUVColorSpace srcSkColorSpace;
+  colorSpace.ToSkYUVColorSpace(8, &srcSkColorSpace);
+  SkColorMatrix skColorMatrix = SkColorMatrix::YUVtoRGB(srcSkColorSpace);
+  float yuvM[20];
+  skColorMatrix.getRowMajor(yuvM);
+  // Only use columns 1-3 (3x3 conversion matrix) and column 5 (bias values)
+  matrix[0] = yuvM[0];
+  matrix[1] = yuvM[1];
+  matrix[2] = yuvM[2];
+  matrix[3] = yuvM[4];
+  matrix[4] = yuvM[5];
+  matrix[5] = yuvM[6];
+  matrix[6] = yuvM[7];
+  matrix[7] = yuvM[9];
+  matrix[8] = yuvM[10];
+  matrix[9] = yuvM[11];
+  matrix[10] = yuvM[12];
+  matrix[11] = yuvM[14];
+}
+
+void GetColorSpaceConversionConstants(gfx::ColorSpace srcColorSpace,
+                                      gfx::ColorSpace dstColorSpace,
+                                      float gamutMatrix[9],
+                                      float srcTransferConstants[7],
+                                      float dstTransferConstants[7]) {
+  // Get primary matrices for the source and destination color spaces.
+  // Multiply the source primary matrix with the inverse destination primary
+  // matrix to create a single transformation matrix.
+  skcms_Matrix3x3 srcPrimaryMatrixToXYZD50;
+  skcms_Matrix3x3 dstPrimaryMatrixToXYZD50;
+  srcColorSpace.GetPrimaryMatrix(&srcPrimaryMatrixToXYZD50);
+  dstColorSpace.GetPrimaryMatrix(&dstPrimaryMatrixToXYZD50);
+
+  skcms_Matrix3x3 dstPrimaryMatrixFromXYZD50;
+  skcms_Matrix3x3_invert(&dstPrimaryMatrixToXYZD50,
+                         &dstPrimaryMatrixFromXYZD50);
+
+  skcms_Matrix3x3 transformM = skcms_Matrix3x3_concat(
+      &srcPrimaryMatrixToXYZD50, &dstPrimaryMatrixFromXYZD50);
+  // From row major matrix to col major matrix
+  gamutMatrix[0] = transformM.vals[0][0];
+  gamutMatrix[1] = transformM.vals[1][0];
+  gamutMatrix[2] = transformM.vals[2][0];
+  gamutMatrix[3] = transformM.vals[0][1];
+  gamutMatrix[4] = transformM.vals[1][1];
+  gamutMatrix[5] = transformM.vals[2][1];
+  gamutMatrix[6] = transformM.vals[0][2];
+  gamutMatrix[7] = transformM.vals[1][2];
+  gamutMatrix[8] = transformM.vals[2][2];
+
+  // Set constants for source transfer function.
+  skcms_TransferFunction src_transfer_fn;
+  srcColorSpace.GetInverseTransferFunction(&src_transfer_fn);
+  srcTransferConstants[0] = src_transfer_fn.g;
+  srcTransferConstants[1] = src_transfer_fn.a;
+  srcTransferConstants[2] = src_transfer_fn.b;
+  srcTransferConstants[3] = src_transfer_fn.c;
+  srcTransferConstants[4] = src_transfer_fn.d;
+  srcTransferConstants[5] = src_transfer_fn.e;
+  srcTransferConstants[6] = src_transfer_fn.f;
+
+  // Set constants for destination transfer function.
+  skcms_TransferFunction dst_transfer_fn;
+  dstColorSpace.GetTransferFunction(&dst_transfer_fn);
+  dstTransferConstants[0] = dst_transfer_fn.g;
+  dstTransferConstants[1] = dst_transfer_fn.a;
+  dstTransferConstants[2] = dst_transfer_fn.b;
+  dstTransferConstants[3] = dst_transfer_fn.c;
+  dstTransferConstants[4] = dst_transfer_fn.d;
+  dstTransferConstants[5] = dst_transfer_fn.e;
+  dstTransferConstants[6] = dst_transfer_fn.f;
+}
+}  // namespace
 
 // static
 GPUExternalTexture* GPUExternalTexture::Create(
@@ -86,6 +165,12 @@ GPUExternalTexture* GPUExternalTexture::Create(
     return nullptr;
   }
 
+  gfx::ColorSpace dstColorSpace;
+  switch (webgpu_desc->colorSpace().AsEnum()) {
+    case V8GPUPredefinedColorSpace::Enum::kSRGB:
+      dstColorSpace = gfx::ColorSpace::CreateSRGB();
+  }
+
   // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
   // rather than check 'is_webgpu_compatible'.
   if (media_video_frame->HasTextures() &&
@@ -112,7 +197,25 @@ GPUExternalTexture* GPUExternalTexture::Create(
     WGPUExternalTextureDescriptor external_texture_desc = {};
     external_texture_desc.plane0 = plane0;
     external_texture_desc.plane1 = plane1;
-    external_texture_desc.colorSpace = WGPUPredefinedColorSpace_Srgb;
+    external_texture_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
+
+    gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
+
+    float yuvToRgbMatrix[12];
+    GetYUVToRGBMatrix(srcColorSpace, yuvToRgbMatrix);
+    external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix;
+
+    float gamutConversionMatrix[9];
+    float srcTransferFn[7];
+    float dstTransferFn[7];
+
+    GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace,
+                                     gamutConversionMatrix, srcTransferFn,
+                                     dstTransferFn);
+
+    external_texture_desc.gamutConversionMatrix = gamutConversionMatrix;
+    external_texture_desc.srcTransferFunctionParameters = srcTransferFn;
+    external_texture_desc.dstTransferFunctionParameters = dstTransferFn;
 
     GPUExternalTexture* external_texture =
         MakeGarbageCollected<GPUExternalTexture>(
@@ -187,6 +290,22 @@ GPUExternalTexture* GPUExternalTexture::Create(
 
   WGPUExternalTextureDescriptor dawn_desc = {};
   dawn_desc.plane0 = plane0;
+  dawn_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
+
+  // The method that performs YUV to RGB conversion
+  // (DrawVideoFrameIntoResourceProvider) on the video frame is hardcoded to use
+  // BT.601, so we must specify that as our source color space here.
+  gfx::ColorSpace srcColorSpace = gfx::ColorSpace::CreateREC601();
+  float gamutMatrix[9];
+  float srcTransferFn[7];
+  float dstTransferFn[7];
+
+  GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace, gamutMatrix,
+                                   srcTransferFn, dstTransferFn);
+
+  dawn_desc.gamutConversionMatrix = gamutMatrix;
+  dawn_desc.srcTransferFunctionParameters = srcTransferFn;
+  dawn_desc.dstTransferFunctionParameters = dstTransferFn;
 
   GPUExternalTexture* external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
