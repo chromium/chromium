@@ -56,7 +56,7 @@ gfx::AcceleratedWidget DemoWindow::GetAcceleratedWidget() {
 }
 
 gfx::Size DemoWindow::GetSize() {
-  return platform_window_->GetBounds().size();
+  return platform_window_->GetBoundsInPixels().size();
 }
 
 void DemoWindow::Start() {

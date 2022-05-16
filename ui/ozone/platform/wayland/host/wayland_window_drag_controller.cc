@@ -408,7 +408,7 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
     return;
 
   DCHECK(window);
-  auto origin = window->GetBounds().origin();
+  auto origin = window->GetBoundsInPixels().origin();
   gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
   DVLOG(1) << "Toplevel window created (detached)."
            << " widget=" << window->GetWidget()
@@ -451,8 +451,8 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // re-positioning during dragging session is done through the drag icon.
   if (dragged_window_) {
     gfx::Point new_location = event->location() - drag_offset_;
-    gfx::Size size = dragged_window_->GetBounds().size();
-    dragged_window_->SetBounds({new_location, size});
+    gfx::Size size = dragged_window_->GetBoundsInPixels().size();
+    dragged_window_->SetBoundsInPixels({new_location, size});
   }
 
   should_process_drag_event_ = false;

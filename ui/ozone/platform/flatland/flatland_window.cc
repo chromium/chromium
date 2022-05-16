@@ -130,11 +130,11 @@ fuchsia::ui::views::ViewRef FlatlandWindow::CloneViewRef() {
   return dup;
 }
 
-gfx::Rect FlatlandWindow::GetBounds() const {
+gfx::Rect FlatlandWindow::GetBoundsInPixels() const {
   return bounds_;
 }
 
-void FlatlandWindow::SetBounds(const gfx::Rect& bounds) {
+void FlatlandWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   // This path should only be reached in tests.
   bounds_ = bounds;
 }

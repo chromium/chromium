@@ -281,7 +281,7 @@ void WaylandWindow::PrepareForShutdown() {
     OnDragSessionClose(DragOperation::kNone);
 }
 
-void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
+void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
   gfx::Rect adjusted_bounds_px = AdjustBoundsToConstraintsPx(bounds_px);
   if (bounds_px_ == adjusted_bounds_px)
     return;
@@ -292,16 +292,16 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
-gfx::Rect WaylandWindow::GetBounds() const {
+gfx::Rect WaylandWindow::GetBoundsInPixels() const {
   return bounds_px_;
+}
+
+void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
+  SetBoundsInPixels(delegate_->ConvertRectToPixels(bounds));
 }
 
 gfx::Rect WaylandWindow::GetBoundsInDIP() const {
   return delegate_->ConvertRectToDIP(bounds_px_);
-}
-
-void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
-  SetBounds(delegate_->ConvertRectToPixels(bounds));
 }
 
 void WaylandWindow::OnSurfaceConfigureEvent() {
@@ -468,8 +468,8 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
     if (event_grabber &&
         root_parent_window == event_grabber->GetRootParentWindow()) {
       ConvertEventLocationToTargetWindowLocation(
-          event_grabber->GetBounds().origin(), GetBounds().origin(),
-          event->AsLocatedEvent());
+          event_grabber->GetBoundsInPixels().origin(),
+          GetBoundsInPixels().origin(), event->AsLocatedEvent());
       return event_grabber->DispatchEventToDelegate(native_event);
     }
   }
@@ -579,7 +579,8 @@ void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
   // This method is used to update the content size by calling WindowWindow's
   // SetBounds, instead of WaylandToplevelWindow's override, which sends a
   // request to the compositor.
-  WaylandWindow::SetBounds(gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
+  WaylandWindow::SetBoundsInPixels(
+      gfx::ScaleToRoundedRect(bounds_dip, window_scale()));
 }
 
 bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
@@ -677,8 +678,8 @@ void WaylandWindow::UpdateCursorPositionFromEvent(
   auto* toplevel_window = GetRootParentWindow();
   if (toplevel_window != this) {
     ConvertEventLocationToTargetWindowLocation(
-        toplevel_window->GetBounds().origin(), GetBounds().origin(),
-        event->AsLocatedEvent());
+        toplevel_window->GetBoundsInPixels().origin(),
+        GetBoundsInPixels().origin(), event->AsLocatedEvent());
   }
   auto* cursor_position = connection_->wayland_cursor_position();
   if (cursor_position) {
@@ -696,7 +697,7 @@ gfx::PointF WaylandWindow::TranslateLocationToRootWindow(
     return location;
 
   gfx::Vector2d offset =
-      GetBounds().origin() - root_window->GetBounds().origin();
+      GetBoundsInPixels().origin() - root_window->GetBoundsInPixels().origin();
   return location + gfx::Vector2dF(offset);
 }
 
@@ -712,7 +713,8 @@ gfx::PointF WaylandWindow::ToRootWindowPixel(const gfx::PointF& location_dp) {
     location_px.Scale(window_scale());
 
   auto* root_window = GetRootParentWindow();
-  return location_px + root_window->GetBounds().origin().OffsetFromOrigin();
+  return location_px +
+         root_window->GetBoundsInPixels().origin().OffsetFromOrigin();
 }
 
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
@@ -946,7 +948,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     AckConfigure(serial);
     root_surface()->Commit();
   } else if (gfx::ScaleToRoundedRect(pending_bounds_dip_, window_scale()) ==
-                 GetBounds() &&
+                 GetBoundsInPixels() &&
              pending_configures_.empty()) {
     // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
     // is empty, implying that the window is already rendering at

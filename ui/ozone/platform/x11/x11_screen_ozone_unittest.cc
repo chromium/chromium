@@ -182,7 +182,7 @@ TEST_F(X11ScreenOzoneTest, GetDisplayForWidgetTwoDisplays) {
   EXPECT_EQ(*display_2, screen()->GetDisplayForAcceleratedWidget(widget));
 
   EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
-  window->SetBounds(
+  window->SetBoundsInPixels(
       gfx::Rect(kPrimaryDisplayBounds.width() - 250, 0, 400, 300));
   EXPECT_EQ(primary_display(),
             screen()->GetDisplayForAcceleratedWidget(widget));

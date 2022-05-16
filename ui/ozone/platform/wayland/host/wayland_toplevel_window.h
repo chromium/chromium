@@ -71,7 +71,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
   void SetInputRegion(const gfx::Rect* region_px) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
 
   // Sets the window's origin.
   void SetOrigin(const gfx::Point& origin);

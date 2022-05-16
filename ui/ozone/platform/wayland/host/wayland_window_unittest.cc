@@ -378,7 +378,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   const auto kHiDpiScale = 2;
   const auto kHiDpiBounds = gfx::ScaleToRoundedRect(kNormalBounds, kHiDpiScale);
 
-  window_->SetBounds(kNormalBounds);
+  window_->SetBoundsInPixels(kNormalBounds);
 
   uint32_t serial = 0;
   auto state = InitializeWlArrayWithActivatedState();
@@ -579,7 +579,7 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
 
   // Make sure the window has normal state initially.
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
-  window_->SetBounds(kNormalBounds);
+  window_->SetBoundsInPixels(kNormalBounds);
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
 
@@ -820,7 +820,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   // Real insets used by default on HiDPI.
   const auto kInsets = gfx::Insets::TLBR(38, 44, 55, 44);
-  const auto kNormalBounds = window_->GetBounds();
+  const auto kNormalBounds = window_->GetBoundsInPixels();
 
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
 
@@ -926,7 +926,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
 
   // Make sure the window has normal state initially.
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
-  window_->SetBounds(kNormalBounds);
+  window_->SetBoundsInPixels(kNormalBounds);
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
 
@@ -988,13 +988,13 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
 }
 
 TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
-  const gfx::Rect current_bounds = window_->GetBounds();
+  const gfx::Rect current_bounds = window_->GetBoundsInPixels();
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
 
   gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_TRUE(restored_bounds.IsEmpty());
-  gfx::Rect bounds = window_->GetBounds();
+  gfx::Rect bounds = window_->GetBoundsInPixels();
 
   const gfx::Rect maximized_bounds = gfx::Rect(0, 0, 1024, 768);
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(maximized_bounds)));
@@ -1017,14 +1017,14 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximize) {
   states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, 0, 0, 2, states.get());
   Sync();
-  bounds = window_->GetBounds();
+  bounds = window_->GetBoundsInPixels();
   EXPECT_EQ(bounds, restored_bounds);
   restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
 TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
-  const gfx::Rect current_bounds = window_->GetBounds();
+  const gfx::Rect current_bounds = window_->GetBoundsInPixels();
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, 0, 0, 1, states.get());
@@ -1032,7 +1032,7 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
 
   gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
-  gfx::Rect bounds = window_->GetBounds();
+  gfx::Rect bounds = window_->GetBoundsInPixels();
 
   const gfx::Rect fullscreen_bounds = gfx::Rect(0, 0, 1280, 720);
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(fullscreen_bounds)));
@@ -1055,20 +1055,20 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterFullscreen) {
   states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, 0, 0, 3, states.get());
   Sync();
-  bounds = window_->GetBounds();
+  bounds = window_->GetBoundsInPixels();
   EXPECT_EQ(bounds, restored_bounds);
   restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
 TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
-  const gfx::Rect current_bounds = window_->GetBounds();
+  const gfx::Rect current_bounds = window_->GetBoundsInPixels();
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
 
   gfx::Rect restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
-  gfx::Rect bounds = window_->GetBounds();
+  gfx::Rect bounds = window_->GetBoundsInPixels();
 
   const gfx::Rect maximized_bounds = gfx::Rect(0, 0, 1024, 768);
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(maximized_bounds)));
@@ -1112,19 +1112,19 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, 0, 0, 4, states.get());
   Sync();
-  bounds = window_->GetBounds();
+  bounds = window_->GetBoundsInPixels();
   EXPECT_EQ(bounds, restored_bounds);
   restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
 TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
-  const gfx::Rect initial_bounds = window_->GetBounds();
+  const gfx::Rect initial_bounds = window_->GetBoundsInPixels();
 
   const gfx::Rect new_bounds = gfx::Rect(0, 0, initial_bounds.width() + 10,
                                          initial_bounds.height() + 10);
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(new_bounds)));
-  window_->SetBounds(new_bounds);
+  window_->SetBoundsInPixels(new_bounds);
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
 
@@ -1156,12 +1156,12 @@ TEST_P(WaylandWindowTest, UpdateWindowRegion) {
       window_->root_surface()->GetSurfaceId());
 
   // Change bounds.
-  const gfx::Rect initial_bounds = window_->GetBounds();
+  const gfx::Rect initial_bounds = window_->GetBoundsInPixels();
   const gfx::Rect new_bounds = gfx::Rect(0, 0, initial_bounds.width() + 10,
                                          initial_bounds.height() + 10);
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
   EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
-  window_->SetBounds(new_bounds);
+  window_->SetBoundsInPixels(new_bounds);
   Sync();
   VerifyAndClearExpectations();
   EXPECT_EQ(mock_surface->opaque_region(), new_bounds);
@@ -1548,7 +1548,7 @@ TEST_P(WaylandWindowTest,
   std::unique_ptr<WaylandWindow> toplevel_window2 =
       CreateWaylandWindowWithParams(
           PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-          window_->GetBounds(), &toplevel_window2_delegate);
+          window_->GetBoundsInPixels(), &toplevel_window2_delegate);
   EXPECT_TRUE(toplevel_window2);
 
   wl_seat_send_capabilities(server_.seat()->resource(),
@@ -1853,7 +1853,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
 
   // The window's scale and bounds must remain unchanged.
   EXPECT_EQ(1, window_->window_scale());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), window_->GetBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), window_->GetBoundsInPixels());
 
   // Simulating drag process from |output1| to |output2|.
   wl_surface_send_enter(surface->resource(), output2->resource());
@@ -1862,7 +1862,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
 
   // The window must change its scale and bounds to keep DIP bounds the same.
   EXPECT_EQ(2, window_->window_scale());
-  EXPECT_EQ(gfx::Rect(0, 0, 1600, 1200), window_->GetBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 1600, 1200), window_->GetBoundsInPixels());
 }
 
 TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
@@ -1902,7 +1902,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     // window.
     EXPECT_EQ(1, window_->window_scale());
     EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
-    EXPECT_EQ(wayland_popup_bounds, wayland_popup->GetBounds());
+    EXPECT_EQ(wayland_popup_bounds, wayland_popup->GetBoundsInPixels());
     wayland_popup->Hide();
 
     // Send the window to |output2|.
@@ -1920,7 +1920,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
     EXPECT_EQ(window_->window_scale(), wayland_popup->window_scale());
     EXPECT_EQ(gfx::ScaleToRoundedRect(wayland_popup_bounds,
                                       wayland_popup->window_scale()),
-              wayland_popup->GetBounds());
+              wayland_popup->GetBoundsInPixels());
 
     wayland_popup->Hide();
     window_->SetPointerFocus(false);
@@ -1998,7 +1998,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
               gfx::ScaleToRoundedRect(bounds_dip, secondary_output_scale);
         }
 
-        EXPECT_EQ(expected_bounds, wayland_popup->GetBounds())
+        EXPECT_EQ(expected_bounds, wayland_popup->GetBoundsInPixels())
             << " when the window is on " << entered_output.label
             << " that has scale " << entered_output.output->GetScale();
       }
@@ -2061,7 +2061,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScaleForcedScale) {
 
   wayland_popup->Show(false);
 
-  EXPECT_EQ(expected_bounds_px, wayland_popup->GetBounds());
+  EXPECT_EQ(expected_bounds_px, wayland_popup->GetBoundsInPixels());
 
   wl_surface_send_leave(surface->resource(), secondary_output->resource());
   Sync();
@@ -2287,7 +2287,7 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   }
 
   auto* toplevel_window = window_.get();
-  toplevel_window->SetBounds(gfx::Rect(0, 0, 739, 574));
+  toplevel_window->SetBoundsInPixels(gfx::Rect(0, 0, 739, 574));
 
   // Case 1: properties are not provided. In this case, bounds' origin must
   // be used as anchor rect and anchor position, gravity and constraints should
@@ -2313,7 +2313,7 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
 
   Sync();
 
-  EXPECT_EQ(menu_window->GetBounds(), menu_window_bounds);
+  EXPECT_EQ(menu_window->GetBoundsInPixels(), menu_window_bounds);
 
   // Case 2: the nested menu window is positioned normally.
   MockPlatformWindowDelegate nested_menu_window_delegate;
@@ -2365,7 +2365,7 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
   }
 
   auto* toplevel_window = window_.get();
-  toplevel_window->SetBounds(gfx::Rect(0, 0, 508, 212));
+  toplevel_window->SetBoundsInPixels(gfx::Rect(0, 0, 508, 212));
 
   MockPlatformWindowDelegate menu_window_delegate;
   EXPECT_CALL(menu_window_delegate, GetMenuType())
@@ -2536,13 +2536,13 @@ TEST_P(WaylandWindowTest, WaylandPopupNestedParent) {
 }
 
 // Tests that size constraints returned by the `ui::PlatformWindowDelegate` are
-// obeyed by the window when its bounds are set internally via its SetBounds()
-// implementation.
+// obeyed by the window when its bounds are set internally via its
+// SetBoundsInPixels() implementation.
 TEST_P(WaylandWindowTest, SizeConstraintsInternal) {
   const gfx::Rect kMinBounds{0, 0, 100, 100};
   const gfx::Rect kMaxBounds{0, 0, 300, 300};
 
-  window_->SetBounds({0, 0, 200, 200});
+  window_->SetBoundsInPixels({0, 0, 200, 200});
   Sync();
 
   auto even_smaller_bounds = kMinBounds;
@@ -2553,7 +2553,7 @@ TEST_P(WaylandWindowTest, SizeConstraintsInternal) {
       .WillOnce(Return(kMinBounds.size()));
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMinBounds)));
 
-  window_->SetBounds(even_smaller_bounds);
+  window_->SetBoundsInPixels(even_smaller_bounds);
   Sync();
 
   VerifyAndClearExpectations();
@@ -2566,7 +2566,7 @@ TEST_P(WaylandWindowTest, SizeConstraintsInternal) {
       .WillOnce(Return(kMaxBounds.size()));
   EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMaxBounds)));
 
-  window_->SetBounds(even_greater_bounds);
+  window_->SetBoundsInPixels(even_greater_bounds);
   Sync();
 }
 
@@ -2582,7 +2582,7 @@ TEST_P(WaylandWindowTest, SizeConstraintsExternal) {
   EXPECT_CALL(delegate_, GetMaximumSizeForWindow())
       .WillRepeatedly(Return(kMaxBounds.size()));
 
-  window_->SetBounds({0, 0, 200, 200});
+  window_->SetBoundsInPixels({0, 0, 200, 200});
   Sync();
 
   uint32_t serial = 0;
@@ -3406,7 +3406,7 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
                                  menu_window_bounds.height()};
   EXPECT_CALL(delegate_, OnDamageRect(Eq(damage_rect))).Times(1);
   menu_window_bounds.set_origin({10, 10});
-  menu_window->SetBounds(menu_window_bounds);
+  menu_window->SetBoundsInPixels(menu_window_bounds);
 
   Sync();
 
@@ -3466,7 +3466,7 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
                             })));
   // The window geometry has to be set to the current bounds of the window for
   // minimized state.
-  gfx::Rect bounds = window_->GetBounds();
+  gfx::Rect bounds = window_->GetBoundsInPixels();
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, bounds.width(), bounds.height()));
   // Send one additional empty configuration event for minimized state.
   // (which means the surface is not maximized, fullscreen or activated)

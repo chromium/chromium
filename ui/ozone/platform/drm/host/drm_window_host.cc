@@ -78,13 +78,13 @@ bool DrmWindowHost::IsVisible() const {
 
 void DrmWindowHost::PrepareForShutdown() {}
 
-void DrmWindowHost::SetBounds(const gfx::Rect& bounds) {
+void DrmWindowHost::SetBoundsInPixels(const gfx::Rect& bounds) {
   bounds_ = bounds;
   delegate_->OnBoundsChanged(bounds);
   SendBoundsChange();
 }
 
-gfx::Rect DrmWindowHost::GetBounds() const {
+gfx::Rect DrmWindowHost::GetBoundsInPixels() const {
   return bounds_;
 }
 

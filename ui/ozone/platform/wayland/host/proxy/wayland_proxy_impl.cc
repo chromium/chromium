@@ -80,7 +80,7 @@ ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
 gfx::Rect WaylandProxyImpl::GetWindowBounds(gfx::AcceleratedWidget widget) {
   auto* window = connection_->wayland_window_manager()->GetWindow(widget);
   DCHECK(window);
-  return window->GetBounds();
+  return window->GetBoundsInPixels();
 }
 
 bool WaylandProxyImpl::WindowHasPointerFocus(gfx::AcceleratedWidget widget) {

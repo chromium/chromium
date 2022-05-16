@@ -114,11 +114,11 @@ fuchsia::ui::views::ViewRef ScenicWindow::CloneViewRef() {
   return dup;
 }
 
-gfx::Rect ScenicWindow::GetBounds() const {
+gfx::Rect ScenicWindow::GetBoundsInPixels() const {
   return bounds_;
 }
 
-void ScenicWindow::SetBounds(const gfx::Rect& bounds) {
+void ScenicWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   // This path should only be reached in tests.
   bounds_ = bounds;
 }

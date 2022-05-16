@@ -128,7 +128,7 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
     hittest_ = hittest;
     pointer_location_in_px_ = pointer_location_in_px;
 
-    platform_window_->SetBounds(bounds_);
+    platform_window_->SetBoundsInPixels(bounds_);
   }
 
  private:

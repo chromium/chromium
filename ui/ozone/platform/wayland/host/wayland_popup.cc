@@ -53,8 +53,8 @@ bool WaylandPopup::CreateShellPopup() {
   params.anchor = delegate()->GetOwnedWindowAnchorAndRectInPx();
   if (params.anchor.has_value()) {
     params.anchor->anchor_rect = gfx::ScaleToRoundedRect(
-        wl::TranslateBoundsToParentCoordinates(params.anchor->anchor_rect,
-                                               parent_window()->GetBounds()),
+        wl::TranslateBoundsToParentCoordinates(
+            params.anchor->anchor_rect, parent_window()->GetBoundsInPixels()),
         1.0 / window_scale());
     // If size is empty, set 1x1.
     if (params.anchor->anchor_rect.size().IsEmpty())
@@ -140,9 +140,9 @@ bool WaylandPopup::IsVisible() const {
   return !!shell_popup_;
 }
 
-void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
-  auto old_bounds = GetBounds();
-  WaylandWindow::SetBounds(bounds);
+void WaylandPopup::SetBoundsInPixels(const gfx::Rect& bounds) {
+  auto old_bounds = GetBoundsInPixels();
+  WaylandWindow::SetBoundsInPixels(bounds);
 
   // The shell popup can be null if bounds are being fixed during
   // the initialization. See WaylandPopup::CreateShellPopup.
@@ -155,7 +155,7 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
     // scheduled and a new buffer is not attached, some compositors may not
     // apply a new state. And committing the surface without attaching a buffer
     // won't make Wayland compositor apply these new bounds.
-    schedule_redraw_ = old_bounds.origin() != GetBounds().origin();
+    schedule_redraw_ = old_bounds.origin() != GetBoundsInPixels().origin();
 
     // If ShellPopup doesn't support repositioning, the popup will be recreated
     // with new geometry applied. Availability of methods to move/resize popup
@@ -174,15 +174,15 @@ void WaylandPopup::SetBounds(const gfx::Rect& bounds) {
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   auto bounds_px = gfx::ScaleToRoundedRect(bounds_dip, window_scale());
-  set_pending_bounds_dip(
-      gfx::ScaleToRoundedRect(wl::TranslateBoundsToTopLevelCoordinates(
-                                  bounds_px, parent_window()->GetBounds()),
-                              1.f / window_scale()));
+  set_pending_bounds_dip(gfx::ScaleToRoundedRect(
+      wl::TranslateBoundsToTopLevelCoordinates(
+          bounds_px, parent_window()->GetBoundsInPixels()),
+      1.f / window_scale()));
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
   if (schedule_redraw_) {
-    delegate()->OnDamageRect(gfx::Rect{{0, 0}, GetBounds().size()});
+    delegate()->OnDamageRect(gfx::Rect{{0, 0}, GetBoundsInPixels().size()});
     schedule_redraw_ = false;
   }
   ProcessPendingBoundsDip(serial);

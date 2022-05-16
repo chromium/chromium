@@ -89,7 +89,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   }
 
   if (screen_coordinates_enabled_)
-    SetBounds(GetBounds());
+    SetBoundsInPixels(GetBoundsInPixels());
 
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
@@ -398,7 +398,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   } else if (is_normal) {
     gfx::Size size_in_dip =
         restored_size_dip().IsEmpty()
-            ? gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / window_scale())
+            ? gfx::ScaleToRoundedSize(GetBoundsInPixels().size(),
+                                      1.f / window_scale())
             : restored_size_dip();
     bounds_dip.set_size(size_in_dip);
   }
@@ -424,9 +425,9 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   state_change_in_transit_ = false;
 }
 
-void WaylandToplevelWindow::SetBounds(const gfx::Rect& bounds) {
+void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   if (!shell_toplevel_ || !screen_coordinates_enabled_) {
-    WaylandWindow::SetBounds(bounds);
+    WaylandWindow::SetBoundsInPixels(bounds);
     return;
   }
   gfx::Rect bounds_in_dip =
@@ -437,7 +438,8 @@ void WaylandToplevelWindow::SetBounds(const gfx::Rect& bounds) {
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
   gfx::Point origin_px =
       gfx::ScaleToFlooredPoint(origin, window_scale(), window_scale());
-  WaylandWindow::SetBounds(gfx::Rect(origin_px, GetBounds().size()));
+  WaylandWindow::SetBoundsInPixels(
+      gfx::Rect(origin_px, GetBoundsInPixels().size()));
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
@@ -853,7 +855,7 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
   if (GetPlatformWindowState() == PlatformWindowState::kNormal) {
     SetRestoredBoundsInDIP({});
   } else if (GetRestoredBoundsInDIP().IsEmpty()) {
-    SetRestoredBoundsInDIP(delegate()->ConvertRectToDIP(GetBounds()));
+    SetRestoredBoundsInDIP(delegate()->ConvertRectToDIP(GetBoundsInPixels()));
   }
 }
 

@@ -470,7 +470,7 @@ void X11Window::PrepareForShutdown() {
   X11EventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 }
 
-void X11Window::SetBounds(const gfx::Rect& bounds) {
+void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   gfx::Rect new_bounds_in_pixels(bounds.origin(),
                                  AdjustSizeForDisplay(bounds.size()));
 
@@ -533,12 +533,13 @@ void X11Window::SetBounds(const gfx::Rect& bounds) {
   OnXWindowBoundsChanged(new_bounds_in_pixels);
 }
 
-gfx::Rect X11Window::GetBounds() const {
+gfx::Rect X11Window::GetBoundsInPixels() const {
   return bounds_in_pixels_;
 }
 
 void X11Window::SetBoundsInDIP(const gfx::Rect& bounds_in_dip) {
-  SetBounds(platform_window_delegate_->ConvertRectToPixels(bounds_in_dip));
+  SetBoundsInPixels(
+      platform_window_delegate_->ConvertRectToPixels(bounds_in_dip));
 }
 
 gfx::Rect X11Window::GetBoundsInDIP() const {
@@ -622,7 +623,7 @@ void X11Window::ToggleFullscreen() {
   // - works around Flash content which expects to have the size updated
   //   synchronously.
   // See https://crbug.com/361408
-  gfx::Rect new_bounds_px = GetBounds();
+  gfx::Rect new_bounds_px = GetBoundsInPixels();
   if (fullscreen) {
     restored_bounds_in_pixels_ = new_bounds_px;
     if (x11_extension_delegate_)
@@ -666,18 +667,18 @@ void X11Window::Maximize() {
     // Resize the window so that it does not have the same size as a monitor.
     // (Otherwise, some window managers immediately put the window back in
     // fullscreen mode).
-    gfx::Rect bounds_in_pixels = GetBounds();
+    gfx::Rect bounds_in_pixels = GetBoundsInPixels();
     gfx::Rect adjusted_bounds_in_pixels(
         bounds_in_pixels.origin(),
         AdjustSizeForDisplay(bounds_in_pixels.size()));
     if (adjusted_bounds_in_pixels != bounds_in_pixels)
-      SetBounds(adjusted_bounds_in_pixels);
+      SetBoundsInPixels(adjusted_bounds_in_pixels);
   }
 
   // When we are in the process of requesting to maximize a window, we can
   // accurately keep track of our restored bounds instead of relying on the
   // heuristics that are in the PropertyNotify and ConfigureNotify handlers.
-  restored_bounds_in_pixels_ = GetBounds();
+  restored_bounds_in_pixels_ = GetBoundsInPixels();
 
   // Some WMs do not respect maximization hints on unmapped windows, so we
   // save this one for later too.
@@ -1287,8 +1288,8 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
       // Another X11Window has installed itself as capture. Translate the
       // event's location and dispatch to the other.
       ConvertEventLocationToTargetWindowLocation(
-          located_events_grabber->GetBounds().origin(), GetBounds().origin(),
-          event->AsLocatedEvent());
+          located_events_grabber->GetBoundsInPixels().origin(),
+          GetBoundsInPixels().origin(), event->AsLocatedEvent());
     }
     return located_events_grabber->DispatchUiEvent(event, xev);
   }
@@ -1582,7 +1583,7 @@ void X11Window::OnMoveLoopEnded() {
 }
 
 void X11Window::SetBoundsOnMove(const gfx::Rect& requested_bounds) {
-  SetBounds(requested_bounds);
+  SetBoundsInPixels(requested_bounds);
 }
 
 scoped_refptr<X11Cursor> X11Window::GetLastCursor() {

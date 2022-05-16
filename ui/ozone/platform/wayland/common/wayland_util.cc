@@ -326,8 +326,8 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
   DCHECK_EQ(window->window_scale(), parent_window->window_scale());
   DCHECK_EQ(window->ui_scale(), parent_window->ui_scale());
   return gfx::ScaleToRoundedRect(
-      wl::TranslateBoundsToParentCoordinates(window->GetBounds(),
-                                             parent_window->GetBounds()),
+      wl::TranslateBoundsToParentCoordinates(
+          window->GetBoundsInPixels(), parent_window->GetBoundsInPixels()),
       1.0f / window->window_scale());
 }
 

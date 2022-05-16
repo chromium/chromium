@@ -56,8 +56,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   bool virtual_keyboard_enabled() const { return is_virtual_keyboard_enabled_; }
 
   // PlatformWindow implementation.
-  gfx::Rect GetBounds() const override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  gfx::Rect GetBoundsInPixels() const override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
   gfx::Rect GetBoundsInDIP() const override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
   void SetTitle(const std::u16string& title) override;

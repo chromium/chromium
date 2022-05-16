@@ -87,7 +87,7 @@ bool WinWindow::IsVisible() const {
 
 void WinWindow::PrepareForShutdown() {}
 
-void WinWindow::SetBounds(const gfx::Rect& bounds) {
+void WinWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   gfx::Rect window_bounds = GetWindowBoundsForClientBounds(
       GetWindowLong(hwnd(), GWL_STYLE), GetWindowLong(hwnd(), GWL_EXSTYLE),
       bounds);
@@ -98,7 +98,7 @@ void WinWindow::SetBounds(const gfx::Rect& bounds) {
                window_bounds.width(), window_bounds.height(), flags);
 }
 
-gfx::Rect WinWindow::GetBounds() const {
+gfx::Rect WinWindow::GetBoundsInPixels() const {
   RECT cr;
   GetClientRect(hwnd(), &cr);
   return gfx::Rect(cr);
@@ -111,7 +111,7 @@ void WinWindow::SetBoundsInDIP(const gfx::Rect& bounds) {
 gfx::Rect WinWindow::GetBoundsInDIP() const {
   // GetBounds should not be used on Windows tests.
   NOTREACHED();
-  return GetBounds();
+  return GetBoundsInPixels();
 }
 
 void WinWindow::SetTitle(const std::u16string& title) {

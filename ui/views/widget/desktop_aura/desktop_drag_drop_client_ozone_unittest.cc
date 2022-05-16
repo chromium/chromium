@@ -70,8 +70,8 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void Close() override {}
   bool IsVisible() const override { return true; }
   void PrepareForShutdown() override {}
-  void SetBounds(const gfx::Rect& bounds) override {}
-  gfx::Rect GetBounds() const override { return gfx::Rect(); }
+  void SetBoundsInPixels(const gfx::Rect& bounds) override {}
+  gfx::Rect GetBoundsInPixels() const override { return gfx::Rect(); }
   void SetBoundsInDIP(const gfx::Rect& bounds) override {}
   gfx::Rect GetBoundsInDIP() const override { return gfx::Rect(); }
   void SetTitle(const std::u16string& title) override {}

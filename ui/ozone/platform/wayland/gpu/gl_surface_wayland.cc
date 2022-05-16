@@ -24,7 +24,7 @@ void EGLWindowDeleter::operator()(wl_egl_window* egl_window) {
 
 std::unique_ptr<wl_egl_window, EGLWindowDeleter> CreateWaylandEglWindow(
     WaylandWindow* window) {
-  gfx::Size size = window->GetBounds().size();
+  gfx::Size size = window->GetBoundsInPixels().size();
   return std::unique_ptr<wl_egl_window, EGLWindowDeleter>(wl_egl_window_create(
       window->root_surface()->surface(), size.width(), size.height()));
 }

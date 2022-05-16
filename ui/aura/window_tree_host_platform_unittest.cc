@@ -83,7 +83,7 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
       return;
 
     should_change_bounds_in_on_resized_ = false;
-    gfx::Rect bounds = platform_window_->GetBounds();
+    gfx::Rect bounds = platform_window_->GetBoundsInPixels();
     bounds.set_x(bounds.x() + 1);
     host_->SetBoundsInPixels(bounds);
   }

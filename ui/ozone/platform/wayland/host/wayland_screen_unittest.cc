@@ -374,15 +374,15 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   // Getting a widget at a screen point outside its bounds, must result in a
   // null widget.
-  const gfx::Rect window_bounds = window_->GetBounds();
+  const gfx::Rect window_bounds = window_->GetBoundsInPixels();
   widget_at_screen_point = platform_screen_->GetAcceleratedWidgetAtScreenPoint(
       gfx::Point(window_bounds.width() + 1, window_bounds.height() + 1));
   EXPECT_EQ(widget_at_screen_point, gfx::kNullAcceleratedWidget);
 
   MockWaylandPlatformWindowDelegate delegate;
   auto menu_window_bounds =
-      gfx::Rect(window_->GetBounds().width() - 10,
-                window_->GetBounds().height() - 10, 100, 100);
+      gfx::Rect(window_->GetBoundsInPixels().width() - 10,
+                window_->GetBoundsInPixels().height() - 10, 100, 100);
   std::unique_ptr<WaylandWindow> menu_window =
       CreateWaylandWindowWithProperties(menu_window_bounds,
                                         PlatformWindowType::kMenu,
@@ -395,9 +395,9 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
   // window, and gathers focus.
   window_->SetPointerFocus(false);
   menu_window->SetPointerFocus(true);
-  widget_at_screen_point =
-      platform_screen_->GetAcceleratedWidgetAtScreenPoint(gfx::Point(
-          menu_window->GetBounds().x() + 1, menu_window->GetBounds().y() + 1));
+  widget_at_screen_point = platform_screen_->GetAcceleratedWidgetAtScreenPoint(
+      gfx::Point(menu_window->GetBoundsInPixels().x() + 1,
+                 menu_window->GetBoundsInPixels().y() + 1));
   EXPECT_EQ(widget_at_screen_point, menu_window->GetWidget());
 
   // Whenever a mouse pointer leaves the menu window, the accelerated widget
@@ -419,7 +419,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
 
   Sync();
 
-  auto menu_bounds_px = menu_window->GetBounds();
+  auto menu_bounds_px = menu_window->GetBoundsInPixels();
   // Translate the point to dip.
   auto point_in_screen =
       gfx::ScaleToRoundedPoint(menu_bounds_px.origin(), 1.f / 2);
@@ -658,10 +658,10 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // WaylandScreen must return a point, which is located outside of bounds of
   // any window. Basically, it means that it takes the largest window and adds
   // 10 pixels to its width and height, and returns the value.
-  const gfx::Rect second_window_bounds = second_window->GetBounds();
+  const gfx::Rect second_window_bounds = second_window->GetBoundsInPixels();
   // A second window has largest bounds. Thus, these bounds must be taken as a
   // ground for the point outside any of the surfaces.
-  ASSERT_TRUE(window_->GetBounds() < second_window_bounds);
+  ASSERT_TRUE(window_->GetBoundsInPixels() < second_window_bounds);
   EXPECT_EQ(gfx::Point(second_window_bounds.width() + 10,
                        second_window_bounds.height() + 10),
             platform_screen_->GetCursorScreenPoint());
@@ -714,7 +714,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   // Now, create a nested menu window and make sure that the cursor screen point
   // still has been correct. The location of the window is on the right side of
   // the main menu window.
-  const gfx::Rect menu_window_bounds = menu_window->GetBounds();
+  const gfx::Rect menu_window_bounds = menu_window->GetBoundsInPixels();
   std::unique_ptr<WaylandWindow> nested_menu_window =
       CreateWaylandWindowWithProperties(
           gfx::Rect(menu_window_bounds.x() + menu_window_bounds.width(),

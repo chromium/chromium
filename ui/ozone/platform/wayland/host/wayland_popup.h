@@ -29,7 +29,7 @@ class WaylandPopup : public WaylandWindow {
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
-  void SetBounds(const gfx::Rect& bounds) override;
+  void SetBoundsInPixels(const gfx::Rect& bounds) override;
 
  private:
   // WaylandWindow overrides:
