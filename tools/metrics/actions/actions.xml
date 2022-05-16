@@ -16219,6 +16219,27 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MediaApp.PDF.DefaultApp.SwitchedAway">
+  <owner>patricialor@chromium.org</owner>
+  <owner>backlight-swe@google.com</owner>
+  <description>
+    Records that the user used the Files App to change their default app for PDF
+    to a different app, including if they change it from non-MediaApp to another
+    non-MediaApp. Recorded only when the MediaApp is enabled as a handler for
+    PDF files.
+  </description>
+</action>
+
+<action name="MediaApp.PDF.DefaultApp.SwitchedTo">
+  <owner>patricialor@chromium.org</owner>
+  <owner>backlight-swe@google.com</owner>
+  <description>
+    Records that the user used the Files App to change their default app for PDF
+    from a different app back to MediaApp, which is the factory setting.
+    Recorded only when the MediaApp is enabled as a handler for PDF files.
+  </description>
+</action>
+
 <action name="MediaContextMenu_Controls">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

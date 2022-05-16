@@ -10,10 +10,13 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -325,6 +329,47 @@ TEST(FileManagerFileTasksTest, ChooseAndSetDefaultTask_FallbackOfficeEditing) {
   // file browser handler.
   ChooseAndSetDefaultTask(pref_service, entries, &tasks);
   EXPECT_TRUE(tasks[0].is_default);
+}
+
+// Test that for changes of default app for PDF files, a metric is recorded.
+TEST(FileManagerFileTasksTest, UpdateDefaultTask_RecordsPdfDefaultAppChanges) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      ash::features::kMediaAppHandlesPdf};
+  TestingPrefServiceSimple pref_service;
+  RegisterDefaultTaskPreferences(&pref_service);
+  base::UserActionTester user_action_tester;
+
+  // Non-PDF file types are not recorded.
+  TaskDescriptor other_app_task("other-app-id", TASK_TYPE_FILE_HANDLER,
+                                "action-id");
+  UpdateDefaultTask(&pref_service, other_app_task, {".txt"}, {"text/plain"});
+  // Even if it's the Media App.
+  TaskDescriptor media_app_task(web_app::kMediaAppId, TASK_TYPE_FILE_HANDLER,
+                                "action-id");
+  UpdateDefaultTask(&pref_service, media_app_task, {"tiff"}, {"image/tiff"});
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedAway"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedTo"));
+
+  // PDF files are recorded.
+  UpdateDefaultTask(&pref_service, media_app_task, {".pdf"},
+                    {"application/pdf"});
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedTo"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedAway"));
+  user_action_tester.ResetCounts();
+
+  UpdateDefaultTask(&pref_service, other_app_task, {".pdf"},
+                    {"application/pdf"});
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedTo"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "MediaApp.PDF.DefaultApp.SwitchedAway"));
 }
 
 // Test FileHandlerIsEnabled which returns whether a file handler should be

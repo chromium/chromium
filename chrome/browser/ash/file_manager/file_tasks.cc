@@ -17,6 +17,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -106,6 +108,27 @@ const char kArcAppTaskType[] = "arc";
 const char kCrostiniAppTaskType[] = "crostini";
 const char kPluginVmAppTaskType[] = "pluginvm";
 const char kWebAppTaskType[] = "web";
+
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kPdfFileExtension[] = ".pdf";
+
+void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
+                                  const std::set<std::string>& mime_types,
+                                  const std::set<std::string>& suffixes) {
+  bool hasPdfMimeType = base::Contains(mime_types, kPdfMimeType);
+  bool hasPdfSuffix = base::Contains(suffixes, kPdfFileExtension);
+  if (!hasPdfMimeType || !hasPdfSuffix) {
+    return;
+  }
+
+  if (new_default_app_id == web_app::kMediaAppId) {
+    base::RecordAction(
+        base::UserMetricsAction("MediaApp.PDF.DefaultApp.SwitchedTo"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MediaApp.PDF.DefaultApp.SwitchedAway"));
+  }
+}
 
 // Returns True if the `app_id` belongs to Files app either extension or SWA.
 inline bool isFilesAppId(const std::string& app_id) {
@@ -672,14 +695,21 @@ void UpdateDefaultTask(PrefService* pref_service,
     }
   }
 
+  std::set<std::string> lowercase_suffixes;
   if (!suffixes.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
       std::string lower_suffix = base::ToLowerASCII(suffix);
+      lowercase_suffixes.insert(lower_suffix);
       mime_type_pref->SetStringKey(lower_suffix, task_id);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
+    RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types,
+                                 lowercase_suffixes);
   }
 }
 
