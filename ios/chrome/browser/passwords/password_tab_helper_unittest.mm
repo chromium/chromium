@@ -8,8 +8,10 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -82,6 +84,7 @@ class PasswordTabHelperTest : public PlatformTest {
 };
 
 TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
+  base::HistogramTester histogram_tester;
   NSURLRequest* request = [NSURLRequest
       requestWithURL:
           [NSURL URLWithString:base::SysUTF8ToNSString(
@@ -107,9 +110,13 @@ TEST_F(PasswordTabHelperTest, RedirectsToPasswordsAndCancelsRequest) {
   EXPECT_OCMOCK_VERIFY(dispatcher_);
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(request_policy.ShouldCancelNavigation());
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite, 1);
 }
 
 TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongLink) {
+  base::HistogramTester histogram_tester;
   NSURLRequest* request =
       [NSURLRequest requestWithURL:[NSURL URLWithString:kWrongURL]];
   const web::WebStatePolicyDecider::RequestInfo request_info(
@@ -130,9 +137,12 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongLink) {
   EXPECT_OCMOCK_VERIFY(dispatcher_);
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(request_policy.ShouldCancelNavigation());
+  histogram_tester.ExpectTotalCount("PasswordManager.ManagePasswordsReferrer",
+                                    0);
 }
 
 TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongTransition) {
+  base::HistogramTester histogram_tester;
   NSURLRequest* request = [NSURLRequest
       requestWithURL:
           [NSURL URLWithString:base::SysUTF8ToNSString(
@@ -155,4 +165,6 @@ TEST_F(PasswordTabHelperTest, NoRedirectWhenWrongTransition) {
   EXPECT_OCMOCK_VERIFY(dispatcher_);
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(request_policy.ShouldCancelNavigation());
+  histogram_tester.ExpectTotalCount("PasswordManager.ManagePasswordsReferrer",
+                                    0);
 }

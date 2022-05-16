@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
@@ -100,6 +102,9 @@ void PasswordTabHelper::ShouldAllowRequest(
                                                           showCancelButton:NO];
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    UMA_HISTOGRAM_ENUMERATION(
+        "PasswordManager.ManagePasswordsReferrer",
+        password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
     return;
   }
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
