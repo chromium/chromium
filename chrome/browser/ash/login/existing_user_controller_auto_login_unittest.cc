@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,6 +84,9 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
     existing_user_controller_->local_account_auto_login_id_subscription_ = {};
     existing_user_controller_
         ->local_account_auto_login_delay_subscription_ = {};
+
+    session_manager_.SetSessionState(
+        session_manager::SessionState::LOGIN_PRIMARY);
   }
 
   ExistingUserController* existing_user_controller() const {
@@ -147,6 +151,8 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   MockUserManager* mock_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
+
+  session_manager::SessionManager session_manager_;
 
   // `existing_user_controller_` must be destroyed before
   // `device_settings_test_helper_`.
