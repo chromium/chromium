@@ -13,17 +13,17 @@
 
 namespace ash {
 
-using SystemAppDelegateMap =
+using SystemWebAppDelegateMap =
     base::flat_map<web_app::SystemAppType,
                    std::unique_ptr<web_app::SystemWebAppDelegate>>;
 
 // Returns whether the given app type is enabled.
-bool IsSystemWebAppEnabled(const SystemAppDelegateMap& delegates,
+bool IsSystemWebAppEnabled(const SystemWebAppDelegateMap& delegates,
                            web_app::SystemAppType type);
 
 // Returns the System App Delegate for the given App |type|.
 const web_app::SystemWebAppDelegate* GetSystemWebApp(
-    const SystemAppDelegateMap& delegates,
+    const SystemWebAppDelegateMap& delegates,
     web_app::SystemAppType type);
 
 }  // namespace ash

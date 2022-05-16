@@ -128,7 +128,7 @@ class SystemWebAppManager {
   // installed on the system.
   // TODO(crbug.com/1321984): Delete this accessor in favor of
   // system_app_delegates().
-  const ash::SystemAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
+  const ash::SystemWebAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
 
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;
@@ -142,13 +142,13 @@ class SystemWebAppManager {
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
-  const ash::SystemAppDelegateMap& system_app_delegates() const {
+  const ash::SystemWebAppDelegateMap& system_app_delegates() const {
     return system_app_delegates_;
   }
 
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
-  void SetSystemAppsForTesting(ash::SystemAppDelegateMap system_apps);
+  void SetSystemAppsForTesting(ash::SystemWebAppDelegateMap system_apps);
 
   // Overrides the update policy. If AlwaysReinstallSystemWebApps feature is
   // enabled, this method does nothing, and system apps will be reinstalled.
@@ -210,7 +210,7 @@ class SystemWebAppManager {
 
   UpdatePolicy update_policy_;
 
-  ash::SystemAppDelegateMap system_app_delegates_;
+  ash::SystemWebAppDelegateMap system_app_delegates_;
 
   const raw_ptr<PrefService> pref_service_;
 

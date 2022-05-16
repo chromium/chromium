@@ -54,7 +54,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       WebAppIconManager* icon_manager,
       WebAppUiManager* ui_manager,
       WebAppInstallFinalizer* install_finalizer,
-      const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
+      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
       OsIntegrationManager* os_integration_manager,
       WebAppSyncBridge* sync_bridge);
   void Start();
@@ -97,7 +97,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
-  raw_ptr<const ash::SystemAppDelegateMap> system_web_apps_delegate_map_ =
+  raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
       nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;

@@ -107,7 +107,7 @@ namespace {
 // bailing out.
 const int kInstallFailureAttempts = 3;
 
-ash::SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
+ash::SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
@@ -145,7 +145,7 @@ ash::SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 
-  ash::SystemAppDelegateMap delegate_map;
+  ash::SystemWebAppDelegateMap delegate_map;
   for (auto& info : info_vec) {
     if (info->IsAppEnabled() ||
         base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
@@ -443,7 +443,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
 }
 
 void SystemWebAppManager::SetSystemAppsForTesting(
-    ash::SystemAppDelegateMap system_apps) {
+    ash::SystemWebAppDelegateMap system_apps) {
   system_app_delegates_ = std::move(system_apps);
 }
 

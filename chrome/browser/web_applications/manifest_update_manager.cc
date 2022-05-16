@@ -31,7 +31,7 @@ void ManifestUpdateManager::SetSubsystems(
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
-    const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
+    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge) {
   install_manager_ = install_manager;

@@ -57,7 +57,7 @@ class WebAppPolicyManager {
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* app_registrar,
       WebAppSyncBridge* sync_bridge,
-      const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
+      const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
       OsIntegrationManager* os_integration_manager);
 
   void Start();
@@ -160,7 +160,7 @@ class WebAppPolicyManager {
       nullptr;
   raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
-  raw_ptr<const ash::SystemAppDelegateMap> system_web_apps_delegate_map_ =
+  raw_ptr<const ash::SystemWebAppDelegateMap> system_web_apps_delegate_map_ =
       nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
 

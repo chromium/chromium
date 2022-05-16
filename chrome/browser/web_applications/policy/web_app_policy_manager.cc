@@ -78,7 +78,7 @@ void WebAppPolicyManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* app_registrar,
     WebAppSyncBridge* sync_bridge,
-    const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
+    const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager) {
   DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);

@@ -16,18 +16,18 @@ class WebAppRegistrar;
 // Returns the app id for the given System App |type|.
 absl::optional<AppId> GetAppIdForSystemApp(
     const WebAppRegistrar& registrar,
-    const ash::SystemAppDelegateMap& delegates,
+    const ash::SystemWebAppDelegateMap& delegates,
     SystemAppType type);
 
 // Returns the System App Type for the given |app_id|.
 absl::optional<SystemAppType> GetSystemAppTypeForAppId(
     const WebAppRegistrar& registrar,
-    const ash::SystemAppDelegateMap& delegates,
+    const ash::SystemWebAppDelegateMap& delegates,
     const AppId& app_id);
 
 // Returns whether |app_id| points to an installed System App.
 bool IsSystemWebApp(const WebAppRegistrar& registrar,
-                    const ash::SystemAppDelegateMap& delegates,
+                    const ash::SystemWebAppDelegateMap& delegates,
                     const AppId& app_id);
 
 }  // namespace web_app

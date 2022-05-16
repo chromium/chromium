@@ -12,7 +12,7 @@ namespace web_app {
 
 absl::optional<AppId> GetAppIdForSystemApp(
     const WebAppRegistrar& registrar,
-    const ash::SystemAppDelegateMap& delegates,
+    const ash::SystemWebAppDelegateMap& delegates,
     SystemAppType type) {
   const web_app::SystemWebAppDelegate* delegate =
       ash::GetSystemWebApp(delegates, type);
@@ -28,7 +28,7 @@ absl::optional<AppId> GetAppIdForSystemApp(
 
 absl::optional<SystemAppType> GetSystemAppTypeForAppId(
     const WebAppRegistrar& registrar,
-    const ash::SystemAppDelegateMap& delegates,
+    const ash::SystemWebAppDelegateMap& delegates,
     const AppId& app_id) {
   const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app || !web_app->client_data().system_web_app_data.has_value()) {
@@ -51,7 +51,7 @@ absl::optional<SystemAppType> GetSystemAppTypeForAppId(
 }
 
 bool IsSystemWebApp(const WebAppRegistrar& registrar,
-                    const ash::SystemAppDelegateMap& delegates,
+                    const ash::SystemWebAppDelegateMap& delegates,
                     const AppId& app_id) {
   return GetSystemAppTypeForAppId(registrar, delegates, app_id).has_value();
 }
