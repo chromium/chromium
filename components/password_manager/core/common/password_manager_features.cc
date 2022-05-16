@@ -90,8 +90,14 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables (un)muting compromised passwords from bulk leak check in settings.
-const base::Feature kMuteCompromisedPasswords{
-    "MuteCompromisedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMuteCompromisedPasswords {
+  "MuteCompromisedPasswords",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables adding, displaying and modifying extra notes to stored credentials.
 const base::Feature kPasswordNotes{"PasswordNotes",
