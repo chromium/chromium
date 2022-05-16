@@ -20,6 +20,11 @@
 #include "base/command_line.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 
 class PreinstalledWebAppUtilsTest : public testing::Test {
@@ -79,7 +84,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
 // ParseConfig() is also tested by PreinstalledWebAppManagerTest.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -99,8 +104,16 @@ class PreinstalledWebAppUtilsTabletTest
  public:
   PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           ash::switches::kEnableTabletFormFactor);
+#else
+      auto init_params = crosapi::mojom::BrowserInitParams::New();
+      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+      init_params->device_properties->is_tablet_form_factor = true;
+      chromeos::BrowserInitParams::SetInitParamsForTests(
+          std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   ~PreinstalledWebAppUtilsTabletTest() override = default;
@@ -141,8 +154,16 @@ class PreinstalledWebAppUtilsArcTest
  public:
   PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
           ash::switches::kArcAvailability, "officially-supported");
+#else
+      auto init_params = crosapi::mojom::BrowserInitParams::New();
+      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+      init_params->device_properties->is_arc_available = true;
+      chromeos::BrowserInitParams::SetInitParamsForTests(
+          std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }
   ~PreinstalledWebAppUtilsArcTest() override = default;
@@ -177,7 +198,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true, false),
                          BoolParamToString);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
 #if BUILDFLAG(IS_WIN)

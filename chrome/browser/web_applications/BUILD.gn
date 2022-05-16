@@ -605,6 +605,10 @@ source_set("web_applications_unit_tests") {
     ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup:startup" ]
+  }
+
   if (is_win) {
     deps += [
       "//chrome/browser/web_applications/chrome_pwa_launcher:unit_tests",
