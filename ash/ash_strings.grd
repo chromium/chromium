@@ -1838,8 +1838,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_MAX_SAVED_DESKS_TOOLTIP" desc="The disabled Save Desk for later button tooltip text when maximum number of saved desks has been reached.">
         Only 6 saved desks allowed. Remove a desk to save a new one.
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON" desc="The text of the desks templates button in the overview desks bar.">
-        Templates
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_LIBRARY" desc="The text of the desks templates button in the overview desks bar when Desk Templates is enabled.">
+        Library
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER" desc="The text of the desks templates button in the overview desks bar when Desk Templates is disabled.">
+        Saved for later
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON" desc="The text of the button to save the active desk as a template.">
         Save desk as a template
