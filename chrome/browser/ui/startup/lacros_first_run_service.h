@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_LACROS_FIRST_RUN_SERVICE_H_
 #define CHROME_BROWSER_UI_STARTUP_LACROS_FIRST_RUN_SERVICE_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 #error This file should only be included on lacros.
@@ -34,11 +38,10 @@ class LacrosFirstRunService : public KeyedService {
   bool ShouldOpenFirstRun() const;
 
   // Assuming that the first run experience needs to be opened on startup,
-  // attempts to complete it silently, in case collecting consent is not needed.
-  // Returns `true` if the FRE was marked finished. If not, `false` will be
-  // returned and `OpenFirstRunIfNeeded()` will need to be eventually called to
-  // show the visual FRE.
-  bool TryMarkFirstRunAlreadyFinished();
+  // asynchronously attempts to complete it silently, in case collecting consent
+  // is not needed. If `callback` is provided, it will run once the attempt is
+  // completed. To see if it the attempt worked, call `ShouldOpenFirstRun()`.
+  void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
 
   // This function takes the user through the browser FRE.
   // 1) First, it checks whether the FRE flow can be skipped in the first place.
@@ -60,8 +63,16 @@ class LacrosFirstRunService : public KeyedService {
   void OpenFirstRunIfNeeded(ResumeTaskCallback callback);
 
  private:
+  void OpenFirstRunInternal(ResumeTaskCallback callback);
+  void TryEnableSyncSilentlyWithToken(const CoreAccountId& account_id,
+                                      base::OnceClosure callback);
+
   // Owns of this instance via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;
+
+  std::unique_ptr<signin::IdentityManager::Observer> token_load_observer_;
+
+  base::WeakPtrFactory<LacrosFirstRunService> weak_ptr_factory_{this};
 };
 
 class LacrosFirstRunServiceFactory : public BrowserContextKeyedServiceFactory {
@@ -85,6 +96,23 @@ class LacrosFirstRunServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
+
+namespace testing {
+
+// Overrides the outcome of a check made during
+// `LacrosFirstRunService::TryEnableSyncSilentlyWithToken()` to indicate that
+// Sync is required for the primary profile, without having to mock policies or
+// device settings.
+class ScopedSyncRequiredInFirstRun {
+ public:
+  explicit ScopedSyncRequiredInFirstRun(bool required);
+  ~ScopedSyncRequiredInFirstRun();
+
+ private:
+  absl::optional<bool> overriden_value_;
+};
+
+}  // namespace testing
 
 // Helper to call `LacrosFirstRunService::ShouldOpenFirstRun()` without having
 // to first obtain the service instance.
