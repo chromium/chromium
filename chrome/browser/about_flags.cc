@@ -2222,14 +2222,6 @@ const FeatureEntry::FeatureVariation kLensCameraAssistedSearchVariations[] = {
     {"(on Tablet)", kLensCameraAssistedSearchOnTablet,
      std::size(kLensCameraAssistedSearchOnTablet), nullptr}};
 
-const FeatureEntry::FeatureParam kLensContextMenuTranslateHideRemoveIcon[] = {
-    {"hideChipRemoveIcon", "true"}};
-
-const FeatureEntry::FeatureVariation kLensContextMenuTranslateVariations[] = {
-    {"(Hide Remove Icon)", kLensContextMenuTranslateHideRemoveIcon,
-     std::size(kLensContextMenuTranslateHideRemoveIcon), nullptr},
-};
-
 const FeatureEntry::FeatureParam kLensContextMenuSearchOnTablet[] = {
     {"enableContextMenuSearchOnTablet", "true"}};
 
@@ -6523,15 +6515,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kContextMenuSearchAndShopWithGoogleLens)},
-
-    {"context-menu-translate-with-google-lens",
-     flag_descriptions::kContextMenuTranslateWithGoogleLensName,
-     flag_descriptions::kContextMenuTranslateWithGoogleLensDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kContextMenuTranslateWithGoogleLens,
-         kLensContextMenuTranslateVariations,
-         "LensContextMenuTranslate")},
 
     {"google-lens-sdk-intent", flag_descriptions::kGoogleLensSdkIntentName,
      flag_descriptions::kGoogleLensSdkIntentDescription, kOsAndroid,

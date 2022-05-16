@@ -958,11 +958,6 @@
     "expiry_milestone": 103
   },
   {
-    "name": "context-menu-translate-with-google-lens",
-    "owners": [ "juanmojica@google.com", "hakop@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "contextual-nudges",
     "owners": [ "yulunwu" ],
     "expiry_milestone": 83
