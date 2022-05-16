@@ -151,12 +151,11 @@ void UpdateRefreshRateUma(const DisplayConfigureRequest& request,
 
   // Check if the refresh value is within an epsilon from one of the common
   // refresh rate values.
-  for (size_t i = 0; i < std::size(kCommonDisplayRefreshRates); ++i) {
-    const bool is_within_epsilon =
-        std::abs(request.mode->refresh_rate() - kCommonDisplayRefreshRates[i]) <
-        kRefreshRateEpsilon;
+  for (float common_rate : kCommonDisplayRefreshRates) {
+    const bool is_within_epsilon = std::abs(request.mode->refresh_rate() -
+                                            common_rate) < kRefreshRateEpsilon;
     if (is_within_epsilon) {
-      histogram->Add(kCommonDisplayRefreshRates[i]);
+      histogram->Add(common_rate);
       return;
     }
   }
