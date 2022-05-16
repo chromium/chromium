@@ -21,20 +21,11 @@ declare_args() {
   # Other clients typically set this to false. If another client wants to use
   # the same default value as Chromium, we'd need to add a separate gclient
   # variable to replace build_with_chromium here.
-  # Note: If you are here to revert because DCHECKs are failing on a specific OS
-  # please prefer excluding OSes rather than reverting . I.e. if Mac builds
-  # break badly but other platforms are reasonably stable, add "&& !is_mac"
-  # instead of reverting.
   dcheck_always_on =
       (build_with_chromium && !is_official_build) || dcheck_is_configurable
 }
 
 declare_args() {
   # Set to false to disable EXPENSIVE_DCHECK()s.
-  # TODO(crbug.com/1225701): Hash out whether expensive DCHECKs need to be
-  # disabled for developers by default. There's concern that disabling these
-  # globally by default effectively reduces them to zero coverage. This is
-  # in place so that you can disable expensive DCHECKs while retaining some
-  # DCHECK coverage, which is especially important in user-facing builds.
   enable_expensive_dchecks = is_debug || dcheck_always_on
 }
