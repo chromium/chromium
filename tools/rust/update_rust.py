@@ -13,6 +13,7 @@ a Chromium checkout to access functions from other scripts.
 
 import argparse
 import os
+import shutil
 import sys
 import tempfile
 import urllib
@@ -25,8 +26,8 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = '1f631e8e'
-RUST_SUB_REVISION = 2
+RUST_REVISION = 'f001f930'
+RUST_SUB_REVISION = 1
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -69,10 +70,15 @@ def main():
   from update import (DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix)
 
   try:
-    with tempfile.TemporaryFile() as f:
+    with tempfile.TemporaryDirectory() as tdir:
       url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
           GetDefaultHostOs()), GetPackageVersion())
-      DownloadAndUnpack(url, THIRD_PARTY_DIR)
+      DownloadAndUnpack(url, tdir)
+
+      # If download was successful, swap out existing rust-toolchain dir with
+      # newly extracted one.
+      shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+      shutil.move(os.path.join(tdir, 'rust-toolchain'), RUST_TOOLCHAIN_OUT_DIR)
   except urllib.error.HTTPError as e:
     # Fail softly for now. This can happen if a Rust package was not produced,
     # e.g. if the Rust build failed upon a Clang update, or if a Rust roll and
