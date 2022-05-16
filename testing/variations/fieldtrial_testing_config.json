@@ -6008,51 +6008,6 @@
             ]
         }
     ],
-    "PotassiumV3": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Settings_20220413_Android",
-                    "enable_features": [
-                        "PrivacySandboxSettings3"
-                    ],
-                    "disable_features": [
-                        "AllowURNsInIframes",
-                        "BiddingAndScoringDebugReportingAPI",
-                        "BrowsingTopics",
-                        "InterestGroupStorage",
-                        "PrivacySandboxAdsAPIs"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Settings_20220413",
-                    "enable_features": [
-                        "PrivacySandboxSettings3"
-                    ],
-                    "disable_features": [
-                        "AllowURNsInIframes",
-                        "BiddingAndScoringDebugReportingAPI",
-                        "BrowsingTopics",
-                        "InterestGroupStorage",
-                        "PrivacySandboxAdsAPIs"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectPriorities": [
         {
             "platforms": [
@@ -6176,6 +6131,55 @@
                     "enable_features": [
                         "IsolatePrerenders",
                         "IsolatePrerendersMustProbeOrigin"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxV3": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Notice_MPArch_20220505",
+                    "params": {
+                        "implementation_type": "mparch"
+                    },
+                    "enable_features": [
+                        "AllowURNsInIframes",
+                        "BiddingAndScoringDebugReportingAPI",
+                        "BrowsingTopics",
+                        "FencedFrames",
+                        "InterestGroupStorage",
+                        "NoncedPartitionedCookies",
+                        "PrivacySandboxAdsAPIs",
+                        "PrivacySandboxSettings3"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Notice_ShadowDOM_20220505_Android",
+                    "params": {
+                        "implementation_type": "shadow_dom"
+                    },
+                    "enable_features": [
+                        "BrowsingTopics",
+                        "FencedFrames",
+                        "NoncedPartitionedCookies",
+                        "PrivacySandboxAdsAPIs",
+                        "PrivacySandboxSettings3"
                     ]
                 }
             ]
