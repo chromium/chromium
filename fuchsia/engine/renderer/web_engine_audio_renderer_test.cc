@@ -138,13 +138,17 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
   // fuchsia::media::StreamSink overrides.
   void SendPacket(fuchsia::media::StreamPacket packet,
                   SendPacketCallback callback) override {
-    EXPECT_FALSE(received_end_of_stream_);
+    EXPECT_EQ(received_end_of_stream_, 0);
     received_packets_.push_back(std::move(packet));
     callback();
   }
-  void EndOfStream() override { received_end_of_stream_ = true; }
+  void EndOfStream() override {
+    EXPECT_FALSE(received_end_of_stream_);
+    received_end_of_stream_ = true;
+  }
   void DiscardAllPackets(DiscardAllPacketsCallback callback) override {
     DiscardAllPacketsNoReply();
+    received_end_of_stream_ = false;
     callback();
   }
   void DiscardAllPacketsNoReply() override {
@@ -1143,4 +1147,5 @@ TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
   audio_consumer_->WaitStarted();
   stream_sink_ = audio_consumer_->TakeStreamSink();
   EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
+  EXPECT_FALSE(stream_sink_->received_end_of_stream());
 }
