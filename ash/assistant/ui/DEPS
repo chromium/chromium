@@ -14,7 +14,7 @@ include_rules = [
   "+build/buildflag.h",
   "+cc/base",
   "+cc/paint",
-  "+chromeos/assistant",
+  "+chromeos/ash/components/assistant",
   "+chromeos/constants",
   "+chromeos/services/assistant/public",
   "+chromeos/services/libassistant/public/cpp",

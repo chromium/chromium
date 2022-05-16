@@ -1711,7 +1711,7 @@ test("content_browsertests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/assistant:buildflags" ]
+    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
   }
 
   if (is_android) {

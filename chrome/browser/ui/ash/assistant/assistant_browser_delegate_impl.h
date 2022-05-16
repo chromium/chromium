@@ -11,7 +11,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/services/assistant/service.h"
 #include "components/session_manager/core/session_manager_observer.h"

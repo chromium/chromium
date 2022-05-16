@@ -7,7 +7,7 @@
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/component_export.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(enable_cros_libassistant)
 
@@ -125,7 +125,8 @@ source_set("internal") {
     "./grpc/external_services:grpc_services_initializer",
     "./grpc/external_services:grpc_services_observer",
     "//build/util:chromium_git_revision",
-    "//chromeos/assistant:buildflags",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/resources",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:libassistant",
@@ -135,7 +136,6 @@ source_set("internal") {
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/util:util",
-    "//chromeos/resources:resources_grit",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
@@ -256,11 +256,11 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/assistant/test_support:test_support",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
-    "//chromeos/assistant/test_support:test_support",
     "//chromeos/dbus/power",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/grpc:assistant_client",

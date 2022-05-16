@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/assistant/assistant.gni")
+import("//build/config/chrome_build.gni")
 
 # C++ headers and sources that can be shared by assistant internal and
 # external directories.

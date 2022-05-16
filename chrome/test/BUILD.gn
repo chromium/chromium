@@ -20,7 +20,7 @@ import(
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/exo/buildflags.gni")
@@ -3953,8 +3953,8 @@ if (!is_android) {
           "//ash/assistant/ui",
           "//ash/assistant/ui:constants",
           "//chrome/browser/ui/ash/assistant/test_support",
+          "//chromeos/ash/components/assistant/test_support",
           "//chromeos/assistant/internal:libassistant",
-          "//chromeos/assistant/test_support",
         ]
 
         data += [ "//chromeos/assistant/internal/test_data/" ]
@@ -4053,6 +4053,7 @@ if (!is_android) {
         "//chrome/services/keymaster/public/mojom",
         "//chrome/services/wilco_dtc_supportd/public/mojom",
         "//chromeos:test_support",
+        "//chromeos/ash/components/assistant:buildflags",
         "//chromeos/ash/components/dbus/authpolicy",
         "//chromeos/ash/components/dbus/biod",
         "//chromeos/ash/components/dbus/biod:biod_proto",
@@ -4065,7 +4066,6 @@ if (!is_android) {
         "//chromeos/ash/components/dbus/system_proxy",
         "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
         "//chromeos/ash/components/dbus/upstart",
-        "//chromeos/assistant:buildflags",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers/public/cpp:cpp",
         "//chromeos/components/remote_apps/mojom:mojom",
@@ -7184,10 +7184,10 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/cpp:unit_tests",
+      "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/dbus/cicerone",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/components/dbus/seneschal",
-      "//chromeos/assistant:buildflags",
       "//chromeos/components/feature_usage:feature_usage",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",

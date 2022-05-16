@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/assistant/assistant.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -17,8 +16,6 @@ grit("resources") {
     "chromeos_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-
-  defines = [ "enable_cros_libassistant=$enable_cros_libassistant" ]
 
   grit_flags = [
     "-E",

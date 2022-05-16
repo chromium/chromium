@@ -169,7 +169,7 @@
                   '|ash/public/cpp/wallpaper/'\
                   '|ash/wallpaper/'\
                   '|ash/webui/personalization_app/'\
-                  '|chromeos/assistant/'\
+                  '|chromeos/ash/components/assistant/'\
                   '|chromeos/services/assistant/'\
                   '|chromeos/services/libassistant/'\
                   '|chrome/browser/ash/wallpaper_handlers/'\

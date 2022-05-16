@@ -7,7 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -178,7 +178,7 @@ static_library("utility") {
       "//ash/services/recording",
       "//chrome/services/file_util",
       "//chrome/services/sharing",
-      "//chromeos/assistant:buildflags",
+      "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/components/local_search_service:local_search_service",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/services/tts",

@@ -12,7 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/util/chromium_git_revision.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/util_headers.h"

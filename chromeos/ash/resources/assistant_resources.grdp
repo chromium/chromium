@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Google Assistant. -->
+  <include name="IDR_ASSISTANT_SPEECH_RECOGNITION_ERROR" file="../../assistant/internal/resources/sounds/en_hol_err_speech_recognition_error.opus" type="BINDATA" />
+  <include name="IDR_ASSISTANT_NO_INTERNET_ERROR" file="../../assistant/internal/resources/sounds/en_hol_err_no_internet.opus" type="BINDATA" />
+</grit-part>

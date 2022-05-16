@@ -1,4 +1,4 @@
-file://chromeos/assistant/OWNERS
+file://chromeos/ash/components/assistant/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

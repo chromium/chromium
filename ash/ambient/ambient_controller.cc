@@ -43,7 +43,7 @@
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"

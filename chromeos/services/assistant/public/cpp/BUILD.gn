@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 # C++ headers and sources that can be used outside assistant.
 component("cpp") {
@@ -45,7 +45,7 @@ component("cpp") {
   ]
 
   deps = [
-    "//chromeos/assistant:buildflags",
+    "//chromeos/ash/components/assistant:buildflags",
     "//components/prefs",
   ]
 

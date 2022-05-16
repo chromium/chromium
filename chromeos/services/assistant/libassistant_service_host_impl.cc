@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/sequence_checker.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/assistant/public/cpp/assistant_browser_delegate.h"

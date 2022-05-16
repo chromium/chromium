@@ -6,7 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -104,7 +104,7 @@ component("policy") {
       "linux/bpf_tts_policy_linux.cc",
       "linux/bpf_tts_policy_linux.h",
     ]
-    deps += [ "//chromeos/assistant:buildflags" ]
+    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
 
     if (enable_cros_libassistant) {
       sources += [

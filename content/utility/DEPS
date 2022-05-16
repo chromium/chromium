@@ -5,7 +5,7 @@ include_rules = [
   "+content/child",
   "+content/public/utility",
   "+content/services",
-  "+chromeos/assistant/buildflags.h",
+  "+chromeos/ash/components/assistant/buildflags.h",
   "+chromeos/services/libassistant",
   "+chromeos/services/tts",
   "+device/vr/buildflags",

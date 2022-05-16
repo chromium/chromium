@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash)
@@ -17,6 +18,8 @@ grit("resources") {
     "ash_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos/ash"
+
+  defines = [ "enable_cros_libassistant=$enable_cros_libassistant" ]
 
   grit_flags = [
     "-E",

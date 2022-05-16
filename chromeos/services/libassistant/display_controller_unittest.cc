@@ -5,7 +5,7 @@
 #include "chromeos/services/libassistant/display_controller.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/components/assistant/test_support/expect_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"

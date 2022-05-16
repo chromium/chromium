@@ -4,7 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(is_chromeos_ash)
 
@@ -58,7 +58,7 @@ component("lib") {
     "//ash/components/audio",
     "//ash/constants",
     "//base",
-    "//chromeos/assistant:buildflags",
+    "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/dbus",
     "//chromeos/dbus/dlcservice:dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
@@ -104,8 +104,8 @@ source_set("tests") {
     "//ash/public/cpp/assistant/test_support",
     "//base",
     "//base/test:test_support",
-    "//chromeos/assistant:buildflags",
-    "//chromeos/assistant/test_support",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/assistant/test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/power",
@@ -166,7 +166,7 @@ static_library("test_support") {
   deps = [
     ":lib",
     "//base",
-    "//chromeos/assistant:buildflags",
+    "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/proto",

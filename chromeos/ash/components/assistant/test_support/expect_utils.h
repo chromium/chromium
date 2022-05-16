@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
-#define CHROMEOS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
 
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace assistant {
 namespace test {
 
@@ -65,6 +65,11 @@ void ExpectResult(T expected_value,
 
 }  // namespace test
 }  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant::test {
+using ::ash::assistant::test::ExpectResult;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_ASSISTANT_TEST_SUPPORT_EXPECT_UTILS_H_

@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/ash/components/assistant/buildflags.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/assistant/internal/buildflags.h"

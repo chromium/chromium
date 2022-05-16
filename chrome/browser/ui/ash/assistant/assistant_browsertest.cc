@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/assistant/test_support/expect_utils.h"
+#include "chromeos/ash/components/assistant/test_support/expect_utils.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/switches.h"
@@ -44,7 +44,7 @@ constexpr int kStartBrightnessPercent = 50;
 
 }  // namespace
 
-using chromeos::assistant::test::ExpectResult;
+using ::ash::assistant::test::ExpectResult;
 
 class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
  public:

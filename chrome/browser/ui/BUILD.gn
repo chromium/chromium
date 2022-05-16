@@ -11,7 +11,7 @@ import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 import("//components/feed/features.gni")
@@ -3089,6 +3089,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/services/file_util/public/cpp",
+      "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
       "//chromeos/ash/components/dbus/os_install",
       "//chromeos/ash/components/dbus/pciguard:pciguard",
@@ -3097,7 +3098,6 @@ static_library("ui") {
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/ash/components/human_presence",
       "//chromeos/ash/resources",
-      "//chromeos/assistant:buildflags",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/onc",

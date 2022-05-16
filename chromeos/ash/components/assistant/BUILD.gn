@@ -4,8 +4,11 @@
 
 import("//ash/ambient/resources/resources.gni")
 import("//build/buildflag_header.gni")
-import("//chromeos/assistant/ambient.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/ambient.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+
+assert(is_chromeos_ash, "Non Chrome OS builds cannot depend on //chromeos/ash")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
