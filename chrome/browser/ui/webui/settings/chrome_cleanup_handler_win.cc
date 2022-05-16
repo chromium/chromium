@@ -37,26 +37,26 @@ namespace settings {
 
 namespace {
 
-// Returns a ListValue containing a copy of the file paths stored in |files|.
-std::unique_ptr<base::ListValue> GetFilesAsListStorage(
-    const std::set<base::FilePath>& files) {
-  auto value = std::make_unique<base::ListValue>();
+// Returns a base::Value::List containing a copy of the file paths stored in
+// |files|.
+base::Value::List GetFilesAsListStorage(const std::set<base::FilePath>& files) {
+  base::Value::List value;
   for (const base::FilePath& path : files) {
-    auto item = std::make_unique<base::DictionaryValue>();
-    item->SetStringKey("dirname",
-                       path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
-    item->SetStringKey("basename", path.BaseName().AsUTF8Unsafe());
-    value->Append(std::move(item));
+    base::Value::Dict item;
+    item.Set("dirname", path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
+    item.Set("basename", path.BaseName().AsUTF8Unsafe());
+    value.Append(std::move(item));
   }
   return value;
 }
 
-// Returns a ListValue containing a copy of the strings stored in |string_set|.
-std::unique_ptr<base::ListValue> GetStringSetAsListStorage(
+// Returns a base::Value::List containing a copy of the strings stored in
+// |string_set|.
+base::Value::List GetStringSetAsListStorage(
     const std::set<std::wstring>& string_set) {
-  auto value = std::make_unique<base::ListValue>();
+  base::Value::List value;
   for (const std::wstring& string : string_set)
-    value->Append(base::AsString16(string));
+    value.Append(base::AsString16(string));
 
   return value;
 }
@@ -65,10 +65,10 @@ base::DictionaryValue GetScannerResultsAsDictionary(
     const safe_browsing::ChromeCleanerScannerResults& scanner_results,
     Profile* profile) {
   base::DictionaryValue value;
-  value.SetList("files",
-                GetFilesAsListStorage(scanner_results.files_to_delete()));
-  value.SetList("registryKeys",
-                GetStringSetAsListStorage(scanner_results.registry_keys()));
+  value.GetDict().Set("files",
+                      GetFilesAsListStorage(scanner_results.files_to_delete()));
+  value.GetDict().Set("registryKeys", GetStringSetAsListStorage(
+                                          scanner_results.registry_keys()));
   return value;
 }
 
