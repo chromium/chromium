@@ -19,8 +19,10 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
-    Profile* profile)
-    : profile_(profile) {}
+    Profile* profile,
+    mojo::PendingReceiver<
+        mojom::app_service_internals::AppServiceInternalsPageHandler> receiver)
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
 AppServiceInternalsPageHandlerImpl::~AppServiceInternalsPageHandlerImpl() =
     default;
