@@ -332,7 +332,7 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * Pushes the given language down to the native ContextualSearchContext.
+     * Pushes the given languages down to the native ContextualSearchContext.
      * @param detectedLanguage An ISO 639 language code string for the language to translate from.
      * @param targetLanguage An ISO 639 language code string to translation into.
      * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
@@ -343,10 +343,9 @@ public abstract class ContextualSearchContext {
             @NonNull String fluentLanguages) {
         // Set redundant languages to empty strings.
         fluentLanguages = targetLanguage.equals(fluentLanguages) ? "" : fluentLanguages;
-        if (targetLanguage.equals(detectedLanguage)) {
-            detectedLanguage = "";
-            targetLanguage = "";
-        }
+        // The target language is essential in order to provide results the user can read, and if
+        // not specified the server may fallback onto a guess based on location, which isn't
+        // always a good experience.
         ContextualSearchContextJni.get().setTranslationLanguages(
                 mNativePointer, this, detectedLanguage, targetLanguage, fluentLanguages);
     }
