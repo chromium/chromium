@@ -6,6 +6,7 @@
 
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/run_loop.h"
+#include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
@@ -92,6 +93,43 @@ TEST_F(VideoCaptureDeviceFactoryFuchsiaTest, RemoveWhileEnumerating) {
 
   get_devices_run_loop.Run();
   EXPECT_TRUE(devices_info.empty());
+}
+
+class TestDeviceChangeObserver
+    : public base::SystemMonitor::DevicesChangedObserver {
+ public:
+  TestDeviceChangeObserver() = default;
+  ~TestDeviceChangeObserver() override = default;
+
+  // DevicesChangedObserver implementation.
+  void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) final {
+    EXPECT_EQ(device_type, base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    ++num_events_;
+  }
+
+  size_t num_events() { return num_events_; };
+
+ private:
+  size_t num_events_ = 0;
+};
+
+TEST_F(VideoCaptureDeviceFactoryFuchsiaTest, DeviceChangeEvent) {
+  base::SystemMonitor system_monitor;
+  TestDeviceChangeObserver test_observer;
+  system_monitor.AddDevicesChangedObserver(&test_observer);
+
+  // DevicesChanged event should not be produced when the list of devices is
+  // fetched for the first time.
+  auto devices_info = GetDevicesInfo();
+  EXPECT_EQ(test_observer.num_events(), 0U);
+
+  // Remove the first camera device. The factory is expected to notify
+  // SystemMonitor about the change.
+  fake_device_watcher_.RemoveDevice(
+      fake_device_watcher_.devices().begin()->first);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(test_observer.num_events(), 1U);
 }
 
 }  // namespace media
