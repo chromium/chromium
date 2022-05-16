@@ -2429,5 +2429,39 @@ TEST_P(ContinueSectionViewTest, AnimatesPrivacyNoticeAccept) {
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 }
 
+// Regression test for https://crbug.com/1326237.
+TEST_F(ContinueSectionViewClamshellModeTest,
+       RemoveSearchResultWhileAnimatingContinueSection) {
+  ResetPrivacyNoticePref();
+  InitializeForAnimationTest(/*result_count=*/3);
+
+  EXPECT_TRUE(IsPrivacyNoticeVisible());
+  EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
+            AppListNudgeController::NudgeType::kPrivacyNotice);
+
+  AppListToastView* privacy_notice =
+      GetContinueSectionView()->GetPrivacyNoticeForTest();
+
+  GestureTapOn(privacy_notice->toast_button());
+
+  EXPECT_EQ(1.0f, privacy_notice->layer()->opacity());
+  EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
+  EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
+
+  RemoveSearchResultAt(0);
+
+  EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
+  EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
+
+  LayerAnimationStoppedWaiter waiter;
+  waiter.Wait(privacy_notice->layer());
+
+  WaitForAllChildrenAnimationsToComplete(
+      GetContinueSectionView()->suggestions_container());
+  EXPECT_FALSE(IsPrivacyNoticeVisible());
+
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash

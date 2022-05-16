@@ -234,6 +234,14 @@ void ContinueSectionView::OnPrivacyToastAcknowledged() {
 }
 
 void ContinueSectionView::AnimateDismissToast(base::RepeatingClosure callback) {
+  // Prevents setting up new animation if the toast is already hiding.
+  // https://crbug.com/1326237.
+  DCHECK(privacy_toast_);
+  if (privacy_toast_->layer() &&
+      privacy_toast_->layer()->GetTargetOpacity() == 0.f) {
+    return;
+  }
+
   PrepareForLayerAnimation(privacy_toast_);
 
   views::AnimationBuilder animation_builder;
