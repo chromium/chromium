@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"

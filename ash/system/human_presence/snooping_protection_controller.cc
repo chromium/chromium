@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"

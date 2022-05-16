@@ -6,7 +6,7 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/human_presence/human_presence_dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

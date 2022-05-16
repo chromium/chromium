@@ -23,7 +23,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chromeos/components/human_presence/human_presence_configuration.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/human_presence/fake_human_presence_dbus_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"

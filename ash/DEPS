@@ -58,8 +58,8 @@ include_rules = [
   # code out of //chromeos into //ash.
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
+  "+chromeos/ash/components/human_presence",
   "+chromeos/components/feature_usage",
-  "+chromeos/components/human_presence",
   "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
   "+chromeos/components/webauthn",
