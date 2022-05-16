@@ -422,7 +422,7 @@ void ResetAuthentication() {
       if ([name hasPrefix:@"test"]) {
         // Add variant selector to test invocations.
         for (NSString* suffix in @[
-               kDisableCacheRestoreSuffix, kDisableSynthesizedRestoreSuffix
+               kDisableSynthesizedRestoreSuffix, kDisableCacheRestoreSuffix
              ]) {
           SEL variant_selector =
               NSSelectorFromString([name stringByAppendingString:suffix]);
