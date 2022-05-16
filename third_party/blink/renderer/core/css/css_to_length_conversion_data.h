@@ -130,6 +130,10 @@ class CORE_EXPORT CSSToLengthConversionData {
     // generated images).
     ContainerSizes PreCachedCopy() const;
 
+    // Note that this will eagerly compute width/height for both `this` and
+    // the incoming object.
+    bool SizesEqual(const ContainerSizes&) const;
+
     void Trace(Visitor*) const;
 
     absl::optional<double> Width() const;
@@ -206,7 +210,11 @@ class CORE_EXPORT CSSToLengthConversionData {
     zoom_ = zoom;
   }
 
-  const ContainerSizes& GetContainerSizes() const { return container_sizes_; }
+  // See ContainerSizes::PreCachedCopy.
+  //
+  // Calling this function will mark the associated ComputedStyle as
+  // dependent on container-relative units.
+  ContainerSizes PreCachedContainerSizesCopy() const;
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
     return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,

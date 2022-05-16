@@ -308,6 +308,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // "global" information that cannot be changed by CSS.
   bool IsComputationallyIndependent() const;
 
+  // True if this value contains any of cq[w,h,i,b,min,max], false otherwise.
+  bool HasContainerRelativeUnits() const;
+
   // Creates either a |CSSNumericLiteralValue| or a |CSSMathFunctionValue|,
   // depending on whether |value| is calculated or not. We should never create a
   // |CSSPrimitiveValue| that's not of any of its subclasses.

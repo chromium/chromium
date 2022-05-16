@@ -72,6 +72,11 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axes,
   return absl::nullopt;
 }
 
+void SetHasContainerRelativeUnits(const ComputedStyle* style) {
+  const_cast<ComputedStyle*>(style)->SetHasContainerRelativeUnits();
+  const_cast<ComputedStyle*>(style)->SetDependsOnContainerQueries(true);
+}
+
 }  // namespace
 
 CSSToLengthConversionData::FontSizes::FontSizes(float em,
@@ -142,6 +147,11 @@ CSSToLengthConversionData::ContainerSizes::PreCachedCopy() const {
 
 void CSSToLengthConversionData::ContainerSizes::Trace(Visitor* visitor) const {
   visitor->Trace(nearest_container_);
+}
+
+bool CSSToLengthConversionData::ContainerSizes::SizesEqual(
+    const ContainerSizes& other) const {
+  return (Width() == other.Width()) && (Height() == other.Height());
 }
 
 absl::optional<double> CSSToLengthConversionData::ContainerSizes::Width()
@@ -360,7 +370,7 @@ double CSSToLengthConversionData::DynamicViewportMaxPercent() const {
 
 double CSSToLengthConversionData::ContainerWidthPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
+    SetHasContainerRelativeUnits(style_);
   if (absl::optional<double> size = container_sizes_.Width())
     return *size / 100;
   return SmallViewportWidthPercent();
@@ -368,7 +378,7 @@ double CSSToLengthConversionData::ContainerWidthPercent() const {
 
 double CSSToLengthConversionData::ContainerHeightPercent() const {
   if (style_)
-    const_cast<ComputedStyle*>(style_)->SetHasContainerRelativeUnits();
+    SetHasContainerRelativeUnits(style_);
   if (absl::optional<double> size = container_sizes_.Height())
     return *size / 100;
   return SmallViewportHeightPercent();
@@ -414,6 +424,12 @@ float CSSToLengthConversionData::ChFontSize() const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
   return font_sizes_.Ch();
+}
+
+CSSToLengthConversionData::ContainerSizes
+CSSToLengthConversionData::PreCachedContainerSizesCopy() const {
+  SetHasContainerRelativeUnits(style_);
+  return container_sizes_.PreCachedCopy();
 }
 
 double CSSToLengthConversionData::ZoomedComputedPixels(

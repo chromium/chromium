@@ -184,6 +184,19 @@ bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
   }
 }
 
+bool CSSImageGeneratorValue::IsUsingContainerRelativeUnits() const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->IsUsingContainerRelativeUnits();
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->IsUsingContainerRelativeUnits();
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->IsUsingContainerRelativeUnits();
+    default:
+      return false;
+  }
+}
+
 bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
                                              const ComputedStyle& style) const {
   switch (GetClassType()) {

@@ -61,6 +61,12 @@ namespace blink {
 
 namespace {
 
+bool IsUsingContainerRelativeUnits(const CSSValue& value) {
+  const auto* image_generator_value = DynamicTo<CSSImageGeneratorValue>(value);
+  return image_generator_value &&
+         image_generator_value->IsUsingContainerRelativeUnits();
+}
+
 class StyleImageLoader {
   STACK_ALLOCATED();
 
@@ -94,14 +100,18 @@ StyleImage* StyleImageLoader::Load(
     CSSValue& value,
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) {
+  const ContainerSizes& container_sizes =
+      IsUsingContainerRelativeUnits(value) ? pre_cached_container_sizes_.Get()
+                                           : ContainerSizes();
+
   if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
     return image_value->CacheImage(document_, image_request_behavior,
                                    cross_origin);
   }
 
   if (auto* paint_value = DynamicTo<CSSPaintValue>(value)) {
-    auto* image = MakeGarbageCollected<StyleGeneratedImage>(
-        *paint_value, pre_cached_container_sizes_.Get());
+    auto* image = MakeGarbageCollected<StyleGeneratedImage>(*paint_value,
+                                                            container_sizes);
     style_.AddPaintImage(image);
     return image;
   }
@@ -115,8 +125,8 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return MakeGarbageCollected<StyleGeneratedImage>(
-        *image_gradient_value, pre_cached_container_sizes_.Get());
+    return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value,
+                                                     container_sizes);
   }
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
@@ -149,15 +159,10 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
 
 const PreCachedContainerSizes::ContainerSizes& PreCachedContainerSizes::Get()
     const {
+  DCHECK(RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled());
   if (!cache_) {
-    // Finding container sizes eagerly means traversing the entire
-    // ancestor chain (in the worse case). Avoid if CSSContainerRelativeUnits
-    // is not enabled.
-    //
-    // TODO(crbug.com/1324901): Avoid based on units within CSSValue instead.
-    if (RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled() &&
-        conversion_data_) {
-      cache_ = conversion_data_->GetContainerSizes().PreCachedCopy();
+    if (conversion_data_) {
+      cache_ = conversion_data_->PreCachedContainerSizesCopy();
     } else {
       cache_ = ContainerSizes();
     }
@@ -207,8 +212,12 @@ StyleImage* ElementStyleResources::CachedStyleImage(
 
   // Gradient functions are never pending (but don't cache StyleImages).
   if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value)) {
-    return MakeGarbageCollected<StyleGeneratedImage>(
-        *gradient_value, pre_cached_container_sizes_.Get());
+    using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+    const ContainerSizes& container_sizes =
+        IsUsingContainerRelativeUnits(value) ? pre_cached_container_sizes_.Get()
+                                             : ContainerSizes();
+    return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value,
+                                                     container_sizes);
   }
 
   if (auto* img_set_value = DynamicTo<CSSImageSetValue>(value))

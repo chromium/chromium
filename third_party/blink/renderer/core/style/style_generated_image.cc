@@ -45,6 +45,8 @@ bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsGeneratedImage())
     return false;
   const auto& other_generated = To<StyleGeneratedImage>(other);
+  if (!container_sizes_.SizesEqual(other_generated.container_sizes_))
+    return false;
   return image_generator_value_ == other_generated.image_generator_value_;
 }
 

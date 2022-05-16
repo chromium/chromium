@@ -201,6 +201,19 @@ bool CSSPrimitiveValue::IsComputationallyIndependent() const {
   return To<CSSMathFunctionValue>(this)->IsComputationallyIndependent();
 }
 
+bool CSSPrimitiveValue::HasContainerRelativeUnits() const {
+  CSSPrimitiveValue::LengthTypeFlags units;
+  AccumulateLengthUnitTypes(units);
+  const CSSPrimitiveValue::LengthTypeFlags container_units(
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerWidth) |
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerHeight) |
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerInlineSize) |
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerBlockSize) |
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerMin) |
+      (1ull << CSSPrimitiveValue::kUnitTypeContainerMax));
+  return (units & container_units).any();
+}
+
 CSSPrimitiveValue::CSSPrimitiveValue(ClassType class_type)
     : CSSValue(class_type) {}
 

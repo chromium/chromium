@@ -1096,8 +1096,26 @@ static bool IsUsingCurrentColor(
   return false;
 }
 
+static bool IsUsingContainerRelativeUnits(const CSSValue* value) {
+  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  return primitive_value && primitive_value->HasContainerRelativeUnits();
+}
+
+static bool IsUsingContainerRelativeUnits(
+    const HeapVector<CSSGradientColorStop, 2>& stops) {
+  for (const CSSGradientColorStop& stop : stops) {
+    if (IsUsingContainerRelativeUnits(stop.offset_.Get()))
+      return true;
+  }
+  return false;
+}
+
 bool CSSLinearGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
+}
+
+bool CSSLinearGradientValue::IsUsingContainerRelativeUnits() const {
+  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_);
 }
 
 void CSSLinearGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -1505,6 +1523,10 @@ bool CSSRadialGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
+bool CSSRadialGradientValue::IsUsingContainerRelativeUnits() const {
+  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_);
+}
+
 void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(first_x_);
   visitor->Trace(first_y_);
@@ -1588,6 +1610,12 @@ CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
 
 bool CSSConicGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
+}
+
+bool CSSConicGradientValue::IsUsingContainerRelativeUnits() const {
+  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(x_.Get()) ||
+         blink::cssvalue::IsUsingContainerRelativeUnits(y_.Get());
 }
 
 void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
