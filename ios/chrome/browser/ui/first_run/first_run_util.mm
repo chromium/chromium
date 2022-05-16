@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #import "components/metrics/metrics_reporting_default_state.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context.h"
@@ -174,4 +175,9 @@ void RecordMetricsReportingDefaultState() {
             ? metrics::EnableMetricsDefault::OPT_OUT
             : metrics::EnableMetricsDefault::OPT_IN);
   });
+}
+
+bool IsApplicationManaged() {
+  return [[[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
 }

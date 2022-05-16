@@ -37,6 +37,7 @@ source_set("welcome_ui") {
     "checkbox_button.mm",
     "tos_view_controller.h",
     "tos_view_controller.mm",
+    "welcome_screen_consumer.h",
     "welcome_screen_mediator.h",
     "welcome_screen_mediator.mm",
     "welcome_screen_view_controller.h",
@@ -45,7 +46,6 @@ source_set("welcome_ui") {
   deps = [
     "//base",
     "//components/metrics",
-    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

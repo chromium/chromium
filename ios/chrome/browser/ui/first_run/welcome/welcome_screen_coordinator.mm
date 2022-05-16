@@ -73,6 +73,7 @@
       [[WelcomeScreenViewController alloc] initWithTOSHandler:TOSHandler];
   self.viewController.delegate = self;
   self.mediator = [[WelcomeScreenMediator alloc] init];
+  self.mediator.consumer = self.viewController;
 
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]

@@ -7,12 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol WelcomeScreenConsumer;
+
 // Mediator that handles writing to prefs for the welcome screen.
 @interface WelcomeScreenMediator : NSObject
 
 // Contains the user choice for UMA reporting. This value is set to the default
 // value when the coordinator is initialized.
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;
+// Mediator's consumer.
+@property(nonatomic, weak) id<WelcomeScreenConsumer> consumer;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

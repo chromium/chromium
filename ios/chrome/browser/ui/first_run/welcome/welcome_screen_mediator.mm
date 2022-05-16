@@ -8,6 +8,7 @@
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +38,13 @@
 - (void)setMetricsReportingEnabled:(BOOL)enabled {
   GetApplicationContext()->GetLocalState()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled, enabled);
+}
+
+#pragma mark - Properties
+
+- (void)setConsumer:(id<WelcomeScreenConsumer>)consumer {
+  _consumer = consumer;
+  self.consumer.isManaged = IsApplicationManaged();
 }
 
 @end
