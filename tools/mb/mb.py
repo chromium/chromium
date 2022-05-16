@@ -1510,9 +1510,11 @@ class MetaBuildWrapper(object):
     is_android = 'target_os="android"' in vals['gn_args']
     is_cros = ('target_os="chromeos"' in vals['gn_args']
                or 'is_chromeos_device=true' in vals['gn_args'])
-    is_mac = self.platform == 'darwin'
     is_msan = 'is_msan=true' in vals['gn_args']
     is_ios = 'target_os="ios"' in vals['gn_args']
+    # pylint: disable=consider-using-ternary
+    is_mac = ((self.platform == 'darwin' and not is_ios)
+              or 'target_os="mac"' in vals['gn_args'])
 
     err = ''
     for f in files:
@@ -1699,7 +1701,9 @@ class MetaBuildWrapper(object):
                or 'is_chromeos_device=true' in vals['gn_args'])
     is_cros_device = 'is_chromeos_device=true' in vals['gn_args']
     is_ios = 'target_os="ios"' in vals['gn_args']
-    is_mac = self.platform == 'darwin' and not is_ios
+    # pylint: disable=consider-using-ternary
+    is_mac = ((self.platform == 'darwin' and not is_ios)
+              or 'target_os="mac"' in vals['gn_args'])
     is_win = self.platform == 'win32' or 'target_os="win"' in vals['gn_args']
     is_lacros = 'chromeos_is_browser_only=true' in vals['gn_args']
 
