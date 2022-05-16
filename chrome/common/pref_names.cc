@@ -1170,6 +1170,13 @@ const char kExternalStorageReadOnly[] = "hardware.external_storage_read_only";
 // window size.
 const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
 
+// Counter for reporting daily OOM kills count.
+const char kOOMKillsDailyCount[] = "oom_kills.daily_count";
+
+// Integer pref used by the metrics::DailyEvent owned by
+// memory::OOMKillsMonitor.
+const char kOOMKillsDailySample[] = "oomkills.daily_sample";
+
 // Boolean user profile pref that determines whether to show a banner in browser
 // settings that links to OS settings.
 const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";

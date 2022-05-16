@@ -1783,6 +1783,16 @@ chromium-metrics-reviews@google.com.
   <summary>Cumulative count of OOM kills in one user session.</summary>
 </histogram>
 
+<histogram name="Memory.OOMKills.Daily" units="kills"
+    expires_after="2022-11-11">
+  <owner>vovoy@google.com</owner>
+  <owner>src/chromeos/memory/OWNERS</owner>
+  <summary>
+    The number of OOM kills since last emit. The emit interval is at least 24
+    hours, see metrics::DailyEvent for more details.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Memory.OpenFDs" units="files" expires_after="M85">
 <!-- Name completed by histogram_suffixes name="MemoryFDsBroswerGpuAndRendererProcess" and name="MemoryFDsAllProcesses" -->
 

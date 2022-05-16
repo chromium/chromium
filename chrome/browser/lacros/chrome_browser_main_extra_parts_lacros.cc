@@ -186,7 +186,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
-  ::memory::OOMKillsMonitor::GetInstance().Initialize();
+  if (g_browser_process != nullptr &&
+      g_browser_process->local_state() != nullptr) {
+    ::memory::OOMKillsMonitor::GetInstance().Initialize(
+        g_browser_process->local_state());
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

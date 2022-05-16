@@ -367,6 +367,8 @@ extern const char kExternalStorageDisabled[];
 extern const char kExternalStorageReadOnly[];
 extern const char kForceMaximizeOnFirstRun[];
 extern const char kInsightsExtensionEnabled[];
+extern const char kOOMKillsDailyCount[];
+extern const char kOOMKillsDailySample[];
 extern const char kSettingsShowOSBanner[];
 extern const char kUsedPolicyCertificates[];
 #endif  // BUILDFLAG(IS_CHROMEOS)

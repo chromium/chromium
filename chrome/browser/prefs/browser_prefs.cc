@@ -276,6 +276,7 @@
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
+#include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -1143,6 +1144,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::echo_offer::RegisterPrefs(registry);
+  memory::OOMKillsMonitor::RegisterPrefs(registry);
   policy::SystemFeaturesDisableListPolicyHandler::RegisterPrefs(registry);
   policy::DlpRulesManagerImpl::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS)
