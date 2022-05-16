@@ -180,8 +180,8 @@ CrostiniInstaller::~CrostiniInstaller() {
 
 void CrostiniInstaller::Shutdown() {
   if (restart_id_ != CrostiniManager::kUninitializedRestartId) {
-    CrostiniManager::GetForProfile(profile_)->AbortRestartCrostini(
-        restart_id_, base::DoNothing());
+    CrostiniManager::GetForProfile(profile_)->CancelRestartCrostini(
+        restart_id_);
     restart_id_ = CrostiniManager::kUninitializedRestartId;
   }
 }
@@ -275,7 +275,7 @@ void CrostiniInstaller::Cancel(base::OnceClosure callback) {
   // Abort the long-running flow, and RestartObserver methods will not be called
   // again until next installation.
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-  crostini_manager->AbortRestartCrostini(restart_id_, base::DoNothing());
+  crostini_manager->CancelRestartCrostini(restart_id_);
   restart_id_ = CrostiniManager::kUninitializedRestartId;
   RecordSetupResult(InstallStateToCancelledSetupResult(installing_state_));
 

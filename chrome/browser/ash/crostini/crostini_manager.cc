@@ -194,6 +194,8 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
 
 const char kCrostiniStabilityHistogram[] = "Crostini.Stability";
 
+CrostiniManager::RestartId CrostiniManager::next_restart_id_ = 0;
+
 CrostiniManager::RestartOptions::RestartOptions() = default;
 CrostiniManager::RestartOptions::RestartOptions(RestartOptions&&) = default;
 CrostiniManager::RestartOptions::~RestartOptions() = default;
@@ -204,49 +206,45 @@ class CrostiniManager::CrostiniRestarter
     : public ash::VmShutdownObserver,
       public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
+  struct RestartRequest {
+    RestartId restart_id;
+    RestartOptions options;
+    CrostiniResultCallback callback;
+    RestartObserver* observer;  // optional
+  };
+
   CrostiniRestarter(Profile* profile,
                     CrostiniManager* crostini_manager,
                     ContainerId container_id,
-                    RestartOptions options,
-                    CrostiniManager::CrostiniResultCallback callback);
+                    RestartRequest request);
   ~CrostiniRestarter() override;
 
-  void Restart();
-  void AddObserver(CrostiniManager::RestartObserver* observer) {
-    observer_list_.AddObserver(observer);
-  }
+  void AddRequest(RestartRequest request);
 
-  // This gets called exactly once, at the end of the restart, either from
-  // Abort() or from CrostiniManager::FinishRestart().
-  void RunCallback(CrostiniResult result);
+  // Start the restart flow. This should only be called once. This cannot be
+  // called directly from the constructor as in some cases it immediately
+  // (synchronously) fails and causes |this| to be deleted.
+  void Restart();
 
   // ash::VmShutdownObserver
   void OnVmShutdown(const std::string& vm_name) override;
 
   void Timeout(mojom::InstallerState state);
 
-  // On abort, |completed_callback_| is immediately invoked via RunCallback().
-  // We wait for the current stage to complete and then quit the flow and call
-  // |callback|.
+  // Cancel an individual request and fire its callback immediately. If there
+  // are no other outstanding requests, stop the restarter once possible.
+  void CancelRequest(RestartId restart_id);
+  // Abort the entire restart. Pending requests are immediately completed, and
+  // |callback| is called once the current operation has finished. Requests
+  // should not be added to an aborted restarter.
   void Abort(base::OnceClosure callback);
-  // If this method returns true, then |this| may have been deleted and it is
-  // unsafe to refer to any member variables.
-  bool ReturnEarlyIfAborted();
 
   // These are called directly from CrostiniManager.
   void OnContainerDownloading(int download_percent);
   void OnLxdContainerStarting(
       vm_tools::cicerone::LxdContainerStartingSignal_Status status);
 
-  CrostiniManager::RestartId restart_id() const { return restart_id_; }
   const ContainerId& container_id() { return container_id_; }
-  bool is_aborted() const { return !abort_callbacks_.empty(); }
-  // If the restarter was not aborted early (either via Abort() or an option
-  // like start_vm_only), the result can be used to complete other restarters
-  // for the same ContainerId.
-  bool RestartAppliesToEquivalentRestarters() {
-    return restart_applies_to_equivalent_restarters_;
-  }
 
   // This is public so CallRestarterStartLxdContainerFinishedForTesting can call
   // it.
@@ -256,9 +254,25 @@ class CrostiniManager::CrostiniRestarter
   void StartStage(mojom::InstallerState stage);
   void EmitMetricIfInIncorrectState(mojom::InstallerState expected);
 
+  using RequestFilter = base::RepeatingCallback<bool(const RestartRequest&)>;
+  // Removes matched requests and returns a closure which will run the
+  // corresponding completion callbacks.
+  base::OnceClosure ExtractRequests(RequestFilter filter,
+                                    CrostiniResult result);
+  void FinishRequests(RequestFilter filter, CrostiniResult result) {
+    return ExtractRequests(filter, result).Run();
+  }
+
+  // The restarter flow ends early if Abort() is called or all requests have
+  // been cancelled or otherwise fulfilled (e.g. when start_vm_only is set).
+  // If this method returns true, then FinishRestart() is called and |this|
+  // gets deleted so it is unsafe to refer to any member variables.
+  bool ReturnEarlyIfNeeded();
+
   // In a successful complete restart, every function in the below list in
-  // called in order, from Restart() to FinishRestart(). If the restarter is
-  // aborted or an operation fails or times out, it proceeds directly to
+  // called in order, from Restart() to FinishRestart(). If the restarter
+  // finishes early (i.e. restarter aborted, all requests cancelled or
+  // completed, operation fails or times out), it proceeds directly to
   // FinishRestart().
 
   // Public function - Restart();
@@ -277,10 +291,15 @@ class CrostiniManager::CrostiniRestarter
   void CreateLxdContainerFinished(CrostiniResult result);
   void SetUpLxdContainerUserFinished(bool success);
   // Public function - StartLxdContainerFinished(CrostiniResult result);
-  // FinishRestart function can cause |this| to be deleted, so callers should
-  // return immediately after calling this. This should be called exactly once
-  // per restarter.
+  // FinishRestart() causes |this| to be deleted, so callers should return
+  // immediately after calling this.
   void FinishRestart(CrostiniResult result);
+
+  // If the current operation can be cancelled, cancel it, complete the
+  // restart (deleting |this|), and return true.
+  bool MaybeCancelCurrentOperation();
+
+  void LogRestarterResult(CrostiniResult result);
 
   base::OneShotTimer stage_timeout_timer_;
   base::TimeTicks stage_start_;
@@ -312,53 +331,45 @@ class CrostiniManager::CrostiniRestarter
   CrostiniManager* crostini_manager_;
 
   const ContainerId container_id_;
-  base::FilePath disk_path_;
-  RestartOptions options_;
-  std::string source_path_;
-  base::FilePath container_homedir_;
   bool is_initial_install_ = false;
-  CrostiniManager::CrostiniResultCallback completed_callback_;
   std::vector<base::OnceClosure> abort_callbacks_;
+  // Options which only affect new containers will be taken from the first
+  // request.
+  std::vector<RestartRequest> requests_;
+  // Pulled out of requests_ for convenience.
   base::ObserverList<CrostiniManager::RestartObserver>::Unchecked
       observer_list_;
-  CrostiniManager::RestartId restart_id_;
+  // TODO(timloh): This should just be an extra state at the start of the flow.
   bool is_running_ = false;
-  bool restart_applies_to_equivalent_restarters_ = true;
-  size_t num_cores_disabled_ = 0;
-  mojom::InstallerState stage_ = mojom::InstallerState::kStart;
-  CrostiniResult result_ = CrostiniResult::NEVER_FINISHED;
 
-  static CrostiniManager::RestartId next_restart_id_;
+  // Data passed between different steps of the restart flow.
+  base::FilePath disk_path_;
+  size_t num_cores_disabled_ = 0;
+
+  mojom::InstallerState stage_ = mojom::InstallerState::kStart;
 
   base::WeakPtrFactory<CrostiniRestarter> weak_ptr_factory_{this};
 };
-
-CrostiniManager::RestartId
-    CrostiniManager::CrostiniRestarter::next_restart_id_ = 0;
 
 CrostiniManager::CrostiniRestarter::CrostiniRestarter(
     Profile* profile,
     CrostiniManager* crostini_manager,
     ContainerId container_id,
-    RestartOptions options,
-    CrostiniManager::CrostiniResultCallback callback)
+    RestartRequest request)
     : profile_(profile),
       crostini_manager_(crostini_manager),
-      container_id_(std::move(container_id)),
-      options_(std::move(options)),
-      completed_callback_(std::move(callback)),
-      restart_id_(next_restart_id_++) {}
+      container_id_(std::move(container_id)) {
+  AddRequest(std::move(request));
+}
 
 CrostiniManager::CrostiniRestarter::~CrostiniRestarter() {
-  // Do not record results if this restart was triggered by the installer.
-  // The crostini installer has its own histograms that should be kept
-  // separate.
-  if (!is_initial_install_) {
-    base::UmaHistogramEnumeration("Crostini.RestarterResult", result_);
-  }
   crostini_manager_->RemoveVmShutdownObserver(this);
-  if (completed_callback_) {
-    LOG(ERROR) << "Destroying without having called the callback.";
+  if (!requests_.empty()) {
+    // This is triggered by logging out when restarts are in progress.
+    LOG(WARNING) << "Destroying with outstanding requests.";
+    for (int i = 0; i < requests_.size(); i++) {
+      LogRestarterResult(CrostiniResult::NEVER_FINISHED);
+    }
   }
 }
 
@@ -372,11 +383,16 @@ void CrostiniManager::CrostiniRestarter::Restart() {
   }
 
   crostini_manager_->AddVmShutdownObserver(this);
-
-  StartStage(mojom::InstallerState::kStart);
+  // TODO(timloh): This is currently false for additional containers created via
+  // settings, but we probably don't want those to be bucketed in the same
+  // histograms as other non-install restarts.
+  // TODO(b/205650706): It is possible to invoke a CrostiniRestarter to install
+  // Crostini without using the actual installer. We should handle these better.
   is_initial_install_ =
       crostini_manager_->GetCrostiniDialogStatus(DialogType::INSTALLER);
-  if (ReturnEarlyIfAborted()) {
+
+  StartStage(mojom::InstallerState::kStart);
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
 
@@ -389,21 +405,19 @@ void CrostiniManager::CrostiniRestarter::Restart() {
   }
 }
 
-void CrostiniManager::CrostiniRestarter::RunCallback(CrostiniResult result) {
-  // Observer should not be called if we have completed.
-  observer_list_.Clear();
+void CrostiniManager::CrostiniRestarter::AddRequest(RestartRequest request) {
+  // CrostiniManager doesn't add requests to aborted restarts.
+  DCHECK(abort_callbacks_.empty());
 
-  DCHECK_EQ(result_, CrostiniResult::NEVER_FINISHED);
-  result_ = result;
-
-  if (completed_callback_) {
-    std::move(completed_callback_).Run(result_);
+  if (request.observer) {
+    observer_list_.AddObserver(request.observer);
   }
+  requests_.push_back(std::move(request));
 }
 
 void CrostiniManager::CrostiniRestarter::OnVmShutdown(
     const std::string& vm_name) {
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   if (vm_name == container_id_.vm_name) {
@@ -451,47 +465,39 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
     case mojom::InstallerState::kStart:
       NOTREACHED();
   }
-  // Note: FinishRestart may delete |this|.
+  // Note: FinishRestart deletes |this|.
   FinishRestart(result);
 }
 
+void CrostiniManager::CrostiniRestarter::CancelRequest(RestartId restart_id) {
+  FinishRequests(
+      base::BindRepeating(
+          [](RestartId restart_id, const RestartRequest& request) -> bool {
+            return request.restart_id == restart_id;
+          },
+          restart_id),
+      CrostiniResult::RESTART_ABORTED);
+
+  if (requests_.empty()) {
+    // May delete |this|.
+    MaybeCancelCurrentOperation();
+  }
+}
+
 void CrostiniManager::CrostiniRestarter::Abort(base::OnceClosure callback) {
-  restart_applies_to_equivalent_restarters_ = false;
   abort_callbacks_.push_back(std::move(callback));
   if (abort_callbacks_.size() > 1) {
     // The subsequent steps only need to be run once.
     return;
   }
 
-  // Run the main callback immediately, but wait for the current step to
+  // Run the result callbacks immediately, but wait for the current step to
   // finish before invoking the abort callback.
-  RunCallback(CrostiniResult::RESTART_ABORTED);
-  if (stage_ == mojom::InstallerState::kInstallImageLoader) {
-    // TerminaInstaller offers a way to cancel installation, which also
-    // prevents any callback from running. In this case we can proceed
-    // directly to running the abort callbacks.
-    crostini_manager_->CancelInstallTermina();
-    // Callers may not expect their callback to be run within the same task.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<CrostiniRestarter> weak_this) {
-                         if (weak_this) {
-                           weak_this->ReturnEarlyIfAborted();
-                         }
-                       },
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-bool CrostiniManager::CrostiniRestarter::ReturnEarlyIfAborted() {
-  if (!is_aborted())
-    return false;
-
-  for (auto& abort_callback : abort_callbacks_) {
-    std::move(abort_callback).Run();
-  }
-  FinishRestart(CrostiniResult::RESTART_ABORTED);
-  return true;
+  FinishRequests(
+      base::BindRepeating([](const RestartRequest& request) { return true; }),
+      CrostiniResult::RESTART_ABORTED);
+  // May delete |this|.
+  MaybeCancelCurrentOperation();
 }
 
 void CrostiniManager::CrostiniRestarter::OnContainerDownloading(
@@ -530,7 +536,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   for (auto& observer : observer_list_) {
     observer.OnContainerStarted(result);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartContainer);
@@ -585,6 +591,41 @@ void CrostiniManager::CrostiniRestarter::EmitMetricIfInIncorrectState(
   }
 }
 
+base::OnceClosure CrostiniManager::CrostiniRestarter::ExtractRequests(
+    RequestFilter filter,
+    CrostiniResult result) {
+  std::vector<CrostiniResultCallback> callbacks;
+  for (auto it = requests_.begin(); it != requests_.end();) {
+    if (!filter.Run(*it)) {
+      it++;
+      continue;
+    }
+
+    crostini_manager_->RemoveRestartId(it->restart_id);
+    if (it->observer)
+      observer_list_.RemoveObserver(it->observer);
+    callbacks.push_back(std::move(it->callback));
+    requests_.erase(it);
+
+    LogRestarterResult(result);
+  }
+
+  return base::BindOnce(
+      [](std::vector<CrostiniResultCallback> callbacks, CrostiniResult result) {
+        for (auto& callback : callbacks)
+          std::move(callback).Run(result);
+      },
+      std::move(callbacks), result);
+}
+
+bool CrostiniManager::CrostiniRestarter::ReturnEarlyIfNeeded() {
+  if (!requests_.empty())
+    return false;
+  // The result is ignored since there are no requests left.
+  FinishRestart(CrostiniResult::UNKNOWN_ERROR);
+  return true;
+}
+
 void CrostiniManager::CrostiniRestarter::ContinueRestart() {
   is_running_ = true;
   // Skip to the end immediately if testing.
@@ -608,7 +649,7 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   for (auto& observer : observer_list_) {
     observer.OnComponentLoaded(result);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kInstallImageLoader);
@@ -620,7 +661,7 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
 
   // Allow concierge to choose an appropriate disk image size.
-  int64_t disk_size_bytes = options_.disk_size_bytes.value_or(0);
+  int64_t disk_size_bytes = requests_[0].options.disk_size_bytes.value_or(0);
   // If we have an already existing disk, CreateDiskImage will just return its
   // path so we can pass it to StartTerminaVm.
   StartStage(mojom::InstallerState::kCreateDiskImage);
@@ -641,7 +682,7 @@ void CrostiniManager::CrostiniRestarter::CreateDiskImageFinished(
   for (auto& observer : observer_list_) {
     observer.OnDiskImageCreated(success, status, disk_size_bytes);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateDiskImage);
@@ -707,7 +748,7 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
   for (auto& observer : observer_list_) {
     observer.OnVmStarted(success);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartTerminaVm);
@@ -724,15 +765,23 @@ void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
     crostini_manager_->UpdateTerminaVmKernelVersion();
   }
 
-  if (options_.start_vm_only) {
-    restart_applies_to_equivalent_restarters_ = false;
-    FinishRestart(CrostiniResult::SUCCESS);
+  // TODO(timloh): Requests with start_vm_only added too late will miss this and
+  // thus fail if any later step fails. Perhaps they should be completed
+  // immediately.
+  FinishRequests(base::BindRepeating([](const RestartRequest& request) {
+                   return request.options.start_vm_only;
+                 }),
+                 CrostiniResult::SUCCESS);
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
 
   // Share any non-persisted paths for the VM.
+  // TODO(timloh): This should probably share paths from all requests. Requests
+  // added too late will also miss this.
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
-      container_id_.vm_name, options_.share_paths, /*persist=*/false,
+      container_id_.vm_name, requests_[0].options.share_paths,
+      /*persist=*/false,
       base::BindOnce(&CrostiniRestarter::SharePathsFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -756,7 +805,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
   for (auto& observer : observer_list_) {
     observer.OnLxdStarted(result);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kStartLxd);
@@ -764,14 +813,19 @@ void CrostiniManager::CrostiniRestarter::StartLxdFinished(
     FinishRestart(result);
     return;
   }
-  if (options_.stop_after_lxd_available) {
-    restart_applies_to_equivalent_restarters_ = false;
-    FinishRestart(CrostiniResult::SUCCESS);
+
+  FinishRequests(base::BindRepeating([](const RestartRequest& request) {
+                   return request.options.stop_after_lxd_available;
+                 }),
+                 CrostiniResult::SUCCESS);
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
+
   StartStage(mojom::InstallerState::kCreateContainer);
   crostini_manager_->CreateLxdContainer(
-      container_id_, options_.image_server_url, options_.image_alias,
+      container_id_, requests_[0].options.image_server_url,
+      requests_[0].options.image_alias,
       base::BindOnce(&CrostiniRestarter::CreateLxdContainerFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -782,7 +836,7 @@ void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
   for (auto& observer : observer_list_) {
     observer.OnContainerCreated(result);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kCreateContainer);
@@ -794,7 +848,7 @@ void CrostiniManager::CrostiniRestarter::CreateLxdContainerFinished(
   StartStage(mojom::InstallerState::kSetupContainer);
   crostini_manager_->SetUpLxdContainerUser(
       container_id_,
-      options_.container_username.value_or(
+      requests_[0].options.container_username.value_or(
           DefaultContainerUserNameForProfile(profile_)),
       base::BindOnce(&CrostiniRestarter::SetUpLxdContainerUserFinished,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -807,7 +861,7 @@ void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
   for (auto& observer : observer_list_) {
     observer.OnContainerSetup(success);
   }
-  if (ReturnEarlyIfAborted()) {
+  if (ReturnEarlyIfNeeded()) {
     return;
   }
   EmitMetricIfInIncorrectState(mojom::InstallerState::kSetupContainer);
@@ -824,14 +878,64 @@ void CrostiniManager::CrostiniRestarter::SetUpLxdContainerUserFinished(
 }
 
 void CrostiniManager::CrostiniRestarter::FinishRestart(CrostiniResult result) {
-  // RunCallback() is usually invoked from CrostiniManager::FinishRestart()
-  // but when aborted is explicitly called earlier.
-  DCHECK(result_ == CrostiniResult::NEVER_FINISHED ||
-         result_ == CrostiniResult::RESTART_ABORTED);
   EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
 
-  // CrostiniManager::FinishRestart deletes |this|, sometimes synchronously.
-  crostini_manager_->FinishRestart(this, result);
+  base::OnceClosure closure;
+  if (abort_callbacks_.empty()) {
+    closure = ExtractRequests(
+        base::BindRepeating([](const RestartRequest& request) { return true; }),
+        result);
+  } else {
+    // Requests have already been completed, and new requests are not allowed.
+    for (auto& abort_callback : abort_callbacks_) {
+      std::move(abort_callback).Run();
+    }
+    abort_callbacks_.clear();
+    closure = base::DoNothing();
+  }
+
+  DCHECK(requests_.empty());
+  DCHECK(observer_list_.empty());
+
+  // CrostiniManager::RestartCompleted deletes |this|
+  crostini_manager_->RestartCompleted(this, std::move(closure));
+}
+
+bool CrostiniManager::CrostiniRestarter::MaybeCancelCurrentOperation() {
+  if (stage_ == mojom::InstallerState::kInstallImageLoader) {
+    // TerminaInstaller offers a way to cancel installation, which also
+    // prevents any callback from running.
+    crostini_manager_->CancelInstallTermina();
+
+    // Not specific to kInstallImageLoader, this will also need to be run if
+    // any other steps are made cancellable.
+    // TODO(timloh): This posts a task because unit tests synchronously cancel
+    // restart requests from observer methods. If we remove this behaviour,
+    // we could just call ReturnEarlyIfNeeded() directly.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<CrostiniRestarter> weak_this) {
+                         if (weak_this) {
+                           weak_this->ReturnEarlyIfNeeded();
+                         }
+                       },
+                       weak_ptr_factory_.GetWeakPtr()));
+    return true;
+  }
+
+  // Current stage can not be cancelled.
+  return false;
+}
+
+void CrostiniManager::CrostiniRestarter::LogRestarterResult(
+    CrostiniResult result) {
+  // Separate Crostini installer restarts from already-installed restarts.
+  // The installer has separate histograms in Crostini.SetupResult.
+  // TODO(timloh): The installer histograms are less granular, we might want to
+  // also log something here.
+  if (!is_initial_install_) {
+    base::UmaHistogramEnumeration("Crostini.RestarterResult", result);
+  }
 }
 
 // Unit tests need this initialized to true. In Browser tests and real life,
@@ -2170,50 +2274,53 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
     return kUninitializedRestartId;
   }
 
-  auto restarter = std::make_unique<CrostiniRestarter>(
-      profile_, this, container_id, std::move(options), std::move(callback));
-  auto restart_id = restarter->restart_id();
-  restarters_by_container_.emplace(container_id, restart_id);
-  restarters_by_id_[restart_id] = std::move(restarter);
+  RestartId restart_id = next_restart_id_++;
+  restarters_by_id_.emplace(restart_id, container_id);
 
-  // Observers will watch this restarter and any others that run before it.
-  if (observer) {
-    auto range = restarters_by_container_.equal_range(container_id);
-    for (auto it = range.first; it != range.second; ++it) {
-      restarters_by_id_[it->second]->AddObserver(observer);
-    }
-  }
+  CrostiniRestarter::RestartRequest request = {restart_id, std::move(options),
+                                               std::move(callback), observer};
 
-  if (restarters_by_container_.count(container_id) > 1) {
-    VLOG(1) << "Already restarting " << container_id;
+  auto it = restarters_by_container_.find(container_id);
+  if (it == restarters_by_container_.end()) {
+    VLOG(1) << "Creating new restarter for " << container_id;
+    restarters_by_container_[container_id] =
+        std::make_unique<CrostiniRestarter>(profile_, this, container_id,
+                                            std::move(request));
+    // In some cases this will synchronously finish the restart and cause it to
+    // be deleted and removed from the map.
+    restarters_by_container_[container_id]->Restart();
   } else {
-    // Restart() needs to be called after the restarter is inserted into
-    // restarters_by_id_ because some tests will make the restart process
-    // complete before Restart() returns.
-    restarters_by_id_[restart_id]->Restart();
+    VLOG(1) << "Already restarting " << container_id;
+    if (request.options.container_username || request.options.disk_size_bytes ||
+        request.options.image_server_url || request.options.image_alias) {
+      LOG(ERROR)
+          << "Crostini restart options for new containers will be ignored "
+             "as a restart is already in progress.";
+    }
+    it->second->AddRequest(std::move(request));
   }
 
   return restart_id;
 }
 
-void CrostiniManager::AbortRestartCrostini(
-    CrostiniManager::RestartId restart_id,
-    base::OnceClosure callback) {
-  auto restarter_it = restarters_by_id_.find(restart_id);
-  if (restarter_it == restarters_by_id_.end()) {
-    // This can happen if a user cancels the install flow at the exact right
-    // moment, for example.
-    LOG(ERROR) << "Aborting a restarter that already finished";
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(callback));
+void CrostiniManager::CancelRestartCrostini(
+    CrostiniManager::RestartId restart_id) {
+  auto container_it = restarters_by_id_.find(restart_id);
+  if (container_it == restarters_by_id_.end()) {
+    // Only tests execute this path at the time of writing but be defensive
+    // just in case.
+    LOG(ERROR)
+        << "Cancelling a restarter that does not exist (already finished?)"
+        << ", id = " << restart_id;
     return;
   }
-  restarter_it->second->Abort(std::move(callback));
+  auto restarter_it = restarters_by_container_.find(container_it->second);
+  DCHECK(restarter_it != restarters_by_container_.end());
+  restarter_it->second->CancelRequest(restart_id);
 }
 
 bool CrostiniManager::IsRestartPending(RestartId restart_id) {
-  auto it = restarters_by_id_.find(restart_id);
-  return it != restarters_by_id_.end() && !it->second->is_aborted();
+  return restarters_by_id_.find(restart_id) != restarters_by_id_.end();
 }
 
 void CrostiniManager::AddShutdownContainerCallback(
@@ -2440,6 +2547,11 @@ void CrostiniManager::OnStartTremplin(std::string vm_name,
   VLOG(1) << "Received TremplinStartedSignal, VM: " << owner_id_ << ", "
           << vm_name;
   UpdateVmState(vm_name, VmState::STARTED);
+
+  // TODO(timloh): These should probably either be in CrostiniRestarter
+  // alongside sharing non-persisted paths, or separated entirely from the
+  // restart flow and instead run for all Guest OS types whenever they start
+  // up. For fonts, this could be done directly in concierge (b/231252066).
 
   // Share fonts directory with the VM but don't persist as a shared path.
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
@@ -3088,10 +3200,9 @@ void CrostiniManager::OnLxdContainerDownloading(
     return;
   }
   ContainerId container_id(signal.vm_name(), signal.container_name());
-  auto range = restarters_by_container_.equal_range(container_id);
-  for (auto it = range.first; it != range.second; ++it) {
-    restarters_by_id_[it->second]->OnContainerDownloading(
-        signal.download_progress());
+  auto iter = restarters_by_container_.find(container_id);
+  if (iter != restarters_by_container_.end()) {
+    iter->second->OnContainerDownloading(signal.download_progress());
   }
 }
 
@@ -3115,9 +3226,6 @@ void CrostiniManager::OnLxdContainerStarting(
     return;
   ContainerId container_id(signal.vm_name(), signal.container_name());
   CrostiniResult result;
-  std::pair<std::multimap<crostini::ContainerId, int>::iterator,
-            std::multimap<crostini::ContainerId, int>::iterator>
-      range;
 
   switch (signal.status()) {
     case vm_tools::cicerone::LxdContainerStartingSignal::UNKNOWN:
@@ -3132,12 +3240,13 @@ void CrostiniManager::OnLxdContainerStarting(
     case vm_tools::cicerone::LxdContainerStartingSignal::FAILED:
       result = CrostiniResult::CONTAINER_START_FAILED;
       break;
-    case vm_tools::cicerone::LxdContainerStartingSignal::STARTING:
-      range = restarters_by_container_.equal_range(container_id);
-      for (auto it = range.first; it != range.second; ++it) {
-        restarters_by_id_[it->second]->OnLxdContainerStarting(signal.status());
+    case vm_tools::cicerone::LxdContainerStartingSignal::STARTING: {
+      auto iter = restarters_by_container_.find(container_id);
+      if (iter != restarters_by_container_.end()) {
+        iter->second->OnLxdContainerStarting(signal.status());
       }
       return;
+    }
     default:
       result = CrostiniResult::UNKNOWN_ERROR;
       break;
@@ -3337,7 +3446,7 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
                      weak_ptr_factory_.GetWeakPtr()));
 
   auto abort_callback = base::BarrierClosure(
-      restarters_by_id_.size(),
+      restarters_by_container_.size(),
       base::BindOnce(
           [](scoped_refptr<CrostiniRemover> remover) {
             content::GetUIThreadTaskRunner({})->PostTask(
@@ -3346,8 +3455,8 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
           },
           crostini_remover));
 
-  for (const auto& restarter_it : restarters_by_id_) {
-    AbortRestartCrostini(restarter_it.first, abort_callback);
+  for (const auto& iter : restarters_by_container_) {
+    iter.second->Abort(abort_callback);
   }
 }
 
@@ -3358,74 +3467,22 @@ void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
   remove_crostini_callbacks_.clear();
 }
 
-void CrostiniManager::FinishRestart(CrostiniRestarter* restarter,
-                                    CrostiniResult result) {
-  if (restarter->RestartAppliesToEquivalentRestarters()) {
-    // Invoke callbacks for all restarters of that container and then delete
-    // the restarters.
-    auto range =
-        restarters_by_container_.equal_range(restarter->container_id());
-    std::vector<std::unique_ptr<CrostiniRestarter>> pending_restarters;
+void CrostiniManager::RemoveRestartId(RestartId restart_id) {
+  // restarters_by_container_ is handled in RestartCompleted()
+  restarters_by_id_.erase(restart_id);
+}
 
-    // Erase first, because restarter->RunCallback() may modify our maps, and
-    // because the upgrade process will want to run more restarters.
-    for (auto it = range.first; it != range.second; ++it) {
-      CrostiniManager::RestartId restart_id = it->second;
-      pending_restarters.emplace_back(std::move(restarters_by_id_[restart_id]));
-      restarters_by_id_.erase(restart_id);
-    }
-    restarters_by_container_.erase(range.first, range.second);
+void CrostiniManager::RestartCompleted(CrostiniRestarter* restarter,
+                                       base::OnceClosure closure) {
+  ContainerId container_id = restarter->container_id();
+  restarter = nullptr;
+  // Destroy the restarter.
+  restarters_by_container_.erase(container_id);
 
-    std::vector<base::OnceClosure> callbacks;
-    for (auto&& restarter : pending_restarters) {
-      callbacks.push_back(base::BindOnce(
-          [](std::unique_ptr<CrostiniRestarter> restarter,
-             CrostiniResult result) { restarter->RunCallback(result); },
-          std::move(restarter), result));
-    }
-
-    if (ShouldWarnAboutExpiredVersion(profile_, restarter->container_id())) {
-      CrostiniExpiredContainerWarningView::Show(profile_, std::move(callbacks));
-    } else {
-      for (auto&& callback : callbacks) {
-        std::move(callback).Run();
-      }
-    }
-    return;
-  }
-
-  // Restart did not fully complete (aborted or only only a partial restart
-  // was requested).
-
-  // Aborted restarts have the callback run immediately when Abort() is called.
-  if (result != CrostiniResult::RESTART_ABORTED) {
-    restarter->RunCallback(result);
-  }
-
-  CrostiniManager::RestartId restart_id = restarter->restart_id();
-  ContainerId key = restarter->container_id();
-
-  {
-    auto restarter_it = restarters_by_id_.find(restart_id);
-    DCHECK(restarter_it != restarters_by_id_.end());
-
-    auto range =
-        restarters_by_container_.equal_range(restarter->container_id());
-    for (auto it = range.first; it != range.second; ++it) {
-      if (it->second == restart_id) {
-        restarters_by_container_.erase(it);
-        break;
-      }
-    }
-    // This destroys the restarter.
-    restarters_by_id_.erase(restarter_it);
-    restarter = nullptr;
-  }
-
-  // Kick off the "next" (in order of arrival) pending Restart() if any.
-  auto range = restarters_by_container_.equal_range(key);
-  if (range.first != range.second) {
-    restarters_by_id_[range.first->second]->Restart();
+  if (ShouldWarnAboutExpiredVersion(profile_, container_id)) {
+    CrostiniExpiredContainerWarningView::Show(profile_, std::move(closure));
+  } else {
+    std::move(closure).Run();
   }
 }
 
@@ -3883,8 +3940,10 @@ void CrostiniManager::GetInstallLocation(
 void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
     CrostiniManager::RestartId id,
     CrostiniResult result) {
-  auto restarter_it = restarters_by_id_.find(id);
-  DCHECK(restarter_it != restarters_by_id_.end());
+  auto container_it = restarters_by_id_.find(id);
+  DCHECK(container_it != restarters_by_id_.end());
+  auto restarter_it = restarters_by_container_.find(container_it->second);
+  DCHECK(restarter_it != restarters_by_container_.end());
   restarter_it->second->StartLxdContainerFinished(result);
 }
 
