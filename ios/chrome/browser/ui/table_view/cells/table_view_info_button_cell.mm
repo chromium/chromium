@@ -65,6 +65,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _iconImageView.hidden = YES;
+    _iconImageView.contentMode = UIViewContentModeCenter;
     [self.contentView addSubview:_iconImageView];
 
     UILayoutGuide* textLayoutGuide = [[UILayoutGuide alloc] init];

@@ -39,7 +39,7 @@ typedef NSArray<TableViewItem*>* ItemArray;
 namespace {
 
 // The size of the symbol image.
-NSInteger kSymbolImagePointSize = 20;
+NSInteger kSymbolImagePointSize = 17;
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -198,29 +198,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                     detailText:(NSInteger)detailText
                        accessibilityIdentifier:
                            (NSString*)accessibilityIdentifier {
-  TableViewInfoButtonItem* managedItem =
+  TableViewInfoButtonItem* infoButtonItem =
       [[TableViewInfoButtonItem alloc] initWithType:type];
-  managedItem.text = l10n_util::GetNSString(titleId);
-  managedItem.detailText = l10n_util::GetNSString(detailText);
+  infoButtonItem.text = l10n_util::GetNSString(titleId);
+  infoButtonItem.detailText = l10n_util::GetNSString(detailText);
   // If Safe Browsing is controlled by enterprise, make non-selected options
   // greyed out.
   if (self.enterpriseEnabled && ![self shouldItemTypeHaveCheckmark:type]) {
-    managedItem.textColor =
+    infoButtonItem.textColor =
         [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
-    managedItem.detailTextColor =
+    infoButtonItem.detailTextColor =
         [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
-    managedItem.accessibilityHint = l10n_util::GetNSString(
+    infoButtonItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   }
-  managedItem.image =
-      DefaultSymbolWithPointSize(kCheckmarkSymbol, kSymbolImagePointSize);
-  managedItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
-                              ? [UIColor colorNamed:kBlueColor]
-                              : [UIColor clearColor];
-  managedItem.accessibilityIdentifier = accessibilityIdentifier;
-  managedItem.accessibilityDelegate = self;
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolImagePointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+  infoButtonItem.image =
+      DefaultSymbolWithConfiguration(kCheckmarkSymbol, configuration);
+  infoButtonItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
+                                 ? [UIColor colorNamed:kBlueColor]
+                                 : [UIColor clearColor];
+  infoButtonItem.accessibilityIdentifier = accessibilityIdentifier;
+  infoButtonItem.accessibilityDelegate = self;
 
-  return managedItem;
+  return infoButtonItem;
 }
 
 // Returns whether an ItemType should have a checkmark based on its related
