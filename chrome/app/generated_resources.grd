@@ -12095,6 +12095,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Remove access
     </message>
 
+    <!-- File System Access file chooser. -->
+    <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE" desc="Title of the chooser when opening a directory with read and write permissions">
+      Select where this site can save changes
+    </message>
+
     <!-- File System Access restricted directory and file dialogs. -->
     <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TITLE" desc="Title of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
       Can't open this folder
