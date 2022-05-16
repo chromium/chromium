@@ -1144,38 +1144,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_EQ(expected_favicon_url.spec(), entry->GetFavicon().url.spec());
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_WIN)
-// http://crbug.com/83828. On Mac 10.6, the failure rate is 14%
-#define MAYBE_FaviconChange DISABLED_FaviconChange
-#else
-#define MAYBE_FaviconChange FaviconChange
-#endif
-// Test that an icon can be changed from JS.
-// This test doesn't seem to be correct now. The Favicon never seems to be set
-// as a NavigationEntry. The related events on the TestWebContentsObserver do
-// seem to be called, however.
-IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_FaviconChange) {
-  static const base::FilePath::CharType* kFile =
-      FILE_PATH_LITERAL("onload_change_favicon.html");
-  GURL file_url(ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kFile)));
-  ASSERT_TRUE(file_url.SchemeIs(url::kFileScheme));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url));
-
-  NavigationEntry* entry = browser()
-                               ->tab_strip_model()
-                               ->GetActiveWebContents()
-                               ->GetController()
-                               .GetLastCommittedEntry();
-  static const base::FilePath::CharType* kIcon = FILE_PATH_LITERAL("test1.png");
-  GURL expected_favicon_url(ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kIcon)));
-  EXPECT_EQ(expected_favicon_url.spec(), entry->GetFavicon().url.spec());
-}
-
 // Makes sure TabClosing is sent when uninstalling an extension that is an app
 // tab.
 IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {

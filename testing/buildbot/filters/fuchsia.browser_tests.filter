@@ -45,7 +45,6 @@
 -AppWindowApiTest.OnRestoredEvent
 -BackForwardCacheSiteDetailsBrowserTest.MemoryDetailsForBackForwardCache
 -BluetoothApiTest.Discovery
--BrowserTest.FaviconChange
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.Database
 -BrowsingDataRemoverBrowserTest.SessionOnlyStorageRemoved
