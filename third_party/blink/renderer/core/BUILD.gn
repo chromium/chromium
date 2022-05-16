@@ -306,6 +306,7 @@ component("core") {
   }
 
   deps = [
+    ":generate_eventhandler_names",
     ":generated_settings_macros",
     "//build:chromeos_buildflags",
     "//components/paint_preview/common",
@@ -1212,6 +1213,28 @@ target(core_generated_target_type, "core_generated") {
   if (is_debug || dcheck_always_on) {
     deps += [ "//components/crash/core/common:crash_key" ]
   }
+}
+
+# Generate a list of event handler attributes, for use by Trusted Types.
+action("generate_eventhandler_names") {
+  script = "//third_party/blink/renderer/build/scripts/run_with_pythonpath.py"
+  real_script = "trustedtypes/generate_eventhandler_names.py"
+  inputs = [
+    web_idl_database_filepath,
+    real_script,
+  ]
+  outputs = [ "$target_gen_dir/trustedtypes/event_handler_names.h" ]
+  deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
+  args = [
+    "-I",
+    rebase_path("//third_party/blink/renderer/bindings/scripts",
+                root_build_dir),
+    rebase_path(real_script, root_build_dir),
+    "--webidl",
+    rebase_path(inputs[0], root_build_dir),
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+  ]
 }
 
 # Fuzzer for blink::TextResourceDecoder.
