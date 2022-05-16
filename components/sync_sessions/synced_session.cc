@@ -152,22 +152,28 @@ SerializedNavigationEntry SessionNavigationFromSyncData(
         break;
     }
   }
-  if (sync_data.navigation_forward_back())
+  if (sync_data.navigation_forward_back()) {
     transition |= ui::PAGE_TRANSITION_FORWARD_BACK;
-  if (sync_data.navigation_from_address_bar())
+  }
+  if (sync_data.navigation_from_address_bar()) {
     transition |= ui::PAGE_TRANSITION_FROM_ADDRESS_BAR;
-  if (sync_data.navigation_home_page())
+  }
+  if (sync_data.navigation_home_page()) {
     transition |= ui::PAGE_TRANSITION_HOME_PAGE;
-  if (sync_data.navigation_chain_start())
+  }
+  if (sync_data.navigation_chain_start()) {
     transition |= ui::PAGE_TRANSITION_CHAIN_START;
-  if (sync_data.navigation_chain_end())
+  }
+  if (sync_data.navigation_chain_end()) {
     transition |= ui::PAGE_TRANSITION_CHAIN_END;
+  }
 
   navigation.set_transition_type(static_cast<ui::PageTransition>(transition));
 
   navigation.set_timestamp(syncer::ProtoTimeToTime(sync_data.timestamp_msec()));
-  if (sync_data.has_favicon_url())
+  if (sync_data.has_favicon_url()) {
     navigation.set_favicon_url(GURL(sync_data.favicon_url()));
+  }
 
   if (sync_data.has_password_state()) {
     navigation.set_password_state(
@@ -341,8 +347,9 @@ sync_pb::SessionWindow SyncedSessionWindow::ToSessionWindowProto() const {
   sync_data.set_window_id(wrapped_window.window_id.id());
   sync_data.set_selected_tab_index(wrapped_window.selected_tab_index);
 
-  for (const auto& tab : wrapped_window.tabs)
+  for (const auto& tab : wrapped_window.tabs) {
     sync_data.add_tab(tab->tab_id.id());
+  }
 
   return sync_data;
 }

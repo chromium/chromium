@@ -67,8 +67,9 @@ SyncExtensionHelper::SyncExtensionHelper() : setup_completed_(false) {}
 SyncExtensionHelper::~SyncExtensionHelper() = default;
 
 void SyncExtensionHelper::SetupIfNecessary(SyncTest* test) {
-  if (setup_completed_)
+  if (setup_completed_) {
     return;
+  }
 
   extension_name_prefix_ = kFakeExtensionPrefix + base::GenerateGUID();
   for (int i = 0; i < test->num_clients(); ++i) {
@@ -170,8 +171,9 @@ bool SyncExtensionHelper::IsExtensionPendingInstallForSync(
           ->pending_extension_manager();
   const extensions::PendingExtensionInfo* info =
       pending_extension_manager->GetById(id);
-  if (!info)
+  if (!info) {
     return false;
+  }
   return info->is_from_sync();
 }
 
@@ -194,8 +196,9 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
   const extensions::PendingExtensionInfo* info = nullptr;
   for (const std::string& pending_crx_id : pending_crx_ids) {
     ASSERT_TRUE(info = pending_extension_manager->GetById(pending_crx_id));
-    if (!info->is_from_sync())
+    if (!info->is_from_sync()) {
       continue;
+    }
 
     StringMap::const_iterator iter = id_to_name_.find(pending_crx_id);
     if (iter == id_to_name_.end()) {

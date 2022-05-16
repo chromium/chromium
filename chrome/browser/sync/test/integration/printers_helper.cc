@@ -91,8 +91,9 @@ bool EditPrinterDescription(ash::SyncedPrintersManager* manager,
       printers, printer_id,
       [](const chromeos::Printer& printer) { return printer.id(); });
 
-  if (found == printers.end())
+  if (found == printers.end()) {
     return false;
+  }
 
   found->set_description(description);
   manager->UpdateSavedPrinter(*found);

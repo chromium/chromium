@@ -274,10 +274,12 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
 }
 
 bool CheckInitialState(int browser_index) {
-  if (0 != GetNumWindows(browser_index))
+  if (0 != GetNumWindows(browser_index)) {
     return false;
-  if (0 != GetNumForeignSessions(browser_index))
+  }
+  if (0 != GetNumForeignSessions(browser_index)) {
     return false;
+  }
   return true;
 }
 

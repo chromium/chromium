@@ -109,8 +109,9 @@ PrefServiceSyncable::CreateIncognitoPrefService(
   auto incognito_pref_store = base::MakeRefCounted<OverlayUserPrefStore>(
       overlay.get(), user_pref_store_.get());
 
-  for (const char* persistent_pref_name : persistent_pref_names)
+  for (const char* persistent_pref_name : persistent_pref_names) {
     incognito_pref_store->RegisterPersistentPref(persistent_pref_name);
+  }
 
   auto pref_value_store = pref_value_store_->CloneAndSpecialize(
       nullptr,  // managed
@@ -247,8 +248,9 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
 }
 
 void PrefServiceSyncable::OnIsSyncingChanged() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnIsSyncingChanged();
+  }
 }
 
 void PrefServiceSyncable::ProcessPrefChange(const std::string& name) {

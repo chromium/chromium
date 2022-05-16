@@ -66,8 +66,9 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
 
   bool SetupClients() override {
     bool result = SyncTest::SetupClients();
-    if (!result)
+    if (!result) {
       return result;
+    }
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
@@ -107,8 +108,9 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GURL start_url = GURL()) {
     Browser* browser = CreateBrowser(profile);
-    if (!start_url.is_valid())
+    if (!start_url.is_valid()) {
       start_url = GetUserInitiatedAppURL();
+    }
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, start_url));
 
     AppId app_id;
@@ -186,8 +188,9 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
       if (!app_ids) {
         app_ids = profile_app_ids;
       } else {
-        if (app_ids != profile_app_ids)
+        if (app_ids != profile_app_ids) {
           return false;
+        }
       }
     }
     return true;

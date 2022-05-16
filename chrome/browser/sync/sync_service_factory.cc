@@ -122,8 +122,9 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // roaming profile location the sync service will not be created.
     UMA_HISTOGRAM_BOOLEAN("Sync.Local.RoamingProfileUnavailable",
                           local_sync_backend_folder.empty());
-    if (local_sync_backend_folder.empty())
+    if (local_sync_backend_folder.empty()) {
       return nullptr;
+    }
 
     init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
   }

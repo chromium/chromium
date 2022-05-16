@@ -100,24 +100,31 @@ testing::AssertionResult StartWithSameSettingsTest(
     SetExtensionSettingsForAllProfiles(extension2, settings);
   }
 
-  if (!test()->SetupSync())
+  if (!test()->SetupSync()) {
     return testing::AssertionFailure();
-  if (!test()->AwaitQuiescence())
+  }
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   MutateSomeSettings(0, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   MutateSomeSettings(1, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   return testing::AssertionSuccess();
 }
@@ -151,38 +158,49 @@ testing::AssertionResult StartWithDifferentSettingsTest(
     SetExtensionSettings(test()->GetProfile(1), extension2, settings);
   }
 
-  if (!test()->SetupSync())
+  if (!test()->SetupSync()) {
     return testing::AssertionFailure();
-  if (!test()->AwaitQuiescence())
+  }
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   MutateSomeSettings(2, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   MutateSomeSettings(3, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   // Test a round of no-ops once, for sanity. Ideally we'd want to assert that
   // this causes no sync activity, but that sounds tricky.
   MutateSomeSettings(3, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   MutateSomeSettings(4, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence())
+  if (!test()->AwaitQuiescence()) {
     return testing::AssertionFailure();
-  if (!AllExtensionSettingsSameAsVerifier())
+  }
+  if (!AllExtensionSettingsSameAsVerifier()) {
     return testing::AssertionFailure();
+  }
 
   return testing::AssertionSuccess();
 }

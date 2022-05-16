@@ -65,8 +65,9 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for sync engine initialization to complete";
-    if (service()->IsEngineInitialized())
+    if (service()->IsEngineInitialized()) {
       return true;
+    }
     // Engine initialization is blocked by an auth error.
     if (HasAuthError(service())) {
       LOG(WARNING) << "Sync engine initialization blocked by auth error";
@@ -339,8 +340,9 @@ bool SyncServiceImplHarness::SetupSyncImpl(
   // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
-  if (signin_type_ == SigninType::UI_SIGNIN)
+  if (signin_type_ == SigninType::UI_SIGNIN) {
     return signin_delegate_->ConfirmSigninUI(profile_);
+  }
   return true;
 }
 

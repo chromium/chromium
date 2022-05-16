@@ -10,15 +10,17 @@
 SyncStartupTracker::SyncStartupTracker(syncer::SyncService* sync_service,
                                        Observer* observer)
     : sync_service_(sync_service), observer_(observer) {
-  if (sync_service_)
+  if (sync_service_) {
     sync_service_->AddObserver(this);
+  }
 
   CheckServiceState();
 }
 
 SyncStartupTracker::~SyncStartupTracker() {
-  if (sync_service_)
+  if (sync_service_) {
     sync_service_->RemoveObserver(this);
+  }
 }
 
 void SyncStartupTracker::OnStateChanged(syncer::SyncService* sync) {
@@ -45,20 +47,24 @@ void SyncStartupTracker::CheckServiceState() {
 SyncStartupTracker::SyncServiceState SyncStartupTracker::GetSyncServiceState(
     syncer::SyncService* sync_service) {
   // If no service exists or it can't be started, treat as a startup error.
-  if (!sync_service || !sync_service->CanSyncFeatureStart())
+  if (!sync_service || !sync_service->CanSyncFeatureStart()) {
     return SYNC_STARTUP_ERROR;
+  }
 
   // If the sync engine has started up, notify the callback.
-  if (sync_service->IsEngineInitialized())
+  if (sync_service->IsEngineInitialized()) {
     return SYNC_STARTUP_COMPLETE;
+  }
 
   // If the sync service has some kind of error, report to the user.
-  if (sync_service->HasUnrecoverableError())
+  if (sync_service->HasUnrecoverableError()) {
     return SYNC_STARTUP_ERROR;
+  }
 
   // If we have an auth error, exit.
-  if (sync_service->GetAuthError().state() != GoogleServiceAuthError::NONE)
+  if (sync_service->GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return SYNC_STARTUP_ERROR;
+  }
 
   // No error detected yet, but the sync engine hasn't started up yet, so
   // we're in the pending state.

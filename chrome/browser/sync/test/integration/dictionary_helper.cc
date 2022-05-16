@@ -47,8 +47,9 @@ SpellcheckCustomDictionary* GetDictionary(int index) {
 }
 
 void LoadDictionary(SpellcheckCustomDictionary* dictionary) {
-  if (dictionary->IsLoaded())
+  if (dictionary->IsLoaded()) {
     return;
+  }
   base::RunLoop run_loop;
   DictionaryLoadObserver observer(
       content::GetDeferredQuitTaskForRunLoop(&run_loop));

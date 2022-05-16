@@ -520,8 +520,9 @@ invalidation::InvalidationService* ChromeSyncClient::GetInvalidationService() {
   invalidation::ProfileInvalidationProvider* provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
 
-  if (provider)
+  if (provider) {
     return provider->GetInvalidationService();
+  }
   return nullptr;
 }
 

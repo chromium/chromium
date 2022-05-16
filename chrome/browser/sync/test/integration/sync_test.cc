@@ -192,8 +192,9 @@ invalidation::FCMNetworkHandler* GetFCMNetworkHandler(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return nullptr;
+  }
 
   auto it = profile_to_fcm_network_handler_map->find(profile);
   return it != profile_to_fcm_network_handler_map->end() ? it->second : nullptr;
@@ -329,8 +330,9 @@ void SyncTest::SetUp() {
                     : "password";
   }
 
-  if (username_.empty() || password_.empty())
+  if (username_.empty() || password_.empty()) {
     LOG(FATAL) << "Cannot run sync tests without GAIA credentials.";
+  }
 
   // Mock the Mac Keychain service.  The real Keychain can block on user input.
   OSCryptMocker::SetUp();
@@ -374,20 +376,24 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
 
 void SyncTest::AddTestSwitches(base::CommandLine* cl) {
   // Disable non-essential access of external network resources.
-  if (!cl->HasSwitch(switches::kDisableBackgroundNetworking))
+  if (!cl->HasSwitch(switches::kDisableBackgroundNetworking)) {
     cl->AppendSwitch(switches::kDisableBackgroundNetworking);
+  }
 
-  if (!cl->HasSwitch(syncer::kSyncShortInitialRetryOverride))
+  if (!cl->HasSwitch(syncer::kSyncShortInitialRetryOverride)) {
     cl->AppendSwitch(syncer::kSyncShortInitialRetryOverride);
+  }
 
-  if (!cl->HasSwitch(syncer::kSyncShortNudgeDelayForTest))
+  if (!cl->HasSwitch(syncer::kSyncShortNudgeDelayForTest)) {
     cl->AppendSwitch(syncer::kSyncShortNudgeDelayForTest);
+  }
 
   // TODO(crbug.com/1060366): This is a temporary switch to allow having two
   // profiles syncing the same account. Having a profile outside of the user
   // directory isn't supported in Chrome.
-  if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir))
+  if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir)) {
     cl->AppendSwitch(switches::kAllowProfilesOutsideUserDir);
+  }
 
   if (cl->HasSwitch(syncer::kSyncServiceURL)) {
     // TODO(crbug.com/1243653): setup real SecurityDomainService if
@@ -476,8 +482,9 @@ void SyncTest::CreateProfileCallback(const base::RepeatingClosure& quit_closure,
   EXPECT_NE(Profile::CREATE_STATUS_LOCAL_FAIL, status);
   // This will be called multiple times. Wait until the profile is initialized
   // fully to quit the loop.
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
+  if (status == Profile::CREATE_STATUS_INITIALIZED) {
     quit_closure.Run();
+  }
 }
 
 // TODO(shadi): Ideally creating a new profile should not depend on signin
@@ -549,17 +556,20 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
 #endif
 
 SyncServiceImplHarness* SyncTest::GetClient(int index) {
-  if (clients_.empty())
+  if (clients_.empty()) {
     LOG(FATAL) << "SetupClients() has not yet been called.";
-  if (index < 0 || index >= static_cast<int>(clients_.size()))
+  }
+  if (index < 0 || index >= static_cast<int>(clients_.size())) {
     LOG(FATAL) << "GetClient(): Index is out of bounds.";
+  }
   return clients_[index].get();
 }
 
 std::vector<SyncServiceImplHarness*> SyncTest::GetSyncClients() {
   std::vector<SyncServiceImplHarness*> clients(clients_.size());
-  for (size_t i = 0; i < clients_.size(); ++i)
+  for (size_t i = 0; i < clients_.size(); ++i) {
     clients[i] = clients_[i].get();
+  }
   return clients;
 }
 
@@ -583,10 +593,12 @@ std::vector<SyncServiceImpl*> SyncTest::GetSyncServices() {
 }
 
 Profile* SyncTest::verifier() {
-  if (!UseVerifier())
+  if (!UseVerifier()) {
     LOG(FATAL) << "Verifier account is disabled.";
-  if (verifier_ == nullptr)
+  }
+  if (verifier_ == nullptr) {
     LOG(FATAL) << "SetupClients() has not yet been called.";
+  }
   return verifier_;
 }
 
@@ -599,14 +611,16 @@ bool SyncTest::SetupClients() {
       g_browser_process->profile_manager()->GetLastUsedProfile();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (num_clients_ <= 0)
+  if (num_clients_ <= 0) {
     LOG(FATAL) << "num_clients_ incorrectly initialized.";
+  }
   bool has_any_browser = false;
 #if !BUILDFLAG(IS_ANDROID)
   has_any_browser = !browsers_.empty();
 #endif
-  if (!profiles_.empty() || has_any_browser || !clients_.empty())
+  if (!profiles_.empty() || has_any_browser || !clients_.empty()) {
     LOG(FATAL) << "SetupClients() has already been called.";
+  }
 
   // Create the required number of sync profiles, browsers and clients.
   profiles_.resize(num_clients_);
@@ -669,8 +683,9 @@ bool SyncTest::SetupClients() {
   if (ArcAppListPrefsFactory::IsFactorySetForSyncTest()) {
     // Init SyncArcPackageHelper to ensure that the arc services are initialized
     // for each Profile, only can be called after test profiles are created.
-    if (!sync_arc_helper())
+    if (!sync_arc_helper()) {
       return false;
+    }
   }
 #endif
 
@@ -1174,9 +1189,10 @@ void SyncTest::WaitForDataModels(Profile* profile) {
 void SyncTest::ReadPasswordFile() {
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   password_file_ = cl->GetSwitchValuePath(switches::kPasswordFileForTest);
-  if (password_file_.empty())
+  if (password_file_.empty()) {
     LOG(FATAL) << "Can't run live server test without specifying --"
                << switches::kPasswordFileForTest << "=<filename>";
+  }
   std::string file_contents;
   base::ReadFileToString(password_file_, &file_contents);
   ASSERT_NE(file_contents, "")

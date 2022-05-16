@@ -344,8 +344,9 @@ history::VisitVector GetVisitsFromClient(int index, history::URLID id) {
 history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url) {
   history::HistoryService* service = GetHistoryServiceFromClient(index);
   history::URLRow url_row;
-  if (!GetUrlFromHistoryService(service, url, &url_row))
+  if (!GetUrlFromHistoryService(service, url, &url_row)) {
     return history::VisitVector();
+  }
   return GetVisitsFromHistoryService(service, url_row.id());
 }
 
@@ -366,8 +367,9 @@ base::Time GetTimestamp() {
   // and it will massage the visit timestamps if we try to use identical
   // values, which can lead to spurious errors. So make sure all timestamps
   // are unique.
-  if (!::timestamp)
+  if (!::timestamp) {
     ::timestamp = new base::Time(base::Time::Now());
+  }
   base::Time original = *::timestamp;
   *::timestamp += base::Milliseconds(1);
   return original;
@@ -391,10 +393,11 @@ void AddUrlToHistoryWithTimestamp(int index,
                                   const base::Time& timestamp) {
   AddToHistory(GetHistoryServiceFromClient(index), url, transition, source,
                timestamp);
-  if (test()->UseVerifier())
+  if (test()->UseVerifier()) {
     AddToHistory(HistoryServiceFactory::GetForProfile(
                      test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS),
                  url, transition, source, timestamp);
+  }
 
   // Wait until the AddPage() request has completed so we know the change has
   // filtered down to the sync observers (don't need to wait for the
@@ -435,30 +438,33 @@ void ExpireHistoryBetween(int index,
 void DeleteUrlFromHistory(int index, const GURL& url) {
   GetHistoryServiceFromClient(index)->DeleteURLs({url});
 
-  if (test()->UseVerifier())
+  if (test()->UseVerifier()) {
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->DeleteURLs({url});
+  }
 
   WaitForHistoryDBThread(index);
 }
 
 void DeleteUrlsFromHistory(int index, const std::vector<GURL>& urls) {
   GetHistoryServiceFromClient(index)->DeleteURLs(urls);
-  if (test()->UseVerifier())
+  if (test()->UseVerifier()) {
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->DeleteURLs(urls);
+  }
   WaitForHistoryDBThread(index);
 }
 
 void SetPageTitle(int index, const GURL& url, const std::string& title) {
   HistoryServiceFactory::GetForProfileWithoutCreating(test()->GetProfile(index))
       ->SetPageTitle(url, base::UTF8ToUTF16(title));
-  if (test()->UseVerifier())
+  if (test()->UseVerifier()) {
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
         ->SetPageTitle(url, base::UTF8ToUTF16(title));
+  }
   WaitForHistoryDBThread(index);
 }
 
@@ -476,8 +482,9 @@ std::string PrintUrlRows(const history::URLRows& rows,
 
 bool CheckURLRowVectorsAreEqualForTypedURLs(const history::URLRows& left,
                                             const history::URLRows& right) {
-  if (left.size() != right.size())
+  if (left.size() != right.size()) {
     return false;
+  }
   for (const history::URLRow& left_url_row : left) {
     // URLs could be out-of-order, so look for a matching URL in the second
     // array.
@@ -490,22 +497,26 @@ bool CheckURLRowVectorsAreEqualForTypedURLs(const history::URLRows& left,
         }
       }
     }
-    if (!found)
+    if (!found) {
       return false;
+    }
   }
   return true;
 }
 
 bool AreVisitsEqual(const history::VisitVector& visit1,
                     const history::VisitVector& visit2) {
-  if (visit1.size() != visit2.size())
+  if (visit1.size() != visit2.size()) {
     return false;
+  }
   for (size_t i = 0; i < visit1.size(); ++i) {
     if (!ui::PageTransitionTypeIncludingQualifiersIs(visit1[i].transition,
-                                                     visit2[i].transition))
+                                                     visit2[i].transition)) {
       return false;
-    if (visit1[i].visit_time != visit2[i].visit_time)
+    }
+    if (visit1[i].visit_time != visit2[i].visit_time) {
       return false;
+    }
   }
   return true;
 }
@@ -513,8 +524,9 @@ bool AreVisitsEqual(const history::VisitVector& visit1,
 bool AreVisitsUnique(const history::VisitVector& visits) {
   base::Time t = base::Time::FromInternalValue(0);
   for (const history::VisitRow& visit : visits) {
-    if (t == visit.visit_time)
+    if (t == visit.visit_time) {
       return false;
+    }
     t = visit.visit_time;
   }
   return true;
@@ -564,8 +576,9 @@ bool CheckAllProfilesHaveSameTypedURLs() {
 bool CheckSyncHasURLMetadata(int index, const GURL& url) {
   history::URLRow row;
   history::HistoryService* service = GetHistoryServiceFromClient(index);
-  if (!GetUrlFromHistoryService(service, url, &row))
+  if (!GetUrlFromHistoryService(service, url, &row)) {
     return false;
+  }
 
   syncer::MetadataBatch batch;
   GetMetadataBatchFromHistoryService(service, &batch);
@@ -575,8 +588,9 @@ bool CheckSyncHasURLMetadata(int index, const GURL& url) {
 
   syncer::EntityMetadataMap metadata_map(batch.TakeAllMetadata());
   for (const auto& [storage_key, metadata] : metadata_map) {
-    if (storage_key == expected_storage_key)
+    if (storage_key == expected_storage_key) {
       return true;
+    }
   }
   return false;
 }
@@ -593,8 +607,9 @@ bool CheckSyncHasMetadataForURLID(int index, history::URLID url_id) {
 
   syncer::EntityMetadataMap metadata_map(batch.TakeAllMetadata());
   for (const auto& [storage_key, metadata] : metadata_map) {
-    if (storage_key == expected_storage_key)
+    if (storage_key == expected_storage_key) {
       return true;
+    }
   }
   return false;
 }
@@ -634,8 +649,9 @@ bool TypedURLChecker::IsExitConditionSatisfied(std::ostream* os) {
   history::URLRows rows = typed_urls_helper::GetTypedUrlsFromClient(index_);
 
   for (const history::URLRow& row : rows) {
-    if (row.url().spec() == url_)
+    if (row.url().spec() == url_) {
       return true;
+    }
   }
   return false;
 }

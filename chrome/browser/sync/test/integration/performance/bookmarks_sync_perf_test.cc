@@ -77,8 +77,9 @@ void BookmarksSyncPerfTest::AddURLs(int profile, size_t num_urls) {
 
 void BookmarksSyncPerfTest::UpdateURLs(int profile) {
   for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
-       GetBookmarkBarNode(profile)->children())
+       GetBookmarkBarNode(profile)->children()) {
     ASSERT_TRUE(SetURL(profile, child.get(), GURL(NextIndexedURL())));
+  }
 }
 
 void BookmarksSyncPerfTest::RemoveURLs(int profile) {

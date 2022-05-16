@@ -49,8 +49,9 @@ void SyncSessionsWebContentsRouter::NotifyTabModified(
     content::WebContents* web_contents,
     bool page_load_completed) {
   SyncedTabDelegate* delegate = nullptr;
-  if (web_contents)
+  if (web_contents) {
     delegate = GetSyncedTabDelegateFromWebContents(web_contents);
+  }
 
   if (handler_ && delegate) {
     handler_->OnLocalTabModified(delegate);

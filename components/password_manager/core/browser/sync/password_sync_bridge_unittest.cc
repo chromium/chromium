@@ -151,9 +151,10 @@ sync_pb::PasswordSpecifics CreateSpecifics(
   password_data->set_username_value(username_value);
   password_data->set_password_element(password_element);
   password_data->set_signon_realm(signon_realm);
-  if (!issue_types.empty())
+  if (!issue_types.empty()) {
     *password_data->mutable_password_issues() =
         CreateSpecificsIssues(issue_types);
+  }
   return password_specifics.password();
 }
 

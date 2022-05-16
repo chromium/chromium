@@ -84,8 +84,9 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
       if (!app_ids) {
         app_ids = profile_app_ids;
       } else {
-        if (app_ids != profile_app_ids)
+        if (app_ids != profile_app_ids) {
           return false;
+        }
       }
     }
     return true;

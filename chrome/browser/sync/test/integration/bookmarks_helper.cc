@@ -90,8 +90,9 @@ void ApplyBookmarkFavicon(
     const GURL& icon_url,
     const scoped_refptr<base::RefCountedMemory>& bitmap_data) {
   // Some tests use no services.
-  if (favicon_service == nullptr)
+  if (favicon_service == nullptr) {
     return;
+  }
 
   favicon_service->AddPageNoVisitForBookmark(bookmark_node->url(),
                                              bookmark_node->GetTitle());
@@ -162,15 +163,17 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
 
   void BookmarkNodeChanged(BookmarkModel* model,
                            const BookmarkNode* node) override {
-    if (model == model_ && node == node_)
+    if (model == model_ && node == node_) {
       model->GetFavicon(node);
+    }
   }
   void BookmarkNodeChildrenReordered(BookmarkModel* model,
                                      const BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(BookmarkModel* model,
                                   const BookmarkNode* node) override {
-    if (model == model_ && node == node_)
+    if (model == model_ && node == node_) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -190,8 +193,9 @@ size_t CountNodesWithTitlesMatching(BookmarkModel* model,
   size_t count = 0;
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if ((node->type() == node_type) && (node->GetTitle() == title))
+    if ((node->type() == node_type) && (node->GetTitle() == title)) {
       ++count;
+    }
   }
   return count;
 }
@@ -204,8 +208,9 @@ size_t CountNodes(BookmarkModel* model, BookmarkNode::Type node_type) {
   size_t count = 0;
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if (node->type() == node_type)
+    if (node->type() == node_type) {
       ++count;
+    }
   }
   return count;
 }
@@ -214,8 +219,9 @@ size_t CountNodes(BookmarkModel* model, BookmarkNode::Type node_type) {
 // Returns true if they match.
 bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
                             const SkBitmap& bitmap_b) {
-  if (bitmap_a.computeByteSize() == 0U && bitmap_b.computeByteSize() == 0U)
+  if (bitmap_a.computeByteSize() == 0U && bitmap_b.computeByteSize() == 0U) {
     return true;
+  }
   if ((bitmap_a.computeByteSize() != bitmap_b.computeByteSize()) ||
       (bitmap_a.width() != bitmap_b.width()) ||
       (bitmap_a.height() != bitmap_b.height())) {
@@ -363,8 +369,9 @@ bool FaviconsMatch(BookmarkModel* model_a,
   gfx::Image image_a = favicon_data_a->image;
   gfx::Image image_b = favicon_data_b->image;
 
-  if (image_a.IsEmpty() && image_b.IsEmpty())
+  if (image_a.IsEmpty() && image_b.IsEmpty()) {
     return true;  // Two empty images are equivalent.
+  }
 
   if (image_a.IsEmpty() != image_b.IsEmpty()) {
     return false;
@@ -379,8 +386,9 @@ bool FaviconsMatch(BookmarkModel* model_a,
 // Does a deep comparison of BookmarkNode fields in |model_a| and |model_b|.
 // Returns true if they are all equal.
 bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
-  if (node_a == nullptr || node_b == nullptr)
+  if (node_a == nullptr || node_b == nullptr) {
     return node_a == node_b;
+  }
   if (node_a->is_folder() != node_b->is_folder()) {
     LOG(ERROR) << "Cannot compare folder with bookmark";
     return false;
@@ -686,8 +694,9 @@ const BookmarkNode* SetURL(int profile,
                << "Profile " << profile;
     return nullptr;
   }
-  if (node->is_url())
+  if (node->is_url()) {
     model->SetURL(node, new_url);
+  }
   return node;
 }
 
@@ -756,8 +765,9 @@ bool ContainsDuplicateBookmarks(int profile) {
       GetBookmarkModel(profile)->root_node());
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
-    if (node->is_folder())
+    if (node->is_folder()) {
       continue;
+    }
     std::vector<const BookmarkNode*> nodes;
     GetBookmarkModel(profile)->GetNodesByURL(node->url(), &nodes);
     EXPECT_GE(nodes.size(), 1U);
@@ -782,8 +792,9 @@ const BookmarkNode* GetUniqueNodeByURL(int profile, const GURL& url) {
   std::vector<const BookmarkNode*> nodes;
   GetBookmarkModel(profile)->GetNodesByURL(url, &nodes);
   EXPECT_EQ(1U, nodes.size());
-  if (nodes.empty())
+  if (nodes.empty()) {
     return nullptr;
+  }
   return nodes[0];
 }
 
@@ -838,12 +849,14 @@ gfx::Image Create1xFaviconFromPNGFile(const std::string& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   const char* kPNGExtension = ".png";
   if (!base::EndsWith(path, kPNGExtension,
-                      base::CompareCase::INSENSITIVE_ASCII))
+                      base::CompareCase::INSENSITIVE_ASCII)) {
     return gfx::Image();
+  }
 
   base::FilePath full_path;
-  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &full_path))
+  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &full_path)) {
     return gfx::Image();
+  }
 
   full_path = full_path.AppendASCII("sync").AppendASCII(path);
   std::string contents;

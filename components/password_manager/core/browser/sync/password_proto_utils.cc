@@ -283,8 +283,9 @@ bool DeserializeFormData(base::Value::Dict& serialized_data,
   std::string* form_url = serialized_data.FindString(kUrlKey);
   std::string* form_action = serialized_data.FindString(kActionKey);
   base::Value::List* fields = serialized_data.FindList(kFieldsKey);
-  if (!form_name || !form_url || !form_action || !fields)
+  if (!form_name || !form_url || !form_action || !fields) {
     return false;
+  }
   form_data.name = base::UTF8ToUTF16(*form_name);
   form_data.url = GURL(*form_url);
   form_data.action = GURL(*form_action);
@@ -292,14 +293,16 @@ bool DeserializeFormData(base::Value::Dict& serialized_data,
   for (auto& serialized_field : *fields) {
     base::Value::Dict* serialized_field_dictionary =
         serialized_field.GetIfDict();
-    if (!serialized_field_dictionary)
+    if (!serialized_field_dictionary) {
       return false;
+    }
     FormFieldData field;
     std::string* field_name = serialized_field_dictionary->FindString(kNameKey);
     std::string* field_type =
         serialized_field_dictionary->FindString(kFormControlTypeKey);
-    if (!field_name || !field_type)
+    if (!field_name || !field_type) {
       return false;
+    }
     field.name = base::UTF8ToUTF16(*field_name);
     field.form_control_type = *field_type;
     form_data.fields.push_back(field);
@@ -312,17 +315,20 @@ void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
   JSONStringValueDeserializer json_deserializer(opaque_metadata);
   std::unique_ptr<base::Value> root(
       json_deserializer.Deserialize(nullptr, nullptr));
-  if (!root.get() || !root->is_dict())
+  if (!root.get() || !root->is_dict()) {
     return;
+  }
 
   base::Value::Dict serialized_data(std::move(root->GetDict()));
   auto skip_zero_click = serialized_data.FindBool(kSkipZeroClickKey);
   auto* serialized_form_data = serialized_data.FindDict(kFormDataKey);
-  if (!skip_zero_click.has_value() || !serialized_form_data)
+  if (!skip_zero_click.has_value() || !serialized_form_data) {
     return;
+  }
   FormData form_data;
-  if (!DeserializeFormData(*serialized_form_data, form_data))
+  if (!DeserializeFormData(*serialized_form_data, form_data)) {
     return;
+  }
   password_form.skip_zero_click = *skip_zero_click;
   password_form.form_data = std::move(form_data);
 }

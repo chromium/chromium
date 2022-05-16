@@ -125,8 +125,9 @@ SyncAppHelper* SyncAppHelper::GetInstance() {
 }
 
 void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
-  if (setup_completed_)
+  if (setup_completed_) {
     return;
+  }
 
   for (int i = 0; i < test->num_clients(); ++i) {
     extensions::ExtensionSystem::Get(test->GetProfile(i))
@@ -142,8 +143,9 @@ void SyncAppHelper::SetupIfNecessary(SyncTest* test) {
 
 bool SyncAppHelper::AppStatesMatch(Profile* profile1, Profile* profile2) {
   if (!SyncExtensionHelper::GetInstance()->ExtensionStatesMatch(profile1,
-                                                                profile2))
+                                                                profile2)) {
     return false;
+  }
 
   const AppStateMap& state_map1 = GetAppStates(profile1);
   const AppStateMap& state_map2 = GetAppStates(profile2);

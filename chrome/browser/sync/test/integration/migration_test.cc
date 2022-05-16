@@ -81,8 +81,9 @@ class MigrationTest : public SyncTest {
   // helps ensure that all migration events are captured, even if they were to
   // occur before a test calls AwaitMigration for a specific profile.
   bool SetupSync() override {
-    if (!SyncTest::SetupSync())
+    if (!SyncTest::SetupSync()) {
       return false;
+    }
 
     for (int i = 0; i < num_clients(); ++i) {
       migration_watchers_.push_back(

@@ -583,8 +583,9 @@ SyncedBookmarkTracker::ReorderUnsyncedEntitiesExceptDeletions(
   // Remove those who are direct children of another node.
   for (const SyncedBookmarkTrackerEntity* entity : entities) {
     const bookmarks::BookmarkNode* node = entity->bookmark_node();
-    for (const auto& child : node->children())
+    for (const auto& child : node->children()) {
       nodes.erase(child.get());
+    }
   }
   // |nodes| contains only roots of all trees in the forest all of which are
   // ready to be processed because their parents have no pending updates.

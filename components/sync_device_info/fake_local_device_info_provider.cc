@@ -49,8 +49,9 @@ FakeLocalDeviceInfoProvider::RegisterOnInitializedCallback(
 void FakeLocalDeviceInfoProvider::SetReady(bool ready) {
   bool got_ready = !ready_ && ready;
   ready_ = ready;
-  if (got_ready)
+  if (got_ready) {
     closure_list_.Notify();
+  }
 }
 
 DeviceInfo* FakeLocalDeviceInfoProvider::GetMutableDeviceInfo() {

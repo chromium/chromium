@@ -66,14 +66,16 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   ::testing::AssertionResult CheckClientsEqual() {
     history::URLRows urls = GetTypedUrlsFromClient(0);
     history::URLRows urls2 = GetTypedUrlsFromClient(1);
-    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2))
+    if (!CheckURLRowVectorsAreEqualForTypedURLs(urls, urls2)) {
       return ::testing::AssertionFailure() << "URLVectors are not equal";
+    }
     // Now check the visits.
     for (size_t i = 0; i < urls.size() && i < urls2.size(); i++) {
       history::VisitVector visit1 = GetVisitsFromClient(0, urls[i].id());
       history::VisitVector visit2 = GetVisitsFromClient(1, urls2[i].id());
-      if (!AreVisitsEqual(visit1, visit2))
+      if (!AreVisitsEqual(visit1, visit2)) {
         return ::testing::AssertionFailure() << "Visits are not equal";
+      }
     }
     return ::testing::AssertionSuccess();
   }
@@ -83,8 +85,9 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
       history::URLRows urls = GetTypedUrlsFromClient(i);
       for (const history::URLRow& url : urls) {
         history::VisitVector visits = GetVisitsFromClient(i, url.id());
-        if (!AreVisitsUnique(visits))
+        if (!AreVisitsUnique(visits)) {
           return false;
+        }
       }
     }
     return true;
@@ -92,10 +95,11 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
 
   int GetVisitCountForFirstURL(int index) {
     history::URLRows urls = GetTypedUrlsFromClient(index);
-    if (urls.empty())
+    if (urls.empty()) {
       return 0;
-    else
+    } else {
       return urls[0].visit_count();
+    }
   }
 };
 

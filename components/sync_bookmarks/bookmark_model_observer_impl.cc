@@ -156,8 +156,9 @@ void BookmarkModelObserverImpl::OnWillRemoveAllUserBookmarks(
   const bookmarks::BookmarkNode* root_node = model->root_node();
   for (const auto& permanent_node : root_node->children()) {
     for (const auto& child : permanent_node->children()) {
-      if (model->client()->CanSyncNode(child.get()))
+      if (model->client()->CanSyncNode(child.get())) {
         ProcessDelete(permanent_node.get(), child.get());
+      }
     }
   }
   nudge_for_commit_closure_.Run();
@@ -395,8 +396,9 @@ void BookmarkModelObserverImpl::ProcessDelete(
     const bookmarks::BookmarkNode* parent,
     const bookmarks::BookmarkNode* node) {
   // If not a leaf node, process all children first.
-  for (const auto& child : node->children())
+  for (const auto& child : node->children()) {
     ProcessDelete(node, child.get());
+  }
   // Process the current node.
   const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);

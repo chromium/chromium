@@ -199,8 +199,9 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     std::unique_ptr<web_app::WebAppTestInstallObserver> install_observer =
         SetupSyncInstallObserverForProfile(profile);
     // This actually waits for all observed apps to be installed.
-    if (install_observer)
+    if (install_observer) {
       install_observer->Wait();
+    }
 
     std::unique_ptr<web_app::WebAppTestUninstallObserver> uninstall_observer =
         SetupSyncUninstallObserverForProfile(profile);

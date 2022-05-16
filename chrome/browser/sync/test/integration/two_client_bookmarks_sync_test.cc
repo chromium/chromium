@@ -1366,10 +1366,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistBMs10LevelUp) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 0)
+    if (level == 0) {
       folder_L0 = folder;
-    if (level == 10)
+    }
+    if (level == 10) {
       folder_L10 = folder;
+    }
   }
 
   std::vector<BookmarkNodeMatcher>& matchers_L11 = matchers_by_level[11];
@@ -1460,10 +1462,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_SinkBMs10LevelDown) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 0)
+    if (level == 0) {
       folder_L0 = folder;
-    if (level == 10)
+    }
+    if (level == 10) {
       folder_L10 = folder;
+    }
   }
 
   std::vector<BookmarkNodeMatcher>& matchers_L01 = matchers_by_level[1];
@@ -1554,8 +1558,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5)
+    if (level == 5) {
       folder_L5 = folder;
+    }
   }
 
   // Add all folders to matchers from all levels.
@@ -1626,8 +1631,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5)
+    if (level == 5) {
       folder_L5 = folder;
+    }
   }
 
   // Add all folders to matchers from all levels.
@@ -1704,8 +1710,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, SC_HoistFolder5LevelsUp) {
     const std::string title = IndexedFolderName(level);
     folder = AddFolder(0, folder, folder->children().size(), title);
     ASSERT_NE(nullptr, folder);
-    if (level == 5)
+    if (level == 5) {
       folder_L5 = folder;
+    }
   }
 
   folder =

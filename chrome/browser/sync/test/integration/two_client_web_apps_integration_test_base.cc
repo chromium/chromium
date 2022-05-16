@@ -56,8 +56,9 @@ void TwoClientWebAppsIntegrationTestBase::AwaitWebAppQuiescence() {
     is_sync_on = is_sync_on && client->service()->IsSyncFeatureActive();
   }
   // If sync is off, then `AwaitQuiescence()` will crash.
-  if (is_sync_on)
+  if (is_sync_on) {
     ASSERT_TRUE(AwaitQuiescence());
+  }
   apps_helper::AwaitWebAppQuiescence(GetAllProfiles());
 }
 
@@ -73,8 +74,9 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
 }
 
 bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
-  if (!SyncTest::SetupClients())
+  if (!SyncTest::SetupClients()) {
     return false;
+  }
 
   for (Profile* profile : GetAllProfiles()) {
     auto* web_app_provider = WebAppProvider::GetForTest(profile);

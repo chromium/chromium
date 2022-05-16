@@ -51,8 +51,9 @@ void MigrationWatcher::OnMigrationStateChange() {
   }
 
   // Manually trigger a check of the exit condition.
-  if (migration_waiter_)
+  if (migration_waiter_) {
     migration_waiter_->OnMigrationStateChange();
+  }
 }
 
 void MigrationWatcher::set_migration_waiter(MigrationWaiter* waiter) {

@@ -31,8 +31,9 @@ std::string RandASCIIString(size_t length) {
   std::string result;
   const int kMin = static_cast<int>(' ');
   const int kMax = static_cast<int>('~');
-  for (size_t i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+  }
   return result;
 }
 
@@ -52,10 +53,12 @@ bool TimeRangeLessThan(const syncer::SyncData& data1,
       data1.GetSpecifics().history_delete_directive().time_range_directive();
   const sync_pb::TimeRangeDirective& range2 =
       data2.GetSpecifics().history_delete_directive().time_range_directive();
-  if (range1.start_time_usec() < range2.start_time_usec())
+  if (range1.start_time_usec() < range2.start_time_usec()) {
     return true;
-  if (range1.start_time_usec() > range2.start_time_usec())
+  }
+  if (range1.start_time_usec() > range2.start_time_usec()) {
     return false;
+  }
   return range1.end_time_usec() < range2.end_time_usec();
 }
 
@@ -91,8 +94,9 @@ void CheckDeleteDirectiveValid(
     DCHECK(!delete_directive.has_time_range_directive());
     DCHECK(!delete_directive.has_url_directive());
     DCHECK_NE(global_id_directive.global_id_size(), 0);
-    if (global_id_directive.has_start_time_usec())
+    if (global_id_directive.has_start_time_usec()) {
       DCHECK_GE(global_id_directive.start_time_usec(), 0);
+    }
     if (global_id_directive.has_end_time_usec()) {
       DCHECK_GT(global_id_directive.end_time_usec(), 0);
 
@@ -211,8 +215,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     ProcessGlobalIdDeleteDirectives(
         HistoryBackend* history_backend,
         const syncer::SyncDataList& global_id_directives) {
-  if (global_id_directives.empty())
+  if (global_id_directives.empty()) {
     return;
+  }
 
   // Group times represented by global IDs by time ranges of delete directives.
   // It's more efficient for backend to process all directives with same time
@@ -241,8 +246,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
                               UnixUsecToTime(id_directive.end_time_usec()))]);
   }
 
-  if (id_times_group.empty())
+  if (id_times_group.empty()) {
     return;
+  }
 
   // Call backend to expire history of directives in each group.
   for (const auto& [begin_and_end_times, times] : id_times_group) {
@@ -258,8 +264,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     ProcessTimeRangeDeleteDirectives(
         HistoryBackend* history_backend,
         const syncer::SyncDataList& time_range_directives) {
-  if (time_range_directives.empty())
+  if (time_range_directives.empty()) {
     return;
+  }
 
   // Iterate through time range directives. Expire history in combined
   // time range for multiple directives whose time ranges overlap.
@@ -296,8 +303,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
       }
       current_start_time = directive_start_time;
     }
-    if (directive_end_time > current_end_time)
+    if (directive_end_time > current_end_time) {
       current_end_time = directive_end_time;
+    }
   }
 
   if (!current_start_time.is_null()) {
@@ -320,16 +328,19 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::ProcessUrlDeleteDirectives(
     const sync_pb::UrlDirective& url_directive =
         delete_directive.url_directive();
 
-    if (!url_directive.has_url() || !url_directive.has_end_time_usec())
+    if (!url_directive.has_url() || !url_directive.has_end_time_usec()) {
       continue;
+    }
 
     GURL url(url_directive.url());
     base::Time end_time = UnixUsecToTime(url_directive.end_time_usec());
-    if (url.is_valid())
+    if (url.is_valid()) {
       deletions.emplace_back(url, end_time);
+    }
   }
-  if (!deletions.empty())
+  if (!deletions.empty()) {
     history_backend->DeleteURLsUntil(deletions);
+  }
 }
 
 DeleteDirectiveHandler::DeleteDirectiveHandler(
@@ -340,8 +351,9 @@ DeleteDirectiveHandler::~DeleteDirectiveHandler() = default;
 
 void DeleteDirectiveHandler::OnBackendLoaded() {
   backend_loaded_ = true;
-  if (wait_until_ready_to_sync_cb_)
+  if (wait_until_ready_to_sync_cb_) {
     std::move(wait_until_ready_to_sync_cb_).Run();
+  }
 }
 
 bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(

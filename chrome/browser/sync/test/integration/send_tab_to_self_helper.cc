@@ -216,8 +216,9 @@ bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
   const std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type =
       tracker_->CountActiveDevicesByType();
   int total = 0;
-  for (const auto& [type, count] : device_count_by_type)
+  for (const auto& [type, count] : device_count_by_type) {
     total += count;
+  }
   return total > 1;
 }
 

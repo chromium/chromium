@@ -23,8 +23,9 @@ BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   // Add all the browser windows.
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_)
+    if (browser->profile() != profile_) {
       continue;
+    }
     synced_window_delegates[browser->synced_window_delegate()->GetSessionId()] =
         browser->synced_window_delegate();
   }

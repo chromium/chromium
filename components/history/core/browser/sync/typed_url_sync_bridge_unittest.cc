@@ -1281,12 +1281,15 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   // Add `kMaxTypedUrlVisits` + 10 visits to the url. The 10 oldest
   // non-typed visits are expected to be skipped.
   int i = 1;
-  for (; i <= kMaxTypedUrlVisits - 20; ++i)
+  for (; i <= kMaxTypedUrlVisits - 20; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
-  for (; i <= kMaxTypedUrlVisits; ++i)
+  }
+  for (; i <= kMaxTypedUrlVisits; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_LINK, i, &url_row, &visits);
-  for (; i <= kMaxTypedUrlVisits + 10; ++i)
+  }
+  for (; i <= kMaxTypedUrlVisits + 10; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
 
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
@@ -1339,8 +1342,9 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
   // Add enough visits to the url so that typed count is above the throttle
   // limit, and not right on the interval that gets synced.
   int i = 1;
-  for (; i < kVisitThrottleThreshold + kVisitThrottleMultiple / 2; ++i)
+  for (; i < kVisitThrottleThreshold + kVisitThrottleMultiple / 2; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
   // Notify typed url sync service of typed visit.
@@ -1349,8 +1353,9 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
                          RedirectList(), Time());
 
   visits.clear();
-  for (; i % kVisitThrottleMultiple != 1; ++i)
+  for (; i % kVisitThrottleMultiple != 1; ++i) {
     AddNewestVisit(ui::PAGE_TRANSITION_TYPED, i, &url_row, &visits);
+  }
   --i;  // Account for the increment before the condition ends.
   fake_history_backend_->SetVisitsForUrl(&url_row, visits);
 
