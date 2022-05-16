@@ -6882,11 +6882,6 @@ crbug.com/1322405 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/gener
 crbug.com/1322072 external/wpt/fetch/content-type/script.window.html [ Failure Pass ]
 crbug.com/1286883 [ Mac ] fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob.html [ Failure Pass ]
 
-# Sheriff 2022-05-09
-crbug.com/1323626 [ Mac11-arm64 ] compositing/lots-of-img-layers.html [ Failure Pass ]
-crbug.com/1323626 [ Mac11-arm64 ] compositing/lots-of-img-layers-with-opacity.html [ Failure Pass ]
-crbug.com/1323627 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-svg-foreign-object.html [ Failure Pass ]
-
 # Sheriff 2022-05-11
 crbug.com/1324428 fast/webgl/canvas-toDataURL-crash.html [ Crash Pass ]
 
