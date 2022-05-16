@@ -117,11 +117,16 @@ button:active {
 .model-info-div,
 .hosts-classification-input-area-div,
 .hosts-classification-result-div,
+.hosts-classification-input-validation-error-div,
 .features-and-parameters-div,
 .classification-input-div {
   font-size: 1rem;
   line-height: 1.5;
   padding: 10px;
+}
+
+.hosts-classification-input-validation-error-div {
+  color: red;
 }
 
 .hosts-classification-input-area-div {
