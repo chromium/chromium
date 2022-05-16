@@ -91979,6 +91979,12 @@ would be helpful to identify which type is being sent.
   <int value="3" label="Token was cleared"/>
 </enum>
 
+<enum name="ToolbarCaptureType">
+  <int value="0" label="unknown"/>
+  <int value="1" label="top"/>
+  <int value="2" label="bottom"/>
+</enum>
+
 <enum name="TouchActions">
   <int value="0" label="NONE"/>
   <int value="1" label="PAN_LEFT"/>

@@ -3461,6 +3461,18 @@ chromium-metrics-reviews@google.com.
       variants="ThumbnailProvider_ClientType"/>
 </histogram>
 
+<histogram name="Android.Toolbar.BitmapCapture" units="ToolbarCaptureType"
+    expires_after="2023-05-11">
+  <owner>skym@chromium.org</owner>
+  <owner>seacow@google.com</owner>
+  <summary>
+    Recorded when a toolbar view draws itself to a bitmap such that it can be
+    passed to the compositor and drawn by native. Performing a bitmap capture is
+    somewhat expensive opperation that must be done on the UI thread. It is
+    possible that high capture counts are correlated with scroll jank.
+  </summary>
+</histogram>
+
 <histogram name="Android.View.onDraw.30Seconds" units="count"
     expires_after="2022-10-30">
   <owner>nuskos@chromium.org</owner>

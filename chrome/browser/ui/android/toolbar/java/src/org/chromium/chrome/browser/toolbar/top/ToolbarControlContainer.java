@@ -19,10 +19,12 @@ import android.view.ViewStub;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -225,6 +227,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         protected void onCaptureStart(Canvas canvas, Rect dirtyRect) {
+            RecordHistogram.recordEnumeratedHistogram("Android.Toolbar.BitmapCapture",
+                    ToolbarCaptureType.TOP, ToolbarCaptureType.NUM_ENTRIES);
+
             // Erase the canvas because assets drawn are not fully opaque and therefore painting
             // twice would be bad.
             canvas.save();
