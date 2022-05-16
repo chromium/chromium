@@ -4846,6 +4846,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
+      affected_by_all: false,
     },
     {
       name: "-webkit-border-vertical-spacing",
@@ -5217,6 +5218,7 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
     },
     {
       name: "-webkit-perspective-origin-y",
@@ -5224,6 +5226,7 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
     },
     {
       name: "-webkit-print-color-adjust",
@@ -5376,6 +5379,7 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
     },
     {
       name: "-webkit-transform-origin-y",
@@ -5383,6 +5387,7 @@
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
+      affected_by_all: false,
     },
     {
       name: "-webkit-transform-origin-z",
@@ -5390,6 +5395,7 @@
       interpolable: true,
       converter: "ConvertComputedLength<float>",
       computable: false,
+      affected_by_all: false,
     },
     {
       name: "-webkit-user-drag",
