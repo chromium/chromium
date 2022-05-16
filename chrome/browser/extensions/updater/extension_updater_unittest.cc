@@ -2361,7 +2361,7 @@ class ExtensionUpdaterTest : public testing::Test {
     std::unique_ptr<ManifestFetchData> fetch_other(
         CreateManifestFetchData(GURL("http://localhost/foo"), other_priority));
 
-    fetch_data->Merge(*fetch_other);
+    fetch_data->Merge(std::move(fetch_other));
     ASSERT_EQ(expected_priority, fetch_data->fetch_priority());
   }
 

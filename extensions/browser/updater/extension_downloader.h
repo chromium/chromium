@@ -353,6 +353,12 @@ class ExtensionDownloader {
   // attempt to download.
   void NotifyUpdateFound(const std::string& id, const std::string& version);
 
+  // Helper method to populate lists of manifest fetch requests.
+  void AddToFetches(std::map<FetchDataGroupKey,
+                             std::vector<std::unique_ptr<ManifestFetchData>>>&
+                        fetches_preparing,
+                    ExtensionDownloaderTask task);
+
   // Do real work of StartAllPending. If .crx cache is used, this function
   // is called when cache is ready.
   void DoStartAllPending();

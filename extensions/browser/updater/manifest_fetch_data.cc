@@ -4,6 +4,7 @@
 
 #include "extensions/browser/updater/manifest_fetch_data.h"
 
+#include <iterator>
 #include <vector>
 
 #include "base/check.h"
@@ -105,8 +106,7 @@ ManifestFetchData::ManifestFetchData(const GURL& update_url,
       full_url_(update_url),
       brand_code_(brand_code),
       ping_mode_(ping_mode),
-      fetch_priority_(fetch_priority),
-      is_all_external_policy_download_(false) {
+      fetch_priority_(fetch_priority) {
   UpdateFullUrl(base_query_params);
   request_ids_.insert(request_id);
 }
@@ -220,6 +220,10 @@ bool ManifestFetchData::AddExtension(const std::string& id,
   return true;
 }
 
+void ManifestFetchData::AddAssociatedTask(ExtensionDownloaderTask task) {
+  associated_tasks_.emplace_back(std::move(task));
+}
+
 void ManifestFetchData::UpdateFullUrl(const std::string& base_query_params) {
   std::string query =
       full_url_.has_query() ? full_url_.query() + "&" : std::string();
@@ -278,16 +282,23 @@ bool ManifestFetchData::DidPing(const std::string& extension_id,
   return value == kNeverPinged || value > 0;
 }
 
-void ManifestFetchData::Merge(const ManifestFetchData& other) {
-  DCHECK(full_url() == other.full_url());
+void ManifestFetchData::Merge(std::unique_ptr<ManifestFetchData> other) {
+  DCHECK(full_url() == other->full_url());
   if (fetch_priority_ != DownloadFetchPriority::kForeground) {
-    fetch_priority_ = other.fetch_priority_;
+    fetch_priority_ = other->fetch_priority_;
   }
-  request_ids_.insert(other.request_ids_.begin(), other.request_ids_.end());
+  request_ids_.insert(other->request_ids_.begin(), other->request_ids_.end());
+  associated_tasks_.insert(
+      associated_tasks_.end(),
+      std::make_move_iterator(other->associated_tasks_.begin()),
+      std::make_move_iterator(other->associated_tasks_.end()));
 }
 
 void ManifestFetchData::set_is_all_external_policy_download() {
   is_all_external_policy_download_ = true;
 }
 
+std::vector<ExtensionDownloaderTask> ManifestFetchData::TakeAssociatedTasks() {
+  return std::move(associated_tasks_);
+}
 }  // namespace extensions

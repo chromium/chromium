@@ -8,8 +8,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/version.h"
+#include "extensions/browser/updater/extension_downloader_task.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -76,6 +78,10 @@ class ManifestFetchData {
                     mojom::ManifestLocation install_location,
                     DownloadFetchPriority fetch_priority);
 
+  // Stores a task in list of associated tasks, call this after successful
+  // AddExtension.
+  void AddAssociatedTask(ExtensionDownloaderTask task);
+
   const GURL& base_url() const { return base_url_; }
   const GURL& full_url() const { return full_url_; }
   ExtensionIdSet GetExtensionIds() const;
@@ -104,10 +110,19 @@ class ManifestFetchData {
   // full_url, this method merges the other information associated with the
   // fetch (in particular this adds all request ids associated with |other|
   // to this ManifestFetchData).
-  void Merge(const ManifestFetchData& other);
+  void Merge(std::unique_ptr<ManifestFetchData> other);
 
   // Assigns true if all the extensions are force installed.
   void set_is_all_external_policy_download();
+
+  // Returns list of associated tasks, added previously by `AddAssociatedTask`.
+  const std::vector<ExtensionDownloaderTask>& GetAssociatedTasks() const {
+    return associated_tasks_;
+  }
+
+  // Returns list of associated tasks. Note that the list will be moved from
+  // ManifestFetchData.
+  std::vector<ExtensionDownloaderTask> TakeAssociatedTasks();
 
  private:
   // Contains supplementary data needed to construct update manifest fetch
@@ -167,7 +182,10 @@ class ManifestFetchData {
 
   // The flag is set to true if all the extensions are force installed
   // extensions.
-  bool is_all_external_policy_download_;
+  bool is_all_external_policy_download_{false};
+
+  // List of associated tasks for ExtensionDownloader.
+  std::vector<ExtensionDownloaderTask> associated_tasks_;
 };
 
 }  // namespace extensions
