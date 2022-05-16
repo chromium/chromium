@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
@@ -21,58 +20,38 @@
 namespace blink {
 
 namespace {
+WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
+  DCHECK_NE(nullptr, descriptor);
 
-GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
-                                         WGPUAdapter adapter) {
-  GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
-  DCHECK(features->FeatureNameSet().IsEmpty());
+  auto&& feature_names = descriptor->requiredFeatures();
 
-  size_t feature_count = procs.adapterEnumerateFeatures(adapter, nullptr);
-  DCHECK(feature_count <= std::numeric_limits<wtf_size_t>::max());
+  HashSet<String> feature_set;
+  for (auto& feature : feature_names)
+    feature_set.insert(feature);
 
-  Vector<WGPUFeatureName> feature_names(static_cast<wtf_size_t>(feature_count));
-  procs.adapterEnumerateFeatures(adapter, feature_names.data());
+  WGPUDeviceProperties requested_device_properties = {};
+  // TODO(crbug.com/1048603): We should validate that the feature_set is a
+  // subset of the adapter's feature set.
+  requested_device_properties.textureCompressionBC =
+      feature_set.Contains("texture-compression-bc");
+  requested_device_properties.textureCompressionETC2 =
+      feature_set.Contains("texture-compression-etc2");
+  requested_device_properties.textureCompressionASTC =
+      feature_set.Contains("texture-compression-astc");
+  requested_device_properties.shaderFloat16 =
+      feature_set.Contains("shader-float16");
+  requested_device_properties.pipelineStatisticsQuery =
+      feature_set.Contains("pipeline-statistics-query");
+  requested_device_properties.timestampQuery =
+      feature_set.Contains("timestamp-query");
+  requested_device_properties.depthClamping =
+      feature_set.Contains("depth-clamping");
+  requested_device_properties.depth24UnormStencil8 =
+      feature_set.Contains("depth24unorm-stencil8");
+  requested_device_properties.depth32FloatStencil8 =
+      feature_set.Contains("depth32float-stencil8");
 
-  for (WGPUFeatureName f : feature_names) {
-    switch (f) {
-      case WGPUFeatureName_Depth24UnormStencil8:
-        features->AddFeatureName("depth24unorm-stencil8");
-        break;
-      case WGPUFeatureName_Depth32FloatStencil8:
-        features->AddFeatureName("depth32float-stencil8");
-        break;
-      case WGPUFeatureName_TimestampQuery:
-        features->AddFeatureName("timestamp-query");
-        break;
-      case WGPUFeatureName_PipelineStatisticsQuery:
-        features->AddFeatureName("pipeline-statistics-query");
-        break;
-      case WGPUFeatureName_TextureCompressionBC:
-        features->AddFeatureName("texture-compression-bc");
-        break;
-      case WGPUFeatureName_TextureCompressionETC2:
-        features->AddFeatureName("texture-compression-etc2");
-        break;
-      case WGPUFeatureName_TextureCompressionASTC:
-        features->AddFeatureName("texture-compression-astc");
-        break;
-      case WGPUFeatureName_IndirectFirstInstance:
-        features->AddFeatureName("indirect-first-instance");
-        break;
-      case WGPUFeatureName_DepthClamping:
-        features->AddFeatureName("depth-clamping");
-        break;
-      case WGPUFeatureName_DawnShaderFloat16:
-        features->AddFeatureName("shader-float16");
-        break;
-      case WGPUFeatureName_DawnMultiPlanarFormats:
-        features->AddFeatureName("multi-planar-formats");
-        break;
-      default:
-        break;
-    }
-  }
-  return features;
+  return requested_device_properties;
 }
 
 }  // anonymous namespace
@@ -80,21 +59,16 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
 GPUAdapter::GPUAdapter(
     GPU* gpu,
     const String& name,
-    WGPUAdapter handle,
+    uint32_t adapter_service_id,
+    const WGPUDeviceProperties& properties,
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
     : DawnObjectBase(dawn_control_client),
       name_(name),
-      handle_(handle),
-      gpu_(gpu) {
-  WGPUAdapterProperties properties = {};
-  GetProcs().adapterGetProperties(handle_, &properties);
-  is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
-
-  WGPUSupportedLimits limits = {};
-  GetProcs().adapterGetLimits(handle_, &limits);
-  limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
-
-  features_ = MakeFeatureNameSet(GetProcs(), handle_);
+      adapter_service_id_(adapter_service_id),
+      adapter_properties_(properties),
+      gpu_(gpu),
+      limits_(MakeGarbageCollected<GPUSupportedLimits>(properties.limits)) {
+  InitializeFeatureNameList();
 }
 
 void GPUAdapter::AddConsoleWarning(ExecutionContext* execution_context,
@@ -126,40 +100,62 @@ GPUSupportedFeatures* GPUAdapter::features() const {
 }
 
 bool GPUAdapter::isFallbackAdapter() const {
-  return is_fallback_adapter_;
+  return adapter_properties_.adapterType == WGPUAdapterType_CPU;
 }
 
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
-                                         WGPURequestDeviceStatus status,
                                          WGPUDevice dawn_device,
+                                         const WGPUSupportedLimits* limits,
                                          const char* error_message) {
-  switch (status) {
-    case WGPURequestDeviceStatus_Success: {
-      DCHECK(dawn_device);
-      ExecutionContext* execution_context =
-          ExecutionContext::From(script_state);
+  if (dawn_device) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    auto* device = MakeGarbageCollected<GPUDevice>(
+        execution_context, GetDawnControlClient(), this, dawn_device, limits,
+        descriptor);
+    resolver->Resolve(device);
+    ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
+        .SetGPUDevice(static_cast<int>(true))
+        .Record(execution_context->UkmRecorder());
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, error_message));
+  }
+}
 
-      auto* device = MakeGarbageCollected<GPUDevice>(
-          execution_context, GetDawnControlClient(), this, dawn_device,
-          descriptor);
-      resolver->Resolve(device);
-
-      ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
-          .SetGPUDevice(static_cast<int>(true))
-          .Record(execution_context->UkmRecorder());
-      break;
-    }
-
-    case WGPURequestDeviceStatus_Error:
-    case WGPURequestDeviceStatus_Unknown:
-      DCHECK_EQ(dawn_device, nullptr);
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, error_message));
-      break;
-    default:
-      NOTREACHED();
+void GPUAdapter::InitializeFeatureNameList() {
+  features_ = MakeGarbageCollected<GPUSupportedFeatures>();
+  DCHECK(features_->FeatureNameSet().IsEmpty());
+  if (adapter_properties_.textureCompressionBC) {
+    features_->AddFeatureName("texture-compression-bc");
+  }
+  if (adapter_properties_.textureCompressionETC2) {
+    features_->AddFeatureName("texture-compression-etc2");
+  }
+  if (adapter_properties_.textureCompressionASTC) {
+    features_->AddFeatureName("texture-compression-astc");
+  }
+  if (adapter_properties_.shaderFloat16) {
+    features_->AddFeatureName("shader-float16");
+  }
+  if (adapter_properties_.pipelineStatisticsQuery) {
+    features_->AddFeatureName("pipeline-statistics-query");
+  }
+  if (adapter_properties_.timestampQuery) {
+    features_->AddFeatureName("timestamp-query");
+  }
+  if (adapter_properties_.depthClamping) {
+    features_->AddFeatureName("depth-clamping");
+  }
+  if (adapter_properties_.depth24UnormStencil8) {
+    features_->AddFeatureName("depth24unorm-stencil8");
+  }
+  if (adapter_properties_.depth32FloatStencil8) {
+    features_->AddFeatureName("depth32float-stencil8");
+  }
+  if (adapter_properties_.multiPlanarFormats) {
+    features_->AddFeatureName("multi-planar-formats");
   }
 }
 
@@ -168,43 +164,27 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  WGPUDeviceDescriptor dawn_desc = {};
-
-  WGPURequiredLimits required_limits = {};
+  WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
+  GPUSupportedLimits::MakeUndefined(&requested_device_properties.limits);
   if (descriptor->hasRequiredLimits()) {
-    dawn_desc.requiredLimits = &required_limits;
-    GPUSupportedLimits::MakeUndefined(&required_limits);
     DOMException* exception = GPUSupportedLimits::Populate(
-        &required_limits, descriptor->requiredLimits());
+        &requested_device_properties.limits, descriptor->requiredLimits());
     if (exception) {
       resolver->Reject(exception);
       return promise;
     }
   }
 
-  Vector<WGPUFeatureName> required_features;
-  if (descriptor->hasRequiredFeatures()) {
-    // Insert features into a set to dedup them.
-    HashSet<WGPUFeatureName> required_features_set;
-    for (const V8GPUFeatureName& f : descriptor->requiredFeatures()) {
-      required_features_set.insert(AsDawnEnum(f));
-    }
-
-    // Then, push the deduped features into a vector.
-    required_features.AppendRange(required_features_set.begin(),
-                                  required_features_set.end());
-    dawn_desc.requiredFeatures = required_features.data();
-    dawn_desc.requiredFeaturesCount = required_features.size();
+  if (auto context_provider = GetContextProviderWeakPtr()) {
+    context_provider->ContextProvider()->WebGPUInterface()->RequestDeviceAsync(
+        adapter_service_id_, requested_device_properties,
+        WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
+                  WrapPersistent(script_state), WrapPersistent(resolver),
+                  WrapPersistent(descriptor)));
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, "WebGPU context lost"));
   }
-
-  auto* callback = BindWGPUOnceCallback(
-      &GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-      WrapPersistent(script_state), WrapPersistent(resolver),
-      WrapPersistent(descriptor));
-
-  GetProcs().adapterRequestDevice(
-      handle_, &dawn_desc, callback->UnboundCallback(), callback->AsUserdata());
-  EnsureFlush();
 
   return promise;
 }

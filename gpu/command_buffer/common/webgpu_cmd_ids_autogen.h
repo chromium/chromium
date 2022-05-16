@@ -15,7 +15,9 @@
   OP(DawnCommands)                /* 256 */ \
   OP(AssociateMailboxImmediate)   /* 257 */ \
   OP(DissociateMailbox)           /* 258 */ \
-  OP(DissociateMailboxForPresent) /* 259 */
+  OP(DissociateMailboxForPresent) /* 259 */ \
+  OP(RequestAdapter)              /* 260 */ \
+  OP(RequestDevice)               /* 261 */
 
 enum CommandId {
   kOneBeforeStartPoint =

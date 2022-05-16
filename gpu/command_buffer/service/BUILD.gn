@@ -103,7 +103,6 @@ target(link_target_type, "gles2_sources") {
   # break.
   visibility = [ "//gpu/*" ]
 
-  deps = []
   sources = [
     "abstract_texture.h",
     "abstract_texture_impl.cc",
@@ -282,7 +281,6 @@ target(link_target_type, "gles2_sources") {
   ]
 
   if (use_dawn) {
-    deps += [ "//gpu/webgpu:common" ]
     sources += [
       "dawn_instance.cc",
       "dawn_instance.h",
@@ -318,7 +316,7 @@ target(link_target_type, "gles2_sources") {
     "//skia",
     "//third_party/dawn/include/dawn:headers",
   ]
-  deps += [
+  deps = [
     ":disk_cache_proto",
     ":service",
     "//base",

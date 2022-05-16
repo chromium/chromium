@@ -72,8 +72,11 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
-  wgpu::Instance instance_ = nullptr;
-  wgpu::Adapter adapter_ = nullptr;
+  int32_t GetAdapterId() const { return adapter_id_; }
+
+  const WGPUDeviceProperties& GetDeviceProperties() const {
+    return device_properties_;
+  }
 
  private:
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
@@ -83,6 +86,9 @@ class WebGPUTest : public testing::Test {
   // SharedImages on macOS require a valid image factory.
   GpuMemoryBufferFactoryIOSurface image_factory_;
 #endif
+  // The ID is the index, so anything less than 0 is invalid.
+  int32_t adapter_id_ = -2;
+  WGPUDeviceProperties device_properties_;
 };
 
 }  // namespace gpu

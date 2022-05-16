@@ -9,7 +9,6 @@ class String;
 
 namespace blink {
 
-class V8GPUFeatureName;
 class V8GPUIndexFormat;
 class V8GPUPredefinedColorSpace;
 
@@ -25,7 +24,6 @@ DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
 WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
 WGPUPredefinedColorSpace AsDawnEnum(
     const V8GPUPredefinedColorSpace& webgpu_enum);
-WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum);
 
 }  // namespace blink
 

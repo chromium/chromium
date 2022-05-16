@@ -20,8 +20,6 @@
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/ipc/webgpu_in_process_context.h"
-#include "gpu/webgpu/callback.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -74,9 +72,7 @@ void WebGPUTest::SetUp() {
 }
 
 void WebGPUTest::TearDown() {
-  adapter_ = nullptr;
-  instance_ = nullptr;
-  context_ = nullptr;
+  context_.reset();
 }
 
 void WebGPUTest::Initialize(const Options& options) {
@@ -122,35 +118,30 @@ void WebGPUTest::Initialize(const Options& options) {
   cmd_helper_ = std::make_unique<webgpu::WebGPUCmdHelper>(
       context_->GetCommandBufferForTest());
 
-  DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
-  dawnProcSetProcs(&procs);
-  instance_ = wgpu::Instance(webgpu()->GetAPIChannel()->GetWGPUInstance());
-
-  wgpu::RequestAdapterOptions ra_options = {};
-  ra_options.forceFallbackAdapter = options.force_fallback_adapter;
-
   bool done = false;
-  auto* callback = webgpu::BindWGPUOnceCallback(
-      [](WebGPUTest* test, bool force_fallback_adapter, bool* done,
-         WGPURequestAdapterStatus status, WGPUAdapter adapter,
-         const char* message) {
-        if (!force_fallback_adapter) {
-          // If we don't force a particular adapter, we should always find
-          // one.
-          EXPECT_EQ(status, WGPURequestAdapterStatus_Success);
-          EXPECT_NE(adapter, nullptr);
-        }
-        test->adapter_ = wgpu::Adapter::Acquire(adapter);
-        *done = true;
-      },
-      this, options.force_fallback_adapter, &done);
+  webgpu()->RequestAdapterAsync(
+      webgpu::PowerPreference::kDefault, options.force_fallback_adapter,
+      base::BindOnce(
+          [](WebGPUTest* test, bool force_fallback_adapter, bool* done,
+             int32_t adapter_id, const WGPUDeviceProperties& properties,
+             const char*) {
+            if (!force_fallback_adapter) {
+              // If we don't force a particular adapter, we should always find
+              // one.
+              EXPECT_GE(adapter_id, 0);
+            }
+            test->adapter_id_ = adapter_id;
+            test->device_properties_ = properties;
+            *done = true;
+          },
+          this, options.force_fallback_adapter, &done));
 
-  instance_.RequestAdapter(&ra_options, callback->UnboundCallback(),
-                           callback->AsUserdata());
-  webgpu()->FlushCommands();
   while (!done) {
     RunPendingTasks();
   }
+
+  DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
+  dawnProcSetProcs(&procs);
 }
 
 webgpu::WebGPUImplementation* WebGPUTest::webgpu() const {
@@ -201,29 +192,25 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
 }
 
 wgpu::Device WebGPUTest::GetNewDevice() {
-  wgpu::Device device;
+  WGPUDevice device = nullptr;
+
   bool done = false;
-
-  auto* callback = webgpu::BindWGPUOnceCallback(
-      [](wgpu::Device* device_out, bool* done, WGPURequestDeviceStatus status,
-         WGPUDevice device, const char* message) {
-        *device_out = wgpu::Device::Acquire(device);
-        *done = true;
-      },
-      &device, &done);
-
-  DCHECK(adapter_);
-  wgpu::DeviceDescriptor device_desc = {};
-
-  adapter_.RequestDevice(&device_desc, callback->UnboundCallback(),
-                         callback->AsUserdata());
-  webgpu()->FlushCommands();
+  DCHECK(adapter_id_ >= 0);
+  webgpu()->RequestDeviceAsync(
+      adapter_id_, device_properties_,
+      base::BindOnce(
+          [](WGPUDevice* result, bool* done, WGPUDevice device,
+             const WGPUSupportedLimits*, const char*) {
+            *result = device;
+            *done = true;
+          },
+          &device, &done));
   while (!done) {
     RunPendingTasks();
   }
 
   EXPECT_NE(device, nullptr);
-  return device;
+  return wgpu::Device::Acquire(device);
 }
 
 TEST_F(WebGPUTest, FlushNoCommands) {
@@ -288,16 +275,15 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
   webgpu()->OnGpuControlLostContext();
 
   bool called = false;
-  wgpu::RequestAdapterOptions ra_options = {};
-  instance_.RequestAdapter(
-      &ra_options,
-      [](WGPURequestAdapterStatus status, WGPUAdapter adapter,
-         const char* message, void* userdata) {
-        EXPECT_EQ(adapter, nullptr);
-        *static_cast<bool*>(userdata) = true;
-      },
-      &called);
-  webgpu()->FlushCommands();
+  webgpu()->RequestAdapterAsync(
+      webgpu::PowerPreference::kDefault, false,
+      base::BindOnce(
+          [](bool* called, int32_t adapter_id, const WGPUDeviceProperties&,
+             const char*) {
+            EXPECT_EQ(adapter_id, -1);
+            *called = true;
+          },
+          &called));
   RunPendingTasks();
   EXPECT_TRUE(called);
 }
@@ -313,18 +299,14 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   webgpu()->OnGpuControlLostContext();
 
   bool called = false;
-
-  DCHECK(adapter_);
-  wgpu::DeviceDescriptor device_desc = {};
-  adapter_.RequestDevice(
-      &device_desc,
-      [](WGPURequestDeviceStatus status, WGPUDevice device, const char* message,
-         void* userdata) {
-        EXPECT_EQ(device, nullptr);
-        *static_cast<bool*>(userdata) = true;
-      },
-      &called);
-  webgpu()->FlushCommands();
+  webgpu()->RequestDeviceAsync(GetAdapterId(), GetDeviceProperties(),
+                               base::BindOnce(
+                                   [](bool* called, WGPUDevice device,
+                                      const WGPUSupportedLimits*, const char*) {
+                                     EXPECT_EQ(device, nullptr);
+                                     *called = true;
+                                   },
+                                   &called));
   RunPendingTasks();
   EXPECT_TRUE(called);
 }
@@ -353,27 +335,20 @@ TEST_F(WebGPUTest, RequestDeviceWitUnsupportedFeature) {
 
   // Create device with unsupported features, expect to fail to create and
   // return nullptr
-  wgpu::FeatureName invalid_feature = static_cast<wgpu::FeatureName>(-2);
-
-  wgpu::Device device;
+  WGPUDeviceProperties unsupported_device_properties = {};
+  unsupported_device_properties.invalidFeature = true;
+  WGPUDevice device = nullptr;
   bool done = false;
 
-  auto* callback = webgpu::BindWGPUOnceCallback(
-      [](wgpu::Device* device_out, bool* done, WGPURequestDeviceStatus status,
-         WGPUDevice device, const char* message) {
-        *device_out = wgpu::Device::Acquire(device);
-        *done = true;
-      },
-      &device, &done);
-
-  DCHECK(adapter_);
-  wgpu::DeviceDescriptor device_desc = {};
-  device_desc.requiredFeaturesCount = 1;
-  device_desc.requiredFeatures = &invalid_feature;
-
-  adapter_.RequestDevice(&device_desc, callback->UnboundCallback(),
-                         callback->AsUserdata());
-  webgpu()->FlushCommands();
+  webgpu()->RequestDeviceAsync(
+      GetAdapterId(), unsupported_device_properties,
+      base::BindOnce(
+          [](WGPUDevice* result, bool* done, WGPUDevice device,
+             const WGPUSupportedLimits*, const char*) {
+            *result = device;
+            *done = true;
+          },
+          &device, &done));
 
   while (!done) {
     RunPendingTasks();
@@ -395,7 +370,8 @@ TEST_F(WebGPUTest, SPIRVIsDisallowed) {
                                        void* userdata) {
     // We match on this string to make sure the shader module creation fails
     // because SPIR-V is disallowed and not because codeSize=0.
-    EXPECT_THAT(message, testing::HasSubstr("SPIR-V is disallowed"));
+    EXPECT_NE(std::string(message).find("SPIR-V is disallowed"),
+              std::string::npos);
     EXPECT_EQ(type, WGPUErrorType_Validation);
     *static_cast<bool*>(userdata) = true;
   };
@@ -435,8 +411,8 @@ TEST_F(WebGPUTest, ExplicitFallbackAdapterIsDisallowed) {
   // Initialize attempts to create an adapter.
   Initialize(options);
 
-  // No fallback adapter should be available.
-  EXPECT_EQ(adapter_, nullptr);
+  // The id should be -1 since no fallback adapter is available.
+  EXPECT_EQ(GetAdapterId(), -1);
 }
 
 TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
@@ -450,11 +426,9 @@ TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
   // Initialize attempts to create an adapter.
   Initialize(options);
 
-  if (adapter_) {
-    wgpu::AdapterProperties properties;
-    adapter_.GetProperties(&properties);
+  if (GetAdapterId() != -1) {
     // If we got an Adapter, it must not be a CPU adapter.
-    EXPECT_NE(properties.adapterType, wgpu::AdapterType::CPU);
+    EXPECT_NE(GetDeviceProperties().adapterType, WGPUAdapterType_CPU);
   }
 }
 

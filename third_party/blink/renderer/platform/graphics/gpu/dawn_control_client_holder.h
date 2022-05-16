@@ -47,7 +47,6 @@ class PLATFORM_EXPORT DawnControlClientHolder
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
   const DawnProcTable& GetProcs() const { return procs_; }
-  WGPUInstance GetWGPUInstance() const;
   bool IsContextLost() const;
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
       const SkImageInfo& info,
