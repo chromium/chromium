@@ -62,7 +62,6 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     // https://crbug.com/783819
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public GURL getGurlForUrl(String url) {
-        // TODO(mthiesse): As this is user-provided it should be going through UrlFormatter.fixupUrl
         return new GURL(url);
     }
 
