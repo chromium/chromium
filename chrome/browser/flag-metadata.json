@@ -5412,6 +5412,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "shelf-gestures-with-vk",
+    "owners": ["tbarzic", "//ash/shelf/OWNERS"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "shelf-hide-buttons-in-tablet",
     "owners": [ "tbarzic", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 85

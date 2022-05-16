@@ -2348,6 +2348,12 @@ const char kShelfDragToPinDescription[] =
     "Enables pinning unpinned items in shelf by dragging them to the part of "
     "the shelf that contains pinned apps.";
 
+const char kShelfGesturesWithVirtualKeyboardName[] =
+    "Enable shelf gestures from virtual keyboard";
+const char kShelfGesturesWithVirtualKeyboardDescription[] =
+    "Enables shelf tablet mode gestures to show hotseat, got to home screen, "
+    "or to go to overview while virtual keyboard is visible";
+
 const char kShelfHoverPreviewsName[] =
     "Show previews of running apps when hovering over the shelf.";
 const char kShelfHoverPreviewsDescription[] =

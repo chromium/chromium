@@ -1322,6 +1322,9 @@ extern const char kSharingSendViaSyncDescription[];
 extern const char kShelfDragToPinName[];
 extern const char kShelfDragToPinDescription[];
 
+extern const char kShelfGesturesWithVirtualKeyboardName[];
+extern const char kShelfGesturesWithVirtualKeyboardDescription[];
+
 extern const char kShelfHoverPreviewsName[];
 extern const char kShelfHoverPreviewsDescription[];
 

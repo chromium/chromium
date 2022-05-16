@@ -54671,6 +54671,7 @@ from previous Chrome versions.
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
+  <int value="-1974861173" label="ShelfGesturesWithVirtualKeyboard:enabled"/>
   <int value="-1973722176" label="VoiceSearchOnLocalNtp:enabled"/>
   <int value="-1973559591" label="AppDiscoveryForOobe:enabled"/>
   <int value="-1972383451" label="disable-pinch"/>
@@ -58906,6 +58907,7 @@ from previous Chrome versions.
   <int value="817393533" label="GlobalMediaControlsModernUI:disabled"/>
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
+  <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="826519677" label="TailoredSecurityIntegration:disabled"/>

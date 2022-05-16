@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -404,6 +406,11 @@ aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
 
 void KeyboardControllerImpl::TransferGestureEventToShelf(
     const ui::GestureEvent& e) {
+  if (!base::FeatureList::IsEnabled(
+          features::kShelfGesturesWithVirtualKeyboard)) {
+    return;
+  }
+
   ash::Shelf* shelf =
       ash::Shelf::ForWindow(keyboard_ui_controller_->GetKeyboardWindow());
   if (shelf) {
