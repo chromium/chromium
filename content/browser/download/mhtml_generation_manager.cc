@@ -23,6 +23,7 @@
 #include "content/browser/download/mhtml_extra_parts_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/mhtml_extra_parts.h"
@@ -147,8 +148,6 @@ class MHTMLGenerationManager::Job {
       const std::vector<MHTMLExtraDataPart>& extra_data_parts,
       std::unique_ptr<mojo::SimpleWatcher> watcher,
       std::unique_ptr<crypto::SecureHash> secure_hash);
-
-  void AddFrame(RenderFrameHost* render_frame_host);
 
   // Creates a string that encompasses any remaining extra data parts to write
   // to the file.
@@ -331,9 +330,18 @@ void MHTMLGenerationManager::Job::initializeJob(WebContents* web_contents) {
       web_contents->GetLastCommittedURL().possibly_invalid_spec(), "file",
       params_.file_path.AsUTF8Unsafe());
 
-  web_contents->ForEachFrame(base::BindRepeating(
-      &MHTMLGenerationManager::Job::AddFrame,
-      base::Unretained(this)));  // Safe because ForEachFrame() is synchronous.
+  // Only include nodes from the primary frame tree, since an MHTML document
+  // would not be able to load inner frame trees (e.g. fenced frames).
+  for (FrameTreeNode* node : static_cast<WebContentsImpl*>(web_contents)
+                                 ->GetPrimaryFrameTree()
+                                 .Nodes()) {
+    if (node->current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+        FrameTreeNode::kFrameTreeNodeInvalidId) {
+      // Skip inner tree placeholder nodes.
+      continue;
+    }
+    pending_frame_tree_node_ids_.push(node->frame_tree_node_id());
+  }
 
   // Main frame needs to be processed first.
   DCHECK(!pending_frame_tree_node_ids_.empty());
@@ -599,12 +607,6 @@ void MHTMLGenerationManager::Job::ReportRendererMainThreadTime(
     all_renderers_main_thread_time_ += renderer_main_thread_time;
   if (renderer_main_thread_time > longest_renderer_main_thread_time_)
     longest_renderer_main_thread_time_ = renderer_main_thread_time;
-}
-
-void MHTMLGenerationManager::Job::AddFrame(RenderFrameHost* render_frame_host) {
-  auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host);
-  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
-  pending_frame_tree_node_ids_.push(frame_tree_node_id);
 }
 
 void MHTMLGenerationManager::Job::CloseFile(
