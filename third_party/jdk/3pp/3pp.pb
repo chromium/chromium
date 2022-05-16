@@ -7,8 +7,8 @@ create {
     url {
       # See the link "[Binaries]" in
       # https://wiki.openjdk.java.net/display/JDKUpdates/JDK11u#JDK11u-Releases
-      download_url: "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jdk_x64_linux_11.0.4_11.tar.gz"
-      version: "11.0.4+11"
+      download_url: "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jdk_x64_linux_hotspot_11.0.15_10.tar.gz"
+      version: "11.0.15+10"
     }
     patch_version: 'cr0'
     unpack_archive: true
