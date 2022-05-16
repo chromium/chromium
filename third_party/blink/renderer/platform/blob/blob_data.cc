@@ -352,8 +352,6 @@ BlobDataHandle::BlobDataHandle(const String& uuid,
       type_(IsValidBlobType(type) ? type.IsolatedCopy() : ""),
       size_(size),
       is_single_unknown_size_file_(false) {
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE(
-      "Storage.Blob.GetBlobFromUUIDTime");
   GetThreadSpecificRegistry()->GetBlobFromUUID(
       blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_);
 }

@@ -315,15 +315,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.GetBlobFromUUIDTime" units="ms"
-    expires_after="M85">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The amount of time taken to complete the synchronous
-    BlobRegistry.GetBlobFromUUID mojo call.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.IDBRequestLoader.ReadError" enum="NetErrorCodes"
     expires_after="M95">
   <owner>mek@chromium.org</owner>
