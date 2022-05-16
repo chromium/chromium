@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -124,7 +125,7 @@ class AuthenticatorRequestDialogModel {
 
   // Implemented by the dialog to observe this model and show the UI panels
   // appropriate for the current step.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when the user clicks "Try Again" to restart the user flow.
     virtual void OnStartOver() {}
@@ -679,7 +680,7 @@ class AuthenticatorRequestDialogModel {
   // accepts the interstitial that requests to turn on the BLE adapter.
   base::OnceClosure after_ble_adapter_powered_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 
   // This field is only filled out once the UX flow is started.
   TransportAvailabilityInfo transport_availability_;
