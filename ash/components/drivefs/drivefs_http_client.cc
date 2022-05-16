@@ -76,7 +76,6 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
  private:
   enum class CallbackState : size_t {
     kBodyRequested,
-    kBodyReceived,
     kResponseReceived,
     kRequestComplete,
     // Add new states above.
@@ -114,7 +113,7 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
     http_delegate_remote_->OnReceiveResponse(mojom::HttpResponse::New(
         response_head->headers->response_code(), std::move(headers)));
     if (body) {
-      OnStartLoadingResponseBody(std::move(body));
+      http_delegate_remote_->OnReceiveBody(std::move(body));
     }
   }
 
@@ -134,12 +133,6 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    DCHECK(IsFirstCall(CallbackState::kBodyReceived));
-    http_delegate_remote_->OnReceiveBody(std::move(body));
-  }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     DCHECK(IsFirstCall(CallbackState::kRequestComplete));
