@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -267,7 +268,7 @@ void UnifiedMessageCenterBubble::OnDisplayConfigurationChanged() {
 
 void UnifiedMessageCenterBubble::UpdateBubbleState() {
   if (CalculateAvailableHeight() < kMessageCenterCollapseThreshold &&
-      message_center_view_->GetPreferredSize().height()) {
+      message_center_view_->message_list_view()->GetTotalNotificationCount()) {
     if (tray_->IsQuickSettingsExplicitlyExpanded()) {
       message_center_view_->SetCollapsed(false /*animate*/);
     } else {
