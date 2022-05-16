@@ -17,10 +17,6 @@ FakeMojoServiceManager::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-void FakeMojoServiceManager::ResetReceiver() {
-  receiver_.reset();
-}
-
 void FakeMojoServiceManager::Register(
     const std::string& service_name,
     mojo::PendingRemote<mojom::ServiceProvider> service_provider) {

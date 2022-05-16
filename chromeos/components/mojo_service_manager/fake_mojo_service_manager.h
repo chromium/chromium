@@ -24,9 +24,6 @@ class COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER) FakeMojoServiceManager
   // Binds a new pipe and pass the pending remote.
   mojo::PendingRemote<mojom::ServiceManager> BindNewPipeAndPassRemote();
 
-  // Resets |receiver_|.
-  void ResetReceiver();
-
  private:
   // mojom::ServiceManager overrides.
   void Register(
