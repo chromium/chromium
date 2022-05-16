@@ -52,7 +52,8 @@ class FrameUserNoteChanges {
   // Called by `Apply()` to construct a new note instance pointing to the
   // provided model. Can be overridden by tests to construct a mocked instance.
   virtual std::unique_ptr<UserNoteInstance> MakeNoteInstance(
-      const UserNote* note_model) const;
+      const UserNote* note_model,
+      UserNoteManager* manager) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(UserNoteUtilsTest, CalculateNoteChanges);

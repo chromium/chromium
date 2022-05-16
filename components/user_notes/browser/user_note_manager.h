@@ -16,10 +16,12 @@
 #include "components/user_notes/browser/user_note_instance.h"
 #include "components/user_notes/browser/user_note_service.h"
 #include "content/public/browser/page_user_data.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 
 namespace content {
 class Page;
-}
+}  // namespace content
 
 namespace user_notes {
 
@@ -32,6 +34,11 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   ~UserNoteManager() override;
   UserNoteManager(const UserNoteManager&) = delete;
   UserNoteManager& operator=(const UserNoteManager&) = delete;
+
+  const mojo::Remote<blink::mojom::AnnotationAgentContainer>&
+  note_agent_container() {
+    return note_agent_container_;
+  };
 
   // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.
@@ -77,6 +84,10 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
                      std::unique_ptr<UserNoteInstance>,
                      base::UnguessableTokenHash>
       instance_map_;
+
+  // A connection to the annotation agent container on the renderer side to
+  // bind note instances to their agent counterpart.
+  mojo::Remote<blink::mojom::AnnotationAgentContainer> note_agent_container_;
 };
 
 }  // namespace user_notes

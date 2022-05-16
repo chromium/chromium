@@ -73,8 +73,8 @@ void UserNoteBaseTest::AddNewInstanceToManager(UserNoteManager* manager,
   DCHECK(manager);
   const auto& entry_it = note_service_->model_map_.find(note_id);
   ASSERT_FALSE(entry_it == note_service_->model_map_.end());
-  manager->AddNoteInstance(
-      std::make_unique<UserNoteInstance>(entry_it->second.model->GetSafeRef()));
+  manager->AddNoteInstance(std::make_unique<UserNoteInstance>(
+      entry_it->second.model->GetSafeRef(), manager));
 }
 
 size_t UserNoteBaseTest::ManagerCountForId(

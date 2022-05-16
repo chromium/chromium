@@ -80,6 +80,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   };
 
   friend class UserNoteBaseTest;
+  friend class UserNoteInstanceTest;
   friend class UserNoteUtilsTest;
   friend class UserNoteUICoordinatorTest;
 

@@ -20,8 +20,9 @@ std::unique_ptr<UserNoteBody> GetTestUserNoteBody() {
 
 std::unique_ptr<UserNoteTarget> GetTestUserNotePageTarget(
     const std::string& url) {
-  return std::make_unique<UserNoteTarget>(UserNoteTarget::TargetType::kPage, "",
-                                          GURL(url), "");
+  return std::make_unique<UserNoteTarget>(UserNoteTarget::TargetType::kPage,
+                                          /*original_text=*/"", GURL(url),
+                                          /*selector=*/"");
 }
 
 }  // namespace user_notes
