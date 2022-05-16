@@ -16,6 +16,9 @@ extern const base::Feature kNewOverflowMenuCBDAction;
 // Feature to add a Settings action to the new overflow menu.
 extern const base::Feature kNewOverflowMenuSettingsAction;
 
+// Feature to use simple icons for new overflow menu destinations.
+extern const base::Feature kNewOverflowMenuSimpleDestinationIcons;
+
 // Feature to enable smart sorting the new overflow menu.
 extern const base::Feature kSmartSortingNewOverflowMenu;
 
@@ -30,6 +33,9 @@ bool IsNewOverflowMenuSettingsActionEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
+
+// Whether or not the NewOverflowMenuSimpleDestinationIcons feature is enabled.
+bool IsNewOverflowMenuSimpleDestinationIconsEnabled();
 
 // Whether the new Google Password Manager branding is enabled.
 bool IsPasswordManagerBrandingUpdateEnabled();

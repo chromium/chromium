@@ -19,6 +19,9 @@ const base::Feature kNewOverflowMenuCBDAction{
 const base::Feature kNewOverflowMenuSettingsAction{
     "NewOverflowMenuSettingsAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNewOverflowMenuSimpleDestinationIcons{
+    "NewOverflowMenuSimpleDestinationIcons", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSmartSortingNewOverflowMenu{
     "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -39,6 +42,11 @@ bool IsNewOverflowMenuCBDActionEnabled() {
 bool IsNewOverflowMenuSettingsActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuSettingsAction);
+}
+
+bool IsNewOverflowMenuSimpleDestinationIconsEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kNewOverflowMenuSimpleDestinationIcons);
 }
 
 bool IsPasswordManagerBrandingUpdateEnabled() {

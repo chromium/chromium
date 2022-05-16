@@ -432,19 +432,30 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (OverflowMenuModel*)createModel {
   __weak __typeof(self) weakSelf = self;
 
+  NSString* bookmarksIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_bookmarks_simple"
+          : @"overflow_menu_destination_bookmarks";
   self.bookmarksDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_BOOKMARKS, Destination::Bookmarks,
-      @"overflow_menu_destination_bookmarks", kToolsMenuBookmarksId, ^{
+      IDS_IOS_TOOLS_MENU_BOOKMARKS, Destination::Bookmarks, bookmarksIconName,
+      kToolsMenuBookmarksId, ^{
         [weakSelf openBookmarks];
       });
+  NSString* downloadsIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_downloads_simple"
+          : @"overflow_menu_destination_downloads";
   self.downloadsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_DOWNLOADS, Destination::Downloads,
-      @"overflow_menu_destination_downloads", kToolsMenuDownloadsId, ^{
+      IDS_IOS_TOOLS_MENU_DOWNLOADS, Destination::Downloads, downloadsIconName,
+      kToolsMenuDownloadsId, ^{
         [weakSelf openDownloads];
       });
+  NSString* historyIconName = IsNewOverflowMenuSimpleDestinationIconsEnabled()
+                                  ? @"overflow_menu_destination_history_simple"
+                                  : @"overflow_menu_destination_history";
   self.historyDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_HISTORY, Destination::History,
-      @"overflow_menu_destination_history", kToolsMenuHistoryId, ^{
+      IDS_IOS_TOOLS_MENU_HISTORY, Destination::History, historyIconName,
+      kToolsMenuHistoryId, ^{
         [weakSelf openHistory];
       });
 
@@ -452,32 +463,50 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                             ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                             : IDS_IOS_TOOLS_MENU_PASSWORDS;
   NSString* passwordIconImageName =
-      IsPasswordManagerBrandingUpdateEnabled()
-          ? @"overflow_menu_destination_passwords_rebrand"
-          : @"overflow_menu_destination_passwords";
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_passwords_simple"
+          : (IsPasswordManagerBrandingUpdateEnabled()
+                 ? @"overflow_menu_destination_passwords_rebrand"
+                 : @"overflow_menu_destination_passwords");
   self.passwordsDestination = CreateOverflowMenuDestination(
       passwordTitleID, Destination::Passwords, passwordIconImageName, @"", ^{
         [weakSelf openPasswords];
       });
 
+  NSString* readingListIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_reading_list_simple"
+          : @"overflow_menu_destination_reading_list";
   self.readingListDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_READING_LIST, Destination::ReadingList,
-      @"overflow_menu_destination_reading_list", kToolsMenuReadingListId, ^{
+      readingListIconName, kToolsMenuReadingListId, ^{
         [weakSelf openReadingList];
       });
+  NSString* recentTabsIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_recent_tabs_simple"
+          : @"overflow_menu_destination_recent_tabs";
   self.recentTabsDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_RECENT_TABS, Destination::RecentTabs,
-      @"overflow_menu_destination_recent_tabs", kToolsMenuOtherDevicesId, ^{
+      recentTabsIconName, kToolsMenuOtherDevicesId, ^{
         [weakSelf openRecentTabs];
       });
+  NSString* settingsIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_settings_simple"
+          : @"overflow_menu_destination_settings";
   self.settingsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_SETTINGS, Destination::Settings,
-      @"overflow_menu_destination_settings", kToolsMenuSettingsId, ^{
+      IDS_IOS_TOOLS_MENU_SETTINGS, Destination::Settings, settingsIconName,
+      kToolsMenuSettingsId, ^{
         [weakSelf openSettings];
       });
+  NSString* siteInfoIconName =
+      IsNewOverflowMenuSimpleDestinationIconsEnabled()
+          ? @"overflow_menu_destination_site_info_simple"
+          : @"overflow_menu_destination_site_info";
   self.siteInfoDestination = CreateOverflowMenuDestination(
       IDS_IOS_TOOLS_MENU_SITE_INFORMATION, Destination::SiteInfo,
-      @"overflow_menu_destination_site_info", kToolsMenuSiteInformation, ^{
+      siteInfoIconName, kToolsMenuSiteInformation, ^{
         [weakSelf openSiteInformation];
       });
 

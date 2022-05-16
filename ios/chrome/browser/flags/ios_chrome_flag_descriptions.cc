@@ -405,6 +405,11 @@ const char kNewOverflowMenuSettingsActionName[] =
 const char kNewOverflowMenuSettingsActionDescription[] =
     "Adds a Settings action to the new overflow menu";
 
+extern const char kNewOverflowMenuSimpleDestinationIconsName[] =
+    "Simple Destination icons in the new overflow menu";
+extern const char kNewOverflowMenuSimpleDestinationIconsDescription[] =
+    "Uses a simple icon style for destination icons in the new overflow menu";
+
 const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
