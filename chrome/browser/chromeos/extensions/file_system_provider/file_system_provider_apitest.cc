@@ -164,13 +164,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
       << message_;
 }
 
-// TODO(crbug.com/1324887): Re-enable this test
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, DISABLED_Unmount) {
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unmount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unmount",
                                {.launch_as_platform_app = true},
                                {.load_as_component = true}))
       << message_;
-  // TODO(crbug.com/1324835): Re-enable this test
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, GetAll) {
