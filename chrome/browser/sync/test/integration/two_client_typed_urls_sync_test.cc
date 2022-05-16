@@ -61,7 +61,7 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   TwoClientTypedUrlsSyncTest& operator=(const TwoClientTypedUrlsSyncTest&) =
       delete;
 
-  ~TwoClientTypedUrlsSyncTest() override {}
+  ~TwoClientTypedUrlsSyncTest() override = default;
 
   ::testing::AssertionResult CheckClientsEqual() {
     history::URLRows urls = GetTypedUrlsFromClient(0);
@@ -81,8 +81,8 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
   bool CheckNoDuplicateVisits() {
     for (int i = 0; i < num_clients(); ++i) {
       history::URLRows urls = GetTypedUrlsFromClient(i);
-      for (size_t j = 0; j < urls.size(); ++j) {
-        history::VisitVector visits = GetVisitsFromClient(i, urls[j].id());
+      for (const history::URLRow& url : urls) {
+        history::VisitVector visits = GetVisitsFromClient(i, url.id());
         if (!AreVisitsUnique(visits))
           return false;
       }
@@ -735,8 +735,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, SkipImportedVisits) {
   ASSERT_EQ(2U, urls.size());
 
   // Make sure the imported URL didn't make it over.
-  for (size_t i = 0; i < urls.size(); ++i) {
-    ASSERT_NE(imported_url, urls[i].url());
+  for (const history::URLRow& url : urls) {
+    ASSERT_NE(imported_url, url.url());
   }
 }
 
@@ -836,6 +836,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
   EXPECT_EQ(count_for_dummy, 1u);
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeOrphanMetadata.ModelReadyToSync",
-      /*bucket=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
-      /*count=*/1);
+      /*sample=*/ModelTypeHistogramValue(syncer::TYPED_URLS),
+      /*expected_count=*/1);
 }

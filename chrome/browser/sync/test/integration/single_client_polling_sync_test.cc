@@ -34,7 +34,7 @@ class SingleClientPollingSyncTest : public SyncTest {
   SingleClientPollingSyncTest& operator=(const SingleClientPollingSyncTest&) =
       delete;
 
-  ~SingleClientPollingSyncTest() override {}
+  ~SingleClientPollingSyncTest() override = default;
 };
 
 // This test verifies that the poll interval in prefs gets initialized if no

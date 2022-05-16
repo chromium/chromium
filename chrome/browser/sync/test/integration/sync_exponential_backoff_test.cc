@@ -28,7 +28,7 @@ class SyncExponentialBackoffTest : public SyncTest {
   SyncExponentialBackoffTest& operator=(const SyncExponentialBackoffTest&) =
       delete;
 
-  ~SyncExponentialBackoffTest() override {}
+  ~SyncExponentialBackoffTest() override = default;
 
   void SetUp() override {
     // This is needed to avoid spurious notifications initiated by the platform.

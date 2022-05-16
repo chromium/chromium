@@ -47,7 +47,7 @@ class FlushHistoryDBQueueTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  ~FlushHistoryDBQueueTask() override {}
+  ~FlushHistoryDBQueueTask() override = default;
 
   raw_ptr<base::WaitableEvent> wait_event_;
 };
@@ -68,7 +68,7 @@ class GetTypedUrlsTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  ~GetTypedUrlsTask() override {}
+  ~GetTypedUrlsTask() override = default;
 
   raw_ptr<history::URLRows> rows_;
   raw_ptr<base::WaitableEvent> wait_event_;
@@ -93,7 +93,7 @@ class GetUrlTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  ~GetUrlTask() override {}
+  ~GetUrlTask() override = default;
 
   GURL url_;
   raw_ptr<history::URLRow> row_;
@@ -119,7 +119,7 @@ class GetVisitsTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  ~GetVisitsTask() override {}
+  ~GetVisitsTask() override = default;
 
   history::URLID id_;
   raw_ptr<history::VisitVector> visits_;
@@ -143,7 +143,7 @@ class RemoveVisitsTask : public history::HistoryDBTask {
   void DoneRunOnMainThread() override {}
 
  private:
-  ~RemoveVisitsTask() override {}
+  ~RemoveVisitsTask() override = default;
 
   const history::VisitVector& visits_;
   raw_ptr<base::WaitableEvent> wait_event_;
@@ -171,7 +171,7 @@ class GetTypedUrlsMetadataTask : public history::HistoryDBTask {
   GetTypedUrlsMetadataTask(syncer::MetadataBatch* metadata_batch,
                            base::WaitableEvent* event)
       : metadata_batch_(metadata_batch), wait_event_(event) {}
-  ~GetTypedUrlsMetadataTask() override {}
+  ~GetTypedUrlsMetadataTask() override = default;
 
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
@@ -219,7 +219,8 @@ void AddToHistory(history::HistoryService* service,
                   ui::PageTransition transition,
                   history::VisitSource source,
                   const base::Time& timestamp) {
-  service->AddPage(url, timestamp, /*scope=*/nullptr, /*nav_entry_id=*/1234,
+  service->AddPage(url, timestamp, /*context_id=*/nullptr,
+                   /*nav_entry_id=*/1234,
                    /*referrer=*/GURL(), history::RedirectList(), transition,
                    source, /*did_replace_entry=*/false,
                    /*floc_allowed=*/false);
@@ -477,13 +478,13 @@ bool CheckURLRowVectorsAreEqualForTypedURLs(const history::URLRows& left,
                                             const history::URLRows& right) {
   if (left.size() != right.size())
     return false;
-  for (size_t i = 0; i < left.size(); ++i) {
+  for (const history::URLRow& left_url_row : left) {
     // URLs could be out-of-order, so look for a matching URL in the second
     // array.
     bool found = false;
-    for (size_t j = 0; j < right.size(); ++j) {
-      if (left[i].url() == right[j].url()) {
-        if (CheckURLRowsAreEqualForTypedURLs(left[i], right[j])) {
+    for (const history::URLRow& right_url_row : right) {
+      if (left_url_row.url() == right_url_row.url()) {
+        if (CheckURLRowsAreEqualForTypedURLs(left_url_row, right_url_row)) {
           found = true;
           break;
         }
@@ -511,10 +512,10 @@ bool AreVisitsEqual(const history::VisitVector& visit1,
 
 bool AreVisitsUnique(const history::VisitVector& visits) {
   base::Time t = base::Time::FromInternalValue(0);
-  for (size_t i = 0; i < visits.size(); ++i) {
-    if (t == visits[i].visit_time)
+  for (const history::VisitRow& visit : visits) {
+    if (t == visit.visit_time)
       return false;
-    t = visits[i].visit_time;
+    t = visit.visit_time;
   }
   return true;
 }
@@ -625,7 +626,7 @@ TypedURLChecker::TypedURLChecker(int index, const std::string& url)
       index_(index),
       url_(url) {}
 
-TypedURLChecker::~TypedURLChecker() {}
+TypedURLChecker::~TypedURLChecker() = default;
 
 bool TypedURLChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for data for url '" << url_ << "' to be populated.";

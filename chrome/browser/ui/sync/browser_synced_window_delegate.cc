@@ -14,7 +14,7 @@
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
     : browser_(browser) {}
 
-BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() {}
+BrowserSyncedWindowDelegate::~BrowserSyncedWindowDelegate() = default;
 
 bool BrowserSyncedWindowDelegate::IsTabPinned(
     const sync_sessions::SyncedTabDelegate* tab) const {

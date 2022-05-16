@@ -35,14 +35,14 @@ std::string IntToStorageKey(int i) {
 class TypedURLSyncMetadataDatabaseTest : public testing::Test,
                                          public TypedURLSyncMetadataDatabase {
  public:
-  TypedURLSyncMetadataDatabaseTest() {}
+  TypedURLSyncMetadataDatabaseTest() = default;
 
   TypedURLSyncMetadataDatabaseTest(const TypedURLSyncMetadataDatabaseTest&) =
       delete;
   TypedURLSyncMetadataDatabaseTest& operator=(
       const TypedURLSyncMetadataDatabaseTest&) = delete;
 
-  ~TypedURLSyncMetadataDatabaseTest() override {}
+  ~TypedURLSyncMetadataDatabaseTest() override = default;
 
  protected:
   sql::Database& GetDB() override { return db_; }

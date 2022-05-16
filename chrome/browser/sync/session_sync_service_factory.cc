@@ -65,7 +65,7 @@ class SyncSessionsClientImpl : public sync_sessions::SyncSessionsClient {
   SyncSessionsClientImpl(const SyncSessionsClientImpl&) = delete;
   SyncSessionsClientImpl& operator=(const SyncSessionsClientImpl&) = delete;
 
-  ~SyncSessionsClientImpl() override {}
+  ~SyncSessionsClientImpl() override = default;
 
   // SyncSessionsClient implementation.
   sync_sessions::SessionSyncPrefs* GetSessionSyncPrefs() override {
@@ -152,7 +152,7 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
   DependsOn(sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance());
 }
 
-SessionSyncServiceFactory::~SessionSyncServiceFactory() {}
+SessionSyncServiceFactory::~SessionSyncServiceFactory() = default;
 
 KeyedService* SessionSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

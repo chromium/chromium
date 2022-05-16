@@ -38,7 +38,7 @@ base::Time UnixUsecToTime(int64_t usec) {
 
 class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
  public:
-  TestHistoryBackendDelegate() {}
+  TestHistoryBackendDelegate() = default;
 
   TestHistoryBackendDelegate(const TestHistoryBackendDelegate&) = delete;
   TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =

@@ -28,10 +28,9 @@ SyncAppListHelper* SyncAppListHelper::GetInstance() {
   return instance;
 }
 
-SyncAppListHelper::SyncAppListHelper()
-    : test_(nullptr), setup_completed_(false) {}
+SyncAppListHelper::SyncAppListHelper() = default;
 
-SyncAppListHelper::~SyncAppListHelper() {}
+SyncAppListHelper::~SyncAppListHelper() = default;
 
 void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   if (setup_completed_) {

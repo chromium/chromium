@@ -101,14 +101,14 @@ constexpr char kInvalidGrantOAuth2Token[] = R"({
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  public:
-  AutofillWebDataServiceConsumer() {}
+  AutofillWebDataServiceConsumer() = default;
 
   AutofillWebDataServiceConsumer(const AutofillWebDataServiceConsumer&) =
       delete;
   AutofillWebDataServiceConsumer& operator=(
       const AutofillWebDataServiceConsumer&) = delete;
 
-  virtual ~AutofillWebDataServiceConsumer() {}
+  ~AutofillWebDataServiceConsumer() override = default;
 
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle handle,
@@ -199,7 +199,7 @@ class SingleClientWalletSyncTest : public SyncTest {
   SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
       delete;
 
-  ~SingleClientWalletSyncTest() override {}
+  ~SingleClientWalletSyncTest() override = default;
 
  protected:
   void WaitForOnPersonalDataChanged(autofill::PersonalDataManager* pdm) {
@@ -1301,8 +1301,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ConvertServerAddress) {
 
   histogram_tester_.ExpectBucketCount(
       "Autofill.WalletAddressConversionType",
-      /*bucket=*/AutofillMetrics::CONVERTED_ADDRESS_ADDED,
-      /*count=*/1);
+      /*sample=*/AutofillMetrics::CONVERTED_ADDRESS_ADDED,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
@@ -1332,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   GetFakeServer()->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "non_unique_name",
-          /*client_tag_hash=*/"address-" + wallet_metadata_specifics->id(),
+          /*client_tag=*/"address-" + wallet_metadata_specifics->id(),
           specifics,
           /*creation_time=*/0,
           /*last_modified_time=*/0));
@@ -1360,7 +1360,7 @@ class SingleClientWalletSecondaryAccountSyncTest
   SingleClientWalletSecondaryAccountSyncTest& operator=(
       const SingleClientWalletSecondaryAccountSyncTest&) = delete;
 
-  ~SingleClientWalletSecondaryAccountSyncTest() override {}
+  ~SingleClientWalletSecondaryAccountSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =

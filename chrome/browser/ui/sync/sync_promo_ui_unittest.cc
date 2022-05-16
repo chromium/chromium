@@ -19,7 +19,7 @@
 
 class SyncPromoUITest : public testing::Test {
  public:
-  SyncPromoUITest() {}
+  SyncPromoUITest() = default;
 
   SyncPromoUITest(const SyncPromoUITest&) = delete;
   SyncPromoUITest& operator=(const SyncPromoUITest&) = delete;

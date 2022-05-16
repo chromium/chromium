@@ -95,6 +95,7 @@ void CheckShouldPromptForNewProfile(
   helper->CheckHasTypedURLs();
 }
 
-ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() {}
+ProfileSigninConfirmationDelegate::~ProfileSigninConfirmationDelegate() =
+    default;
 
 }  // namespace ui

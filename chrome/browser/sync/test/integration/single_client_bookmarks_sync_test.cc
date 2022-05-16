@@ -35,6 +35,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
@@ -1095,12 +1096,12 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 
   // There should have been one creation and no deletions.
-  EXPECT_EQ(
-      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
-                                         /*LOCAL_CREATION=*/1));
-  EXPECT_EQ(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
-                                         /*LOCAL_DELETION=*/0));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.BOOKMARK",
+                   syncer::ModelTypeEntityChange::kLocalCreation));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.BOOKMARK",
+                   syncer::ModelTypeEntityChange::kLocalDeletion));
 }
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
@@ -1119,9 +1120,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
-  EXPECT_NE(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
-                                         /*REMOTE_INITIAL_UPDATE=*/5));
+  EXPECT_NE(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.BOOKMARK",
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
@@ -1146,9 +1147,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
-  EXPECT_EQ(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
-                                         /*REMOTE_INITIAL_UPDATE=*/5));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.BOOKMARK",
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1587,9 +1588,9 @@ IN_PROC_BROWSER_TEST_F(
   // commits are expected despite the fact that the server-side bookmark is a
   // legacy bookmark without the most recent fields (e.g. GUID), because loading
   // favicons should not lead to commits unless the favicon itself changed.
-  EXPECT_EQ(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
-                                         /*LOCAL_UPDATE=*/2));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.BOOKMARK",
+                   syncer::ModelTypeEntityChange::kLocalUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

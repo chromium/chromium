@@ -79,7 +79,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
   SingleClientHistoryDeleteDirectivesSyncTest& operator=(
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
 
-  ~SingleClientHistoryDeleteDirectivesSyncTest() override {}
+  ~SingleClientHistoryDeleteDirectivesSyncTest() override = default;
 
   bool WaitForHistoryDeleteDirectives(size_t num_expected_directives) {
     return HistoryDeleteDirectivesEqualityChecker(

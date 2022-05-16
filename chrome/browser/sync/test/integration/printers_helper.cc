@@ -178,6 +178,6 @@ PrintersMatchChecker::PrintersMatchChecker()
     : AwaitMatchStatusChangeChecker(base::BindRepeating(
           &printers_helper::AllProfilesContainSamePrinters)) {}
 
-PrintersMatchChecker::~PrintersMatchChecker() {}
+PrintersMatchChecker::~PrintersMatchChecker() = default;
 
 }  // namespace printers_helper

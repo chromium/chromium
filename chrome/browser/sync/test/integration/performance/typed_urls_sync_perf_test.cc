@@ -48,7 +48,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class TypedUrlsSyncPerfTest : public SyncTest {
  public:
-  TypedUrlsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
+  TypedUrlsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   TypedUrlsSyncPerfTest(const TypedUrlsSyncPerfTest&) = delete;
   TypedUrlsSyncPerfTest& operator=(const TypedUrlsSyncPerfTest&) = delete;
@@ -72,7 +72,7 @@ class TypedUrlsSyncPerfTest : public SyncTest {
   // Returns a unique URL according to the integer |n|.
   GURL IntToURL(int n);
 
-  int url_number_;
+  int url_number_ = 0;
 };
 
 void TypedUrlsSyncPerfTest::AddURLs(int profile, int num_urls) {

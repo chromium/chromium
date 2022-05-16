@@ -51,10 +51,9 @@ sync_pb::EntitySpecifics SyncArcPackageHelper::GetTestSpecifics(size_t id) {
   return specifics;
 }
 
-SyncArcPackageHelper::SyncArcPackageHelper()
-    : test_(nullptr), setup_completed_(false) {}
+SyncArcPackageHelper::SyncArcPackageHelper() = default;
 
-SyncArcPackageHelper::~SyncArcPackageHelper() {}
+SyncArcPackageHelper::~SyncArcPackageHelper() = default;
 
 void SyncArcPackageHelper::SetupTest(SyncTest* test) {
   if (setup_completed_) {

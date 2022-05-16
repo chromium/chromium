@@ -46,7 +46,7 @@ const char kFakeExtensionPrefix[] = "fakeextension";
 SyncExtensionHelper::ExtensionState::ExtensionState()
     : enabled_state(ENABLED), disable_reasons(0), incognito_enabled(false) {}
 
-SyncExtensionHelper::ExtensionState::~ExtensionState() {}
+SyncExtensionHelper::ExtensionState::~ExtensionState() = default;
 
 bool SyncExtensionHelper::ExtensionState::Equals(
     const SyncExtensionHelper::ExtensionState& other) const {
@@ -64,7 +64,7 @@ SyncExtensionHelper* SyncExtensionHelper::GetInstance() {
 
 SyncExtensionHelper::SyncExtensionHelper() : setup_completed_(false) {}
 
-SyncExtensionHelper::~SyncExtensionHelper() {}
+SyncExtensionHelper::~SyncExtensionHelper() = default;
 
 void SyncExtensionHelper::SetupIfNecessary(SyncTest* test) {
   if (setup_completed_)

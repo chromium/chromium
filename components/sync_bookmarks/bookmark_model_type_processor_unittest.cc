@@ -358,7 +358,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeInitialUpdateReceived",
       /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
-      /*expected_count=*/3);
+      /*expected_bucket_count=*/3);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
@@ -431,7 +431,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeIncrementalUpdateReceived",
       /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
-      /*expected_count=*/1);
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(

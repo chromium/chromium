@@ -51,7 +51,7 @@ class LocalSyncTest : public InProcessBrowserTest {
     EXPECT_TRUE(local_sync_backend_dir_.CreateUniqueTempDir());
   }
 
-  ~LocalSyncTest() override {}
+  ~LocalSyncTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // By default on Window OS local sync backend uses roaming profile. It can

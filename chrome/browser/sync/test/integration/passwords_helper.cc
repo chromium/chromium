@@ -44,7 +44,7 @@ const char kIndexedFakeOrigin[] = "http://fake-signon-realm.google.com/%d";
 class PasswordStoreConsumerHelper
     : public password_manager::PasswordStoreConsumer {
  public:
-  PasswordStoreConsumerHelper() {}
+  PasswordStoreConsumerHelper() = default;
 
   PasswordStoreConsumerHelper(const PasswordStoreConsumerHelper&) = delete;
   PasswordStoreConsumerHelper& operator=(const PasswordStoreConsumerHelper&) =

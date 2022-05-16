@@ -50,7 +50,7 @@ class TwoClientSessionsSyncTest : public SyncTest {
   TwoClientSessionsSyncTest& operator=(const TwoClientSessionsSyncTest&) =
       delete;
 
-  ~TwoClientSessionsSyncTest() override {}
+  ~TwoClientSessionsSyncTest() override = default;
 
   bool WaitForForeignSessionsToSync(int local_index, int non_local_index) {
     return ForeignSessionsMatchChecker(non_local_index, local_index).Wait();
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
 
   // Close one of the two tabs. We also issue another navigation to make sure
   // association logic kicks in.
-  CloseTab(/*index=*/0, /*tab_index=*/1);
+  CloseTab(/*browser_index=*/0, /*tab_index=*/1);
   NavigateTab(0, GURL(kURL3));
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 

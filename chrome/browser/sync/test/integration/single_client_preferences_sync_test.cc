@@ -19,6 +19,7 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "content/public/test/browser_test.h"
@@ -132,9 +133,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
-  EXPECT_EQ(kNumEntities, histogram_tester.GetBucketCount(
-                              "Sync.ModelTypeEntityChange3.PREFERENCE",
-                              /*REMOTE_INITIAL_UPDATE=*/5));
+  EXPECT_EQ(kNumEntities,
+            histogram_tester.GetBucketCount(
+                "Sync.ModelTypeEntityChange3.PREFERENCE",
+                syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
@@ -152,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   /*REMOTE_INITIAL_UPDATE=*/5));
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
@@ -177,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   /*REMOTE_INITIAL_UPDATE=*/5));
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
 }  // namespace

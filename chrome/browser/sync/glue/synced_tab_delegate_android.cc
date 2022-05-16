@@ -35,7 +35,7 @@ SessionID SessionIdFromAndroidId(int android_tab_id) {
 SyncedTabDelegateAndroid::SyncedTabDelegateAndroid(TabAndroid* tab_android)
     : tab_android_(tab_android) {}
 
-SyncedTabDelegateAndroid::~SyncedTabDelegateAndroid() {}
+SyncedTabDelegateAndroid::~SyncedTabDelegateAndroid() = default;
 
 SessionID SyncedTabDelegateAndroid::GetWindowId() const {
   return tab_android_->window_id();

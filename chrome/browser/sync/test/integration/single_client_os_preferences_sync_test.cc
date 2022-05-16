@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Shelf alignment is a Chrome OS only preference.
-  ChangeStringPref(/*profile_index=*/0, ash::prefs::kShelfAlignment,
+  ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
                    ash::kShelfAlignmentRight);
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_THAT(GetPrefs(/*index=*/0)->GetString(ash::prefs::kShelfAlignment),

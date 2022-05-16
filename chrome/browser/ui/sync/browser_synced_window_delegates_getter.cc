@@ -15,7 +15,8 @@ namespace browser_sync {
 BrowserSyncedWindowDelegatesGetter::BrowserSyncedWindowDelegatesGetter(
     Profile* profile)
     : profile_(profile) {}
-BrowserSyncedWindowDelegatesGetter::~BrowserSyncedWindowDelegatesGetter() {}
+BrowserSyncedWindowDelegatesGetter::~BrowserSyncedWindowDelegatesGetter() =
+    default;
 
 BrowserSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {

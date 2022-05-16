@@ -467,5 +467,5 @@ void AutofillProfileChecker::OnPersonalDataChanged() {
   CheckExitCondition();
 }
 
-PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() {}
-PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() {}
+PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
+PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;

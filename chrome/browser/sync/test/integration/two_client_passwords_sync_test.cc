@@ -19,6 +19,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
 
@@ -370,9 +371,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithVerifier,
   // There should be only one deletion. This is to test the bug
   // (crbug.com/1046309) where the USS client was local deletions when receiving
   // remote deletions.
-  EXPECT_EQ(
-      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.PASSWORD",
-                                         /*LOCAL_DELETION=*/0));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.PASSWORD",
+                   syncer::ModelTypeEntityChange::kLocalDeletion));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,

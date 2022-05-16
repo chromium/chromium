@@ -45,7 +45,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class ExtensionsSyncPerfTest : public SyncTest {
  public:
-  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT), extension_number_(0) {}
+  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   ExtensionsSyncPerfTest(const ExtensionsSyncPerfTest&) = delete;
   ExtensionsSyncPerfTest& operator=(const ExtensionsSyncPerfTest&) = delete;
@@ -63,7 +63,7 @@ class ExtensionsSyncPerfTest : public SyncTest {
   int GetExtensionCount(int profile);
 
  private:
-  int extension_number_;
+  int extension_number_ = 0;
 };
 
 void ExtensionsSyncPerfTest::AddExtensions(int profile, int num_extensions) {

@@ -29,7 +29,8 @@ SyncSessionsWebContentsRouterFactory::SyncSessionsWebContentsRouterFactory()
           "SyncSessionsWebContentsRouter",
           BrowserContextDependencyManager::GetInstance()) {}
 
-SyncSessionsWebContentsRouterFactory::~SyncSessionsWebContentsRouterFactory() {}
+SyncSessionsWebContentsRouterFactory::~SyncSessionsWebContentsRouterFactory() =
+    default;
 
 KeyedService* SyncSessionsWebContentsRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

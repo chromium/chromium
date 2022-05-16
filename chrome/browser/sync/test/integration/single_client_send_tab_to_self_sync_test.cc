@@ -39,7 +39,7 @@ class SingleClientSendTabToSelfSyncTest : public SyncTest {
   SingleClientSendTabToSelfSyncTest& operator=(
       const SingleClientSendTabToSelfSyncTest&) = delete;
 
-  ~SingleClientSendTabToSelfSyncTest() override {}
+  ~SingleClientSendTabToSelfSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();

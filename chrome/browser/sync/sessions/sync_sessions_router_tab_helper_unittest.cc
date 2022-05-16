@@ -41,8 +41,8 @@ class FakeLocalSessionEventHandler : public LocalSessionEventHandler {
 
 class SyncSessionsRouterTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
-  SyncSessionsRouterTabHelperTest() : ChromeRenderViewHostTestHarness() {}
-  ~SyncSessionsRouterTabHelperTest() override {}
+  SyncSessionsRouterTabHelperTest() = default;
+  ~SyncSessionsRouterTabHelperTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();

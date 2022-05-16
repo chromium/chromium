@@ -849,7 +849,7 @@ void TypedURLSyncBridge::MergeURLWithSync(
             base::Time::FromInternalValue(sync_url.visits(index));
         ui::PageTransition transition =
             ui::PageTransitionFromInt(sync_url.visit_transitions(index));
-        added_visits.push_back(VisitInfo(visit_time, transition));
+        added_visits.emplace_back(visit_time, transition);
       }
       new_synced_visits->emplace_back(new_url.url(), added_visits);
       return;

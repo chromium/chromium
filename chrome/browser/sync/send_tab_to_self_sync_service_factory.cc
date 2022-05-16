@@ -38,7 +38,7 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
-SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() {}
+SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() = default;
 
 KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

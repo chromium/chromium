@@ -43,7 +43,7 @@ class SingleClientAutofillProfileSyncTest : public SyncTest {
   SingleClientAutofillProfileSyncTest& operator=(
       const SingleClientAutofillProfileSyncTest&) = delete;
 
-  ~SingleClientAutofillProfileSyncTest() override {}
+  ~SingleClientAutofillProfileSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,

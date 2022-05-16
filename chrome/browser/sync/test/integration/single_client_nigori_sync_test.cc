@@ -1109,7 +1109,8 @@ IN_PROC_BROWSER_TEST_F(
                                              GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/1, /*expected_count=*/1);
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1154,7 +1155,8 @@ IN_PROC_BROWSER_TEST_F(
                                               GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/0, /*expected_count=*/1);
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,

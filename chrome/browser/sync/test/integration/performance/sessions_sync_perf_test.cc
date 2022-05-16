@@ -43,7 +43,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class SessionsSyncPerfTest : public SyncTest {
  public:
-  SessionsSyncPerfTest() : SyncTest(TWO_CLIENT), url_number_(0) {}
+  SessionsSyncPerfTest() : SyncTest(TWO_CLIENT) {}
 
   SessionsSyncPerfTest(const SessionsSyncPerfTest&) = delete;
   SessionsSyncPerfTest& operator=(const SessionsSyncPerfTest&) = delete;
@@ -68,7 +68,7 @@ class SessionsSyncPerfTest : public SyncTest {
   // Returns a unique URL according to the integer |n|.
   GURL IntToURL(int n);
 
-  int url_number_;
+  int url_number_ = 0;
 };
 
 void SessionsSyncPerfTest::AddTabs(int profile, int num_tabs) {

@@ -39,7 +39,7 @@ class TwoClientSendTabToSelfSyncTest : public SyncTest {
   TwoClientSendTabToSelfSyncTest& operator=(
       const TwoClientSendTabToSelfSyncTest&) = delete;
 
-  ~TwoClientSendTabToSelfSyncTest() override {}
+  ~TwoClientSendTabToSelfSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,

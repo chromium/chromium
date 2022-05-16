@@ -39,7 +39,7 @@ struct AppState {
 
   syncer::StringOrdinal app_launch_ordinal;
   syncer::StringOrdinal page_ordinal;
-  extensions::LaunchType launch_type;
+  extensions::LaunchType launch_type = extensions::LAUNCH_TYPE_INVALID;
   GURL launch_web_url;
   std::string description;
   std::string name;
@@ -47,9 +47,9 @@ struct AppState {
 
 using AppStateMap = std::map<std::string, AppState>;
 
-AppState::AppState() : launch_type(extensions::LAUNCH_TYPE_INVALID) {}
+AppState::AppState() = default;
 
-AppState::~AppState() {}
+AppState::~AppState() = default;
 
 bool AppState::IsValid() const {
   return page_ordinal.IsValid() && app_launch_ordinal.IsValid();
@@ -221,4 +221,4 @@ void SyncAppHelper::FixNTPOrdinalCollisions(Profile* profile) {
 
 SyncAppHelper::SyncAppHelper() : setup_completed_(false) {}
 
-SyncAppHelper::~SyncAppHelper() {}
+SyncAppHelper::~SyncAppHelper() = default;

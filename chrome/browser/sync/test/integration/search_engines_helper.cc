@@ -127,17 +127,16 @@ bool ServiceMatchesVerifier(int profile_index) {
     return false;
   }
 
-  for (size_t i = 0; i < verifier_turls.size(); ++i) {
-    const TemplateURL& verifier_turl = *verifier_turls.at(i);
+  for (TemplateURL* verifier_turl : verifier_turls) {
     const TemplateURL* other_turl =
-        other->GetTemplateURLForKeyword(verifier_turl.keyword());
+        other->GetTemplateURLForKeyword(verifier_turl->keyword());
 
     if (!other_turl) {
       DVLOG(1) << "The other service did not contain a TURL with keyword: "
-               << verifier_turl.keyword();
+               << verifier_turl->keyword();
       return false;
     }
-    if (!TURLsMatch(verifier_turl, *other_turl))
+    if (!TURLsMatch(*verifier_turl, *other_turl))
       return false;
   }
 

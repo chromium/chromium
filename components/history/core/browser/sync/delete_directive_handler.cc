@@ -143,7 +143,7 @@ class DeleteDirectiveHandler::DeleteDirectiveTask : public HistoryDBTask {
         delete_directives_(delete_directive),
         post_processing_action_(post_processing_action) {}
 
-  ~DeleteDirectiveTask() override {}
+  ~DeleteDirectiveTask() override = default;
 
   // Implements HistoryDBTask.
   bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override;
@@ -220,15 +220,13 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
   typedef std::map<std::pair<base::Time, base::Time>, std::set<base::Time>>
       GlobalIdTimesGroup;
   GlobalIdTimesGroup id_times_group;
-  for (size_t i = 0; i < global_id_directives.size(); ++i) {
+  for (const syncer::SyncData& global_id_directive : global_id_directives) {
     DVLOG(1) << "Processing delete directive: "
-             << DeleteDirectiveToString(global_id_directives[i]
-                                            .GetSpecifics()
+             << DeleteDirectiveToString(global_id_directive.GetSpecifics()
                                             .history_delete_directive());
 
     const sync_pb::GlobalIdDirective& id_directive =
-        global_id_directives[i]
-            .GetSpecifics()
+        global_id_directive.GetSpecifics()
             .history_delete_directive()
             .global_id_directive();
     if (id_directive.global_id_size() == 0 ||
@@ -267,9 +265,9 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
   // time range for multiple directives whose time ranges overlap.
   base::Time current_start_time;
   base::Time current_end_time;
-  for (size_t i = 0; i < time_range_directives.size(); ++i) {
+  for (const syncer::SyncData& data : time_range_directives) {
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive =
-        time_range_directives[i].GetSpecifics().history_delete_directive();
+        data.GetSpecifics().history_delete_directive();
     DVLOG(1) << "Processing time range directive: "
              << DeleteDirectiveToString(delete_directive);
 
@@ -338,7 +336,7 @@ DeleteDirectiveHandler::DeleteDirectiveHandler(
     BackendTaskScheduler backend_task_scheduler)
     : backend_task_scheduler_(std::move(backend_task_scheduler)) {}
 
-DeleteDirectiveHandler::~DeleteDirectiveHandler() {}
+DeleteDirectiveHandler::~DeleteDirectiveHandler() = default;
 
 void DeleteDirectiveHandler::OnBackendLoaded() {
   backend_loaded_ = true;
@@ -460,10 +458,10 @@ absl::optional<syncer::ModelError> DeleteDirectiveHandler::ProcessSyncChanges(
   }
 
   syncer::SyncDataList delete_directives;
-  for (auto it = change_list.begin(); it != change_list.end(); ++it) {
-    switch (it->change_type()) {
+  for (const syncer::SyncChange& sync_change : change_list) {
+    switch (sync_change.change_type()) {
       case syncer::SyncChange::ACTION_ADD:
-        delete_directives.push_back(it->sync_data());
+        delete_directives.push_back(sync_change.sync_data());
         break;
       case syncer::SyncChange::ACTION_DELETE:
         // TODO(akalin): Keep track of existing delete directives.
@@ -498,9 +496,9 @@ void DeleteDirectiveHandler::FinishProcessing(
   if (sync_processor_.get() &&
       post_processing_action == DROP_AFTER_PROCESSING) {
     syncer::SyncChangeList change_list;
-    for (size_t i = 0; i < delete_directives.size(); ++i) {
+    for (const syncer::SyncData& delete_directive : delete_directives) {
       change_list.push_back(syncer::SyncChange(
-          FROM_HERE, syncer::SyncChange::ACTION_DELETE, delete_directives[i]));
+          FROM_HERE, syncer::SyncChange::ACTION_DELETE, delete_directive));
     }
     sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   }

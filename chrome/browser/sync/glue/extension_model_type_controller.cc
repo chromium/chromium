@@ -26,7 +26,7 @@ ExtensionModelTypeController::ExtensionModelTypeController(
          type == syncer::THEMES);
 }
 
-ExtensionModelTypeController::~ExtensionModelTypeController() {}
+ExtensionModelTypeController::~ExtensionModelTypeController() = default;
 
 void ExtensionModelTypeController::LoadModels(
     const syncer::ConfigureContext& configure_context,

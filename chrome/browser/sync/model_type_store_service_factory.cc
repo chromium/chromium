@@ -26,7 +26,7 @@ ModelTypeStoreServiceFactory::ModelTypeStoreServiceFactory()
           "ModelTypeStoreService",
           BrowserContextDependencyManager::GetInstance()) {}
 
-ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() {}
+ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() = default;
 
 KeyedService* ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

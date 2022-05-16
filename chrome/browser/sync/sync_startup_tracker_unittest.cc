@@ -21,7 +21,7 @@ class MockObserver : public SyncStartupTracker::Observer {
 
 class SyncStartupTrackerTest : public testing::Test {
  public:
-  SyncStartupTrackerTest() {}
+  SyncStartupTrackerTest() = default;
 
   void SetupNonInitializedPSS() {
     sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());

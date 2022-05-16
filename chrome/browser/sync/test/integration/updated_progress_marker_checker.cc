@@ -23,7 +23,7 @@ UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() {}
+UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() = default;
 
 bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for progress markers";

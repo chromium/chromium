@@ -2679,7 +2679,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   type_processor()->OnCommitCompleted(
       model_type_state(),
       /*committed_response_list=*/CommitResponseDataList(),
-      /*rror_response_list=*/FailedCommitResponseDataList());
+      /*error_response_list=*/FailedCommitResponseDataList());
   EXPECT_EQ(0, bridge()->commit_failures_count());
 }
 

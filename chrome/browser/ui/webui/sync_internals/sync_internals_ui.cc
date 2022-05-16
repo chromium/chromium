@@ -48,4 +48,4 @@ SyncInternalsUI::SyncInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<SyncInternalsMessageHandler>());
 }
 
-SyncInternalsUI::~SyncInternalsUI() {}
+SyncInternalsUI::~SyncInternalsUI() = default;

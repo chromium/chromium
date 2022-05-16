@@ -336,7 +336,7 @@ TEST_F(LocalSessionEventHandlerImplTest, AssociateWindowsAndTabsIfEmpty) {
   auto mock_batch = std::make_unique<StrictMock<MockWriteBatch>>();
   EXPECT_CALL(*mock_batch,
               Put(Pointee(MatchesHeader(kSessionTag, /*window_ids=*/IsEmpty(),
-                                        /*tabs_ids=*/IsEmpty()))));
+                                        /*tab_ids=*/IsEmpty()))));
   EXPECT_CALL(*mock_batch, Commit());
   EXPECT_CALL(mock_delegate_, CreateLocalSessionWriteBatch())
       .WillOnce(Return(ByMove(std::move(mock_batch))));

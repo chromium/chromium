@@ -25,7 +25,7 @@ class TwoClientAutocompleteSyncTest : public SyncTest {
   TwoClientAutocompleteSyncTest& operator=(
       const TwoClientAutocompleteSyncTest&) = delete;
 
-  ~TwoClientAutocompleteSyncTest() override {}
+  ~TwoClientAutocompleteSyncTest() override = default;
 
   bool TestUsesSelfNotifications() override { return false; }
 };

@@ -102,7 +102,7 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
   SingleClientCustomPassphraseSyncTest& operator=(
       const SingleClientCustomPassphraseSyncTest&) = delete;
 
-  ~SingleClientCustomPassphraseSyncTest() override {}
+  ~SingleClientCustomPassphraseSyncTest() override = default;
 
   // Waits until the given set of bookmarks appears on the server, encrypted
   // according to the server-side Nigori and with the given passphrase.

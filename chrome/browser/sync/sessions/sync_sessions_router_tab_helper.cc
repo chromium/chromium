@@ -38,7 +38,7 @@ SyncSessionsRouterTabHelper::SyncSessionsRouterTabHelper(
     favicon_driver_->AddObserver(this);
 }
 
-SyncSessionsRouterTabHelper::~SyncSessionsRouterTabHelper() {}
+SyncSessionsRouterTabHelper::~SyncSessionsRouterTabHelper() = default;
 
 void SyncSessionsRouterTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

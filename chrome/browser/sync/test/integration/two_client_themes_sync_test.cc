@@ -25,7 +25,7 @@ class TwoClientThemesSyncTest : public SyncTest {
   TwoClientThemesSyncTest(const TwoClientThemesSyncTest&) = delete;
   TwoClientThemesSyncTest& operator=(const TwoClientThemesSyncTest&) = delete;
 
-  ~TwoClientThemesSyncTest() override {}
+  ~TwoClientThemesSyncTest() override = default;
 };
 
 // Starts with default themes, then sets up sync and uses it to set all

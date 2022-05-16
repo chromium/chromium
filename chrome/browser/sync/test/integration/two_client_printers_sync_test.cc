@@ -42,7 +42,7 @@ class TwoClientPrintersSyncTest : public SyncTest {
   TwoClientPrintersSyncTest& operator=(const TwoClientPrintersSyncTest&) =
       delete;
 
-  ~TwoClientPrintersSyncTest() override {}
+  ~TwoClientPrintersSyncTest() override = default;
 };
 
 }  // namespace

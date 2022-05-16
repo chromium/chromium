@@ -102,7 +102,7 @@ ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-ThemePendingInstallChecker::~ThemePendingInstallChecker() {}
+ThemePendingInstallChecker::~ThemePendingInstallChecker() = default;
 
 bool ThemePendingInstallChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pending theme to be '" << theme_ << "'";

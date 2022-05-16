@@ -32,9 +32,9 @@ const char kTypedURLModelTypeStateKey[] = "typed_url_model_type_state";
 //   value            Serialize sync EntityMetadata, which is for tracking sync
 //                    state of each typed url.
 
-TypedURLSyncMetadataDatabase::TypedURLSyncMetadataDatabase() {}
+TypedURLSyncMetadataDatabase::TypedURLSyncMetadataDatabase() = default;
 
-TypedURLSyncMetadataDatabase::~TypedURLSyncMetadataDatabase() {}
+TypedURLSyncMetadataDatabase::~TypedURLSyncMetadataDatabase() = default;
 
 bool TypedURLSyncMetadataDatabase::GetAllSyncMetadata(
     syncer::MetadataBatch* metadata_batch) {

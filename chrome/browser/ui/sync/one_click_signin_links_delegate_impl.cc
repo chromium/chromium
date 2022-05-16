@@ -13,7 +13,7 @@ OneClickSigninLinksDelegateImpl::OneClickSigninLinksDelegateImpl(
     Browser* browser)
     : browser_(browser) {}
 
-OneClickSigninLinksDelegateImpl::~OneClickSigninLinksDelegateImpl() {}
+OneClickSigninLinksDelegateImpl::~OneClickSigninLinksDelegateImpl() = default;
 
 void OneClickSigninLinksDelegateImpl::OnLearnMoreLinkClicked(bool is_dialog) {
   NavigateParams params(browser_, GURL(chrome::kChromeSyncLearnMoreURL),

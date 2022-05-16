@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
@@ -236,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   // Upon a local creation, the received update will be seen as reflection and
   // get counted as incremental update.
-  EXPECT_EQ(
-      1, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.PASSWORD",
-                                         /*REMOTE_NON_INITIAL_UPDATE=*/4));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.PASSWORD",
+                   syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
@@ -256,12 +257,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTest,
   // If that metadata hasn't been properly persisted, the password stored on the
   // server will be received at the client as an initial update or an
   // incremental once.
-  EXPECT_EQ(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.PASSWORD",
-                                         /*REMOTE_INITIAL_UPDATE=*/5));
-  EXPECT_EQ(
-      0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.PASSWORD",
-                                         /*REMOTE_NON_INITIAL_UPDATE=*/4));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.PASSWORD",
+                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Sync.ModelTypeEntityChange3.PASSWORD",
+                   syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate));
 }
 
 class SingleClientPasswordsWithAccountStorageSyncTest : public SyncTest {

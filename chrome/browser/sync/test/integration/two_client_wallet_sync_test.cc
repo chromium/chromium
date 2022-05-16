@@ -60,7 +60,7 @@ class TwoClientWalletSyncTest : public SyncTest {
   TwoClientWalletSyncTest(const TwoClientWalletSyncTest&) = delete;
   TwoClientWalletSyncTest& operator=(const TwoClientWalletSyncTest&) = delete;
 
-  ~TwoClientWalletSyncTest() override {}
+  ~TwoClientWalletSyncTest() override = default;
 
   // Needed for AwaitQuiescence().
   bool TestUsesSelfNotifications() override { return true; }

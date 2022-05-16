@@ -55,7 +55,7 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
   SingleClientSecondaryAccountSyncTest& operator=(
       const SingleClientSecondaryAccountSyncTest&) = delete;
 
-  ~SingleClientSecondaryAccountSyncTest() override {}
+  ~SingleClientSecondaryAccountSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     test_signin_client_subscription_ =

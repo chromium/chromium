@@ -88,7 +88,7 @@ MATCHER_P(MatchesModelType, model_type, "") {
 class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
  public:
   explicit TestSyncProcessorStub(syncer::SyncChangeList* output)
-      : output_(output), fail_next_(false) {}
+      : output_(output) {}
 
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
@@ -106,7 +106,7 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
 
  private:
   raw_ptr<syncer::SyncChangeList> output_;
-  bool fail_next_;
+  bool fail_next_ = false;
 };
 
 class TestSyncedPrefObserver : public SyncedPrefObserver {

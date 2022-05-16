@@ -240,7 +240,7 @@ bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
 
 // Represents a favicon image and the icon URL associated with it.
 struct FaviconData {
-  FaviconData() {}
+  FaviconData() = default;
 
   FaviconData(const gfx::Image& favicon_image, const GURL& favicon_url)
       : image(favicon_image), icon_url(favicon_url) {}
@@ -823,8 +823,7 @@ gfx::Image CreateFavicon(SkColor color) {
   const int dip_height = 16;
   std::vector<float> favicon_scales = favicon_base::GetFaviconScales();
   gfx::ImageSkia favicon;
-  for (size_t i = 0; i < favicon_scales.size(); ++i) {
-    float scale = favicon_scales[i];
+  for (float scale : favicon_scales) {
     int pixel_width = dip_width * scale;
     int pixel_height = dip_height * scale;
     SkBitmap bmp;
@@ -1085,7 +1084,8 @@ SingleBookmarksModelMatcherChecker::SingleBookmarksModelMatcherChecker(
     : SingleBookmarkModelStatusChangeChecker(profile_index),
       matcher_(matcher) {}
 
-SingleBookmarksModelMatcherChecker::~SingleBookmarksModelMatcherChecker() {}
+SingleBookmarksModelMatcherChecker::~SingleBookmarksModelMatcherChecker() =
+    default;
 
 bool SingleBookmarksModelMatcherChecker::IsExitConditionSatisfied(
     std::ostream* os) {
@@ -1197,7 +1197,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
   return true;
 }
 
-ServerBookmarksEqualityChecker::~ServerBookmarksEqualityChecker() {}
+ServerBookmarksEqualityChecker::~ServerBookmarksEqualityChecker() = default;
 
 BookmarksUrlChecker::BookmarksUrlChecker(int profile,
                                          const GURL& url,
@@ -1222,7 +1222,7 @@ BookmarksGUIDChecker::BookmarksGUIDChecker(int profile, const base::GUID& guid)
     : SingleBookmarksModelMatcherChecker(profile,
                                          testing::Contains(HasGuid(guid))) {}
 
-BookmarksGUIDChecker::~BookmarksGUIDChecker() {}
+BookmarksGUIDChecker::~BookmarksGUIDChecker() = default;
 
 BookmarkModelMatchesFakeServerChecker::BookmarkModelMatchesFakeServerChecker(
     int profile,

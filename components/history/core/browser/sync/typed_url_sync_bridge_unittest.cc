@@ -255,7 +255,7 @@ void StoreMetadata(const std::string& storage_key,
 
 class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
  public:
-  TestHistoryBackendDelegate() {}
+  TestHistoryBackendDelegate() = default;
 
   TestHistoryBackendDelegate(const TestHistoryBackendDelegate&) = delete;
   TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
@@ -316,14 +316,14 @@ class TestHistoryBackendForSync : public HistoryBackend {
 
     std::vector<VisitInfo> added_visits;
     for (const auto& visit : visits) {
-      added_visits.push_back(VisitInfo(visit.visit_time, visit.transition));
+      added_visits.emplace_back(visit.visit_time, visit.transition);
     }
     AddVisits(new_url->url(), added_visits, SOURCE_SYNCED);
     new_url->set_id(GetIdByUrl(new_url->url()));
   }
 
  private:
-  ~TestHistoryBackendForSync() override {}
+  ~TestHistoryBackendForSync() override = default;
 };
 
 class MockHistoryBackendClient : public HistoryBackendClient {
@@ -1498,8 +1498,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsSame) {
   const int64_t visits[] = {1024, 2065, 65534, 1237684};
 
   for (int64_t visit : visits) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
     new_url.add_visits(visit);
     new_url.add_visit_transitions(ui::PAGE_TRANSITION_TYPED);
   }
@@ -1528,8 +1528,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsRemove) {
   const int64_t visits_removed[] = {1500, 6000, 2237684};
 
   for (int64_t visit : visits_left) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
   }
 
   for (int64_t visit : visits_right) {
@@ -1562,8 +1562,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsAdd) {
   const int64_t visits_added[] = {1, 1500, 6000, 2237684};
 
   for (int64_t visit : visits_left) {
-    old_visits.push_back(VisitRow(0, SinceEpoch(visit), 0,
-                                  ui::PAGE_TRANSITION_TYPED, 0, true, 0));
+    old_visits.emplace_back(0, SinceEpoch(visit), 0, ui::PAGE_TRANSITION_TYPED,
+                            0, true, 0);
   }
 
   for (int64_t visit : visits_right) {
