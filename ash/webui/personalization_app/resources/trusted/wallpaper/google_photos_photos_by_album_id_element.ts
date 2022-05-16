@@ -285,12 +285,30 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     return undefined;
   }
 
+  /** Returns the aria posinset index for the photo at index |i|. */
+  private getPhotoAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  /**
+   * Returns 'true' or 'false' depending on whether the specified |photo| is
+   * currently selected.
+   */
+  private getPhotoAriaSelected_(
+      photo: GooglePhotosPhoto|null,
+      currentSelected: GooglePhotosPhotosByAlbumId['currentSelected_'],
+      pendingSelected: GooglePhotosPhotosByAlbumId['pendingSelected_']):
+      string {
+    return this.isPhotoSelected_(photo, currentSelected, pendingSelected)
+        .toString();
+  }
+
   /** Returns whether the specified |photo| is a placeholder. */
   private isPhotoPlaceholder_(photo: GooglePhotosPhoto|null): boolean {
     return !!photo && photo.id === PLACEHOLDER_ID;
   }
 
-  // Returns whether the specified |photo| is currently selected.
+  /** Returns whether the specified |photo| is currently selected. */
   private isPhotoSelected_(
       photo: GooglePhotosPhoto|null,
       currentSelected: GooglePhotosPhotosByAlbumId['currentSelected_'],

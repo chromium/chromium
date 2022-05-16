@@ -398,15 +398,27 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     const selector = 'wallpaper-grid-item:not([hidden]).photo';
     const photoSelector = `${selector}:not([placeholder])`;
     const placeholderSelector = `${selector}[placeholder]`;
+    const photoListSelector = 'iron-list:not([hidden])#grid';
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
-    assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
+    let placeholderEls = querySelectorAll(placeholderSelector);
+    assertEquals(placeholderEls!.length, 0);
+    let photoListEl = querySelectorAll(photoListSelector);
+    assertEquals(photoListEl!.length, 1);
+    assertEquals(
+        photoListEl![0]!.getAttribute('aria-setsize'),
+        placeholderEls!.length.toString());
 
     // Select album id. Only placeholders should be present.
     googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
-    const placeholderEls = querySelectorAll(placeholderSelector);
+    placeholderEls = querySelectorAll(placeholderSelector);
     assertNotEquals(placeholderEls!.length, 0);
+    photoListEl = querySelectorAll(photoListSelector);
+    assertEquals(photoListEl!.length, 1);
+    assertEquals(
+        photoListEl![0]!.getAttribute('aria-setsize'),
+        placeholderEls!.length.toString());
 
     // Placeholders should be aria-labeled.
     placeholderEls!.forEach(placeholderEl => {
@@ -432,9 +444,18 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     assertNotEquals(photoEls!.length, 0);
     assertEquals(querySelectorAll(placeholderSelector)!.length, 0);
 
+    // The photo list's aria-setsize should be consistent with the number of
+    // photos.
+    photoListEl = querySelectorAll(photoListSelector);
+    assertEquals(photoListEl!.length, 1);
+    assertEquals(
+        photoListEl![0]!.getAttribute('aria-setsize'),
+        photos.length.toString());
+
     // Photos should be aria-labeled.
     photoEls!.forEach((photoEl, i) => {
       assertEquals(photoEl.getAttribute('aria-label'), photos[i]!.name);
+      assertEquals(photoEl.getAttribute('aria-posinset'), (i + 1).toString());
     });
 
     // Clicking a photo should do something.
