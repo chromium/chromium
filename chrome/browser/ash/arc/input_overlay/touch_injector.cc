@@ -204,6 +204,8 @@ void TouchInjector::OnApplyPendingBinding() {
 
 void TouchInjector::OnBindingSave() {
   OnApplyPendingBinding();
+  if (display_overlay_controller_)
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
   OnSaveProtoFile();
 }
 
