@@ -2166,7 +2166,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/protocol_handler_launch_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/webauthn/authenticator_dialog_view_browsertest.cc",
-      "../browser/ui/views/webauthn/webauthn_icon_interactive_uitest.cc",
       "../browser/ui/views/webid/fake_delegate.cc",
       "../browser/ui/views/webid/fake_delegate.h",
       "../browser/ui/views/webid/fedcm_account_selection_view_desktop_browsertest.cc",

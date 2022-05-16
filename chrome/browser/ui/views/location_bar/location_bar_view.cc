@@ -322,9 +322,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFileSystemAccess);
-    if (base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
-      params.types_enabled.push_back(PageActionIconType::kWebAuthn);
-    }
 
     if (dom_distiller::IsDomDistillerEnabled() && browser_->is_type_normal()) {
       params.types_enabled.push_back(PageActionIconType::kReaderMode);

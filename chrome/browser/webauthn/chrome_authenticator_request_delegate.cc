@@ -854,11 +854,6 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   weak_dialog_model_->StartFlow(std::move(data), is_conditional_,
                                 last_used_native_api);
 
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (browser) {
-    browser->window()->UpdatePageActionIcon(PageActionIconType::kWebAuthn);
-  }
-
   ShowAuthenticatorRequestDialog(web_contents,
                                  std::move(transient_dialog_model_holder_));
 

@@ -28,7 +28,6 @@ enum class PageActionIconType {
   kTranslate,
   kVirtualCardManualFallback,
   kVirtualCardEnroll,
-  kWebAuthn,
   kZoom,
 };
 

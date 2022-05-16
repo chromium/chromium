@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
-#include "chrome/browser/ui/views/webauthn/webauthn_icon_view.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
 #include "ui/views/animation/ink_drop.h"
@@ -219,13 +218,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         DCHECK(params.command_updater);
         add_page_action_icon(
             type, std::make_unique<TranslateIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kWebAuthn:
-        DCHECK(base::FeatureList::IsEnabled(features::kWebAuthConditionalUI));
-        add_page_action_icon(
-            type, std::make_unique<WebAuthnIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
