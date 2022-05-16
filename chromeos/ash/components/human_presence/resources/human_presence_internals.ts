@@ -81,6 +81,10 @@ function onEnableError() {
   $('enable-error').style.display = 'block';
 }
 
+function onManifest(manifest: string) {
+  $('manifest').textContent = manifest;
+}
+
 function onSenseChanged(value: IncomingHpsResult) {
   if (value.disabled) {
     enableButton('enable-sense', true);
@@ -124,10 +128,12 @@ function initialize() {
   addWebUIListener('sense_changed', onSenseChanged);
   addWebUIListener('notify_changed', onNotifyChanged);
   addWebUIListener('enable_error', onEnableError);
+  addWebUIListener('manifest', onManifest);
   $('enable-sense').onclick = enableSense;
   $('disable-sense').onclick = disableSense;
   $('enable-notify').onclick = enableNotify;
   $('disable-notify').onclick = disableNotify;
+  $('show-info').onclick = showInfo;
   onConnected({connected: false});
   chrome.send('connect');
 }
@@ -156,6 +162,10 @@ function disableNotify() {
   // UI always reflects the latest state. This is needed because hpsd sends an
   // UNKNOWN result whenever a feature is turned off.
   chrome.send('query_notify');
+}
+
+function showInfo() {
+  ($('info-dialog') as any).showModal();
 }
 
 function updatePolling() {

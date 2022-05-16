@@ -26,6 +26,7 @@ extern const char kHumanPresenceInternalsConnectedEvent[];
 extern const char kHumanPresenceInternalsLockOnLeaveChangedEvent[];
 extern const char kHumanPresenceInternalsSnoopingProtectionChangedEvent[];
 extern const char kHumanPresenceInternalsEnableErrorEvent[];
+extern const char kHumanPresenceInternalsManifestEvent[];
 
 }  // namespace hps
 
