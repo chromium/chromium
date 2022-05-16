@@ -56,8 +56,8 @@ void MergeForSubframesWithAdjustedTime(
   DCHECK(inout_timing);
   const ContentfulPaintTimingInfo new_candidate(
       candidate_new_time, candidate_new_size, inout_timing->TextOrImage(),
-      inout_timing->InMainFrame(), inout_timing->Type(),
-      inout_timing->ImageBPP());
+      inout_timing->ImageBPP(), inout_timing->InMainFrame(),
+      inout_timing->Type());
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
   inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
