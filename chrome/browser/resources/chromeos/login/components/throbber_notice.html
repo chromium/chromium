@@ -35,8 +35,10 @@
     </style>
     <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
     <div id="comment" aria-live="polite"
-        aria-label$="[[i18nDynamic(locale, textKey)]]">
-      [[i18nDynamic(locale, textKey)]]
+        aria-label$="[[getAriaLabel(locale, textKey)]]">
+      <template is="dom-if" if="[[textKey]]">
+        [[i18nDynamic(locale, textKey)]]
+      </template>
     </div>
   </template>
   <script src="throbber_notice.js"></script>

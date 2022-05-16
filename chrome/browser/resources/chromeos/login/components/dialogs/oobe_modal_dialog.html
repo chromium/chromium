@@ -59,13 +59,19 @@ The dialog provides two properties that can be set directly from HTML.
     <cr-dialog id="modalDialog" on-close="onClose_">
       <!-- Title -->
       <div id="modalDialogTitle" slot="title">
-        <slot name="title">[[i18nDynamic(locale, titleKey)]]</slot>
+        <slot name="title">
+          <template is="dom-if" if="[[titleKey]]">
+            [[i18nDynamic(locale, titleKey)]]
+          </template>
+        </slot>
       </div>
       <!-- Content to be shown -->
       <div id="contentContainer" slot="body"
           class="flex-grow layout vertical not-resizable">
         <slot name="content">
-          [[i18nDynamic(locale, contentKey)]]
+          <template is="dom-if" if="[[contentKey]]">
+            [[i18nDynamic(locale, contentKey)]]
+          </template>
         </slot>
       </div>
       <!-- Close Button -->

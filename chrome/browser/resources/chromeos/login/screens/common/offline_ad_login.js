@@ -114,7 +114,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       /**
        * ID of localized welcome message on top of the UI.
        */
-      adWelcomeMessageKey: String,
+      adWelcomeMessageKey: {type: String, value: 'loginWelcomeMessage'},
       /**
        * Error message for the machine name input.
        */
@@ -268,9 +268,6 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       if ('emailDomain' in data) {
         this.userRealm = '@' + data['emailDomain'];
       }
-    }
-    if (!this.adWelcomeMessageKey) {
-      this.adWelcomeMessageKey = 'loginWelcomeMessage';
     }
     this.focus();
   }
@@ -570,14 +567,14 @@ class OfflineAdLogin extends OfflineAdLoginBase {
 
   getMachineNameError_(locale, errorState) {
     if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG) {
-      return this.i18nDynamic(locale, 'adJoinErrorMachineNameTooLong');
+      return this.i18n('adJoinErrorMachineNameTooLong');
     }
     if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_INVALID) {
       if (this.machineNameInputPattern_) {
-        return this.i18nDynamic(locale, 'adJoinErrorMachineNameInvalidFormat');
+        return this.i18n('adJoinErrorMachineNameInvalidFormat');
       }
     }
-    return this.i18nDynamic(locale, 'adJoinErrorMachineNameInvalid');
+    return this.i18n('adJoinErrorMachineNameInvalid');
   }
 
   onKeydownUnlockPassword_(e) {

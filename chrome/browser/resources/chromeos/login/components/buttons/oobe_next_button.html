@@ -80,7 +80,9 @@
         aria-label$="[[labelForAria_]]" class="action-button">
       <div class="flex horizontal layout center-justified center">
         <slot name="text">
-          <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          <template is="dom-if" if="[[textKey]]">
+            <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          </template>
         </slot>
         <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
       </div>

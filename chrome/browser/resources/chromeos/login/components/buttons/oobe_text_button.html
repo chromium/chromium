@@ -65,7 +65,9 @@
       <div id="container"
           class="flex layout horizontal center center-justified self-stretch">
         <slot name="text">
-          <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          <template is="dom-if" if="[[textKey]]">
+            <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+          </template>
         </slot>
       </div>
     </cr-button>

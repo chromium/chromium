@@ -21,23 +21,6 @@ const OobeI18nBehaviorImpl = {
   },
 
   /**
-   * See documentation for I18nBehavior.i18n(...)
-   * @param {string} id The ID of the string to translate.
-   * @param {...string|number} var_args Values to replace the placeholders $1
-   *     to $9 in the string.
-   * @return {string} A translated, sanitized, substituted string.
-   */
-  i18n(id, var_args) {
-    if (typeof this.locale === 'undefined') {
-      return '';
-    }
-    if (typeof id === 'undefined') {
-      return '';
-    }
-    return I18nBehavior.i18n.apply(this, arguments);
-  },
-
-  /**
    * Similar to 'i18nAdvanced', with an unused |locale| parameter used to
    * trigger updates when |this.locale| changes.
    * @param {string} locale The UI language used.

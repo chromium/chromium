@@ -47,9 +47,9 @@ Polymer({
   },
 
   ariaLabel_(labelForAria, locale, textKey) {
-    if ((typeof labelForAria !== 'undefined') && (labelForAria !== '')) {
+    if (labelForAria) {
       return labelForAria;
     }
-    return this.i18n(textKey);
+    return (!textKey) ? '' : this.i18n(textKey);
   },
 });
