@@ -51,6 +51,7 @@ align-content: normal
 align-items: normal
 align-self: auto
 alignment-baseline: auto
+anchor-name: none
 animation-delay: 0s
 animation-direction: normal
 animation-duration: 0s
@@ -278,6 +279,7 @@ perspective: none
 perspective-origin: 0px 0px
 pointer-events: auto
 position: static
+position-fallback: none
 r: 0px
 resize: none
 right: auto

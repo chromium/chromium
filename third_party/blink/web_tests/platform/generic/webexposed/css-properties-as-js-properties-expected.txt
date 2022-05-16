@@ -8,6 +8,7 @@ alignItems
 alignSelf
 alignmentBaseline
 all
+anchorName
 animation
 animationDelay
 animationDirection
@@ -336,6 +337,7 @@ placeItems
 placeSelf
 pointerEvents
 position
+positionFallback
 prefix
 quotes
 r

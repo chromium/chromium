@@ -128,6 +128,25 @@ const CSSValue* AlignmentBaseline::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.AlignmentBaseline());
 }
 
+const CSSValue* AnchorName::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeDashedIdent(range, context);
+}
+const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (style.AnchorName().IsEmpty())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.AnchorName());
+}
+
 const CSSValue* AnimationDelay::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -5700,6 +5719,25 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
 void Position::ApplyInherit(StyleResolverState& state) const {
   if (!state.ParentNode()->IsDocumentNode())
     state.Style()->SetPosition(state.ParentStyle()->GetPosition());
+}
+
+const CSSValue* PositionFallback::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeDashedIdent(range, context);
+}
+const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (style.PositionFallback().IsEmpty())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(style.PositionFallback());
 }
 
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,

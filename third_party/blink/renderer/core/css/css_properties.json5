@@ -1360,6 +1360,18 @@
       converter: "ConvertSelfOrDefaultAlignmentData",
     },
     {
+      name: "anchor-name",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      type_name: "AtomicString",
+      default_value: "g_null_atom",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNoneOrCustomIdent",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
+    },
+    {
       name: "aspect-ratio",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
@@ -3669,6 +3681,18 @@
       style_builder_custom_functions: ["inherit"],
       // See comment on display.
       supports_incremental_style: false,
+    },
+    {
+      name: "position-fallback",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      type_name: "AtomicString",
+      default_value: "g_null_atom",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertNoneOrCustomIdent",
+      keywords: ["none"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSAnchorPositioning",
     },
     {
       name: "quotes",

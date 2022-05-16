@@ -1404,6 +1404,16 @@ float StyleBuilderConverter::ConvertAlpha(StyleResolverState& state,
   return ClampTo<float>(ConvertNumberOrPercentage(state, value), 0, 1);
 }
 
+AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdent(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
+    return g_null_atom;
+  }
+  return To<CSSCustomIdentValue>(value).Value();
+}
+
 StyleOffsetRotation StyleBuilderConverter::ConvertOffsetRotate(
     StyleResolverState&,
     const CSSValue& value) {
