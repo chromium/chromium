@@ -18,12 +18,12 @@ bool LoadUrlAndExpectResponse(
     fuchsia::web::NavigationController* navigation_controller,
     fuchsia::web::LoadUrlParams load_url_params,
     base::StringPiece url) {
-  DCHECK(navigation_controller);
+  CHECK(navigation_controller);
   base::test::TestFuture<fuchsia::web::NavigationController_LoadUrl_Result>
       result;
   navigation_controller->LoadUrl(std::string(url), std::move(load_url_params),
                                  CallbackToFitFunction(result.GetCallback()));
-  DCHECK(result.Wait());
+  CHECK(result.Wait());
   return result.Get().is_response();
 }
 
