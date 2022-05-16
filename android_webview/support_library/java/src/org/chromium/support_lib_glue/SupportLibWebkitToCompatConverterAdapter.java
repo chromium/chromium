@@ -4,13 +4,15 @@
 
 package org.chromium.support_lib_glue;
 
-import android.annotation.SuppressLint;
+import android.os.Build;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebMessagePort;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
+
+import androidx.annotation.RequiresApi;
 
 import com.android.webview.chromium.SafeBrowsingResponseAdapter;
 import com.android.webview.chromium.ServiceWorkerSettingsAdapter;
@@ -49,8 +51,8 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     // ServiceWorkerWebSettingsBoundaryInterface
-    @SuppressLint("NewApi")
     @Override
+    @RequiresApi(Build.VERSION_CODES.N)
     public InvocationHandler convertServiceWorkerSettings(
             /* ServiceWorkerWebSettings */ Object serviceWorkerWebSettings) {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -60,6 +62,7 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     @Override
+    @RequiresApi(Build.VERSION_CODES.N)
     public /* ServiceWorkerWebSettings */ Object convertServiceWorkerSettings(
             /* SupportLibServiceWorkerSettings */ InvocationHandler serviceWorkerSettings) {
         SupportLibServiceWorkerSettingsAdapter supportLibWebSettings =
@@ -68,7 +71,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
         return new ServiceWorkerSettingsAdapter(supportLibWebSettings.getAwServiceWorkerSettings());
     }
 
-    @SuppressLint("NewApi")
     @Override
     public /* SupportLibWebResourceError */ InvocationHandler convertWebResourceError(
             /* WebResourceError */ Object webResourceError) {
@@ -86,8 +88,8 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
         return new WebResourceErrorAdapter(supportLibError.getAwWebResourceError());
     }
 
-    @SuppressLint("NewApi")
     @Override
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public /* SupportLibSafeBrowsingResponse */ InvocationHandler convertSafeBrowsingResponse(
             /* SafeBrowsingResponse */ Object safeBrowsingResponse) {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
@@ -97,6 +99,7 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
     }
 
     @Override
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public /* SafeBrowsingResponse */ Object convertSafeBrowsingResponse(
             /* SupportLibSafeBrowsingResponse */ InvocationHandler safeBrowsingResponse) {
         SupportLibSafeBrowsingResponse supportLibResponse =
@@ -106,7 +109,6 @@ class SupportLibWebkitToCompatConverterAdapter implements WebkitToCompatConverte
                 supportLibResponse.getAwSafeBrowsingResponseCallback());
     }
 
-    @SuppressLint("NewApi")
     @Override
     public /* SupportLibWebMessagePort */ InvocationHandler convertWebMessagePort(
             /* WebMessagePort */ Object webMessagePort) {

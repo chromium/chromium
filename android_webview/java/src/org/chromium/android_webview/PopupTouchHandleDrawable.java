@@ -262,7 +262,6 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
         if (orientationChanged || mirroringChanged) scheduleInvalidate();
     }
 
-    @SuppressLint("NewApi")
     private void updateDrawableAndRequestLayout() {
         mNeedsUpdateDrawable = false;
 

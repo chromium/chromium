@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.os.Build;
 import android.webkit.SafeBrowsingResponse;
 import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebMessagePort;
@@ -11,6 +12,8 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
@@ -40,6 +43,7 @@ public class WebkitToSharedGlueConverter {
         return WebViewChromiumFactoryProvider.getSingleton().getAwInit();
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     public static AwServiceWorkerSettings getServiceWorkerSettings(
             ServiceWorkerWebSettings settings) {
         ServiceWorkerSettingsAdapter adapter = (ServiceWorkerSettingsAdapter) settings;
@@ -55,6 +59,7 @@ public class WebkitToSharedGlueConverter {
         return ((WebResourceErrorAdapter) error).getAwWebResourceError();
     }
 
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
     public static Callback<AwSafeBrowsingResponse> getAwSafeBrowsingResponseCallback(
             SafeBrowsingResponse response) {
         return ((SafeBrowsingResponseAdapter) response).getAwSafeBrowsingResponseCallback();

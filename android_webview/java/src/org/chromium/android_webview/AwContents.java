@@ -1284,7 +1284,6 @@ public class AwContents implements SmartClipProvider {
     /**
      * Reconciles the state of this AwContents object with the state of the new container view.
      */
-    @SuppressLint("NewApi") // ViewGroup#isAttachedToWindow requires API level 19.
     private void onContainerViewChanged() {
         // NOTE: mAwViewMethods is used by the old container view, the WebView, so it might refer
         // to a NullAwViewMethods when in fullscreen. To ensure that the state is reconciled with
@@ -1312,10 +1311,14 @@ public class AwContents implements SmartClipProvider {
         awViewMethodsImpl.onWindowFocusChanged(mContainerView.hasWindowFocus());
         awViewMethodsImpl.onFocusChanged(mContainerView.hasFocus(), 0, null);
         mContainerView.requestLayout();
-        if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (mAutofillProvider != null) mAutofillProvider.onContainerViewChanged(mContainerView);
+        }
         mDisplayModeController.setCurrentContainerView(mContainerView);
-        if (mDisplayCutoutController != null) {
-            mDisplayCutoutController.setCurrentContainerView(mContainerView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (mDisplayCutoutController != null) {
+                mDisplayCutoutController.setCurrentContainerView(mContainerView);
+            }
         }
     }
 
@@ -3372,7 +3375,6 @@ public class AwContents implements SmartClipProvider {
     /**
      * @see JavascriptInjector#addPossiblyUnsafeInterface(Object, String, Class)
      */
-    @SuppressLint("NewApi")  // JavascriptInterface requires API level 17.
     public void addJavascriptInterface(Object object, String name) {
         if (TRACE) Log.i(TAG, "%s addJavascriptInterface=%s", this, name);
         if (isDestroyed(WARN)) return;
