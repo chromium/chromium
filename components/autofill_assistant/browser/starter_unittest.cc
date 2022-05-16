@@ -2254,6 +2254,55 @@ TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
   EXPECT_THAT(GetUkmRegularScriptOnboarding(ukm_recorder_), IsEmpty());
 }
 
+class StarterFencedFrameTest : public StarterTest {
+ public:
+  StarterFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~StarterFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(StarterFencedFrameTest, NoImplicitTriggeringForFencedFrames) {
+  // This test should not fetch trigger scripts.
+  SetupPlatformDelegateForReturningUser();
+  PrepareTriggerScriptRequestSender();
+  EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
+      .Times(0);
+
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"REQUEST_TRIGGER_SCRIPT", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+
+  // Start on "different.com" and it shouldn't start immediately.
+  SimulateNavigateToUrl(GURL("https://www.different.com"));
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
+  // Create a fenced frame and navigate to the example deeplink. The navigation
+  // should not start because it is not in the primary main frame.
+  content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(web_contents()->GetMainFrame());
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(GURL(kExampleDeeplink),
+                                                         fenced_frame_rfh);
+  navigation_simulator->Start();
+}
+
 TEST_F(StarterTest, StartupRegistersTriggerFieldTrial) {
   auto mock_field_trial_util =
       std::make_unique<NiceMock<MockAssistantFieldTrialUtil>>();
