@@ -21,8 +21,11 @@ EXTRA_PATHS_COMPONENTS = [
     ('tools', 'perf'),
 ]
 
+# Directories that should have pytype run on them when Python files are changed.
+PYTYPE_DIRECTORIES = []
 
-def CommonChecks(input_api, output_api):
+
+def CommonChecks(input_api, output_api, run_pytype):
   results = []
 
   gpu_env = dict(input_api.environ)
@@ -89,9 +92,56 @@ def CommonChecks(input_api, output_api):
       version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
+  # pytype can take quite a long time to run on the GPU code, likely due to all
+  # the dependencies that it has to check as well. So, don't run pytype except
+  # on commit (i.e. on the bots).
+  if run_pytype:
+    # pytype specifies that the provided PYTHONPATH is :-separated.
+    pytype_paths = [testing_path, current_path] + pylint_extra_paths
+    pytype_python_path = ':'.join(pytype_paths)
+    results.extend(RunPytype(input_api, output_api, pytype_python_path,
+                             gpu_env))
+
   results.extend(CheckForNewSkipExpectations(input_api, output_api))
 
   return results
+
+
+def RunPytype(input_api, output_api, python_path, gpu_env):
+  """Runs pytype on changed Python files to enforce type hinting."""
+  affected_directories = set()
+  abspath_directories = {
+      input_api.os_path.join(input_api.PresubmitLocalPath(), d): d
+      for d in PYTYPE_DIRECTORIES
+  }
+  file_filter = lambda f: f.AbsoluteLocalPath().endswith('.py')
+  for affected_file in input_api.AffectedFiles(file_filter=file_filter):
+    for abs_d, d in abspath_directories.items():
+      if affected_file.AbsoluteLocalPath().startswith(abs_d):
+        affected_directories.add(d)
+        break
+
+  if not affected_directories:
+    return []
+
+  script_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                       'run_pytype.py')
+  pytype_cmd = [
+      input_api.python3_executable,
+      script_path,
+      '--pythonpath',
+      python_path,
+      '--keep-going',
+      '--jobs',
+      'auto',
+  ]
+  pytype_cmd.extend(list(affected_directories))
+  pytype_test = input_api.Command(name='run_content_test_gpu_pytype',
+                                  cmd=pytype_cmd,
+                                  kwargs={'env': gpu_env},
+                                  message=output_api.PresubmitPromptWarning,
+                                  python3=True)
+  return input_api.RunTests([pytype_test])
 
 
 def CheckForNewSkipExpectations(input_api, output_api):
@@ -121,7 +171,8 @@ def CheckForNewSkipExpectations(input_api, output_api):
 
 
 def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+  return CommonChecks(input_api, output_api, run_pytype=False)
+
 
 def CheckChangeOnCommit(input_api, output_api):
-  return CommonChecks(input_api, output_api)
+  return CommonChecks(input_api, output_api, run_pytype=True)

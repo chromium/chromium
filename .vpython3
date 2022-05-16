@@ -52,6 +52,96 @@ wheel: <
   version: "version:1.15.0"
 >
 
+# These wheels are necessary to run pytype, i.e. enforce Python 3 type hinting.
+# We currently use 2021.11.2 instead of the 2022.5.5 available in CIPD because
+# 2022.5.5 seems to have issues when analyzing code that imports the asyncio
+# module. 2021.11.2 only has Linux wheels available, so restrict to that
+# platform.
+wheel: <
+  name: "infra/python/wheels/pytype/${vpython_platform}"
+  version: "version:2021.11.2"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/importlab-py3"
+  version: "version:0.6.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/networkx-py3"
+  version: "version:2.5"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/decorator-py3"
+  version: "version:5.0.9"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/libcst-py3"
+  version: "version:0.3.19"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/pyyaml/${vpython_platform}"
+  version: "version:5.4.1.chromium.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typing-inspect-py3"
+  version: "version:0.7.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.0.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/tabulate-py3"
+  version: "version:0.8.9"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typed-ast/${vpython_platform}"
+  version: "version:1.5.3"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/ninja/${vpython_platform}"
+  version: "version:1.10.0.post2"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/mypy-extensions-py3"
+  version: "version:0.4.3"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+
 # Common utilities.
 # Use the same versions specified by //third_party/catapult/.vpython3 so that
 # Chromium tests using Telemetry function properly.
@@ -273,7 +363,7 @@ wheel <
 
 wheel <
   name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:20.3.0"
+  version: "version:21.4.0"
 >
 
 wheel <
