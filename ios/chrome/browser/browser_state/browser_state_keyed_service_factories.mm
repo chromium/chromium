@@ -161,10 +161,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   UnifiedConsentServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
   VerdictCacheManagerFactory::GetInstance();
-
-  if (IsURLBlocklistEnabled()) {
-    PolicyBlocklistServiceFactory::GetInstance();
-  }
+  PolicyBlocklistServiceFactory::GetInstance();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

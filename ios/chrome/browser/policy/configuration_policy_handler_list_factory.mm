@@ -163,11 +163,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::NewTabPageLocationPolicyHandler>());
-
-  if (ShouldInstallURLBlocklistPolicyHandlers()) {
-    handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
-        policy::key::kURLBlocklist));
-  }
+  handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(
+      policy::key::kURLBlocklist));
 
   return handlers;
 }

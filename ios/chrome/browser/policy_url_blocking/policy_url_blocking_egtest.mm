@@ -51,8 +51,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableEnterprisePolicy);
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kInstallURLBlocklistHandlers);
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }
