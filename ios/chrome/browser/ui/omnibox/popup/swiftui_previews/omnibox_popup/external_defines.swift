@@ -58,3 +58,7 @@ public func NativeImage(_ imageID: Int) -> UIImage? {
     fatalError("This image ID is not available in the previews project")
   }
 }
+
+let kToolbarSeparatorHeight = 0.1
+let kContractedLocationBarHorizontalMargin = 15.0
+let kExpandedLocationBarLeadingMarginRefreshedPopup = 16.0

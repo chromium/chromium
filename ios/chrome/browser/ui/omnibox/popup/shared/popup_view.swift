@@ -4,21 +4,6 @@
 
 import SwiftUI
 
-/// Utility which provides a way to treat the `simultaneousGesture` view modifier as a value.
-struct SimultaneousGestureModifier<T: Gesture>: ViewModifier {
-  let gesture: T
-  let mask: GestureMask
-
-  init(_ gesture: T, including mask: GestureMask = .all) {
-    self.gesture = gesture
-    self.mask = mask
-  }
-
-  func body(content: Content) -> some View {
-    content.simultaneousGesture(gesture, including: mask)
-  }
-}
-
 /// A view modifier which embeds the content in a `ScrollViewReader` and calls `action`
 /// when the provided `value` changes. It is similar to the `onChange` view modifier, but provides
 /// a `ScrollViewProxy` object in addition to the new state of `value` when calling `action`.
@@ -159,66 +144,80 @@ struct PopupView: View {
     self.appearanceContainerType = appearanceContainerType
   }
 
+  /// Determines if a custom separator should be shown for a given row.
+  func shouldDisplayCustomSeparators(
+    section: PopupMatchSection, indexPath: IndexPath, isHighlighted: Bool
+  ) -> Bool {
+    // No separator on the last row in a section.
+    // No separators when there is one or 0 rows in a section.
+    // No separator on highlighted row.
+    return
+      !isHighlighted && (section.matches.count > 1)
+      && (indexPath.row < section.matches.count - 1)
+  }
+
+  /// View for a single PopupMatchSection of the suggestion list.
+  @ViewBuilder func sectionContents(
+    _ sectionIndex: Int, _ section: PopupMatchSection, _ geometry: GeometryProxy
+  ) -> some View {
+    ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
+      matchIndex, match in
+      let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
+      let highlighted = indexPath == model.highlightedMatchIndexPath
+
+      PopupMatchRowView(
+        match: match,
+        isHighlighted: highlighted,
+        toolbarConfiguration: uiConfiguration.toolbarConfiguration,
+        selectionHandler: {
+          model.delegate?.autocompleteResultConsumer(
+            model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
+        },
+        trailingButtonHandler: {
+          model.delegate?.autocompleteResultConsumer(
+            model, didTapTrailingButtonForRow: UInt(matchIndex),
+            inSection: UInt(sectionIndex))
+        },
+        uiConfiguration: uiConfiguration,
+        shouldDisplayCustomSeparator: shouldDisplayCustomSeparators(
+          section: section, indexPath: indexPath, isHighlighted: highlighted)
+      )
+      .id(indexPath)
+      .deleteDisabled(!match.supportsDeletion)
+      .listRowInsets(Dimensions.matchListRowInsets)
+      .listRowBackground(Color.clear)
+      .accessibilityElement(children: .combine)
+      .accessibilityIdentifier(
+        OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath)
+      )
+      .environment(\.layoutDirection, layoutDirection)
+    }
+    .onDelete { indexSet in
+      for matchIndex in indexSet {
+        model.delegate?.autocompleteResultConsumer(
+          model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
+      }
+    }
+  }
+
+  /// Section footer, to be used in variation two.
+  @ViewBuilder func footerForVariationTwo() -> some View {
+    Spacer()
+      // Use `leastNonzeroMagnitude` to remove the footer. Otherwise,
+      // it uses a default height.
+      .frame(height: CGFloat.leastNonzeroMagnitude)
+      .listRowInsets(EdgeInsets())
+  }
+
   func listContent(geometry: GeometryProxy) -> some View {
     ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
       sectionIndex, section in
 
-      let sectionContents =
-        ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
-          matchIndex, match in
-          let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
-          let highlighted = indexPath == model.highlightedMatchIndexPath
-          // UI Variation 1 always has separators. Variation 2 doesn't have
-          // one on the last row in a section.
-          // If there is only one row or less in a section, no row separators.
-          let shouldDisplayCustomSeparator =
-            !highlighted && (section.matches.count > 1)
-            && (matchIndex < section.matches.count - 1)
-
-          PopupMatchRowView(
-            match: match,
-            isHighlighted: highlighted,
-            toolbarConfiguration: uiConfiguration.toolbarConfiguration,
-            selectionHandler: {
-              model.delegate?.autocompleteResultConsumer(
-                model, didSelectRow: UInt(matchIndex), inSection: UInt(sectionIndex))
-            },
-            trailingButtonHandler: {
-              model.delegate?.autocompleteResultConsumer(
-                model, didTapTrailingButtonForRow: UInt(matchIndex),
-                inSection: UInt(sectionIndex))
-            },
-            uiConfiguration: uiConfiguration,
-            shouldDisplayCustomSeparator: shouldDisplayCustomSeparator
-          )
-          .id(indexPath)
-          .deleteDisabled(!match.supportsDeletion)
-          .listRowInsets(Dimensions.matchListRowInsets)
-          .listRowBackground(Color.clear)
-          .accessibilityElement(children: .combine)
-          .accessibilityIdentifier(
-            OmniboxPopupAccessibilityIdentifierHelper.accessibilityIdentifierForRow(at: indexPath)
-          )
-          .environment(\.layoutDirection, layoutDirection)
-        }
-        .onDelete { indexSet in
-          for matchIndex in indexSet {
-            model.delegate?.autocompleteResultConsumer(
-              model, didSelectRowForDeletion: UInt(matchIndex), inSection: UInt(sectionIndex))
-          }
-        }
-
-      let footerForVariationTwo = Spacer()
-        // Use `leastNonzeroMagnitude` to remove the footer. Otherwise,
-        // it uses a default height.
-        .frame(height: CGFloat.leastNonzeroMagnitude)
-        .listRowInsets(EdgeInsets())
-
       Section(
         header: header(for: section, at: sectionIndex, geometry: geometry),
-        footer: popupUIVariation == .one ? nil : footerForVariationTwo
+        footer: popupUIVariation == .one ? nil : footerForVariationTwo()
       ) {
-        sectionContents
+        sectionContents(sectionIndex, section, geometry)
       }
     }
   }
@@ -429,18 +428,25 @@ struct PopupView: View {
 }
 
 struct PopupView_Previews: PreviewProvider {
+
+  static func model() -> PopupModel {
+    PopupModel(
+      matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil)
+  }
+
   static var previews: some View {
-    let sample =
-      PopupView(
-        model: PopupModel(
-          matches: [PopupMatch.previews], headers: ["Suggestions"], delegate: nil),
-        uiConfiguration: PopupUIConfiguration(
-          toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
-      )
+
+    let sample = PopupView(
+      model: model(), uiConfiguration: PopupUIConfiguration.previewsConfiguration()
+    ).previewDevice(PreviewDevice(rawValue: "iPhone 13 mini"))
 
     sample.environment(\.popupUIVariation, .one)
     sample.environment(\.popupUIVariation, .two)
+
     sample.environment(\.locale, .init(identifier: "ar"))
+
+    PopupView(model: model(), uiConfiguration: PopupUIConfiguration.previewsConfigurationIPad())
+      .previewDevice(PreviewDevice(rawValue: "iPad Pro (11-inch)"))
 
     let darkSample = sample.environment(\.colorScheme, .dark)
 

@@ -90,4 +90,30 @@ protocol PublishedWrapper {
       }
     }
   }
+
+  /// This configuration can be used for the Previews project and has
+  /// reasonable defaults
+  static func previewsConfiguration() -> PopupUIConfiguration {
+    let UIConfiguration = PopupUIConfiguration(
+      toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
+    UIConfiguration.omniboxLeadingSpace = 10
+    UIConfiguration.omniboxTrailingSpace = 10
+    UIConfiguration.safeAreaTrailingSpace = 2
+    UIConfiguration.omniboxLeadingImageLeadingSpace = 22
+    UIConfiguration.omniboxTextFieldLeadingSpace = 51
+    return UIConfiguration
+  }
+
+  /// This configuration can be used for the Previews project and has
+  /// reasonable defaults for an iPad
+  static func previewsConfigurationIPad() -> PopupUIConfiguration {
+    let UIConfiguration = PopupUIConfiguration(
+      toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
+    UIConfiguration.omniboxLeadingSpace = 200
+    UIConfiguration.omniboxTrailingSpace = 120
+    UIConfiguration.safeAreaTrailingSpace = 200
+    UIConfiguration.omniboxLeadingImageLeadingSpace = 30
+    UIConfiguration.omniboxTextFieldLeadingSpace = 140
+    return UIConfiguration
+  }
 }
