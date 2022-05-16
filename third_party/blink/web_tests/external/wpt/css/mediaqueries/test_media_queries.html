@@ -606,6 +606,20 @@ setup({ "explicit_done": true });
       assert_not_equals(any_overflow_inline, overflow_inline_none, "overflow-inline should be equivalent to not (overflow-inline: none)");
     }, "Sanity check for overflow-inline");
 
+    // Parsing tests for update from mediaqueries-4
+    expression_should_be_known("update")
+    expression_should_be_known("update: none")
+    expression_should_be_known("update: slow")
+    expression_should_be_known("update: fast")
+    expression_should_be_unknown("update: some-random-invalid-thing")
+
+    // Sanity check for update
+    test(function() {
+      var any_update = query_applies("(update)");
+      var update_none = query_applies("(update: none)");
+      assert_not_equals(any_update, update_none, "update should be equivalent to not (update: none)");
+    }, "Sanity check for update");
+
     // Parsing tests for interaction media features.
     expression_should_be_known("hover")
     expression_should_be_known("hover: hover")
