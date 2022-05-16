@@ -288,8 +288,6 @@ void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
   // Though enrollment handler calls this method, it's "fine" do delete the
   // handler here as it does not do anyhting after that callback in
   // |EnrollmentHandler::ReportResult()|.
-  // TODO(crbug.com/1236167): Enrollment handler calls this method.  Deal with
-  // removing caller from callee.
   enrollment_handler_.reset();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
