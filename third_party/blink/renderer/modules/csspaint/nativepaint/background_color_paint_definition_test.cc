@@ -85,6 +85,14 @@ TEST_F(BackgroundColorPaintDefinitionTest, SimpleBGColorAnimationNotFallback) {
   absl::optional<double> progress;
   EXPECT_TRUE(BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
+  EXPECT_EQ(
+      element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+      ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+
+  UpdateAllLifecyclePhasesForTest();
+  // Cannot composite without a compositor thread.
+  EXPECT_EQ(element->GetElementAnimations()->CompositedBackgroundColorStatus(),
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
 }
 
 // Test the case when there is no animation attached to the element.

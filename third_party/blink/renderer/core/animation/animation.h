@@ -410,6 +410,15 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // Tracking the state of animations in dev tools.
   void NotifyProbe();
 
+  // Reset the cached value for the status of a possible background color
+  // animation if required. Any time an animation affecting background color
+  // changes we need to reset the flag so that Paint can make a fresh
+  // compositing decision and create a fresh paint worklet image from the
+  // keyframes.
+  // TODO(crbug.com/1310961): Investigate if we need a similar fix for
+  // non-native paint worklets.
+  void UpdateCompositedPaintStatus();
+
   String id_;
 
   // Extended play state reported to dev tools. This play state has an

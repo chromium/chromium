@@ -29,6 +29,7 @@ class StyleDifference {
     kTextDecorationOrColorChanged = 1 << 5,
     kBlendModeChanged = 1 << 6,
     kMaskChanged = 1 << 7,
+    kBackgroundColorChanged = 1 << 8,
     // If you add a value here, be sure to update kPropertyDifferenceCount.
   };
 
@@ -150,6 +151,13 @@ class StyleDifference {
   }
   void SetMaskChanged() { property_specific_differences_ |= kMaskChanged; }
 
+  bool BackgroundColorChanged() const {
+    return property_specific_differences_ & kBackgroundColorChanged;
+  }
+  void SetBackgroundColorChanged() {
+    property_specific_differences_ |= kBackgroundColorChanged;
+  }
+
   bool ScrollAnchorDisablingPropertyChanged() const {
     return scroll_anchor_disabling_property_changed_;
   }
@@ -168,7 +176,7 @@ class StyleDifference {
   }
 
  private:
-  static constexpr int kPropertyDifferenceCount = 8;
+  static constexpr int kPropertyDifferenceCount = 9;
 
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const StyleDifference&);

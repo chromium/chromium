@@ -2213,6 +2213,10 @@ void Animation::SetCompositorPending(bool effect_changed) {
       !compositor_state_->start_time || !start_time_) {
     compositor_pending_ = true;
     document_->GetPendingAnimations().Add(this);
+    // Determine if we need to reset the cached state of a background color
+    // animation to force Paint to re-evaluate whether the background should be
+    // painted via a paint worklet.
+    UpdateCompositedPaintStatus();
   }
 }
 
@@ -2220,6 +2224,7 @@ void Animation::CancelAnimationOnCompositor() {
   if (HasActiveAnimationsOnCompositor()) {
     To<KeyframeEffect>(content_.Get())
         ->CancelAnimationOnCompositor(GetCompositorAnimation());
+    UpdateCompositedPaintStatus();
   }
 
   DestroyCompositorAnimation();
@@ -2546,6 +2551,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
   pending_play_ = false;
   SetHoldTimeAndPhase(pause_time, TimelinePhase::kActive);
   start_time_ = absl::nullopt;
+  UpdateCompositedPaintStatus();
 }
 
 void Animation::SetEffectSuppressed(bool suppressed) {
@@ -2849,6 +2855,30 @@ bool Animation::IsInDisplayLockedSubtree() {
   }
 
   return is_in_display_locked_subtree_;
+}
+
+void Animation::UpdateCompositedPaintStatus() {
+  if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled())
+    return;
+
+  KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+  if (!keyframe_effect)
+    return;
+
+  if (!keyframe_effect->Affects(
+          PropertyHandle(GetCSSPropertyBackgroundColor()))) {
+    return;
+  }
+
+  Element* target = keyframe_effect->EffectTarget();
+  if (!target)
+    return;
+
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  DCHECK(element_animations);
+
+  element_animations->SetCompositedBackgroundColorStatus(
+      ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
 }
 
 void Animation::Trace(Visitor* visitor) const {

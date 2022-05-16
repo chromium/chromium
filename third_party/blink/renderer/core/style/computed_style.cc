@@ -926,9 +926,18 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
     const ComputedStyle& other,
     StyleDifference& diff) const {
   if (BackgroundColorInternal() != other.BackgroundColorInternal()) {
-    diff.SetNeedsPaintInvalidation();
-    return;
+    // If the background color change is not due to a composited animation, then
+    // paint invalidation is required; but we can defer the decision until we
+    // know whether the color change will be rendered by the compositor.
+    diff.SetBackgroundColorChanged();
   }
+  // The rendered color may differ from the reported color for a link to prevent
+  // leaking the visited status of a link.
+  if (InternalVisitedBackgroundColor() !=
+      other.InternalVisitedBackgroundColor()) {
+    diff.SetBackgroundColorChanged();
+  }
+
   if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
     diff.SetNeedsPaintInvalidation();
     return;
