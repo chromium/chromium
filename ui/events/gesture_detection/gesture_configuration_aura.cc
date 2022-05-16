@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_switches.h"
 
@@ -39,6 +40,15 @@ class GestureConfigurationAura : public GestureConfiguration {
     // details.
     set_max_touch_move_in_pixels_for_click(6);
 #endif
+    double touch_slop_distance;
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kTouchSlopDistance) &&
+        base::StringToDouble(
+            command_line->GetSwitchValueASCII(switches::kTouchSlopDistance),
+            &touch_slop_distance)) {
+      set_max_touch_move_in_pixels_for_click(touch_slop_distance);
+    }
+
     set_double_tap_enabled(kDoubleTapAuraSupport);
     set_double_tap_timeout_in_ms(semi_long_press_time_in_ms());
     set_gesture_begin_end_types_enabled(true);
