@@ -368,7 +368,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
     "java/src/org/chromium/content_public/browser/ViewEventSink.java",
     "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
-    "java/src/org/chromium/content_public/browser/WebAuthnCredentialDetails.java",
     "java/src/org/chromium/content_public/browser/WebContents.java",
     "java/src/org/chromium/content_public/browser/WebContentsAccessibility.java",
     "java/src/org/chromium/content_public/browser/WebContentsInternals.java",

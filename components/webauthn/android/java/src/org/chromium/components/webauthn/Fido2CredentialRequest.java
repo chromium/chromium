@@ -34,7 +34,6 @@ import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.net.GURLUtils;
@@ -67,6 +66,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private WebContents mWebContents;
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
+    private WebAuthnBrowserBridge mBrowserBridge;
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden.
     @Nullable
@@ -253,6 +253,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         task.addOnFailureListener((e) -> { Log.e(TAG, "FIDO2 API call failed", e); });
     }
 
+    @VisibleForTesting
+    public void overrideBrowserBridgeForTesting(WebAuthnBrowserBridge bridge) {
+        mBrowserBridge = bridge;
+    }
+
     private boolean apiAvailable() {
         return ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.Silent());
@@ -261,7 +266,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private void onWebAuthnCredentialDetailsListReceived(RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options, String callerOriginString,
             byte[] clientDataHash, List<WebAuthnCredentialDetails> credentials) {
-        frameHost.onCredentialsDetailsListReceived(credentials,
+        if (mBrowserBridge == null) {
+            mBrowserBridge = new WebAuthnBrowserBridge();
+        }
+        mBrowserBridge.onCredentialsDetailsListReceived(frameHost, credentials,
                 (selectedCredentialId)
                         -> dispatchGetAssertionRequest(
                                 options, callerOriginString, clientDataHash, selectedCredentialId));

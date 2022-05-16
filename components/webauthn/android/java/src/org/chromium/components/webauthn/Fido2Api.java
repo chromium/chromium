@@ -31,7 +31,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.blink.mojom.UvmEntry;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 import java.security.NoSuchAlgorithmException;

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBAUTHN_CHROME_CONDITIONAL_UI_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_WEBAUTHN_CHROME_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_
 
 #include <vector>
 
 #include "base/callback.h"
 #include "base/supports_user_data.h"
-#include "content/public/browser/conditional_ui_delegate_android.h"
 
 namespace content {
 class WebContents;
@@ -19,25 +18,27 @@ namespace device {
 class DiscoverableCredentialMetadata;
 }
 
-// Chrome implementation of ConditionalUiDelegateAndroid.
-class ChromeConditionalUiDelegateAndroid
-    : public base::SupportsUserData::Data,
-      public content::ConditionalUiDelegateAndroid {
+// Helper class for connecting the autofill implementation to the WebAuthn
+// request handling for Conditional UI on Android. This is attached to a
+// WebContents via SetUserData. It caches callbacks in both directions to
+// eliminate races between the WebAuthn 'get' request and the autofill request
+// for form suggestions.
+class ConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
  public:
-  ChromeConditionalUiDelegateAndroid();
+  ConditionalUiDelegateAndroid();
 
-  ChromeConditionalUiDelegateAndroid(
-      const ChromeConditionalUiDelegateAndroid&) = delete;
-  ChromeConditionalUiDelegateAndroid& operator=(
-      const ChromeConditionalUiDelegateAndroid&) = delete;
+  ConditionalUiDelegateAndroid(const ConditionalUiDelegateAndroid&) = delete;
+  ConditionalUiDelegateAndroid& operator=(const ConditionalUiDelegateAndroid&) =
+      delete;
 
-  ~ChromeConditionalUiDelegateAndroid() override;
+  ~ConditionalUiDelegateAndroid() override;
 
-  // content::ConditionalUiDelegateAndroid:
+  // Called when a Web Authentication Conditional UI request is received. This
+  // provides the callback that will complete the request if and when a user
+  // selects a credential from a form autofill dialog.
   void OnWebAuthnRequestPending(
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback)
-      override;
+      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
 
   // Tells the driver that the user has selected a Web Authentication
   // credential from a dialog, and provides the credential ID for the selected
@@ -54,7 +55,7 @@ class ChromeConditionalUiDelegateAndroid
   // one does not already exist.
   // The delegate is destroyed along with the WebContents and so should not be
   // cached.
-  static ChromeConditionalUiDelegateAndroid* GetConditionalUiDelegate(
+  static ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
       content::WebContents* web_contents);
 
  private:
@@ -68,4 +69,4 @@ class ChromeConditionalUiDelegateAndroid
       retrieve_credentials_callback_;
 };
 
-#endif  // CHROME_BROWSER_WEBAUTHN_CHROME_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_

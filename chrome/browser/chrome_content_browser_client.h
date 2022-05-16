@@ -798,11 +798,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                       content::BrowserContext* browser_context,
                                       int32_t error_code) override;
 
-#if BUILDFLAG(IS_ANDROID)
-  content::ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
-      content::RenderFrameHost* host) override;
-#endif
-
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

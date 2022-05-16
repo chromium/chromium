@@ -17,7 +17,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/webauthn/chrome_conditional_ui_delegate_android.h"
+#include "chrome/browser/webauthn/android/conditional_ui_delegate_android.h"
 #endif
 
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
@@ -35,7 +35,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
 #if BUILDFLAG(IS_ANDROID)
   auto* credentials_delegate =
-      ChromeConditionalUiDelegateAndroid::GetConditionalUiDelegate(
+      ConditionalUiDelegateAndroid::GetConditionalUiDelegate(
           client_->web_contents());
   if (!credentials_delegate) {
     std::move(retrieve_suggestions_callback_).Run();
@@ -66,7 +66,7 @@ void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
 
 #if BUILDFLAG(IS_ANDROID)
   auto* credentials_delegate =
-      ChromeConditionalUiDelegateAndroid::GetConditionalUiDelegate(
+      ConditionalUiDelegateAndroid::GetConditionalUiDelegate(
           client_->web_contents());
   if (!credentials_delegate) {
     std::move(retrieve_suggestions_callback_).Run();

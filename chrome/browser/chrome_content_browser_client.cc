@@ -399,7 +399,6 @@
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/webauthn/chrome_conditional_ui_delegate_android.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/autofill_assistant/content/common/switches.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
@@ -6584,12 +6583,3 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
 
   return web_app::GetOfflinePageInfo(url, browser_context);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-content::ConditionalUiDelegateAndroid*
-ChromeContentBrowserClient::GetConditionalUiDelegate(
-    content::RenderFrameHost* host) {
-  return ChromeConditionalUiDelegateAndroid::GetConditionalUiDelegate(
-      content::WebContents::FromRenderFrameHost(host));
-}
-#endif

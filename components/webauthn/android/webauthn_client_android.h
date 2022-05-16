@@ -2,33 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_CONDITIONAL_UI_DELEGATE_ANDROID_H_
-#define CONTENT_PUBLIC_BROWSER_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#ifndef COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_
+#define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_
 
-#include <vector>
+#include <memory>
 
 #include "base/callback_forward.h"
+
+namespace content {
+class RenderFrameHost;
+}
 
 namespace device {
 class DiscoverableCredentialMetadata;
 }
 
-namespace content {
+namespace components {
 
-// Interface for providing the embedder with a list of Web Authentication
-// credentials for use in Conditional UI.
-class ConditionalUiDelegateAndroid {
+class WebAuthnClientAndroid {
  public:
-  virtual ~ConditionalUiDelegateAndroid() = default;
+  virtual ~WebAuthnClientAndroid();
+
+  // Called by the embedder to set the static instance of this client.
+  static void SetClient(std::unique_ptr<WebAuthnClientAndroid> client);
+
+  // Accessor for the client that has been set by the embedder.
+  static WebAuthnClientAndroid* GetClient();
 
   // Called when a Web Authentication Conditional UI request is received. This
   // provides the callback that will complete the request if and when a user
   // selects a credential from a form autofill dialog.
   virtual void OnWebAuthnRequestPending(
+      content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) = 0;
 };
 
-}  // namespace content
+}  // namespace components
 
-#endif  // CONTENT_PUBLIC_BROWSER_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#endif  // COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CLIENT_ANDROID_H_

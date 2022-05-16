@@ -64,10 +64,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "content/public/browser/conditional_ui_delegate_android.h"
-#endif
-
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/global_descriptors.h"
 #endif
@@ -2262,13 +2258,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   GetAlternativeErrorPageOverrideInfo(const GURL& url,
                                       BrowserContext* browser_context,
                                       int32_t error_code);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Gets the delegate interface that is used to interact with the Web
-  // Authentication Conditional UI implementation in the embedder.
-  virtual ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
-      RenderFrameHost* host);
-#endif  //  BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

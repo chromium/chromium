@@ -3384,8 +3384,10 @@ static_library("browser") {
       "video_tutorials/internal/android/video_tutorial_service_bridge_factory.cc",
       "webapps/web_app_offline_android.cc",
       "webauthn/android/cable_module_android.cc",
-      "webauthn/chrome_conditional_ui_delegate_android.cc",
-      "webauthn/chrome_conditional_ui_delegate_android.h",
+      "webauthn/android/chrome_webauthn_client_android.cc",
+      "webauthn/android/chrome_webauthn_client_android.h",
+      "webauthn/android/conditional_ui_delegate_android.cc",
+      "webauthn/android/conditional_ui_delegate_android.h",
     ]
     public_deps += [
       "//chrome/android/features/dev_ui:buildflags",

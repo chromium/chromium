@@ -28,7 +28,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 
 import java.util.List;
 

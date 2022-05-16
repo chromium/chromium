@@ -2,7 +2,6 @@ include_rules = [
   "+cc/switches.h", # For cc command line switches.
   "+components/viz/common",
   "+components/viz/host",
-  "+device/fido",
   "+jni",
   "+net/dns/public",
   "+third_party/blink/public/platform/web_gesture_curve.h",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.content_public.browser;
+package org.chromium.components.webauthn;
 
 /**
  * Describes a WebAuthn credential available on the authenticator.

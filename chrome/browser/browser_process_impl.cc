@@ -162,6 +162,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
+#include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
+#include "components/webauthn/android/webauthn_client_android.h"
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -349,6 +351,13 @@ void BrowserProcessImpl::Init() {
 
 #if BUILDFLAG(IS_MAC)
   system_media_permissions::LogSystemMediaPermissionsStartupStats();
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
+    components::WebAuthnClientAndroid::SetClient(
+        std::make_unique<ChromeWebAuthnClientAndroid>());
+  }
 #endif
 }
 

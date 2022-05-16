@@ -60,9 +60,10 @@ import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.IsUvpaaResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
+import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
-import org.chromium.content_public.browser.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -101,6 +102,7 @@ public class Fido2CredentialRequestTest {
     private MockIntentSender mIntentSender;
     private EmbeddedTestServer mTestServer;
     private MockAuthenticatorRenderFrameHost mFrameHost;
+    private MockBrowserBridge mMockBrowserBridge;
     private Origin mOrigin;
     private InternalAuthenticator.Natives mTestAuthenticatorImplJni;
     private Fido2CredentialRequest mRequest;
@@ -350,37 +352,12 @@ public class Fido2CredentialRequestTest {
         }
     }
 
-    private static class MockAuthenticatorRenderFrameHost extends MockRenderFrameHost {
-        private GURL mLastUrl;
-        private boolean mIsPaymentCredentialCreation;
+    private static class MockBrowserBridge extends WebAuthnBrowserBridge {
         private byte[] mSelectedCredentialId;
         private List<WebAuthnCredentialDetails> mExpectedCredentialList;
 
         @Override
-        public GURL getLastCommittedURL() {
-            return mLastUrl;
-        }
-
-        @Override
-        public Origin getLastCommittedOrigin() {
-            return new MockOrigin(mLastUrl);
-        }
-
-        public void setLastCommittedURL(GURL url) {
-            mLastUrl = url;
-        }
-
-        @Override
-        public int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId,
-                Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
-            super.performMakeCredentialWebAuthSecurityChecks(
-                    relyingPartyId, effectiveOrigin, isPaymentCredentialCreation);
-            mIsPaymentCredentialCreation = isPaymentCredentialCreation;
-            return 0;
-        }
-
-        @Override
-        public void onCredentialsDetailsListReceived(
+        public void onCredentialsDetailsListReceived(RenderFrameHost frameHost,
                 List<WebAuthnCredentialDetails> credentialList, Callback<byte[]> callback) {
             Assert.assertEquals(mExpectedCredentialList.size(), credentialList.size());
             for (int i = 0; i < credentialList.size(); i++) {
@@ -423,6 +400,36 @@ public class Fido2CredentialRequestTest {
         }
     }
 
+    private static class MockAuthenticatorRenderFrameHost extends MockRenderFrameHost {
+        private GURL mLastUrl;
+        private boolean mIsPaymentCredentialCreation;
+
+        MockAuthenticatorRenderFrameHost() {}
+
+        @Override
+        public GURL getLastCommittedURL() {
+            return mLastUrl;
+        }
+
+        @Override
+        public Origin getLastCommittedOrigin() {
+            return new MockOrigin(mLastUrl);
+        }
+
+        public void setLastCommittedURL(GURL url) {
+            mLastUrl = url;
+        }
+
+        @Override
+        public int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId,
+                Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
+            super.performMakeCredentialWebAuthSecurityChecks(
+                    relyingPartyId, effectiveOrigin, isPaymentCredentialCreation);
+            mIsPaymentCredentialCreation = isPaymentCredentialCreation;
+            return 0;
+        }
+    }
+
     @Before
     public void setUp() throws Exception {
         Assume.assumeTrue(gmsVersionSupported());
@@ -449,6 +456,9 @@ public class Fido2CredentialRequestTest {
         Fido2ApiHandler.overrideInstanceForTesting(new MockFido2ApiHandler(mRequest));
 
         Fido2ApiCallHelper.overrideInstanceForTesting(new MockFido2ApiCallHelper());
+
+        mMockBrowserBridge = new MockBrowserBridge();
+        mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
 
         mRequest.setWebContentsForTesting(mMockWebContents);
         mStartTimeMs = SystemClock.elapsedRealtime();
@@ -1294,7 +1304,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_conditionalUi_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        mFrameHost.setExpectedCredentialDetailsList(Arrays.asList(
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
                 new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
 
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
@@ -1313,8 +1323,8 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testGetAssertion_conditionalUi_failureEmptyCredential() {
-        mFrameHost.setSelectedCredentialId(new byte[0]);
-        mFrameHost.setExpectedCredentialDetailsList(Arrays.asList(
+        mMockBrowserBridge.setSelectedCredentialId(new byte[0]);
+        mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
                 new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.isConditional = true;

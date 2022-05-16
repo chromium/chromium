@@ -547,7 +547,6 @@ source_set("browser_sources") {
       "android/synchronous_compositor.h",
       "android/synchronous_compositor_client.h",
       "ax_inspect_factory_android.cc",
-      "conditional_ui_delegate_android.h",
       "tts_environment_android.h",
     ]
   }
