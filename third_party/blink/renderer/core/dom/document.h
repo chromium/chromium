@@ -1593,10 +1593,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return *root_scroller_controller_;
   }
 
-  AnchorElementInteractionTracker* GetAnchorElementInteractionTracker() const {
-    return anchor_element_interaction_tracker_.Get();
-  }
-
   // Returns true if this document has a frame and it is a main frame.
   // See `Frame::IsMainFrame`.
   bool IsInMainFrame() const;

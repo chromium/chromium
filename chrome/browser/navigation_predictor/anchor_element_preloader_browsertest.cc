@@ -1,7 +1,6 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -22,7 +21,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace {
 class AnchorElementPreloaderBrowserTest
@@ -44,12 +42,6 @@ class AnchorElementPreloaderBrowserTest
     EXPECT_TRUE(https_server_->Start());
     preresolve_count_ = 0;
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Without this flag, clicks emitted by SimulateMouseClickOrTapElementWithId
-    // are suppressed in these tests.
-    command_line->AppendSwitch("allow-pre-commit-input");
   }
 
   void SetUpOnMainThread() override {
@@ -110,12 +102,16 @@ class AnchorElementPreloaderBrowserTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorTest) {
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::SimulateMouseClickOrTapElementWithId(
-      browser()->tab_strip_model()->GetActiveWebContents(), "anchor1");
-
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      R"(
+                const a = document.getElementById('anchor1');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
+                a.dispatchEvent(e);
+              )"));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
   ukm::SourceId ukm_source_id = browser()
@@ -144,8 +140,13 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   const GURL& url = GetTestURL("/invalid_href_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::SimulateMouseClickOrTapElementWithId(
-      browser()->tab_strip_model()->GetActiveWebContents(), "anchor2");
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      R"(
+                const a = document.getElementById('anchor2');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
+                a.dispatchEvent(e);
+              )"));
   EXPECT_EQ(0, preresolve_count_);
 
   histogram_tester()->ExpectTotalCount(
@@ -167,9 +168,15 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   const GURL& url = GetTestURL("/iframe_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
-      blink::WebMouseEvent::Button::kLeft, gfx::Point(200, 200));
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      R"(
+                const iframe = document.getElementById('iframe1');
+                const iframe_doc = iframe.contentWindow.document;
+                const a = iframe_doc.getElementById('iframe_anchor');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
+                a.dispatchEvent(e);
+             )"));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
 
@@ -202,8 +209,13 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
                                  prefetch::PreloadPagesState::kNoPreloading);
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::SimulateMouseClickOrTapElementWithId(
-      browser()->tab_strip_model()->GetActiveWebContents(), "anchor1");
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      R"(
+                const a = document.getElementById('anchor1');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
+                a.dispatchEvent(e);
+             )"));
   EXPECT_EQ(0, preresolve_count_);
 
   histogram_tester()->ExpectTotalCount(
@@ -225,10 +237,13 @@ class AnchorElementPreloaderHoldbackBrowserTest
     : public AnchorElementPreloaderBrowserTest {
  public:
   void SetFeatures() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
+    feature_list_holdback_.InitAndEnableFeatureWithParameters(
         blink::features::kAnchorElementInteraction,
         {{"preconnect_holdback", "true"}});
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_holdback_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
@@ -236,16 +251,15 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  content::SimulateMouseClickOrTapElementWithId(
-      browser()->tab_strip_model()->GetActiveWebContents(), "anchor1");
+  EXPECT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      R"(
+                const a = document.getElementById('anchor1');
+                var e = new PointerEvent('pointerdown', {isPrimary: true});
+                a.dispatchEvent(e);
+             )"));
   EXPECT_EQ(0, preresolve_count_);
 
-  while (
-      histogram_tester()
-          ->GetAllSamples(kPreloadingAnchorElementPreloaderPreloadingTriggered)
-          .empty()) {
-    base::RunLoop().RunUntilIdle();
-  }
   histogram_tester()->ExpectTotalCount(
       kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
 

@@ -5,13 +5,12 @@
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/loader/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_listener.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -19,6 +18,16 @@ namespace blink {
 AnchorElementInteractionTracker::AnchorElementInteractionTracker(
     Document& document)
     : interaction_host_(document.GetExecutionContext()) {
+  base::RepeatingCallback<void(const KURL&)> callback =
+      WTF::BindRepeating(&AnchorElementInteractionTracker::OnPointerDown,
+                         WrapWeakPersistent(this));
+
+  anchor_element_listener_ =
+      MakeGarbageCollected<AnchorElementListener>(callback);
+
+  document.addEventListener(event_type_names::kPointerdown,
+                            anchor_element_listener_, true);
+
   document.GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       interaction_host_.BindNewPipeAndPassReceiver(
           document.GetExecutionContext()->GetTaskRunner(
@@ -26,6 +35,7 @@ AnchorElementInteractionTracker::AnchorElementInteractionTracker(
 }
 
 void AnchorElementInteractionTracker::Trace(Visitor* visitor) const {
+  visitor->Trace(anchor_element_listener_);
   visitor->Trace(interaction_host_);
 }
 
@@ -34,50 +44,8 @@ bool AnchorElementInteractionTracker::IsFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kAnchorElementInteraction);
 }
 
-void AnchorElementInteractionTracker::OnPointerDown(
-    EventTarget& target,
-    const PointerEvent& pointer_event) {
-  if (!target.ToNode()) {
-    return;
-  }
-  if (!pointer_event.isPrimary()) {
-    return;
-  }
-  // TODO(crbug.com/1297312): Check if user changed the default mouse settings
-  if (pointer_event.button() !=
-          static_cast<int>(WebPointerProperties::Button::kLeft) &&
-      pointer_event.button() !=
-          static_cast<int>(WebPointerProperties::Button::kMiddle)) {
-    return;
-  }
-  HTMLAnchorElement* anchor = FirstAnchorElementIncludingSelf(target.ToNode());
-  if (!anchor) {
-    return;
-  }
-  KURL url = GetHrefEligibleForPreloading(*anchor);
-  if (url.IsEmpty()) {
-    return;
-  }
+void AnchorElementInteractionTracker::OnPointerDown(const KURL& url) {
   interaction_host_->OnPointerDown(url);
-}
-
-HTMLAnchorElement*
-AnchorElementInteractionTracker::FirstAnchorElementIncludingSelf(Node* node) {
-  HTMLAnchorElement* anchor = nullptr;
-  while (node && !anchor) {
-    anchor = DynamicTo<HTMLAnchorElement>(node);
-    node = node->parentNode();
-  }
-  return anchor;
-}
-
-KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
-    const HTMLAnchorElement& anchor) {
-  KURL url = anchor.Href();
-  if (url.ProtocolIsInHTTPFamily()) {
-    return url;
-  }
-  return KURL();
 }
 
 }  // namespace blink

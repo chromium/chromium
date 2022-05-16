@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
@@ -189,14 +188,6 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   std::unique_ptr<EventTiming> event_timing;
   if (frame_ && frame_->DomWindow())
     event_timing = EventTiming::Create(frame_->DomWindow(), *pointer_event);
-
-  if (event_type == event_type_names::kPointerdown) {
-    AnchorElementInteractionTracker* tracker =
-        frame_->GetDocument()->GetAnchorElementInteractionTracker();
-    if (tracker) {
-      tracker->OnPointerDown(*target, *pointer_event);
-    }
-  }
 
   if (should_filter &&
       !HasPointerEventListener(frame_->GetEventHandlerRegistry()))
