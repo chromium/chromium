@@ -840,8 +840,9 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
   RunTest();
 }
 
+// TODO(https://crbug.com/1325556): Re-enable when flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
-                       RemoteFrameInFencedFrame) {
+                       DISABLED_RemoteFrameInFencedFrame) {
   ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB(siteC))"));
   RunTest();
 }
