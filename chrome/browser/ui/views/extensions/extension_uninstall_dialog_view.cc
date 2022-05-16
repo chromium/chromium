@@ -127,8 +127,8 @@ void ExtensionUninstallDialogViews::Show() {
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
   dialog_model_ = dialog_model.get();
 
-  // TODO(devlin): There's a lot of shared-ish code between this and
-  // PrintJobConfirmationDialogView. We should pull it into a common location.
+  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
+  // an anchor view and showing a BubbleDialogDelegate into a common location.
   BrowserView* const browser_view =
       parent() ? BrowserView::GetBrowserViewForNativeWindow(parent()) : nullptr;
   ExtensionsToolbarContainer* const container =

@@ -35,9 +35,8 @@ void PrintJobConfirmationDialogView::Show(
     const std::u16string& print_job_title,
     const std::u16string& printer_name,
     base::OnceCallback<void(bool)> callback) {
-  // TODO (crbug.com/996785): Extract common code with
-  // ExtensionUninstallDialogViews::Show() to separate methods: first method to
-  // get an anchor view and the second one to show a BubbleDialogDelegateView.
+  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
+  // an anchor view and showing a BubbleDialogDelegate into a common location.
 
   // We may want to show dialog even if there is no appropriate browser view,
   // i.e. |parent| is null or kNullNativeWindow. In that case we use

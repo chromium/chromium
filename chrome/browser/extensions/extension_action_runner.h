@@ -177,16 +177,12 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Shows the bubble to prompt the user to refresh the page to run the blocked
   // actions for the given |extension|. |callback| is invoked when the bubble is
   // closed.
-  void ShowBlockedActionBubble(
-      const Extension* extension,
-      base::OnceCallback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>
-          callback);
+  void ShowBlockedActionBubble(const Extension* extension,
+                               base::OnceClosure callback);
 
   // Called when the blocked actions bubble invoked to run the extension action
   // is closed.
-  void OnBlockedActionBubbleForRunActionClosed(
-      const std::string& extension_id,
-      ToolbarActionsBarBubbleDelegate::CloseAction action);
+  void OnBlockedActionBubbleForRunActionClosed(const std::string& extension_id);
 
   // Called when the blocked actions bubble invoked for the page access grant is
   // closed.
@@ -194,8 +190,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
       const std::string& extension_id,
       const GURL& page_url,
       SitePermissionsHelper::SiteAccess current_access,
-      SitePermissionsHelper::SiteAccess new_access,
-      ToolbarActionsBarBubbleDelegate::CloseAction action);
+      SitePermissionsHelper::SiteAccess new_access);
 
   // Handles permission changes necessary for page access modification of the
   // |extension|.

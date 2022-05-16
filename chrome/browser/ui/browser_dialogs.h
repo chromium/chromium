@@ -320,6 +320,8 @@ void ShowExtensionInstallBlockedByParentDialog(
     base::OnceClosure done_callback);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
+// TODO(crbug.com/1324288): Move extensions dialogs to
+// c/b/ui/extensions/extensions_dialogs.h
 // TODO(devlin): Put more extension-y bits in this block - currently they're
 // unguarded.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -337,6 +339,7 @@ void ShowExtensionSettingsOverriddenDialog(
 void ShowExtensionInstallFrictionDialog(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> callback);
+
 #endif
 
 // Returns a OnceClosure that client code can call to close the device chooser.

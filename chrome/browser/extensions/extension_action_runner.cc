@@ -24,8 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/blocked_action_bubble_delegate.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
@@ -356,60 +355,54 @@ void ExtensionActionRunner::LogUMA() const {
 
 void ExtensionActionRunner::ShowBlockedActionBubble(
     const Extension* extension,
-    base::OnceCallback<void(ToolbarActionsBarBubbleDelegate::CloseAction)>
-        callback) {
+    base::OnceClosure callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   ExtensionsContainer* const extensions_container =
       browser ? browser->window()->GetExtensionsContainer() : nullptr;
   if (!extensions_container)
     return;
-  if (default_bubble_close_action_for_testing_) {
+
+  // TODO(crbug.com/1319555): Remove the use of
+  // ToolbarActionsBarBubbleDelegate::CloseAction, that is still used in tests.
+  // Previously it was needed to differentiate between callback calls, but now
+  // callback is only called when the page needs to be refreshed
+  // (CLOSE_EXECUTE).
+  if (default_bubble_close_action_for_testing_ &&
+      *default_bubble_close_action_for_testing_ ==
+          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  *default_bubble_close_action_for_testing_));
+        FROM_HERE, base::BindOnce(std::move(callback)));
   } else {
-    extensions_container->ShowToolbarActionBubble(
-        std::make_unique<BlockedActionBubbleDelegate>(std::move(callback),
-                                                      extension->id()));
+    ShowBlockedActionDialog(browser, extension->id(), std::move(callback));
   }
 }
 
 void ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed(
-    const std::string& extension_id,
-    ToolbarActionsBarBubbleDelegate::CloseAction action) {
-  // If the user agreed to refresh the page, do so.
-  if (action == ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE) {
-    const Extension* extension = ExtensionRegistry::Get(browser_context_)
-                                     ->enabled_extensions()
-                                     .GetByID(extension_id);
-    if (!extension)
-      return;
-    {
-      // Ignore the active tab permission being granted because we don't want
-      // to run scripts right before we refresh the page.
-      base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_,
-                                              true);
-      TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter()
-          ->GrantIfRequested(extension);
-    }
-    web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
+    const std::string& extension_id) {
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension)
+    return;
+  {
+    // Ignore the active tab permission being granted because we don't want
+    // to run scripts right before we refresh the page.
+    base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_, true);
+    TabHelper::FromWebContents(web_contents())
+        ->active_tab_permission_granter()
+        ->GrantIfRequested(extension);
   }
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
 void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
     const std::string& extension_id,
     const GURL& page_url,
     SitePermissionsHelper::SiteAccess current_access,
-    SitePermissionsHelper::SiteAccess new_access,
-    ToolbarActionsBarBubbleDelegate::CloseAction action) {
+    SitePermissionsHelper::SiteAccess new_access) {
   DCHECK(new_access == SitePermissionsHelper::SiteAccess::kOnSite ||
          new_access == SitePermissionsHelper::SiteAccess::kOnAllSites);
   DCHECK_EQ(SitePermissionsHelper::SiteAccess::kOnClick, current_access);
-
-  // Don't change permissions if the user chose to not refresh the page.
-  if (action != ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE)
-    return;
 
   // If the web contents have navigated to a different origin, do nothing.
   if (!url::IsSameOriginWith(page_url, web_contents()->GetLastCommittedURL()))
