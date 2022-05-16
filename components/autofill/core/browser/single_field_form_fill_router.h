@@ -43,10 +43,6 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
 
  private:
-  // The SingleFieldFormFiller being used to fill the current field. Reset
-  // whenever suggestions are requested for a new field.
-  base::WeakPtr<SingleFieldFormFiller> current_single_field_form_filler_;
-
   // Available single field form fillers:
   base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
 };
