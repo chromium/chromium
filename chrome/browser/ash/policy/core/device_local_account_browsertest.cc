@@ -943,7 +943,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyDownload) {
                    .empty());
 }
 
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, AccountListChange) {
+// TODO(crbug.com/1326284): Re-enable this test
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_AccountListChange) {
   AddPublicSessionToDevicePolicy(kAccountId1);
   AddPublicSessionToDevicePolicy(kAccountId2);
 
