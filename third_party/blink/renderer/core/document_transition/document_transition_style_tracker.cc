@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -98,12 +99,30 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
     child_box->MapToVisualRectInAncestorSpace(box, overflow_rect);
     result.Unite(overflow_rect);
   }
-  // Clip self painting descendant overflow by the clipping rect, then add in
-  // the visual overflow from the own painting layer.
-  // TODO(vmpstr): After these steps, we should also clip by the clip-path.
+  // Clip self painting descendant overflow by the overflow clip rect, then add
+  // in the visual overflow from the own painting layer.
   result.Intersect(box->OverflowClipRect(PhysicalOffset()));
   result.Unite(box->PhysicalVisualOverflowRectIncludingFilters());
-  return result;
+
+  const ComputedStyle& style = box->StyleRef();
+  if (!style.HasClipPath())
+    return result;
+
+  ClipPathOperation* clip_path = style.ClipPath();
+  if (clip_path->GetType() != ClipPathOperation::kShape)
+    return result;
+
+  ShapeClipPathOperation* shape =
+      static_cast<ShapeClipPathOperation*>(clip_path);
+  // TODO(vmpstr): Should this by PhysicalBorderBoxRect or Logical?
+  const Path& path = shape->GetPath(
+      static_cast<gfx::RectF>(box->BorderBoxRect()), style.EffectiveZoom());
+
+  // TODO(vmpstr): This is just the bounds of the clip-path, as opposed to the
+  // intersection between the clip-path and the border box bounds. This seems
+  // suboptimal, but that's the rect that we use further down the pipeline to
+  // generate the texture.
+  return static_cast<PhysicalRect>(gfx::ToEnclosingRect(path.BoundingRect()));
 }
 
 }  // namespace

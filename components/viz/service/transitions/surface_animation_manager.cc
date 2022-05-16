@@ -183,6 +183,8 @@ void ReplaceSharedElementWithRenderPass(
       target_render_pass
           ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   gfx::RectF tex_coord_rect(gfx::SizeF(shared_element_quad.rect.size()));
+  tex_coord_rect.Offset(-shared_pass_output_rect.x(),
+                        -shared_pass_output_rect.y());
   render_pass_quad->SetNew(
       /*shared_quad_state=*/copied_quad_state,
       /*rect=*/shared_element_quad.rect,
