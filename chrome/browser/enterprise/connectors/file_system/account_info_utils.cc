@@ -35,8 +35,7 @@ constexpr char kUploadFolderDefaultName[] = "ChromeDownloads";
 // Encrypt an access or refresh token.
 bool EncryptToken(std::string token, std::string* b64_enc_token) {
   std::string enc_token;
-  if (!b64_enc_token ||
-      !OSCrypt::GetInstance()->EncryptString(token, &enc_token)) {
+  if (!b64_enc_token || !OSCrypt::EncryptString(token, &enc_token)) {
     return false;
   }
 
@@ -73,7 +72,7 @@ bool RetrieveAndDecryptToken(PrefService* prefs,
   }
   std::string enc_pref;
   return base::Base64Decode(b64_enc_pref, &enc_pref) &&
-         OSCrypt::GetInstance()->DecryptString(enc_pref, decrypted_token);
+         OSCrypt::DecryptString(enc_pref, decrypted_token);
 }
 
 bool GetToken(PrefService* prefs,

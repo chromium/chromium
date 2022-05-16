@@ -682,8 +682,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
-    network_service->SetEncryptionKey(
-        OSCrypt::GetInstance()->GetRawEncryptionKey());
+    network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
 
   // Asynchronously reapply the most recently received CRLSet (if any).

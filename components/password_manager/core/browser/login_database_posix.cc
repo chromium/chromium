@@ -30,7 +30,7 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) {
-  return OSCrypt::GetInstance()->EncryptString16(plain_text, cipher_text)
+  return OSCrypt::EncryptString16(plain_text, cipher_text)
              ? ENCRYPTION_RESULT_SUCCESS
              : ENCRYPTION_RESULT_SERVICE_FAILURE;
 }
@@ -58,8 +58,7 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-  bool decryption_success =
-      OSCrypt::GetInstance()->DecryptString16(cipher_text, plain_text);
+  bool decryption_success = OSCrypt::DecryptString16(cipher_text, plain_text);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".

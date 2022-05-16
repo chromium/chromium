@@ -105,6 +105,8 @@ class WebDataServiceTest : public testing::Test {
  protected:
   void SetUp() override {
     base::FilePath path(WebDatabase::kInMemoryPath);
+    // OSCrypt is used for encryption of credit card data in this test.
+    OSCryptMocker::SetUp();
 
     // TODO(pkasting): http://crbug.com/740773 This should likely be sequenced,
     // not single-threaded; it's also possible the various uses of this below
@@ -127,13 +129,13 @@ class WebDataServiceTest : public testing::Test {
     wds_ = nullptr;
     wdbs_ = nullptr;
     task_environment_.RunUntilIdle();
+    OSCryptMocker::TearDown();
   }
 
   base::test::TaskEnvironment task_environment_;
   base::FilePath profile_dir_;
   scoped_refptr<AutofillWebDataService> wds_;
   scoped_refptr<WebDatabaseService> wdbs_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 class WebDataServiceAutofillTest : public WebDataServiceTest {

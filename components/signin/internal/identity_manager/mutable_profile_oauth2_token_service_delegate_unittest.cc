@@ -94,6 +94,8 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         revoke_all_tokens_on_load_(false) {}
 
   void SetUp() override {
+    OSCryptMocker::SetUp();
+
     MutableProfileOAuth2TokenServiceDelegate::RegisterProfilePrefs(
         pref_service_.registry());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
@@ -111,6 +113,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
       oauth2_service_delegate_->RemoveObserver(this);
       oauth2_service_delegate_->Shutdown();
     }
+    OSCryptMocker::TearDown();
   }
 
   void LoadTokenDatabase() {
@@ -263,7 +266,6 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   bool revoke_all_tokens_on_load_;
   std::string source_for_refresh_token_available_;
   std::string source_for_refresh_token_revoked_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {

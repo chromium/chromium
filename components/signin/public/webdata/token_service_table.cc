@@ -84,8 +84,7 @@ bool TokenServiceTable::RemoveTokenForService(const std::string& service) {
 bool TokenServiceTable::SetTokenForService(const std::string& service,
                                            const std::string& token) {
   std::string encrypted_token;
-  bool encrypted =
-      OSCrypt::GetInstance()->EncryptString(token, &encrypted_token);
+  bool encrypted = OSCrypt::EncryptString(token, &encrypted_token);
   if (!encrypted) {
     LOG(ERROR) << "Failed to encrypt token (token will not be saved to DB).";
     return false;
@@ -130,8 +129,7 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
     bool entry_ok =
         !service.empty() && s.ColumnBlobAsString(1, &encrypted_token);
     if (entry_ok) {
-      if (OSCrypt::GetInstance()->DecryptString(encrypted_token,
-                                                &decrypted_token)) {
+      if (OSCrypt::DecryptString(encrypted_token, &decrypted_token)) {
         (*tokens)[service] = decrypted_token;
         read_token_result = READ_ONE_TOKEN_SUCCESS;
         number_of_tokens_loaded++;

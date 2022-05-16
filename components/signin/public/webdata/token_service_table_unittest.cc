@@ -27,6 +27,7 @@ class TokenServiceTableTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
@@ -36,11 +37,12 @@ class TokenServiceTableTest : public testing::Test {
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }
 
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TokenServiceTable> table_;
   std::unique_ptr<WebDatabase> db_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {

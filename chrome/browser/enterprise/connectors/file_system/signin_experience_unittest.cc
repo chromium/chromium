@@ -56,6 +56,7 @@ class SigninExperienceForSettingsPageTest : public testing::Test {
 
   void SetUp() override {
     // Need this for OAuth tokens since they are stored with encryption.
+    OSCryptMocker::SetUp();
 
     feature_list_.InitWithFeatures({kFileSystemConnectorEnabled}, {});
 
@@ -70,6 +71,8 @@ class SigninExperienceForSettingsPageTest : public testing::Test {
     ASSERT_TRUE(UnlinkAccount());
     ASSERT_TRUE(VerifyNoLinkedAccount());
   }
+
+  void TearDown() override { OSCryptMocker::TearDown(); }
 
  protected:
   bool LinkAccount(std::string service_provider,
@@ -161,7 +164,6 @@ class SigninExperienceForSettingsPageTest : public testing::Test {
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(SigninExperienceForSettingsPageTest, FromLinked_ToUnlinked) {

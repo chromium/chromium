@@ -81,6 +81,9 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     active_browser_ = browser();
 
+    // Don't want Keychain coming up on Mac.
+    test::DisableSystemServices(pref_service());
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -93,6 +96,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
         ->autofill_manager()
         ->client()
         ->HideAutofillPopup(PopupHidingReason::kTabGone);
+    test::ReenableSystemServices();
   }
 
   // Necessary to avoid flakiness or failure due to input arriving

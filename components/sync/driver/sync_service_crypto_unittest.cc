@@ -80,8 +80,7 @@ std::string CreateBootstrapToken(const std::string& passphrase,
   EXPECT_FALSE(serialized_key.empty());
 
   std::string encrypted_key;
-  EXPECT_TRUE(
-      OSCrypt::GetInstance()->EncryptString(serialized_key, &encrypted_key));
+  EXPECT_TRUE(OSCrypt::EncryptString(serialized_key, &encrypted_key));
 
   std::string encoded_key;
   base::Base64Encode(encrypted_key, &encoded_key);
@@ -105,7 +104,7 @@ MATCHER_P2(BootstrapTokenDerivedFrom,
   }
 
   std::string decrypted_key;
-  if (!OSCrypt::GetInstance()->DecryptString(decoded_key, &decrypted_key)) {
+  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
     return false;
   }
 
@@ -363,6 +362,10 @@ class SyncServiceCryptoTest : public testing::Test {
 
   ~SyncServiceCryptoTest() override = default;
 
+  void SetUp() override { OSCryptMocker::SetUp(); }
+
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
   bool VerifyAndClearExpectations() {
     return testing::Mock::VerifyAndClearExpectations(&delegate_) &&
            testing::Mock::VerifyAndClearExpectations(&trusted_vault_client_) &&
@@ -379,7 +382,6 @@ class SyncServiceCryptoTest : public testing::Test {
   TestTrustedVaultClient trusted_vault_client_;
   testing::NiceMock<MockSyncEngine> engine_;
   SyncServiceCrypto crypto_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 // Happy case where no user action is required upon startup.

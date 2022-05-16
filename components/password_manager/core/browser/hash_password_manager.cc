@@ -41,7 +41,7 @@ std::string DecryptBase64String(const std::string& encrypted_base64_string) {
     return std::string();
 
   std::string plain_text;
-  if (!OSCrypt::GetInstance()->DecryptString(encrypted_string, &plain_text))
+  if (!OSCrypt::DecryptString(encrypted_string, &plain_text))
     return std::string();
 
   return plain_text;
@@ -50,7 +50,7 @@ std::string DecryptBase64String(const std::string& encrypted_base64_string) {
 // Returns empty string if encryption fails.
 std::string EncryptString(const std::string& plain_text) {
   std::string encrypted_text;
-  if (!OSCrypt::GetInstance()->EncryptString(plain_text, &encrypted_text)) {
+  if (!OSCrypt::EncryptString(plain_text, &encrypted_text)) {
     return std::string();
   }
   std::string encrypted_base64_text;

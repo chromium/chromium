@@ -52,6 +52,9 @@ class PasswordGenerationInteractiveTest
  public:
   void SetUpOnMainThread() override {
     PasswordManagerBrowserTestBase::SetUpOnMainThread();
+    // Disable Autofill requesting access to AddressBook data. This will cause
+    // the tests to hang on Mac.
+    autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
 
     // Set observer for popup.
     ChromePasswordManagerClient* client =
@@ -62,6 +65,12 @@ class PasswordGenerationInteractiveTest
         set_wait_for_server_predictions_for_filling(false);
 
     NavigateToFile("/password/signup_form_new_password.html");
+  }
+
+  void TearDownOnMainThread() override {
+    PasswordManagerBrowserTestBase::TearDownOnMainThread();
+
+    autofill::test::ReenableSystemServices();
   }
 
   // Waits until the value of the field with id |field_id| becomes non-empty.

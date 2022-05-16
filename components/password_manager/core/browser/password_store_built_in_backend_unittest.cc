@@ -152,7 +152,10 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
     return backend;
   }
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    OSCryptMocker::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
 
   void TearDown() override {
     PasswordStoreBackend* backend = store_.get();
@@ -160,6 +163,7 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
         [](std::unique_ptr<PasswordStoreBackend> backend) { backend.reset(); },
         std::move(store_)));
     RunUntilIdle();
+    OSCryptMocker::TearDown();
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
@@ -188,7 +192,6 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<PasswordStoreBuiltInBackend> store_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(PasswordStoreBuiltInBackendTest, NonASCIIData) {

@@ -10,12 +10,12 @@ namespace autofill {
 
 bool SystemEncryptor::EncryptString16(const std::u16string& plaintext,
                                       std::string* ciphertext) const {
-  return ::OSCrypt::GetInstance()->EncryptString16(plaintext, ciphertext);
+  return ::OSCrypt::EncryptString16(plaintext, ciphertext);
 }
 
 bool SystemEncryptor::DecryptString16(const std::string& ciphertext,
                                       std::u16string* plaintext) const {
-  return ::OSCrypt::GetInstance()->DecryptString16(ciphertext, plaintext);
+  return ::OSCrypt::DecryptString16(ciphertext, plaintext);
 }
 
 }  // namespace autofill

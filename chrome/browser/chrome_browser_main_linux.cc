@@ -85,7 +85,7 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableEncryptionSelection);
   chrome::GetDefaultUserDataDirectory(&config->user_data_path);
-  OSCrypt::GetInstance()->SetConfig(std::move(config));
+  OSCrypt::SetConfig(std::move(config));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();

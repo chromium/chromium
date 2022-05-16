@@ -26,15 +26,11 @@ class OSCryptLinuxTest : public testing::Test {
   ~OSCryptLinuxTest() override = default;
 
   void SetUp() override {
-    os_crypt_mocker_linux_.SetUp();
-    os_crypt_.SetEncryptionPasswordForTesting("something");
+    OSCryptMockerLinux::SetUp();
+    OSCrypt::SetEncryptionPasswordForTesting("something");
   }
 
-  void TearDown() override { os_crypt_mocker_linux_.TearDown(); }
-
- protected:
-  OSCrypt os_crypt_;
-  OSCryptMockerLinux os_crypt_mocker_linux_{&os_crypt_};
+  void TearDown() override { OSCryptMockerLinux::TearDown(); }
 };
 
 TEST_F(OSCryptLinuxTest, VerifyV0) {
@@ -42,9 +38,9 @@ TEST_F(OSCryptLinuxTest, VerifyV0) {
   std::string ciphertext;
   std::string decipheredtext;
 
-  os_crypt_.SetEncryptionPasswordForTesting(std::string());
+  OSCrypt::SetEncryptionPasswordForTesting(std::string());
   ciphertext = originaltext;  // No encryption
-  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decipheredtext));
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
   ASSERT_EQ(originaltext, decipheredtext);
 }
 
@@ -53,11 +49,11 @@ TEST_F(OSCryptLinuxTest, VerifyV10) {
   std::string ciphertext;
   std::string decipheredtext;
 
-  os_crypt_.SetEncryptionPasswordForTesting("peanuts");
-  ASSERT_TRUE(os_crypt_.EncryptString(originaltext, &ciphertext));
-  os_crypt_.SetEncryptionPasswordForTesting("not_peanuts");
+  OSCrypt::SetEncryptionPasswordForTesting("peanuts");
+  ASSERT_TRUE(OSCrypt::EncryptString(originaltext, &ciphertext));
+  OSCrypt::SetEncryptionPasswordForTesting("not_peanuts");
   ciphertext = ciphertext.substr(3).insert(0, "v10");
-  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decipheredtext));
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
   ASSERT_EQ(originaltext, decipheredtext);
 }
 
@@ -66,19 +62,19 @@ TEST_F(OSCryptLinuxTest, VerifyV11) {
   std::string ciphertext;
   std::string decipheredtext;
 
-  os_crypt_.SetEncryptionPasswordForTesting(std::string());
-  ASSERT_TRUE(os_crypt_.EncryptString(originaltext, &ciphertext));
+  OSCrypt::SetEncryptionPasswordForTesting(std::string());
+  ASSERT_TRUE(OSCrypt::EncryptString(originaltext, &ciphertext));
   ASSERT_EQ(ciphertext.substr(0, 3), "v11");
-  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decipheredtext));
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
   ASSERT_EQ(originaltext, decipheredtext);
 }
 
 TEST_F(OSCryptLinuxTest, IsEncryptionAvailable) {
-  EXPECT_TRUE(os_crypt_.IsEncryptionAvailable());
-  os_crypt_.ClearCacheForTesting();
+  EXPECT_TRUE(OSCrypt::IsEncryptionAvailable());
+  OSCrypt::ClearCacheForTesting();
   // Mock the GetKeyStorage function.
-  os_crypt_.UseMockKeyStorageForTesting(base::BindOnce(&GetNullKeyStorage));
-  EXPECT_FALSE(os_crypt_.IsEncryptionAvailable());
+  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&GetNullKeyStorage));
+  EXPECT_FALSE(OSCrypt::IsEncryptionAvailable());
 }
 
 TEST_F(OSCryptLinuxTest, SetRawEncryptionKey) {
@@ -87,18 +83,18 @@ TEST_F(OSCryptLinuxTest, SetRawEncryptionKey) {
   std::string decipheredtext;
 
   // Encrypt with not_peanuts and save the raw encryption key.
-  os_crypt_.SetEncryptionPasswordForTesting("not_peanuts");
-  ASSERT_TRUE(os_crypt_.EncryptString(originaltext, &ciphertext));
+  OSCrypt::SetEncryptionPasswordForTesting("not_peanuts");
+  ASSERT_TRUE(OSCrypt::EncryptString(originaltext, &ciphertext));
   ASSERT_EQ(ciphertext.substr(0, 3), "v11");
-  std::string raw_key = os_crypt_.GetRawEncryptionKey();
+  std::string raw_key = OSCrypt::GetRawEncryptionKey();
   ASSERT_FALSE(raw_key.empty());
 
   // Clear the cached encryption key.
-  os_crypt_.ClearCacheForTesting();
+  OSCrypt::ClearCacheForTesting();
 
   // Set the raw encryption key and make sure decryption works.
-  os_crypt_.SetRawEncryptionKey(raw_key);
-  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decipheredtext));
+  OSCrypt::SetRawEncryptionKey(raw_key);
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decipheredtext));
   ASSERT_EQ(originaltext, decipheredtext);
 }
 

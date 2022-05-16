@@ -24,7 +24,6 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/fake_server/fake_server.h"
@@ -562,7 +561,6 @@ class SyncTest : public PlatformBrowserTest {
   std::vector<syncer::FCMHandler*> sync_invalidations_fcm_handlers_;
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       fake_server_sync_invalidation_sender_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_H_

@@ -83,8 +83,7 @@ void DeviceOAuth2TokenStoreDesktop::SetAndSaveRefreshToken(
     const std::string& refresh_token,
     StatusCallback result_callback) {
   std::string encrypted_token;
-  bool success =
-      OSCrypt::GetInstance()->EncryptString(refresh_token, &encrypted_token);
+  bool success = OSCrypt::EncryptString(refresh_token, &encrypted_token);
 
   if (success) {
     refresh_token_ = refresh_token;
@@ -133,8 +132,7 @@ void DeviceOAuth2TokenStoreDesktop::DecryptToken() const {
   DCHECK(!refresh_token_.empty());
 
   std::string decrypted_token;
-  bool success =
-      OSCrypt::GetInstance()->DecryptString(refresh_token_, &decrypted_token);
+  bool success = OSCrypt::DecryptString(refresh_token_, &decrypted_token);
   if (success) {
     refresh_token_ = decrypted_token;
     token_decrypted_ = true;

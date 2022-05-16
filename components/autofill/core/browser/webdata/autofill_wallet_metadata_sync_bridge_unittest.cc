@@ -286,7 +286,7 @@ MATCHER_P(HasSpecifics, expected, "") {
 
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
-  AutofillWalletMetadataSyncBridgeTest() = default;
+  AutofillWalletMetadataSyncBridgeTest() {}
 
   AutofillWalletMetadataSyncBridgeTest(
       const AutofillWalletMetadataSyncBridgeTest&) = delete;
@@ -487,7 +487,6 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 // The following 2 tests make sure client tags stay stable.
@@ -921,6 +920,9 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncAddresses) {
 // Verify that updates of local (non-sync) credit cards are ignored.
 // Regression test for crbug.com/1206306.
 TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
+  // Local credit cards need crypto for storage.
+  OSCryptMocker::SetUp();
+
   // Add local data.
   CreditCard existing_card =
       CreateLocalCreditCardWithDetails(/*use_count=*/30, /*use_date=*/40);
@@ -942,6 +944,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+
+  OSCryptMocker::TearDown();
 }
 
 // Verify that old orphan metadata gets deleted on startup.

@@ -191,6 +191,7 @@ class PersonalDataManagerTestBase {
         identity_test_env_(&test_url_loader_factory_) {}
 
   void SetUpTest() {
+    OSCryptMocker::SetUp();
     prefs_ = test::PrefServiceForTesting();
     base::FilePath path(WebDatabase::kInMemoryPath);
     profile_web_database_ =
@@ -221,6 +222,15 @@ class PersonalDataManagerTestBase {
     account_database_service_->Init(base::NullCallback());
 
     strike_database_ = std::make_unique<TestInMemoryStrikeDatabase>();
+
+    test::DisableSystemServices(prefs_.get());
+  }
+
+  void TearDownTest() {
+    // Order of destruction is important as BrowserAutofillManager relies on
+    // PersonalDataManager to be around when it gets destroyed.
+    test::ReenableSystemServices();
+    OSCryptMocker::TearDown();
   }
 
   void ResetPersonalDataManager(UserMode user_mode,
@@ -326,7 +336,6 @@ class PersonalDataManagerTestBase {
   raw_ptr<AutofillTable> account_autofill_table_;  // weak ref
   std::unique_ptr<StrikeDatabaseBase> strike_database_;
   PersonalDataLoadedObserverMock personal_data_observer_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
@@ -564,6 +573,7 @@ class PersonalDataManagerTest : public PersonalDataManagerHelper,
     SetUpTest();
     ResetPersonalDataManager(USER_MODE_NORMAL);
   }
+  void TearDown() override { TearDownTest(); }
 };
 
 class PersonalDataManagerMigrationTest : public PersonalDataManagerHelper,
@@ -579,6 +589,7 @@ class PersonalDataManagerMigrationTest : public PersonalDataManagerHelper,
 
  protected:
   void SetUp() override { SetUpTest(); }
+  void TearDown() override { TearDownTest(); }
 };
 
 class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
@@ -595,6 +606,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     if (personal_data_)
       personal_data_->Shutdown();
     personal_data_.reset();
+    TearDownTest();
   }
 
   void ResetPersonalDataManager(UserMode user_mode) {
@@ -3565,6 +3577,8 @@ class SaveImportedProfileTest
     SetUpTest();
     ResetPersonalDataManager(USER_MODE_NORMAL);
   }
+
+  void TearDown() override { TearDownTest(); }
 
   void InitializeFeatures() {
     structured_names_enabled_ = std::get<0>(GetParam());

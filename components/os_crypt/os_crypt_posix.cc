@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/encryptor.h"
@@ -56,14 +55,6 @@ crypto::SymmetricKey* GetEncryptionKey() {
 }
 
 }  // namespace
-
-// static
-OSCrypt* OSCrypt::GetInstance() {
-  return base::Singleton<OSCrypt, base::LeakySingletonTraits<OSCrypt>>::get();
-}
-
-OSCrypt::OSCrypt() = default;
-OSCrypt::~OSCrypt() = default;
 
 bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
@@ -151,14 +142,17 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   return true;
 }
 
+// static
 bool OSCrypt::IsEncryptionAvailable() {
   return false;
 }
 
+// static
 void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   DCHECK(raw_key.empty());
 }
 
+// static
 std::string OSCrypt::GetRawEncryptionKey() {
   return "";
 }

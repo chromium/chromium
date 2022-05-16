@@ -30,40 +30,97 @@ class SymmetricKey;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 namespace os_crypt {
 struct Config;
 }
-#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 
-// The OSCrypt class gives access to simple encryption and decryption of
+// Temporary interface due to OSCrypt refactor. See OSCryptImpl for descriptions
+// of what each function does.
+namespace OSCrypt {
+#if BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(OS_CRYPT)
+void SetConfig(std::unique_ptr<os_crypt::Config> config);
+#endif  // BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(OS_CRYPT) bool IsEncryptionAvailable();
+COMPONENT_EXPORT(OS_CRYPT)
+bool EncryptString16(const std::u16string& plaintext, std::string* ciphertext);
+COMPONENT_EXPORT(OS_CRYPT)
+bool DecryptString16(const std::string& ciphertext, std::u16string* plaintext);
+COMPONENT_EXPORT(OS_CRYPT)
+bool EncryptString(const std::string& plaintext, std::string* ciphertext);
+COMPONENT_EXPORT(OS_CRYPT)
+bool DecryptString(const std::string& ciphertext, std::string* plaintext);
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(OS_CRYPT)
+void RegisterLocalPrefs(PrefRegistrySimple* registry);
+COMPONENT_EXPORT(OS_CRYPT) bool Init(PrefService* local_state);
+
+// Initialises OSCryptImpl using an encryption key present in the |local_state|.
+// It is similar to the Init() method above, however, it will not create
+// a new encryption key if it is not present in the |local_state|.
+enum InitResult {
+  kSuccess,
+  kKeyDoesNotExist,
+  kInvalidKeyFormat,
+  kDecryptionFailed
+};
+
+COMPONENT_EXPORT(OS_CRYPT)
+InitResult InitWithExistingKey(PrefService* local_state);
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE)
+COMPONENT_EXPORT(OS_CRYPT) void UseMockKeychainForTesting(bool use_mock);
+COMPONENT_EXPORT(OS_CRYPT)
+void UseLockedMockKeychainForTesting(bool use_locked);
+#endif  // BUILDFLAG(IS_APPLE)
+COMPONENT_EXPORT(OS_CRYPT)
+std::string GetRawEncryptionKey();
+COMPONENT_EXPORT(OS_CRYPT)
+void SetRawEncryptionKey(const std::string& key);
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(OS_CRYPT) void UseMockKeyForTesting(bool use_mock);
+COMPONENT_EXPORT(OS_CRYPT) void SetLegacyEncryptionForTesting(bool legacy);
+COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
+#endif  // BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+COMPONENT_EXPORT(OS_CRYPT)
+void UseMockKeyStorageForTesting(
+    base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
+        storage_provider_factory);
+COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
+COMPONENT_EXPORT(OS_CRYPT)
+void SetEncryptionPasswordForTesting(const std::string& password);
+#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+}  // namespace OSCrypt
+
+// The OSCryptImpl class gives access to simple encryption and decryption of
 // strings. Note that on Mac, access to the system Keychain is required and
 // these calls can block the current thread to collect user input. The same is
 // true for Linux, if a password management tool is available.
-class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
+class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
  public:
-  OSCrypt();
-  ~OSCrypt();
-  OSCrypt(const OSCrypt&) = delete;
-  OSCrypt(OSCrypt&&) = delete;
-  OSCrypt& operator=(const OSCrypt&) = delete;
-  OSCrypt& operator=(OSCrypt&&) = delete;
+  OSCryptImpl();
+  ~OSCryptImpl();
+  OSCryptImpl(const OSCryptImpl&) = delete;
+  OSCryptImpl(OSCryptImpl&&) = delete;
+  OSCryptImpl& operator=(const OSCryptImpl&) = delete;
+  OSCryptImpl& operator=(OSCryptImpl&&) = delete;
 
-  // Returns singleton instance of OSCrypt.
-  static OSCrypt* GetInstance();
+  // Returns singleton instance of OSCryptImpl.
+  static OSCryptImpl* GetInstance();
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
-  // Set the configuration of OSCrypt.
+#if BUILDFLAG(IS_LINUX)
+  // Set the configuration of OSCryptImpl.
   // This method, or SetRawEncryptionKey(), must be called before using
   // EncryptString() and DecryptString().
   void SetConfig(std::unique_ptr<os_crypt::Config> config);
-#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#endif  // BUILDFLAG(IS_LINUX)
 
   // On Linux returns true iff the real secret key (not hardcoded one) is
   // available. On MacOS returns true if Keychain is available (for mock
   // Keychain it returns true if not using locked Keychain, false if using
   // locked mock Keychain). On Windows returns true if non mock encryption
-  // key is available. On other platforms, returns false as OSCrypt will use
+  // key is available. On other platforms, returns false as OSCryptImpl will use
   // a hardcoded key.
   bool IsEncryptionAvailable();
 
@@ -87,25 +144,18 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
   bool DecryptString(const std::string& ciphertext, std::string* plaintext);
 
 #if BUILDFLAG(IS_WIN)
-  // Registers preferences used by OSCrypt.
+  // Registers preferences used by OSCryptImpl.
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
 
-  // Initialises OSCrypt.
+  // Initialises OSCryptImpl.
   // This method should be called on the main UI thread before any calls to
   // encryption or decryption. Returns |true| if os_crypt successfully
   // initialized.
   bool Init(PrefService* local_state);
 
-  // Initialises OSCrypt using an encryption key present in the
+  // Initialises OSCryptImpl using an encryption key present in the
   // |local_state|. It is similar to the Init() method above, however, it will
   // not create a new encryption key if it is not present in the |local_state|.
-
-  enum InitResult {
-    kSuccess,
-    kKeyDoesNotExist,
-    kInvalidKeyFormat,
-    kDecryptionFailed
-  };
 
   OSCrypt::InitResult InitWithExistingKey(PrefService* local_state);
 #endif
@@ -133,7 +183,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
 
   // Set the raw encryption key to be used for all AES encryption.
   // On platforms that may use a hardcoded key, |key| can be empty and
-  // OSCrypt will default to the hardcoded key. This method is thread-safe.
+  // OSCryptImpl will default to the hardcoded key. This method is thread-safe.
   void SetRawEncryptionKey(const std::string& key);
 
 #if BUILDFLAG(IS_WIN)
@@ -146,7 +196,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
   // than using a session key.
   void SetLegacyEncryptionForTesting(bool legacy);
 
-  // For unit testing purposes, reset the state of OSCrypt so a new key can
+  // For unit testing purposes, reset the state of OSCryptImpl so a new key can
   // be loaded via Init() or SetRawEncryptionkey().
   void ResetStateForTesting();
 #endif
@@ -182,7 +232,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
   static base::Lock& GetLock();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_LINUX)
   // Create the KeyStorage. Will be null if no service is found. A Config must
   // be set before every call to this method.
   std::unique_ptr<KeyStorageLinux> CreateKeyStorage();
@@ -207,7 +257,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCrypt {
 
   base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
       storage_provider_factory_;
-#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
   // Use mock key instead of a real encryption key. Used for testing.

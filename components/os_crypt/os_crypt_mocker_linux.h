@@ -5,32 +5,38 @@
 #ifndef COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_LINUX_H_
 #define COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_LINUX_H_
 
-#include "base/memory/raw_ptr.h"
+#include <string>
+
 #include "base/strings/string_piece.h"
+#include "components/os_crypt/key_storage_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class OSCrypt;
-
 // Holds and serves a password from memory.
-class OSCryptMockerLinux {
+class OSCryptMockerLinux : public KeyStorageLinux {
  public:
-  explicit OSCryptMockerLinux(OSCrypt* os_crypt);
+  OSCryptMockerLinux() = default;
 
   OSCryptMockerLinux(const OSCryptMockerLinux&) = delete;
   OSCryptMockerLinux& operator=(const OSCryptMockerLinux&) = delete;
-  OSCryptMockerLinux(OSCryptMockerLinux&&) = delete;
-  OSCryptMockerLinux& operator=(OSCryptMockerLinux&&) = delete;
 
-  ~OSCryptMockerLinux() = default;
+  ~OSCryptMockerLinux() override = default;
+
+  // Get a pointer to the stored password. OSCryptMockerLinux owns the pointer.
+  std::string* GetKeyPtr();
 
   // Inject the mocking scheme into OSCrypt.
-  void SetUp();
+  static void SetUp();
 
   // Restore OSCrypt to its real behaviour.
-  void TearDown();
+  static void TearDown();
+
+ protected:
+  // KeyStorageLinux
+  bool Init() override;
+  absl::optional<std::string> GetKeyImpl() override;
 
  private:
-  raw_ptr<OSCrypt> os_crypt_;
+  std::string key_;
 };
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_MOCKER_LINUX_H_

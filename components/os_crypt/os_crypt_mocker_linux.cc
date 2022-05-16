@@ -5,45 +5,42 @@
 #include "components/os_crypt/os_crypt_mocker_linux.h"
 
 #include <memory>
-#include <string>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/rand_util.h"
 #include "components/os_crypt/key_storage_config_linux.h"
-#include "components/os_crypt/key_storage_linux.h"
 #include "components/os_crypt/os_crypt.h"
 
 namespace {
-class KeyStorageLinuxMock : public KeyStorageLinux {
- protected:
-  // KeyStorageLinux
-  bool Init() override {
-    key_ = "the_encryption_key";
-    return true;
-  }
-
-  absl::optional<std::string> GetKeyImpl() override { return key_; }
-
- private:
-  std::string key_;
-};
 
 std::unique_ptr<KeyStorageLinux> CreateNewMock() {
-  return std::make_unique<KeyStorageLinuxMock>();
+  return std::make_unique<OSCryptMockerLinux>();
 }
-}  // namespace
 
-OSCryptMockerLinux::OSCryptMockerLinux(OSCrypt* os_crypt)
-    : os_crypt_(os_crypt) {}
+}
 
+absl::optional<std::string> OSCryptMockerLinux::GetKeyImpl() {
+  return key_;
+}
+
+std::string* OSCryptMockerLinux::GetKeyPtr() {
+  return &key_;
+}
+
+// static
 void OSCryptMockerLinux::SetUp() {
-  os_crypt_->UseMockKeyStorageForTesting(  // IN-TEST
-      base::BindOnce(&CreateNewMock));
+  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&CreateNewMock));
 }
 
+// static
 void OSCryptMockerLinux::TearDown() {
-  os_crypt_->UseMockKeyStorageForTesting(base::NullCallback());  // IN-TEST
-  os_crypt_->ClearCacheForTesting();                             // IN-TEST
+  OSCrypt::UseMockKeyStorageForTesting(base::NullCallback());
+  OSCrypt::ClearCacheForTesting();
+}
+
+bool OSCryptMockerLinux::Init() {
+  key_ = "the_encryption_key";
+  return true;
 }

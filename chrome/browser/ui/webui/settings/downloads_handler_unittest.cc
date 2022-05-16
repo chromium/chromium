@@ -151,6 +151,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
                                      param.auto_open_downloads);
 
     // Setup the downloads connection feature.
+    OSCryptMocker::SetUp();
     feature_list_.InitWithFeatures({ec::kFileSystemConnectorEnabled}, {});
     ASSERT_TRUE(ec::SetFileSystemOAuth2Tokens(
         profile()->GetPrefs(), ec::kFileSystemServiceProviderPrefNameBox,
@@ -179,6 +180,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
 
   void TearDown() override {
     service_->SetDownloadManagerDelegateForTesting(nullptr);
+    OSCryptMocker::TearDown();
     testing::Test::TearDown();
   }
 
@@ -266,7 +268,6 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
   base::test::ScopedFeatureList feature_list_;
 
   DownloadsHandler handler_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_P(DownloadsHandlerTest, AutoOpenDownloads) {

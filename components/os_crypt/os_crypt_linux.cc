@@ -65,23 +65,63 @@ std::unique_ptr<crypto::SymmetricKey> GenerateEncryptionKey(
 
 }  // namespace
 
-OSCrypt* OSCrypt::GetInstance() {
-  return base::Singleton<OSCrypt, base::LeakySingletonTraits<OSCrypt>>::get();
+namespace OSCrypt {
+void SetConfig(std::unique_ptr<os_crypt::Config> config) {
+  OSCryptImpl::GetInstance()->SetConfig(std::move(config));
+}
+bool EncryptString16(const std::u16string& plaintext, std::string* ciphertext) {
+  return OSCryptImpl::GetInstance()->EncryptString16(plaintext, ciphertext);
+}
+bool DecryptString16(const std::string& ciphertext, std::u16string* plaintext) {
+  return OSCryptImpl::GetInstance()->DecryptString16(ciphertext, plaintext);
+}
+bool EncryptString(const std::string& plaintext, std::string* ciphertext) {
+  return OSCryptImpl::GetInstance()->EncryptString(plaintext, ciphertext);
+}
+bool DecryptString(const std::string& ciphertext, std::string* plaintext) {
+  return OSCryptImpl::GetInstance()->DecryptString(ciphertext, plaintext);
+}
+std::string GetRawEncryptionKey() {
+  return OSCryptImpl::GetInstance()->GetRawEncryptionKey();
+}
+void SetRawEncryptionKey(const std::string& key) {
+  OSCryptImpl::GetInstance()->SetRawEncryptionKey(key);
+}
+bool IsEncryptionAvailable() {
+  return OSCryptImpl::GetInstance()->IsEncryptionAvailable();
+}
+void UseMockKeyStorageForTesting(
+    base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
+        storage_provider_factory) {
+  OSCryptImpl::GetInstance()->UseMockKeyStorageForTesting(
+      std::move(storage_provider_factory));
+}
+void ClearCacheForTesting() {
+  OSCryptImpl::GetInstance()->ClearCacheForTesting();
+}
+void SetEncryptionPasswordForTesting(const std::string& password) {
+  OSCryptImpl::GetInstance()->SetEncryptionPasswordForTesting(password);
+}
+}  // namespace OSCrypt
+
+OSCryptImpl* OSCryptImpl::GetInstance() {
+  return base::Singleton<OSCryptImpl,
+                         base::LeakySingletonTraits<OSCryptImpl>>::get();
 }
 
-OSCrypt::OSCrypt()
-    : storage_provider_factory_(
-          base::BindOnce(&OSCrypt::CreateKeyStorage, base::Unretained(this))) {}
+OSCryptImpl::OSCryptImpl()
+    : storage_provider_factory_(base::BindOnce(&OSCryptImpl::CreateKeyStorage,
+                                               base::Unretained(this))) {}
 
-OSCrypt::~OSCrypt() = default;
+OSCryptImpl::~OSCryptImpl() = default;
 
-bool OSCrypt::EncryptString16(const std::u16string& plaintext,
-                              std::string* ciphertext) {
+bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
+                                  std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
-bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              std::u16string* plaintext) {
+bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
+                                  std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;
@@ -90,8 +130,8 @@ bool OSCrypt::DecryptString16(const std::string& ciphertext,
   return true;
 }
 
-bool OSCrypt::EncryptString(const std::string& plaintext,
-                            std::string* ciphertext) {
+bool OSCryptImpl::EncryptString(const std::string& plaintext,
+                                std::string* ciphertext) {
   if (plaintext.empty()) {
     ciphertext->clear();
     return true;
@@ -122,8 +162,8 @@ bool OSCrypt::EncryptString(const std::string& plaintext,
   return true;
 }
 
-bool OSCrypt::DecryptString(const std::string& ciphertext,
-                            std::string* plaintext) {
+bool OSCryptImpl::DecryptString(const std::string& ciphertext,
+                                std::string* plaintext) {
   if (ciphertext.empty()) {
     plaintext->clear();
     return true;
@@ -171,18 +211,18 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
   return true;
 }
 
-void OSCrypt::SetConfig(std::unique_ptr<os_crypt::Config> config) {
+void OSCryptImpl::SetConfig(std::unique_ptr<os_crypt::Config> config) {
   // Setting initialisation parameters makes no sense after initializing.
   DCHECK(!is_password_v11_cached_);
   config_ = std::move(config);
 }
 
-bool OSCrypt::IsEncryptionAvailable() {
+bool OSCryptImpl::IsEncryptionAvailable() {
   return GetPasswordV11();
 }
 
-void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
-  base::AutoLock auto_lock(OSCrypt::GetLock());
+void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
+  base::AutoLock auto_lock(OSCryptImpl::GetLock());
   // Check if the v11 password is already cached. If it is, then data encrypted
   // with the old password might not be decryptable.
   DCHECK(!is_password_v11_cached_);
@@ -200,32 +240,32 @@ void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   is_password_v11_cached_ = true;
 }
 
-std::string OSCrypt::GetRawEncryptionKey() {
+std::string OSCryptImpl::GetRawEncryptionKey() {
   if (crypto::SymmetricKey* key = GetPasswordV11())
     return key->key();
   return std::string();
 }
 
-void OSCrypt::ClearCacheForTesting() {
+void OSCryptImpl::ClearCacheForTesting() {
   password_v10_cache_.reset();
   password_v11_cache_.reset();
   is_password_v11_cached_ = false;
   config_.reset();
 }
 
-void OSCrypt::UseMockKeyStorageForTesting(
+void OSCryptImpl::UseMockKeyStorageForTesting(
     base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
         storage_provider_factory) {
   if (storage_provider_factory)
     storage_provider_factory_ = std::move(storage_provider_factory);
   else
     storage_provider_factory_ =
-        base::BindOnce(&OSCrypt::CreateKeyStorage, base::Unretained(this));
+        base::BindOnce(&OSCryptImpl::CreateKeyStorage, base::Unretained(this));
 }
 
 // Create the KeyStorage. Will be null if no service is found. A Config must be
 // set before every call to this function.
-std::unique_ptr<KeyStorageLinux> OSCrypt::CreateKeyStorage() {
+std::unique_ptr<KeyStorageLinux> OSCryptImpl::CreateKeyStorage() {
   CHECK(config_);
   std::unique_ptr<KeyStorageLinux> key_storage =
       KeyStorageLinux::CreateService(*config_);
@@ -233,15 +273,15 @@ std::unique_ptr<KeyStorageLinux> OSCrypt::CreateKeyStorage() {
   return key_storage;
 }
 
-void OSCrypt::SetEncryptionPasswordForTesting(const std::string& password) {
+void OSCryptImpl::SetEncryptionPasswordForTesting(const std::string& password) {
   ClearCacheForTesting();  // IN-TEST
   password_v11_cache_ = GenerateEncryptionKey(password);
   is_password_v11_cached_ = true;
 }
 
 // Returns a cached string of "peanuts". Is thread-safe.
-crypto::SymmetricKey* OSCrypt::GetPasswordV10() {
-  base::AutoLock auto_lock(OSCrypt::GetLock());
+crypto::SymmetricKey* OSCryptImpl::GetPasswordV10() {
+  base::AutoLock auto_lock(OSCryptImpl::GetLock());
   if (!password_v10_cache_.get()) {
     password_v10_cache_ = GenerateEncryptionKey("peanuts");
   }
@@ -250,8 +290,8 @@ crypto::SymmetricKey* OSCrypt::GetPasswordV10() {
 
 // Caches and returns the password from the KeyStorage or null if there is no
 // service. Is thread-safe.
-crypto::SymmetricKey* OSCrypt::GetPasswordV11() {
-  base::AutoLock auto_lock(OSCrypt::GetLock());
+crypto::SymmetricKey* OSCryptImpl::GetPasswordV11() {
+  base::AutoLock auto_lock(OSCryptImpl::GetLock());
   if (!is_password_v11_cached_) {
     std::unique_ptr<KeyStorageLinux> key_storage =
         std::move(storage_provider_factory_).Run();
@@ -267,7 +307,7 @@ crypto::SymmetricKey* OSCrypt::GetPasswordV11() {
 }
 
 // static
-base::Lock& OSCrypt::GetLock() {
+base::Lock& OSCryptImpl::GetLock() {
   static base::NoDestructor<base::Lock> os_crypt_lock;
   return *os_crypt_lock;
 }

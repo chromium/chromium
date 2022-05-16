@@ -662,7 +662,7 @@ void NetworkService::OnCertDBChanged() {
 }
 
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
-  OSCrypt::GetInstance()->SetRawEncryptionKey(encryption_key);
+  OSCrypt::SetRawEncryptionKey(encryption_key);
 }
 
 void NetworkService::OnMemoryPressure(

@@ -70,11 +70,11 @@ void SetCryptKeyOnce(const base::FilePath& user_data_path) {
   // process, send it the required key if it is available.
   if (content::IsOutOfProcessNetworkService()
 #if BUILDFLAG(IS_WIN)
-      && OSCrypt::GetInstance()->IsEncryptionAvailable()
+      && OSCrypt::IsEncryptionAvailable()
 #endif
   ) {
     content::GetNetworkService()->SetEncryptionKey(
-        OSCrypt::GetInstance()->GetRawEncryptionKey());
+        OSCrypt::GetRawEncryptionKey());
   }
 #endif
 }

@@ -12,12 +12,12 @@ SystemEncryptor::~SystemEncryptor() {}
 
 bool SystemEncryptor::EncryptString(const std::string& plaintext,
                                     std::string* ciphertext) {
-  return ::OSCrypt::GetInstance()->EncryptString(plaintext, ciphertext);
+  return ::OSCrypt::EncryptString(plaintext, ciphertext);
 }
 
 bool SystemEncryptor::DecryptString(const std::string& ciphertext,
                                     std::string* plaintext) {
-  return ::OSCrypt::GetInstance()->DecryptString(ciphertext, plaintext);
+  return ::OSCrypt::DecryptString(ciphertext, plaintext);
 }
 
 }  // namespace gcm

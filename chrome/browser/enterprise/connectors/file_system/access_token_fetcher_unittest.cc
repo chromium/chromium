@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -28,7 +29,8 @@ TEST(SetGetFileSystemOAuth2Token, Box) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   PrefService* prefs = profile.GetPrefs();
-  OSCryptMocker os_crypt_mocker;
+
+  OSCryptMocker::SetUp();
 
   ASSERT_TRUE(
       SetFileSystemOAuth2Tokens(prefs, "box", "testAToken", "testRToken"));
@@ -38,6 +40,8 @@ TEST(SetGetFileSystemOAuth2Token, Box) {
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs, "box", &atoken, &rtoken));
   EXPECT_EQ(atoken, "testAToken");
   EXPECT_EQ(rtoken, "testRToken");
+
+  OSCryptMocker::TearDown();
 }
 
 class AccessTokenFetcherForTest : public AccessTokenFetcher {

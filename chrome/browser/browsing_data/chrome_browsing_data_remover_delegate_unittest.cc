@@ -632,10 +632,14 @@ class RemovePasswordsTester {
                   testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
                   .get());
     }
+
+    OSCryptMocker::SetUp();
   }
 
   RemovePasswordsTester(const RemovePasswordsTester&) = delete;
   RemovePasswordsTester& operator=(const RemovePasswordsTester&) = delete;
+
+  ~RemovePasswordsTester() { OSCryptMocker::TearDown(); }
 
   password_manager::MockPasswordStoreInterface* profile_store() {
     return profile_store_;
@@ -660,7 +664,6 @@ class RemovePasswordsTester {
       mock_smart_bubble_stats_store_;
   testing::NiceMock<password_manager::MockFieldInfoStore>
       mock_field_info_store_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 class RemoveSecurePaymentConfirmationCredentialsTester {
@@ -870,6 +873,7 @@ class RemoveAutofillTester {
   explicit RemoveAutofillTester(TestingProfile* profile)
       : personal_data_manager_(
             autofill::PersonalDataManagerFactory::GetForProfile(profile)) {
+    autofill::test::DisableSystemServices(profile->GetPrefs());
     personal_data_manager_->AddObserver(&personal_data_observer_);
   }
 
@@ -878,6 +882,7 @@ class RemoveAutofillTester {
 
   ~RemoveAutofillTester() {
     personal_data_manager_->RemoveObserver(&personal_data_observer_);
+    autofill::test::ReenableSystemServices();
   }
 
   // Returns true if there are autofill profiles.
@@ -956,7 +961,6 @@ class RemoveAutofillTester {
 
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
   testing::NiceMock<PersonalDataLoadedObserverMock> personal_data_observer_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 #if BUILDFLAG(ENABLE_REPORTING)

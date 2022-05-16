@@ -51,6 +51,8 @@ class CBCMInvalidationsInitializerTest
     : public testing::Test,
       public CBCMInvalidationsInitializer::Delegate {
  public:
+  CBCMInvalidationsInitializerTest() = default;
+
   void RefreshTokenSavedCallbackExpectSuccess(bool success) {
     EXPECT_TRUE(success);
 
@@ -102,10 +104,14 @@ class CBCMInvalidationsInitializerTest
         testing_local_state_.registry());
     DeviceOAuth2TokenServiceFactory::Initialize(GetURLLoaderFactory(),
                                                 &testing_local_state_);
+    OSCryptMocker::SetUp();
     mock_policy_client_.SetDMToken(kDMToken);
   }
 
-  void TearDown() override { DeviceOAuth2TokenServiceFactory::Shutdown(); }
+  void TearDown() override {
+    DeviceOAuth2TokenServiceFactory::Shutdown();
+    OSCryptMocker::TearDown();
+  }
 
   int num_refresh_tokens_saved_ = 0;
   int num_invalidations_started_ = 0;
@@ -114,7 +120,6 @@ class CBCMInvalidationsInitializerTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple testing_local_state_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(CBCMInvalidationsInitializerTest, InvalidationsStartDisabled) {

@@ -773,6 +773,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   }
 
   void SetUp() override {
+    OSCryptMocker::SetUp();
     RenameHandlerTestBase::SetUp(profile_);
     EXPECT_CALL(*uploader(), GetDestinationFolderUrl()).Times(0);
   }
@@ -780,6 +781,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   void TearDown() override {
     ASSERT_EQ(download_cb_reason_, uploader()->expected_reason_);
     RenameHandlerTestBase::TearDown();
+    OSCryptMocker::TearDown();
   }
 
  protected:
@@ -846,7 +848,6 @@ class RenameHandlerOAuth2Test : public testing::Test,
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(RenameHandlerOAuth2Test, NullPtrs) {
