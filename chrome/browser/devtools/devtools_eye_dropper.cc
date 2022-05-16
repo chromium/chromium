@@ -37,7 +37,7 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
     : content::WebContentsObserver(web_contents), callback_(callback) {
   mouse_event_callback_ = base::BindRepeating(
       &DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
-  if (web_contents->GetMainFrame()->IsRenderFrameCreated())
+  if (web_contents->GetMainFrame()->IsRenderFrameLive())
     AttachToHost(web_contents->GetMainFrame());
 }
 
@@ -49,7 +49,7 @@ DevToolsEyeDropper::~DevToolsEyeDropper() {
 }
 
 void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameCreated());
+  DCHECK(frame_host->IsRenderFrameLive());
   // Historically, (see https://crbug.com/847363) this code handled the
   // RenderWidgetHostView being null, but now it is listening to creation of the
   // frame which includes creation of the widget so it is implied that
@@ -120,7 +120,7 @@ void DevToolsEyeDropper::RenderFrameHostChanged(
     // has its renderer frame. Since `old_host` is null only when this observer
     // method is called at startup, it should be before the renderer frame is
     // created.
-    DCHECK(!new_host->IsRenderFrameCreated());
+    DCHECK(!new_host->IsRenderFrameLive());
     return;
   }
   DCHECK(host_);

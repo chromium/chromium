@@ -1657,7 +1657,7 @@ void DevToolsUIBindings::CallClientMethod(
     return;
   // If the client renderer is gone (e.g., the window was closed with both the
   // inspector and client being destroyed), the message can not be sent.
-  if (!web_contents_->GetMainFrame()->IsRenderFrameCreated())
+  if (!web_contents_->GetMainFrame()->IsRenderFrameLive())
     return;
   base::Value::List arguments;
   if (!arg1.is_none()) {
