@@ -82,8 +82,11 @@ void AXTreeFormatterMacBrowserTest::TestFormat(
   std::unique_ptr<ui::AXTreeFormatter> formatter =
       AXInspectFactory::CreatePlatformFormatter();
 
-  formatter->SetPropertyFilters(property_filters,
-                                ui::AXTreeFormatter::kFiltersDefaultSet);
+  std::vector<ui::AXPropertyFilter> property_filters_ext(property_filters);
+  property_filters_ext.emplace_back("AXRole", ui::AXPropertyFilter::ALLOW);
+
+  formatter->SetPropertyFilters(property_filters_ext,
+                                ui::AXTreeFormatter::kFiltersEmptySet);
   formatter->SetNodeFilters(node_filters);
 
   BrowserAccessibility* root = GetManager()->GetRoot();
@@ -162,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, DefaultAttributes) {
   TestFormat(R"~~(<input aria-label="input">)~~", {},
              R"~~(AXWebArea
 ++AXGroup
-++++AXTextField AXDescription='input'
+++++AXTextField
 )~~");
 }
 
@@ -191,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeAXTextMarker) {
   TestFormat(R"~~(<p>Paragraph</p>)~~", {":3;AXStartTextMarker=*"},
              R"~~(AXWebArea
 ++AXGroup
-++++AXStaticText AXStartTextMarker={:1, 0, down} AXValue='Paragraph'
+++++AXStaticText AXStartTextMarker={:1, 0, down}
 )~~");
 }
 
@@ -203,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                     </script>)~~",
              {":3;AXSelectedTextMarkerRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXStaticText AXSelectedTextMarkerRange={anchor: {:2, -1, down}, focus: {:3, 0, down}} AXValue='Paragraph'
+++++AXStaticText AXSelectedTextMarkerRange={anchor: {:2, -1, down}, focus: {:3, 0, down}}
 )~~");
 }
 
@@ -215,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, SerializeNSRange) {
                     </script>)~~",
              {":3;AXSelectedTextRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXTextField AXSelectedTextRange={loc: 0, len: 8} AXValue='alphabet'
+++++AXTextField AXSelectedTextRange={loc: 0, len: 8}
 )~~");
 }
 
@@ -223,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesInt) {
   TestFormat(R"~~(<p contentEditable="true">Text</p>)~~",
              {":2;AXLineForIndex(0)=*"}, R"~~(AXWebArea
-++AXTextArea AXLineForIndex(0)=0 AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXLineForIndex(0)=0
+++++AXStaticText
 )~~");
 }
 
@@ -233,8 +236,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
   TestWrongParameters(R"~~(<p contentEditable="true">Text</p>)~~",
                       {"1, 2", "NaN"}, ":2;AXLineForIndex(Argument)=*",
                       R"~~(AXWebArea
-++AXTextArea AXLineForIndex(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXLineForIndex(Argument)=ERROR:FAILED_TO_PARSE
+++++AXStaticText
 )~~");
 }
 
@@ -245,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 ++AXTable AXCellForColumnAndRow([0, 0])=:4
 ++++AXRow
 ++++++AXCell
-++++++++AXStaticText AXValue='CELL'
+++++++++AXStaticText
 ++++AXColumn
 ++++++AXCell
-++++++++AXStaticText AXValue='CELL'
+++++++++AXStaticText
 ++++AXGroup
 )~~");
 }
@@ -271,10 +274,10 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 ++AXTable AXCellForColumnAndRow(Argument)=ERROR:FAILED_TO_PARSE
 ++++AXRow
 ++++++AXCell
-++++++++AXStaticText AXValue='CELL'
+++++++++AXStaticText
 ++++AXColumn
 ++++++AXCell
-++++++++AXStaticText AXValue='CELL'
+++++++++AXStaticText
 ++++AXGroup
 )~~");
 }
@@ -294,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesNSRange) {
   TestFormat(R"~~(<p contentEditable="true">Text</p>)~~",
              {":2;AXStringForRange({loc: 1, len: 2})=*"}, R"~~(AXWebArea
-++AXTextArea AXStringForRange({loc: 1, len: 2})='ex' AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXStringForRange({loc: 1, len: 2})='ex'
+++++AXStaticText
 )~~");
 }
 
@@ -305,8 +308,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                       {"1, 2", "[]", "{loc: 1, leno: 2}", "{loco: 1, len: 2}",
                        "{loc: NaN, len: 2}", "{loc: 2, len: NaN}"},
                       ":2;AXStringForRange(Argument)=*", R"~~(AXWebArea
-++AXTextArea AXStringForRange(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXStringForRange(Argument)=ERROR:FAILED_TO_PARSE
+++++AXStaticText
 )~~");
 }
 
@@ -314,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                        ParameterizedAttributesUIElement) {
   TestFormat(R"~~(<p contentEditable='true'>Text</p>)~~",
              {":2;AXIndexForChildUIElement(:3)=*"}, R"~~(AXWebArea
-++AXTextArea AXIndexForChildUIElement(:3)=0 AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXIndexForChildUIElement(:3)=0
+++++AXStaticText
 )~~");
 }
 
@@ -325,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                       {"1, 2", "2", ":4"},
                       ":2;AXIndexForChildUIElement(Argument)=*",
                       R"~~(AXWebArea
-++AXTextArea AXIndexForChildUIElement(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
-++++AXStaticText AXValue='Text'
+++AXTextArea AXIndexForChildUIElement(Argument)=ERROR:FAILED_TO_PARSE
+++++AXStaticText
 )~~");
 }
 
@@ -335,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
   TestFormat(R"~~(<p>Text</p>)~~", {":1;AXIndexForTextMarker({:2, 1, down})=*"},
              R"~~(AXWebArea AXIndexForTextMarker({:2, 1, down})=1
 ++AXGroup
-++++AXStaticText AXValue='Text'
+++++AXStaticText
 )~~");
 }
 
@@ -347,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
       ":1;AXIndexForTextMarker(Argument)=*",
       R"~~(AXWebArea AXIndexForTextMarker(Argument)=ERROR:FAILED_TO_PARSE
 ++AXGroup
-++++AXStaticText AXValue='Text'
+++++AXStaticText
 )~~");
 }
 
@@ -358,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
               "{:2, 3, down}})=*"},
              R"~~(AXWebArea
 ++AXGroup AXStringForTextMarkerRange({anchor: {:2, 1, down}, focus: {:2, 3, down}})='ex'
-++++AXStaticText AXValue='Text'
+++++AXStaticText
 )~~");
 }
 
@@ -371,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
       ":1;AXStringForTextMarkerRange(Argument)=*",
       R"~~(AXWebArea AXStringForTextMarkerRange(Argument)=ERROR:FAILED_TO_PARSE
 ++AXGroup
-++++AXStaticText AXValue='Text'
+++++AXStaticText
 )~~");
 }
 
@@ -380,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, NestedCalls) {
              {":1;AXIndexForTextMarker(AXTextMarkerForIndex(0))"},
              R"~~(AXWebArea AXIndexForTextMarker(AXTextMarkerForIndex(0))=0
 ++AXGroup
-++++AXStaticText AXValue='Text'
+++++AXStaticText
 )~~");
 }
 
