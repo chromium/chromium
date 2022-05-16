@@ -4,6 +4,8 @@
 
 #include "media/mojo/services/webrtc_video_perf_history.h"
 
+#include <math.h>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/format_macros.h"
