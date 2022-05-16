@@ -11,7 +11,6 @@
 #include "testing/perf/perf_result_reporter.h"
 
 using bookmarks_helper::AddURL;
-using bookmarks_helper::AllModelsMatch;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::IndexedURL;
 using bookmarks_helper::IndexedURLTitle;

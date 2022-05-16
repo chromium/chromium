@@ -24,8 +24,6 @@
 
 namespace {
 
-using sync_pb::HistoryDeleteDirectiveSpecifics;
-
 int64_t TimeToUnixUsec(base::Time time) {
   DCHECK(!time.is_null());
   return (time - base::Time::UnixEpoch()).InMicroseconds();

@@ -20,7 +20,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using preferences_helper::BooleanPrefMatches;
-using preferences_helper::BuildPrefStoreFromPrefsFile;
 using preferences_helper::ChangeBooleanPref;
 using preferences_helper::ChangeIntegerPref;
 using preferences_helper::ChangeListPref;
@@ -29,7 +28,6 @@ using preferences_helper::ClearPref;
 using preferences_helper::GetPrefs;
 using preferences_helper::GetRegistry;
 using testing::Eq;
-using user_prefs::PrefRegistrySyncable;
 
 namespace {
 

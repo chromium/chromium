@@ -37,10 +37,8 @@
 #include "extensions/common/constants.h"
 
 using apps_helper::AllProfilesHaveSameApps;
-using apps_helper::CopyNTPOrdinals;
 using apps_helper::DisableApp;
 using apps_helper::EnableApp;
-using apps_helper::FixNTPOrdinalCollisions;
 using apps_helper::GetAppLaunchOrdinalForApp;
 using apps_helper::IncognitoDisableApp;
 using apps_helper::IncognitoEnableApp;

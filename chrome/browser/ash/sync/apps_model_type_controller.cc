@@ -18,7 +18,6 @@
 
 using syncer::ClientTagBasedModelTypeProcessor;
 using syncer::ForwardingModelTypeControllerDelegate;
-using syncer::ModelTypeController;
 using syncer::ModelTypeControllerDelegate;
 using syncer::SyncableServiceBasedBridge;
 

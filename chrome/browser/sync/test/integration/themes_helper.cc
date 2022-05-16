@@ -21,8 +21,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
-using sync_datatype_helper::test;
-
 namespace {
 
 // Make a name to pass to an extension helper.

@@ -13,8 +13,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
-using content::NavigationEntry;
-
 namespace browser_sync {
 namespace {
 
@@ -50,8 +48,7 @@ bool SyncedTabDelegateAndroid::IsPlaceholderTab() const {
 }
 
 void SyncedTabDelegateAndroid::SetWebContents(
-    content::WebContents* web_contents,
-    int source_tab_android_id) {
+    content::WebContents* web_contents) {
   TabContentsSyncedTabDelegate::SetWebContents(web_contents);
 }
 

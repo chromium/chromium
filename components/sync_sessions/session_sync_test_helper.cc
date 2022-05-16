@@ -105,6 +105,7 @@ sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
   specifics.set_session_tag(tag);
   specifics.set_tab_node_id(tab_node_id);
   sync_pb::SessionTab* tab = specifics.mutable_tab();
+  tab->set_window_id(window_id.id());
   tab->set_tab_id(tab_id.id());
   tab->set_tab_visual_index(1);
   tab->set_current_navigation_index(0);

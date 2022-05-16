@@ -198,9 +198,11 @@ void NavigateTabForward(int browser_index) {
 }
 
 bool ExecJs(int browser_index, int tab_index, const std::string& script) {
-  return content::ExecJs(
-      test()->GetBrowser(browser_index)->tab_strip_model()->GetWebContentsAt(0),
-      script);
+  return content::ExecJs(test()
+                             ->GetBrowser(browser_index)
+                             ->tab_strip_model()
+                             ->GetWebContentsAt(tab_index),
+                         script);
 }
 
 bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {

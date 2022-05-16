@@ -17,7 +17,6 @@
 using preferences_helper::ChangeStringPref;
 using preferences_helper::ClearPref;
 using preferences_helper::GetPrefs;
-using preferences_helper::GetRegistry;
 
 namespace {
 

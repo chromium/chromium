@@ -48,7 +48,6 @@ using testing::NotNull;
 using testing::Return;
 using testing::ReturnRef;
 using testing::UnorderedElementsAre;
-using testing::UnorderedElementsAreArray;
 
 constexpr char kSignonRealm1[] = "abc";
 constexpr char kSignonRealm2[] = "def";

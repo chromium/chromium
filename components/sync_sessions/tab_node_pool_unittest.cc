@@ -13,7 +13,6 @@ namespace sync_sessions {
 namespace {
 
 using testing::ElementsAre;
-using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 const int kTabNodeId1 = 10;

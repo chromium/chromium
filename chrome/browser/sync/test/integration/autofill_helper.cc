@@ -41,10 +41,8 @@ using autofill::AutofillWebDataServiceObserverOnDBSequence;
 using autofill::CreditCard;
 using autofill::FormFieldData;
 using autofill::PersonalDataManager;
-using autofill::PersonalDataManagerObserver;
 using base::WaitableEvent;
 using sync_datatype_helper::test;
-using testing::_;
 
 namespace {
 

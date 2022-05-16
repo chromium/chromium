@@ -43,8 +43,6 @@ using passwords_helper::ProfileContainsSamePasswordFormsAsVerifier;
 using password_manager::PasswordForm;
 
 using testing::Contains;
-using testing::ElementsAre;
-using testing::IsEmpty;
 
 const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
     syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;

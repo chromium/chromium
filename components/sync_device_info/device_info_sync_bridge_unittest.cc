@@ -49,7 +49,6 @@
 namespace syncer {
 namespace {
 
-using base::OneShotTimer;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;

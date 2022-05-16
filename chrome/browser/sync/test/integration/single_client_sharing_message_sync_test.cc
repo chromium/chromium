@@ -22,7 +22,6 @@
 namespace {
 
 using sync_pb::SharingMessageSpecifics;
-using testing::_;
 
 constexpr char kEmptyOAuth2Token[] = "";
 

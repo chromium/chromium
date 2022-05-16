@@ -11,7 +11,6 @@ namespace {
 
 using themes_helper::GetCustomTheme;
 using themes_helper::GetThemeID;
-using themes_helper::UseCustomTheme;
 using themes_helper::UseDefaultTheme;
 using themes_helper::UseSystemTheme;
 using themes_helper::UsingCustomTheme;

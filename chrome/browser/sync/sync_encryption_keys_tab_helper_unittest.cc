@@ -25,9 +25,6 @@
 
 namespace {
 
-using testing::IsNull;
-using testing::NotNull;
-
 class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   SyncEncryptionKeysTabHelperTest(const SyncEncryptionKeysTabHelperTest&) =

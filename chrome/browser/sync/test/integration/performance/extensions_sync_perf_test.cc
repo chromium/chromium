@@ -9,8 +9,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
-using extensions_helper::AllProfilesHaveSameExtensions;
-using extensions_helper::AllProfilesHaveSameExtensionsAsVerifier;
 using extensions_helper::DisableExtension;
 using extensions_helper::EnableExtension;
 using extensions_helper::GetInstalledExtensions;

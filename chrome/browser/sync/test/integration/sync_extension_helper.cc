@@ -38,7 +38,6 @@
 
 using extensions::Extension;
 using extensions::ExtensionPrefs;
-using extensions::ExtensionRegistry;
 using extensions::Manifest;
 
 const char kFakeExtensionPrefix[] = "fakeextension";

@@ -28,7 +28,6 @@
 
 using apps_helper::DisableApp;
 using apps_helper::EnableApp;
-using apps_helper::HasSameApps;
 using apps_helper::IncognitoDisableApp;
 using apps_helper::IncognitoEnableApp;
 using apps_helper::InstallAppsPendingForSync;

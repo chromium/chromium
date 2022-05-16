@@ -33,9 +33,6 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
-using syncer::PREFERENCES;
-using syncer::PRIORITY_PREFERENCES;
-
 namespace sync_preferences {
 
 namespace {

@@ -12,7 +12,6 @@
 #include "content/public/test/browser_test.h"
 
 using printers_helper::AddPrinter;
-using printers_helper::CreateTestPrinter;
 using printers_helper::CreateTestPrinterSpecifics;
 using printers_helper::EditPrinterDescription;
 using printers_helper::GetPrinterCount;

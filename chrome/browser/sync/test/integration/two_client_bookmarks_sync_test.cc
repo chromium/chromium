@@ -42,7 +42,6 @@ using bookmarks_helper::AddURL;
 using bookmarks_helper::AllModelsMatch;
 using bookmarks_helper::BookmarkModelMatchesFakeServerChecker;
 using bookmarks_helper::BookmarksMatchChecker;
-using bookmarks_helper::BookmarksTitleChecker;
 using bookmarks_helper::CheckFaviconExpired;
 using bookmarks_helper::CheckHasNoFavicon;
 using bookmarks_helper::ContainsDuplicateBookmarks;

@@ -50,9 +50,7 @@ using syncer::SyncData;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Matches;
-using testing::Not;
 using testing::NotNull;
-using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using user_prefs::PrefRegistrySyncable;
 

@@ -43,7 +43,6 @@ namespace sync_bookmarks {
 namespace {
 
 using base::ASCIIToUTF16;
-using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;

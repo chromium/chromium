@@ -71,7 +71,6 @@ using sessions_helper::NavigateTabBack;
 using sessions_helper::NavigateTabForward;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
-using sessions_helper::OpenTabFromSourceIndex;
 using sessions_helper::ScopedWindowMap;
 using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;

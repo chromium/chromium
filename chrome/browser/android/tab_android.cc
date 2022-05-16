@@ -275,7 +275,6 @@ void TabAndroid::InitWebContents(
     jboolean incognito,
     jboolean is_background_tab,
     const JavaParamRef<jobject>& jweb_contents,
-    jint jparent_tab_id,
     const JavaParamRef<jobject>& jweb_contents_delegate,
     const JavaParamRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
@@ -297,7 +296,7 @@ void TabAndroid::InitWebContents(
   ContextMenuHelper::FromWebContents(web_contents())
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
 
-  synced_tab_delegate_->SetWebContents(web_contents(), jparent_tab_id);
+  synced_tab_delegate_->SetWebContents(web_contents());
 
   // Verify that the WebContents this tab represents matches the expected
   // off the record state.

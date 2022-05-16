@@ -37,7 +37,6 @@ namespace syncer {
 using base::Time;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::FeatureSpecificFields;
-using sync_pb::ModelTypeState;
 using sync_pb::SharingSpecificFields;
 
 using Record = ModelTypeStore::Record;

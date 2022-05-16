@@ -25,7 +25,6 @@
 
 namespace {
 
-using fake_server::SessionsHierarchy;
 using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
 using sessions_helper::DeleteForeignSession;

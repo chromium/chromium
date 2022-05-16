@@ -29,12 +29,10 @@ using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
 using testing::_;
 using testing::ByMove;
-using testing::Eq;
 using testing::IsEmpty;
 using testing::NiceMock;
 using testing::Pointee;
 using testing::Return;
-using testing::SizeIs;
 using testing::StrictMock;
 
 const char kFoo1[] = "http://foo1/";

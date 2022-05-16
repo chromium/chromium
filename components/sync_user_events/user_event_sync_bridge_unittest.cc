@@ -26,7 +26,6 @@ namespace {
 using sync_pb::UserEventSpecifics;
 using testing::_;
 using testing::ElementsAre;
-using testing::Eq;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;

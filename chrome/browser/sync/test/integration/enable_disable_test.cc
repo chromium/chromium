@@ -29,7 +29,6 @@ namespace {
 using syncer::ModelType;
 using syncer::ModelTypeSet;
 using syncer::ModelTypeToDebugString;
-using syncer::SyncUserSettings;
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 

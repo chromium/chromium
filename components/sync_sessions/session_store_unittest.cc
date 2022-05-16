@@ -45,7 +45,6 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
-using testing::IsNull;
 using testing::Matcher;
 using testing::NiceMock;
 using testing::NotNull;

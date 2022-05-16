@@ -36,7 +36,6 @@
 
 namespace {
 
-using bookmarks::BookmarkNode;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::ServerBookmarksEqualityChecker;

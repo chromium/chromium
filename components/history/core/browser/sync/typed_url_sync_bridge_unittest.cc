@@ -45,15 +45,12 @@ using syncer::MetadataChangeList;
 using syncer::MockModelTypeChangeProcessor;
 using testing::_;
 using testing::AllOf;
-using testing::Contains;
 using testing::DoAll;
 using testing::IsEmpty;
 using testing::Mock;
 using testing::NiceMock;
-using testing::Not;
 using testing::Pointee;
 using testing::Return;
-using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 // Constants used to limit size of visits processed. See

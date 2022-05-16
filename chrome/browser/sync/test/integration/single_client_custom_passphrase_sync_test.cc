@@ -32,26 +32,20 @@ using bookmarks_helper::ServerBookmarksEqualityChecker;
 using fake_server::FakeServer;
 using fake_server::GetServerNigori;
 using fake_server::SetNigoriInFakeServer;
-using sync_pb::EncryptedData;
 using sync_pb::NigoriSpecifics;
-using sync_pb::SyncEntity;
 using syncer::BuildCustomPassphraseNigoriSpecifics;
 using syncer::Cryptographer;
 using syncer::GetEncryptedBookmarkEntitySpecifics;
 using syncer::InitCustomPassphraseCryptographerFromNigori;
-using syncer::InitCustomPassphraseKeyDerivationParamsFromNigori;
 using syncer::KeyParamsForTesting;
 using syncer::LoopbackServerEntity;
-using syncer::ModelType;
 using syncer::ModelTypeSet;
 using syncer::PassphraseType;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::ProtoPassphraseInt32ToEnum;
 using syncer::ScryptPassphraseKeyParamsForTesting;
 using syncer::SyncEngineStoppedChecker;
-using syncer::SyncService;
 using testing::ElementsAre;
-using testing::SizeIs;
 
 // Intercepts all bookmark entity names as committed to the FakeServer.
 class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {

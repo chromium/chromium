@@ -14,7 +14,6 @@ namespace {
 using autofill::AutofillKey;
 using autofill_helper::AddKeys;
 using autofill_helper::GetAllKeys;
-using autofill_helper::KeysMatch;
 using autofill_helper::RemoveKey;
 
 class TwoClientAutocompleteSyncTest : public SyncTest {

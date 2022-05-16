@@ -19,16 +19,12 @@
 
 namespace {
 
-using autofill::AutofillMetadata;
 using autofill::AutofillProfile;
 using autofill::CreditCard;
-using autofill::PersonalDataManager;
 using wallet_helper::CreateDefaultSyncPaymentsCustomerData;
 using wallet_helper::CreateSyncWalletAddress;
 using wallet_helper::CreateSyncWalletCard;
-using wallet_helper::GetCreditCard;
 using wallet_helper::GetLocalProfiles;
-using wallet_helper::GetPersonalDataManager;
 using wallet_helper::GetServerAddressesMetadata;
 using wallet_helper::GetServerCardsMetadata;
 using wallet_helper::GetServerCreditCards;

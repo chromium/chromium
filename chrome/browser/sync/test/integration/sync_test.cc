@@ -175,12 +175,9 @@ std::unique_ptr<invalidation::FCMNetworkHandler> CreateFCMNetworkHandler(
 }
 
 std::unique_ptr<invalidation::PerUserTopicSubscriptionManager>
-CreatePerUserTopicSubscriptionManager(
-    invalidation::IdentityProvider* identity_provider,
-    PrefService* local_state,
-    network::mojom::URLLoaderFactory* url_loader_factory,
-    const std::string& project_id,
-    bool migrate_prefs) {
+CreatePerUserTopicSubscriptionManager(PrefService* local_state,
+                                      const std::string& project_id,
+                                      bool migrate_prefs) {
   return std::make_unique<FakePerUserTopicSubscriptionManager>(local_state);
 }
 
@@ -1067,12 +1064,8 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
                               profile_to_fcm_network_handler_map,
                               gcm_profile_service->driver(),
                               instance_id_driver),
-          base::BindRepeating(
-              &CreatePerUserTopicSubscriptionManager,
-              profile_identity_provider.get(), profile->GetPrefs(),
-              base::RetainedRef(profile->GetDefaultStoragePartition()
-                                    ->GetURLLoaderFactoryForBrowserProcess()
-                                    .get())),
+          base::BindRepeating(&CreatePerUserTopicSubscriptionManager,
+                              profile->GetPrefs()),
           instance_id_driver, profile->GetPrefs(), kInvalidationGCMSenderId);
   fcm_invalidation_service->Init();
 

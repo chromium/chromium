@@ -54,7 +54,6 @@ using autofill::AutofillProfile;
 using autofill::CreditCard;
 using autofill::CreditCardCloudTokenData;
 using autofill::data_util::TruncateUTF8;
-using base::ASCIIToUTF16;
 using testing::Contains;
 using wallet_helper::CreateDefaultSyncCreditCardCloudTokenData;
 using wallet_helper::CreateDefaultSyncPaymentsCustomerData;
@@ -75,7 +74,6 @@ using wallet_helper::GetServerCardsMetadata;
 using wallet_helper::GetWalletModelTypeState;
 using wallet_helper::kDefaultBillingAddressID;
 using wallet_helper::kDefaultCardID;
-using wallet_helper::kDefaultCreditCardCloudTokenDataID;
 using wallet_helper::kDefaultCustomerID;
 using wallet_helper::UnmaskServerCard;
 

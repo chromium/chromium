@@ -31,7 +31,6 @@
 using testing::_;
 using testing::Eq;
 using testing::IsNull;
-using testing::Ne;
 using testing::NotNull;
 using testing::UnorderedElementsAre;
 

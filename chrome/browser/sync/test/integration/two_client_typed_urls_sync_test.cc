@@ -46,7 +46,6 @@ using typed_urls_helper::GetAllSyncMetadata;
 using typed_urls_helper::GetTypedUrlsFromClient;
 using typed_urls_helper::GetUrlFromClient;
 using typed_urls_helper::GetVisitsFromClient;
-using typed_urls_helper::RemoveVisitsFromClient;
 using typed_urls_helper::WriteMetadataToClient;
 
 namespace {

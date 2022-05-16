@@ -59,7 +59,6 @@ namespace {
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
-using bookmarks::UrlAndTitle;
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::AddURL;
 using bookmarks_helper::BookmarkFaviconLoadedChecker;
