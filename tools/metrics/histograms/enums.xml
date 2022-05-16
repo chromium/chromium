@@ -58859,6 +58859,7 @@ from previous Chrome versions.
   <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
+  <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
   <int value="802930463" label="ThrottleForegroundTimers:disabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
@@ -59430,6 +59431,7 @@ from previous Chrome versions.
   <int value="1190035852" label="MediaRemoting:enabled"/>
   <int value="1191531211" label="RawClipboard:disabled"/>
   <int value="1192302892" label="gesture-typing"/>
+  <int value="1192894768" label="NetworkServiceInProcess2:disabled"/>
   <int value="1192913630" label="OfflinePagesBackgroundLoading:disabled"/>
   <int value="1193385506" label="OmniboxLooseMaxLimitOnDedicatedRows:enabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>
