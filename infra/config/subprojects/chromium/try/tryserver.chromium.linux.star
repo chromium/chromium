@@ -592,6 +592,9 @@ try_.builder(
 try_.builder(
     name = "linux_vr",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/VR Linux",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
