@@ -3529,7 +3529,7 @@
   {
     "name": "help-app-launcher-search",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 107
   },
   {
     "name": "help-app-search-service-integration",
