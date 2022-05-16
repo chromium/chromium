@@ -247,10 +247,13 @@ base::Value::List AttributionInteropParser::ParseEventLevelReports(
     base::Value::Dict& output) {
   static constexpr char kKey[] = "event_level_reports";
 
-  auto context = PushContext(kKey);
-
   base::Value::List event_level_results;
 
+  base::Value* value = output.Find(kKey);
+  if (!value)
+    return event_level_results;
+
+  auto context = PushContext(kKey);
   ParseList(output.Find(kKey),
             base::BindLambdaForTesting([&](base::Value value) {
               if (!EnsureDictionary(&value))

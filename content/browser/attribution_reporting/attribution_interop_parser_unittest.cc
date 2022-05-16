@@ -416,10 +416,6 @@ const ParseErrorTestCase kParseOutputErrorTestCases[] = {
         R"json(1)json",
     },
     {
-        R"(["event_level_reports"]: must be present)",
-        R"json({})json",
-    },
-    {
         R"(["event_level_reports"]: must be a list)",
         R"json({
           "event_level_reports": ""
