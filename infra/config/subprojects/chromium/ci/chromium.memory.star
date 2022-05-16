@@ -47,6 +47,21 @@ def linux_memory_builder(*, name, **kwargs):
 linux_memory_builder(
     name = "Linux ASan LSan Builder",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "lsan",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
         short_name = "bld",
@@ -64,6 +79,22 @@ linux_memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "lsan",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     triggered_by = ["ci/Linux ASan LSan Builder"],
     os = os.LINUX_BIONIC,
     reclient_instance = None,
@@ -72,6 +103,21 @@ linux_memory_builder(
 linux_memory_builder(
     name = "Linux ASan Tests (sandboxed)",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_asan",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
         short_name = "sbx",
