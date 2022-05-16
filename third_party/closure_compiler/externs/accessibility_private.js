@@ -285,6 +285,7 @@ chrome.accessibilityPrivate.SetNativeChromeVoxResponse = {
   TALKBACK_NOT_INSTALLED: 'talkbackNotInstalled',
   WINDOW_NOT_FOUND: 'windowNotFound',
   FAILURE: 'failure',
+  NEED_DEPRECATION_CONFIRMATION: 'needDeprecationConfirmation',
 };
 
 /**

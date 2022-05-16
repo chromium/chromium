@@ -743,6 +743,10 @@ KeyMap.BINDINGS_ = [
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}}
   },
   {
+    command: 'showTalkBackKeyboardShortcuts',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.K]}}
+  },
+  {
     command: 'forceClickOnCurrentItem',
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true}

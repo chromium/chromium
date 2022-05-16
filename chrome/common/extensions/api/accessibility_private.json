@@ -246,7 +246,7 @@
       {
         "id": "SetNativeChromeVoxResponse",
         "type": "string",
-        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" ],
+        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" , "needDeprecationConfirmation" ],
         "description": "Response code for onNativeChromeVoxArcSupportResult"
       },
       {

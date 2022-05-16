@@ -303,9 +303,24 @@ export class CommandHandler extends CommandHandlerInterface {
                     Msgs.getMsg('announce_install_talkback')));
                 ChromeVox.tts.speak(
                     Msgs.getMsg('announce_install_talkback'), QueueMode.FLUSH);
+              } else if (
+                  response ===
+                  chrome.accessibilityPrivate.SetNativeChromeVoxResponse
+                      .NEED_DEPRECATION_CONFIRMATION) {
+                ChromeVox.braille.write(NavBraille.fromText(
+                    Msgs.getMsg('announce_talkback_deprecation')));
+                ChromeVox.tts.speak(
+                    Msgs.getMsg('announce_talkback_deprecation'),
+                    QueueMode.FLUSH);
               }
             });
         break;
+      case 'showTalkBackKeyboardShortcuts':
+        chrome.tabs.create({
+          url:
+              'https://support.google.com/accessibility/android/answer/6110948',
+        });
+        return false;
       case 'showTtsSettings':
         chrome.accessibilityPrivate.openSettingsSubpage(
             'manageAccessibility/tts');

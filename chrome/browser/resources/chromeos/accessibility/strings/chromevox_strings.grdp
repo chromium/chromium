@@ -3384,4 +3384,7 @@
   <message desc="Spoken message asking users to install the Accessibility Suite app from the Play Store when users tried to turn on Talkback without installing Accessibility Suite." name="IDS_CHROMEVOX_ANNOUNCE_INSTALL_TALKBACK" is_accessibility_with_no_ui="true">
     TalkBack is currently not installed. Please install Android AccessibilitySuite through Play Store and try again.
   </message>
+  <message desc="Spoken message notifying users that using TalkBack on Chromebook is no longer supported and keyboard shortcut are no longer customized for Chromebooks." name="IDS_CHROMEVOX_ANNOUNCE_TALKBACK_DEPRECATION" is_accessibility_with_no_ui="true">
+    TalkBack no longer provides customization for Chromebooks. You can still use it, but use TalkBack default keyboard shortcuts. Press Search+A, then K to see available shortcuts. If you still want to use TalkBack, press the command again.
+  </message>
 </grit-part>
