@@ -242,19 +242,6 @@ void QueuedHistoryDBTask::DoneRun() {
                      is_canceled_));
 }
 
-// HistoryBackendHelper --------------------------------------------------------
-
-// Wrapper around base::SupportsUserData with a public destructor.
-class HistoryBackendHelper : public base::SupportsUserData {
- public:
-  HistoryBackendHelper();
-  ~HistoryBackendHelper() override;
-};
-
-HistoryBackendHelper::HistoryBackendHelper() = default;
-
-HistoryBackendHelper::~HistoryBackendHelper() = default;
-
 // HistoryBackend --------------------------------------------------------------
 
 // static
@@ -285,9 +272,6 @@ HistoryBackend::HistoryBackend(
 HistoryBackend::~HistoryBackend() {
   DCHECK(scheduled_commit_.IsCancelled()) << "Deleting without cleanup";
   queued_history_db_tasks_.clear();
-
-  // Release stashed embedder object before cleaning up the databases.
-  supports_user_data_helper_.reset();
 
   // Clear the error callback. The error callback that is installed does not
   // process an error immediately, rather it uses a PostTask() with `this`. As
@@ -322,11 +306,6 @@ void HistoryBackend::Init(
       << "History directory does not exist. If you are in a test make sure "
          "that ~TestingProfile() has not been called or that the "
          "ScopedTempDirectory used outlives this task.";
-
-  // HistoryBackend is created on the UI thread by HistoryService, then the
-  // HistoryBackend::Init() method is called on the DB thread. Create the
-  // base::SupportsUserData on the DB thread since it is not thread-safe.
-  supports_user_data_helper_ = std::make_unique<HistoryBackendHelper>();
 
   if (!force_fail)
     InitImpl(history_database_params);
@@ -1164,7 +1143,7 @@ void HistoryBackend::SetTypedURLSyncBridgeForTest(
   typed_url_sync_bridge_ = std::move(bridge);
 }
 
-bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) {
+bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) const {
   return time < expirer_.GetCurrentExpirationTime();
 }
 
@@ -2542,9 +2521,6 @@ void HistoryBackend::KillHistoryDatabase() {
   bool success = db_->Raze();
   UMA_HISTOGRAM_BOOLEAN("History.KillHistoryDatabaseResult", success);
 
-  // Release stashed embedder object before cleaning up the databases.
-  supports_user_data_helper_.reset();
-
   // The expirer keeps tabs on the active databases. Tell it about the
   // databases which will be closed.
   expirer_.SetDatabases(nullptr, nullptr);
@@ -2552,19 +2528,6 @@ void HistoryBackend::KillHistoryDatabase() {
   // Reopen a new transaction for `db_` for the sake of CloseAllDatabases().
   db_->BeginTransaction();
   CloseAllDatabases();
-}
-
-base::SupportsUserData::Data* HistoryBackend::GetUserData(
-    const void* key) const {
-  DCHECK(supports_user_data_helper_);
-  return supports_user_data_helper_->GetUserData(key);
-}
-
-void HistoryBackend::SetUserData(
-    const void* key,
-    std::unique_ptr<base::SupportsUserData::Data> data) {
-  DCHECK(supports_user_data_helper_);
-  supports_user_data_helper_->SetUserData(key, std::move(data));
 }
 
 void HistoryBackend::ProcessDBTask(

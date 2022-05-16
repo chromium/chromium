@@ -291,7 +291,7 @@ class TestHistoryBackendForSync : public HistoryBackend {
                        std::move(backend_client),
                        base::ThreadTaskRunnerHandle::Get()) {}
 
-  bool IsExpiredVisitTime(const Time& time) override {
+  bool IsExpiredVisitTime(const Time& time) const override {
     return time.ToDeltaSinceWindowsEpoch().InMicroseconds() == kExpiredVisit;
   }
 
