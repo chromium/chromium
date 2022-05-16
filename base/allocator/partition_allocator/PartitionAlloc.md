@@ -9,26 +9,10 @@ details. For implementation details, see the comments in
 PartitionAlloc is a memory allocator optimized for space efficiency,
 allocation latency, and security.
 
-### Core terms
-
-A *partition* is a heap that is separated and protected from any other
-partitions, as well as from non-PartitionAlloc memory. The most typical use of
-partitions is to isolate certain object types. However, one can also isolate
-objects of certain sizes, or objects of a certain lifetime (as the caller
-prefers). Callers can create as many partitions as they need. The direct
-memory cost of partitions is minimal, but the implicit cost resulting from
-fragmentation is not to be underestimated.
-
-Each partition holds multiple buckets. A *bucket* is a collection of regions in
-a partition that contains similar-sized objects, e.g. one bucket holds sizes
-(224,&nbsp;256], another (256,&nbsp;320], and so on. Bucket sizes are
-geometrically-spaced, and go all the way up to `kMaxBucketed`, which is a tad
-under 1MiB (so called *normal buckets*). There are tens of buckets, 4 between
-each power of two (except for lower sizes where buckets that aren't a multiple
-of `partition_alloc::internal::kAlignment` simply don't exist).
-
-Larger allocations (&gt;`kMaxBucketed`) are realized by direct memory mapping
-(*direct map*).
+*** note
+This document largely avoids defining terms; consult the
+[glossary](./glossary.md) for a complete reference.
+***
 
 ### Performance
 
@@ -39,11 +23,7 @@ possibility of inlining.
 
 However, even the fast path isn't the fastest, because it requires taking
 a per-partition lock. Although we optimized the lock, there was still room for
-improvement. Therefore we introduced the *thread cache*, which holds a small
-amount of not-too-large memory chunks, ready to be allocated. Because these
-chunks are stored per-thread, they can be allocated without a lock, only
-requiring a faster thread-local storage (TLS) lookup, improving cache locality
-in the process.
+improvement; to this end, we introduced the thread cache.
 The thread cache has been tailored to satisfy a vast majority of requests by
 allocating from and releasing memory to the main allocator in batches,
 amortizing lock acquisition and further improving locality while not trapping
@@ -98,78 +78,7 @@ natural PartitionAlloc alignment guarantees. Allocations with an alignment
 requirement greater than `partition_alloc::internal::kAlignment` are expected
 to be very rare.
 
-## PartitionAlloc-Everywhere
-
-Originally, PartitionAlloc was used only in Blink (Chromium’s rendering engine).
-It was invoked explicitly, by calling PartitionAlloc APIs directly.
-
-PartitionAlloc-Everywhere is the name of the project that brought PartitionAlloc
-to the entire-ish codebase (exclusions apply). This was done by intercepting
-`malloc()`, `free()`, `realloc()`, aforementioned `posix_memalign()`, etc. and
-routing them into PartitionAlloc. The shim located in
-`base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h` is
-responsible for intercepting. For more details, see
-[base/allocator/README.md](../../../base/allocator/README.md).
-
-A special, catch-it-all *Malloc* partition has been created for the intercepted
-`malloc()` et al. This is to isolate from already existing Blink partitions.
-The only exception from that is Blink's *FastMalloc* partition, which was also
-catch-it-all in nature, so it's perfectly fine to merge these together, to
-minimize fragmentation.
-
-PartitionAlloc-Everywhere was launched in M89 for Windows 64-bit and Android.
-Windows 32-bit and Linux followed it shortly after, in M90.
-
 ## Architecture
-
-### Many Different Flavors of Pages
-
-In PartitionAlloc, by *system page* we mean a memory page as defined by CPU/OS
-(often referred to as "virtual page" out there). It is most commonly 4KiB in
-size, but depending on CPU it can be larger (PartitionAlloc supports up to
-64KiB).
-
-The reason why we use the term "system page" is to disambiguate from
-*partition page*, which is the most common granularity used by PartitionAlloc.
-Each partition page consists of exactly 4 system pages.
-
-A *super page* is a 2MiB region, aligned on a 2MiB boundary.
-Don't confuse it with CPU/OS terms like "large page" or "huge page", which are
-also commonly 2MiB in size. These have to be fully committed/uncommitted in
-memory, whereas super pages can be partially committed, with system page
-granularity.
-
-### Slots and Spans
-
-A *slot* is an indivisible allocation unit. Slot sizes are tied to buckets.
-For example each allocation that falls into the bucket (240;&nbsp;256] would
-be satisfied with a slot of size 256. This applies only to normal buckets, not
-to direct map.
-
-A *slot span* is just a grouping of slots of the same size next to each other
-in memory. Slot span size is a multiple of a partition page.
-
-A bucket is a collection of slot spans containing slots of the same size,
-organized as linked-lists.
-
-Allocations up to 4 partition pages are referred to as *small buckets*.
-In these cases, slot spans are always between 1 and 4 partition pages in size.
-The size is chosen based on the slot size, such that the rounding waste is
-minimized. For example, if the slot size was 96B and slot span was 1 partition
-page of 16KiB, 64B would be wasted at the end, but nothing is wasted if 3
-partition pages totalling 48KiB are used. Furthermore, PartitionAlloc may avoid
-waste by lowering the number of committed system pages compared to the number of
-reserved pages. For example, for the slot size of 80B we'd use a slot span of 4
-partition pages of 16KiB, i.e. 16 system pages of 4KiB, but commit only up to
-15, thus resulting in perfect packing.
-
-Allocations above 4 partition pages (but &le;`kMaxBucketed`) are referred to as
-*single slot spans*. That's because each slot span is guaranteed to hold exactly
-one slot. Fun fact: there are sizes &le;4 partition pages that result in a slot
-span having exactly 1 slot, but nonetheless they're still classified as small
-buckets. The reason is that single slot spans are often handled by a different
-code path, and that distinction is made purely based on slot size, for
-simplicity and efficiency.
 
 ### Layout in Memory
 
