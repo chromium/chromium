@@ -42,9 +42,7 @@ public class SendTabToSelfAndroidBridgeTest {
     private static final String GUID = "randomguid";
     private static final String URL = "http://www.tanyastacos.com";
     private static final String TITLE = "Come try Tanya's famous tacos";
-    private static final String DEVICE_NAME = "Macbook Pro";
     private static final String TARGET_DEVICE_SYNC_CACHE_GUID = "randomguid2";
-    private static final long SHARE_TIME_MS = 456L;
 
     @Before
     public void setUp() {
@@ -80,37 +78,9 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
-    @SuppressWarnings("unchecked")
-    public void testGetAllGuids() {
-        when(mNativeMock.getAllGuids(eq(mProfile)))
-                .thenReturn(new String[] {"one", "two", "three"});
-
-        List<String> actual = SendTabToSelfAndroidBridge.getAllGuids(mProfile);
-
-        verify(mNativeMock).getAllGuids(eq(mProfile));
-        Assert.assertEquals(3, actual.size());
-        Assert.assertArrayEquals(new String[] {"one", "two", "three"}, actual.toArray());
-    }
-
-    @Test
-    @SmallTest
-    public void testDeleteAllEntries() {
-        SendTabToSelfAndroidBridge.deleteAllEntries(mProfile);
-        verify(mNativeMock).deleteAllEntries(eq(mProfile));
-    }
-
-    @Test
-    @SmallTest
     public void testDismissEntry() {
         SendTabToSelfAndroidBridge.dismissEntry(mProfile, GUID);
         verify(mNativeMock).dismissEntry(eq(mProfile), eq(GUID));
-    }
-
-    @Test
-    @SmallTest
-    public void testMarkEntryOpened() {
-        SendTabToSelfAndroidBridge.markEntryOpened(mProfile, GUID);
-        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
     }
 
     @Test

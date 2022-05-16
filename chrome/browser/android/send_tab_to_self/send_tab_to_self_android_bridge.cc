@@ -7,16 +7,13 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -48,16 +45,6 @@ SendTabToSelfModel* GetModel(const JavaParamRef<jobject>& j_profile) {
 }  // namespace
 
 static ScopedJavaLocalRef<jobjectArray>
-JNI_SendTabToSelfAndroidBridge_GetAllGuids(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  auto guids =
-      model->IsReady() ? model->GetAllGuids() : std::vector<std::string>();
-  return base::android::ToJavaArrayOfStrings(env, guids);
-}
-
-static ScopedJavaLocalRef<jobjectArray>
 JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
@@ -79,17 +66,6 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
   }
 
   return base::android::ToTypedJavaArrayOfObjects(env, infos, type);
-}
-
-// Deletes all entries in the model.
-static void JNI_SendTabToSelfAndroidBridge_DeleteAllEntries(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (!model->IsReady()) {
-    return;
-  }
-  model->DeleteAllEntries();
 }
 
 // Adds a new entry with the specified parameters. Returns whether the
@@ -131,18 +107,6 @@ static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
   if (model->IsReady()) {
     const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
     model->DismissEntry(guid);
-  }
-}
-
-// Marks the entry with the associated GUID as opened.
-static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jstring>& j_guid) {
-  SendTabToSelfModel* model = GetModel(j_profile);
-  if (model->IsReady()) {
-    const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-    model->MarkEntryOpened(guid);
   }
 }
 

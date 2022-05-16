@@ -22,7 +22,6 @@ class TestSendTabToSelfModel : public SendTabToSelfModel {
 
   // SendTabToSelfModel:
   std::vector<std::string> GetAllGuids() const override;
-  void DeleteAllEntries() override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
   const SendTabToSelfEntry* AddEntry(const GURL& url,

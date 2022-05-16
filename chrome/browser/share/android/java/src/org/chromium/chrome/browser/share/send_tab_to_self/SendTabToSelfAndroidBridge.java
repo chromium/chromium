@@ -23,25 +23,6 @@ public class SendTabToSelfAndroidBridge {
     private boolean mIsNativeSendTabToSelfModelLoaded;
 
     /**
-     * @param profile Profile of the user to retrieve the GUIDs for.
-     * @return All GUIDs for all SendTabToSelf entries, or an empty list if the model isn't ready.
-     */
-    public static List<String> getAllGuids(Profile profile) {
-        // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
-        // place. assert mIsNativeSendTabToSelfModelLoaded;
-        return Arrays.asList(SendTabToSelfAndroidBridgeJni.get().getAllGuids(profile));
-    }
-
-    /**
-     * Deletes all SendTabToSelf entries. This is called when the user disables sync.
-     */
-    public static void deleteAllEntries(Profile profile) {
-        // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
-        // place. assert mIsNativeSendTabToSelfModelLoaded;
-        SendTabToSelfAndroidBridgeJni.get().deleteAllEntries(profile);
-    }
-
-    /**
      * Creates a new entry to be persisted to the sync backend.
      *
      * @param profile Profile of the user to add entry for.
@@ -76,15 +57,6 @@ public class SendTabToSelfAndroidBridge {
     public static void dismissEntry(Profile profile, String guid) {
         SendTabToSelfAndroidBridgeJni.get().dismissEntry(profile, guid);
     }
-    /**
-     * Mark the entry associated with the GUID as opened.
-     *
-     * @param profile Profile of the user to mark entry as opened.
-     * @param guid The GUID of the entry to mark as opened.
-     */
-    public static void markEntryOpened(Profile profile, String guid) {
-        SendTabToSelfAndroidBridgeJni.get().markEntryOpened(profile, guid);
-    }
 
     /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
@@ -109,15 +81,9 @@ public class SendTabToSelfAndroidBridge {
         boolean addEntry(
                 Profile profile, String url, String title, String targetDeviceSyncCacheGuid);
 
-        String[] getAllGuids(Profile profile);
-
-        void deleteAllEntries(Profile profile);
-
         void deleteEntry(Profile profile, String guid);
 
         void dismissEntry(Profile profile, String guid);
-
-        void markEntryOpened(Profile profile, String guid);
 
         TargetDeviceInfo[] getAllTargetDeviceInfos(Profile profile);
 

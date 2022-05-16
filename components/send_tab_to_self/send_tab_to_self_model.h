@@ -32,9 +32,6 @@ class SendTabToSelfModel {
   // Returns a vector of entry IDs in the model.
   virtual std::vector<std::string> GetAllGuids() const = 0;
 
-  // Delete all entries.
-  virtual void DeleteAllEntries() = 0;
-
   // Returns a specific entry. Returns null if the entry does not exist.
   virtual const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const = 0;

@@ -73,7 +73,6 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   // SendTabToSelfModel overrides.
   std::vector<std::string> GetAllGuids() const override;
-  void DeleteAllEntries() override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
   const SendTabToSelfEntry* AddEntry(
@@ -150,6 +149,8 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   // Delete all of the entries that match the URLs provided.
   void DeleteEntries(const std::vector<GURL>& urls);
+
+  void DeleteAllEntries();
 
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
