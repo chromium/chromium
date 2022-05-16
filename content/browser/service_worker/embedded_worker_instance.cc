@@ -704,6 +704,10 @@ void EmbeddedWorkerInstance::Detach() {
 
 void EmbeddedWorkerInstance::UpdateForegroundPriority() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (status() == EmbeddedWorkerStatus::STOPPING) {
+    return;
+  }
+
   if (process_handle_ &&
       owner_version_->ShouldRequireForegroundPriority(process_id())) {
     NotifyForegroundServiceWorkerAdded();
@@ -918,6 +922,8 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   starting_phase_ = NOT_STARTING;
   thread_id_ = ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId;
   token_ = absl::nullopt;
+
+  DCHECK(!foreground_notified_);
 }
 
 void EmbeddedWorkerInstance::OnSetupFailed(
