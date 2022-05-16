@@ -381,10 +381,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
               return true;
             }));
 
-    policy_manager().SetSubsystems(
-        &externally_managed_app_manager(), &app_registrar(),
-        &controller().sync_bridge(), &system_app_manager(),
-        &controller().os_integration_manager());
+    policy_manager().SetSubsystems(&externally_managed_app_manager(),
+                                   &app_registrar(),
+                                   &controller().sync_bridge(),
+                                   &system_app_manager().system_app_delegates(),
+                                   &controller().os_integration_manager());
 
     controller().Init();
   }

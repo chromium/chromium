@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -29,7 +30,6 @@ namespace web_app {
 class WebAppUiManager;
 class WebAppInstallFinalizer;
 class OsIntegrationManager;
-class SystemWebAppManager;
 class WebAppSyncBridge;
 
 // Checks for updates to a web app's manifest and triggers a reinstall if the
@@ -48,14 +48,15 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-  void SetSubsystems(WebAppInstallManager* install_manager,
-                     WebAppRegistrar* registrar,
-                     WebAppIconManager* icon_manager,
-                     WebAppUiManager* ui_manager,
-                     WebAppInstallFinalizer* install_finalizer,
-                     SystemWebAppManager* system_web_app_manager,
-                     OsIntegrationManager* os_integration_manager,
-                     WebAppSyncBridge* sync_bridge);
+  void SetSubsystems(
+      WebAppInstallManager* install_manager,
+      WebAppRegistrar* registrar,
+      WebAppIconManager* icon_manager,
+      WebAppUiManager* ui_manager,
+      WebAppInstallFinalizer* install_finalizer,
+      const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
+      OsIntegrationManager* os_integration_manager,
+      WebAppSyncBridge* sync_bridge);
   void Start();
   void Shutdown();
 
@@ -96,7 +97,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
-  raw_ptr<SystemWebAppManager> system_web_app_manager_ = nullptr;
+  raw_ptr<const ash::SystemAppDelegateMap> system_web_apps_delegate_map_ =
+      nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppInstallManager> install_manager_ = nullptr;

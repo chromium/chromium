@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
@@ -50,9 +51,6 @@ class WebAppUiManager;
 class WebAppSyncBridge;
 class WebAppPolicyManager;
 
-using SystemAppDelegateMap =
-    base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>;
-
 // Installs, uninstalls, and updates System Web Apps.
 // System Web Apps are built-in, highly-privileged Web Apps for Chrome OS. They
 // have access to more APIs and are part of the Chrome OS image.
@@ -72,7 +70,7 @@ class SystemWebAppManager {
       "Webapp.SystemApps.FreshInstallDuration";
 
   // Returns whether the given app type is enabled.
-  bool IsAppEnabled(SystemAppType type);
+  bool IsAppEnabled(SystemAppType type) const;
 
   explicit SystemWebAppManager(Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
@@ -128,7 +126,9 @@ class SystemWebAppManager {
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
-  const SystemAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
+  // TODO(crbug.com/1321984): Delete this accessor in favor of
+  // system_app_delegates().
+  const ash::SystemAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
 
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;
@@ -140,9 +140,15 @@ class SystemWebAppManager {
     return *on_tasks_started_;
   }
 
+  // Returns a map of registered system app types and infos, these apps will be
+  // installed on the system.
+  const ash::SystemAppDelegateMap& system_app_delegates() const {
+    return system_app_delegates_;
+  }
+
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
-  void SetSystemAppsForTesting(SystemAppDelegateMap system_apps);
+  void SetSystemAppsForTesting(ash::SystemAppDelegateMap system_apps);
 
   // Overrides the update policy. If AlwaysReinstallSystemWebApps feature is
   // enabled, this method does nothing, and system apps will be reinstalled.
@@ -204,7 +210,7 @@ class SystemWebAppManager {
 
   UpdatePolicy update_policy_;
 
-  SystemAppDelegateMap system_app_delegates_;
+  ash::SystemAppDelegateMap system_app_delegates_;
 
   const raw_ptr<PrefService> pref_service_;
 

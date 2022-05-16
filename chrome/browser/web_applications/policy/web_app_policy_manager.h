@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -32,7 +33,6 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class WebAppSyncBridge;
-class SystemWebAppManager;
 class OsIntegrationManager;
 
 // Policy installation allows enterprise admins to control and manage
@@ -57,7 +57,7 @@ class WebAppPolicyManager {
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* app_registrar,
       WebAppSyncBridge* sync_bridge,
-      SystemWebAppManager* web_app_manager,
+      const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
       OsIntegrationManager* os_integration_manager);
 
   void Start();
@@ -160,7 +160,8 @@ class WebAppPolicyManager {
       nullptr;
   raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
-  raw_ptr<SystemWebAppManager> web_app_manager_ = nullptr;
+  raw_ptr<const ash::SystemAppDelegateMap> system_web_apps_delegate_map_ =
+      nullptr;
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;

@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -31,7 +31,7 @@ void ManifestUpdateManager::SetSubsystems(
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
-    SystemWebAppManager* system_web_app_manager,
+    const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge) {
   install_manager_ = install_manager;
@@ -39,7 +39,7 @@ void ManifestUpdateManager::SetSubsystems(
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
   install_finalizer_ = install_finalizer;
-  system_web_app_manager_ = system_web_app_manager;
+  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
   os_integration_manager_ = os_integration_manager;
   sync_bridge_ = sync_bridge;
 }
@@ -70,7 +70,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
-  if (system_web_app_manager_->IsSystemWebApp(app_id)) {
+  if (IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, app_id)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }

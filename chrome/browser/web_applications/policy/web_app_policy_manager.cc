@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -78,7 +78,7 @@ void WebAppPolicyManager::SetSubsystems(
     ExternallyManagedAppManager* externally_managed_app_manager,
     WebAppRegistrar* app_registrar,
     WebAppSyncBridge* sync_bridge,
-    SystemWebAppManager* web_app_manager,
+    const ash::SystemAppDelegateMap* system_web_apps_delegate_map,
     OsIntegrationManager* os_integration_manager) {
   DCHECK(externally_managed_app_manager);
   DCHECK(app_registrar);
@@ -88,7 +88,7 @@ void WebAppPolicyManager::SetSubsystems(
   externally_managed_app_manager_ = externally_managed_app_manager;
   app_registrar_ = app_registrar;
   sync_bridge_ = sync_bridge;
-  web_app_manager_ = web_app_manager;
+  system_web_apps_delegate_map_ = system_web_apps_delegate_map;
   os_integration_manager_ = os_integration_manager;
 }
 
@@ -637,9 +637,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
-  for (const auto& app_type : disabled_system_apps_) {
-    absl::optional<AppId> app_id =
-        web_app_manager_->GetAppIdForSystemApp(app_type);
+  for (const SystemAppType& app_type : disabled_system_apps_) {
+    absl::optional<AppId> app_id = GetAppIdForSystemApp(
+        *app_registrar_, *system_web_apps_delegate_map_, app_type);
     if (app_id.has_value()) {
       disabled_web_apps_.insert(app_id.value());
     }

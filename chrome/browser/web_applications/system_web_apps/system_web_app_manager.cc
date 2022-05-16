@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -106,9 +107,9 @@ namespace {
 // bailing out.
 const int kInstallFailureAttempts = 3;
 
-SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
-  std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
+ash::SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
@@ -144,11 +145,13 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 
-  SystemAppDelegateMap delegate_map;
+  ash::SystemAppDelegateMap delegate_map;
   for (auto& info : info_vec) {
     if (info->IsAppEnabled() ||
         base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
-      delegate_map.emplace(info->GetType(), std::move(info));
+      // Gets `type` before std::move().
+      SystemAppType type = info->GetType();
+      delegate_map.emplace(type, std::move(info));
     }
   }
   return delegate_map;
@@ -163,11 +166,9 @@ bool HasSystemWebAppScheme(const GURL& url) {
 }
 
 ExternalInstallOptions CreateInstallOptionsForSystemApp(
-    const SystemAppType app_type,
-
+    const SystemAppType type,
     const SystemWebAppDelegate& delegate,
     bool force_update,
-
     bool is_disabled) {
   DCHECK(delegate.GetInstallUrl().scheme() == content::kChromeUIScheme ||
          delegate.GetInstallUrl().scheme() ==
@@ -192,7 +193,7 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.force_reinstall = force_update;
   install_options.uninstall_and_replace =
       delegate.GetAppIdsToUninstallAndReplace();
-  install_options.system_app_type = app_type;
+  install_options.system_app_type = type;
   install_options.handles_file_open_intents =
       delegate.ShouldHandleFileOpenIntents();
 
@@ -247,15 +248,8 @@ void SystemWebAppManager::StopBackgroundTasks() {
   }
 }
 
-bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
-  if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-    return true;
-
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return false;
-
-  return it->second->IsAppEnabled();
+bool SystemWebAppManager::IsAppEnabled(SystemAppType type) const {
+  return ash::IsSystemWebAppEnabled(system_app_delegates_, type);
 }
 
 void SystemWebAppManager::Shutdown() {
@@ -344,43 +338,20 @@ SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
 }
 
 absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
-    SystemAppType id) const {
-  auto app_url_it = system_app_delegates_.find(id);
-  if (app_url_it == system_app_delegates_.end())
-    return absl::optional<AppId>();
-
-  return registrar_->LookupExternalAppId(app_url_it->second->GetInstallUrl());
+    SystemAppType type) const {
+  return web_app::GetAppIdForSystemApp(*registrar_, system_app_delegates_,
+                                       type);
 }
 
 absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
     const AppId& app_id) const {
-  const WebApp* web_app = registrar_->GetAppById(app_id);
-  if (!web_app || !web_app->client_data().system_web_app_data.has_value()) {
-    return absl::nullopt;
-  }
-
-  // The registered system apps can change from previous runs (e.g. flipping a
-  // SWA flag). The registry isn't up-to-date until SWA finishes installing, so
-  // we could have a invalid type (for current session) during SWA install.
-  //
-  // This check ensures we return a type that is safe for other methods (avoids
-  // crashing when looking up that type).
-  SystemAppType proto_type =
-      web_app->client_data().system_web_app_data->system_app_type;
-  if (system_app_delegates_.contains(proto_type)) {
-    return proto_type;
-  }
-
-  return absl::nullopt;
+  return web_app::GetSystemAppTypeForAppId(*registrar_, system_app_delegates_,
+                                           app_id);
 }
 
 const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
     SystemAppType type) const {
-  auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
-    return nullptr;
-
-  return it->second.get();
+  return ash::GetSystemWebApp(system_app_delegates_, type);
 }
 
 std::vector<AppId> SystemWebAppManager::GetAppIds() const {
@@ -396,7 +367,7 @@ std::vector<AppId> SystemWebAppManager::GetAppIds() const {
 }
 
 bool SystemWebAppManager::IsSystemWebApp(const AppId& app_id) const {
-  return GetSystemAppTypeForAppId(app_id).has_value();
+  return web_app::IsSystemWebApp(*registrar_, system_app_delegates_, app_id);
 }
 
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
@@ -447,11 +418,12 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
   if (!type.has_value())
     return absl::nullopt;
 
-  const auto it = system_app_delegates_.find(type);
-  if (it == system_app_delegates_.end())
+  const web_app::SystemWebAppDelegate* delegate =
+      ash::GetSystemWebApp(system_app_delegates_, type.value());
+  if (!delegate)
     return absl::nullopt;
 
-  if (!it->second->ShouldCaptureNavigations())
+  if (!delegate->ShouldCaptureNavigations())
     return absl::nullopt;
 
     // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
@@ -471,8 +443,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
 }
 
 void SystemWebAppManager::SetSystemAppsForTesting(
-    base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>
-        system_apps) {
+    ash::SystemAppDelegateMap system_apps) {
   system_app_delegates_ = std::move(system_apps);
 }
 
