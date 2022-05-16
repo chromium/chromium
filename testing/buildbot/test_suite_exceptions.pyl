@@ -2220,11 +2220,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.media_unittests.filter',
         ],
       },
-      'fuchsia-fyi-x64-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.media_unittests.filter',
-        ],
-      },
     },
   },
   'mediapipe_validating_tests': {
@@ -2902,15 +2897,6 @@
       },
       'chromeos-amd64-generic-rel (reclient)': {
         'ci_only': True,
-      },
-    },
-  },
-  'skia_unittests': {
-    'modifications': {
-      'fuchsia-fyi-x64-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.skia_unittests.filter',
-        ],
       },
     },
   },
