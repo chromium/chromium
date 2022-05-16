@@ -52,22 +52,22 @@ base::ListValue* AddSection(base::ListValue* parent_list,
 void AddSectionEntry(base::ListValue* section_list,
                      const std::string& name,
                      bool value) {
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-  entry->SetStringKey("stat_name", name);
-  entry->SetBoolKey("stat_value", value);
-  entry->SetBoolKey("is_valid", true);
-  section_list->Append(std::move(entry));
+  base::Value::Dict entry;
+  entry.Set("stat_name", name);
+  entry.Set("stat_value", value);
+  entry.Set("is_valid", true);
+  section_list->GetList().Append(std::move(entry));
 }
 
 // Adds a string entry to a section (created with |AddSection| above).
 void AddSectionEntry(base::ListValue* section_list,
                      const std::string& name,
                      const std::string& value) {
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-  entry->SetStringKey("stat_name", name);
-  entry->SetStringKey("stat_value", value);
-  entry->SetBoolKey("is_valid", true);
-  section_list->Append(std::move(entry));
+  base::Value::Dict entry;
+  entry.Set("stat_name", name);
+  entry.Set("stat_value", value);
+  entry.Set("is_valid", true);
+  section_list->GetList().Append(std::move(entry));
 }
 
 std::string FilteringBehaviorToString(
