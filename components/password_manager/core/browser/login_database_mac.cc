@@ -11,7 +11,7 @@ namespace password_manager {
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) {
-  return OSCrypt::EncryptString16(plain_text, cipher_text)
+  return OSCrypt::GetInstance()->EncryptString16(plain_text, cipher_text)
              ? ENCRYPTION_RESULT_SUCCESS
              : ENCRYPTION_RESULT_SERVICE_FAILURE;
 }
@@ -19,7 +19,7 @@ LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
 LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
     std::u16string* plain_text) {
-  return OSCrypt::DecryptString16(cipher_text, plain_text)
+  return OSCrypt::GetInstance()->DecryptString16(cipher_text, plain_text)
              ? ENCRYPTION_RESULT_SUCCESS
              : ENCRYPTION_RESULT_SERVICE_FAILURE;
 }

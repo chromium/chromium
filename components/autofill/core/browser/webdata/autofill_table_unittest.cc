@@ -144,7 +144,6 @@ class AutofillTableTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
@@ -154,13 +153,12 @@ class AutofillTableTest : public testing::Test {
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
-
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(AutofillTableTest, Autofill) {
@@ -3199,7 +3197,6 @@ class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
 
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
@@ -3209,12 +3206,11 @@ class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
-
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_P(GetFormValuesTest, GetFormValuesForElementName_SubstringMatchEnabled) {

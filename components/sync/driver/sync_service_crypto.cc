@@ -191,7 +191,7 @@ std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
   }
 
   std::string decrypted_key;
-  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
+  if (!OSCrypt::GetInstance()->DecryptString(decoded_key, &decrypted_key)) {
     return nullptr;
   }
 
@@ -217,7 +217,7 @@ std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
   }
 
   std::string encrypted_key;
-  if (!OSCrypt::EncryptString(serialized_key, &encrypted_key)) {
+  if (!OSCrypt::GetInstance()->EncryptString(serialized_key, &encrypted_key)) {
     return std::string();
   }
 

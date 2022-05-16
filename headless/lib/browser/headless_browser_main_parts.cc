@@ -173,7 +173,8 @@ void HeadlessBrowserMainParts::CreatePrefService() {
 #if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableCookieEncryption) &&
-      OSCrypt::InitWithExistingKey(local_state_.get()) != OSCrypt::kSuccess) {
+      OSCrypt::GetInstance()->InitWithExistingKey(local_state_.get()) !=
+          OSCrypt::kSuccess) {
     command_line->AppendSwitch(switches::kDisableCookieEncryption);
   }
 #endif  // BUILDFLAG(IS_WIN)

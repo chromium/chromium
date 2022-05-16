@@ -588,7 +588,7 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   DCHECK(local_state);
 
   // Initialize the OSCrypt.
-  bool os_crypt_init = OSCrypt::Init(local_state);
+  bool os_crypt_init = OSCrypt::GetInstance()->Init(local_state);
   DCHECK(os_crypt_init);
 
   ChromeBrowserMainParts::PreCreateMainMessageLoop();

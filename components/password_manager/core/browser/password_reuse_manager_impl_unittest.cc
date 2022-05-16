@@ -73,10 +73,6 @@ class PasswordReuseManagerImplTest : public testing::Test {
   ~PasswordReuseManagerImplTest() override = default;
 
   void SetUp() override {
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
-
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
 
@@ -94,7 +90,6 @@ class PasswordReuseManagerImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    OSCryptMocker::TearDown();
     reuse_manager_.Shutdown();
     profile_store_->ShutdownOnUIThread();
     account_store_->ShutdownOnUIThread();
@@ -114,6 +109,9 @@ class PasswordReuseManagerImplTest : public testing::Test {
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
   PasswordReuseManagerImpl reuse_manager_;
+  // Mock OSCrypt. There is a call to OSCrypt on initializling
+  // PasswordReuseDetector, so it should be mocked.
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {

@@ -206,17 +206,12 @@ class PasswordStoreTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
 
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   void WaitForPasswordStore() { task_environment_.RunUntilIdle(); }
 
@@ -242,6 +237,9 @@ class PasswordStoreTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
+  // Mock OSCrypt. There is a call to OSCrypt on initializling
+  // PasswordReuseDetector, so it should be mocked.
+  OSCryptMocker os_crypt_mocker_;
 };
 
 absl::optional<PasswordHashData> GetPasswordFromPref(

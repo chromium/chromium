@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -228,13 +227,10 @@ class LoginDatabaseTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestMetadataStoreMacDatabase");
-    OSCryptMocker::SetUp();
 
     db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false));
     ASSERT_TRUE(db_->Init());
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   LoginDatabase& db() { return *db_; }
 
@@ -246,6 +242,7 @@ class LoginDatabaseTest : public testing::Test {
   // password_manager::DeletePasswordsDirectory() which calls
   // base::ThreadPool::PostTask().
   base::test::TaskEnvironment task_environment_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(LoginDatabaseTest, GetAllLogins) {
@@ -1225,7 +1222,6 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   complete_form.in_store = PasswordForm::Store::kProfileStore;
   incomplete_form.in_store = PasswordForm::Store::kProfileStore;
 
-
   // Both still exist now.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(2U, result.size());
@@ -1724,7 +1720,7 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
   std::u16string decrypted_pw;
-  ASSERT_TRUE(OSCrypt::DecryptString16(
+  ASSERT_TRUE(OSCrypt::GetInstance()->DecryptString16(
       GetColumnValuesFromDatabase<std::string>(file, "password_value").at(0),
       &decrypted_pw));
   EXPECT_EQ(decrypted_pw, password_form.password_value);
@@ -1854,10 +1850,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
                                   .AppendASCII("data")
                                   .AppendASCII("password_manager");
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
-    OSCryptMocker::SetUp();
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Creates the database from |sql_file|.
   void CreateDatabase(base::StringPiece sql_file) {
@@ -1886,6 +1879,7 @@ class LoginDatabaseMigrationTest : public testing::TestWithParam<int> {
   base::FilePath database_dump_location_;
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 void LoginDatabaseMigrationTest::MigrationToVCurrent(
@@ -2003,10 +1997,7 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
-    OSCryptMocker::SetUp();
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Generates login depending on |unique_string| and |origin| parameters and
   // adds it to the database. Changes encrypted password in the database if the
@@ -2022,6 +2013,8 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
     return testing_local_state_;
   }
 
+  OSCryptMocker& os_crypt_mocker() { return os_crypt_mocker_; }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
@@ -2029,6 +2022,7 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple testing_local_state_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
@@ -2154,7 +2148,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
                 /*blocklisted=*/false);
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
 
-  OSCryptMocker::SetBackendLocked(true);
+  os_crypt_mocker().SetBackendLocked(true);
   LoginDatabase db(database_path(), IsAccountStore(false));
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(db.Init());
@@ -2650,13 +2644,10 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestMetadataStoreMacDatabase");
-    OSCryptMocker::SetUp();
 
     db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(true));
     ASSERT_TRUE(db_->Init());
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   LoginDatabase& db() { return *db_; }
 
@@ -2664,6 +2655,7 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
   base::FilePath file_;
   std::unique_ptr<LoginDatabase> db_;
   base::test::TaskEnvironment task_environment_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(LoginDatabaseForAccountStoreTest, AddLogins) {

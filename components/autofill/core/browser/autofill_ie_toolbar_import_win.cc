@@ -85,7 +85,7 @@ std::wstring ReadAndDecryptValue(const RegKey& key, const wchar_t* value_name) {
   result = key.ReadValue(value_name, &(data[0]), &data_size, &data_type);
   if (result == ERROR_SUCCESS) {
     std::string out_data;
-    if (OSCrypt::DecryptString(data, &out_data)) {
+    if (OSCrypt::GetInstance()->DecryptString(data, &out_data)) {
       // The actual data is in UTF16 already.
       if (!(out_data.size() & 1) && (out_data.size() > 2) &&
           !out_data[out_data.size() - 1] && !out_data[out_data.size() - 2]) {

@@ -155,9 +155,6 @@ class AutofillTest : public InProcessBrowserTest {
   AutofillTest() = default;
 
   void SetUpOnMainThread() override {
-    // Don't want Keychain coming up on Mac.
-    test::DisableSystemServices(browser()->profile()->GetPrefs());
-
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     WaitForPersonalDataManagerToBeLoaded(browser()->profile());
@@ -174,7 +171,6 @@ class AutofillTest : public InProcessBrowserTest {
             ->DriverForFrame(web_contents->GetMainFrame())
             ->autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
-    test::ReenableSystemServices();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

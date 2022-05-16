@@ -70,7 +70,6 @@
 #include "components/embedder_support/switches.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_paths.h"
@@ -408,15 +407,6 @@ void InProcessBrowserTest::SetUp() {
 
   SetScreenInstance();
 
-  // Use a mocked password storage if OS encryption is used that might block or
-  // prompt the user (which is when anything sensitive gets stored, including
-  // Cookies). Without this on Mac and Linux, many tests will hang waiting for a
-  // user to approve KeyChain/kwallet access. On Windows this is not needed as
-  // OS APIs never block.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  OSCryptMocker::SetUp();
-#endif
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal::CaptivePortalService::set_state_for_testing(
       captive_portal::CaptivePortalService::DISABLED_FOR_TESTING);
@@ -491,9 +481,6 @@ void InProcessBrowserTest::TearDown() {
   com_initializer_.reset();
 #endif
   BrowserTestBase::TearDown();
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  OSCryptMocker::TearDown();
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);

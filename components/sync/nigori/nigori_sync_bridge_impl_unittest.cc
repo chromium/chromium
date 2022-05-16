@@ -236,9 +236,6 @@ class NigoriSyncBridgeImplTest : public testing::Test {
 
   ~NigoriSyncBridgeImplTest() override { bridge_->RemoveObserver(&observer_); }
 
-  void SetUp() override { OSCryptMocker::SetUp(); }
-  void TearDown() override { OSCryptMocker::TearDown(); }
-
   NigoriSyncBridgeImpl* bridge() { return bridge_.get(); }
   MockNigoriLocalChangeProcessor* processor() { return processor_; }
   MockObserver* observer() { return &observer_; }
@@ -254,6 +251,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   raw_ptr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_;
   raw_ptr<testing::NiceMock<MockNigoriStorage>> storage_;
   testing::NiceMock<MockObserver> observer_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 class NigoriSyncBridgeImplTestWithOptionalScryptDerivation
@@ -278,8 +276,7 @@ class NigoriSyncBridgeImplPersistenceTest : public testing::Test {
   NigoriSyncBridgeImplPersistenceTest() = default;
   ~NigoriSyncBridgeImplPersistenceTest() override = default;
 
-  void SetUp() override { OSCryptMocker::SetUp(); }
-  void TearDown() override { OSCryptMocker::TearDown(); }
+  OSCryptMocker os_crypt_mocker_;
 };
 
 // During initialization bridge should expose encrypted types via observers

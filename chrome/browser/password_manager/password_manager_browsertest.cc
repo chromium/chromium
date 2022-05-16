@@ -949,10 +949,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        VerifyPasswordGenerationUpload) {
-  // Disable Autofill requesting access to AddressBook data. This causes
-  // the test to hang on Mac.
-  autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
-
   // Visit a signup form.
   NavigateToFile("/password/signup_form.html");
 
@@ -1002,8 +998,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       upload_histogram->SnapshotSamples();
   EXPECT_EQ(0, snapshot->GetCount(0 /* failure */));
   EXPECT_EQ(2, snapshot->GetCount(1 /* success */));
-
-  autofill::test::ReenableSystemServices();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForSubmitFromIframe) {

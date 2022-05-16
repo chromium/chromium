@@ -78,7 +78,7 @@ sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
   base::ReadFileToString(path, &ciphertext);
 
   std::string decrypted_content;
-  OSCrypt::DecryptString(ciphertext, &decrypted_content);
+  OSCrypt::GetInstance()->DecryptString(ciphertext, &decrypted_content);
 
   sync_pb::LocalTrustedVault proto;
   proto.ParseFromString(decrypted_content);
@@ -138,10 +138,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   }
 
   ~StandaloneTrustedVaultBackendTest() override = default;
-
-  void SetUp() override { OSCryptMocker::SetUp(); }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   void ResetBackend() {
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
@@ -234,6 +230,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
@@ -263,8 +260,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
 
   std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
+  ASSERT_TRUE(OSCrypt::GetInstance()->EncryptString(
+      initial_data.SerializeAsString(), &encrypted_data));
   ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
                                 encrypted_data.size()));
 
@@ -291,8 +288,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
 
   std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
+  ASSERT_TRUE(OSCrypt::GetInstance()->EncryptString(
+      initial_data.SerializeAsString(), &encrypted_data));
   ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
                                 encrypted_data.size()));
 
@@ -324,7 +321,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   sync_pb::LocalTrustedVault proto;
   EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
   EXPECT_THAT(ciphertext, Ne(""));
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  EXPECT_TRUE(
+      OSCrypt::GetInstance()->DecryptString(ciphertext, &decrypted_content));
   EXPECT_TRUE(proto.ParseFromString(decrypted_content));
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
@@ -357,8 +355,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                            user_data2->add_vault_key()->mutable_key_material());
 
   std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
+  ASSERT_TRUE(OSCrypt::GetInstance()->EncryptString(
+      initial_data.SerializeAsString(), &encrypted_data));
   ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
                                 encrypted_data.size()));
 
@@ -371,7 +369,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   sync_pb::LocalTrustedVault proto;
   ASSERT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
   ASSERT_THAT(ciphertext, Ne(""));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  ASSERT_TRUE(
+      OSCrypt::GetInstance()->DecryptString(ciphertext, &decrypted_content));
   ASSERT_TRUE(proto.ParseFromString(decrypted_content));
   ASSERT_THAT(proto.user_size(), Eq(2));
   // Constant key should be added for the first user.

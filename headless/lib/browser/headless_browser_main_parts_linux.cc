@@ -45,7 +45,7 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   // need to support that.
   config->should_use_preference = false;
   config->user_data_path = base::FilePath();
-  OSCrypt::SetConfig(std::move(config));
+  OSCrypt::GetInstance()->SetConfig(std::move(config));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 

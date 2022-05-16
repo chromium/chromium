@@ -41,16 +41,11 @@ using testing::UnorderedElementsAre;
 class PasswordNotesTableTest : public testing::Test {
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ReloadDatabase();
   }
 
-  void TearDown() override {
-    login_db_.reset();
-    OSCryptMocker::TearDown();
-  }
+  void TearDown() override { login_db_.reset(); }
 
   void ReloadDatabase() {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
@@ -66,6 +61,7 @@ class PasswordNotesTableTest : public testing::Test {
  private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LoginDatabase> login_db_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(PasswordNotesTableTest,

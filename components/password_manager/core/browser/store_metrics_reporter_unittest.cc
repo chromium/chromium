@@ -125,13 +125,7 @@ void AddMetricsTestData(TestPasswordStore* store) {
 
 class StoreMetricsReporterTest : public SyncUsernameTestBase {
  public:
-  StoreMetricsReporterTest() = default;
-
   void SetUp() override {
-    // Mock OSCrypt. There is a call to OSCrypt inside HashPasswordManager so it
-    // should be mocked.
-    OSCryptMocker::SetUp();
-
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
 
@@ -145,13 +139,14 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kLastTimePasswordStoreMetricsReported, 0.0);
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
-
   ~StoreMetricsReporterTest() override = default;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
+  // Mock OSCrypt. There is a call to OSCrypt inside HashPasswordManager so it
+  // should be mocked.
+  OSCryptMocker os_crypt_mocker_;
 };
 
 // The test fixture is used to test StoreIndependentMetrics. The parameter

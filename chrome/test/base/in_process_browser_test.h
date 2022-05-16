@@ -29,6 +29,10 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/os_crypt/os_crypt_mocker.h"
+#endif
+
 namespace base {
 
 class CommandLine;
@@ -344,6 +348,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Use a default download directory to make sure downloads don't end up in the
   // system default location.
   base::ScopedTempDir default_download_dir_;
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  OSCryptMocker os_crypt_mocker_;
+#endif
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

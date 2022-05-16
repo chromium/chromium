@@ -77,7 +77,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
 // unlock the Keychain.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Check that the backend works.
-  if (success && !OSCrypt::IsEncryptionAvailable()) {
+  if (success && !OSCrypt::GetInstance()->IsEncryptionAvailable()) {
     success = false;
     LOG(ERROR) << "Encryption is not available.";
   }

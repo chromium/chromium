@@ -36,18 +36,9 @@ class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
     return &scoped_testing_local_state_;
   }
 
-  void SetUp() override {
-    testing::Test::SetUp();
-    OSCryptMocker::SetUp();
-  }
-
-  void TearDown() override {
-    OSCryptMocker::TearDown();
-    testing::Test::TearDown();
-  }
-
  private:
   ScopedTestingLocalState scoped_testing_local_state_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
@@ -74,7 +65,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  OSCrypt::GetInstance()->EncryptString(token, &encrypted_token);
 
   std::string encoded;
   base::Base64Encode(encrypted_token, &encoded);
@@ -102,7 +93,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  OSCrypt::GetInstance()->EncryptString(token, &encrypted_token);
 
   std::string encoded;
   base::Base64Encode(encrypted_token, &encoded);
@@ -151,7 +142,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   std::string decoded;
   base::Base64Decode(persisted_token, &decoded);
   std::string decrypted;
-  OSCrypt::DecryptString(decoded, &decrypted);
+  OSCrypt::GetInstance()->DecryptString(decoded, &decrypted);
 
   EXPECT_EQ(token, store.GetRefreshToken());
   EXPECT_EQ(token, decrypted);

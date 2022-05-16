@@ -79,62 +79,19 @@ bool DecryptStringWithDPAPI(const std::string& ciphertext,
 }
 }  // namespace
 
-namespace OSCrypt {
-bool EncryptString16(const std::u16string& plaintext, std::string* ciphertext) {
-  return OSCryptImpl::GetInstance()->EncryptString16(plaintext, ciphertext);
-}
-bool DecryptString16(const std::string& ciphertext, std::u16string* plaintext) {
-  return OSCryptImpl::GetInstance()->DecryptString16(ciphertext, plaintext);
-}
-bool EncryptString(const std::string& plaintext, std::string* ciphertext) {
-  return OSCryptImpl::GetInstance()->EncryptString(plaintext, ciphertext);
-}
-bool DecryptString(const std::string& ciphertext, std::string* plaintext) {
-  return OSCryptImpl::GetInstance()->DecryptString(ciphertext, plaintext);
-}
-void RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  OSCryptImpl::RegisterLocalPrefs(registry);
-}
-InitResult InitWithExistingKey(PrefService* local_state) {
-  return OSCryptImpl::GetInstance()->InitWithExistingKey(local_state);
-}
-bool Init(PrefService* local_state) {
-  return OSCryptImpl::GetInstance()->Init(local_state);
-}
-std::string GetRawEncryptionKey() {
-  return OSCryptImpl::GetInstance()->GetRawEncryptionKey();
-}
-void SetRawEncryptionKey(const std::string& key) {
-  OSCryptImpl::GetInstance()->SetRawEncryptionKey(key);
-}
-bool IsEncryptionAvailable() {
-  return OSCryptImpl::GetInstance()->IsEncryptionAvailable();
-}
-void UseMockKeyForTesting(bool use_mock) {
-  OSCryptImpl::GetInstance()->UseMockKeyForTesting(use_mock);
-}
-void SetLegacyEncryptionForTesting(bool legacy) {
-  OSCryptImpl::GetInstance()->SetLegacyEncryptionForTesting(legacy);
-}
-void ResetStateForTesting() {
-  OSCryptImpl::GetInstance()->ResetStateForTesting();
-}
-}  // namespace OSCrypt
+OSCrypt::OSCrypt() = default;
+OSCrypt::~OSCrypt() = default;
 
-OSCryptImpl::OSCryptImpl() = default;
-OSCryptImpl::~OSCryptImpl() = default;
-
-OSCryptImpl* OSCryptImpl::GetInstance() {
-  return base::Singleton<OSCryptImpl,
-                         base::LeakySingletonTraits<OSCryptImpl>>::get();
+OSCrypt* OSCrypt::GetInstance() {
+  return base::Singleton<OSCrypt, base::LeakySingletonTraits<OSCrypt>>::get();
 }
 
-bool OSCryptImpl::EncryptString16(const std::u16string& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
-bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
+bool OSCrypt::DecryptString16(const std::string& ciphertext,
                               std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
@@ -144,7 +101,7 @@ bool OSCryptImpl::DecryptString16(const std::string& ciphertext,
   return true;
 }
 
-bool OSCryptImpl::EncryptString(const std::string& plaintext,
+bool OSCrypt::EncryptString(const std::string& plaintext,
                             std::string* ciphertext) {
   if (use_legacy_)
     return EncryptStringWithDPAPI(plaintext, ciphertext);
@@ -169,7 +126,7 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
   return true;
 }
 
-bool OSCryptImpl::DecryptString(const std::string& ciphertext,
+bool OSCrypt::DecryptString(const std::string& ciphertext,
                             std::string* plaintext) {
   if (!base::StartsWith(ciphertext, kEncryptionVersionPrefix,
                         base::CompareCase::SENSITIVE))
@@ -191,11 +148,11 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
 }
 
 // static
-void OSCryptImpl::RegisterLocalPrefs(PrefRegistrySimple* registry) {
+void OSCrypt::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOsCryptEncryptedKeyPrefName, "");
 }
 
-bool OSCryptImpl::Init(PrefService* local_state) {
+bool OSCrypt::Init(PrefService* local_state) {
   // Try to pull the key from the local state.
   switch (InitWithExistingKey(local_state)) {
     case OSCrypt::kSuccess:
@@ -226,7 +183,7 @@ bool OSCryptImpl::Init(PrefService* local_state) {
   return true;
 }
 
-OSCrypt::InitResult OSCryptImpl::InitWithExistingKey(PrefService* local_state) {
+OSCrypt::InitResult OSCrypt::InitWithExistingKey(PrefService* local_state) {
   DCHECK(encryption_key_.empty()) << "Key already exists.";
   // Try and pull the key from the local state.
   if (!local_state->HasPrefPath(kOsCryptEncryptedKeyPrefName))
@@ -259,14 +216,14 @@ OSCrypt::InitResult OSCryptImpl::InitWithExistingKey(PrefService* local_state) {
   return OSCrypt::kSuccess;
 }
 
-void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
+void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   DCHECK(!use_mock_key_) << "Mock key in use.";
   DCHECK(!raw_key.empty()) << "Bad key.";
   DCHECK(encryption_key_.empty()) << "Key already set.";
   encryption_key_.assign(raw_key);
 }
 
-std::string OSCryptImpl::GetRawEncryptionKey() {
+std::string OSCrypt::GetRawEncryptionKey() {
   if (use_mock_key_) {
     if (mock_encryption_key_.empty())
       mock_encryption_key_.assign(
@@ -279,19 +236,19 @@ std::string OSCryptImpl::GetRawEncryptionKey() {
   return encryption_key_;
 }
 
-bool OSCryptImpl::IsEncryptionAvailable() {
+bool OSCrypt::IsEncryptionAvailable() {
   return !encryption_key_.empty();
 }
 
-void OSCryptImpl::UseMockKeyForTesting(bool use_mock) {
+void OSCrypt::UseMockKeyForTesting(bool use_mock) {
   use_mock_key_ = use_mock;
 }
 
-void OSCryptImpl::SetLegacyEncryptionForTesting(bool legacy) {
+void OSCrypt::SetLegacyEncryptionForTesting(bool legacy) {
   use_legacy_ = legacy;
 }
 
-void OSCryptImpl::ResetStateForTesting() {
+void OSCrypt::ResetStateForTesting() {
   use_legacy_ = false;
   use_mock_key_ = false;
   encryption_key_.clear();

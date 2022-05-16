@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/os_crypt.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -32,13 +33,9 @@
 namespace {
 
 class OSCryptTest : public testing::Test {
- public:
-  OSCryptTest() { OSCryptMocker::SetUp(); }
-
-  OSCryptTest(const OSCryptTest&) = delete;
-  OSCryptTest& operator=(const OSCryptTest&) = delete;
-
-  ~OSCryptTest() override { OSCryptMocker::TearDown(); }
+ protected:
+  OSCrypt os_crypt_;
+  OSCryptMocker os_crypt_mocker_{&os_crypt_};
 };
 
 TEST_F(OSCryptTest, String16EncryptionDecryption) {
@@ -49,21 +46,21 @@ TEST_F(OSCryptTest, String16EncryptionDecryption) {
   std::string ciphertext;
 
   // Test borderline cases (empty strings).
-  EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
-  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
+  EXPECT_TRUE(os_crypt_.EncryptString16(plaintext, &ciphertext));
+  EXPECT_TRUE(os_crypt_.DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test a simple string.
   plaintext = u"hello";
-  EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
-  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
+  EXPECT_TRUE(os_crypt_.EncryptString16(plaintext, &ciphertext));
+  EXPECT_TRUE(os_crypt_.DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test a 16-byte aligned string.  This previously hit a boundary error in
   // base::OSCrypt::Crypt() on Mac.
   plaintext = u"1234567890123456";
-  EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
-  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
+  EXPECT_TRUE(os_crypt_.EncryptString16(plaintext, &ciphertext));
+  EXPECT_TRUE(os_crypt_.DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test Unicode.
@@ -75,16 +72,16 @@ TEST_F(OSCryptTest, String16EncryptionDecryption) {
   plaintext = wchars;
   utf8_plaintext = base::UTF16ToUTF8(plaintext);
   EXPECT_EQ(plaintext, base::UTF8ToUTF16(utf8_plaintext));
-  EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
-  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
+  EXPECT_TRUE(os_crypt_.EncryptString16(plaintext, &ciphertext));
+  EXPECT_TRUE(os_crypt_.DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &utf8_result));
+  EXPECT_TRUE(os_crypt_.DecryptString(ciphertext, &utf8_result));
   EXPECT_EQ(utf8_plaintext, base::UTF16ToUTF8(result));
 
-  EXPECT_TRUE(OSCrypt::EncryptString(utf8_plaintext, &ciphertext));
-  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
+  EXPECT_TRUE(os_crypt_.EncryptString(utf8_plaintext, &ciphertext));
+  EXPECT_TRUE(os_crypt_.DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &utf8_result));
+  EXPECT_TRUE(os_crypt_.DecryptString(ciphertext, &utf8_result));
   EXPECT_EQ(utf8_plaintext, base::UTF16ToUTF8(result));
 }
 
@@ -94,20 +91,20 @@ TEST_F(OSCryptTest, EncryptionDecryption) {
   std::string ciphertext;
 
   // Test borderline cases (empty strings).
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test a simple string.
   plaintext = "hello";
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Make sure it null terminates.
   plaintext.assign("hello", 3);
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_EQ(plaintext, "hel");
 }
 
@@ -117,23 +114,23 @@ TEST_F(OSCryptTest, CypherTextDiffers) {
   std::string ciphertext;
 
   // Test borderline cases (empty strings).
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
-  // |cyphertext| is empty on the Mac, different on Windows.
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
+  // |ciphertext| is empty on the Mac, different on Windows.
   EXPECT_TRUE(ciphertext.empty() || plaintext != ciphertext);
   EXPECT_EQ(plaintext, result);
 
   // Test a simple string.
   plaintext = "hello";
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_NE(plaintext, ciphertext);
   EXPECT_EQ(plaintext, result);
 
   // Make sure it null terminates.
   plaintext.assign("hello", 3);
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &result));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_NE(plaintext, ciphertext);
   EXPECT_EQ(result, "hel");
 }
@@ -145,23 +142,29 @@ TEST_F(OSCryptTest, DecryptError) {
 
   // Test a simple string, messing with ciphertext prior to decrypting.
   plaintext = "hello";
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
   EXPECT_NE(plaintext, ciphertext);
   ASSERT_LT(4UL, ciphertext.size());
   ciphertext[3] = ciphertext[3] + 1;
-  EXPECT_FALSE(OSCrypt::DecryptString(ciphertext, &result));
+  EXPECT_FALSE(os_crypt_.DecryptString(ciphertext, &result));
   EXPECT_NE(plaintext, result);
   EXPECT_TRUE(result.empty());
 }
 
 class OSCryptConcurrencyTest : public testing::Test {
  public:
-  OSCryptConcurrencyTest() { OSCryptMocker::SetUp(); }
+  void AssertProperEncryption() {
+    std::string plaintext = "secrets";
+    std::string encrypted;
+    std::string decrypted;
+    ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &encrypted));
+    ASSERT_TRUE(os_crypt_.DecryptString(encrypted, &decrypted));
+    ASSERT_EQ(plaintext, decrypted);
+  }
 
-  OSCryptConcurrencyTest(const OSCryptConcurrencyTest&) = delete;
-  OSCryptConcurrencyTest& operator=(const OSCryptConcurrencyTest&) = delete;
-
-  ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
+ protected:
+  OSCrypt os_crypt_;
+  OSCryptMocker os_crypt_mocker_{&os_crypt_};
 };
 
 // Flaky on Win 7 (dbg) and win-asan, see https://crbug.com/1066699
@@ -182,14 +185,9 @@ TEST_F(OSCryptConcurrencyTest, MAYBE_ConcurrentInitialization) {
   // Make calls.
   for (base::Thread* thread : threads) {
     ASSERT_TRUE(thread->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce([]() -> void {
-          std::string plaintext = "secrets";
-          std::string encrypted;
-          std::string decrypted;
-          ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &encrypted));
-          ASSERT_TRUE(OSCrypt::DecryptString(encrypted, &decrypted));
-          ASSERT_EQ(plaintext, decrypted);
-        })));
+        FROM_HERE,
+        base::BindOnce(&OSCryptConcurrencyTest::AssertProperEncryption,
+                       base::Unretained(this))));
   }
 
   // Cleanup
@@ -207,7 +205,11 @@ class OSCryptTestWin : public testing::Test {
   OSCryptTestWin(const OSCryptTestWin&) = delete;
   OSCryptTestWin& operator=(const OSCryptTestWin&) = delete;
 
-  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
+  ~OSCryptTestWin() override { os_crypt_mocker_.ResetState(); }
+
+ protected:
+  OSCrypt os_crypt_;
+  OSCryptMocker os_crypt_mocker_{&os_crypt_};
 };
 
 // This test verifies that the header of the data returned from CryptProtectData
@@ -222,9 +224,9 @@ TEST_F(OSCryptTestWin, DPAPIHeader) {
   std::string plaintext;
   std::string ciphertext;
 
-  OSCryptMocker::SetLegacyEncryption(true);
+  os_crypt_mocker_.SetLegacyEncryption(true);
   crypto::RandBytes(base::WriteInto(&plaintext, 11), 10);
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
 
   using std::string_literals::operator""s;
   const std::string expected_header("\x01\x00\x00\x00"s);
@@ -236,74 +238,79 @@ TEST_F(OSCryptTestWin, DPAPIHeader) {
 }
 
 TEST_F(OSCryptTestWin, ReadOldData) {
-  OSCryptMocker::SetLegacyEncryption(true);
+  os_crypt_mocker_.SetLegacyEncryption(true);
 
   std::string plaintext = "secrets";
   std::string legacy_ciphertext;
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &legacy_ciphertext));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &legacy_ciphertext));
 
-  OSCryptMocker::SetLegacyEncryption(false);
+  os_crypt_mocker_.SetLegacyEncryption(false);
 
   TestingPrefServiceSimple pref_service_simple;
   OSCrypt::RegisterLocalPrefs(pref_service_simple.registry());
-  ASSERT_TRUE(OSCrypt::Init(&pref_service_simple));
+  ASSERT_TRUE(os_crypt_.Init(&pref_service_simple));
 
   std::string decrypted;
   // Should be able to decrypt data encrypted with DPAPI.
-  ASSERT_TRUE(OSCrypt::DecryptString(legacy_ciphertext, &decrypted));
+  ASSERT_TRUE(os_crypt_.DecryptString(legacy_ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 
   // Should now encrypt same plaintext to get different ciphertext.
   std::string new_ciphertext;
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &new_ciphertext));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &new_ciphertext));
 
   // Should be different from DPAPI ciphertext.
   EXPECT_NE(legacy_ciphertext, new_ciphertext);
 
   // Decrypt new ciphertext to give original string.
-  ASSERT_TRUE(OSCrypt::DecryptString(new_ciphertext, &decrypted));
+  ASSERT_TRUE(os_crypt_.DecryptString(new_ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
 
 TEST_F(OSCryptTestWin, PrefsKeyTest) {
+#if BUILDFLAG(IS_WIN)
+  // Real use scenario. Disable os crypt mocking.
+  os_crypt_.UseMockKeyForTesting(false);
+#endif  // BUILDFLAG(IS_WIN)
+
   TestingPrefServiceSimple first_prefs;
   OSCrypt::RegisterLocalPrefs(first_prefs.registry());
 
   // Verify new random key can be generated.
-  ASSERT_TRUE(OSCrypt::Init(&first_prefs));
-  std::string first_key = OSCrypt::GetRawEncryptionKey();
+  ASSERT_TRUE(os_crypt_.Init(&first_prefs));
+  std::string first_key = os_crypt_.GetRawEncryptionKey();
 
   std::string plaintext = "secrets";
   std::string ciphertext;
-  ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
+  ASSERT_TRUE(os_crypt_.EncryptString(plaintext, &ciphertext));
 
   TestingPrefServiceSimple second_prefs;
-  OSCrypt::RegisterLocalPrefs(second_prefs.registry());
+  os_crypt_.RegisterLocalPrefs(second_prefs.registry());
 
-  OSCryptMocker::ResetState();
-  ASSERT_TRUE(OSCrypt::Init(&second_prefs));
-  std::string second_key = OSCrypt::GetRawEncryptionKey();
+  os_crypt_mocker_.ResetState();
+  ASSERT_TRUE(os_crypt_.Init(&second_prefs));
+  std::string second_key = os_crypt_.GetRawEncryptionKey();
   // Keys should be different since they are random.
   EXPECT_NE(first_key, second_key);
 
   std::string decrypted;
   // Cannot decrypt with the wrong key.
-  EXPECT_FALSE(OSCrypt::DecryptString(ciphertext, &decrypted));
+  EXPECT_FALSE(os_crypt_.DecryptString(ciphertext, &decrypted));
 
   // Initialize OSCrypt from existing key.
-  OSCryptMocker::ResetState();
-  OSCrypt::SetRawEncryptionKey(first_key);
+  os_crypt_mocker_.ResetState();
+  os_crypt_.SetRawEncryptionKey(first_key);
 
   // Verify decryption works with first key.
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 
   // Initialize OSCrypt from existing prefs.
-  OSCryptMocker::ResetState();
-  ASSERT_TRUE(OSCrypt::Init(&first_prefs));
+  os_crypt_mocker_.ResetState();
+  ASSERT_TRUE(os_crypt_.Init(&first_prefs));
 
   // Verify decryption works with key from first prefs.
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted));
+  ASSERT_TRUE(os_crypt_.DecryptString(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
 

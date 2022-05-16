@@ -46,12 +46,12 @@ bool CookieOSCryptoDelegate::ShouldEncrypt() {
 
 bool CookieOSCryptoDelegate::EncryptString(const std::string& plaintext,
                                            std::string* ciphertext) {
-  return OSCrypt::EncryptString(plaintext, ciphertext);
+  return OSCrypt::GetInstance()->EncryptString(plaintext, ciphertext);
 }
 
 bool CookieOSCryptoDelegate::DecryptString(const std::string& ciphertext,
                                            std::string* plaintext) {
-  return OSCrypt::DecryptString(ciphertext, plaintext);
+  return OSCrypt::GetInstance()->DecryptString(ciphertext, plaintext);
 }
 
 // Using a LazyInstance is safe here because this class is stateless and

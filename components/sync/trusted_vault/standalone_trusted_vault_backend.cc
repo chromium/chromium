@@ -47,7 +47,7 @@ sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
   }
 
   const bool decryption_success =
-      OSCrypt::DecryptString(ciphertext, &decrypted_content);
+      OSCrypt::GetInstance()->DecryptString(ciphertext, &decrypted_content);
   base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataDecryptionIsSuccessful",
                             decryption_success);
   if (decryption_success) {
@@ -60,8 +60,8 @@ sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
 void WriteToDisk(const sync_pb::LocalTrustedVault& data,
                  const base::FilePath& file_path) {
   std::string encrypted_data;
-  const bool encryption_success =
-      OSCrypt::EncryptString(data.SerializeAsString(), &encrypted_data);
+  const bool encryption_success = OSCrypt::GetInstance()->EncryptString(
+      data.SerializeAsString(), &encrypted_data);
   base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataEncryptionIsSuccessful",
                             encryption_success);
   if (!encryption_success) {

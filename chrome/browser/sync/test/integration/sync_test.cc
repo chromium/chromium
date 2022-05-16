@@ -57,7 +57,6 @@
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
@@ -332,9 +331,6 @@ void SyncTest::SetUp() {
   if (username_.empty() || password_.empty())
     LOG(FATAL) << "Cannot run sync tests without GAIA credentials.";
 
-  // Mock the Mac Keychain service.  The real Keychain can block on user input.
-  OSCryptMocker::SetUp();
-
   // Yield control back to the PlatformBrowserTest framework.
   PlatformBrowserTest::SetUp();
 
@@ -348,9 +344,6 @@ void SyncTest::TearDown() {
 
   // Allow the PlatformBrowserTest framework to perform its tear down.
   PlatformBrowserTest::TearDown();
-
-  // Return OSCrypt to its real behaviour
-  OSCryptMocker::TearDown();
 }
 
 void SyncTest::PostRunTestOnMainThread() {

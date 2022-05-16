@@ -27,15 +27,13 @@ class HashPasswordManagerTest : public testing::Test {
                                           PrefRegistry::NO_REGISTRATION_FLAGS);
     prefs_.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                         PrefRegistry::NO_REGISTRATION_FLAGS);
-    // Mock OSCrypt. There is a call to OSCrypt on initializling
-    // PasswordReuseDetector, so it should be mocked.
-    OSCryptMocker::SetUp();
   }
-
-  ~HashPasswordManagerTest() override { OSCryptMocker::TearDown(); }
 
  protected:
   TestingPrefServiceSimple prefs_;
+  // Mock OSCrypt. There is a call to OSCrypt on initializling
+  // PasswordReuseDetector, so it should be mocked.
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(HashPasswordManagerTest, SavingPasswordHashData) {

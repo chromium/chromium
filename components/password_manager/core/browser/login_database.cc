@@ -1549,7 +1549,7 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
-  if (!OSCrypt::IsEncryptionAvailable()) {
+  if (!OSCrypt::GetInstance()->IsEncryptionAvailable()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable);
     return DatabaseCleanupResult::kEncryptionUnavailable;
@@ -1642,8 +1642,8 @@ bool LoginDatabase::UpdateSyncMetadata(
   }
 
   std::string encrypted_metadata;
-  if (!OSCrypt::EncryptString(metadata.SerializeAsString(),
-                              &encrypted_metadata)) {
+  if (!OSCrypt::GetInstance()->EncryptString(metadata.SerializeAsString(),
+                                             &encrypted_metadata)) {
     DLOG(ERROR) << "Cannot encrypt the sync metadata";
     return false;
   }
@@ -1791,8 +1791,8 @@ LoginDatabase::GetAllSyncEntityMetadata() {
     std::string storage_key = base::NumberToString(storage_key_int);
     std::string encrypted_serialized_metadata = s.ColumnString(1);
     std::string decrypted_serialized_metadata;
-    if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
-                                &decrypted_serialized_metadata)) {
+    if (!OSCrypt::GetInstance()->DecryptString(
+            encrypted_serialized_metadata, &decrypted_serialized_metadata)) {
       DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
                        "sync_pb::EntityMetadata.";
       return nullptr;

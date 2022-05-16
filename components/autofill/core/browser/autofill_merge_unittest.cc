@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "testing/data_driven_testing/data_driven_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -195,8 +196,6 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   // testing::Test:
   void SetUp() override;
 
-  void TearDown() override;
-
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
@@ -214,6 +213,7 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
  private:
   std::map<std::string, ServerFieldType> string_to_field_type_map_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 AutofillMergeTest::AutofillMergeTest()
@@ -231,15 +231,10 @@ AutofillMergeTest::AutofillMergeTest()
 AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
-  test::DisableSystemServices(nullptr);
   personal_data_.set_auto_accept_address_imports_for_testing(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_,
       /*payments::PaymentsClient=*/nullptr, &personal_data_, "en");
-}
-
-void AutofillMergeTest::TearDown() {
-  test::ReenableSystemServices();
 }
 
 void AutofillMergeTest::GenerateResults(const std::string& input,

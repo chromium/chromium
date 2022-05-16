@@ -30,7 +30,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -791,15 +790,6 @@ void SetCreditCardInfo(CreditCard* credit_card,
   check_and_set(credit_card, CREDIT_CARD_EXP_MONTH, expiration_month);
   check_and_set(credit_card, CREDIT_CARD_EXP_4_DIGIT_YEAR, expiration_year);
   credit_card->set_billing_address_id(billing_address_id);
-}
-
-void DisableSystemServices(PrefService* prefs) {
-  // Use a mock Keychain rather than the OS one to store credit card data.
-  OSCryptMocker::SetUp();
-}
-
-void ReenableSystemServices() {
-  OSCryptMocker::TearDown();
 }
 
 void SetServerCreditCards(AutofillTable* table,

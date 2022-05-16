@@ -26,12 +26,7 @@ class NigoriStorageImplTest : public testing::Test {
   NigoriStorageImplTest() = default;
   ~NigoriStorageImplTest() override = default;
 
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    OSCryptMocker::SetUp();
-  }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   base::FilePath GetFilePath() {
     return temp_dir_.GetPath().Append(
@@ -40,6 +35,7 @@ class NigoriStorageImplTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(NigoriStorageImplTest, ShouldBeAbleToRestoreAfterWrite) {

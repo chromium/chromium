@@ -436,7 +436,6 @@ class FormDataImporterTestBase {
 
     autofill_client_ = std::make_unique<TestAutofillClient>();
 
-    test::DisableSystemServices(prefs_.get());
     ResetPersonalDataManager(USER_MODE_NORMAL);
 
     form_data_importer_ =
@@ -622,6 +621,7 @@ class FormDataImporterTestBase {
   std::unique_ptr<PersonalDataManager> personal_data_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  OSCryptMocker os_crypt_mocker_;
 };
 
 // TODO(crbug.com/1103421): Clean legacy implementation once structured names

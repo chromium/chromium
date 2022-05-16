@@ -52,14 +52,10 @@ class InsecureCredentialsTableTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    OSCryptMocker::SetUp();
     ReloadDatabase();
   }
 
-  void TearDown() override {
-    login_db_.reset();
-    OSCryptMocker::TearDown();
-  }
+  void TearDown() override { login_db_.reset(); }
 
   void ReloadDatabase() {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
@@ -92,6 +88,7 @@ class InsecureCredentialsTableTest : public testing::Test {
                                 base::Time::FromTimeT(1), InsecureType::kLeaked,
                                 IsMuted(false)};
   PasswordForm test_form_ = TestForm();
+  OSCryptMocker os_crypt_mocker_;
 };
 
 TEST_F(InsecureCredentialsTableTest, Reload) {

@@ -30,7 +30,8 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   }
 
   std::string encrypted_data;
-  if (!OSCrypt::EncryptString(serialized_data, &encrypted_data)) {
+  if (!OSCrypt::GetInstance()->EncryptString(serialized_data,
+                                             &encrypted_data)) {
     DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
     return;
   }
@@ -53,7 +54,8 @@ absl::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   }
 
   std::string serialized_data;
-  if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
+  if (!OSCrypt::GetInstance()->DecryptString(encrypted_data,
+                                             &serialized_data)) {
     DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
     return absl::nullopt;
   }
