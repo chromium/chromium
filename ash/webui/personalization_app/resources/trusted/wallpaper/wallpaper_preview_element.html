@@ -34,7 +34,7 @@
     margin-inline-end: -18px;
   }
 
-  #imageContainer, 
+  #imageContainer,
   #imagePlaceholder {
     grid-area: image;
     justify-self: center;
@@ -58,7 +58,7 @@
 </style>
 <div class="preview-container" id="container">
   <div id="wallpaperLabel">
-    <p>$i18n{wallpaperLabel}</p>
+    <p on-click="onClickWallpaper_" class="clickable">$i18n{wallpaperLabel}</p>
     <cr-icon-button id="wallpaperButton" iron-icon="cr:chevron-right"
         role="button" on-click="onClickWallpaper_"
         aria-label="$i18n{ariaLabelChangeWallpaper}">

@@ -1,4 +1,4 @@
-<style include="cros-button-style">
+<style include="common-style cros-button-style">
   #container {
     display: grid;
     grid-template-areas:
@@ -53,7 +53,7 @@
     <template is="dom-if" if="[[isAmbientModeAllowed_()]]">
       <ambient-preview clickable="[[clickable_]]" main-page>
         <div id="ambientLabel">
-          <p>$i18n{screensaverLabel}</p>
+          <p on-click="onClickAmbientSubpageLink_" class="clickable">$i18n{screensaverLabel}</p>
           <cr-icon-button id="ambientSubpageLink"
                 iron-icon="cr:chevron-right"
                 on-click="onClickAmbientSubpageLink_"
