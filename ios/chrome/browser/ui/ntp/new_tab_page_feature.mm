@@ -26,6 +26,9 @@ const base::Feature kEnableDiscoverFeedStaticResourceServing{
     "EnableDiscoverFeedStaticResourceServing",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableDiscoverFeedTopSyncPromo{
+    "EnableDiscoverFeedTopSyncPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
     "DiscoverFeedSRSReconstructedTemplatesEnabled";
 
@@ -34,6 +37,10 @@ const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
 
 const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
+const char kDiscoverFeedTopSyncPromoStyleParam[] = "FeedTopPromoStyle";
+const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[] = "fullWithTitle";
+const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
@@ -49,4 +56,8 @@ bool IsDiscoverFeedShorterCacheEnabled() {
 
 bool IsNTPViewHierarchyRepairEnabled() {
   return base::FeatureList::IsEnabled(kNTPViewHierarchyRepair);
+}
+
+bool IsDiscoverFeedTopSyncPromoEnabled() {
+  return base::FeatureList::IsEnabled(kEnableDiscoverFeedTopSyncPromo);
 }

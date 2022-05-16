@@ -231,6 +231,18 @@ const FeatureEntry::FeatureVariation
          std::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
 };
 
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoFullWithTitle[] = {
+    {kDiscoverFeedTopSyncPromoStyleParam,
+     kDiscoverFeedTopSyncPromoStyleFullWithTitle}};
+const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompact[] = {
+    {kDiscoverFeedTopSyncPromoStyleParam,
+     kDiscoverFeedTopSyncPromoStyleCompact}};
+const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
+    {"Full with title", kDiscoverFeedTopSyncPromoFullWithTitle,
+     std::size(kDiscoverFeedTopSyncPromoFullWithTitle), nullptr},
+    {"Compact", kDiscoverFeedTopSyncPromoCompact,
+     std::size(kDiscoverFeedTopSyncPromoCompact), nullptr}};
+
 const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion1[] = {
     {kIOSOmniboxUpdatedPopupUIVariationName,
      kIOSOmniboxUpdatedPopupUIVariation1}};
@@ -699,6 +711,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableDiscoverFeedDiscoFeedEndpoint)},
+    {"enable-discover-feed-top-sync-promo",
+     flag_descriptions::kEnableDiscoverFeedTopSyncPromoName,
+     flag_descriptions::kEnableDiscoverFeedTopSyncPromoDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
+                                    kDiscoverFeedTopSyncPromoVariations,
+                                    "EnableDiscoverFeedTopSyncPromo")},
     {"enable-fre-default-browser-screen-testing",
      flag_descriptions::kEnableFREDefaultBrowserScreenTestingName,
      flag_descriptions::kEnableFREDefaultBrowserScreenTestingDescription,

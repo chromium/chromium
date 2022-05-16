@@ -155,6 +155,11 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDiscoverFeedInNtpName[];
 extern const char kDiscoverFeedInNtpDescription[];
 
+// Title and description for the flag to enable the sync promotion on top of the
+// discover feed.
+extern const char kEnableDiscoverFeedTopSyncPromoName[];
+extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
+
 // Title and description for the flag to enable DisplaySyncErrors refactored
 // code.
 extern const char kDisplaySyncErrorsRefactorName[];

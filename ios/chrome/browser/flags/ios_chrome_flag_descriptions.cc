@@ -178,6 +178,12 @@ const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
 
+const char kEnableDiscoverFeedTopSyncPromoName[] =
+    "Enable the sync promo on top of the feed.";
+const char kEnableDiscoverFeedTopSyncPromoDescription[] =
+    "When enabled, a sync promotion will be presented to eligible users on top "
+    "of the feed cards.";
+
 const char kDisplaySyncErrorsRefactorName[] =
     "Enable Display Sync Errors refactored code";
 const char kDisplaySyncErrorsRefactorDescription[] =

@@ -23,6 +23,9 @@ extern const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint;
 // Feature flag to enable static resource serving for the Discover feed.
 extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
 
+// Feature flag to enable the sync promo on top of the discover feed.
+extern const base::Feature kEnableDiscoverFeedTopSyncPromo;
+
 // A parameter to indicate whether Reconstructed Templates is enabled for static
 // resource serving.
 extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
@@ -30,6 +33,15 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 // A parameter to indicate whether Preload Templates is enabled for static
 // resource serving.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
+
+// A parameter to indicate the style used for the discover feed top promo.
+extern const char kDiscoverFeedTopSyncPromoStyleParam[];
+
+// A parameter value used for displaying the full with title promo style.
+extern const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[];
+
+// A parameter value used for displaying the compact promo style.
+extern const char kDiscoverFeedTopSyncPromoStyleCompact[];
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
@@ -47,5 +59,8 @@ bool IsDiscoverFeedShorterCacheEnabled();
 
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
+
+// Whether the Discover feed top sync promotion is enabled.
+bool IsDiscoverFeedTopSyncPromoEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

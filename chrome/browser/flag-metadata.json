@@ -2007,6 +2007,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-discover-feed-top-sync-promo",
+    "owners": [ "mrefaat", "sczs"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-dns-proxy",
     "owners": [ "garrick", "jasongustaman", "cros-networking@google.com" ],
     "expiry_milestone": 104
