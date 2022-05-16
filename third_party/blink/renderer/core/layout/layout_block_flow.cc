@@ -2858,10 +2858,6 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
   if (ChildrenInline()) {
     if (child_is_block_level) {
-      if (GetDisplayLockContext() && IsShapingDeferred()) {
-        GetDisplayLockContext()->SetRequestedState(
-            EContentVisibility::kVisible);
-      }
       // Wrap the inline content in anonymous blocks, to allow for the new block
       // child to be inserted.
       MakeChildrenNonInline(before_child);
@@ -3319,6 +3315,10 @@ static void GetInlineRun(LayoutObject* start,
 
 void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   NOT_DESTROYED();
+
+  if (GetDisplayLockContext() && IsShapingDeferred())
+    GetDisplayLockContext()->SetRequestedState(EContentVisibility::kVisible);
+
   // makeChildrenNonInline takes a block whose children are *all* inline and it
   // makes sure that inline children are coalesced under anonymous blocks.
   // If |insertionPoint| is defined, then it represents the insertion point for

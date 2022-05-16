@@ -350,6 +350,20 @@ TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfc) {
   EXPECT_FALSE(IsLocked("target"));
 }
 
+// crbug.com/1324458
+TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfcByChildPositionChange) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<li id="target">\n<div id="abs" style="position:absolute"></div></li>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  GetElementById("abs")->setAttribute("style", "position:static");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
 TEST_F(DeferredShapingTest, ScrollIntoView) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <div><p id="prior">IFC</p></div>
