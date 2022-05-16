@@ -7,8 +7,22 @@ var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
 
-function getUniqueSubEventName(eventName) {
+function getGloballyUniqueSubEventName(eventName) {
   return eventName + '/' + idGeneratorNatives.GetNextId();
+}
+
+function getScopedUniqueSubEventName(eventName) {
+  return eventName + '/' + idGeneratorNatives.GetNextScopedId();
+}
+
+// Sub-event names for webviews must use a global ID since there may be
+// multiple webviews in an app, each with its own ScriptContext. See
+// crbug.com/1309302.
+function getUniqueSubEventName(eventName, forWebview) {
+  if (forWebview)
+    return getGloballyUniqueSubEventName(eventName);
+
+  return getScopedUniqueSubEventName(eventName);
 }
 
 // WebRequestEventImpl object. This is used for special webRequest events
@@ -56,7 +70,8 @@ WebRequestEventImpl.prototype.addListener =
   // NOTE(benjhayden) New APIs should not use this subEventName trick! It does
   // not play well with event pages. See downloads.onDeterminingFilename and
   // ExtensionDownloadsEventRouter for an alternative approach.
-  var subEventName = getUniqueSubEventName(this.eventName);
+  var subEventName = getUniqueSubEventName(this.eventName,
+                                           this.webViewInstanceId != 0);
   // Note: this could fail to validate, in which case we would not add the
   // subEvent listener.
   bindingUtil.validateCustomSignature(this.eventName,
