@@ -1162,9 +1162,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kArcAppInstallEventLoggingEnabled,
     prefs::kArcAppInstallEventLoggingEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kEnableSyncConsent,
-    prefs::kEnableSyncConsent,
-    base::Value::Type::BOOLEAN },
   { key::kNetworkFileSharesAllowed,
     prefs::kNetworkFileSharesAllowed,
     base::Value::Type::BOOLEAN },
@@ -1553,6 +1550,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kInsightsExtensionEnabled,
     prefs::kInsightsExtensionEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kEnableSyncConsent,
+    prefs::kEnableSyncConsent,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 

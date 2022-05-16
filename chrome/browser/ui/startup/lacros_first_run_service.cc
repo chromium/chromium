@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -138,8 +139,10 @@ bool IsSyncRequired(Profile* profile) {
   if (g_sync_required_for_testing.has_value())
     return g_sync_required_for_testing.value();
 
-  // TODO(crbug.com/1324569): Also support disabled sync consent and ephemeral
-  // users.
+  if (!profile->GetPrefs()->GetBoolean(prefs::kEnableSyncConsent))
+    return true;
+
+  // TODO(crbug.com/1324569): Also support ephemeral users.
 
   return false;
 }

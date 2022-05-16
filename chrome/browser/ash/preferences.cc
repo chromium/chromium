@@ -488,9 +488,6 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kTextToSpeechVolume, blink::mojom::kSpeechSynthesisDefaultVolume,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  // By default showing Sync Consent is set to true. It can changed by policy.
-  registry->RegisterBooleanPref(::prefs::kEnableSyncConsent, true);
-
   registry->RegisterBooleanPref(prefs::kSyncOobeCompleted, false);
 
   registry->RegisterBooleanPref(::prefs::kTPMFirmwareUpdateCleanupDismissed,

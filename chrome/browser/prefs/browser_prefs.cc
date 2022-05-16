@@ -1395,6 +1395,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
   policy::PolicyCertService::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(prefs::kInsightsExtensionEnabled, false);
+  // By default showing Sync Consent is set to true. It can changed by policy.
+  registry->RegisterBooleanPref(prefs::kEnableSyncConsent, true);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)

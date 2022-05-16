@@ -138,3 +138,22 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
+
+IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
+                       TryMarkFirstRunAlreadyFinished_SyncConsentDisabled) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  Profile* profile = browser()->profile();
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+
+  profile->GetPrefs()->SetBoolean(prefs::kEnableSyncConsent, false);
+
+  base::RunLoop run_loop;
+  fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
+      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+}

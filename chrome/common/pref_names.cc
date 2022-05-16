@@ -488,6 +488,10 @@ const char kPrintingAPIExtensionsAllowlist[] =
 // A boolean specifying whether the insights extension is enabled. If set to
 // true, the CCaaS Chrome component extension will be installed.
 const char kInsightsExtensionEnabled[] = "insights_extension_enabled";
+
+// Boolean controlling whether showing Sync Consent during sign-in is enabled.
+// Controlled by policy.
+const char kEnableSyncConsent[] = "sync_consent.enabled";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -951,10 +955,6 @@ const char kUsageTimeLimit[] = "screen_time.limit";
 
 // Last state of the screen time limit.
 const char kScreenTimeLastState[] = "screen_time.last_state";
-
-// Boolean controlling whether showing Sync Consent during sign-in is enabled.
-// Controlled by policy.
-const char kEnableSyncConsent[] = "sync_consent.enabled";
 
 // Boolean pref indicating whether a user is allowed to use the Network File
 // Shares for Chrome OS feature.
