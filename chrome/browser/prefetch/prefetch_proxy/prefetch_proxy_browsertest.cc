@@ -556,7 +556,8 @@ class PrefetchProxyBrowserTest
     cmd->AppendSwitchASCII("isolated-prerender-tunnel-proxy",
                            GetProxyURL().spec());
     cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                           "SpeculationRulesPrefetchProxy");
+                           "SpeculationRulesPrefetchProxy,"
+                           "SpeculationRulesPrefetchWithSubresources");
   }
 
   content::WebContents* GetWebContents() const {

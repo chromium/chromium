@@ -282,7 +282,7 @@ class NoStatePrefetchBrowserTest
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "SpeculationRulesPrefetchProxy");
+                                    "SpeculationRulesPrefetchWithSubresources");
   }
 
   void SetUpOnMainThread() override {

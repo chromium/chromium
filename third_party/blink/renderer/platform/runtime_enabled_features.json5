@@ -2191,7 +2191,7 @@
     // was enabled.
     {
       name: "SpeculationRules",
-      implied_by: ["SpeculationRulesPrefetchProxy", "Prerender2"],
+      implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
     },
     // Origin trial to enable Speculation Rules for access to the prefetch proxy.
@@ -2199,6 +2199,9 @@
     {
       name: "SpeculationRulesPrefetchProxy",
       origin_trial_feature_name: "SpeculationRulesPrefetch",
+    },
+    {
+      "name": "SpeculationRulesPrefetchWithSubresources",
     },
     {
       name: "SrcsetMaxDensity",
