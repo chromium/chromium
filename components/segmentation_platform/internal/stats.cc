@@ -36,6 +36,8 @@ std::string OptimizationTargetToHistogramVariant(
     case OptimizationTarget::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
       return "ChromeLowUserEngagement";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
+      return "FeedUserSegment";
     default:
       return "Other";
   }
@@ -66,7 +68,8 @@ enum class SegmentationModel {
   kChromeStartAndroid = 11,
   kQueryTiles = 12,
   kChromeLowUserEngagement = 16,
-  kMaxValue = kChromeLowUserEngagement,
+  kFeedUserSegment = 17,
+  kMaxValue = kFeedUserSegment,
 };
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
@@ -90,7 +93,8 @@ bool IsBooleanSegment(const std::string& segmentation_key) {
   // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
   return segmentation_key == kChromeStartAndroidSegmentationKey ||
          segmentation_key == kQueryTilesSegmentationKey ||
-         segmentation_key == kChromeLowUserEngagementSegmentationKey;
+         segmentation_key == kChromeLowUserEngagementSegmentationKey ||
+         segmentation_key == kFeedUserSegmentationKey;
 }
 
 BooleanSegmentSwitch GetBooleanSegmentSwitch(
@@ -188,6 +192,8 @@ SegmentationModel OptimizationTargetToSegmentationModel(
     case OptimizationTarget::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
       return SegmentationModel::kChromeLowUserEngagement;
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
+      return SegmentationModel::kFeedUserSegment;
     default:
       return SegmentationModel::kUnknown;
   }
@@ -256,6 +262,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return "QueryTiles";
   } else if (segmentation_key == kChromeLowUserEngagementSegmentationKey) {
     return "ChromeLowUserEngagement";
+  } else if (segmentation_key == kFeedUserSegmentationKey) {
+    return "FeedUserSegment";
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -301,6 +309,7 @@ void RecordModelScore(OptimizationTarget segment_id, float score) {
     case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
     case OptimizationTarget::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
       // Assumes all models return score between 0 and 1. This is true for all
       // the models we have currently.
       base::UmaHistogramPercentage(

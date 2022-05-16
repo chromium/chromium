@@ -275,6 +275,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
   // Target for segmentation: Determine users with low engagement with chrome.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;
+  // Target for segmentation: Determine users who prefer to use Feed.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER = 17;
 }
 
 // The model engine versions that can be used to do model inference.
