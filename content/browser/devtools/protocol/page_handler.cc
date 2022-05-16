@@ -454,31 +454,6 @@ static network::mojom::ReferrerPolicy ParsePolicyFromString(
   return network::mojom::ReferrerPolicy::kDefault;
 }
 
-namespace {
-
-void DispatchNavigateCallback(
-    NavigationRequest* request,
-    std::unique_ptr<PageHandler::NavigateCallback> callback) {
-  std::string frame_id =
-      request->frame_tree_node()->devtools_frame_token().ToString();
-  // A new NavigationRequest may have been created before |request|
-  // started, in which case it is not marked as aborted. We report this as an
-  // abort to DevTools anyway.
-  if (!request->IsNavigationStarted()) {
-    callback->sendSuccess(frame_id, Maybe<std::string>(),
-                          net::ErrorToString(net::ERR_ABORTED));
-    return;
-  }
-  Maybe<std::string> opt_error;
-  if (request->GetNetErrorCode() != net::OK)
-    opt_error = net::ErrorToString(request->GetNetErrorCode());
-  callback->sendSuccess(frame_id,
-                        request->devtools_navigation_token().ToString(),
-                        std::move(opt_error));
-}
-
-}  // namespace
-
 void PageHandler::Navigate(const std::string& url,
                            Maybe<std::string> referrer,
                            Maybe<std::string> maybe_transition_type,
@@ -556,40 +531,44 @@ void PageHandler::Navigate(const std::string& url,
   // Handler may be destroyed while navigating if the session
   // gets disconnected as a result of access checks.
   base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();
-  base::WeakPtr<NavigationHandle> navigation_handle =
-      frame_tree_node->navigator().controller().LoadURLWithParams(params);
-  // TODO(caseq): should we still dispatch callback here?
+  frame_tree_node->navigator().controller().LoadURLWithParams(params);
   if (!weak_self)
     return;
-  if (!navigation_handle) {
+  if (frame_tree_node->navigation_request()) {
+    navigate_callbacks_[frame_tree_node->navigation_request()
+                            ->devtools_navigation_token()] =
+        std::move(callback);
+  } else {
     callback->sendSuccess(out_frame_id, Maybe<std::string>(),
-                          net::ErrorToString(net::ERR_ABORTED));
-    return;
+                          Maybe<std::string>());
   }
-  auto* navigation_request =
-      static_cast<NavigationRequest*>(navigation_handle.get());
-  if (frame_tree_node->navigation_request() != navigation_request) {
-    // The ownership of the navigation request should have been transferred to
-    // RFH at this point, so we won't get `NavigationReset` for it any more --
-    // fire the callback now!
-    DispatchNavigateCallback(navigation_request, std::move(callback));
-    return;
-  }
-  // At this point, we expect the callback to get dispatched upon
-  // `NavigationReset()` is called when `NavigationRequest` is taken from
-  // `FrameTreeNode`.
-  const base::UnguessableToken& navigation_token =
-      navigation_request->devtools_navigation_token();
-  navigate_callbacks_[navigation_token] = std::move(callback);
 }
 
 void PageHandler::NavigationReset(NavigationRequest* navigation_request) {
-  auto it =
+  auto navigate_callback =
       navigate_callbacks_.find(navigation_request->devtools_navigation_token());
-  if (it == navigate_callbacks_.end())
+  if (navigate_callback == navigate_callbacks_.end())
     return;
-  DispatchNavigateCallback(navigation_request, std::move(it->second));
-  navigate_callbacks_.erase(it);
+  std::string frame_id =
+      navigation_request->frame_tree_node()->devtools_frame_token().ToString();
+  // A new NavigationRequest may have been created before |navigation_request|
+  // started, in which case it is not marked as aborted. We report this as an
+  // abort to DevTools anyway.
+  if (!navigation_request->IsNavigationStarted()) {
+    navigate_callback->second->sendSuccess(
+        frame_id, Maybe<std::string>(),
+        Maybe<std::string>(net::ErrorToString(net::ERR_ABORTED)));
+  } else {
+    bool success = navigation_request->GetNetErrorCode() == net::OK;
+    std::string error_string =
+        net::ErrorToString(navigation_request->GetNetErrorCode());
+    navigate_callback->second->sendSuccess(
+        frame_id,
+        Maybe<std::string>(
+            navigation_request->devtools_navigation_token().ToString()),
+        success ? Maybe<std::string>() : Maybe<std::string>(error_string));
+  }
+  navigate_callbacks_.erase(navigate_callback);
 }
 
 void PageHandler::DownloadWillBegin(FrameTreeNode* ftn,
