@@ -73,7 +73,7 @@ public class ClipDrawableProgressBar extends ImageView {
         mDesiredVisibility = getVisibility();
 
         int foregroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
-        mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color);
+        mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
 
         mForegroundDrawable = new ColorDrawable(foregroundColor);
         setImageDrawable(

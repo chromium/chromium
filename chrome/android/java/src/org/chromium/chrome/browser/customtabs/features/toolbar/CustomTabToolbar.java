@@ -839,7 +839,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             final int backgroundColor = getBackground().getColor();
             if (ThemeUtils.isUsingDefaultToolbarColor(
                         context, /*isIncognito=*/false, backgroundColor)) {
-                progressBar.setBackgroundColor(context.getColor(R.color.progress_bar_bg_color));
+                progressBar.setBackgroundColor(
+                        context.getColor(R.color.progress_bar_bg_color_list));
                 progressBar.setForegroundColor(
                         SemanticColorUtils.getProgressBarForeground(context));
             } else {
