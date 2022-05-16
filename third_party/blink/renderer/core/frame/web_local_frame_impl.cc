@@ -1704,6 +1704,11 @@ void WebLocalFrameImpl::DispatchBeforePrintEvent(
 
   GetFrame()->GetDocument()->SetPrinting(Document::kBeforePrinting);
   DispatchPrintEventRecursively(event_type_names::kBeforeprint);
+  // In case the printing or print preview aborts for any reason, it is
+  // important not to leave the document in the kBeforePrinting state.
+  // See: crbug.com/1309595
+  if (GetFrame())
+    GetFrame()->GetDocument()->SetPrinting(Document::kNotPrinting);
 }
 
 void WebLocalFrameImpl::DispatchAfterPrintEvent() {
