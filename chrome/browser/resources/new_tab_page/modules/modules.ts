@@ -261,7 +261,12 @@ export class ModulesElement extends PolymerElement {
             'disable-module', e => this.onDisableModule_(e));
         moduleWrapper.addEventListener('detect-impression', () => {
           if (!this.moduleImpressionDetected_) {
+            // Executed the first time a module impression is detected.
             NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
+            if (this.modulesFreShown) {
+              chrome.metricsPrivate.recordBoolean(
+                  `NewTabPage.Modules.FreImpression`, this.modulesFreShown);
+            }
           }
           this.moduleImpressionDetected_ = true;
         });
@@ -436,16 +441,9 @@ export class ModulesElement extends PolymerElement {
         this.modulesShownToUser;
   }
 
-  private async onModulesFreShownChange_() {
+  private onModulesFreShownChange_() {
     chrome.metricsPrivate.recordBoolean(
         `NewTabPage.Modules.FreLoaded`, this.modulesFreShown);
-    // The FRE only shows when modules are shown to users so we log a FRE
-    // impression whenever a module impression is detected and the FRE is set to
-    // show.
-    if (this.moduleImpressionDetected_) {
-      chrome.metricsPrivate.recordBoolean(
-          `NewTabPage.Modules.FreImpression`, this.modulesFreShown);
-    }
   }
 
   private onCustomizeModuleFre_() {
