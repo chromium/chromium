@@ -141,6 +141,18 @@ System.load(BundleUtils.getNativeLibraryPath("foo", "mysplitsname"));
 
 [b/171269960]: https://issuetracker.google.com/171269960
 
+### System.loadLibrary() Broken for Libraries in Splits on System Image
+
+Also tracked by [b/171269960], Android's linker config (`ld.config.txt`) sets
+`permitted_paths="/data:/mnt/expand"`, and then adds the app's `.apk` to an
+allowlist. This allowlist does not contain apk splits, so library loading is
+blocked by `permitted_paths` when the splits live on the `/system` partition.
+
+**Work-around:**
+
+Use compressed system image stubs (`.apk.gz` and `-Stub.apk`) so that Chrome is
+extracted to the `/data` partition upon boot.
+
 ### Too Many Splits Break App Zygote
 
 Starting with Android Q / TriChrome, Chrome uses an [Application Zygote]. As
