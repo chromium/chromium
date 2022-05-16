@@ -29741,6 +29741,15 @@ should be able to be added at any place in this file.
   <description>The start surface overview is shown.</description>
 </action>
 
+<action name="StartSurface.ShownFromBackNavigation">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>andrewheard@chromium.org</owner>
+  <description>
+    The Start surface is showing due to the user taps the back button.
+  </description>
+</action>
+
 <action name="StartSurface.SinglePane">
   <obsolete>
     Split in StartSurface.SinglePane.Home and
@@ -33475,6 +33484,13 @@ should be able to be added at any place in this file.
   <suffix name="Search" label="User started searching from the top menu."/>
   <suffix name="Settings" label="User entered settings from the top menu."/>
   <affected-action name="Android.DownloadManager.Menu.Action"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="FromTab" label="The back navigation is initiated from a Tab."/>
+  <suffix name="FromTabSwitcher"
+      label="The back navigation is initiated from the Tab switcher."/>
+  <affected-action name="StartSurface.ShownFromBackNavigation"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

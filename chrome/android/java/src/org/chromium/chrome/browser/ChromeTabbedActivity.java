@@ -2217,6 +2217,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // current tab and previous overview mode. Once in the Start surface, it will close
                 // Chrome if back button is tapped again.
                 showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
+                ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
             } else {
                 // Otherwise, clicking the back button should go back to the previous overview mode.
                 showOverview(StartSurfaceState.SHOWING_PREVIOUS);
