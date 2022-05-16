@@ -38,6 +38,7 @@ static_library("language_detection") {
     ":chinese_script_classifier",
     "//base",
     "//components/language/core/common",
+    "//components/optimization_guide/core:features",
     "//components/translate/core/common",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/flatbuffers",
