@@ -113,6 +113,11 @@ void DlpContentManagerAsh::OnWindowDestroying(aura::Window* window) {
   MaybeChangeOnScreenRestrictions();
 }
 
+void DlpContentManagerAsh::OnWindowTitleChanged(aura::Window* window) {
+  CheckRunningVideoCapture();
+  CheckRunningScreenShares();
+}
+
 DlpContentRestrictionSet DlpContentManagerAsh::GetOnScreenPresentRestrictions()
     const {
   return on_screen_restrictions_;

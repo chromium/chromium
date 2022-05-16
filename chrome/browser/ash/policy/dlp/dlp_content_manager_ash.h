@@ -52,6 +52,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // DlpWindowObserver::Delegate overrides:
   void OnWindowOcclusionChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowTitleChanged(aura::Window* window) override;
 
   // Returns which restrictions are applied to the WebContents which are
   // currently visible.

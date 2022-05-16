@@ -24,19 +24,21 @@ class DlpWindowObserver : public aura::WindowObserver {
     virtual void OnWindowOcclusionChanged(aura::Window* window) = 0;
 
     virtual void OnWindowDestroying(aura::Window* window) = 0;
+
+    virtual void OnWindowTitleChanged(aura::Window* window) = 0;
   };
 
   DlpWindowObserver(aura::Window* window, Delegate* delegate);
+  DlpWindowObserver(const DlpWindowObserver&) = delete;
+  DlpWindowObserver& operator=(const DlpWindowObserver&) = delete;
   ~DlpWindowObserver() override;
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowOcclusionChanged(aura::Window* window) override;
+  void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
-  DlpWindowObserver(const DlpWindowObserver&) = delete;
-  DlpWindowObserver& operator=(const DlpWindowObserver&) = delete;
-
   aura::Window* window_;
   Delegate* delegate_;
 };

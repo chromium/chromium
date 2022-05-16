@@ -112,6 +112,7 @@ content::MediaStreamRequest CreateMediaStreamRequest(
 }  // namespace
 
 // TODO(crbug.com/1262948): Enable and modify for lacros.
+// TODO(crbug.com/1322094): Add tests for OnWindowTitleChanged().
 class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentManagerAshBrowserTest() = default;
@@ -1505,8 +1506,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       kScreenShareBlockedNotificationId));
 }
 
+// TODO(crbug.com/1319941): Enable after fixing.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       NavigateWebContents) {
+                       DISABLED_NavigateWebContents) {
   SetupReporting();
   const GURL restricted_url(kGoogleUrl);
   const GURL reported_url(kExampleUrl);

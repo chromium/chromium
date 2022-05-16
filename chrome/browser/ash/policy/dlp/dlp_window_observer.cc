@@ -31,4 +31,9 @@ void DlpWindowObserver::OnWindowOcclusionChanged(aura::Window* window) {
   delegate_->OnWindowOcclusionChanged(window_);
 }
 
+void DlpWindowObserver::OnWindowTitleChanged(aura::Window* window) {
+  DCHECK_EQ(window_, window);
+  delegate_->OnWindowTitleChanged(window_);
+}
+
 }  // namespace policy
