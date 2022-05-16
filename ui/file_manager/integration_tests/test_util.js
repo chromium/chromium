@@ -1071,6 +1071,17 @@ export const ENTRIES = {
     typeText: 'Zip archive'
   }),
 
+  zipExtArchive: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'tera.zip',
+    targetPath: 'tera.zip',
+    mimeType: 'application/x-zip',
+    lastModifiedTime: 'Apr 6, 2022, 1:00 AM',
+    nameText: 'tera.zip',
+    sizeText: '250 bytes',
+    typeText: 'Zip archive'
+  }),
+
   debPackage: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'package.deb',
