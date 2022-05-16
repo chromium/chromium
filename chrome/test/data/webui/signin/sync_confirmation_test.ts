@@ -15,6 +15,15 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 [true, false].forEach(isNewDesignEnabled => {
   const suiteDesignSuffix = isNewDesignEnabled ? 'NewDesign' : 'OldDesign';
 
+  // Sync forced comes with different strings but these come from the UI class
+  // so loadTimeData.overrideValues() does not help here.s
+  const STANDARD_TITLE = 'Turn on sync?';
+  const STANDARD_CONSENT_DESCRIPTION_TEXT = [
+    STANDARD_TITLE,
+    'Sync your bookmarks, passwords, history, and more on all your devices',
+    'Google may use your history to personalize Search and other Google ' +
+        'services',
+  ];
   const STANDARD_CONSENT_CONFIRMATION = 'Yes, I\'m in';
 
   [true, false].forEach(syncForcedEnabled => {
@@ -60,6 +69,11 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
 
           // Tests that no DCHECKS are thrown during initialization of the UI.
           test('LoadPage', function() {
+            assertEquals(
+                STANDARD_TITLE,
+                app.shadowRoot!.querySelector('#syncConfirmationHeading')!
+                    .textContent!.trim());
+
             const cancelButton =
                 app.shadowRoot!.querySelector(
                     isNewDesignEnabled ? '#notNowButton' : '#cancelButton') as
@@ -126,7 +140,11 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
         // Confirm button.
         test('recordConsentOnConfirm', async function() {
           app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
-          const [_, confirmation] = await browserProxy.whenCalled('confirm');
+          const [description, confirmation] =
+              await browserProxy.whenCalled('confirm');
+          assertEquals(
+              JSON.stringify(STANDARD_CONSENT_DESCRIPTION_TEXT),
+              JSON.stringify(description));
           assertEquals(STANDARD_CONSENT_CONFIRMATION, confirmation);
         });
 
@@ -135,8 +153,11 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
         test('recordConsentOnSettingsLink', async function() {
           app.shadowRoot!.querySelector<HTMLElement>(
                              '#settingsButton')!.click();
-          const [_, confirmation] =
+          const [description, confirmation] =
               await browserProxy.whenCalled('goToSettings');
+          assertEquals(
+              JSON.stringify(STANDARD_CONSENT_DESCRIPTION_TEXT),
+              JSON.stringify(description));
           // 'Sync settings' is recorded for new design but this is passed from
           // the UI class so overriding loadTimeData does not help here.
           assertEquals('Settings', confirmation);

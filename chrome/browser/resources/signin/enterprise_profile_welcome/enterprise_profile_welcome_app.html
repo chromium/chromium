@@ -5,7 +5,7 @@
     --banner-size: auto;
     --footer-margin: 40px;
     --content-container-margin-bottom: calc(48px + var(--footer-margin));
-    --content-container-margin-top: 72px;
+    --content-container-margin-top: 104px;
     --info-box-margin-inline: auto;
     --info-box-margin-top: 32px;
     --info-box-width: 514px;
@@ -42,6 +42,7 @@
   }
 
   #headerContainer {
+    background-color: var(--header-background-color);
     height: var(--banner-height);
     position: relative;
     width: 100%;
@@ -101,35 +102,29 @@
   }
 
   #contentContainer {
-    font-size: 14px;
-    line-height: 20px;
     margin-bottom: var(--content-container-margin-bottom);
     margin-inline: auto;
     margin-top: var(--content-container-margin-top);
     text-align: center;
-    width: 382px;
   }
 
   #contentContainer h2 {
-    font-size: 24px;
-    font-weight: 500;
-    line-height: 32px;
+    font-size: 1.85em;
+    font-weight: normal;
     margin-bottom: 8px;
   }
 
   .info-box {
     align-items: center;
-    bottom: 0;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
     color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
-    font-size: 11px;
-    line-height: 16px;
     margin-inline: var(--info-box-margin-inline);
     margin-top: var(--info-box-margin-top);
     padding-block: 12px;
     padding-inline-end: 18px;
-    position: absolute;
     width: var(--info-box-width);
   }
 
@@ -180,6 +175,7 @@
     }
 
     .info-box {
+      border-color: var(--google-grey-600);
       color: var(--google-grey-100);
     }
 
@@ -210,17 +206,17 @@
       [[subtitle_]]
     </p>
   </template>
-</div>
-<template is="dom-if" if="[[enterpriseInfo_]]">
-  <div class="info-box">
-    <div class="icon-container">
-      <iron-icon icon="cr:domain"></iron-icon>
+  <template is="dom-if" if="[[enterpriseInfo_]]">
+    <div class="info-box">
+      <div class="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+      <p id="enterpriseInfo" >
+        [[enterpriseInfo_]]
+      </p>
     </div>
-    <p id="enterpriseInfo" >
-      [[enterpriseInfo_]]
-    </p>
-  </div>
-</template>
+  </template>
+</div>
 <template is="dom-if" if="[[showLinkDataCheckbox_]]">
   <cr-checkbox id="linkData" checked="{{linkData_}}">
     <div>$i18n{linkDataText}</div>
