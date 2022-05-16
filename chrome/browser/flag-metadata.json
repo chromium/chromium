@@ -2382,8 +2382,8 @@
   },
   {
     "name": "enable-media-foundation-video-capture",
-    "owners": [ "agpalak", "guidou" ],
-    "expiry_milestone": 99
+    "owners": [ "agpalak", "herre" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-migrate-default-chrome-app-to-web-apps-gsuite",
