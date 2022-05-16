@@ -1445,7 +1445,7 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
 
           <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
-            The following accounts are available for this Chrome profile
+            Sign in to Chrome
           </message>
         </if>
         <if expr="not chromeos_lacros">
