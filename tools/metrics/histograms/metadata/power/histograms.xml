@@ -1168,6 +1168,14 @@ chromium-metrics-reviews@google.com.
     in which at least one WebView is visible on the screen as
     &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
     app is visible, including when in multi-window mode.
+
+    Note that the capacity counter can be implemented in different ways by
+    different devices/OEMs and its accuracy can vary (across devices and at
+    different times on the same device, also due to environmental factors like
+    device temperature or charge level).
+
+    We've found looking at the 99%ile-trimmed mean more useful than looking at
+    specific percentiles, especially when filtering for specific device models.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
@@ -1223,6 +1231,11 @@ chromium-metrics-reviews@google.com.
     in which at least one WebView is visible on the screen as
     &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
     app is visible, including when in multi-window mode.
+
+    Note that the capacity counter can be implemented in different ways by
+    different devices/OEMs and its accuracy can vary (across devices and at
+    different times on the same device, also due to environmental factors like
+    device temperature or charge level).
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
@@ -1255,6 +1268,11 @@ chromium-metrics-reviews@google.com.
     in which at least one WebView is visible on the screen as
     &quot;foreground&quot; time. For Chrome, it considers any time the Chrome
     app is visible, including when in multi-window mode.
+
+    Note that the capacity counter can be implemented in different ways by
+    different devices/OEMs and its accuracy can vary (across devices and at
+    different times on the same device, also due to environmental factors like
+    device temperature or charge level).
 
     For a histogram of daily per-user values, see the computed histogram
     Power.DailyForegroundBatteryDrain.
