@@ -298,9 +298,8 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
   original_url_ = gaia_gurl;
 
   if (credentials_mode != network::mojom::CredentialsMode::kOmit) {
-    DCHECK_EQ(GaiaUrls::GetInstance()->gaia_url(),
-              gaia_gurl.DeprecatedGetOriginAsURL())
-        << gaia_gurl;
+    CHECK(gaia::HasGaiaSchemeHostPort(gaia_gurl)) << gaia_gurl;
+
     url::Origin origin = GaiaUrls::GetInstance()->gaia_origin();
     resource_request->site_for_cookies =
         net::SiteForCookies::FromOrigin(origin);
