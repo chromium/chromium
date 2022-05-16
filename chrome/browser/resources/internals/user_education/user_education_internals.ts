@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerRemote} from '/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './user_education_internals.html.js';
+import {FeaturePromoDemoPageInfo, UserEducationInternalsPageHandler, UserEducationInternalsPageHandlerInterface} from './user_education_internals.mojom-webui.js';
+
 class UserEducationInternalsElement extends PolymerElement {
   static get is() {
     return 'user-education-internals';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -20,22 +21,25 @@ class UserEducationInternalsElement extends PolymerElement {
       /**
        * List of tutorials and feature_promos that can be started.
        * Each tutorial has a string identifier.
-       * @private {!Array<string>}
        */
       tutorials_: Array,
-      feature_promos_: Array,
-      feature_promo_error_message_: String,
+      featurePromos_: Array,
+      featurePromoErrorMessage_: String,
     };
   }
 
+  private tutorials_: string[];
+  private featurePromos_: FeaturePromoDemoPageInfo[];
+  private featurePromoErrorMessage_: string;
+
+  private handler_: UserEducationInternalsPageHandlerInterface;
+
   constructor() {
     super();
-    /** @private {UserEducationInternalsPageHandlerRemote} */
     this.handler_ = UserEducationInternalsPageHandler.getRemote();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.handler_.getTutorials().then(({tutorialIds}) => {
@@ -43,29 +47,21 @@ class UserEducationInternalsElement extends PolymerElement {
     });
 
     this.handler_.getFeaturePromos().then(({featurePromos}) => {
-      this.feature_promos_ = featurePromos;
+      this.featurePromos_ = featurePromos;
     });
   }
 
-  /**
-   * @param {!Object} e
-   * @private
-   */
-  startTutorial_(e) {
-    const id = /** @type {string} */ (e.model.item);
+  private startTutorial_(e: DomRepeatEvent<string>) {
+    const id = e.model.item;
     this.handler_.startTutorial(id);
   }
 
-  /**
-   * @param {!Object} e
-   * @private
-   */
-  ShowFeaturePromo_(e) {
-    const id = /** @type {string} */ (e.model.item.displayTitle);
-    this.feature_promo_error_message_ = '';
+  private showFeaturePromo_(e: DomRepeatEvent<FeaturePromoDemoPageInfo>) {
+    const id = e.model.item.displayTitle;
+    this.featurePromoErrorMessage_ = '';
 
     this.handler_.showFeaturePromo(id).then(({errorMessage}) => {
-      this.feature_promo_error_message_ = errorMessage;
+      this.featurePromoErrorMessage_ = errorMessage;
     });
   }
 }

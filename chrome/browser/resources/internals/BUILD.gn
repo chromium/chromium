@@ -14,14 +14,8 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   if (!is_android) {
-    deps = [
-      "user_education:build_grdp",
-      "user_education:build_mojo_grdp",
-    ]
-    grdp_files = [
-      "$target_gen_dir/user_education/resources.grdp",
-      "$target_gen_dir/user_education/mojo_resources.grdp",
-    ]
+    deps = [ "user_education:build_grdp" ]
+    grdp_files = [ "$target_gen_dir/user_education/resources.grdp" ]
   } else {
     deps = [
       "lens:build_grdp",
