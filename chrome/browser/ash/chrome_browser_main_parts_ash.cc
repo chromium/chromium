@@ -39,6 +39,7 @@
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
+#include "ash/webui/camera_app_ui/document_scanner_installer.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -640,6 +641,9 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
 
   // DBus is initialized in ChromeMainDelegate::PostEarlyInitialization().
   CHECK(DBusThreadManager::IsInitialized());
+
+  // Triggers the installation as earlier as possible.
+  ash::DocumentScannerInstaller::GetInstance()->TriggerInstall();
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
   // USE_REAL_DBUS clients may be undefined even if the device is using real

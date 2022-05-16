@@ -73,12 +73,18 @@ source_set("window_managemet") {
 
 source_set("document_scanning") {
   sources = [
+    "document_scanner_installer.cc",
+    "document_scanner_installer.h",
     "document_scanner_service_client.cc",
     "document_scanner_service_client.h",
   ]
 
+  public_deps = [ "//dbus" ]
+
   deps = [
     "//base",
+    "//chromeos/dbus/dlcservice",
+    "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/device_event_log",
