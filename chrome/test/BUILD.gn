@@ -3299,6 +3299,8 @@ if (!is_android) {
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
         deps += [ "//ash/services/multidevice_setup/public/cpp:prefs" ]
+      } else {
+        sources += [ "../browser/ui/views/profiles/profile_customization_bubble_view_browsertest.cc" ]
       }
       if (!is_chromeos) {
         sources += [
@@ -3306,7 +3308,6 @@ if (!is_android) {
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
-          "../browser/ui/views/profiles/profile_customization_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
           "../browser/ui/views/toolbar/outdated_upgrade_bubble_browsertest.cc",
