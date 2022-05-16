@@ -184,12 +184,13 @@ class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
 
 class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
  public:
-  void SetPlugin(PdfViewWebPlugin* web_plugin) {
+  void SetPlugin(base::StringPiece document_url, PdfViewWebPlugin* web_plugin) {
+    document_url_ = GURL(document_url);
     web_plugin_ = web_plugin;
 
     ON_CALL(*this, CompleteURL)
         .WillByDefault([this](const blink::WebString& partial_url) {
-          return GURL(web_plugin_->GetURL()).Resolve(partial_url.Utf8());
+          return document_url_.Resolve(partial_url.Utf8());
         });
     ON_CALL(*this, CreateAssociatedURLLoader).WillByDefault([]() {
       return std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
@@ -301,9 +302,9 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
   // Represents the frame widget's text input type.
   blink::WebTextInputType widget_text_input_type_;
 
+  GURL document_url_;
   raw_ptr<PdfViewWebPlugin> web_plugin_;
 
- private:
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
 };
 
@@ -317,7 +318,8 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
     void operator()(PdfViewWebPlugin* ptr) { ptr->Destroy(); }
   };
 
-  void SetUpPlugin(const blink::WebPluginParams& params) {
+  void SetUpPlugin(base::StringPiece document_url,
+                   const blink::WebPluginParams& params) {
     auto client = std::make_unique<NiceMock<FakePdfViewWebPluginClient>>();
     client_ptr_ = client.get();
 
@@ -326,14 +328,14 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
             std::move(client), std::move(unbound_remote), params));
 
-    client_ptr_->SetPlugin(plugin_.get());
+    client_ptr_->SetPlugin(document_url, plugin_.get());
   }
 
   void SetUpPluginWithUrl(const std::string& url) {
     blink::WebPluginParams params;
     params.attribute_names.push_back("src");
     params.attribute_values.push_back(blink::WebString::FromUTF8(url));
-    SetUpPlugin(params);
+    SetUpPlugin(url, params);
   }
 
   void TearDown() override { plugin_.reset(); }
@@ -345,7 +347,7 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
 class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
  protected:
   void SetUp() override {
-    SetUpPluginWithUrl("dummy.pdf");
+    SetUpPluginWithUrl("http://localhost/example.pdf");
 
     auto engine = CreateEngine();
     engine_ptr_ = engine.get();
@@ -457,7 +459,28 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 };
 
 TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
-  SetUpPluginWithUrl("dummy.pdf");
+  SetUpPluginWithUrl("http://localhost/example.pdf");
+
+  EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader)
+      .WillOnce([](const blink::WebAssociatedURLLoaderOptions& options) {
+        EXPECT_TRUE(options.grant_universal_access);
+
+        auto associated_loader =
+            std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+        EXPECT_CALL(*associated_loader, LoadAsynchronously)
+            .WillOnce([](const blink::WebURLRequest& request,
+                         blink::WebAssociatedURLLoaderClient* client) {
+              EXPECT_EQ("http://localhost/example.pdf",
+                        request.Url().GetString().Utf8());
+              EXPECT_EQ("GET", request.HttpMethod().Utf8());
+
+              EXPECT_FALSE(client->WillFollowRedirect(blink::WebURL(),
+                                                      blink::WebURLResponse()));
+              client->DidReceiveResponse(blink::WebURLResponse());
+              client->DidFinishLoading();
+            });
+        return associated_loader;
+      });
 
   EXPECT_TRUE(plugin_->InitializeForTesting(
       std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get())));
@@ -465,6 +488,8 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
 
 TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeWithEmptyUrl) {
   SetUpPluginWithUrl("");
+
+  EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).Times(0);
 
   EXPECT_FALSE(plugin_->InitializeForTesting(
       std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get())));
@@ -1149,7 +1174,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, RequestMethod) {
 
   SubmitForm(/*url=*/"");
 
-  EXPECT_EQ(request_.HttpMethod(), blink::WebString::FromASCII("POST"));
+  EXPECT_EQ(request_.HttpMethod().Utf8(), "POST");
 }
 
 TEST_F(PdfViewWebPluginSubmitFormTest, RequestBody) {
@@ -1159,6 +1184,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, RequestBody) {
   SubmitForm(/*url=*/"", kFormData);
 
   blink::WebHTTPBody::Element element;
+  EXPECT_EQ(request_.HttpBody().ElementCount(), 1u);
   ASSERT_TRUE(request_.HttpBody().ElementAt(0, element));
   ASSERT_EQ(element.type, blink::HTTPBodyElementType::kTypeData);
   EXPECT_THAT(element.data.Copy(), testing::ElementsAreArray(kFormData));
@@ -1169,7 +1195,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, RelativeUrl) {
 
   SubmitForm("relative_endpoint");
 
-  EXPECT_EQ(request_.Url().GetString(),
+  EXPECT_EQ(request_.Url().GetString().Utf8(),
             "https://www.example.com/path/to/relative_endpoint");
 }
 
@@ -1178,7 +1204,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, NoRelativeUrl) {
 
   SubmitForm("");
 
-  EXPECT_EQ(request_.Url().GetString(),
+  EXPECT_EQ(request_.Url().GetString().Utf8(),
             "https://www.example.com/path/to/the.pdf");
 }
 
@@ -1187,7 +1213,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, AbsoluteUrl) {
 
   SubmitForm("https://b.example.com/relative_endpoint");
 
-  EXPECT_EQ(request_.Url().GetString(),
+  EXPECT_EQ(request_.Url().GetString().Utf8(),
             "https://b.example.com/relative_endpoint");
 }
 
