@@ -79,7 +79,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // When the bar opens, we should not make any additional request.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertLoadedLowPriorityUrl();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
         assertLoadedLowPriorityUrl();
@@ -112,7 +112,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // Once the bar opens, we make a new request at normal priority.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertLoadedNormalPriorityUrl();
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
     }
@@ -151,7 +151,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         }
 
         // Once the bar opens, we make a new request at normal priority.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         waitForNormalPriorityUrlLoaded();
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
     }
@@ -193,7 +193,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertSearchTermRequested();
         fakeResponse(false, 403, "", "", "", false);
         assertLoadedNoUrl();
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertLoadedNormalPriorityUrl();
     }
 
@@ -218,7 +218,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertWebContentsCreatedButNeverMadeVisible();
 
         // Expanding the Panel should make the Content visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsVisible();
 
         // Closing the Panel should destroy the Content.
@@ -244,7 +244,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertNoSearchesLoaded();
 
         // Expanding the Panel should make the Content visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsCreated();
         assertWebContentsVisible();
 
@@ -271,7 +271,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // Expanding the Panel should make the Content visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -282,7 +282,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // Expanding the Panel should not change the visibility or load content again.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -311,7 +311,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertNoSearchesLoaded();
 
         // Expanding the Panel should load the URL and make the Content visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsCreated();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
@@ -323,7 +323,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // Expanding the Panel should not change the visibility or load content again.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -399,7 +399,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         WebContents wc1 = getPanelWebContents();
 
         // Expanding the Panel should make the Content visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsVisible();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -415,7 +415,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         simulateNonResolveSearch("resolution");
 
         // Expanding the Panel should load and display the new search.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsCreated();
         assertWebContentsVisible();
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
@@ -457,7 +457,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
         // Expanding the Panel should load and display the new search.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         assertWebContentsCreated();
         assertWebContentsVisible();
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
@@ -510,7 +510,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         String url = mFakeServer.getLoadedUrl();
 
         // Expand Panel so that the Content becomes visible.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
 
         // Close the Panel.
         tapBasePageToClosePanel();

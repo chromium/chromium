@@ -158,7 +158,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         Assert.assertTrue("Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
@@ -194,7 +194,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
         Assert.assertTrue("Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Select a chip in the Bar, which should expand the panel.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(

@@ -126,16 +126,9 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         longPressNode(SEARCH_NODE);
         assertPeekingPanelNonResolve();
         fakeResponse(mFakeServer.buildResolvedSearchTermWithRelatedSearches(SEARCH_NODE_TERM));
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         mPanel.updatePanelToStateForTest(OverlayPanel.PanelState.EXPANDED);
-        if (enabledFeature == EnabledFeature.PRIVACY_NEUTRAL
-                || enabledFeature == EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES) {
-            // PRIVACY_NEUTRAL feature includes Delayed Intelligence which resolves during the
-            // expand.
-            assertExpandedPanelResolve(SEARCH_NODE_TERM);
-        } else {
-            assertExpandedPanelNonResolve();
-        }
+        assertExpandedPanelNonResolve();
         maximizePanel();
         // TODO(donnd): consider asserting that no caption or other intelligent UI is showing.
         closePanel();

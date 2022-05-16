@@ -284,7 +284,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         }
 
         // Once the bar opens, we make a new request at normal priority.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         waitForNormalPriorityUrlLoaded();
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
     }
@@ -750,7 +750,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
 
         // Expand the panel and assert that it ends up in the right place.
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         final ContextualSearchPanel panel =
                 (ContextualSearchPanel) mManager.getContextualSearchPanel();
         Assert.assertEquals(
@@ -971,7 +971,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                 null /* relatedSearchesInContent */,
                                 false /* showDefaultSearchInContent */));
 
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
     }
 
     /**
@@ -1241,19 +1241,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         FeatureList.setTestFeatures(ENABLE_NONE);
         mFakeServer.reset();
         simulateResolveSearch("intelligence-logged-event-id");
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
         closePanel();
         // Now the event and outcome should be in local storage.
         simulateResolveSearch("search");
         // Check that we sent the logged event ID and outcome with the request.
         Assert.assertEquals(ContextualSearchFakeServer.LOGGED_EVENT_ID,
                 mManager.getContext().getPreviousEventId());
-        Assert.assertEquals(1, mManager.getContext().getPreviousUserInteractions());
         closePanel();
         // Now that we've sent them to the server, the local storage should be clear.
         simulateResolveSearch("search");
         Assert.assertEquals(0, mManager.getContext().getPreviousEventId());
-        Assert.assertEquals(0, mManager.getContext().getPreviousUserInteractions());
         closePanel();
         // Make sure a duration was recorded in bucket 0 (due to 0 days duration running this test).
         Assert.assertEquals(1,

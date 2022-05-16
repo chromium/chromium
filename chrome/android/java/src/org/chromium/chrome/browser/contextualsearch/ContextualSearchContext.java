@@ -65,7 +65,6 @@ public abstract class ContextualSearchContext {
 
     // Data about the previous user interactions and the event-ID from the server that will log it.
     private long mPreviousEventId;
-    private int mPreviousUserInteractions;
 
     // Translation members.
     @NonNull
@@ -103,7 +102,6 @@ public abstract class ContextualSearchContext {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
         mPreviousEventId = previousEventId;
-        mPreviousUserInteractions = previousUserInteractions;
         ContextualSearchContextJni.get().setResolveProperties(getNativePointer(), this, homeCountry,
                 doSendBasePageUrl, previousEventId, previousUserInteractions);
         mTargetLanguage = targetLanguage;
@@ -452,11 +450,6 @@ public abstract class ContextualSearchContext {
     // ============================================================================================
     // Test support.
     // ============================================================================================
-
-    @VisibleForTesting
-    int getPreviousUserInteractions() {
-        return mPreviousUserInteractions;
-    }
 
     @VisibleForTesting
     long getPreviousEventId() {

@@ -1383,27 +1383,23 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void clickToExpandAndClosePanel() throws TimeoutException {
         clickWordNode("states");
-        tapBarToExpandAndClosePanel();
+        expandAndClosePanel();
         waitForSelectionEmpty();
     }
 
     /**
-     * Simple sequence useful for checking if a Search Request is prefetched.
-     * Resets the fake server and clicks near to cause a search, then closes the panel,
-     * which takes us back to the starting state except that the fake server knows
-     * if a prefetch occurred.
+     * Expand the panel and then close it.
      */
-    protected void clickToTriggerPrefetch() throws Exception {
-        mFakeServer.reset();
-        simulateResolveSearch("search");
+    protected void expandAndClosePanel() throws TimeoutException {
+        expandPanelAndAssert();
         closePanel();
-        waitForPanelToCloseAndSelectionEmpty();
     }
 
     /**
      * Tap on the peeking Bar to expand the panel, then close it.
      */
-    private void tapBarToExpandAndClosePanel() throws TimeoutException {
+    @Deprecated
+    protected void tapBarToExpandAndClosePanel() throws TimeoutException {
         tapPeekingBarToExpandAndAssert();
         closePanel();
     }
@@ -1423,11 +1419,36 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Taps the peeking bar to expand the panel
      */
+    @Deprecated
     protected void tapPeekingBarToExpandAndAssert() throws TimeoutException {
         retryPanelBarInteractions(() -> {
             clickPanelBar();
             waitForPanelToExpand();
         }, false);
+    }
+
+    /**
+     * Expands the panel and asserts that it did actually expand.
+     */
+    protected void expandPanelAndAssert() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mPanel.animatePanelToState(PanelState.EXPANDED,
+                                StateChangeReason.UNKNOWN, PANEL_INTERACTION_RETRY_DELAY_MS));
+        waitForPanelToExpand();
+    }
+
+    /**
+     * Simple sequence useful for checking if a Search Request is prefetched.
+     * Resets the fake server and clicks near to cause a search, then closes the panel,
+     * which takes us back to the starting state except that the fake server knows
+     * if a prefetch occurred.
+     */
+    protected void clickToTriggerPrefetch() throws Exception {
+        mFakeServer.reset();
+        simulateResolveSearch("search");
+        closePanel();
+        waitForPanelToCloseAndSelectionEmpty();
     }
 
     /**

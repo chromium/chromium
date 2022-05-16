@@ -222,7 +222,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     public void testAppMenuSuppressedWhenExpanded(@EnabledFeature int enabledFeature)
             throws Exception {
         triggerPanelPeek();
-        tapPeekingBarToExpandAndAssert();
+        expandPanelAndAssert();
 
         pressAppMenuKey();
         assertAppMenuVisibility(false);
