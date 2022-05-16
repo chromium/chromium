@@ -615,11 +615,21 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInSingleNestedFrame) {
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInLocalRoot) {
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteA))"));
   RunTest();
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
   RunTest();
 }
@@ -627,6 +637,11 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewBrowserTest, EditableInDoublyNestedFrame) {
 IN_PROC_BROWSER_TEST_P(
     ScrollIntoViewBrowserTest,
     CrossesEditableInDoublyNestedFrameLocalAndRemoteBoundaries) {
+// TODO(crbug.com/1323876) Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+  if (!IsForceLocalFrames())
+    return;
+#endif
   ASSERT_TRUE(SetupTest("siteA(siteA(siteB(siteB)))"));
   RunTest();
 }
