@@ -4365,6 +4365,17 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
   DCHECK(!IsInPerformLayout());
   DCHECK(!frame_->GetDocument() || !frame_->GetDocument()->InStyleRecalc());
 
+  // When a frame is throttled, we delete its previous painted output, so it
+  // will need to be repainted, even if nothing else has changed.
+  if (LayoutView* layout_view = GetLayoutView())
+    layout_view->Layer()->SetNeedsRepaint();
+  // The painted output of the frame may be included in a cached subsequence
+  // associated with the embedding document, so invalidate the owner.
+  if (auto* owner = GetFrame().OwnerLayoutObject()) {
+    if (PaintLayer* owner_layer = owner->Layer())
+      owner_layer->SetNeedsRepaint();
+  }
+
   if (!CanThrottleRendering()) {
     // Start ticking animation frames again if necessary.
     if (GetPage())
@@ -4378,18 +4389,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     DCHECK(!IsUpdatingLifecycle());
     ForceThrottlingScope force_throttling(*this);
     RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
-  }
-
-  // When a frame is throttled, we typically delete its previous painted
-  // output, so it will need to be repainted, even if nothing else has
-  // changed.
-  if (LayoutView* layout_view = GetLayoutView())
-    layout_view->Layer()->SetNeedsRepaint();
-  // The painted output of the frame may be included in a cached subsequence
-  // associated with the embedding document, so invalidate the owner.
-  if (auto* owner = GetFrame().OwnerLayoutObject()) {
-    if (PaintLayer* owner_layer = owner->Layer())
-      owner_layer->SetNeedsRepaint();
   }
 
 #if DCHECK_IS_ON()
