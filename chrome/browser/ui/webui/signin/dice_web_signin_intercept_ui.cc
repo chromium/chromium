@@ -67,10 +67,12 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   static constexpr webui::ResourcePath kResources[] = {
       {"dice_web_signin_intercept_app.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_APP_JS},
+      {"dice_web_signin_intercept_app.html.js",
+       IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_APP_HTML_JS},
       {"dice_web_signin_intercept_browser_proxy.js",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_DICE_WEB_SIGNIN_INTERCEPT_BROWSER_PROXY_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
+      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       {"images/split_header.svg",
        IDR_SIGNIN_DICE_WEB_SIGNIN_INTERCEPT_IMAGES_SPLIT_HEADER_SVG},
       // Resources for testing.
