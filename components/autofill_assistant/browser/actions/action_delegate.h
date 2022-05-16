@@ -476,8 +476,9 @@ class ActionDelegate {
   // Executes the |external_action|.
   virtual void RequestExternalAction(
       const ExternalActionProto& external_action,
+      base::OnceCallback<void()> start_dom_checks_callback,
       base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback) = 0;
+          end_action_callback) = 0;
 
   // Returns whether or not this instance of Autofill Assistant must use a
   // backend endpoint to query data.

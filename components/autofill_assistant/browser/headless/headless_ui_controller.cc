@@ -14,12 +14,15 @@ bool HeadlessUiController::SupportsExternalActions() {
   return action_extension_delegate_ != nullptr;
 }
 void HeadlessUiController::ExecuteExternalAction(
-    const external::Action& info,
+    const external::Action& external_action,
+    base::OnceCallback<void()> start_dom_checks_callback,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {
+        end_action_callback) {
   DCHECK(action_extension_delegate_);
 
-  action_extension_delegate_->OnActionRequested(info, std::move(callback));
+  action_extension_delegate_->OnActionRequested(
+      external_action, std::move(start_dom_checks_callback),
+      std::move(end_action_callback));
 }
 
 // TODO(b/201964911): fail execution instead of just logging a warning if a

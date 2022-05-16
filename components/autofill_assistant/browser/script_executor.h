@@ -269,8 +269,9 @@ class ScriptExecutor : public ActionDelegate,
   bool SupportsExternalActions() override;
   void RequestExternalAction(
       const ExternalActionProto& external_action,
+      base::OnceCallback<void()> start_dom_checks_callback,
       base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback) override;
+          end_action_callback) override;
   bool MustUseBackendData() const override;
 
  private:

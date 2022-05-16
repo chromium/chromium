@@ -1115,8 +1115,9 @@ bool ScriptExecutor::SupportsExternalActions() {
 
 void ScriptExecutor::RequestExternalAction(
     const ExternalActionProto& external_action,
+    base::OnceCallback<void()> start_dom_checks_callback,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {
+        end_action_callback) {
   bool prompt = external_action.allow_interrupt() ||
                 external_action.show_touchable_area();
   if (prompt && delegate_->EnterState(AutofillAssistantState::PROMPT)) {
@@ -1130,21 +1131,22 @@ void ScriptExecutor::RequestExternalAction(
   external::Action action;
   *action.mutable_info() = external_action.info();
   ui_delegate_->ExecuteExternalAction(
-      action, base::BindOnce(&ScriptExecutor::OnExternalActionFinished,
-                             weak_ptr_factory_.GetWeakPtr(), external_action,
-                             prompt, std::move(callback)));
+      action, std::move(start_dom_checks_callback),
+      base::BindOnce(&ScriptExecutor::OnExternalActionFinished,
+                     weak_ptr_factory_.GetWeakPtr(), external_action, prompt,
+                     std::move(end_action_callback)));
 }
 
 void ScriptExecutor::OnExternalActionFinished(
     const ExternalActionProto& external_action,
     const bool prompt,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback,
+        end_action_callback,
     ExternalActionDelegate::ActionResult result) {
   if (prompt) {
     CleanUpAfterPrompt(external_action.show_touchable_area());
   }
-  std::move(callback).Run(result);
+  std::move(end_action_callback).Run(result);
 }
 
 bool ScriptExecutor::MustUseBackendData() const {

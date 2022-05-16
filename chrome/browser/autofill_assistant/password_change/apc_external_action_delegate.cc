@@ -10,9 +10,11 @@ ApcExternalActionDelegate::ApcExternalActionDelegate() = default;
 
 void ApcExternalActionDelegate::OnActionRequested(
     const autofill_assistant::external::Action& action_info,
-    base::OnceCallback<void(
-        autofill_assistant::ExternalActionDelegate::ActionResult)> callback) {
+    base::OnceCallback<void()> start_dom_checks_callback,
+    base::OnceCallback<
+        void(autofill_assistant::ExternalActionDelegate::ActionResult)>
+        end_action_callback) {
   autofill_assistant::ExternalActionDelegate::ActionResult result;
   result.success = true;
-  std::move(callback).Run(result);
+  std::move(end_action_callback).Run(result);
 }

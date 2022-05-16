@@ -170,7 +170,10 @@ bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
 
 void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
     const external::Action& external_action,
+    base::OnceCallback<void()> start_dom_checks_callback,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {}
+        end_action_callback) {
+  std::move(end_action_callback).Run({true});
+}
 
 }  // namespace autofill_assistant

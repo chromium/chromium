@@ -82,8 +82,9 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   bool SupportsExternalActions() override;
   void ExecuteExternalAction(
       const external::Action& external_action,
+      base::OnceCallback<void()> start_dom_checks_callback,
       base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-          callback) override;
+          end_action_callback) override;
 
   const std::vector<Details>& GetDetails() { return details_; }
 

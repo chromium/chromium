@@ -215,11 +215,12 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
                callback));
   MOCK_METHOD0(SupportsExternalActions, bool());
-  MOCK_METHOD2(
+  MOCK_METHOD3(
       RequestExternalAction,
       void(const ExternalActionProto& external_action,
+           base::OnceCallback<void()> start_dom_checks_callback,
            base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-               callback));
+               end_action_callback));
   MOCK_CONST_METHOD0(MustUseBackendData, bool());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {

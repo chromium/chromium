@@ -19,12 +19,30 @@ ExternalAction::~ExternalAction() = default;
 void ExternalAction::InternalProcessAction(ProcessActionCallback callback) {
   callback_ = std::move(callback);
   if (!delegate_->SupportsExternalActions()) {
+    VLOG(1) << "External action are not supported for this run.";
     EndAction(ClientStatus(INVALID_ACTION));
+    return;
+  }
+  if (!proto_.external_action().has_info()) {
+    VLOG(1) << "The ExternalAction's |info| is missing.";
+    EndAction(ClientStatus(INVALID_ACTION));
+    return;
   }
 
-  auto external_action = proto_.external_action();
+  delegate_->RequestExternalAction(
+      proto_.external_action(),
+      base::BindOnce(&ExternalAction::StartDomChecks,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ExternalAction::OnExternalActionFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  SendActionInfo();
+  // Do not add any code here. External delegates may choose to end the action
+  // immediately, which could result in *this being deleted and UaF errors for
+  // code after the above call.
+}
+
+void ExternalAction::StartDomChecks() {
+  const auto& external_action = proto_.external_action();
   if (external_action.allow_interrupt()) {
     delegate_->WaitForDom(
         /* max_wait_time= */ base::TimeDelta::Max(),
@@ -32,13 +50,6 @@ void ExternalAction::InternalProcessAction(ProcessActionCallback callback) {
         /* observer= */ nullptr, /* check_elements= */ base::DoNothing(),
         /* callback= */ base::DoNothing());
   }
-}
-
-void ExternalAction::SendActionInfo() {
-  delegate_->RequestExternalAction(
-      proto_.external_action(),
-      base::BindOnce(&ExternalAction::OnExternalActionFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExternalAction::OnExternalActionFinished(

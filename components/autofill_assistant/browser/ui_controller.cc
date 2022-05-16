@@ -1161,9 +1161,10 @@ bool UiController::SupportsExternalActions() {
 }
 
 void UiController::ExecuteExternalAction(
-    const external::Action& info,
+    const external::Action& external_action,
+    base::OnceCallback<void()> start_dom_checks_callback,
     base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
-        callback) {
+        end_action_callback) {
   NOTREACHED() << "Flows using default UI don't support external actions.";
 }
 
