@@ -328,14 +328,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="LocalStorageContext.ReadVersionError" enum="LevelDBStatus"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason reading the schema version of the LocalStorage database failed.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

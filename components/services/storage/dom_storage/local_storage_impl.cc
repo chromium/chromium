@@ -588,9 +588,6 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
     database_initialized_ = true;
   } else {
     // Other read error. Possibly database corruption.
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.ReadVersionError",
-                              leveldb_env::GetLevelDBStatusUMAValue(status),
-                              leveldb_env::LEVELDB_STATUS_MAX);
     LogDatabaseOpenResult(OpenResult::VERSION_READ_ERROR);
     DeleteAndRecreateDatabase(
         "LocalStorageContext.OpenResultAfterReadVersionError");
