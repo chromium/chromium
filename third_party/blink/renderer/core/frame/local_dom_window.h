@@ -418,11 +418,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   TrustedTypePolicyFactory* GetTrustedTypesForWorld(
       const DOMWrapperWorld&) const;
 
-  // Returns true if this window is cross-site to the main frame. Defaults to
-  // false in a detached window.
-  // Note: This uses an outdated definition of "site" which only includes the
-  // registrable domain and not the scheme. IsCrossSiteSubframeIncludingScheme()
-  // uses HTML's definition of "site" as a registrable domain and scheme.
+  // Returns true if this window is cross-site to the outermost main frame.
+  // Defaults to false in a detached window. Note: This uses an outdated
+  // definition of "site" which only includes the registrable domain and not the
+  // scheme. IsCrossSiteSubframeIncludingScheme() uses HTML's definition of
+  // "site" as a registrable domain and scheme.
   bool IsCrossSiteSubframe() const;
 
   bool IsCrossSiteSubframeIncludingScheme() const;

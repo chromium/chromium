@@ -269,6 +269,8 @@ TrustedTypePolicyFactory* LocalDOMWindow::trustedTypes(
 bool LocalDOMWindow::IsCrossSiteSubframe() const {
   if (!GetFrame())
     return false;
+  if (GetFrame()->IsInFencedFrameTree())
+    return true;
   // It'd be nice to avoid the url::Origin temporaries, but that would require
   // exposing the net internal helper.
   // TODO: If the helper gets exposed, we could do this without any new
@@ -281,7 +283,11 @@ bool LocalDOMWindow::IsCrossSiteSubframe() const {
 }
 
 bool LocalDOMWindow::IsCrossSiteSubframeIncludingScheme() const {
-  return GetFrame() && top()->GetFrame() &&
+  if (!GetFrame())
+    return false;
+  if (GetFrame()->IsInFencedFrameTree())
+    return true;
+  return top()->GetFrame() &&
          !top()
               ->GetFrame()
               ->GetSecurityContext()
