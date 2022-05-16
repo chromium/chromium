@@ -538,14 +538,6 @@ class ASH_EXPORT CaptureModeSession
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
 
-  // This helps indicating whether located events should be handled by the
-  // capture mode settings menu view or the capture mode Pre-EventHandler. When
-  // it's true, settings menu view should handle the event. Set it to true when
-  // the event is a press event and is located on the settings menu view. Set it
-  // to false when the event is a release event and "event_on_settings_menu_" is
-  // true.
-  bool located_press_event_on_settings_menu_ = false;
-
   // True if a located event should be passed to camera preview to be handled.
   bool should_pass_located_event_to_camera_preview_ = false;
 

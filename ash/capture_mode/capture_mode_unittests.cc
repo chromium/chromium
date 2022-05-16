@@ -1064,6 +1064,31 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
   EXPECT_GT(GetCaptureModeLabelWidget()->GetWindowBoundsInScreen().x(), 20);
 }
 
+// Tests that pressing on the capture bar and releasing the press outside of the
+// capture bar, the capture region could still be draggable and set. Regression
+// test for https://crbug.com/1325028.
+TEST_F(CaptureModeTest, SetCaptureRegionAfterPressOnCaptureBar) {
+  UpdateDisplay("800x600");
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  auto* settings_button = GetSettingsButton();
+
+  // Press on the settings button without release.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      settings_button->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  // Move mouse to the outside of the capture bar and then release the press.
+  event_generator->MoveMouseTo({300, 300});
+  event_generator->ReleaseLeftButton();
+
+  // Set the capture region, and verify it's set successfully.
+  const gfx::Rect region_bounds(100, 100, 200, 200);
+  SelectRegion(region_bounds);
+  EXPECT_EQ(controller->user_capture_region(), region_bounds);
+}
+
 TEST_F(CaptureModeTest, WindowCapture) {
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
