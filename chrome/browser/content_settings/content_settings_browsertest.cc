@@ -476,7 +476,10 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, MAYBE_AllowCookiesUsingExceptions) {
 }
 
 // Verify that cookies can be blocked for a specific website using exceptions.
-IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesUsingExceptions) {
+//
+// TODO(https://crbug.com/931080): Re-enable test once flakiness is fixed.
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       DISABLED_BlockCookiesUsingExceptions) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetPageURL()));
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
