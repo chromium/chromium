@@ -219,7 +219,8 @@ void WebEngineAudioRenderer::OnBuffersAcquired(
     SendInputPacket(std::move(packet));
   }
 
-  if (is_at_end_of_stream_) {
+  if (has_delayed_end_of_stream_) {
+    has_delayed_end_of_stream_ = false;
     OnSysmemBufferStreamEndOfStream();
   }
 }
@@ -781,9 +782,11 @@ void WebEngineAudioRenderer::OnSysmemBufferStreamEndOfStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_at_end_of_stream_);
 
-  // Stream sink is not bound yet, don't send EOS.
-  if (!stream_sink_)
+  // Stream sink is not bound yet, queue EOS request until then.
+  if (!stream_sink_) {
+    has_delayed_end_of_stream_ = true;
     return;
+  }
 
   stream_sink_->EndOfStream();
 

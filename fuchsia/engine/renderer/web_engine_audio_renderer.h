@@ -199,10 +199,11 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   // VmoBuffers for the buffers |input_buffer_collection_|.
   std::vector<media::VmoBuffer> input_buffers_;
 
-  // Packets produced before the |stream_sink_| is connected. They are sent as
-  // soon as input buffers are acquired and |stream_sink_| is connected in
-  // OnBuffersAcquired().
+  // Packets and EndOfStream produced before the |stream_sink_| is connected.
+  // They are sent as soon as input buffers are acquired and |stream_sink_| is
+  // connected in OnBuffersAcquired().
   std::list<media::StreamProcessorHelper::IoPacket> delayed_packets_;
+  bool has_delayed_end_of_stream_ = false;
 
   // Lead time range requested by the |audio_consumer_|. Initialized to  the
   // [100ms, 500ms] until the initial AudioConsumerStatus is received.
