@@ -72,8 +72,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
                   : std::make_unique<media::NullMediaLog>();
     return VideoDecoderPipeline::Create(
         /*client_task_runner=*/std::move(task_runner),
-        std::make_unique<PlatformVideoFramePool>(
-            /*gpu_memory_buffer_factory=*/nullptr),
+        std::make_unique<PlatformVideoFramePool>(),
         std::make_unique<media::VideoFrameConverter>(), std::move(log));
   }
 };

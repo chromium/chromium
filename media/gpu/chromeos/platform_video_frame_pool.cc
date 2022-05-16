@@ -20,7 +20,6 @@ namespace {
 
 // The default method to create frames.
 CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -34,8 +33,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
   }
 
   scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
-      gpu_memory_buffer_factory, format, coded_size, visible_rect, natural_size,
-      timestamp,
+      format, coded_size, visible_rect, natural_size, timestamp,
       use_protected
           ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
           : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
@@ -54,10 +52,8 @@ CroStatus::Or<scoped_refptr<VideoFrame>> DefaultCreateFrame(
 
 }  // namespace
 
-PlatformVideoFramePool::PlatformVideoFramePool(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
-    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
+PlatformVideoFramePool::PlatformVideoFramePool()
+    : create_frame_cb_(base::BindRepeating(&DefaultCreateFrame)) {
   DVLOGF(4);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -107,11 +103,19 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     // with (10, 20), 100x100 we cannot (even though it's contained in the
     // former). Hence the use of GetRectSizeFromOrigin() to calculate the
     // visible rect for |new_frame|.
+    //
+    // TODO(b/230370976): after https://crrev.com/c/3597211,
+    // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for
+    // allocating dma-bufs which means DRM framebuffers won't be created for a
+    // dma-buf at allocation time (instead, it will be created at the moment of
+    // creating a SharedImage). That means that we probably don't need to take
+    // the |visible_rect_| into account for IsSameFormat_Locked() any more which
+    // implies that we can create |new_frame| using gfx::Rect(coded_size) as
+    // the visible rectangle.
     CHECK(use_linear_buffers_.has_value());
     CroStatus::Or<scoped_refptr<VideoFrame>> new_frame = create_frame_cb_.Run(
-        gpu_memory_buffer_factory_, format, coded_size,
-        gfx::Rect(GetRectSizeFromOrigin(visible_rect_)), coded_size,
-        use_protected_, *use_linear_buffers_, base::TimeDelta());
+        format, coded_size, gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
+        coded_size, use_protected_, *use_linear_buffers_, base::TimeDelta());
     if (new_frame.has_error()) {
       // TODO(crbug.com/c/1103510) Push the error up instead of dropping it.
       return nullptr;
@@ -195,12 +199,19 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // hardware overlay purposes. The caveat is that different visible rectangles
   // can map to the same framebuffer size, i.e., all the visible rectangles with
   // the same bottom-right corner map to the same framebuffer size.
+  //
+  // TODO(b/230370976): after https://crrev.com/c/3597211,
+  // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for allocating
+  // dma-bufs which means DRM framebuffers won't be created for a dma-buf at
+  // allocation time (instead, it will be created at the moment of creating a
+  // SharedImage). That means that we probably don't need to take the
+  // |visible_rect| into account for IsSameFormat_Locked() any more.
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
     free_frames_.clear();
     auto maybe_frame = create_frame_cb_.Run(
-        gpu_memory_buffer_factory_, format, coded_size, visible_rect,
-        natural_size, use_protected, *use_linear_buffers_, base::TimeDelta());
+        format, coded_size, visible_rect, natural_size, use_protected,
+        *use_linear_buffers_, base::TimeDelta());
     if (maybe_frame.has_error())
       return std::move(maybe_frame).error();
     auto frame = std::move(maybe_frame).value();

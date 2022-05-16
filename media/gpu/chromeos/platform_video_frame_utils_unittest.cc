@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
@@ -66,63 +65,6 @@ scoped_refptr<VideoFrame> CreateMockDmaBufVideoFrame(
                                          std::move(dmabuf_fds),
                                          base::TimeDelta());
 }
-
-class FakeGpuMemoryBufferFactory : public gpu::GpuMemoryBufferFactory {
- public:
-  FakeGpuMemoryBufferFactory() = default;
-  ~FakeGpuMemoryBufferFactory() override {
-    for (const auto& buffers : gpu_memory_buffers_) {
-      if (!buffers.second.empty()) {
-        LOG(ERROR) << "client_id=" << buffers.first
-                   << ", the number of unreleased buffers="
-                   << buffers.second.size();
-        ADD_FAILURE();
-      }
-    }
-  }
-
-  // gpu::GpuMemoryBufferFactory implementation.
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      const gfx::Size& framebuffer_size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      int client_id,
-      gpu::SurfaceHandle surface_handle) override {
-    if (base::Contains(gpu_memory_buffers_[client_id], id))
-      return gfx::GpuMemoryBufferHandle();
-
-    FakeGpuMemoryBuffer fake_gmb(size, format);
-    gfx::GpuMemoryBufferHandle handle = fake_gmb.CloneHandle();
-    handle.id = id;
-    gpu_memory_buffers_[client_id].insert(id);
-    return handle;
-  }
-
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                              int client_id) override {
-    ASSERT_TRUE(base::Contains(gpu_memory_buffers_, client_id));
-    ASSERT_TRUE(base::Contains(gpu_memory_buffers_[client_id], id));
-    gpu_memory_buffers_[client_id].erase(id);
-  }
-
-  bool FillSharedMemoryRegionWithBufferContents(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
-  // Type-checking downcast routine.
-  gpu::ImageFactory* AsImageFactory() override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
-
- private:
-  std::map<int, std::set<gfx::GpuMemoryBufferId>> gpu_memory_buffers_;
-};
 }  // namespace
 
 TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
@@ -159,6 +101,12 @@ TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   }
 }
 
+// TODO(b/230370976): remove this #if/#endif guard. To do so, we need to be able
+// to mock/fake the allocator used by CreatePlatformVideoFrame() and
+// CreateGpuMemoryBufferVideoFrame() so that those functions return a
+// non-nullptr frame on platforms where allocating NV12 buffers is not
+// supported.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
   constexpr gfx::Size kCodedSize(320, 240);
@@ -168,9 +116,6 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
   constexpr gfx::BufferUsage kBufferUsage =
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
-  auto gpu_memory_buffer_factory =
-      std::make_unique<FakeGpuMemoryBufferFactory>();
-
   const VideoFrame::StorageType storage_types[] = {
       VideoFrame::STORAGE_DMABUFS,
       VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
@@ -179,14 +124,14 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
     scoped_refptr<VideoFrame> frame;
     switch (storage_type) {
       case VideoFrame::STORAGE_DMABUFS:
-        frame = CreatePlatformVideoFrame(
-            gpu_memory_buffer_factory.get(), kPixelFormat, kCodedSize,
-            kVisibleRect, kNaturalSize, kTimeStamp, kBufferUsage);
+        frame =
+            CreatePlatformVideoFrame(kPixelFormat, kCodedSize, kVisibleRect,
+                                     kNaturalSize, kTimeStamp, kBufferUsage);
         break;
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-        frame = CreateGpuMemoryBufferVideoFrame(
-            gpu_memory_buffer_factory.get(), kPixelFormat, kCodedSize,
-            kVisibleRect, kNaturalSize, kTimeStamp, kBufferUsage);
+        frame = CreateGpuMemoryBufferVideoFrame(kPixelFormat, kCodedSize,
+                                                kVisibleRect, kNaturalSize,
+                                                kTimeStamp, kBufferUsage);
         break;
       default:
         NOTREACHED();
@@ -214,4 +159,5 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
     };
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace media

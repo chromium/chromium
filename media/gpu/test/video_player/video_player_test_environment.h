@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_test_environment.h"
@@ -61,12 +60,6 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   // Get the output folder.
   const base::FilePath& OutputFolder() const;
 
-  // Get the GpuMemoryBufferFactory for doing buffer allocations. This needs to
-  // survive as long as the process is alive just like in production which is
-  // why it's in here as there are threads that won't immediately die when an
-  // individual test is completed.
-  gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
-
  private:
   VideoPlayerTestEnvironment(
       std::unique_ptr<media::test::Video> video,
@@ -85,8 +78,6 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
 
   const FrameOutputConfig frame_output_config_;
   const base::FilePath output_folder_;
-
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
 }  // namespace test
 }  // namespace media

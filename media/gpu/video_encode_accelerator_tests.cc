@@ -139,8 +139,7 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(video);
 
     auto video_encoder =
-        VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
-                             CreateBitstreamProcessors(video, config));
+        VideoEncoder::Create(config, CreateBitstreamProcessors(video, config));
     LOG_ASSERT(video_encoder);
 
     if (!video_encoder->Initialize(video))
@@ -407,8 +406,7 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
   if (g_env->SpatialLayers().size() > 1)
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
-  auto video_encoder = VideoEncoder::Create(GetDefaultConfig(),
-                                            g_env->GetGpuMemoryBufferFactory());
+  auto video_encoder = VideoEncoder::Create(GetDefaultConfig());
 
   EXPECT_NE(video_encoder, nullptr);
 }

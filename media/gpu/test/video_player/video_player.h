@@ -19,10 +19,6 @@
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_player/frame_renderer.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
-
 namespace media {
 namespace test {
 
@@ -65,12 +61,11 @@ class VideoPlayer {
 
   ~VideoPlayer();
 
-  // Create an instance of the video player. The |gpu_memory_buffer_factory|,
-  // |frame_renderer| and |frame_processors| will not be owned by the video
-  // player. The caller should guarantee they outlive the video player.
+  // Create an instance of the video player. The |frame_renderer| and
+  // |frame_processors| will not be owned by the video player. The caller should
+  // guarantee they outlive the video player.
   static std::unique_ptr<VideoPlayer> Create(
       const VideoDecoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       std::unique_ptr<FrameRenderer> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors = {});
 
@@ -133,7 +128,6 @@ class VideoPlayer {
 
   bool CreateDecoderClient(
       const VideoDecoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       std::unique_ptr<FrameRenderer> frame_renderer,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
   void Destroy();

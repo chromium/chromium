@@ -18,10 +18,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace media {
 class VideoBitrateAllocation;
 
@@ -59,7 +55,6 @@ class VideoEncoder {
   // destroyed on the same sequence where they are created.
   static std::unique_ptr<VideoEncoder> Create(
       const VideoEncoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory,
       std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors =
           {});
 
@@ -123,7 +118,6 @@ class VideoEncoder {
 
   bool CreateEncoderClient(
       const VideoEncoderClientConfig& config,
-      gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory,
       std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors);
 
   // Notify the video encoder an event has occurred (e.g. bitstream ready).
