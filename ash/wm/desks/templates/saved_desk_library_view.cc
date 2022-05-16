@@ -324,7 +324,7 @@ void SavedDeskLibraryView::OnFeedbackButtonPressed() {
   std::string extra_diagnostics;
   for (auto* grid : grid_views()) {
     for (auto* item : grid->grid_items())
-      extra_diagnostics += (item->desk_template()->ToString() + "\n");
+      extra_diagnostics += (item->desk_template().ToString() + "\n");
   }
 
   // Note that this will activate the dialog which will exit overview and delete

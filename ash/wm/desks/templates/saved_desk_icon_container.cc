@@ -161,7 +161,7 @@ SavedDeskIconContainer::SavedDeskIconContainer() {
 SavedDeskIconContainer::~SavedDeskIconContainer() = default;
 
 void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
-    DeskTemplate* desk_template) {
+    const DeskTemplate* desk_template) {
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   if (!restore_data)

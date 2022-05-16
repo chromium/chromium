@@ -68,7 +68,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
  public:
   METADATA_HEADER(SavedDeskItemView);
 
-  explicit SavedDeskItemView(const DeskTemplate* desk_template);
+  explicit SavedDeskItemView(std::unique_ptr<DeskTemplate> desk_template);
   SavedDeskItemView(const SavedDeskItemView&) = delete;
   SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;
   ~SavedDeskItemView() override;
@@ -76,9 +76,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // The preferred size of the whole SavedDeskItemView.
   static constexpr gfx::Size kPreferredSize = {220, 120};
 
-  DeskTemplate* desk_template() const { return desk_template_.get(); }
+  const DeskTemplate& desk_template() const { return *desk_template_; }
   SavedDeskNameView* name_view() const { return name_view_; }
-  const base::GUID uuid() const { return desk_template_->uuid(); }
+  const base::GUID& uuid() const { return desk_template_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.

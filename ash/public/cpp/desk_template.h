@@ -60,7 +60,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // A special value to use as an icon identifier for an incognito window.
   static constexpr char kIncognitoWindowIdentifier[] = "incognito_window";
 
-  base::GUID uuid() const { return uuid_; }
+  const base::GUID& uuid() const { return uuid_; }
   DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
 

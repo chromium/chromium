@@ -3498,13 +3498,13 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   // The actual template name will still have "(1)" appended to maintain its
   // uniqueness.
   EXPECT_EQ(u"Desk 1 (1)",
-            GetItemViewFromTemplatesGrid(0)->desk_template()->template_name());
+            GetItemViewFromTemplatesGrid(0)->desk_template().template_name());
 
   // Set the second template to have a new unique name by updating the model
   // directly. This mimics updating the name on a different device and is the
   // only way to change the name without prompting the replace dialog.
   SavedDeskItemView* second_item = GetItemViewFromTemplatesGrid(1);
-  auto new_desk_template = second_item->desk_template()->Clone();
+  auto new_desk_template = second_item->desk_template().Clone();
   new_desk_template->set_template_name(u"Desk 2");
   const base::GUID uuid = new_desk_template->uuid();
 
@@ -3533,7 +3533,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
             SavedDeskPresenter::Get()->EntriesAddedOrUpdatedRemotely(
                 {entry.get()});
             ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
-            ASSERT_EQ(u"Desk 2", second_item->desk_template()->template_name());
+            ASSERT_EQ(u"Desk 2", second_item->desk_template().template_name());
             loop1.Quit();
           }));
   loop1.Run();

@@ -113,8 +113,9 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 }  // namespace
 
-SavedDeskItemView::SavedDeskItemView(const DeskTemplate* desk_template)
-    : desk_template_(desk_template->Clone()) {
+SavedDeskItemView::SavedDeskItemView(
+    std::unique_ptr<DeskTemplate> desk_template)
+    : desk_template_(std::move(desk_template)) {
   auto launch_template_callback = base::BindRepeating(
       &SavedDeskItemView::OnGridItemPressed, weak_ptr_factory_.GetWeakPtr());
 
@@ -617,8 +618,8 @@ SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
       [this, name](const SavedDeskItemView* d) {
         // Name duplication is allowed if one of the templates is an admin
         // template.
-        return (d != this && d->desk_template()->template_name() == name &&
-                d->desk_template()->source() != DeskTemplateSource::kPolicy);
+        return (d != this && d->desk_template_->template_name() == name &&
+                d->desk_template_->source() != DeskTemplateSource::kPolicy);
       });
   return iter == templates_grid_view_items.end() ? nullptr : *iter;
 }
