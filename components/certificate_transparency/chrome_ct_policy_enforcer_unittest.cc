@@ -38,10 +38,11 @@ namespace certificate_transparency {
 
 namespace {
 
-const char kGoogleAviatorLogID[] =
+// A log ID that for test purposes counts as a valid Google operated log.
+const char kTestGoogleLogID[] =
     "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
     "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\xfb\xc4";
-static_assert(std::size(kGoogleAviatorLogID) - 1 == crypto::kSHA256Length,
+static_assert(std::size(kTestGoogleLogID) - 1 == crypto::kSHA256Length,
               "Incorrect log ID length.");
 
 }  // namespace
@@ -59,7 +60,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     chain_ = X509Certificate::CreateFromBytes(
         base::as_bytes(base::make_span(der_test_cert)));
     ASSERT_TRUE(chain_.get());
-    google_log_id_ = std::string(kGoogleAviatorLogID, crypto::kSHA256Length);
+    google_log_id_ = std::string(kTestGoogleLogID, crypto::kSHA256Length);
+    policy_enforcer_->SetValidGoogleLogForTesting(google_log_id_);
     non_google_log_id_.assign(crypto::kSHA256Length, 1);
     clock_.SetNow(base::Time::Now());
   }
@@ -94,16 +96,21 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
   void AddDisqualifiedLogSCT(SignedCertificateTimestamp::Origin desired_origin,
                              bool timestamp_after_disqualification_date,
                              SCTList* verified_scts) {
-    static const char kCertlyLogID[] =
+    static const char kTestRetiredLogID[] =
         "\xcd\xb5\x17\x9b\x7f\xc1\xc0\x46\xfe\xea\x31\x13\x6a\x3f\x8f\x00\x2e"
         "\x61\x82\xfa\xf8\x89\x6f\xec\xc8\xb2\xf5\xb5\xab\x60\x49\x00";
-    static_assert(std::size(kCertlyLogID) - 1 == crypto::kSHA256Length,
+    static_assert(std::size(kTestRetiredLogID) - 1 == crypto::kSHA256Length,
                   "Incorrect log ID length.");
+    base::Time retirement_time;
+    ASSERT_TRUE(base::Time::FromUTCExploded({2016, 4, 0, 15, 0, 0, 0, 0},
+                                            &retirement_time));
+    policy_enforcer_->SetDisqualifiedLogForTesting(
+        std::make_pair(std::string(kTestRetiredLogID, 32), retirement_time));
 
     scoped_refptr<SignedCertificateTimestamp> sct(
         new SignedCertificateTimestamp());
     sct->origin = desired_origin;
-    sct->log_id = std::string(kCertlyLogID, crypto::kSHA256Length);
+    sct->log_id = std::string(kTestRetiredLogID, crypto::kSHA256Length);
     if (timestamp_after_disqualification_date) {
       EXPECT_TRUE(base::Time::FromUTCExploded({2016, 4, 0, 16, 0, 0, 0, 0},
                                               &sct->timestamp));
@@ -608,6 +615,9 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, UpdateCTLogList) {
   // Update the list again, this time including all the known operated by Google
   // logs, and setting operators to different values.
   operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
+  operated_by_google_logs.emplace_back(kTestGoogleLogID);
+  std::sort(std::begin(operated_by_google_logs),
+            std::end(operated_by_google_logs));
   FillOperatorHistoryWithDiverseOperators(scts, &operator_history);
   policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                     operated_by_google_logs, operator_history);
@@ -666,13 +676,13 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies, IsLogDisqualifiedTimestamp) {
   base::Time future_disqualification = base::Time::Now() + base::Hours(1);
   disqualified_logs.emplace_back(kModifiedGoogleAviatorLogID,
                                  future_disqualification);
-  disqualified_logs.emplace_back(kGoogleAviatorLogID, past_disqualification);
+  disqualified_logs.emplace_back(kTestGoogleLogID, past_disqualification);
   policy_enforcer_->UpdateCTLogList(base::Time::Now(), disqualified_logs,
                                     operated_by_google_logs,
                                     log_operator_history);
 
   base::Time disqualification_time;
-  EXPECT_TRUE(policy_enforcer_->IsLogDisqualified(kGoogleAviatorLogID,
+  EXPECT_TRUE(policy_enforcer_->IsLogDisqualified(kTestGoogleLogID,
                                                   &disqualification_time));
   EXPECT_EQ(disqualification_time, past_disqualification);
   EXPECT_FALSE(policy_enforcer_->IsLogDisqualified(kModifiedGoogleAviatorLogID,
@@ -699,8 +709,7 @@ TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,
   base::Time unused;
   // IsLogDisqualified should return false for a log that is not in the
   // disqualified list.
-  EXPECT_FALSE(
-      policy_enforcer_->IsLogDisqualified(kGoogleAviatorLogID, &unused));
+  EXPECT_FALSE(policy_enforcer_->IsLogDisqualified(kTestGoogleLogID, &unused));
 }
 
 TEST_P(ChromeCTPolicyEnforcerTestBothPolicies,

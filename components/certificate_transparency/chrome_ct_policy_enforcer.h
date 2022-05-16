@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/cert/ct_policy_enforcer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace certificate_transparency {
 
@@ -95,6 +96,15 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
     log_operator_history_ = std::move(log_operator_history);
   }
 
+  void SetValidGoogleLogForTesting(const std::string& google_log) {
+    valid_google_log_for_testing_ = google_log;
+  }
+
+  void SetDisqualifiedLogForTesting(
+      const std::pair<std::string, base::Time>& disqualified_log) {
+    disqualified_log_for_testing_ = disqualified_log;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeCTPolicyEnforcerTestBothPolicies,
                            IsLogDisqualifiedTimestamp);
@@ -134,6 +144,16 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // The time at which |disqualified_logs_| and |operated_by_google_logs_| were
   // generated.
   base::Time log_list_date_;
+
+  // If set, this log ID will be considered a valid, Google operated log.
+  // Calling UpdateCTLogList clears this value if set.
+  absl::optional<std::string> valid_google_log_for_testing_;
+
+  // If set, this log ID will be considered a disqualified log, effective at the
+  // specified time.
+  // Calling UpdateCTLogList clears this value if set.
+  absl::optional<std::pair<std::string, base::Time>>
+      disqualified_log_for_testing_;
 };
 
 }  // namespace certificate_transparency
