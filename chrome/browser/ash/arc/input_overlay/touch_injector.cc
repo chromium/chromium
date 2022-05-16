@@ -487,7 +487,9 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   auto it = rewritten_touch_infos_.find(original_id);
 
   if (it == rewritten_touch_infos_.end()) {
-    DCHECK(touch_event->type() == ui::ET_TOUCH_PRESSED);
+    // When touching on the window to regain the focus, the first
+    // |ui::ET_TOUCH_PRESSED| will not be received and then it may send
+    // |ui::ET_TOUCH_MOVED| event to the window. So no need to add DCHECK here.
     if (touch_event->type() != ui::ET_TOUCH_PRESSED)
       return nullptr;
   } else {
