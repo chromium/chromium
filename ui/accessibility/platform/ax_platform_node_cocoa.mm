@@ -1022,7 +1022,7 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityGrabbedAttribute];
 
   if (ui::SupportsRequired(role)) {
-    [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
+    [axAttributes addObject:NSAccessibilityRequiredAttribute];
   }
 
   // Url: add the url attribute only if the object has a valid url.

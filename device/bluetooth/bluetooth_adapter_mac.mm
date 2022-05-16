@@ -71,14 +71,6 @@ bool IsDeviceSystemPaired(const std::string& device_address) {
 
 namespace device {
 
-CBCentralManagerState GetCBManagerState(CBCentralManager* manager) {
-#if defined(MAC_OS_X_VERSION_10_13)
-  return static_cast<CBCentralManagerState>([manager state]);
-#else
-  return [manager state];
-#endif
-}
-
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterMac::CreateAdapter();
@@ -119,8 +111,7 @@ std::string BluetoothAdapterMac::String(NSError* error) {
 }
 
 BluetoothAdapterMac::BluetoothAdapterMac()
-    : BluetoothAdapter(),
-      controller_state_function_(
+    : controller_state_function_(
           base::BindRepeating(&BluetoothAdapterMac::GetHostControllerState,
                               base::Unretained(this))),
       power_state_function_(
@@ -634,8 +625,7 @@ void BluetoothAdapterMac::ClassicDeviceAdded(IOBluetoothDevice* device) {
 }
 
 bool BluetoothAdapterMac::IsLowEnergyPowered() const {
-  return GetCBManagerState(low_energy_central_manager_) ==
-         CBCentralManagerStatePoweredOn;
+  return [low_energy_central_manager_ state] == CBManagerStatePoweredOn;
 }
 
 void BluetoothAdapterMac::LowEnergyDeviceUpdated(
@@ -750,19 +740,17 @@ void BluetoothAdapterMac::LowEnergyDeviceUpdated(
   }
 }
 
-// TODO(crbug.com/511025): Handle state < CBCentralManagerStatePoweredOff.
 void BluetoothAdapterMac::LowEnergyCentralManagerUpdatedState() {
   DVLOG(1) << "Central manager state updated: "
            << [low_energy_central_manager_ state];
 
-  // A state with a value lower than CBCentralManagerStatePoweredOn implies that
+  // A state with a value lower than CBManagerStatePoweredOn implies that
   // scanning has stopped and that any connected peripherals have been
   // disconnected. Call DidDisconnectPeripheral manually to update the devices'
   // states since macOS doesn't call it.
   // See
   // https://developer.apple.com/reference/corebluetooth/cbcentralmanagerdelegate/1518888-centralmanagerdidupdatestate?language=objc
-  if (GetCBManagerState(low_energy_central_manager_) <
-      CBCentralManagerStatePoweredOn) {
+  if ([low_energy_central_manager_ state] < CBManagerStatePoweredOn) {
     DVLOG(1)
         << "Central no longer powered on. Notifying of device disconnection.";
     for (BluetoothDevice* device : GetDevices()) {

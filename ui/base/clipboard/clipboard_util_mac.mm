@@ -219,10 +219,10 @@ NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
   NSString* buffer_type = nil;
   switch (buffer) {
     case ClipboardBuffer::kCopyPaste:
-      buffer_type = NSGeneralPboard;
+      buffer_type = NSPasteboardNameGeneral;
       break;
     case ClipboardBuffer::kDrag:
-      buffer_type = NSDragPboard;
+      buffer_type = NSPasteboardNameDrag;
       break;
     case ClipboardBuffer::kSelection:
       NOTREACHED();

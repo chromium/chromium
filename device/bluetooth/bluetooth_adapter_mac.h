@@ -37,13 +37,6 @@
 
 namespace device {
 
-// The 10.13 SDK deprecates the CBCentralManagerState enum, but marks the
-// replacement enum with limited availability, making it unusable. API methods
-// now return the new enum, so to compare enum values the new enum must be cast.
-// Wrap this in a function to obtain the state via a call to [manager state] to
-// avoid code that would use the replacement enum and trigger warnings.
-CBCentralManagerState GetCBManagerState(CBCentralManager* manager);
-
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
     : public BluetoothAdapter,
       public BluetoothDiscoveryManagerMac::Observer,

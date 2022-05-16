@@ -21,7 +21,7 @@ COMPONENT_EXPORT(UI_BASE) extern NSString* kFindPasteboardChangedNotification;
 // to get the text currently on the find pasteboard, and to receive
 // notifications when the text on the find pasteboard has changed. You should
 // always use this class instead of accessing
-// [NSPasteboard pasteboardWithName:NSFindPboard] directly.
+// [NSPasteboard pasteboardWithName:NSPasteboardNameFind] directly.
 //
 // This is not thread-safe and must be used on the main thread.
 //
