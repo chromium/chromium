@@ -553,8 +553,6 @@ template("write_build_config") {
     }
     if (defined(invoker.add_view_trace_events) &&
         invoker.add_view_trace_events) {
-      args += [ "--add-view-trace-events" ]
-
       # Adding trace events involves rewriting bytecode and generating a new set
       # of jar files. In order to avoid conflicts between bundles we save the
       # new jars in a bundle specific gen/ directory. The build config for the
@@ -563,24 +561,22 @@ template("write_build_config") {
       # We use the base module's target_gen_dir because non-base modules and the
       # app bundle targets have a reference to it (base_module_target).
       if (_type == "android_app_bundle") {
-        _base_module_target_name =
+        _trace_events_target_name =
             get_label_info(_parent_invoker.base_module_target, "name")
-        _base_module_gen_dir =
-            get_label_info(_base_module_target_name, "target_gen_dir")
+      } else if (defined(invoker.base_module_target)) {
+        _trace_events_target_name =
+            get_label_info(invoker.base_module_target, "name")
       } else {
-        if (defined(invoker.base_module_target)) {
-          _base_module_name = get_label_info(invoker.base_module_target, "name")
-          _base_module_gen_dir =
-              get_label_info(_base_module_name, "target_gen_dir")
-        } else {
-          _grandparent_invoker = _parent_invoker.invoker
-          _base_module_gen_dir =
-              get_label_info(_grandparent_invoker.target_name, "target_gen_dir")
-        }
+        _grandparent_invoker = _parent_invoker.invoker
+        _trace_events_target_name = _grandparent_invoker.target_name
       }
+
+      # FIXME: This should likely be using the base module's target_out_dir
+      #     rather than the current target's.
       args += [
-        "--base-module-gen-dir",
-        rebase_path(_base_module_gen_dir, root_build_dir),
+        "--trace-events-jar-dir",
+        rebase_path("$target_out_dir/$_trace_events_target_name",
+                    root_build_dir),
       ]
     }
     if (defined(invoker.version_name)) {

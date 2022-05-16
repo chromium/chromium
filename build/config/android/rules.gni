@@ -1353,7 +1353,7 @@ if (enable_java_templates) {
       _package_name = "org.chromium.test"
     }
 
-    _resource_arsc_output = "${target_gen_dir}/${target_name}.ap_"
+    _resource_arsc_output = "${target_out_dir}/${target_name}.ap_"
     _compile_resources_target = "${target_name}__compile_resources"
     compile_resources(_compile_resources_target) {
       forward_variables_from(invoker, [ "android_manifest" ])
@@ -4840,7 +4840,7 @@ if (enable_java_templates) {
               "//build/android/bytecode:trace_event_adder"
           _rewritten_jar_target_name = "${target_name}__trace_event_rewritten"
           _rewriter_path = root_build_dir + "/bin/helper/trace_event_adder"
-          _stamp = "${target_gen_dir}/${target_name}.trace_event_rewrite.stamp"
+          _stamp = "${target_out_dir}/${target_name}.trace_event_rewrite.stamp"
           action_with_pydeps(_rewritten_jar_target_name) {
             script = "//build/android/gyp/trace_event_bytecode_rewriter.py"
             inputs = [
@@ -4920,7 +4920,7 @@ if (enable_java_templates) {
       # the internal module name inside the final bundle, in other words,
       # this file *must* be named ${_module.name}.zip
       _create_module_target = "${_target_name}__${_module.name}__create"
-      _module_zip_path = "$target_gen_dir/$target_name/${_module.name}.zip"
+      _module_zip_path = "$target_out_dir/$target_name/${_module.name}.zip"
       create_android_app_bundle_module(_create_module_target) {
         forward_variables_from(invoker,
                                [
