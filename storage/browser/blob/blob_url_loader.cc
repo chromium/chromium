@@ -231,20 +231,12 @@ void BlobURLLoader::HeadersCompleted(
   // TODO(jam): some of this code can be shared with
   // services/network/url_loader.h
 
-  client_->OnReceiveResponse(
-      std::move(response),
-      base::FeatureList::IsEnabled(network::features::kCombineResponseBody)
-          ? std::move(response_body_consumer_handle_)
-          : mojo::ScopedDataPipeConsumerHandle());
+  client_->OnReceiveResponse(std::move(response),
+                             std::move(response_body_consumer_handle_));
   sent_headers_ = true;
 
   if (metadata.has_value())
     client_->OnReceiveCachedMetadata(std::move(metadata.value()));
-
-  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    client_->OnStartLoadingResponseBody(
-        std::move(response_body_consumer_handle_));
-  }
 }
 
 }  // namespace storage

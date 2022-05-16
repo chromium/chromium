@@ -69,7 +69,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   // ContinueWithCodeCache
   //   notify client about cache
   // BindURLLoaderAndContinue
-  // OnStartLoadingResponseBody
+  // OnReceiveResponse
   //   start reading from the pipe
   // OnReadable (zero or more times)
   //   notify client about data
@@ -100,8 +100,6 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle handle) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void CodeCacheReceived(base::Time response_time, mojo_base::BigBuffer data);

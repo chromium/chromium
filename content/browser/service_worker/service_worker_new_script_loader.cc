@@ -25,7 +25,6 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_info.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -263,8 +262,6 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
             *response_head));
   }
 
-  network_loader_state_ = LoaderState::kWaitingForBody;
-
   WriteHeaders(response_head.Clone());
 
   // Don't pass SSLInfo to the client when the original request doesn't ask
@@ -275,14 +272,28 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     response_head->ssl_info.reset();
   }
 
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      body) {
-    OnStartLoadingResponseBodyInternal(std::move(response_head),
-                                       std::move(body));
-  } else {
+  if (!body) {
     client_->OnReceiveResponse(std::move(response_head),
                                mojo::ScopedDataPipeConsumerHandle());
+    return;
   }
+
+  // Create a pair of the consumer and producer for responding to the client.
+  mojo::ScopedDataPipeConsumerHandle client_consumer;
+  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
+      MOJO_RESULT_OK) {
+    CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
+                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+    return;
+  }
+
+  // Pass the consumer handle for responding with the response to the client.
+  client_->OnReceiveResponse(std::move(response_head),
+                             std::move(client_consumer));
+
+  network_consumer_ = std::move(body);
+  network_loader_state_ = LoaderState::kLoadingBody;
+  MaybeStartNetworkConsumerHandleWatcher();
 }
 
 void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
@@ -314,39 +325,6 @@ void ServiceWorkerNewScriptLoader::OnReceiveCachedMetadata(
 void ServiceWorkerNewScriptLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  OnStartLoadingResponseBodyInternal(network::mojom::URLResponseHeadPtr(),
-                                     std::move(consumer));
-}
-
-void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBodyInternal(
-    network::mojom::URLResponseHeadPtr response_head,
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  DCHECK_EQ(LoaderState::kWaitingForBody, network_loader_state_);
-  // Create a pair of the consumer and producer for responding to the client.
-  mojo::ScopedDataPipeConsumerHandle client_consumer;
-  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
-      MOJO_RESULT_OK) {
-    CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
-    return;
-  }
-
-  // Pass the consumer handle for responding with the response to the client.
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      response_head) {
-    client_->OnReceiveResponse(std::move(response_head),
-                               std::move(client_consumer));
-  } else {
-    client_->OnStartLoadingResponseBody(std::move(client_consumer));
-  }
-
-  network_consumer_ = std::move(consumer);
-  network_loader_state_ = LoaderState::kLoadingBody;
-  MaybeStartNetworkConsumerHandleWatcher();
 }
 
 void ServiceWorkerNewScriptLoader::OnComplete(
@@ -427,10 +405,11 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
 }
 
 void ServiceWorkerNewScriptLoader::MaybeStartNetworkConsumerHandleWatcher() {
-  if (network_loader_state_ == LoaderState::kWaitingForBody) {
-    // OnStartLoadingResponseBody() or OnComplete() will continue the sequence.
+  if (network_loader_state_ == LoaderState::kLoadingHeader) {
+    // OnReceiveResponse() or OnComplete() will continue the sequence.
     return;
   }
+
   if (header_writer_state_ != WriterState::kCompleted) {
     DCHECK_EQ(WriterState::kWriting, header_writer_state_);
     // OnWriteHeadersComplete() will continue the sequence.

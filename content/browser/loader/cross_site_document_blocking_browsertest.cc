@@ -385,15 +385,13 @@ class RequestInterceptor {
     // Tell the |original_client_| that the request has completed (and that it
     // can release its URLLoaderClient.
     if (status.error_code == net::OK) {
-      original_client_->OnReceiveResponse(std::move(response_head),
-                                          mojo::ScopedDataPipeConsumerHandle());
-
       mojo::ScopedDataPipeProducerHandle producer_handle;
       mojo::ScopedDataPipeConsumerHandle consumer_handle;
       ASSERT_EQ(mojo::CreateDataPipe(response_body.size() + 1, producer_handle,
                                      consumer_handle),
                 MOJO_RESULT_OK);
-      original_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+      original_client_->OnReceiveResponse(std::move(response_head),
+                                          std::move(consumer_handle));
 
       uint32_t num_bytes = response_body.size();
       EXPECT_EQ(MOJO_RESULT_OK,

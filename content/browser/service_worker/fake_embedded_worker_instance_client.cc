@@ -72,8 +72,6 @@ class FakeEmbeddedWorkerInstanceClient::LoaderClient final
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     auto callback = std::move(callback_);
     std::move(callback).Run();

@@ -97,6 +97,8 @@ interface URLLoaderClient {
   OnReceiveEarlyHints(EarlyHints early_hints);
 
   // Called when the response head is received.
+  // The loader is expected to close its end of the pipe after finishing
+  // writing the body, so that the client knows when it is done reading.
   OnReceiveResponse(URLResponseHead head,
                     handle<data_pipe_consumer>? body);
 
@@ -126,13 +128,6 @@ interface URLLoaderClient {
   // process from net service, and not pass it via renderer process. This can be
   // done after the upcoming network servicification work.
   OnTransferSizeUpdated(int32 transfer_size_diff);
-
-  // Called when the loader starts loading response body. This is called after
-  // OnReceiveResponse is called.
-  //
-  // The loader is expected to close its end of the pipe after finishing
-  // writing the body, so that the client knows when it is done reading.
-  OnStartLoadingResponseBody(handle<data_pipe_consumer> body);
 
   // Called when the loading completes. No notification will be dispatched for
   // this client after this message arrives. |status| has its |ssl_info| field

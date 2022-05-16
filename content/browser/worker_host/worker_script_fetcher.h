@@ -52,7 +52,7 @@ struct SubresourceLoaderParams;
 // NetworkService (PlzWorker):
 // This is an implementation of the URLLoaderClient for web worker's main script
 // fetch. The loader and client bounded with this class are to be unbound and
-// forwarded to the renderer process on OnStartLoadingResponseBody, and the
+// forwarded to the renderer process on OnReceiveResponse, and the
 // resource loader in the renderer process will take them over.
 //
 // WorkerScriptFetcher deletes itself when the ownership of the loader and
@@ -215,8 +215,6 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void DidParseHeaders(network::mojom::ParsedHeadersPtr parsed_headers);

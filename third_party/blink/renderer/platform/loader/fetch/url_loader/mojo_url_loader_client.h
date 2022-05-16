@@ -69,8 +69,6 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
                         OnUploadProgressCallback ack_callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);

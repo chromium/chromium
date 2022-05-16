@@ -215,8 +215,6 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     UpdateRequestResponseStartTime(response_.get());
     response_->encoded_data_length = 0;
     if (is_navigation_request) {
-      client_->OnReceiveResponse(std::move(response_),
-                                 mojo::ScopedDataPipeConsumerHandle());
       SendResponseBody();
       return;
     }
@@ -265,8 +263,6 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       CrossOriginReadBlockingChecker::Result result) {
     switch (result) {
       case CrossOriginReadBlockingChecker::Result::kAllowed:
-        client_->OnReceiveResponse(std::move(response_),
-                                   mojo::ScopedDataPipeConsumerHandle());
         SendResponseBody();
         return;
       case CrossOriginReadBlockingChecker::Result::kNetError:
@@ -281,8 +277,6 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
 
     // Send sanitized response.
     network::corb::SanitizeBlockedResponseHeaders(*response_);
-    client_->OnReceiveResponse(std::move(response_),
-                               mojo::ScopedDataPipeConsumerHandle());
 
     // Send an empty response's body.
     mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
@@ -294,7 +288,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
           network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
       return;
     }
-    client_->OnStartLoadingResponseBody(std::move(pipe_consumer_handle));
+    client_->OnReceiveResponse(std::move(response_),
+                               std::move(pipe_consumer_handle));
 
     // Send a dummy OnComplete message.
     network::URLLoaderCompletionStatus status =
@@ -350,7 +345,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
             weak_factory_.GetWeakPtr(), std::move(pipe_producer_handle),
             std::make_unique<storage::BlobDataHandle>(*blob_data_handle_)));
 
-    client_->OnStartLoadingResponseBody(std::move(pipe_consumer_handle));
+    client_->OnReceiveResponse(std::move(response_),
+                               std::move(pipe_consumer_handle));
   }
 
   void BlobReaderComplete(net::Error result) {

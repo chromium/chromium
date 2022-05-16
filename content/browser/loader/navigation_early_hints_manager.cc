@@ -341,8 +341,15 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
       return;
     }
 
-    if (body)
-      OnStartLoadingResponseBody(std::move(body));
+    if (!body)
+      return;
+
+    if (response_body_drainer_) {
+      mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
+      return;
+    }
+    response_body_drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {}
@@ -353,15 +360,6 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   }
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    if (response_body_drainer_) {
-      mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
-      return;
-    }
-    response_body_drainer_ =
-        std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-  }
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (result_.was_canceled || result_.error_code.has_value()) {
       mojo::ReportBadMessage("NEHM_BAD_COMPLETE");

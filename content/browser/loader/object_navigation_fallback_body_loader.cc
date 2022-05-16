@@ -324,12 +324,6 @@ void ObjectNavigationFallbackBodyLoader::OnTransferSizeUpdated(
   // Not needed so implementation omitted.
 }
 
-void ObjectNavigationFallbackBodyLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  // Should have already happened.
-  NOTREACHED();
-}
-
 void ObjectNavigationFallbackBodyLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   status_ = status;

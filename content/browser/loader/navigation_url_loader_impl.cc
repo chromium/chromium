@@ -790,14 +790,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
   if (head_->mime_type == "application/pdf" || head_->mime_type == "text/pdf")
     early_hints_manager_.reset();
 
-  if (response_body)
-    OnStartLoadingResponseBody(std::move(response_body));
-}
+  if (!response_body)
+    return;
 
-void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle response_body) {
-  LogQueueTimeHistogram("Navigation.QueueTime.OnStartLoadingResponseBody",
-                        resource_request_->is_outermost_main_frame);
   response_body_ = std::move(response_body);
   received_response_ = true;
 

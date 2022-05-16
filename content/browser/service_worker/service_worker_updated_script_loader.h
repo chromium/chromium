@@ -64,7 +64,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   enum class LoaderState {
     kNotStarted,
     kLoadingHeader,
-    kWaitingForBody,
     kLoadingBody,
     kCompleted,
   };
@@ -109,8 +108,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
                         OnUploadProgressCallback ack_callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // Implements ServiceWorkerCacheWriter::WriteObserver.
@@ -194,8 +191,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   // Corresponds to the steps of calls as a URLLoaderClient.
   //
   // CreateLoaderAndStart(): kNotStarted -> kLoadingHeader
-  // OnReceiveResponse(): kLoadingHeader -> kWaitingForBody
-  // OnStartLoadingResponseBody(): kWaitingForBody -> kLoadingBody
+  // OnReceiveResponse(): kLoadingHeader -> kLoadingBody
   // OnComplete(): kLoadingBody -> kCompleted
   //
   // When this loader is created, the state should be kLoadingBody or kCompleted

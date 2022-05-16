@@ -234,8 +234,6 @@ public final class ProductionSupportedFlagList {
                             + " number in the minor version position in the User-Agent string."),
             Flag.baseFeature(NetworkServiceFeatures.URL_LOADER_SYNC_CLIENT,
                     "Optimizes communication between URLLoader and CorsURLLoader."),
-            Flag.baseFeature(NetworkServiceFeatures.COMBINE_RESPONSE_BODY,
-                    "Reduces URLLoaderClient mojo calls."),
             Flag.baseFeature(NetworkServiceFeatures.FASTER_SET_COOKIE, "Optimizes cookie access."),
             Flag.baseFeature(NetworkServiceFeatures.OPTIMIZE_NETWORK_BUFFERS,
                     "Optimizes buffer size for reading from the network or InputStream."),

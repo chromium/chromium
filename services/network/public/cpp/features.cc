@@ -249,10 +249,6 @@ const base::Feature kCorsNonWildcardRequestHeadersSupport{
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
-const base::Feature kCombineResponseBody{"CombineResponseBody",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Don't wait for database write before responding to
 // RestrictedCookieManager::SetCookieFromString.
 const base::Feature kFasterSetCookie{"FasterSetCookie",

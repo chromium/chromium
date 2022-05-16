@@ -178,10 +178,6 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
     // will clean up the preload request when OnReceiveRedirect() is called.
     client_->OnReceiveRedirect(redirect_info, std::move(head));
   }
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    client_->OnStartLoadingResponseBody(std::move(body));
-  }
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (completed_)
       return;

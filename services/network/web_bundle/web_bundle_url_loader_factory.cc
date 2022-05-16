@@ -157,14 +157,6 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     wrapped_->OnTransferSizeUpdated(transfer_size_diff);
   }
 
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    mojo::ScopedDataPipeConsumerHandle consumer =
-        HandleReceiveBody(std::move(body));
-    if (consumer)
-      wrapped_->OnStartLoadingResponseBody(std::move(consumer));
-  }
-
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     if (status.error_code != net::OK) {
       if (factory_)
@@ -232,13 +224,9 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void OnResponse(mojom::URLResponseHeadPtr response) {
-    client_->OnReceiveResponse(std::move(response),
-                               mojo::ScopedDataPipeConsumerHandle());
-  }
-
-  void OnData(mojo::ScopedDataPipeConsumerHandle consumer) {
-    client_->OnStartLoadingResponseBody(std::move(consumer));
+  void OnResponse(mojom::URLResponseHeadPtr response,
+                  mojo::ScopedDataPipeConsumerHandle consumer) {
+    client_->OnReceiveResponse(std::move(response), std::move(consumer));
   }
 
   void OnFail(net::Error error) {
@@ -266,8 +254,6 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
     corb::SanitizeBlockedResponseHeaders(*response_head);
-    client_->OnReceiveResponse(std::move(response_head),
-                               mojo::ScopedDataPipeConsumerHandle());
 
     // Send empty body to the URLLoaderClient.
     mojo::ScopedDataPipeProducerHandle producer;
@@ -277,7 +263,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       return;
     }
     producer.reset();
-    client_->OnStartLoadingResponseBody(std::move(consumer));
+    client_->OnReceiveResponse(std::move(response_head), std::move(consumer));
 
     // CORB responses are reported as a success.
     CompleteBlockedResponse(net::OK, absl::nullopt);
@@ -859,15 +845,13 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
       break;
   }
 
-  loader->OnResponse(std::move(response_head));
-
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     loader->OnFail(net::ERR_INSUFFICIENT_RESOURCES);
     return;
   }
-  loader->OnData(std::move(consumer));
+  loader->OnResponse(std::move(response_head), std::move(consumer));
   source_->ReadToDataPipe(
       std::move(producer), payload_offset, payload_length,
       base::BindOnce(&URLLoader::OnWriteCompleted, loader->GetWeakPtr()));

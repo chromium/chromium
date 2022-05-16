@@ -189,8 +189,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle response_body) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle response_body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -270,7 +268,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
 
   // Set to true if we receive a valid response from a URLLoader, i.e.
-  // URLLoaderClient::OnStartLoadingResponseBody() is called.
+  // URLLoaderClient::OnReceiveResponse() is called.
   bool received_response_ = false;
 
   bool started_ = false;

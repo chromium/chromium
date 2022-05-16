@@ -253,7 +253,17 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   if (estimated_length_ > 0)
     body_content_.reserve(estimated_length_);
 
-  OnStartLoadingResponseBody(std::move(body));
+  if (!body)
+    return;
+
+  serving_from_data_ = true;
+
+  pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+
+  event_queue_.push_back(base::BindOnce(
+      &StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData,
+      base::Unretained(this)));
 }
 
 void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(
@@ -297,19 +307,6 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
   event_queue_.push_back(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated,
                      base::Unretained(this), transfer_size_diff));
-}
-
-void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!forwarding_client_);
-  serving_from_data_ = true;
-
-  pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-
-  event_queue_.push_back(base::BindOnce(
-      &StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData,
-      base::Unretained(this)));
 }
 
 void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,

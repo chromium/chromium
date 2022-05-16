@@ -372,8 +372,6 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
                         OnUploadProgressCallback callback) override;
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void StartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
@@ -1546,11 +1544,6 @@ void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
     client_->OnTransferSizeUpdated(transfer_size_diff);
   else
     response_metadata_->transfer_size += transfer_size_diff;
-}
-
-void InterceptionJob::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  NOTREACHED();
 }
 
 void InterceptionJob::StartLoadingResponseBody(

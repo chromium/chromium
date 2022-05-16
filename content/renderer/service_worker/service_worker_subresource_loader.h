@@ -135,10 +135,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
                                  absl::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
-  // Calls url_loader_client_->OnReceiveResponse() with |response_head_|.
   void CommitResponseHeaders();
 
-  // Calls url_loader_client_->OnStartLoadingResponseBody() with
+  // Calls url_loader_client_->OnReceiveResponse() with |response_head_| and
   // |response_body|.
   void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body);
 

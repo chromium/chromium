@@ -636,14 +636,6 @@ void CorsURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void CorsURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(network_loader_);
-  DCHECK(forwarding_client_);
-  DCHECK(!deferred_redirect_url_);
-  forwarding_client_->OnStartLoadingResponseBody(std::move(body));
-}
-
 void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);

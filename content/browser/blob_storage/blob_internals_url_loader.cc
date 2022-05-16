@@ -24,8 +24,6 @@ void StartBlobInternalsURLLoader(
 
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(client_remote));
-  client->OnReceiveResponse(std::move(resource_response),
-                            mojo::ScopedDataPipeConsumerHandle());
 
   std::string output = storage::ViewBlobInternalsJob::GenerateHTML(
       blob_storage_context->context());
@@ -46,7 +44,8 @@ void StartBlobInternalsURLLoader(
   result = producer_handle->EndWriteData(num_bytes);
   CHECK_EQ(result, MOJO_RESULT_OK);
 
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
+  client->OnReceiveResponse(std::move(resource_response),
+                            std::move(consumer_handle));
   network::URLLoaderCompletionStatus status(net::OK);
   status.encoded_data_length = output.size();
   status.encoded_body_length = output.size();

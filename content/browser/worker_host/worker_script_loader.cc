@@ -270,12 +270,6 @@ void WorkerScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void WorkerScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  client_->OnStartLoadingResponseBody(std::move(consumer));
-}
-
 void WorkerScriptLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

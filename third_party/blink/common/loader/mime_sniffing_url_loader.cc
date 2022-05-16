@@ -72,8 +72,17 @@ void MimeSniffingURLLoader::Start(
   source_url_loader_.Bind(std::move(source_url_loader_remote));
   source_url_client_receiver_.Bind(std::move(source_url_client_receiver),
                                    task_runner_);
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+  if (!body)
+    return;
+
+  state_ = State::kSniffing;
+  body_consumer_handle_ = std::move(body);
+  body_consumer_watcher_.Watch(
+      body_consumer_handle_.get(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(&MimeSniffingURLLoader::OnBodyReadable,
+                          base::Unretained(this)));
+  body_consumer_watcher_.ArmOrNotify();
 }
 
 void MimeSniffingURLLoader::OnReceiveEarlyHints(
@@ -115,18 +124,6 @@ void MimeSniffingURLLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
 
 void MimeSniffingURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   destination_url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void MimeSniffingURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  state_ = State::kSniffing;
-  body_consumer_handle_ = std::move(body);
-  body_consumer_watcher_.Watch(
-      body_consumer_handle_.get(),
-      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(&MimeSniffingURLLoader::OnBodyReadable,
-                          base::Unretained(this)));
-  body_consumer_watcher_.ArmOrNotify();
 }
 
 void MimeSniffingURLLoader::OnComplete(

@@ -220,8 +220,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
                         OnUploadProgressCallback ack_callback) override {}
   void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     on_complete_called_++;
     if (on_complete_callback_)

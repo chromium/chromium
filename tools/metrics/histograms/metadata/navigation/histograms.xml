@@ -1086,7 +1086,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <token key="Method">
     <variant name="OnReceiveRedirect"/>
     <variant name="OnReceiveResponse"/>
-    <variant name="OnStartLoadingResponseBody"/>
   </token>
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>

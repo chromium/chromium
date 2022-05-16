@@ -218,11 +218,6 @@ void PrefetchURLLoader::OnReceiveRedirect(
   forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
 }
 
-void PrefetchURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  NOTREACHED();
-}
-
 void PrefetchURLLoader::OnUploadProgress(int64_t current_position,
                                          int64_t total_size,
                                          base::OnceCallback<void()> callback) {

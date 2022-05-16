@@ -230,8 +230,6 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     response->mime_type = *mime_type;
     response->headers = CreateHeaders(*mime_type, charset);
     response->content_length = content_length;
-    client_->OnReceiveResponse(std::move(response),
-                               mojo::ScopedDataPipeConsumerHandle());
 
     // Set up the Mojo DataPipe used for streaming the response payload to the
     // client.
@@ -244,7 +242,7 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
       return;
     }
 
-    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+    client_->OnReceiveResponse(std::move(response), std::move(consumer_handle));
 
     // Start reading the contents of |mmap_| into the response DataPipe.
     body_writer_ =

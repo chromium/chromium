@@ -637,10 +637,10 @@ TEST_F(ServiceWorkerJobTest, Register_FailToStartWorker) {
 
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = GURL("https://www.example.com/");
-  scoped_refptr<ServiceWorkerRegistration> registration = RunRegisterJob(
-      GURL("https://www.example.com/service_worker.js"),
-      blink::StorageKey(url::Origin::Create(options.scope)), options,
-      blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed);
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      RunRegisterJob(GURL("https://www.example.com/service_worker.js"),
+                     blink::StorageKey(url::Origin::Create(options.scope)),
+                     options, blink::ServiceWorkerStatusCode::kErrorNetwork);
 
   ASSERT_EQ(scoped_refptr<ServiceWorkerRegistration>(nullptr), registration);
 }

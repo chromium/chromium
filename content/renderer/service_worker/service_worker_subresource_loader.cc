@@ -19,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -113,12 +112,6 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    DCHECK(url_loader_client_.is_bound());
-    url_loader_client_->OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -594,23 +587,14 @@ void ServiceWorkerSubresourceLoader::StartResponse(
 void ServiceWorkerSubresourceLoader::CommitResponseHeaders() {
   TransitionToStatus(Status::kSentHeader);
   DCHECK(url_loader_client_.is_bound());
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
-    return;  // Will be sent in CommitResponseBody.
-
-  // TODO(kinuko): Fill the ssl_info.
-  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                        mojo::ScopedDataPipeConsumerHandle());
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   TransitionToStatus(Status::kSentBody);
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-    url_loader_client_->OnReceiveResponse(response_head_.Clone(),
-                                          std::move(response_body));
-  } else {
-    url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
-  }
+  // TODO(kinuko): Fill the ssl_info.
+  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                        std::move(response_body));
 }
 
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
@@ -813,18 +797,12 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
   DCHECK(!side_data_reading_complete_);
   side_data_reading_complete_ = true;
 
-  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      metadata.has_value()) {
-    url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
-  }
-
   DCHECK(data_pipe.is_valid());
   CommitResponseBody(std::move(data_pipe));
 
   // See https://crbug.com/1294238. The cached meta data needs to be sent after
   // the response head.
-  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
-      metadata.has_value()) {
+  if (metadata.has_value()) {
     url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
   }
 

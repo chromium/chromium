@@ -219,13 +219,6 @@ void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void CacheAliasSearchPrefetchURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(forwarding_client_);
-  forwarding_client_->OnStartLoadingResponseBody(std::move(body));
-  return;
-}
-
 void CacheAliasSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK && can_fallback_) {

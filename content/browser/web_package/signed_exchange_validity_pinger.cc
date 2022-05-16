@@ -117,8 +117,12 @@ void SignedExchangeValidityPinger::OnReceiveEarlyHints(
 void SignedExchangeValidityPinger::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
-  if (body)
-    OnStartLoadingResponseBody(std::move(body));
+  if (!body)
+    return;
+
+  DCHECK(!pipe_drainer_);
+  pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
 }
 
 void SignedExchangeValidityPinger::OnReceiveRedirect(
@@ -148,13 +152,6 @@ void SignedExchangeValidityPinger::OnReceiveCachedMetadata(
 void SignedExchangeValidityPinger::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   NOTREACHED();
-}
-
-void SignedExchangeValidityPinger::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!pipe_drainer_);
-  pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
 }
 
 void SignedExchangeValidityPinger::OnComplete(

@@ -171,11 +171,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
     target_client_->OnTransferSizeUpdated(transfer_size_diff);
   }
 
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    target_client_->OnStartLoadingResponseBody(std::move(body));
-  }
-
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     target_client_->OnComplete(status);
   }

@@ -119,18 +119,18 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
 
     *original_client_receiver =
         source_loader_client_remote_.BindNewPipeAndPassReceiver();
+
+    if (no_body_)
+      return;
+
+    DCHECK(!source_body_handle_);
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    EXPECT_EQ(MOJO_RESULT_OK,
+              mojo::CreateDataPipe(nullptr, source_body_handle_, consumer));
+    *body = std::move(consumer);
   }
 
   void LoadResponseBody(const std::string& body) {
-    if (!source_body_handle_.is_valid()) {
-      // Send OnStartLoadingResponseBody() if it's the first call.
-      mojo::ScopedDataPipeConsumerHandle consumer;
-      EXPECT_EQ(MOJO_RESULT_OK,
-                mojo::CreateDataPipe(nullptr, source_body_handle_, consumer));
-      source_loader_client_remote()->OnStartLoadingResponseBody(
-          std::move(consumer));
-    }
-
     MojoDataPipeSender sender(std::move(source_body_handle_));
     base::RunLoop loop;
     sender.Start(body, loop.QuitClosure());
@@ -163,8 +163,11 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     return 0;
   }
 
+  void ResetProducer() { source_body_handle_.reset(); }
+
   bool is_intercepted() const { return is_intercepted_; }
   bool is_resumed() const { return is_resumed_; }
+  void set_no_body() { no_body_ = true; }
 
   network::TestURLLoaderClient* destination_loader_client() {
     return &destination_loader_client_;
@@ -177,6 +180,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
  private:
   bool is_intercepted_ = false;
   bool is_resumed_ = false;
+  bool no_body_ = false;
   network::mojom::URLResponseHeadPtr updated_response_head_;
   mojo::ScopedDataPipeConsumerHandle body_;
 
@@ -312,6 +316,7 @@ TEST_F(MimeSniffingThrottleTest, NoBody) {
   GURL response_url("https://example.com");
   auto response_head = network::mojom::URLResponseHead::New();
   bool defer = false;
+  delegate->set_no_body();
   throttle->WillProcessResponse(response_url, response_head.get(), &defer);
   EXPECT_TRUE(defer);
   EXPECT_TRUE(delegate->is_intercepted());
@@ -340,12 +345,7 @@ TEST_F(MimeSniffingThrottleTest, EmptyBody) {
   EXPECT_TRUE(defer);
   EXPECT_TRUE(delegate->is_intercepted());
 
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
-  delegate->source_loader_client_remote()->OnStartLoadingResponseBody(
-      std::move(consumer));
-  producer.reset();  // The pipe is empty.
+  delegate->ResetProducer();
 
   delegate->source_loader_client_remote()->OnComplete(
       network::URLLoaderCompletionStatus());
@@ -507,9 +507,6 @@ TEST_F(MimeSniffingThrottleTest, Abort_NoBodyPipe) {
   // Release a pipe for the body on the receiver side.
   delegate->destination_loader_client()->response_body_release();
   task_environment_.RunUntilIdle();
-
-  // Send the body after the pipe is closed. The the loader aborts.
-  delegate->LoadResponseBody("This is a text.");
 
   // Calling OnComplete should not crash.
   delegate->CompleteResponse();

@@ -155,12 +155,6 @@ void WorkerMainScriptLoader::OnReceiveCachedMetadata(
 void WorkerMainScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 }
 
-void WorkerMainScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle handle) {
-  // This has already happened in the browser process.
-  NOTREACHED();
-}
-
 void WorkerMainScriptLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK)

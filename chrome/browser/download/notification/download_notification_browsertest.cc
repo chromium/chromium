@@ -174,16 +174,16 @@ class SlowDownloadInterceptor {
   }
 
   void HandleKnownSize(content::URLLoaderInterceptor::RequestParams* params) {
-    SendHead(params, "application/octet-stream", /*content_length=*/1024);
-    SendBody(params, "some random data");
+    SendHead(params, "application/octet-stream", /*content_length=*/1024,
+             "some random data");
     base::AutoLock lock(lock_);
     pending_requests_.push_back(
         std::make_unique<PendingRequest>(std::move(*params)));
   }
 
   void HandleUnknownSize(content::URLLoaderInterceptor::RequestParams* params) {
-    SendHead(params, "application/octet-stream", /*content_length=*/-1);
-    SendBody(params, "some random data");
+    SendHead(params, "application/octet-stream", /*content_length=*/-1,
+             "some random data");
     base::AutoLock lock(lock_);
     pending_requests_.push_back(
         std::make_unique<PendingRequest>(std::move(*params)));
@@ -208,8 +208,7 @@ class SlowDownloadInterceptor {
 
   static void SendOk(content::URLLoaderInterceptor::RequestParams* params) {
     std::string response = "OK";
-    SendHead(params, "text/http", response.size());
-    SendBody(params, response);
+    SendHead(params, "text/http", response.size(), response);
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;
     params->client->OnComplete(status);
@@ -217,7 +216,8 @@ class SlowDownloadInterceptor {
 
   static void SendHead(content::URLLoaderInterceptor::RequestParams* params,
                        std::string mime_type,
-                       int64_t content_length) {
+                       int64_t content_length,
+                       std::string data) {
     auto head = network::mojom::URLResponseHead::New();
     std::string headers =
         "HTTP/1.1 200 OK\n"
@@ -231,12 +231,7 @@ class SlowDownloadInterceptor {
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
     head->headers->GetMimeType(&head->mime_type);
-    params->client->OnReceiveResponse(std::move(head),
-                                      mojo::ScopedDataPipeConsumerHandle());
-  }
 
-  static void SendBody(content::URLLoaderInterceptor::RequestParams* params,
-                       std::string data) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     ASSERT_EQ(
@@ -249,7 +244,8 @@ class SlowDownloadInterceptor {
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(data.size(), write_size);
     ASSERT_TRUE(consumer_handle.is_valid());
-    params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
+    params->client->OnReceiveResponse(std::move(head),
+                                      std::move(consumer_handle));
   }
 
   const std::map<std::string, Handler> handlers_;

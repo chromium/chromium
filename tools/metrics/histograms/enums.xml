@@ -54459,7 +54459,6 @@ from previous Chrome versions.
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
-  <int value="-2109929623" label="CombineResponseBody:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
@@ -59887,7 +59886,6 @@ from previous Chrome versions.
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
   <int value="1482839038" label="AutofillCreditCardAuthentication:enabled"/>
-  <int value="1483766877" label="CombineResponseBody:disabled"/>
   <int value="1483827594" label="webview-selective-image-inversion-darkening"/>
   <int value="1483980996" label="MacSyscallSandbox:enabled"/>
   <int value="1486092162"

@@ -212,11 +212,6 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
-    OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body) {
-  target_client_->OnStartLoadingResponseBody(std::move(body));
-}
-
-void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
     SetOnCompleteRecordMetricsCallback(
         OnCompleteRecordMetricsCallback callback) {
   on_complete_metrics_callback_ = std::move(callback);

@@ -114,11 +114,6 @@ void SignedExchangePrefetchHandler::OnTransferSizeUpdated(
   NOTREACHED();
 }
 
-void SignedExchangePrefetchHandler::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  NOTREACHED();
-}
-
 void SignedExchangePrefetchHandler::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   // We only reach here on error, since successful completion of the

@@ -283,8 +283,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->content_length = file_size;
 
   client_->OnReceiveResponse(std::move(response_head),
-                             mojo::ScopedDataPipeConsumerHandle());
-  client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+                             std::move(consumer_handle));
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

@@ -78,7 +78,6 @@ class ServiceWorkerInstalledScriptLoader
   std::unique_ptr<ServiceWorkerInstalledScriptReader> reader_;
 
   std::string encoding_;
-  mojo::ScopedDataPipeConsumerHandle body_handle_;
   uint64_t body_size_ = 0;
   std::unique_ptr<mojo::DataPipeDrainer> metadata_drainer_;
 };

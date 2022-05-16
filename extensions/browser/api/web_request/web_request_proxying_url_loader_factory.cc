@@ -481,19 +481,6 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   target_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void WebRequestProxyingURLLoaderFactory::InProgressRequest::
-    OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT_WITH_FLOW0(
-      "extensions",
-      "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
-      "OnStartLoadingResponseBody",
-      TRACE_ID_WITH_SCOPE(kWebRequestProxyingURLLoaderFactoryScope,
-                          TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-
-  target_client_->OnStartLoadingResponseBody(std::move(body));
-}
-
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   TRACE_EVENT_WITH_FLOW2(

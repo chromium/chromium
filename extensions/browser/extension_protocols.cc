@@ -92,7 +92,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -158,11 +157,6 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     real_client_->OnTransferSizeUpdated(transfer_size_diff);
-  }
-
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {
-    real_client_->OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -727,13 +721,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       return;
     }
 
-    if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
-      client_->OnReceiveResponse(std::move(head), std::move(consumer_handle));
-    } else {
-      client_->OnReceiveResponse(std::move(head),
-                                 mojo::ScopedDataPipeConsumerHandle());
-      client_->OnStartLoadingResponseBody(std::move(consumer_handle));
-    }
+    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle));
 
     CompleteRequestAndDeleteThis(net::OK);
   }
