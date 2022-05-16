@@ -18,7 +18,7 @@
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint</item>
+        <item name="thumbTint">@color/switch_thumb_tint_list</item>
         <item name="trackTint">@color/switch_track_tint</item>
         <item name="trackTintMode">src_in</item>
     </style>
