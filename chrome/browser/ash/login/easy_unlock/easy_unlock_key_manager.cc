@@ -156,11 +156,9 @@ void EasyUnlockKeyManager::DeviceDataListToRemoteDeviceList(
     base::ListValue* device_list) {
   device_list->ClearList();
   for (size_t i = 0; i < data_list.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> device_dict(
-        new base::DictionaryValue);
-    DeviceDataToRemoteDeviceDictionary(account_id, data_list[i],
-                                       device_dict.get());
-    device_list->Append(std::move(device_dict));
+    base::DictionaryValue device_dict;
+    DeviceDataToRemoteDeviceDictionary(account_id, data_list[i], &device_dict);
+    device_list->GetList().Append(std::move(device_dict));
   }
 }
 
