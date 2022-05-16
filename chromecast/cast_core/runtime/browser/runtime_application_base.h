@@ -5,13 +5,17 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 
+#include <string>
+#include <vector>
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/common/value.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/v2/runtime_application_service.castcore.pb.h"
@@ -82,6 +86,18 @@ class RuntimeApplicationBase : public RuntimeApplication {
             StatusCallback callback) final;
   void Launch(cast::runtime::LaunchApplicationRequest request,
               StatusCallback callback) final;
+
+ protected:
+  // Returns renderer features.
+  base::Value GetRendererFeatures() const;
+  // Returns if app is audio only.
+  bool GetIsAudioOnly() const;
+  // Returns if feature permissions are enforced.
+  bool GetEnforceFeaturePermissions() const;
+  // Returns feature permissions.
+  std::vector<int> GetFeaturePermissions() const;
+  // Returns additional feature permission origins.
+  std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
 
  private:
   // RuntimeApplicationService handlers:

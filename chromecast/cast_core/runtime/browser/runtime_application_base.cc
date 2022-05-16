@@ -5,13 +5,31 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
+#include "chromecast/common/feature_constants.h"
 
 namespace chromecast {
+
+namespace {
+
+// Parses renderer features.
+const cast::common::Dictionary::Entry* FindEntry(
+    const std::string& key,
+    const cast::common::Dictionary& dict) {
+  auto iter = base::ranges::find_if(
+      dict.entries(), [&key](const auto& entry) { return entry.key() == key; });
+  if (iter == dict.entries().end()) {
+    return nullptr;
+  }
+  return &*iter;
+}
+
+}  // namespace
 
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
@@ -138,17 +156,103 @@ void RuntimeApplicationBase::Launch(
                      weak_factory_.GetWeakPtr()));
 }
 
+base::Value RuntimeApplicationBase::GetRendererFeatures() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto* entry = FindEntry(feature::kCastCoreRendererFeatures,
+                                GetAppConfig().extra_features());
+  if (!entry) {
+    return base::Value();
+  }
+  DCHECK(entry->value().has_dictionary());
+
+  base::Value::Dict renderer_features;
+  for (const cast::common::Dictionary::Entry& feature :
+       entry->value().dictionary().entries()) {
+    base::Value::Dict dict;
+    if (feature.has_value()) {
+      DCHECK(feature.value().has_dictionary());
+      for (const cast::common::Dictionary::Entry& feature_arg :
+           feature.value().dictionary().entries()) {
+        DCHECK(feature_arg.has_value());
+        if (feature_arg.value().value_case() == cast::common::Value::kFlag) {
+          dict.Set(feature_arg.key(), feature_arg.value().flag());
+        } else if (feature_arg.value().value_case() ==
+                   cast::common::Value::kText) {
+          dict.Set(feature_arg.key(), feature_arg.value().text());
+        } else {
+          LOG(FATAL) << "No or unsupported value was set for the feature: "
+                     << feature.key();
+        }
+      }
+    }
+    DVLOG(1) << "Renderer feature created: " << feature.key();
+    renderer_features.Set(feature.key(), std::move(dict));
+  }
+
+  return base::Value(std::move(renderer_features));
+}
+
+bool RuntimeApplicationBase::GetIsAudioOnly() const {
+  const auto* entry =
+      FindEntry(feature::kCastCoreIsAudioOnly, GetAppConfig().extra_features());
+  if (entry && entry->value().value_case() == cast::common::Value::kFlag) {
+    return entry->value().flag();
+  }
+  return false;
+}
+
+bool RuntimeApplicationBase::GetEnforceFeaturePermissions() const {
+  const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
+                                GetAppConfig().extra_features());
+  if (entry && entry->value().value_case() == cast::common::Value::kFlag) {
+    return entry->value().flag();
+  }
+  return false;
+}
+
+std::vector<int> RuntimeApplicationBase::GetFeaturePermissions() const {
+  std::vector<int> feature_permissions;
+  const auto* entry = FindEntry(feature::kCastCoreFeaturePermissions,
+                                GetAppConfig().extra_features());
+  if (entry) {
+    DCHECK(entry->value().value_case() == cast::common::Value::kArray);
+    base::ranges::for_each(
+        entry->value().array().values(),
+        [&feature_permissions](const cast::common::Value& value) {
+          DCHECK(value.value_case() == cast::common::Value::kNumber);
+          feature_permissions.push_back(value.number());
+        });
+  }
+  return feature_permissions;
+}
+
+std::vector<std::string>
+RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
+  std::vector<std::string> feature_permission_origins;
+  const auto* entry = FindEntry(feature::kCastCoreFeaturePermissionOrigins,
+                                GetAppConfig().extra_features());
+  if (entry) {
+    DCHECK(entry->value().value_case() == cast::common::Value::kArray);
+    base::ranges::for_each(
+        entry->value().array().values(),
+        [&feature_permission_origins](const cast::common::Value& value) {
+          DCHECK(value.value_case() == cast::common::Value::kText);
+          feature_permission_origins.push_back(value.text());
+        });
+  }
+  return feature_permission_origins;
+}
+
 void RuntimeApplicationBase::OnApplicationInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Load the application URL (now that we have the bindings set up).
-  const std::vector<int32_t> feature_permissions;
-  const std::vector<std::string> additional_feature_permission_origins;
+  GetCastWebContents()->AddRendererFeatures(GetRendererFeatures());
+
   // TODO(b/203580094): Currently we assume the app is not audio only.
   GetCastWebContents()->SetAppProperties(
-      GetAppConfig().app_id(), GetCastSessionId(), false /*is_audio_app*/,
-      GetApplicationUrl(), false /*enforce_feature_permissions*/,
-      feature_permissions, additional_feature_permission_origins);
+      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(),
+      GetApplicationUrl(), GetEnforceFeaturePermissions(),
+      GetFeaturePermissions(), GetAdditionalFeaturePermissionOrigins());
   GetCastWebContents()->LoadUrl(GetApplicationUrl());
 
   // Show the web view.
@@ -231,34 +335,6 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   CastWebView::Scoped cast_web_view =
       web_service_->CreateWebViewInternal(std::move(params));
   DCHECK(cast_web_view);
-
-  // Apply Cast features to the web content.
-  const auto& cast_features = GetAppConfig().cast_features();
-  if (!cast_features.empty()) {
-    base::DictionaryValue renderer_features;
-    for (const auto& feature : cast_features) {
-      base::DictionaryValue dict;
-      for (const auto& feature_value : feature.values()) {
-        switch (feature_value.value_case()) {
-          case cast::common::CastFeature::Value::kFlag:
-            dict.SetBoolKey(feature_value.key(), feature_value.flag());
-            break;
-          case cast::common::CastFeature::Value::kText:
-            dict.SetStringKey(feature_value.key(), feature_value.text());
-            break;
-          case cast::common::CastFeature::Value::VALUE_NOT_SET:
-            LOG(FATAL) << "No value was set for the feature: "
-                       << feature.name();
-        }
-      }
-      DVLOG(1) << "Renderer feature created: " << feature.name();
-      renderer_features.SetKey(feature.name(), std::move(dict));
-    }
-    cast_web_view->cast_web_contents()->AddRendererFeatures(
-        std::move(renderer_features));
-    LOG(INFO) << "Renderer features set: size=" << cast_features.size();
-  }
-
   return cast_web_view;
 }
 

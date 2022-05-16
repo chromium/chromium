@@ -202,6 +202,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//third_party/abseil-cpp:absl",
+    "//third_party/cast_core/public/src/proto/common:value_proto",
     "//third_party/cast_core/public/src/proto/core:cast_core_service_proto_castcore",
     "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto_castcore",
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore",

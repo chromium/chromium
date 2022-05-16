@@ -92,10 +92,9 @@ void WebRuntimeApplication::InnerContentsCreated(
   // Bind inner CastWebContents with the same session id and app id as the
   // root CastWebContents so that the same url rewrites are applied.
   inner_contents->SetAppProperties(
-      GetAppConfig().app_id(), GetCastSessionId(), false /*is_audio_app*/,
-      GetApplicationUrl(), false /*enforce_feature_permissions*/,
-      feature_permissions, additional_feature_permission_origins);
-
+      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(),
+      GetApplicationUrl(), GetEnforceFeaturePermissions(),
+      GetFeaturePermissions(), GetAdditionalFeaturePermissionOrigins());
   CastWebContents::Observer::Observe(inner_contents);
 
   // Attach URL request rewrire rules to the inner CastWebContents.
