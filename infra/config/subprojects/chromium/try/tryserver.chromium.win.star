@@ -90,6 +90,13 @@ try_.builder(
 
 try_.builder(
     name = "win_chromium_compile_rel_ng",
+    mirrors = [
+        "ci/Win Builder",
+    ],
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
 )
 
 try_.builder(
@@ -188,6 +195,10 @@ try_.builder(
 try_.builder(
     name = "win7-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/Win Builder",
+        "ci/Win7 Tests (1)",
+    ],
     cores = 16,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
