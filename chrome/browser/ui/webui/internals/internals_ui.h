@@ -48,6 +48,12 @@ class InternalsUI : public ui::MojoWebUIController {
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUIDataSource> source_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<
+      mojom::user_education_internals::UserEducationInternalsPageHandler>
+      user_education_handler_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_
