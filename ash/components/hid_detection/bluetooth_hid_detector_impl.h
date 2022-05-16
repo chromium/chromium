@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
 
 #include "ash/components/hid_detection/bluetooth_hid_detector.h"
+
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
@@ -13,8 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 // Concrete BluetoothHidDetector implementation that uses CrosBluetoothConfig.
 class BluetoothHidDetectorImpl
@@ -151,7 +151,6 @@ class BluetoothHidDetectorImpl
   base::WeakPtrFactory<BluetoothHidDetectorImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_

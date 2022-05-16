@@ -4,8 +4,7 @@
 
 #include "ash/components/hid_detection/fake_bluetooth_hid_detector.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 FakeBluetoothHidDetector::FakeBluetoothHidDetector() = default;
 
@@ -54,5 +53,4 @@ void FakeBluetoothHidDetector::PerformStopBluetoothHidDetection() {
   is_bluetooth_hid_detection_active_ = false;
 }
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection

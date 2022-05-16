@@ -25,6 +25,10 @@ enum class HidType {
   kMaxValue = kUnknownPointer
 };
 
+// Returns true if |device| is a HID with pointing capabilities (i.e. a mouse or
+// touchpad).
+bool IsDevicePointer(const device::mojom::InputDeviceInfo& device);
+
 // Record each HID that is connected while the HID detection screen is shown.
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
 

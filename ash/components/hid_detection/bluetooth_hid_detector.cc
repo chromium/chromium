@@ -5,8 +5,7 @@
 #include "ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "ash/constants/ash_features.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 BluetoothHidPairingState::BluetoothHidPairingState(const std::string& code,
                                                    uint8_t num_keys_entered)
@@ -96,5 +95,4 @@ void BluetoothHidDetector::NotifyBluetoothHidDetectionStatusChanged() {
   delegate_->OnBluetoothHidStatusChanged();
 }
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection

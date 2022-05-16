@@ -18,7 +18,7 @@ absl::optional<HidType> GetHidType(
   if (device.is_touchscreen || device.is_tablet)
     return HidType::kTouchscreen;
 
-  if (device.is_mouse || device.is_touchpad) {
+  if (IsDevicePointer(device)) {
     switch (device.type) {
       case InputDeviceType::TYPE_BLUETOOTH:
         return HidType::kBluetoothPointer;
@@ -48,6 +48,10 @@ absl::optional<HidType> GetHidType(
 }
 
 }  // namespace
+
+bool IsDevicePointer(const device::mojom::InputDeviceInfo& device) {
+  return device.is_mouse || device.is_touchpad;
+}
 
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
   absl::optional<HidType> hid_type = GetHidType(device);

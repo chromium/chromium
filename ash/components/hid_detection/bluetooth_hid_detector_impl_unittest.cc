@@ -18,8 +18,7 @@
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 namespace {
 
 using ash::hid_detection::BluetoothHidDetector;
@@ -993,5 +992,4 @@ TEST_F(BluetoothHidDetectorImplTest, AddDevice_DisplayCodeAuths) {
                                     /*pairing_state=*/absl::nullopt);
 }
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection

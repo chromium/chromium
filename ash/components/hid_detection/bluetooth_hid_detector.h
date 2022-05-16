@@ -9,8 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 // TODO(gordonseto): Move this to HidDetectionManager when that class is
 // created.
@@ -119,7 +118,6 @@ class BluetoothHidDetector {
   Delegate* delegate_ = nullptr;
 };
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_H_

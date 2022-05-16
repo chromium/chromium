@@ -9,8 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace hid_detection {
+namespace ash::hid_detection {
 
 class FakeBluetoothHidDetector : public BluetoothHidDetector {
  public:
@@ -47,7 +46,6 @@ class FakeBluetoothHidDetector : public BluetoothHidDetector {
   bool is_bluetooth_hid_detection_active_ = false;
 };
 
-}  // namespace hid_detection
-}  // namespace ash
+}  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_FAKE_BLUETOOTH_HID_DETECTOR_H_
