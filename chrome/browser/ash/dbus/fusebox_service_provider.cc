@@ -13,11 +13,9 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
@@ -306,14 +304,7 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
 
 }  // namespace
 
-FuseBoxServiceProvider::OnCloseCallbackTracker::OnCloseCallbackTracker(
-    base::ScopedClosureRunner on_close_callback)
-    : on_close_callback_runner(std::move(on_close_callback)) {}
-
-FuseBoxServiceProvider::OnCloseCallbackTracker::~OnCloseCallbackTracker() =
-    default;
-
-FuseBoxServiceProvider::FuseBoxServiceProvider() : next_tracker_key_(1) {}
+FuseBoxServiceProvider::FuseBoxServiceProvider() = default;
 
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
@@ -354,23 +345,15 @@ void FuseBoxServiceProvider::Close(
   dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
+    ReplyToClose(common.fs_context, method_call, std::move(sender),
                  common.error_code);
     return;
   }
 
-  uint64_t cookie = 0;
-  if (!reader.PopUint64(&cookie)) {
-    LOG(ERROR) << "No Cookie";
-    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
-                 base::File::Error::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
-
-  trackers_.erase(cookie);
-
-  ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
-               base::File::Error::FILE_OK);
+  // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
+  // implement MTP device writing.
+  ReplyToClose(common.fs_context, method_call, std::move(sender),
+               base::File::Error::FILE_ERROR_INVALID_OPERATION);
 }
 
 void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
@@ -380,93 +363,15 @@ void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
   dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToOpenFailure(std::move(common.fs_context), method_call,
-                       std::move(sender), common.error_code);
+    ReplyToOpenFailure(common.fs_context, method_call, std::move(sender),
+                       common.error_code);
     return;
   }
 
-  int32_t flags = 0;
-  if (!reader.PopInt32(&flags)) {
-    LOG(ERROR) << "No Flags";
-    ReplyToOpenFailure(std::move(common.fs_context), method_call,
-                       std::move(sender),
-                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
-  int base_file_flags = base::File::FLAG_OPEN;
-  switch (mode_t(flags) & O_ACCMODE) {
-    case O_RDWR:
-      base_file_flags |= base::File::FLAG_READ | base::File::FLAG_WRITE;
-      break;
-    case O_WRONLY:
-      base_file_flags |= base::File::FLAG_WRITE;
-      break;
-    default:
-      base_file_flags |= base::File::FLAG_READ;
-      break;
-  }
-
-  auto reply_to_open_typical = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&FuseBoxServiceProvider::ReplyToOpenTypical,
-                     weak_ptr_factory_.GetWeakPtr(), common.fs_context,
-                     method_call, std::move(sender)));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          base::IgnoreResult(&storage::FileSystemOperationRunner::OpenFile),
-          // Unretained is safe: common.fs_context owns its operation_runner.
-          base::Unretained(common.fs_context->operation_runner()),
-          common.fs_url, base_file_flags, std::move(reply_to_open_typical)));
-}
-
-void FuseBoxServiceProvider::ReplyToOpenTypical(
-    scoped_refptr<storage::FileSystemContext> fs_context,  // See (§) above.
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender,
-    base::File file,
-    base::ScopedClosureRunner on_close_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  uint64_t cookie = next_tracker_key_++;
-  scoped_refptr<OnCloseCallbackTracker> tracker;
-  if (on_close_callback) {
-    tracker = base::MakeRefCounted<OnCloseCallbackTracker>(
-        std::move(on_close_callback));
-    trackers_[cookie] = tracker;
-  } else {
-    // No-op. We don't need to track when client and server have closed, since
-    // the action we'd otherwise take is to run a null on_close_callback.
-  }
-
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-
-  writer.AppendInt32(static_cast<int32_t>(file.error_details()));
-  writer.AppendUint64(cookie);
-  if (file.IsValid()) {
-    // AppendFileDescriptor will dup its file-descriptor argument.
-    writer.AppendFileDescriptor(file.GetPlatformFile());
-  }
-
-  std::move(sender).Run(std::move(response));
-
-  // Call base::File::Close, which can block, off the UI thread.
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {
-          base::MayBlock(),
-          base::TaskPriority::BEST_EFFORT,
-          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-      },
-      base::BindOnce(
-          [](base::File file, scoped_refptr<OnCloseCallbackTracker> tracker) {
-            file.Close();
-            // The |tracker| destructor will run after |file| was closed.
-          },
-          std::move(file), tracker));
+  // Fail with an invalid operation error for now. TODO(crbug.com/1249754)
+  // implement MTP device writing.
+  ReplyToOpenFailure(common.fs_context, method_call, std::move(sender),
+                     base::File::Error::FILE_ERROR_INVALID_OPERATION);
 }
 
 void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
