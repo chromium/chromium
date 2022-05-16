@@ -2194,7 +2194,7 @@ if (enable_java_templates) {
   #     with this file as the base.
   template("android_apk_or_module") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    assert(defined(invoker.android_manifest))
+    _template_name = target_name
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
@@ -2207,8 +2207,6 @@ if (enable_java_templates) {
     if (defined(invoker.target_sdk_version)) {
       _target_sdk_version = invoker.target_sdk_version
     }
-
-    _template_name = target_name
 
     _is_bundle_module =
         defined(invoker.is_bundle_module) && invoker.is_bundle_module
@@ -3141,16 +3139,6 @@ if (enable_java_templates) {
         }
       }
 
-      _keystore_path = android_keystore_path
-      _keystore_name = android_keystore_name
-      _keystore_password = android_keystore_password
-
-      if (defined(invoker.keystore_path)) {
-        _keystore_path = invoker.keystore_path
-        _keystore_name = invoker.keystore_name
-        _keystore_password = invoker.keystore_password
-      }
-
       if (_incremental_apk) {
         _incremental_compiled_resources_path = "${_base_path}_incremental.ap_"
         _incremental_compile_resources_target_name =
@@ -3193,6 +3181,9 @@ if (enable_java_templates) {
                                [
                                  "expected_libs_and_assets",
                                  "expected_libs_and_assets_base",
+                                 "keystore_name",
+                                 "keystore_path",
+                                 "keystore_password",
                                  "native_lib_placeholders",
                                  "secondary_abi_loadable_modules",
                                  "secondary_native_lib_placeholders",
@@ -3208,9 +3199,6 @@ if (enable_java_templates) {
         }
 
         build_config = _build_config
-        keystore_name = _keystore_name
-        keystore_path = _keystore_path
-        keystore_password = _keystore_password
         min_sdk_version = _min_sdk_version
         uncompress_shared_libraries = _uncompress_shared_libraries
 

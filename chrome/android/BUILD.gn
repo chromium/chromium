@@ -5,6 +5,7 @@
 import("//build/android/resource_sizes.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/android/system_image.gni")
 import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
@@ -2862,6 +2863,12 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       expected_libs_and_assets = "expectations/trichrome_library_apk.$target_cpu.libs_and_assets.expected"
     }
   }
+
+  # Can be used to install compressed apks on system images.
+  system_image_stub_apk("trichrome_library_system_stub_apk") {
+    package_name = chrome_public_manifest_package
+    stub_output = "$root_out_dir/apks/TrichromeLibrary-Stub.apk"
+  }
 }
 
 if (android_64bit_target_cpu) {
@@ -3694,6 +3701,22 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     if (_enable_libs_and_assets_verification) {
       expected_libs_and_assets = "expectations/trichrome_chrome_bundle.$target_cpu.libs_and_assets.expected"
     }
+  }
+
+  # Creates .zip of .apk splits suitable for the Android system image.
+  system_image_apks("trichrome_chrome_system_zip") {
+    apk_or_bundle_target = ":trichrome_chrome_bundle"
+    input_apk_or_bundle = "$root_out_dir/apks/TrichromeChrome.aab"
+    output = "$root_out_dir/apks/TrichromeChromeSystem.zip"
+    stub_output = "$root_out_dir/apks/TrichromeChrome-Stub.apk"
+  }
+
+  # Combines all splits into a single .apk for the Android system image.
+  system_image_apks("trichrome_chrome_system_apk") {
+    apk_or_bundle_target = ":trichrome_chrome_bundle"
+    input_apk_or_bundle = "$root_out_dir/apks/TrichromeChrome.aab"
+    output = "$root_out_dir/apks/TrichromeChromeSystem.apk"
+    fuse_apk = true
   }
 
   if (is_official_build) {

@@ -2437,13 +2437,13 @@ if (enable_java_templates) {
 
     action_with_pydeps(target_name) {
       script = _script
-      depfile = "$target_gen_dir/${target_name}.d"
+      _depfile = "$target_gen_dir/${target_name}.d"
       inputs = _inputs
       outputs = _outputs
       deps = _deps
       args = _args + [
                "--depfile",
-               rebase_path(depfile, root_build_dir),
+               rebase_path(_depfile, root_build_dir),
              ]
     }
   }
@@ -2679,9 +2679,18 @@ if (enable_java_templates) {
     _apksigner = "$android_sdk_build_tools/lib/apksigner.jar"
     _zipalign = "$android_sdk_build_tools/zipalign"
 
+    _keystore_path = android_keystore_path
+    _keystore_name = android_keystore_name
+    _keystore_password = android_keystore_password
+
+    if (defined(invoker.keystore_path)) {
+      _keystore_path = invoker.keystore_path
+      _keystore_name = invoker.keystore_name
+      _keystore_password = invoker.keystore_password
+    }
+
     _inputs = [
-      invoker.build_config,
-      invoker.keystore_path,
+      _keystore_path,
       invoker.packaged_resources_path,
       _apksigner,
       _zipalign,
@@ -2694,28 +2703,30 @@ if (enable_java_templates) {
         rebase_path(invoker.packaged_resources_path, root_build_dir)
     _rebased_packaged_apk_path =
         rebase_path(invoker.output_apk_path, root_build_dir)
-    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
     _args = [
       "--resource-apk=$_rebased_compiled_resources_path",
       "--output-apk=$_rebased_packaged_apk_path",
-      "--assets=@FileArg($_rebased_build_config:assets)",
-      "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
       "--apksigner-jar",
       rebase_path(_apksigner, root_build_dir),
       "--zipalign-path",
       rebase_path(_zipalign, root_build_dir),
       "--key-path",
-      rebase_path(invoker.keystore_path, root_build_dir),
+      rebase_path(_keystore_path, root_build_dir),
       "--key-name",
-      invoker.keystore_name,
+      _keystore_name,
       "--key-passwd",
-      invoker.keystore_password,
+      _keystore_password,
       "--min-sdk-version=${invoker.min_sdk_version}",
-
-      # TODO(mlopatkin) We are relying on the fact that build_config is an APK
-      # build_config.
-      "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)",
     ]
+    if (defined(invoker.build_config)) {
+      _inputs += [ invoker.build_config ]
+      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+      _args += [
+        "--assets=@FileArg($_rebased_build_config:assets)",
+        "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
+        "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)",
+      ]
+    }
     if (is_official_build) {
       _args += [ "--best-compression" ]
     }
@@ -2794,10 +2805,10 @@ if (enable_java_templates) {
         _failure_file =
             "$expectations_failure_dir/" +
             string_replace(invoker.expected_libs_and_assets, "/", "_")
-        inputs = [
-          invoker.build_config,
-          invoker.expected_libs_and_assets,
-        ]
+        inputs = [ invoker.expected_libs_and_assets ]
+        if (defined(invoker.build_config)) {
+          inputs += [ invoker.build_config ]
+        }
         deps = [ invoker.build_config_dep ]
         outputs = [
           _actual_file,

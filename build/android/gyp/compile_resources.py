@@ -12,6 +12,7 @@ final R.java class for all resource packages the APK depends on.
 This will crunch images with aapt2.
 """
 
+import argparse
 import collections
 import contextlib
 import filecmp
@@ -51,7 +52,26 @@ def _ParseArgs(args):
   Returns:
     An options object as from argparse.ArgumentParser.parse_args()
   """
-  parser, input_opts, output_opts = resource_utils.ResourceArgsParser()
+  parser = argparse.ArgumentParser(description=__doc__)
+
+  input_opts = parser.add_argument_group('Input options')
+  output_opts = parser.add_argument_group('Output options')
+
+  input_opts.add_argument('--include-resources',
+                          action='append',
+                          required=True,
+                          help='Paths to arsc resource files used to link '
+                          'against. Can be specified multiple times.')
+
+  input_opts.add_argument(
+      '--dependencies-res-zips',
+      default=[],
+      help='Resources zip archives from dependents. Required to '
+      'resolve @type/foo references into dependent libraries.')
+
+  input_opts.add_argument(
+      '--extra-res-packages',
+      help='Additional package names to generate R.java files for.')
 
   input_opts.add_argument(
       '--aapt2-path', required=True, help='Path to the Android aapt2 tool.')
@@ -176,6 +196,21 @@ def _ParseArgs(args):
       action='store_true',
       help='Whether to strip xml namespaces from processed xml resources.')
 
+  input_opts.add_argument(
+      '--is-bundle-module',
+      action='store_true',
+      help='Whether resources are being generated for a bundle module.')
+
+  input_opts.add_argument(
+      '--uses-split',
+      help='Value to set uses-split to in the AndroidManifest.xml.')
+
+  input_opts.add_argument(
+      '--extra-verification-manifest',
+      help='Path to AndroidManifest.xml which should be merged into base '
+      'manifest when performing verification.')
+
+  build_utils.AddDepfileOption(output_opts)
   output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
   output_opts.add_argument('--proto-path', help='Apk output for proto format.')
 
@@ -184,7 +219,6 @@ def _ParseArgs(args):
 
   output_opts.add_argument(
       '--srcjar-out',
-      required=True,
       help='Path to srcjar to contain generated R.java.')
 
   output_opts.add_argument('--r-text-out',
@@ -200,25 +234,14 @@ def _ParseArgs(args):
   output_opts.add_argument(
       '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.')
 
-  input_opts.add_argument(
-      '--is-bundle-module',
-      action='store_true',
-      help='Whether resources are being generated for a bundle module.')
-
-  input_opts.add_argument(
-      '--uses-split',
-      help='Value to set uses-split to in the AndroidManifest.xml.')
-
-  input_opts.add_argument(
-      '--extra-verification-manifest',
-      help='Path to AndroidManifest.xml which should be merged into base '
-      'manifest when performing verification.')
-
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
-  resource_utils.HandleCommonOptions(options)
-
+  options.include_resources = build_utils.ParseGnList(options.include_resources)
+  options.dependencies_res_zips = build_utils.ParseGnList(
+      options.dependencies_res_zips)
+  options.extra_res_packages = build_utils.ParseGnList(
+      options.extra_res_packages)
   options.locale_allowlist = build_utils.ParseGnList(options.locale_allowlist)
   options.shared_resources_allowlist_locales = build_utils.ParseGnList(
       options.shared_resources_allowlist_locales)
@@ -830,9 +853,10 @@ def _PackageApk(options, build):
   link_proc = subprocess.Popen(link_command)
 
   # Create .res.info file in parallel.
-  _CreateResourceInfoFile(path_info, build.info_path,
-                          options.dependencies_res_zips)
-  logging.debug('Created .res.info file')
+  if options.info_path:
+    logging.debug('Creating .res.info file')
+    _CreateResourceInfoFile(path_info, build.info_path,
+                            options.dependencies_res_zips)
 
   exit_code = link_proc.wait()
   assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
@@ -1010,18 +1034,20 @@ def main(args):
       # will be created in the base module.
       apk_package_name = None
 
-    logging.debug('Creating R.srcjar')
-    resource_utils.CreateRJavaFiles(
-        build.srcjar_dir, apk_package_name, build.r_txt_path,
-        options.extra_res_packages, rjava_build_options, options.srcjar_out,
-        custom_root_package_name, grandparent_custom_package_name,
-        options.extra_main_r_text_files)
-    build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
+    if options.srcjar_out:
+      logging.debug('Creating R.srcjar')
+      resource_utils.CreateRJavaFiles(
+          build.srcjar_dir, apk_package_name, build.r_txt_path,
+          options.extra_res_packages, rjava_build_options, options.srcjar_out,
+          custom_root_package_name, grandparent_custom_package_name,
+          options.extra_main_r_text_files)
+      build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
 
     logging.debug('Copying outputs')
     _WriteOutputs(options, build)
 
   if options.depfile:
+    assert options.srcjar_out, 'Update first output below and remove assert.'
     depfile_deps = (options.dependencies_res_zips +
                     options.dependencies_res_zip_overlays +
                     options.extra_main_r_text_files + options.include_resources)
