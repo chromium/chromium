@@ -181,10 +181,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
     k3rdParty,
   };
 
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete. If updating this, also update
-  // ChromeAuthenticatorRequestDelegate.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On Linux, some configurations aren't supported because of bluez
   // limitations. This macro maps the expected result in that case.
 #define NONE_ON_LINUX(r) (Result::kNone)

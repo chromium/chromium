@@ -668,9 +668,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     }
   }
 
-  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
-  // switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
+  // No caBLEv1 on Linux. It tends to crash bluez.
   if (std::any_of(pairings_from_extension.begin(),
                   pairings_from_extension.end(),
                   [](const device::CableDiscoveryData& v) -> bool {
