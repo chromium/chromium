@@ -10,20 +10,20 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace translate {
-class TranslateAcceptLanguages;
+namespace language {
+class AcceptLanguagesService;
 }
 
 namespace ios_web_view {
 
 class WebViewBrowserState;
 
-// TranslateAcceptLanguagesFactory is a way to associate a
-// TranslateAcceptLanguages instance to a BrowserState.
+// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesService instance to a BrowserState.
 class WebViewTranslateAcceptLanguagesFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static translate::TranslateAcceptLanguages* GetForBrowserState(
+  static language::AcceptLanguagesService* GetForBrowserState(
       WebViewBrowserState* browser_state);
   static WebViewTranslateAcceptLanguagesFactory* GetInstance();
 

@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
@@ -27,7 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -995,7 +995,7 @@ void TranslateManager::FilterForUserPrefs(
     TranslateTriggerDecision* decision,
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
-  TranslateAcceptLanguages* accept_languages =
+  language::AcceptLanguagesService* accept_languages =
       translate_client_->GetTranslateAcceptLanguages();
   // Don't translate any user blocklisted languages.
   if (!translate_prefs->CanTranslateLanguage(accept_languages,

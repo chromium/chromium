@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/core/browser/translate_accept_languages.h"
+#include "components/language/core/browser/accept_languages_service.h"
 
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_download_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace translate {
+namespace language {
 
-TranslateAcceptLanguages::TranslateAcceptLanguages(
+AcceptLanguagesService::AcceptLanguagesService(
     PrefService* prefs,
     const char* accept_languages_pref)
     : accept_languages_pref_(accept_languages_pref) {
@@ -28,33 +28,32 @@ TranslateAcceptLanguages::TranslateAcceptLanguages(
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       accept_languages_pref,
-      base::BindRepeating(&TranslateAcceptLanguages::InitAcceptLanguages,
+      base::BindRepeating(&AcceptLanguagesService::InitAcceptLanguages,
                           base::Unretained(this), prefs));
 }
 
-TranslateAcceptLanguages::~TranslateAcceptLanguages() {}
+AcceptLanguagesService::~AcceptLanguagesService() = default;
 
 // static
-bool TranslateAcceptLanguages::CanBeAcceptLanguage(base::StringPiece language) {
+bool AcceptLanguagesService::CanBeAcceptLanguage(base::StringPiece language) {
   SCOPED_UMA_HISTOGRAM_TIMER("Translate.AcceptLanguages.CanBeAcceptDuration");
 
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
 
-  const std::string locale =
-      TranslateDownloadManager::GetInstance()->application_locale();
+  const std::string ui_locale = base::i18n::GetConfiguredLocale();
 
-  return l10n_util::IsLanguageAccepted(locale, accept_language);
+  return l10n_util::IsLanguageAccepted(ui_locale, accept_language);
 }
 
-bool TranslateAcceptLanguages::IsAcceptLanguage(
+bool AcceptLanguagesService::IsAcceptLanguage(
     base::StringPiece language) const {
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
   return accept_languages_.find(accept_language) != accept_languages_.end();
 }
 
-void TranslateAcceptLanguages::InitAcceptLanguages(PrefService* prefs) {
+void AcceptLanguagesService::InitAcceptLanguages(PrefService* prefs) {
   DCHECK(prefs);
   // Build the languages.
   accept_languages_.clear();
@@ -71,4 +70,4 @@ void TranslateAcceptLanguages::InitAcceptLanguages(PrefService* prefs) {
   }
 }
 
-}  // namespace translate
+}  // namespace language

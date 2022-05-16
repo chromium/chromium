@@ -12,15 +12,15 @@
 
 class ChromeBrowserState;
 
-namespace translate {
-class TranslateAcceptLanguages;
+namespace language {
+class AcceptLanguagesService;
 }
 
-// TranslateAcceptLanguagesFactory is a way to associate a
-// TranslateAcceptLanguages instance to a BrowserState.
+// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesService instance to a BrowserState.
 class TranslateAcceptLanguagesFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static translate::TranslateAcceptLanguages* GetForBrowserState(
+  static language::AcceptLanguagesService* GetForBrowserState(
       ChromeBrowserState* browser_state);
   static TranslateAcceptLanguagesFactory* GetInstance();
 

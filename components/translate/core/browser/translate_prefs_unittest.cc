@@ -19,13 +19,13 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/translate_util.h"
@@ -1140,17 +1140,17 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
 
   translate_prefs_->ResetToDefaults();
 
-  TranslateAcceptLanguages translate_accept_languages(
+  language::AcceptLanguagesService accept_languages_service(
       &prefs_, language::prefs::kAcceptLanguages);
 
   // Unblocked language.
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "fr"));
+  EXPECT_TRUE(
+      translate_prefs_->CanTranslateLanguage(&accept_languages_service, "fr"));
 
   // Blocked language.
   translate_prefs_->BlockLanguage("en");
-  EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "en"));
+  EXPECT_FALSE(
+      translate_prefs_->CanTranslateLanguage(&accept_languages_service, "en"));
 
   // When the detailed language settings are enabled blocked languages not in
   // the accept languages list are blocked. When the detailed language settings
@@ -1158,10 +1158,10 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   translate_prefs_->BlockLanguage("de");
   if (TranslatePrefs::IsDetailedLanguageSettingsEnabled()) {
     EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &translate_accept_languages, "de"));
+        &accept_languages_service, "de"));
   } else {
     EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-        &translate_accept_languages, "de"));
+        &accept_languages_service, "de"));
   }
 
 // When the detailed language settings are enabled blocked languages not in
@@ -1171,14 +1171,14 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
     base::test::ScopedFeatureList scoped_feature_list(
         language::kDetailedLanguageSettings);
     EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &translate_accept_languages, "de"));
+        &accept_languages_service, "de"));
   }
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   {  // Desktop scoped feature.
     base::test::ScopedFeatureList scoped_feature_list(
         language::kDesktopDetailedLanguageSettings);
     EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &translate_accept_languages, "de"));
+        &accept_languages_service, "de"));
   }
 #endif
 
@@ -1190,7 +1190,7 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
          {"enforce_ranker", "false"},
          {"backoff_threshold", "1"}});
     EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-        &translate_accept_languages, "en"));
+        &accept_languages_service, "en"));
   }
 }
 

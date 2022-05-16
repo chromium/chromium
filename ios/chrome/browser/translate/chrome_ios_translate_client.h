@@ -19,8 +19,11 @@
 
 class PrefService;
 
+namespace language {
+class AcceptLanguagesService;
+}
+
 namespace translate {
-class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
 }  // namespace translate
@@ -53,7 +56,7 @@ class ChromeIOSTranslateClient
   translate::IOSTranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
-  translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
+  language::AcceptLanguagesService* GetTranslateAcceptLanguages() override;
   int GetInfobarIconID() const override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)

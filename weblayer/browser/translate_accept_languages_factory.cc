@@ -6,19 +6,19 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 
 namespace weblayer {
 
 // static
-translate::TranslateAcceptLanguages*
+language::AcceptLanguagesService*
 TranslateAcceptLanguagesFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<translate::TranslateAcceptLanguages*>(
+  return static_cast<language::AcceptLanguagesService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -31,14 +31,14 @@ TranslateAcceptLanguagesFactory::GetInstance() {
 
 TranslateAcceptLanguagesFactory::TranslateAcceptLanguagesFactory()
     : BrowserContextKeyedServiceFactory(
-          "TranslateAcceptLanguages",
+          "AcceptLanguagesService",
           BrowserContextDependencyManager::GetInstance()) {}
 
 TranslateAcceptLanguagesFactory::~TranslateAcceptLanguagesFactory() = default;
 
 KeyedService* TranslateAcceptLanguagesFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  return new translate::TranslateAcceptLanguages(
+  return new language::AcceptLanguagesService(
       user_prefs::UserPrefs::Get(browser_context),
       language::prefs::kAcceptLanguages);
 }

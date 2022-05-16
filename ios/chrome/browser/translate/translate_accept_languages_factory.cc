@@ -7,42 +7,42 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
 namespace {
 
-// TranslateAcceptLanguagesService is a thin container for
-// TranslateAcceptLanguages to enable associating it with a BrowserState.
-class TranslateAcceptLanguagesService : public KeyedService {
+// AcceptLanguagesServiceForBrowserState is a thin container for
+// AcceptLanguagesService to enable associating it with a BrowserState.
+class AcceptLanguagesServiceForBrowserState : public KeyedService {
  public:
-  explicit TranslateAcceptLanguagesService(PrefService* prefs);
+  explicit AcceptLanguagesServiceForBrowserState(PrefService* prefs);
 
-  TranslateAcceptLanguagesService(const TranslateAcceptLanguagesService&) =
-      delete;
-  TranslateAcceptLanguagesService& operator=(
-      const TranslateAcceptLanguagesService&) = delete;
+  AcceptLanguagesServiceForBrowserState(
+      const AcceptLanguagesServiceForBrowserState&) = delete;
+  AcceptLanguagesServiceForBrowserState& operator=(
+      const AcceptLanguagesServiceForBrowserState&) = delete;
 
-  ~TranslateAcceptLanguagesService() override;
+  ~AcceptLanguagesServiceForBrowserState() override;
 
-  // Returns the associated TranslateAcceptLanguages.
-  translate::TranslateAcceptLanguages& accept_languages() {
+  // Returns the associated AcceptLanguagesService.
+  language::AcceptLanguagesService& accept_languages() {
     return accept_languages_;
   }
 
  private:
-  translate::TranslateAcceptLanguages accept_languages_;
+  language::AcceptLanguagesService accept_languages_;
 };
 
-TranslateAcceptLanguagesService::TranslateAcceptLanguagesService(
+AcceptLanguagesServiceForBrowserState::AcceptLanguagesServiceForBrowserState(
     PrefService* prefs)
     : accept_languages_(prefs, language::prefs::kAcceptLanguages) {}
 
-TranslateAcceptLanguagesService::~TranslateAcceptLanguagesService() {
-}
+AcceptLanguagesServiceForBrowserState::
+    ~AcceptLanguagesServiceForBrowserState() {}
 
 }  // namespace
 
@@ -54,19 +54,18 @@ TranslateAcceptLanguagesFactory::GetInstance() {
 }
 
 // static
-translate::TranslateAcceptLanguages*
+language::AcceptLanguagesService*
 TranslateAcceptLanguagesFactory::GetForBrowserState(ChromeBrowserState* state) {
-  TranslateAcceptLanguagesService* service =
-      static_cast<TranslateAcceptLanguagesService*>(
+  AcceptLanguagesServiceForBrowserState* service =
+      static_cast<AcceptLanguagesServiceForBrowserState*>(
           GetInstance()->GetServiceForBrowserState(state, true));
   return &service->accept_languages();
 }
 
 TranslateAcceptLanguagesFactory::TranslateAcceptLanguagesFactory()
     : BrowserStateKeyedServiceFactory(
-          "TranslateAcceptLanguagesService",
-          BrowserStateDependencyManager::GetInstance()) {
-}
+          "AcceptLanguagesServiceForBrowserState",
+          BrowserStateDependencyManager::GetInstance()) {}
 
 TranslateAcceptLanguagesFactory::~TranslateAcceptLanguagesFactory() {
 }
@@ -76,7 +75,7 @@ TranslateAcceptLanguagesFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<TranslateAcceptLanguagesService>(
+  return std::make_unique<AcceptLanguagesServiceForBrowserState>(
       browser_state->GetPrefs());
 }
 

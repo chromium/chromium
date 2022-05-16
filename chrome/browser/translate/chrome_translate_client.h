@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/autofill_assistant/browser/public/runtime_observer.h"
+#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/browser/per_frame_content_translate_driver.h"
@@ -28,9 +29,12 @@ class WebContents;
 
 class PrefService;
 
+namespace language {
+class AcceptLanguagesService;
+}
+
 namespace translate {
 class LanguageState;
-class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
 class TranslateMessage;
@@ -67,9 +71,10 @@ class ChromeTranslateClient
   static std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
       PrefService* prefs);
 
-  // Helper method to return the TranslateAcceptLanguages instance associated
+  // Helper method to return the AcceptLanguagesService instance associated
   // with |browser_context|.
-  static translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages(
+  // TODO(crbug.com/949253): Rename this to GetAcceptLanguageService.
+  static language::AcceptLanguagesService* GetTranslateAcceptLanguages(
       content::BrowserContext* browser_context);
 
   // Helper method to return the TranslateManager instance associated with
@@ -89,7 +94,7 @@ class ChromeTranslateClient
   translate::TranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
-  translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
+  language::AcceptLanguagesService* GetTranslateAcceptLanguages() override;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)

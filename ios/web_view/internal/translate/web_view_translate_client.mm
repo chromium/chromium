@@ -46,7 +46,7 @@ WebViewTranslateClient::WebViewTranslateClient(
     translate::TranslateRanker* translate_ranker,
     language::LanguageModel* language_model,
     web::WebState* web_state,
-    translate::TranslateAcceptLanguages* accept_languages)
+    language::AcceptLanguagesService* accept_languages)
     : pref_service_(pref_service),
       translate_manager_(this, translate_ranker, language_model),
       translate_driver_(web_state,
@@ -114,7 +114,7 @@ WebViewTranslateClient::GetTranslatePrefs() {
   return std::make_unique<translate::TranslatePrefs>(GetPrefs());
 }
 
-translate::TranslateAcceptLanguages*
+language::AcceptLanguagesService*
 WebViewTranslateClient::GetTranslateAcceptLanguages() {
   return accept_languages_;
 }

@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/core/browser/translate_accept_languages.h"
+#include "components/language/core/browser/accept_languages_service.h"
 
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace translate {
+using translate::TranslateDownloadManager;
+
+namespace language {
 namespace {
 
 // RAII class to set the TranslateDownloadManager application locale, and then
@@ -30,11 +32,11 @@ class TranslateLocaleRestorer {
   const std::string existing_locale_;
 };
 
-TEST(TranslateAcceptLanguagesTest, TestIsAcceptLanguage) {
+TEST(AcceptLanguagesServiceTest, TestIsAcceptLanguage) {
   const char* const pref_setting = "translate-accept-languages";
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterStringPref(pref_setting, "en-US,es,zh-CN");
-  TranslateAcceptLanguages accept_languages(&prefs, pref_setting);
+  AcceptLanguagesService accept_languages(&prefs, pref_setting);
 
   // All valid.
   EXPECT_TRUE(accept_languages.IsAcceptLanguage("en"));
@@ -49,23 +51,23 @@ TEST(TranslateAcceptLanguagesTest, TestIsAcceptLanguage) {
   EXPECT_FALSE(accept_languages.IsAcceptLanguage("zh"));
 }
 
-TEST(TranslateAcceptLanguagesTest, TestCanBeAcceptLanguage) {
+TEST(AcceptLanguagesServiceTest, TestCanBeAcceptLanguage) {
   TranslateLocaleRestorer locale_restorer("es");
 
   // Valid accept languages.
-  EXPECT_TRUE(TranslateAcceptLanguages::CanBeAcceptLanguage("en"));
-  EXPECT_TRUE(TranslateAcceptLanguages::CanBeAcceptLanguage("en-US"));
-  EXPECT_TRUE(TranslateAcceptLanguages::CanBeAcceptLanguage("es"));
-  EXPECT_TRUE(TranslateAcceptLanguages::CanBeAcceptLanguage("es-419"));
-  EXPECT_TRUE(TranslateAcceptLanguages::CanBeAcceptLanguage("zh-CN"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("en"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("en-US"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("es"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("es-419"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("zh-CN"));
 
   // Not valid format.
-  EXPECT_FALSE(TranslateAcceptLanguages::CanBeAcceptLanguage("en-us"));
-  EXPECT_FALSE(TranslateAcceptLanguages::CanBeAcceptLanguage("zh-Hant"));
+  EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("en-us"));
+  EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("zh-Hant"));
 
   // Not valid language.
-  EXPECT_FALSE(TranslateAcceptLanguages::CanBeAcceptLanguage("xx"));
+  EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("xx"));
 }
 
 }  // namespace
-}  // namespace translate
+}  // namespace language

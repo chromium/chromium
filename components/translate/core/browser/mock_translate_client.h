@@ -38,7 +38,8 @@ class MockTranslateClient : public TranslateClient {
 
   std::unique_ptr<TranslatePrefs> GetTranslatePrefs() override;
 
-  MOCK_METHOD0(GetTranslateAcceptLanguages, TranslateAcceptLanguages*());
+  MOCK_METHOD0(GetTranslateAcceptLanguages,
+               language::AcceptLanguagesService*());
   MOCK_CONST_METHOD0(GetInfobarIconID, int());
 
 #if !defined(USE_AURA)

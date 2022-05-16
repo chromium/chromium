@@ -33,6 +33,7 @@ class PrefRegistrySyncable;
 
 namespace language {
 class LanguagePrefs;
+class AcceptLanguagesService;
 }
 
 namespace translate {
@@ -80,8 +81,6 @@ constexpr int kNeverTranslateShortcutMinimumDenials = 2;
 #else
 constexpr int kNeverTranslateShortcutMinimumDenials = 3;
 #endif
-
-class TranslateAcceptLanguages;
 
 // This class holds various info about a language, that are related to Translate
 // Preferences and Language Settings.
@@ -322,7 +321,7 @@ class TranslatePrefs {
   // Gets the user selected language list from language settings.
   void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
-  bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
+  bool CanTranslateLanguage(language::AcceptLanguagesService* accept_languages,
                             base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);

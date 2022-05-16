@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_H_
-#define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_H_
+#ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_ACCEPT_LANGUAGES_SERVICE_H_
+#define COMPONENTS_LANGUAGE_CORE_BROWSER_ACCEPT_LANGUAGES_SERVICE_H_
 
 #include <set>
 #include <string>
@@ -14,24 +14,24 @@
 
 class PrefService;
 
-namespace translate {
+namespace language {
 
-// TranslateAcceptLanguages tracks the value of the "Accept-Language" HTTP
+// AcceptLanguagesService tracks the value of the "Accept-Language" HTTP
 // header.
-class TranslateAcceptLanguages : public KeyedService {
+class AcceptLanguagesService : public KeyedService {
  public:
   // |accept_languages_pref| is the path to the preference storing the accept
   // languages.
-  TranslateAcceptLanguages(PrefService* prefs,
-                           const char* accept_languages_pref);
+  AcceptLanguagesService(PrefService* prefs, const char* accept_languages_pref);
 
-  TranslateAcceptLanguages(const TranslateAcceptLanguages&) = delete;
-  TranslateAcceptLanguages& operator=(const TranslateAcceptLanguages&) = delete;
+  AcceptLanguagesService(const AcceptLanguagesService&) = delete;
+  AcceptLanguagesService& operator=(const AcceptLanguagesService&) = delete;
 
-  ~TranslateAcceptLanguages() override;
+  ~AcceptLanguagesService() override;
 
-  // Returns true if |language| is available as Accept-Languages. |language|
-  // will be converted if it has the synonym of accept language.
+  // Returns true if |language| is available as Accept-Languages for the given
+  // |display_locale|. |language| will be converted if it has the synonym of
+  // accept language.
   static bool CanBeAcceptLanguage(base::StringPiece language);
 
   // Returns true if the passed language has been configured by the user as an
@@ -54,6 +54,6 @@ class TranslateAcceptLanguages : public KeyedService {
   const std::string accept_languages_pref_;
 };
 
-}  // namespace translate
+}  // namespace language
 
-#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_H_
+#endif  // COMPONENTS_LANGUAGE_CORE_BROWSER_ACCEPT_LANGUAGES_SERVICE_H_

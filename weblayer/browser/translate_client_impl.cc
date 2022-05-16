@@ -114,7 +114,7 @@ TranslateClientImpl::GetTranslatePrefs() {
   return CreateTranslatePrefs(GetPrefs());
 }
 
-translate::TranslateAcceptLanguages*
+language::AcceptLanguagesService*
 TranslateClientImpl::GetTranslateAcceptLanguages() {
   return TranslateAcceptLanguagesFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());

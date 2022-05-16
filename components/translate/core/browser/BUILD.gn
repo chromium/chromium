@@ -9,8 +9,6 @@ static_library("browser") {
     "language_state.cc",
     "language_state.h",
     "page_translated_details.h",
-    "translate_accept_languages.cc",
-    "translate_accept_languages.h",
     "translate_browser_metrics.cc",
     "translate_browser_metrics.h",
     "translate_client.h",
@@ -113,7 +111,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "language_state_unittest.cc",
-    "translate_accept_languages_unittest.cc",
     "translate_browser_metrics_unittest.cc",
     "translate_language_list_unittest.cc",
     "translate_manager_unittest.cc",

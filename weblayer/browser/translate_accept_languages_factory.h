@@ -8,14 +8,14 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-namespace translate {
-class TranslateAcceptLanguages;
+namespace language {
+class AcceptLanguagesService;
 }
 
 namespace weblayer {
 
-// TranslateAcceptLanguagesFactory is a way to associate a
-// TranslateAcceptLanguages instance to a BrowserContext.
+// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesService instance to a BrowserContext.
 class TranslateAcceptLanguagesFactory
     : public BrowserContextKeyedServiceFactory {
  public:
@@ -24,7 +24,7 @@ class TranslateAcceptLanguagesFactory
   TranslateAcceptLanguagesFactory& operator=(
       const TranslateAcceptLanguagesFactory&) = delete;
 
-  static translate::TranslateAcceptLanguages* GetForBrowserContext(
+  static language::AcceptLanguagesService* GetForBrowserContext(
       content::BrowserContext* browser_context);
   static TranslateAcceptLanguagesFactory* GetInstance();
 
