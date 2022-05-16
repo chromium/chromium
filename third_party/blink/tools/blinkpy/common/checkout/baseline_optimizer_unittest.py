@@ -72,6 +72,11 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release']
             },
+            'Fake Test Linux HighDPI': {
+                'port_name': 'linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
+                'flag_specific': 'highdpi',
+            },
             'Fake Test Mac11.0': {
                 'port_name': 'mac-mac11',
                 'specifiers': ['Mac11', 'Release']

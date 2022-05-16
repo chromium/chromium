@@ -61,6 +61,22 @@ class BuilderList(object):
             assert 'port_name' in builders_dict[builder]
             assert ('android' in specifiers or
                     len(builders_dict[builder]['specifiers']) == 2)
+        self._flag_spec_to_port = self._find_ports_for_flag_specific_options()
+
+    def _find_ports_for_flag_specific_options(self):
+        flag_spec_to_port = {}
+        for builder_name, builder in self._builders.items():
+            option = self.flag_specific_option(builder_name)
+            if not option:
+                continue
+            port_name = self.port_name_for_builder_name(builder_name)
+            maybe_port_name = flag_spec_to_port.get(option)
+            if maybe_port_name and maybe_port_name != port_name:
+                raise ValueError(
+                    'Flag-specific suite %r can only run on one port, got: '
+                    '%r, %r' % (option, maybe_port_name, port_name))
+            flag_spec_to_port[option] = port_name
+        return flag_spec_to_port
 
     @staticmethod
     def load_default_builder_list(filesystem):
@@ -136,6 +152,9 @@ class BuilderList(object):
     def port_name_for_builder_name(self, builder_name):
         return self._builders[builder_name]['port_name']
 
+    def port_name_for_flag_specific_option(self, option):
+        return self._flag_spec_to_port[option]
+
     def specifiers_for_builder(self, builder_name):
         return self._builders[builder_name]['specifiers']
 
@@ -153,6 +172,13 @@ class BuilderList(object):
 
     def flag_specific_option(self, builder_name):
         return self._builders[builder_name].get('flag_specific', None)
+
+    def flag_specific_options_for_port_name(self, port_name):
+        return {
+            option
+            for option, port in self._flag_spec_to_port.items()
+            if port == port_name
+        }
 
     def platform_specifier_for_builder(self, builder_name):
         return self.specifiers_for_builder(builder_name)[0]
