@@ -6,6 +6,7 @@
 #define UI_GL_GL_DISPLAY_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/check.h"
