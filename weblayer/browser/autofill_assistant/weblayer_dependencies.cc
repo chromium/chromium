@@ -83,8 +83,8 @@ WebLayerDependencies::CreateFieldTrialUtil() const {
   return std::make_unique<WebLayerAssistantFieldTrialUtil>();
 }
 
-autofill::PersonalDataManager* WebLayerDependencies::GetPersonalDataManager()
-    const {
+autofill::PersonalDataManager* WebLayerDependencies::GetPersonalDataManager(
+    content::BrowserContext* browser_context) const {
   // TODO(b/222671580): Add NOTREACHED?
   return nullptr;
 }

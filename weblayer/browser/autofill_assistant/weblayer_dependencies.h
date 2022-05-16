@@ -41,7 +41,8 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
   // Overrides CommonDependencies
   std::unique_ptr<::autofill_assistant::AssistantFieldTrialUtil>
   CreateFieldTrialUtil() const override;
-  autofill::PersonalDataManager* GetPersonalDataManager() const override;
+  autofill::PersonalDataManager* GetPersonalDataManager(
+      content::BrowserContext* browser_context) const override;
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;
   std::string GetLocale() const override;

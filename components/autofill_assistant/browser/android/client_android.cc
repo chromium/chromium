@@ -537,7 +537,8 @@ AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
-  return dependencies_->GetCommonDependencies()->GetPersonalDataManager();
+  return dependencies_->GetCommonDependencies()->GetPersonalDataManager(
+      GetWebContents()->GetBrowserContext());
 }
 
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {

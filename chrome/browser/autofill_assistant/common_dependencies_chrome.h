@@ -29,7 +29,8 @@ class CommonDependenciesChrome : public CommonDependencies {
 
   std::string GetCountryCode() const override;
 
-  autofill::PersonalDataManager* GetPersonalDataManager() const override;
+  autofill::PersonalDataManager* GetPersonalDataManager(
+      content::BrowserContext* browser_context) const override;
 
   password_manager::PasswordManagerClient* GetPasswordManagerClient(
       content::WebContents* web_contents) const override;

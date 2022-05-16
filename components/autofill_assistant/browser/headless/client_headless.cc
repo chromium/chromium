@@ -117,7 +117,8 @@ AccessTokenFetcher* ClientHeadless::GetAccessTokenFetcher() {
 }
 
 autofill::PersonalDataManager* ClientHeadless::GetPersonalDataManager() const {
-  return common_dependencies_->GetPersonalDataManager();
+  return common_dependencies_->GetPersonalDataManager(
+      GetWebContents()->GetBrowserContext());
 }
 
 WebsiteLoginManager* ClientHeadless::GetWebsiteLoginManager() const {

@@ -44,11 +44,10 @@ std::string CommonDependenciesChrome::GetCountryCode() const {
       g_browser_process->variations_service());
 }
 
-PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager() const {
-  // TODO(b/201964911): Using |GetLastUsedProfile| is probably not the best
-  // option for desktop. Consider passing a profile on instantiation instead.
-  return autofill::PersonalDataManagerFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile());
+PersonalDataManager* CommonDependenciesChrome::GetPersonalDataManager(
+    content::BrowserContext* browser_context) const {
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
+      browser_context);
 }
 
 PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
