@@ -51,6 +51,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1328,6 +1329,14 @@ ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
   base::FilePath directory_path;
   base::PathService::Get(key, &directory_path);
   return directory_path;
+}
+
+std::u16string ChromeFileSystemAccessPermissionContext::GetPickerTitle(
+    const blink::mojom::FilePickerOptionsPtr& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(asully): Add per-picker-type strings. For now, return an empty string,
+  // which will fall back to the platform default for the given picker type.
+  return std::u16string();
 }
 
 ChromeFileSystemAccessPermissionContext::Grants

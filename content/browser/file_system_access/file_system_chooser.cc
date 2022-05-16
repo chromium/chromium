@@ -190,6 +190,7 @@ ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
 FileSystemChooser::Options::Options(
     ui::SelectFileDialog::Type type,
     blink::mojom::AcceptsTypesInfoPtr accepts_types_info,
+    std::u16string title,
     base::FilePath default_directory,
     base::FilePath suggested_name)
     : type_(ValidateType(type)),
@@ -198,9 +199,12 @@ FileSystemChooser::Options::Options(
       // This value will be updated if the extension of `suggested_name`
       // matches an extension in `accepts_types_info->accepts`.
       default_file_type_index_(file_types_.extensions.empty() ? 0 : 1),
+      title_(std::move(title)),
       default_path_(default_directory.Append(
           ResolveSuggestedNameExtension(std::move(suggested_name),
                                         file_types_))) {}
+
+FileSystemChooser::Options::Options(const Options& other) = default;
 
 base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
     base::FilePath suggested_name,
@@ -255,7 +259,7 @@ void FileSystemChooser::CreateAndShow(
   }
 
   listener->dialog_->SelectFile(
-      options.type(), /*title=*/std::u16string(), options.default_path(),
+      options.type(), options.title(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,

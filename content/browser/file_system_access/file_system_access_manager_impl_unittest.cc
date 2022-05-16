@@ -1207,6 +1207,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
                                      test_file.DirName(), PathType::kLocal));
@@ -1289,6 +1291,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
                                      test_file.DirName(), PathType::kLocal));
@@ -1367,6 +1371,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   EXPECT_CALL(permission_context_,
               GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context_,
               SetLastPickedDirectory(kTestStorageKey.origin(), std::string(),
                                      test_dir, PathType::kLocal));

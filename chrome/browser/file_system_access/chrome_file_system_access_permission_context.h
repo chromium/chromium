@@ -20,6 +20,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class HostContentSettingsMap;
@@ -101,6 +102,9 @@ class ChromeFileSystemAccessPermissionContext
                                   const std::string& id) override;
   base::FilePath GetWellKnownDirectoryPath(
       blink::mojom::WellKnownDirectory directory) override;
+
+  std::u16string GetPickerTitle(
+      const blink::mojom::FilePickerOptionsPtr& options) override;
 
   ContentSetting GetReadGuardContentSetting(const url::Origin& origin);
   ContentSetting GetWriteGuardContentSetting(const url::Origin& origin);

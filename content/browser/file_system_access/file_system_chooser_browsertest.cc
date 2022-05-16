@@ -503,6 +503,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -581,6 +583,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -666,6 +670,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -759,6 +765,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -822,6 +830,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -956,6 +966,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(good_dir_info));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -1046,10 +1058,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
-
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
                   origin, PathType::kLocal, test_dir,
@@ -1130,6 +1143,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(good_dir_info));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -1222,6 +1237,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -1313,6 +1330,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDesktop))
       .WillOnce(testing::Return(desktop_dir));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
@@ -1846,6 +1865,35 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
                                 id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
   EXPECT_EQ(dir_handle, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, PickerTitle) {
+  base::FilePath test_dir = CreateTestDir();
+
+  FakeFileSystemAccessPermissionContext permission_context;
+  static_cast<FileSystemAccessManagerImpl*>(
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetStoragePartition(shell()->web_contents()->GetSiteInstance())
+          ->GetFileSystemAccessEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  // Check that the title of the file picker was plumbed through correctly.
+  EXPECT_EQ(FakeFileSystemAccessPermissionContext::kPickerTitle,
+            dialog_params.title);
 }
 
 }  // namespace content

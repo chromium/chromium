@@ -4,6 +4,8 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -37,7 +39,8 @@ class FileSystemChooserTest : public testing::Test {
         FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                    blink::mojom::AcceptsTypesInfo::New(
                                        std::move(accepts), include_accepts_all),
-                                   base::FilePath(), base::FilePath()),
+                                   std::u16string(), base::FilePath(),
+                                   base::FilePath()),
         base::BindLambdaForTesting(
             [&](blink::mojom::FileSystemAccessErrorPtr,
                 std::vector<FileSystemChooser::ResultEntry> entries) {

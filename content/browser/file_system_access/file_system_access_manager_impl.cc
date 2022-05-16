@@ -55,6 +55,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -546,9 +547,13 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     }
   }
 
+  std::u16string title = permission_context_
+                             ? permission_context_->GetPickerTitle(options)
+                             : std::u16string();
   FileSystemChooser::Options file_system_chooser_options(
       GetSelectFileDialogType(options), GetAndMoveAcceptsTypesInfo(options),
-      std::move(default_directory), std::move(suggested_name_path));
+      std::move(title), std::move(default_directory),
+      std::move(suggested_name_path));
 
   if (auto_file_picker_result_for_test_) {
     DidChooseEntries(context, file_system_chooser_options,

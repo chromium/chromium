@@ -26,6 +26,7 @@ struct SelectFileDialogParams {
   gfx::NativeWindow owning_window = {};
   int file_type_index = -1;
   base::FilePath default_path;
+  std::u16string title;
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of
