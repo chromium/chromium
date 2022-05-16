@@ -396,7 +396,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // {@link onPictureInPictureModeChanged} from the platform.  This might disagree with the value
     // returned by {@link isInPictureInPictureMode}.
     private boolean mLastPictureInPictureModeForTesting;
-    private SubscriptionsManager mSubscriptionsManager;
 
     protected BackPressManager mBackPressManager = new BackPressManager();
     private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
@@ -1735,12 +1734,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         };
         display.addObserver(mDisplayAndroidObserver);
 
-        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
-
-        if (ShoppingFeatures.isShoppingListEnabled()) {
-            mSubscriptionsManager = factory.getForLastUsedProfile().getSubscriptionsManager();
-        }
-
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
         // analyze daily power impact for a typical Chrome user. The flag only has an effect if the
         // spinner is shown, but our earlier UMA analysis shows that it may have a side-effect on
@@ -2569,7 +2562,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             List<BookmarkId> bookmarkIds =
                     PowerBookmarkUtils.getBookmarkIdsWithSharedClusterIdForTab(
                             currentTab, mBookmarkBridgeSupplier.get());
-            PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
+            SubscriptionsManager subscriptionsManager = null;
+            if (ShoppingFeatures.isShoppingListEnabled()) {
+                subscriptionsManager = new CommerceSubscriptionsServiceFactory()
+                                               .getForLastUsedProfile()
+                                               .getSubscriptionsManager();
+            }
+            PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(subscriptionsManager,
                     mBookmarkBridgeSupplier.get(), bookmarkIds,
                     /*enabled=*/false, mSnackbarManager, getResources());
             RecordUserAction.record("MobileMenuDisablePriceTracking");
