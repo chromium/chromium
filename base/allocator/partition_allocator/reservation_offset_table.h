@@ -204,7 +204,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address,
                                                      pool_handle pool,
                                                      uintptr_t offset_in_pool) {
-  PA_DCHECK(AddressPoolManager::GetInstance()->GetPoolBaseAddress(pool) +
+  PA_DCHECK(AddressPoolManager::GetInstance().GetPoolBaseAddress(pool) +
                 offset_in_pool ==
             address);
   uint16_t* offset_ptr = ReservationOffsetPointer(pool, offset_in_pool);

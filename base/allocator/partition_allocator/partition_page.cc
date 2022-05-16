@@ -350,12 +350,12 @@ void UnmapNow(uintptr_t reservation_start,
   }
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
-  AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
-                                                reservation_size);
+  AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
+                                               reservation_size);
 #endif
 
   // After resetting the table entries, unreserve and decommit the memory.
-  AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+  AddressPoolManager::GetInstance().UnreserveAndDecommit(
       pool, reservation_start, reservation_size);
 }
 

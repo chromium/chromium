@@ -94,7 +94,7 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
                                     size_t requested_size) {
   PA_DCHECK(!(requested_address % kSuperPageSize));
 
-  uintptr_t reserved_address = AddressPoolManager::GetInstance()->Reserve(
+  uintptr_t reserved_address = AddressPoolManager::GetInstance().Reserve(
       pool, requested_address, requested_size);
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
@@ -107,12 +107,12 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
           AreAllowedSuperPagesForBRPPool(reserved_address,
                                          reserved_address + requested_size))
         break;
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+      AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool, reserved_address, requested_size);
       // No longer try to honor |requested_address|, because it didn't work for
       // us last time.
       reserved_address =
-          AddressPoolManager::GetInstance()->Reserve(pool, 0, requested_size);
+          AddressPoolManager::GetInstance().Reserve(pool, 0, requested_size);
     }
 
     // If the allocation attempt succeeds, we will break out of the following
@@ -129,10 +129,10 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
           AreAllowedSuperPagesForBRPPool(reserved_address,
                                          reserved_address + requested_size))
         break;
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+      AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool, reserved_address, requested_size);
       // Reserve() can return a different pointer than attempted.
-      reserved_address = AddressPoolManager::GetInstance()->Reserve(
+      reserved_address = AddressPoolManager::GetInstance().Reserve(
           pool, address_to_try, requested_size);
     }
 
@@ -141,7 +141,7 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
     if (reserved_address &&
         !AreAllowedSuperPagesForBRPPool(reserved_address,
                                         reserved_address + requested_size)) {
-      AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+      AddressPoolManager::GetInstance().UnreserveAndDecommit(
           pool, reserved_address, requested_size);
       reserved_address = 0;
     }
@@ -155,8 +155,8 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
   // If `MarkUsed` was called earlier, the other thread could incorrectly
   // determine that the allocation had come form PartitionAlloc.
   if (reserved_address)
-    AddressPoolManager::GetInstance()->MarkUsed(pool, reserved_address,
-                                                requested_size);
+    AddressPoolManager::GetInstance().MarkUsed(pool, reserved_address,
+                                               requested_size);
 #endif
 
   PA_DCHECK(!(reserved_address % kSuperPageSize));
@@ -383,10 +383,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       {
         ScopedSyscallTimer timer{root};
 #if !defined(PA_HAS_64_BITS_POINTERS)
-        AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
-                                                      reservation_size);
+        AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
+                                                     reservation_size);
 #endif
-        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+        AddressPoolManager::GetInstance().UnreserveAndDecommit(
             pool, reservation_start, reservation_size);
       }
 

@@ -91,7 +91,7 @@ void PartitionAddressSpace::Init() {
   setup_.regular_pool_base_mask_ = ~(RegularPoolSize() - 1) & kMemTagUnmask;
 #endif
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (RegularPoolSize() - 1)));
-  setup_.regular_pool_ = AddressPoolManager::GetInstance()->Add(
+  setup_.regular_pool_ = AddressPoolManager::GetInstance().Add(
       setup_.regular_pool_base_address_, RegularPoolSize());
   PA_CHECK(setup_.regular_pool_ == kRegularPoolHandle);
   PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
@@ -117,7 +117,7 @@ void PartitionAddressSpace::Init() {
   setup_.brp_pool_base_mask_ = ~(BRPPoolSize() - 1) & kMemTagUnmask;
 #endif
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (BRPPoolSize() - 1)));
-  setup_.brp_pool_ = AddressPoolManager::GetInstance()->Add(
+  setup_.brp_pool_ = AddressPoolManager::GetInstance().Add(
       setup_.brp_pool_base_address_, BRPPoolSize());
   PA_CHECK(setup_.brp_pool_ == kBRPPoolHandle);
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
@@ -128,7 +128,7 @@ void PartitionAddressSpace::Init() {
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
   uintptr_t requested_address = setup_.regular_pool_base_address_;
-  uintptr_t actual_address = AddressPoolManager::GetInstance()->Reserve(
+  uintptr_t actual_address = AddressPoolManager::GetInstance().Reserve(
       setup_.regular_pool_, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated at the beginning of "
@@ -153,7 +153,7 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   setup_.configurable_pool_base_address_ = pool_base;
   setup_.configurable_pool_base_mask_ = ~(size - 1);
 
-  setup_.configurable_pool_ = AddressPoolManager::GetInstance()->Add(
+  setup_.configurable_pool_ = AddressPoolManager::GetInstance().Add(
       setup_.configurable_pool_base_address_, size);
   PA_CHECK(setup_.configurable_pool_ == kConfigurablePoolHandle);
 }
@@ -174,11 +174,11 @@ void PartitionAddressSpace::UninitForTesting() {
   setup_.regular_pool_ = 0;
   setup_.brp_pool_ = 0;
   setup_.configurable_pool_ = 0;
-  AddressPoolManager::GetInstance()->ResetForTesting();
+  AddressPoolManager::GetInstance().ResetForTesting();
 }
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
-  AddressPoolManager::GetInstance()->Remove(setup_.configurable_pool_);
+  AddressPoolManager::GetInstance().Remove(setup_.configurable_pool_);
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
   setup_.configurable_pool_ = 0;

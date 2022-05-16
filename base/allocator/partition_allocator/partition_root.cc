@@ -636,7 +636,7 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   auto* curr = first_extent;
   while (curr != nullptr) {
     auto* next = curr->next;
-    internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+    internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
         pool_handle, reinterpret_cast<uintptr_t>(curr),
         internal::kSuperPageSize * curr->number_of_consecutive_super_pages);
     curr = next;

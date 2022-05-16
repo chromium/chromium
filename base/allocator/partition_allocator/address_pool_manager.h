@@ -54,7 +54,7 @@ namespace partition_alloc::internal {
 // All PartitionAlloc allocations must be in either of the pools.
 class BASE_EXPORT AddressPoolManager {
  public:
-  static AddressPoolManager* GetInstance();
+  static AddressPoolManager& GetInstance();
 
   AddressPoolManager(const AddressPoolManager&) = delete;
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
@@ -100,8 +100,8 @@ class BASE_EXPORT AddressPoolManager {
  private:
   friend class AddressPoolManagerForTesting;
 
-  AddressPoolManager();
-  ~AddressPoolManager();
+  constexpr AddressPoolManager() = default;
+  ~AddressPoolManager() = default;
 
   // Populates `stats` if applicable.
   // Returns whether `stats` was populated. (They might not be, e.g.
@@ -111,8 +111,11 @@ class BASE_EXPORT AddressPoolManager {
 #if defined(PA_HAS_64_BITS_POINTERS)
   class Pool {
    public:
-    Pool();
-    ~Pool();
+    constexpr Pool() = default;
+    ~Pool() = default;
+
+    Pool(const Pool&) = delete;
+    Pool& operator=(const Pool&) = delete;
 
     void Initialize(uintptr_t ptr, size_t length);
     bool IsInitialized();
@@ -139,7 +142,7 @@ class BASE_EXPORT AddressPoolManager {
     // 1s. This is a best-effort hint in the sense that there still may be lots
     // of 1s after this index, but at least we know there is no point in
     // starting the search before it.
-    size_t bit_hint_ GUARDED_BY(lock_);
+    size_t bit_hint_ GUARDED_BY(lock_) = 0;
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
@@ -160,6 +163,8 @@ class BASE_EXPORT AddressPoolManager {
   Pool pools_[kNumPools];
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+  static AddressPoolManager singleton_;
 
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
 };

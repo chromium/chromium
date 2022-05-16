@@ -17,7 +17,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/lazy_instance.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -26,16 +25,11 @@
 
 namespace partition_alloc::internal {
 
-namespace {
-
-base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
+AddressPoolManager AddressPoolManager::singleton_;
 
 // static
-AddressPoolManager* AddressPoolManager::GetInstance() {
-  return g_address_pool_manager.Pointer();
+AddressPoolManager& AddressPoolManager::GetInstance() {
+  return singleton_;
 }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -282,9 +276,6 @@ void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
   }
   stats->largest_available_reservation = largest_run;
 }
-
-AddressPoolManager::Pool::Pool() = default;
-AddressPoolManager::Pool::~Pool() = default;
 
 void AddressPoolManager::GetPoolStats(const pool_handle handle,
                                       PoolStats* stats) {
@@ -545,8 +536,5 @@ void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
     dumper->DumpStats(&stats);
   }
 }
-
-AddressPoolManager::AddressPoolManager() = default;
-AddressPoolManager::~AddressPoolManager() = default;
 
 }  // namespace partition_alloc::internal

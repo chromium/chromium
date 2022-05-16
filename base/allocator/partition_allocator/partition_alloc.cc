@@ -80,7 +80,7 @@ void PartitionAllocGlobalUninitForTesting() {
 #if defined(PA_HAS_64_BITS_POINTERS)
   internal::PartitionAddressSpace::UninitForTesting();
 #else
-  internal::AddressPoolManager::GetInstance()->ResetForTesting();
+  internal::AddressPoolManager::GetInstance().ResetForTesting();
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::g_oom_handling_function = nullptr;
