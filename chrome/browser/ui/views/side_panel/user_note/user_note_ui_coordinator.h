@@ -23,6 +23,10 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   UserNoteUICoordinator& operator=(const UserNoteUICoordinator&) = delete;
   ~UserNoteUICoordinator() override;
 
+  static constexpr int kUserNoteUIViewId = 172;
+  static constexpr int kUserNoteScrollViewId = 173;
+  static constexpr int kUserNoteScrollContentsViewId = 174;
+
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
   // UserNoteUI overrides

@@ -81,6 +81,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
 
   friend class UserNoteBaseTest;
   friend class UserNoteUtilsTest;
+  friend class UserNoteUICoordinatorTest;
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also
