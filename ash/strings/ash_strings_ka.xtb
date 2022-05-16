@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">გამარჯობა, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ტექსტის შეყვანა</translation>
+<translation id="1982717156487272186">წინა კვირის ჩვენება</translation>
 <translation id="1989113344093894667">კონტენტის აღბეჭდვა ვერ ხერხდება</translation>
 <translation id="1990046457226896323">მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="1993072747612765854">შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ</translation>
@@ -326,6 +327,7 @@
 <translation id="2970920913501714344">აპების, გაფართოებებისა და თემების ინსტალაცია</translation>
 <translation id="2977598380246111477">შემდეგი ციფრი</translation>
 <translation id="2981684127883932071">ნაჩვენებია შემოთავაზებები</translation>
+<translation id="2985148236010982088">ყველა აპის ნახვა</translation>
 <translation id="2992327365391326550">მოწყობილობის მიკროფონის ღილაკი გამორთულია.</translation>
 <translation id="2995447421581609334">ტრანსლირების მოწყობილობების ჩვენება.</translation>
 <translation id="2996462380875591307">ჩამაგრებული ლუპა ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+D.</translation>
@@ -464,6 +466,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> და <ph name="UNAVAILABLE_APPS_COUNT" /> სხვა აპი არ არის ამ მოწყობილობაზე.</translation>
 <translation id="3735740477244556633">დალაგება</translation>
 <translation id="3742055079367172538">ეკრანის ანაბეჭდი გადაღებულია</translation>
+<translation id="3761848338953536304">თქვენი ადმინისტრატორი ითხოვს, გამორთოთ SIM ბარათის ჩაკეტვის პარამეტრი</translation>
 <translation id="3765841986579723851">დღეს რედაქტირებული</translation>
 <translation id="3771549900096082774">მაღალკონტრასტული რეჟიმი</translation>
 <translation id="3773700760453577392">ადმინისტრატორმა აკრძალა მრავალჯერადი შესვლა <ph name="USER_EMAIL" />-ისთვის. გასაგრძელებლად საჭიროა ყველა მომხმარებლის გამოსვლა სისტემიდან.</translation>
@@ -620,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, შეფასებულია <ph name="RATING_SCORE" /> ვარსკვლავით</translation>
 <translation id="4633185660152240791">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი დღის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # დღის განმავლობაში}}</translation>
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
+<translation id="4644727592819780893">რეგიონი ზედმეტად პატარაა კამერის მოსათავსებლად</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, აპის რეკომენდაცია</translation>
 <translation id="4657775630156561295">თქვენი ანგარიშის შემოთავაზებების ისტორიიდან სამუდამოდ ამოიშლება შემდეგი შემოთავაზება:
 
@@ -774,6 +778,7 @@
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
 <translation id="5675363643668471212">თაროს ელემენტი</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
+<translation id="5678564054339031017">შემდეგი კვირის ჩვენება</translation>
 <translation id="5679050765726761783">დაკავშირებულია დაბალი სიმძლავრის ელკვების ადაპტერი</translation>
 <translation id="5682642926269496722">Google ასისტენტი მიუწვდომელია მომხმარებლის ამჟამინდელი ანგარიშისთვის.</translation>
 <translation id="5689633613396158040">ღამის განათება გაგიმარტივებთ ეკრანზე კითხვას ან მის ყურებას მკრთალი განათების პირობებში. შეეხეთ ღამის განათების ჩართვის დროის შესაცვლელად ან მის მთლიანად გამოსართავად.</translation>
@@ -828,6 +833,7 @@
 <translation id="598407983968395253">შაბლონის გამოყენება</translation>
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
 <translation id="5992218262414051481">მაღალკონტრასტული რეჟიმი ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+H.</translation>
+<translation id="6009656393242168182">გათიშეთ SIM ბარათის ჩაკეტვის პარამეტრი</translation>
 <translation id="6012623610530968780">გვერდი <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" />-დან</translation>
 <translation id="6018164090099858612">მიმდინარეობს სარკის რეჟიმიდან გამოსვლა</translation>
 <translation id="602001110135236999">გადაადგილება მარცხნივ</translation>
@@ -862,6 +868,7 @@
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166852626429024716">წამოიწყეთ ძიება თქვენს მოწყობილობაში, აპებში, პარამეტრებსა და ვებში...</translation>
 <translation id="6179832488876878285">აქ შეგიძლიათ მნიშვნელოვანი ფაილების ჩამაგრება. დასაწყებად გახსენით ფაილების აპი.</translation>
+<translation id="6182592640011875895">სამუშაო მაგიდის გახსნა</translation>
 <translation id="619279033188484792">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები და შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="619335566042889110">სრულად დატენა ახლავე</translation>
 <translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
@@ -1168,6 +1175,7 @@
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
 <translation id="8061464966246066292">მაღალკონტრასტული რეჟიმი</translation>
+<translation id="8083540854303889870">შენახულია სამომავლოდ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />-ში ეკრანის ტრანსლირების შეწყვეტა</translation>
 <translation id="8113423164597455979">ჩართული, ყველა აპისთვის</translation>
 <translation id="8120151603115102514">თქვენს ტელეფონს არ აქვს ეკრანის დაბლოკვა. თქვენი Chromebook-ის განსაბლოკად შეიყვანეთ პაროლი.</translation>

@@ -3781,6 +3781,7 @@
 <translation id="4648491805942548247">Недостаточно прав</translation>
 <translation id="4650591383426000695">Телефон будет отключен от устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не удалось загрузить онлайн-компонент с ресурсами демонстрационного режима.</translation>
+<translation id="4651921906638302153">Не удалось войти в аккаунт</translation>
 <translation id="4652935475563630866">Изменено разрешение на доступ к камере. Чтобы продолжить, перезапустите Parallels Desktop.</translation>
 <translation id="4653405415038586100">Ошибка при настройке Linux</translation>
 <translation id="465406513924180949">Эти корзины помогут вам вернуться к товарам, которые вы добавляли в заказы в интернет-магазинах.
@@ -5437,6 +5438,7 @@
 <translation id="6327785803543103246">Автоматическое определение настроек прокси-сервера</translation>
 <translation id="6331818708794917058">Разрешить сайтам отправлять запрос на подключение к MIDI-устройствам</translation>
 <translation id="6333064448949140209">Файл будет отправлен в Google для отладки</translation>
+<translation id="6333170995003625229">Введен недействительный адрес электронной почты или пароль. Повторите попытку.</translation>
 <translation id="6335920438823100346">Для запуска Linux требуется (источник правила: <ph name="MANAGER" />) выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6338981933082930623">Разрешить всем сайтам показывать любые объявления</translation>
@@ -5851,6 +5853,7 @@
 <translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737663862851963468">Удалить билет Kerberos</translation>
+<translation id="6738430949033571771">Проверка аккаунта…</translation>
 <translation id="6739923123728562974">Показывать ярлык на рабочем столе</translation>
 <translation id="6740234557573873150">Скачивание файла "<ph name="FILE_NAME" />" приостановлено</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Администратор<ph name="END_LINK" /> отключил Безопасный просмотр.</translation>
@@ -7669,6 +7672,8 @@
 <translation id="8546306075665861288">Кеш изображений</translation>
 <translation id="8546930481464505581">Настроить Touch Bar</translation>
 <translation id="8547013269961688403">Включить полноэкранную лупу</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> управляется менеджером <ph name="MANAGER" />. Вы не можете использовать этот адрес электронной почты как дополнительный аккаунт.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Чтобы войти как <ph name="USER_EMAIL" />, сперва выйдите из аккаунта на устройстве <ph name="DEVICE_TYPE" />. Затем в нижней части экрана входа нажмите "Добавить пользователя".<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Чтобы сменить режим клавиш верхнего ряда, удерживайте кнопку поиска</translation>
 <translation id="8549316893834449916">Это тот же аккаунт, что и в других сервисах Google, таких как Gmail, Диск или YouTube.</translation>
 <translation id="8551388862522347954">Лицензии</translation>

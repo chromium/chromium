@@ -3779,6 +3779,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4648491805942548247">Nedovoljan broj dozvola</translation>
 <translation id="4650591383426000695">Prekinite vezu između telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Učitavanje onlajn komponente sa resursima za režim demonstracije nije uspelo.</translation>
+<translation id="4651921906638302153">Ne možete da se prijavite pomoću ovog naloga</translation>
 <translation id="4652935475563630866">Promena podešavanja kamere zahteva ponovno pokretanje Parallels Desktop-a. Ponovo pokrenite Parallels Desktop da biste nastavili.</translation>
 <translation id="4653405415038586100">Greška pri konfigurisanju Linux-a</translation>
 <translation id="465406513924180949">Prikazuju vam se korpe koje vam pomažu da se lako vratite na stavke koje ste ostavili u korpama za kupovinu širom veba.
@@ -5435,6 +5436,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6327785803543103246">Automatsko otkrivanje veb-proksija</translation>
 <translation id="6331818708794917058">Sajtovi mogu da traže da se povezuju sa MIDI uređajima</translation>
 <translation id="6333064448949140209">Datoteka će biti poslata Google-u radi otklanjanja grešaka</translation>
+<translation id="6333170995003625229">Verifikacija imejl adrese ili lozinke nije uspela. Probajte ponovo da se prijavite.</translation>
 <translation id="6335920438823100346">Da biste pokrenuli Linux, <ph name="MANAGER" /> zahteva da napravite rezervnu kopiju podataka i resetujete ovaj Chromebook na fabrička podešavanja.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> je onemogućio ADB otklanjanje grešaka. To će resetovati <ph name="DEVICE_TYPE" /> za 24 sata. Napravite rezervne kopije svih fajlova koje želite da zadržite.</translation>
 <translation id="6338981933082930623">Svi sajtovi mogu da prikazuju sve oglase</translation>
@@ -5847,6 +5849,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6735304988756581115">Prikaži kolačiće i ostale podatke sa sajta...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Uklonite Kerberos tiket</translation>
+<translation id="6738430949033571771">Verifikuje se nalog…</translation>
 <translation id="6739923123728562974">Prikaži prečicu na radnoj površini</translation>
 <translation id="6740234557573873150">Preuzimanje datoteke <ph name="FILE_NAME" /> je pauzirano</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administrator<ph name="END_LINK" /> je isključio bezbedno pregledanje</translation>
@@ -7665,6 +7668,8 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8546306075665861288">Keš slike</translation>
 <translation id="8546930481464505581">Prilagodi dodirnu traku</translation>
 <translation id="8547013269961688403">Omogući lupu za ceo ekran</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Imejlom <ph name="USER_EMAIL" /> upravlja <ph name="MANAGER" />. Ne možete da dodate ovaj imejl kao dodatni nalog.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Da biste koristili <ph name="USER_EMAIL" />, prvo se odjavite sa uređaja <ph name="DEVICE_TYPE" />. Zatim u dnu ekrana za prijavljivanje izaberite Dodaj osobu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Zadržite taster za pretragu da biste promenili ponašanje tastera u gornjem redu</translation>
 <translation id="8549316893834449916">Za prijavljivanje na Chromebook ćete koristiti Google nalog – isti koji koristite i za Gmail, Disk, YouTube i drugo.</translation>
 <translation id="8551388862522347954">Licence</translation>

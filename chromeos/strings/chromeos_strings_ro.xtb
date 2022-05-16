@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Data ultimei resetări a datelor nu este disponibilă</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rețeaua de domiciliu, nu de roaming</translation>
+<translation id="132712914231403017">Instalează imaginea de firmware</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Culoarea imaginii de fundal</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
 <translation id="1643449475550628585">Schimbă zilnic imaginea de fundal</translation>
 <translation id="1644574205037202324">Istoric</translation>
+<translation id="1645954272419197032">Confirmă informațiile dispozitivului</translation>
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Conectivitate</translation>
 <translation id="2008685064673031089">Căutare de numere prime</translation>
 <translation id="2016697457005847575">Încearcă pașii pentru remedierea erorilor</translation>
+<translation id="2016848882344942759">--fără etichetă albă--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Programul modului întunecat</translation>
 <translation id="2275586345903859204">Reparația s-a finalizat</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Introdu un dispozitiv de stocare externă, cum ar fi o unitate USB sau un card SD, cu imaginea Utilitar de recuperare Chromebook descărcată</translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
 <translation id="2320295602967756579">Activează tema luminoasă</translation>
 <translation id="2323506179655536734">OMIS</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">Cheia de autentificare TLS</translation>
 <translation id="2713444072780614174">Alb</translation>
 <translation id="2717139507051041123">Activează modul de culoare închisă</translation>
+<translation id="2727250716596204208">Nu s-a găsit imaginea de firmware. Introdu un dispozitiv de stocare externă, cum ar fi o unitate USB sau un card SD, cu imaginea Utilitar de recuperare Chromebook descărcată.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
 <translation id="2756652381241102009">Rulează diagnosticarea</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Dispozitivul este conectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Elimini pagina?}=1{Elimini pagina {PAGE_NUMBER}?}few{Elimini pagina {PAGE_NUMBER}?}other{Elimini pagina {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Se configurează accesul utilizatorilor la dispozitiv…</translation>
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
+<translation id="3383751554789092165">Schimbă informațiile dispozitivului după caz.</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
 <translation id="3404770484521709967">Componentele sunt instalate corect.</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Neconectat</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="3771294271822695279">Fișiere video</translation>
+<translation id="3774059845329307709">Număr de serie</translation>
 <translation id="3784455785234192852">Blochează</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">Baterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Card SIM deblocat</translation>
 <translation id="4562494484721939086">Fără semnal</translation>
+<translation id="4568938274596692027">Instalarea s-a finalizat. Se pregătește repornirea…</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Nivelul bateriei căștii stângi a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Se instalează firmware-ul…</translation>
 <translation id="4915052247106771211">Astfel, dispozitivul va reveni la setările din fabrică (Powerwash).</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4917889632206600977">Oprită – Hârtie epuizată</translation>
@@ -615,8 +625,10 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
+<translation id="6822504384524564824">SKU trebuie schimbat numai dacă noile componente sunt diferite de cele înlocuite. De exemplu, un ecran tactil care înlocuiește un ecran netactil sau o memorie care face upgrade de la 8 GB la 16 GB.</translation>
 <translation id="6840315122969944400">Reparație <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
+<translation id="6876833053687020046">Numărul DRAM al piesei</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6905724422583748843">Înapoi la <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Capacul scanerului este deschis. Închide capacul și încearcă din nou.</translation>
@@ -664,6 +676,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Schimbă screensaverul</translation>
 <translation id="7397270852490618635">Dezactivează tema luminoasă</translation>
 <translation id="741244894080940828">conversie</translation>
@@ -763,6 +776,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>
 <translation id="8372477600026034341">Gazde suplimentare</translation>
 <translation id="8378855320830505539">Regiune</translation>
+<translation id="8382302752385457774">Etichetă albă</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
 <translation id="8422748173858722634">IMEI</translation>

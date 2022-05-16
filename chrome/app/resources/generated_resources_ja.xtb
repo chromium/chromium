@@ -3769,6 +3769,7 @@
 <translation id="4648491805942548247">十分な権限がありません</translation>
 <translation id="4650591383426000695">スマートフォンを <ph name="DEVICE_TYPE" /> から切断します</translation>
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
+<translation id="4651921906638302153">このアカウントではログインできません</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
 <translation id="465406513924180949">ウェブ上でショッピング カートに入れた商品に簡単にアクセスできるよう、カートが表示されています。
@@ -5419,6 +5420,7 @@
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
 <translation id="6331818708794917058">サイトが MIDI デバイスへの接続を要求できるようにする</translation>
 <translation id="6333064448949140209">ファイルはデバッグのため Google に送信されます</translation>
+<translation id="6333170995003625229">メールアドレスまたはパスワードを確認できませんでした。もう一度ログインしてみてください。</translation>
 <translation id="6335920438823100346">Linux を起動するため、<ph name="MANAGER" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> は 24 時間以内にリセットされます。必要なファイルがあればバックアップしてください。</translation>
 <translation id="6338981933082930623">すべてのサイトであらゆる広告を表示できるようにする</translation>
@@ -5826,6 +5828,7 @@
 <translation id="6735304988756581115">Cookie と他のサイトのデータを表示...</translation>
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6737663862851963468">Kerberos チケットの削除</translation>
+<translation id="6738430949033571771">アカウントを確認しています...</translation>
 <translation id="6739923123728562974">デスクトップ ショートカットを表示</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> を一時停止しました</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />がセーフ ブラウジングをオフにしました</translation>
@@ -7641,6 +7644,8 @@
 <translation id="8546306075665861288">画像キャッシュ</translation>
 <translation id="8546930481464505581">Touch Bar をカスタマイズ</translation>
 <translation id="8547013269961688403">全画面拡大鏡を有効にする</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> は <ph name="MANAGER" /> により管理されています。このメールアドレスを追加アカウントとして設定することはできません。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> を使用するには、まず <ph name="DEVICE_TYPE" /> にログインします。次に、ログイン画面の一番下にある [ユーザーを追加] を選択します。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">キーボードの最上段にあるキーの動作を切り替えるには、検索キーを押したままにします</translation>
 <translation id="8549316893834449916">Chromebook には Google アカウント（Gmail、ドライブ、YouTube などで使用しているのと同じアカウント）を使用してログインします。</translation>
 <translation id="8551388862522347954">ライセンス</translation>

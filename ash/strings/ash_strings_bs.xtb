@@ -326,6 +326,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2970920913501714344">Instaliranje aplikacija, proširenja i tema</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
 <translation id="2981684127883932071">Prikaz prijedloga</translation>
+<translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
 <translation id="2995447421581609334">Prikaz uređaja za emitiranje.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
@@ -464,6 +465,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i još <ph name="UNAVAILABLE_APPS_COUNT" /> aplikacije(a) nisu na ovom uređaju.</translation>
 <translation id="3735740477244556633">Poredaj po</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
+<translation id="3761848338953536304">Administrator traži da isključite postavku zaključavanja SIM-a</translation>
 <translation id="3765841986579723851">Uređeno danas</translation>
 <translation id="3771549900096082774">Način rada visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator nije dozvolio višestruku prijavu za korisnika <ph name="USER_EMAIL" />. Svi korisnici se moraju odjaviti kako bi se nastavilo.</translation>
@@ -828,6 +830,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Za primanje ažuriranja, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
 <translation id="5992218262414051481">Omogućen je način rada u visokom kontrastu. Pritisnite ponovo Ctrl + tipku za pretraživanje + H da ga onemogućite.</translation>
+<translation id="6009656393242168182">Onemogućite postavku zaključavanja SIM-a</translation>
 <translation id="6012623610530968780">Stranica <ph name="SELECTED_PAGE" /> od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izlazak iz načina rada za preslikavanje</translation>
 <translation id="602001110135236999">Listaj ulijevo</translation>
@@ -862,6 +865,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6179832488876878285">Ovdje možete zakačiti važne fajlove. Otvorite aplikaciju Fajlovi da započnete.</translation>
+<translation id="6182592640011875895">Otvori radnu površinu</translation>
 <translation id="619279033188484792">Pregledajte nedavne fotografije, medije i obavještenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Potpuno napuni sada</translation>
 <translation id="6220928844947387476">Sada istovremeno možete snimati sebe i svoj ekran</translation>
@@ -1168,6 +1172,7 @@ Nova instalacija</translation>
 <translation id="8052898407431791827">Kopirano u međumemoriju</translation>
 <translation id="8054466585765276473">Izračunava se vrijeme baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
+<translation id="8083540854303889870">Spremljeno za kasnije</translation>
 <translation id="8098591350844501178">Prestanak emitiranja ekrana na prijemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
 <translation id="8120151603115102514">Vaš telefon nema zaključavanje ekrana. Da otključate Chromebook, unesite lozinku.</translation>
@@ -1329,7 +1334,7 @@ Nova instalacija</translation>
 <translation id="9077515519330855811">Kontrole medija, trenutno se reproducira: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kamera se uklopila u gornji lijevi ugao</translation>
-<translation id="9080132581049224423">Prevucite prema gore da odete na početnu stranicu</translation>
+<translation id="9080132581049224423">Prevucite prema gore da odete na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon je u upotrebi.</translation>
 <translation id="9084606467167974638">Promijenite položaj menija</translation>
 <translation id="9085962983642906571">Vaša baterija će ostati na 80% dok je priključena na napajanje radi produženja vijeka trajanja baterije.</translation>

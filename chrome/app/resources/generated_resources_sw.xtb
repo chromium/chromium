@@ -3791,6 +3791,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4648491805942548247">Idhini isiyotosha</translation>
 <translation id="4650591383426000695">Tenganisha simu yako na <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Imeshindwa kupakia kipengele cha mtandaoni chenye nyenzo za hali ya onyesho.</translation>
+<translation id="4651921906638302153">Huwezi kuingia kwa kutumia akaunti hii</translation>
 <translation id="4652935475563630866">Mabadiliko kwenye mipangilio ya kamera yanahitaji ufungue tena Parallels Desktop. Fungua tena Parallels Desktop ili uendelee.</translation>
 <translation id="4653405415038586100">Hitilafu ya kuweka mipangilio ya Linux</translation>
 <translation id="465406513924180949">Unaona vikapu vinavyokusaidia kurejea kwa urahisi kwenye bidhaa ulizoacha kwenye vikapu vya ununuzi kwenye wavuti.
@@ -5447,6 +5448,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6327785803543103246">Ugunduzi wa seva mbadala za wavuti kiotomatiki</translation>
 <translation id="6331818708794917058">Tovuti zinaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya MIDI</translation>
 <translation id="6333064448949140209">Faili itatumwa kwa Google kwa ajili ya utatuzi</translation>
+<translation id="6333170995003625229">Imeshindwa kuthibitisha anwani ya barua pepe au nenosiri. Jaribu kuingia tena katika akaunti.</translation>
 <translation id="6335920438823100346">Ili uweze kufungua Linux, <ph name="MANAGER" /> inahitaji uhifadhi nakala ya data yako na urejeshe mipangilio ambayo Chromebook hii ilitoka nayo kiwandani.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> imezima utatuzi wa ADB. Hatua hii itarejesha mipangilio ambayo <ph name="DEVICE_TYPE" /> yako ilitoka nayo kiwandani, baada ya saa 24. Hifadhi nakala za faili zozote ambazo ungependa zisipotee.</translation>
 <translation id="6338981933082930623">Tovuti zote zinaweza kukuonyesha matangazo yoyote</translation>
@@ -5855,6 +5857,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6735304988756581115">Onyesha vidakuzi na data ya tovuti zingine...</translation>
 <translation id="6736243959894955139">Anwani</translation>
 <translation id="6737663862851963468">Ondoa tiketi ya Kerberos</translation>
+<translation id="6738430949033571771">Inathibitisha akaunti...</translation>
 <translation id="6739923123728562974">Onyesha mkato wa eneo-kazi</translation>
 <translation id="6740234557573873150">Imesitisha <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Msimamizi wako<ph name="END_LINK" /> amezima mipangilio ya Kuvinjari Salama</translation>
@@ -7675,6 +7678,8 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8546306075665861288">Akiba ya picha</translation>
 <translation id="8546930481464505581">Badilisha Upau Mguso Utakavyo</translation>
 <translation id="8547013269961688403">Washa kikuzaji cha skrini nzima</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> inadhibitiwa na <ph name="MANAGER" />. Huwezi kuongeza barua pepe hii kuwa akaunti ya ziada.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Ili utumie <ph name="USER_EMAIL" />, ondoka kwanza katika akaunti kwenye <ph name="DEVICE_TYPE" /> yako. Kisha chini ya skrini ya kuingia katika akaunti, chagua Ongeza Wasifu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Shikilia kitufe cha Utafutaji ili ubadilishe tabia ya vitufe vya juu vya safu mlalo</translation>
 <translation id="8549316893834449916">Utatumia Akaunti yako ya Google kuingia katika Chromebook yako – akaunti ile ile unayotumia kuingia kwenye Gmail, Hifadhi, YouTube na zaidi.</translation>
 <translation id="8551388862522347954">Leseni</translation>

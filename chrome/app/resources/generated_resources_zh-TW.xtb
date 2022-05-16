@@ -3777,6 +3777,7 @@
 <translation id="4648491805942548247">權限不足</translation>
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
 <translation id="4651484272688821107">無法使用示範模式的資源載入線上元件。</translation>
+<translation id="4651921906638302153">無法登入這個帳戶</translation>
 <translation id="4652935475563630866">必須重新啟動 Parallels Desktop，攝影機設定的變更才會生效。請重新啟動 Parallels Desktop 以繼續操作。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
 <translation id="465406513924180949">畫面上會顯示購物車，方便你在網路上輕鬆查看購物車中的商品。
@@ -5430,6 +5431,7 @@
 <translation id="6327785803543103246">網路 Proxy 自動探索</translation>
 <translation id="6331818708794917058">網站可以要求連線至 MIDI 裝置</translation>
 <translation id="6333064448949140209">檔案會傳送給 Google 進行偵錯</translation>
+<translation id="6333170995003625229">無法驗證你的電子郵件地址或密碼，請再試一次。</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> 要求你備份資料，並將這部 Chromebook 恢復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統在 24 小時後重設 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="6338981933082930623">所有網站都可以向你顯示任何廣告</translation>
@@ -5837,6 +5839,7 @@
 <translation id="6735304988756581115">顯示 Cookie 和其他網站資料...</translation>
 <translation id="6736243959894955139">位址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
+<translation id="6738430949033571771">正在驗證帳戶...</translation>
 <translation id="6739923123728562974">顯示桌面捷徑</translation>
 <translation id="6740234557573873150">已暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />系統管理員<ph name="END_LINK" />已停用安全瀏覽功能</translation>
@@ -7656,6 +7659,8 @@
 <translation id="8546306075665861288">圖片快取</translation>
 <translation id="8546930481464505581">自訂 Touch Bar</translation>
 <translation id="8547013269961688403">啟用全螢幕放大鏡</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 是由 <ph name="MANAGER" /> 管理。你無法將這個電子郵件地址新增為其他帳戶。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如要使用 <ph name="USER_EMAIL" />，請先登出 <ph name="DEVICE_TYPE" />，然後在登入畫面底部選取「新增使用者」。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">按住搜尋鍵即可切換最上排按鍵的行為</translation>
 <translation id="8549316893834449916">你將使用 Google 帳戶登入 Chromebook，Google 帳戶是你用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8551388862522347954">授權</translation>

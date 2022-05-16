@@ -326,6 +326,7 @@
 <translation id="2970920913501714344">安裝應用程式、擴充程式和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2981684127883932071">顯示緊建議</translation>
+<translation id="2985148236010982088">查看所有應用程式</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="2995447421581609334">顯示投放裝置。</translation>
 <translation id="2996462380875591307">已啟用固定的放大鏡。再次按下 Search+Shift+D 鍵即可停用。</translation>
@@ -464,6 +465,7 @@
 <translation id="3726171378575546917">此裝置上未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
+<translation id="3761848338953536304">管理員要求您關閉 SIM 卡鎖定設定</translation>
 <translation id="3765841986579723851">今天編輯過</translation>
 <translation id="3771549900096082774">高對比模式</translation>
 <translation id="3773700760453577392">管理員已禁止 <ph name="USER_EMAIL" /> 的多重登入功能。所有使用者都必須登出，才能繼續操作。</translation>
@@ -827,6 +829,7 @@
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
 <translation id="5992218262414051481">已啟用高對比模式。再次按下 Ctrl+Search+H 鍵即可停用。</translation>
+<translation id="6009656393242168182">停用 SIM 卡鎖定設定</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
@@ -861,6 +864,7 @@
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6166852626429024716">搜尋您的裝置、應用程式、設定、網絡…</translation>
 <translation id="6179832488876878285">您可將重要的檔案固定至此處。開啟「檔案」應用程式即可開始使用。</translation>
+<translation id="6182592640011875895">開啟桌面</translation>
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片、媒體和通知</translation>
 <translation id="619335566042889110">現已完全充滿</translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
@@ -1166,6 +1170,7 @@
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8061464966246066292">高對比模式</translation>
+<translation id="8083540854303889870">已儲存以供日後使用</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
 <translation id="8120151603115102514">您的手機沒有上鎖畫面。如要解鎖 Chromebook，請輸入密碼。</translation>

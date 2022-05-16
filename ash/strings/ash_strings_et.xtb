@@ -326,6 +326,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2970920913501714344">Installige rakendusi, laiendusi ja teemasid</translation>
 <translation id="2977598380246111477">Järgmine number</translation>
 <translation id="2981684127883932071">Soovitused on kuvatud</translation>
+<translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
 <translation id="2995447421581609334">Kuvab ülekandeseadmed.</translation>
 <translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
@@ -464,6 +465,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
 <translation id="3735740477244556633">Sortimisalus:</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
+<translation id="3761848338953536304">Teie administraator nõuab, et lülitaksite SIM-kaardi luku seade välja</translation>
 <translation id="3765841986579723851">Täna muudetud</translation>
 <translation id="3771549900096082774">Suure kontrastsusega režiim</translation>
 <translation id="3773700760453577392">Administraator on keelanud e-posti aadressi <ph name="USER_EMAIL" /> puhul mitmele kontole sisselogimise.
@@ -829,6 +831,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
 <translation id="5992218262414051481">Suure kontrastsusega režiim on lubatud. Vajutage selle väljalülitamiseks uuesti klahvikombinatsiooni Ctrl + otsinguklahv + H.</translation>
+<translation id="6009656393242168182">Keelake SIM-kaardi luku seade</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
 <translation id="602001110135236999">Keri vasakule</translation>
@@ -863,6 +866,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6166852626429024716">Otsige oma seadmest, rakendustest, seadetest, veebist …</translation>
 <translation id="6179832488876878285">Saate oma olulised failid siia kinnitada. Alustamiseks avage rakendus Failid.</translation>
+<translation id="6182592640011875895">Ava töölaud</translation>
 <translation id="619279033188484792">Seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutiste fotode, meedia ja märguannete vaatamine</translation>
 <translation id="619335566042889110">Laadi nüüd täielikult täis</translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
@@ -1169,6 +1173,7 @@ Uus installimine</translation>
 <translation id="8052898407431791827">Lõikelauale kopeeritud</translation>
 <translation id="8054466585765276473">Aku tööaja arvutamine.</translation>
 <translation id="8061464966246066292">Kõrge kontrast</translation>
+<translation id="8083540854303889870">Salvestatud hilisemaks</translation>
 <translation id="8098591350844501178">Peata ekraani ülekandmine vastuvõtjasse <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sees, kõik rak.</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>

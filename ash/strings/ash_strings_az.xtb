@@ -176,6 +176,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Salam, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Mətn daxiletməsi</translation>
+<translation id="1982717156487272186">Əvvəlki həftəni göstərin</translation>
 <translation id="1989113344093894667">Məzmunu çəkmək olmur</translation>
 <translation id="1990046457226896323">Nitq faylları endirilib</translation>
 <translation id="1993072747612765854">Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi ilə bağlı ətraflı məlumat əldə edin</translation>
@@ -622,6 +623,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Ulduz reytinqi <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Bir gün ərzində cihazı əvvəlki versiyaya dəyişdirin}other{# gün ərzində cihazı əvvəlki versiyaya dəyişdirin}}</translation>
 <translation id="4642092649622328492">Natamam skrinşot çəkin</translation>
+<translation id="4644727592819780893">Region kameraya yerləşdirmək üçün çox kiçikdir</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Tətbiq tövsiyəsi</translation>
 <translation id="4657775630156561295">Aşağıdakı təklif hesabınızın təklif tarixçəsindən həmişəlik silinəcək:
 
@@ -776,6 +778,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5673434351075758678">Ayarları sinxronizasiya etdikdən sonra "<ph name="FROM_LOCALE" />" dilindən "<ph name="TO_LOCALE" />" dilinə.</translation>
 <translation id="5675363643668471212">Rəf elementi</translation>
 <translation id="5677928146339483299">Bloklananlar</translation>
+<translation id="5678564054339031017">Növbəti həftəni göstərin</translation>
 <translation id="5679050765726761783">Enerjiye qənaət edən adapter qoşuldu</translation>
 <translation id="5682642926269496722">Google Assistent cari istifadəçi hesabında əlçatan deyil.</translation>
 <translation id="5689633613396158040">Gecə İşığı zəif işıqda ekrana baxmağı və ya oxumağı asanlaşdırır. Gecə İşığının yandığı vaxtı dəyişmək və ya onu birdəfəlik söndürmək üçün toxunun.</translation>

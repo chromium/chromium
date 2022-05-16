@@ -326,6 +326,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2970920913501714344">Kusakinisha programu, viendelezi na mandhari</translation>
 <translation id="2977598380246111477">Nambari inayofuata</translation>
 <translation id="2981684127883932071">Inaonyesha mapendekezo</translation>
+<translation id="2985148236010982088">Angalia programu zote</translation>
 <translation id="2992327365391326550">Kitufe cha maikrofoni ya kifaa kimezimwa.</translation>
 <translation id="2995447421581609334">Onyesha vifaa vinavyotuma maudhui.</translation>
 <translation id="2996462380875591307">Umewasha Kikuzaji Kilichoambatishwa. Bonyeza Ctrl+Search+D tena ili ukizime.</translation>
@@ -464,6 +465,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> na zingine <ph name="UNAVAILABLE_APPS_COUNT" /> hazipo kwenye kifaa hiki.</translation>
 <translation id="3735740477244556633">Panga kwa</translation>
 <translation id="3742055079367172538">Picha ya skrini imepigwa</translation>
+<translation id="3761848338953536304">Msimamizi wako anakuomba uzime mipangilio ya kufunga SIM</translation>
 <translation id="3765841986579723851">Imebadilishwa leo</translation>
 <translation id="3771549900096082774">Hali ya Juu ya Utofautishaji</translation>
 <translation id="3773700760453577392">Msimamizi ameondoa uwezo wa <ph name="USER_EMAIL" /> wa kuingia katika akaunti nyingi kwa wakati mmoja. Watumiaji wote lazima waondoke katika akaunti ili waendelee.</translation>
@@ -828,6 +830,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="598407983968395253">Tumia kiolezo</translation>
 <translation id="598882571027504733">Ili upate sasisho, washa Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
 <translation id="5992218262414051481">Hali ya Utofautishaji wa Juu imewashwa. Bonyeza Ctrl+Search+H tena ili ugeuze na kuizima.</translation>
+<translation id="6009656393242168182">Zima mipangilio yako ya kufunga SIM</translation>
 <translation id="6012623610530968780">Ukurasa wa <ph name="SELECTED_PAGE" /> kati ya <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Inaondoka kwenye hali ya kuakisi</translation>
 <translation id="602001110135236999">Sogeza kushoto</translation>
@@ -862,6 +865,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6166852626429024716">Tafuta kwenye programu, mipangilio, wavuti, kifaa chako...</translation>
 <translation id="6179832488876878285">Unaweza kubandika faili zako muhimu hapa. Fungua programu ya Faili ili uanze.</translation>
+<translation id="6182592640011875895">Fungua eneokazi</translation>
 <translation id="619279033188484792">Tazama picha, maudhui na arifa za hivi karibuni za simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="619335566042889110">Chaji betri kikamilifu sasa</translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
@@ -1169,6 +1173,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8052898407431791827">Imewekwa kwenye ubao wa kunakili</translation>
 <translation id="8054466585765276473">Inakokotoa muda wa betri.</translation>
 <translation id="8061464966246066292">Kilinganushi kikubwa</translation>
+<translation id="8083540854303889870">Imehifadhiwa kwa ajili ya baadaye</translation>
 <translation id="8098591350844501178">Acha kutuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Imewashwa: zote</translation>
 <translation id="8120151603115102514">Simu yako haina kipengele cha kufunga skrini. Ili ufungue Chromebook yako, weka nenosiri.</translation>

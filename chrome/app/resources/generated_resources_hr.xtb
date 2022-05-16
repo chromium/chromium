@@ -3783,6 +3783,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4648491805942548247">Nedovoljne dozvole</translation>
 <translation id="4650591383426000695">Prekinite vezu između svog telefona i uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nije uspjelo učitavanje online komponente s resursima demo načina.</translation>
+<translation id="4651921906638302153">Ne možete se prijaviti tim računom</translation>
 <translation id="4652935475563630866">Za promjenu postavke fotoaparata potrebno je ponovno pokrenuti Parallels Desktop. Ponovo pokrenite Parallels Desktop da biste nastavili.</translation>
 <translation id="4653405415038586100">Pogreška prilikom konfiguriranja Linuxa</translation>
 <translation id="465406513924180949">Prikazuju vam se košarice pomoću kojih se možete lako vratiti na artikle koje ste ostavili u košaricama na webu.
@@ -5436,6 +5437,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6327785803543103246">Automatsko otkrivanje putem web-proxyja</translation>
 <translation id="6331818708794917058">Web-lokacije mogu tražiti dopuštenje za povezivanje s MIDI uređajima</translation>
 <translation id="6333064448949140209">Datoteka će se poslati Googleu radi uklanjanja pogrešaka</translation>
+<translation id="6333170995003625229">Vaša e-adresa ili zaporka nije se mogla potvrditi. Ponovo se pokušajte prijaviti.</translation>
 <translation id="6335920438823100346">Da biste pokrenuli Linux, <ph name="MANAGER" /> zahtijeva da sigurnosno kopirate svoje podatke i vratite ovaj Chromebook na tvorničke postavke.</translation>
 <translation id="6336038146639916978">Domena <ph name="MANAGER" /> onemogućila je ADB otklanjanje pogrešaka. Zbog toga će se uređaj <ph name="DEVICE_TYPE" /> vratiti na zadano za 24 sata. Sigurnosno kopirajte sve datoteke koje želite zadržati.</translation>
 <translation id="6338981933082930623">Sve vam web-lokacije mogu prikazivati bilo kakve oglase</translation>
@@ -5848,6 +5850,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6735304988756581115">Prikaži kolačiće i ostale podatke o web-lokaciji...</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Uklanjanje Kerberosovog tiketa</translation>
+<translation id="6738430949033571771">Potvrđivanje računa...</translation>
 <translation id="6739923123728562974">Prikaži prečac na radnoj površini</translation>
 <translation id="6740234557573873150">Dokument <ph name="FILE_NAME" /> pauziran</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Vaš administrator<ph name="END_LINK" /> isključio je Sigurno pregledavanje</translation>
@@ -7666,6 +7669,8 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8546306075665861288">Predmemorija slike</translation>
 <translation id="8546930481464505581">Prilagodba dodirne trake</translation>
 <translation id="8547013269961688403">Omogući povećalo za cijeli zaslon</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Računom <ph name="USER_EMAIL" /> upravlja <ph name="MANAGER" />. Tu e-adresu ne možete dodati kao dodatni račun.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Da biste koristili <ph name="USER_EMAIL" />, najprije se odjavite s uređaja <ph name="DEVICE_TYPE" />. Zatim pri dnu zaslona za prijavu odaberite Dodaj osobu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Držite tipku Pretraživanje da biste izmjenjivali ponašanje tipki u najvišem retku</translation>
 <translation id="8549316893834449916">Na Chromebook se prijavljujete svojim Google računom – istim računom koji upotrebljavate za Gmail, Disk, YouTube itd.</translation>
 <translation id="8551388862522347954">Licence</translation>

@@ -326,6 +326,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2970920913501714344">Instalirajte aplikacije, dodatke i teme</translation>
 <translation id="2977598380246111477">Sledeći broj</translation>
 <translation id="2981684127883932071">Prikazuju se predlozi</translation>
+<translation id="2985148236010982088">Prikaži sve aplikacije</translation>
 <translation id="2992327365391326550">Dugme za mikrofon na uređaju je isključeno.</translation>
 <translation id="2995447421581609334">Pregledajte uređaje za prebacivanje.</translation>
 <translation id="2996462380875591307">Montirana lupa ekrana je omogućena. Pritisnite Ctrl + taster za pretragu + D ponovo da biste je isključili.</translation>
@@ -464,6 +465,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu na ovom uređaju.</translation>
 <translation id="3735740477244556633">Sortiraj prema</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
+<translation id="3761848338953536304">Administrator zahteva da isključite podešavanje zaključavanja SIM kartice</translation>
 <translation id="3765841986579723851">Izmenjeno danas</translation>
 <translation id="3771549900096082774">Režim visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator je zabranio višestruko prijavljivanje za <ph name="USER_EMAIL" />. Svi korisnici moraju da se odjave da bismo nastavili sa sesijom.</translation>
@@ -828,6 +830,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
 <translation id="5992218262414051481">Režim visokog kontrasta je omogućen. Pritisnite Ctrl + taster za pretragu + H ponovo da biste ga isključili.</translation>
+<translation id="6009656393242168182">Onemogućite podešavanje zaključavanja SIM kartice</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Izlazak iz režima sa preslikavanjem</translation>
 <translation id="602001110135236999">Pomeri nalevo</translation>
@@ -862,6 +865,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražujte uređaj, aplikacije, podešavanja, veb...</translation>
 <translation id="6179832488876878285">Ovde možete da zakačite najvažnije fajlove. Otvorite aplikaciju Fajlovi da biste započeli.</translation>
+<translation id="6182592640011875895">Otvori radnu površinu</translation>
 <translation id="619279033188484792">Pregledajte nedavne slike, medijski sadržaj i obaveštenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Odmah napunite do kraja</translation>
 <translation id="6220928844947387476">Sada istovremeno možete da snimate sebe i ekran</translation>
@@ -1168,6 +1172,7 @@ Novo instaliranje</translation>
 <translation id="8052898407431791827">Kopirano je u privremenu memoriju</translation>
 <translation id="8054466585765276473">Izračunavanje vremena trajanja baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
+<translation id="8083540854303889870">Sačuvano za kasnije</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
 <translation id="8120151603115102514">Telefon nema zaključani ekran. Da biste otključali Chromebook, unesite lozinku.</translation>

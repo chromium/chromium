@@ -316,6 +316,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8133124826068723441">您的網域無法使用「同步功能」，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
+<translation id="8213374284266571500">由於此檔案類型不安全，因此 Chromium 已封鎖此檔案</translation>
 <translation id="8248265253516264921">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>
 <translation id="8276522524898344151">Chromium 正在嘗試複製密碼。</translation>

@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Салам <ph name="USERNAME" />,</translation>
 <translation id="1978498689038657292">Текст киргизүү</translation>
+<translation id="1982717156487272186">Мурунку аптаны көрсөтүү</translation>
 <translation id="1989113344093894667">Мазмун сүрөткө тартылган жок</translation>
 <translation id="1990046457226896323">Кеп файлдары жүктөлүп алынды</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> колдонмосундагы жаңыртуу жөнүндө кененирээк маалымат алуу</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Рейтинги: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Түзмөктү бир күндүн ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # күндүн ичинде мурунку версияга өзгөртүңүз}}</translation>
 <translation id="4642092649622328492">Экрандын бир бөлүгүн тартып алуу</translation>
+<translation id="4644727592819780893">Аймак камера үчүн өтө кичинекей</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Сунушталган колдонмо</translation>
 <translation id="4657775630156561295">Төмөнкү сунуш аккаунтуңуздагы сунуштар таржымалынан биротоло өчүрүлөт:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">Жөндөөлөр шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
 <translation id="5675363643668471212">Текчедеги нерсе</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
+<translation id="5678564054339031017">Кийинки аптаны көрсөтүү</translation>
 <translation id="5679050765726761783">Кубаты төмөн адаптер туташтырылды</translation>
 <translation id="5682642926269496722">Google Жардамчы учурдагы колдонуучунун аккаунтунда жеткиликсиз.</translation>
 <translation id="5689633613396158040">Түнкү режим күңүрт жерде көзүңүзгө күч келтирбөөгө жардам берет. Түнкү режим күйгүзүлө турган убакытты өзгөртүү же биротоло өчүрүп салуу үчүн таптап коюңуз.</translation>

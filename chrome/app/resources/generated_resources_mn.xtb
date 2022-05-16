@@ -1718,6 +1718,7 @@
 <translation id="25899519884572181">Уншигчийн горимоос гарах</translation>
 <translation id="2593499352046705383">Эхлэхээсээ өмнө өгөгдлөө нөөцөлсөн эсэхээ шалгана уу. <ph name="DEVICE_OS" />-г суулгаснаар таны хатуу дискийг дарж бичнэ. Та g.co/flex/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="2594999711683503743">Google-с хайх эсвэл URL бичих</translation>
+<translation id="2597976513418770460">Chrome хөтчийн зүйлсээ <ph name="ACCOUNT_EMAIL" />-с авна уу</translation>
 <translation id="2602501489742255173">Эхлүүлэхийн тулд дээш шударна уу</translation>
 <translation id="2603115962224169880">Компьютерийг цэвэрлэх</translation>
 <translation id="2603355571917519942">Voice Match бэлэн байна</translation>
@@ -3457,6 +3458,7 @@
 <translation id="4307992518367153382">Үндэс</translation>
 <translation id="4309165024397827958">Байршлын зөвшөөрөлтэй Android аппууд болон үйлчилгээнүүдэд таны төхөөрөмжийн байршлыг ашиглахыг зөвшөөрнө үү. Google нь байршлын нарийвчлал болон байршилд тулгуурласан үйлчилгээг сайжруулахын тулд байршлын өгөгдлийг үе үе цуглуулж, энэ өгөгдлийг нэргүй байдлаар ашиглаж магадгүй.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
+<translation id="4310132194679586591">Энэ холбоосыг нээхийн тулд төхөөрөмж дээрээ апп сонгоно уу</translation>
 <translation id="4310139701823742692">Файлын формат буруу байна. PPD файлыг шалгаад дахин оролдоно уу.</translation>
 <translation id="431076611119798497">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Бүртгэл}other{<ph name="EXTRA_ACCOUNTS" /> Google Бүртгэл}}</translation>
@@ -4687,6 +4689,7 @@
 <translation id="5554403733534868102">Үүнээс хойш шинэчлэлт хийхийн тулд хүлээх шаардлагагүй болно</translation>
 <translation id="5554489410841842733">Өргөтгөл нь одоо байгаа хуудсан дээр ажиллаж чадаж байгаа үед энэ дүрс харагдах болно.</translation>
 <translation id="5554720593229208774">Имэйл Certification Authority</translation>
+<translation id="5554866693883022680">Энэ холбоосыг нээхийн тулд <ph name="DEVICE_TYPE" /> дээрээ апп сонгоно уу</translation>
 <translation id="5555363196923735206">Камерыг хөнтрөх</translation>
 <translation id="5555525474779371165">Аюулгүй үзэх хамгаалалтаа сонгоно уу</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
@@ -7451,6 +7454,7 @@
 <translation id="8275080796245127762">Төхөөрөмжөөсөө дуудлага хийх</translation>
 <translation id="8275339871947079271">Хаанаас ч нэвтэрсэн нууц үгэндээ аюулгүй хандахын тулд үүнийг Google Бүртгэл рүүгээ зөөнө үү</translation>
 <translation id="8276560076771292512">Хоосон кэш ба эрчтэйгээр дахин ачаалах</translation>
+<translation id="8281721647184388851">Chrome хөтчийн синк хийхийг асаах уу?</translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" руу холбогдож байх явцад таниулах кодыг буцаасан.</translation>
 <translation id="8284279544186306258">бүх <ph name="WEBSITE_1" /> сайтууд</translation>
@@ -7606,6 +7610,7 @@
 <translation id="8448729345478502352">Дэлгэц дээрх зүйлсийг жижигрүүлэх эсвэл томруулах</translation>
 <translation id="8449008133205184768">Зөөж тавиад, хэлбэршүүлэлттэй нийцүүл</translation>
 <translation id="8449036207308062757">Хадгалах санг удирдах</translation>
+<translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
 <translation id="8456512334795994339">Ажиллах болон тоглоход зориулсан аппуудыг олох</translation>
 <translation id="845702320058262034">Холбогдож чадсангүй. Утасныхаа Bluetooth-г асаасан эсэхээ шалгана уу.</translation>
 <translation id="8457451314607652708">Хавчуургыг татаж авчрах</translation>

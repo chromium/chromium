@@ -3786,6 +3786,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4648491805942548247">Ebapiisav luba</translation>
 <translation id="4650591383426000695">Katkestage telefoni ja seadme <ph name="DEVICE_TYPE" /> ühendus</translation>
 <translation id="4651484272688821107">Demorežiimi ressurssidega veebipõhist komponenti ei saanud laadida.</translation>
+<translation id="4651921906638302153">Selle kontoga ei saa sisse logida</translation>
 <translation id="4652935475563630866">Kaamera seade muudatuse jõustumiseks tuleb Parallels Desktop uuesti käivitada. Jätkamiseks käivitage Parallels Desktop uuesti.</translation>
 <translation id="4653405415038586100">Viga Linuxi seadistamisel</translation>
 <translation id="465406513924180949">Näete kaarte, mis aitavad teil hõlpsalt naasta üksuste juurde, mille veebis ostukorvidesse jätsite.
@@ -5442,6 +5443,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6327785803543103246">Veebipõhise puhverserveri automaattuvastamine</translation>
 <translation id="6331818708794917058">Saidid saavad küsida luba MIDI-seadmetega ühenduse loomiseks</translation>
 <translation id="6333064448949140209">Fail saadetakse silumiseks Google'ile</translation>
+<translation id="6333170995003625229">Teie e-posti aadressi või parooli ei saanud kinnitada. Proovige uuesti sisse logida.</translation>
 <translation id="6335920438823100346">Linuxi käivitamiseks nõuab <ph name="MANAGER" />, et varundaksite oma andmed ja lähtestaksite selle Chromebooki tehaseseadetele.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> keelas ADB silumise. See lähtestab 24 tunni jooksul teie seadme <ph name="DEVICE_TYPE" />. Varundage kõik failid, mille soovite säilitada.</translation>
 <translation id="6338981933082930623">Kõik saidid saavad teile kuvada mis tahes reklaame</translation>
@@ -5850,6 +5852,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6735304988756581115">Kuva küpsisefaile ja muid saidi andmeid...</translation>
 <translation id="6736243959894955139">Aadress</translation>
 <translation id="6737663862851963468">Kerberose pileti eemaldamine</translation>
+<translation id="6738430949033571771">Konto kinnitamine …</translation>
 <translation id="6739923123728562974">Kuva töölaua otsetee</translation>
 <translation id="6740234557573873150">Peatati fail <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administraator<ph name="END_LINK" /> lülitas Google'i ohutu sirvimise välja</translation>
@@ -7669,6 +7672,8 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8546306075665861288">Kujutise vahemälu</translation>
 <translation id="8546930481464505581">Puuteriba kohandamine</translation>
 <translation id="8547013269961688403">Luba täisekraani luup</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Kontot <ph name="USER_EMAIL" /> haldab <ph name="MANAGER" />. Te ei saa seda e-posti aadressi lisakontona lisada.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Konto <ph name="USER_EMAIL" /> kasutamiseks logige kõigepealt välja oma seadmest <ph name="DEVICE_TYPE" />. Seejärel tehke sisselogimiskuva allosas valik Lisa inimene.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Ülemise rea klahvide toimingu vahetamiseks hoidke all otsinguklahvi</translation>
 <translation id="8549316893834449916">Chromebooki sisselogimiseks kasutate oma Google'i kontot – sama kontot, mida kasutate Gmaili, Drive'i, YouTube'i ja muude jaoks.</translation>
 <translation id="8551388862522347954">Litsentsid</translation>

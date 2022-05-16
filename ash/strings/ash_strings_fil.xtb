@@ -176,6 +176,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Kumusta, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Pag-input ng text</translation>
+<translation id="1982717156487272186">Ipakita ang nakaraang linggo</translation>
 <translation id="1989113344093894667">Hindi ma-capture ang content</translation>
 <translation id="1990046457226896323">Na-download na ang mga speech file</translation>
 <translation id="1993072747612765854">Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" /></translation>
@@ -622,6 +623,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Star na rating <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Ibalik sa nakaraang bersyon ang device sa loob ng isang araw}one{Ibalik sa nakaraang bersyon ang device sa loob ng # araw}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na araw}}</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
+<translation id="4644727592819780893">Masyadong maliit ang rehiyon para ipakita ang preview ng camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasyon sa app</translation>
 <translation id="4657775630156561295">Permanenteng aalisin ang sumusunod na mungkahi sa history ng suhestyon ng iyong account:
 
@@ -776,6 +778,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5673434351075758678">Gagawing "<ph name="TO_LOCALE" />" mula "<ph name="FROM_LOCALE" />" pagkatapos i-sync ang iyong mga setting.</translation>
 <translation id="5675363643668471212">Item sa shelf</translation>
 <translation id="5677928146339483299">Naka-block</translation>
+<translation id="5678564054339031017">Ipakita ang susunod na linggo</translation>
 <translation id="5679050765726761783">Nakakonekta ang low-power adapter</translation>
 <translation id="5682642926269496722">Hindi available ang Google Assistant para sa kasalukuyang user account.</translation>
 <translation id="5689633613396158040">Mas pinapadali ng Night Light na tumingin sa iyong screen o magbasa sa dilim. I-tap para baguhin kung anong oras mao-on ang Night Light o tuluyan itong i-off.</translation>

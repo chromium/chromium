@@ -3779,6 +3779,7 @@
 <translation id="4648491805942548247">Недовољан број дозвола</translation>
 <translation id="4650591383426000695">Прекините везу између телефона и уређаја <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Учитавање онлајн компоненте са ресурсима за режим демонстрације није успело.</translation>
+<translation id="4651921906638302153">Не можете да се пријавите помоћу овог налога</translation>
 <translation id="4652935475563630866">Промена подешавања камере захтева поновно покретање Parallels Desktop-а. Поново покрените Parallels Desktop да бисте наставили.</translation>
 <translation id="4653405415038586100">Грешка при конфигурисању Linux-а</translation>
 <translation id="465406513924180949">Приказују вам се корпе које вам помажу да се лако вратите на ставке које сте оставили у корпама за куповину широм веба.
@@ -5435,6 +5436,7 @@
 <translation id="6327785803543103246">Аутоматско откривање веб-проксија</translation>
 <translation id="6331818708794917058">Сајтови могу да траже да се повезују са MIDI уређајима</translation>
 <translation id="6333064448949140209">Датотека ће бити послата Google-у ради отклањања грешака</translation>
+<translation id="6333170995003625229">Верификација имејл адресе или лозинке није успела. Пробајте поново да се пријавите.</translation>
 <translation id="6335920438823100346">Да бисте покренули Linux, <ph name="MANAGER" /> захтева да направите резервну копију података и ресетујете овај Chromebook на фабричка подешавања.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> је онемогућио ADB отклањање грешака. То ће ресетовати <ph name="DEVICE_TYPE" /> за 24 сата. Направите резервне копије свих фајлова које желите да задржите.</translation>
 <translation id="6338981933082930623">Сви сајтови могу да приказују све огласе</translation>
@@ -5847,6 +5849,7 @@
 <translation id="6735304988756581115">Прикажи колачиће и остале податке са сајта...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737663862851963468">Уклоните Kerberos тикет</translation>
+<translation id="6738430949033571771">Верификује се налог…</translation>
 <translation id="6739923123728562974">Прикажи пречицу на радној површини</translation>
 <translation id="6740234557573873150">Преузимање датотеке <ph name="FILE_NAME" /> је паузирано</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Администратор<ph name="END_LINK" /> је искључио безбедно прегледање</translation>
@@ -7665,6 +7668,8 @@
 <translation id="8546306075665861288">Кеш слике</translation>
 <translation id="8546930481464505581">Прилагоди додирну траку</translation>
 <translation id="8547013269961688403">Омогући лупу за цео екран</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />Имејлом <ph name="USER_EMAIL" /> управља <ph name="MANAGER" />. Не можете да додате овај имејл као додатни налог.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Да бисте користили <ph name="USER_EMAIL" />, прво се одјавите са уређаја <ph name="DEVICE_TYPE" />. Затим у дну екрана за пријављивање изаберите Додај особу.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Задржите тастер за претрагу да бисте променили понашање тастера у горњем реду</translation>
 <translation id="8549316893834449916">За пријављивање на Chromebook ћете користити Google налог – исти који користите и за Gmail, Диск, YouTube и друго.</translation>
 <translation id="8551388862522347954">Лиценце</translation>
