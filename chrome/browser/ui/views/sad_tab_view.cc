@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bulleted_label_list_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -548,13 +549,17 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   auto* actions_container =
       container->AddChildView(std::make_unique<views::FlexLayoutView>());
   actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  auto* help_link =
-      actions_container->AddChildView(std::make_unique<views::Link>(
-          l10n_util::GetStringUTF16(GetHelpLinkTitle())));
-  help_link->SetCallback(base::BindRepeating(
-      &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
-  help_link->SetProperty(views::kTableVertAlignKey,
-                         views::LayoutAlignment::kCenter);
+  // Do not show the help link in the kiosk session to prevent escape from a
+  // kiosk app.
+  if (!profiles::IsKioskSession()) {
+    auto* help_link =
+        actions_container->AddChildView(std::make_unique<views::Link>(
+            l10n_util::GetStringUTF16(GetHelpLinkTitle())));
+    help_link->SetCallback(base::BindRepeating(
+        &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
+    help_link->SetProperty(views::kTableVertAlignKey,
+                           views::LayoutAlignment::kCenter);
+  }
   action_button_ =
       actions_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&SadTabView::PerformAction,
@@ -640,8 +645,7 @@ void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   title_->SizeToFit(max_width);
 }
 
-SadTab* SadTab::Create(content::WebContents* web_contents,
-                       SadTabKind kind) {
+SadTab* SadTab::Create(content::WebContents* web_contents, SadTabKind kind) {
   return new SadTabView(web_contents, kind);
 }
 
