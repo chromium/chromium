@@ -26,6 +26,12 @@ void FidoAuthenticator::GetNextAssertion(
   NOTREACHED();
 }
 
+void FidoAuthenticator::GetCredentialInformationForRequest(
+    const CtapGetAssertionRequest& request,
+    GetCredentialInformationForRequestCallback callback) {
+  NOTREACHED();
+}
+
 void FidoAuthenticator::GetTouch(base::OnceCallback<void()> callback) {}
 
 void FidoAuthenticator::GetPinRetries(

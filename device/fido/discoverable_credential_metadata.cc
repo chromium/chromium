@@ -22,4 +22,9 @@ DiscoverableCredentialMetadata& DiscoverableCredentialMetadata::operator=(
     DiscoverableCredentialMetadata&& other) = default;
 DiscoverableCredentialMetadata::~DiscoverableCredentialMetadata() = default;
 
+bool DiscoverableCredentialMetadata::operator==(
+    const DiscoverableCredentialMetadata& other) const {
+  return cred_id == other.cred_id && user == other.user;
+}
+
 }  // namespace device

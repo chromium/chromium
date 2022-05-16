@@ -28,6 +28,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
   DiscoverableCredentialMetadata& operator=(
       DiscoverableCredentialMetadata&& other);
   ~DiscoverableCredentialMetadata();
+  bool operator==(const DiscoverableCredentialMetadata& other) const;
 
   std::vector<uint8_t> cred_id;
   PublicKeyCredentialUserEntity user;

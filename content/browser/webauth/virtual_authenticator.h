@@ -92,7 +92,7 @@ class VirtualAuthenticator : public blink::test::mojom::VirtualAuthenticator {
   //
   // There is an N:1 relationship between VirtualFidoDevices and this class, so
   // this method can be called any number of times.
-  std::unique_ptr<device::FidoDevice> ConstructDevice();
+  std::unique_ptr<device::VirtualFidoDevice> ConstructDevice();
 
   // blink::test::mojom::VirtualAuthenticator:
   void GetLargeBlob(const std::vector<uint8_t>& key_handle,

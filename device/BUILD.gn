@@ -184,6 +184,7 @@ test("device_unittests") {
       "fido/u2f_register_operation_unittest.cc",
       "fido/u2f_sign_operation_unittest.cc",
       "fido/virtual_ctap2_device_unittest.cc",
+      "fido/virtual_fido_device_authenticator_unittest.cc",
       "fido/virtual_u2f_device_unittest.cc",
     ]
 

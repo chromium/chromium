@@ -197,6 +197,8 @@ component("fido") {
       "virtual_ctap2_device.h",
       "virtual_fido_device.cc",
       "virtual_fido_device.h",
+      "virtual_fido_device_authenticator.cc",
+      "virtual_fido_device_authenticator.h",
       "virtual_u2f_device.cc",
       "virtual_u2f_device.h",
     ]

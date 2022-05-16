@@ -39,10 +39,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       Config config);
   ~ChromeOSAuthenticator() override;
 
-  static void HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request,
-      base::OnceCallback<void(bool has_credential)> callback);
-
   static void HasLegacyU2fCredentialForGetAssertionRequest(
       const CtapGetAssertionRequest& request,
       base::OnceCallback<void(bool has_credential)> callback);
@@ -81,6 +77,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
   void GetNextAssertion(GetAssertionCallback callback) override {}
+  void GetCredentialInformationForRequest(
+      const CtapGetAssertionRequest& request,
+      GetCredentialInformationForRequestCallback callback) override;
   void Cancel() override;
   Type GetType() const override;
   std::string GetId() const override;
@@ -101,6 +100,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   void OnGetAlgorithmsResponse(
       base::OnceClosure callback,
       absl::optional<u2f::GetAlgorithmsResponse> response);
+  void OnHasCredentialInformationForRequest(
+      GetCredentialInformationForRequestCallback callback,
+      absl::optional<u2f::HasCredentialsResponse> response);
   void OnMakeCredentialResponse(
       CtapMakeCredentialRequest request,
       MakeCredentialCallback callback,
@@ -109,9 +111,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       CtapGetAssertionRequest request,
       GetAssertionCallback callback,
       absl::optional<u2f::GetAssertionResponse> response);
-  void OnHasLegacyCredentialsResponse(
-      base::OnceCallback<void(bool has_credential)> callback,
-      absl::optional<u2f::HasCredentialsResponse> response);
   void OnCancelResponse(
       absl::optional<u2f::CancelWebAuthnFlowResponse> response);
 

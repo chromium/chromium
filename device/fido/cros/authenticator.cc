@@ -256,6 +256,38 @@ void ChromeOSAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                           std::move(callback)));
 }
 
+void ChromeOSAuthenticator::GetCredentialInformationForRequest(
+    const CtapGetAssertionRequest& request,
+    GetCredentialInformationForRequestCallback callback) {
+  u2f::HasCredentialsRequest req;
+  req.set_rp_id(request.rp_id);
+  if (request.app_id) {
+    req.set_app_id(*request.app_id);
+  }
+
+  for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
+    req.add_credential_id(
+        std::string(descriptor.id.begin(), descriptor.id.end()));
+  }
+
+  chromeos::U2FClient::Get()->HasCredentials(
+      req, base::BindOnce(
+               &ChromeOSAuthenticator::OnHasCredentialInformationForRequest,
+               weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
+    GetCredentialInformationForRequestCallback callback,
+    absl::optional<u2f::HasCredentialsResponse> response) {
+  std::move(callback).Run(
+      /*credentials=*/{},
+      /*has_credential=*/
+      response &&
+          response->status() ==
+              u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
+          response->credential_id().size() > 0);
+}
+
 void ChromeOSAuthenticator::OnGetAssertionResponse(
     CtapGetAssertionRequest request,
     GetAssertionCallback callback,
@@ -299,34 +331,6 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
       std::vector<uint8_t>(credential_id.begin(), credential_id.end()));
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                           std::move(authenticator_response));
-}
-
-void ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
-    const CtapGetAssertionRequest& request,
-    base::OnceCallback<void(bool has_credential)> callback) {
-  u2f::HasCredentialsRequest req;
-  req.set_rp_id(request.rp_id);
-  if (request.app_id) {
-    req.set_app_id(*request.app_id);
-  }
-
-  for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
-    req.add_credential_id(
-        std::string(descriptor.id.begin(), descriptor.id.end()));
-  }
-
-  chromeos::U2FClient::Get()->HasCredentials(
-      req,
-      base::BindOnce(
-          [](base::OnceCallback<void(bool has_credential)> callback,
-             absl::optional<u2f::HasCredentialsResponse> response) {
-            std::move(callback).Run(
-                response &&
-                response->status() ==
-                    u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
-                response->credential_id().size() > 0);
-          },
-          std::move(callback)));
 }
 
 void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(

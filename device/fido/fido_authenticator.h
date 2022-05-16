@@ -19,6 +19,7 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/credential_management.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -50,6 +51,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using GetAssertionCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
       absl::optional<AuthenticatorGetAssertionResponse>)>;
+  using GetCredentialInformationForRequestCallback = base::OnceCallback<void(
+      std::vector<DiscoverableCredentialMetadata> credentials,
+      bool has_credentials)>;
+
   using GetRetriesCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               absl::optional<pin::RetriesResponse>)>;
@@ -117,6 +122,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // GetNextAssertion fetches the next assertion from a device that indicated in
   // the response to |GetAssertion| that multiple results were available.
   virtual void GetNextAssertion(GetAssertionCallback callback);
+  // GetCredentialInformationForRequest returns a boolean indicating whether
+  // there are credentials applicable for |request|, and if supported, a list of
+  // the corresponding resident credential metadata for empty allow list
+  // requests.
+  virtual void GetCredentialInformationForRequest(
+      const CtapGetAssertionRequest& request,
+      GetCredentialInformationForRequestCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);
   // GetPinRetries gets the number of PIN attempts remaining before an

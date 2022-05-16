@@ -102,7 +102,8 @@ void VirtualAuthenticator::SetUserPresence(bool is_user_present) {
       is_user_present);
 }
 
-std::unique_ptr<device::FidoDevice> VirtualAuthenticator::ConstructDevice() {
+std::unique_ptr<device::VirtualFidoDevice>
+VirtualAuthenticator::ConstructDevice() {
   switch (protocol_) {
     case device::ProtocolVersion::kU2f:
       return std::make_unique<device::VirtualU2fDevice>(state_);
