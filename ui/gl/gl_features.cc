@@ -115,15 +115,6 @@ bool UsePassthroughCommandDecoder() {
   if (!base::FeatureList::IsEnabled(kDefaultPassthroughCommandDecoder))
     return false;
 
-#if BUILDFLAG(IS_MAC)
-  // Excessive crashes are seen in GL drivers on MacOS 10.15.7 in the glFlush
-  // function when using ANGLE and the passthrough command decoder.
-  // crbug.com/1257538
-  if (base::mac::IsOS10_15()) {
-    return false;
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   // Check block list against build info.
   const auto* build_info = base::android::BuildInfo::GetInstance();
