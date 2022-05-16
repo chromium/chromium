@@ -245,6 +245,9 @@ class DriveFsSessionForTest : public DriveFsSession {
       ConnectToExtensionCallback callback) override {}
   void DisplayConfirmDialog(mojom::DialogReasonPtr error,
                             DisplayConfirmDialogCallback callback) override {}
+  void ExecuteHttpRequest(
+      mojom::HttpRequestPtr request,
+      mojo::PendingRemote<mojom::HttpDelegate> delegate) override {}
 };
 
 class DriveFsSessionTest : public ::testing::Test,

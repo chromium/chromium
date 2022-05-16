@@ -16,6 +16,8 @@ component("drivefs") {
     "drivefs_host.cc",
     "drivefs_host.h",
     "drivefs_host_observer.h",
+    "drivefs_http_client.cc",
+    "drivefs_http_client.h",
     "drivefs_search.cc",
     "drivefs_search.h",
     "drivefs_session.cc",
@@ -73,6 +75,7 @@ source_set("unit_tests") {
     "drivefs_auth_unittest.cc",
     "drivefs_bootstrap_unittest.cc",
     "drivefs_host_unittest.cc",
+    "drivefs_http_client_unittest.cc",
     "drivefs_search_unittest.cc",
     "drivefs_session_unittest.cc",
   ]
