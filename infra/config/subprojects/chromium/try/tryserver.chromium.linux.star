@@ -660,6 +660,9 @@ try_.builder(
 
 try_.builder(
     name = "network_service_linux",
+    mirrors = [
+        "ci/Network Service Linux",
+    ],
 )
 
 try_.builder(
