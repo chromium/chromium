@@ -177,7 +177,7 @@ void RecordMetricsReportingDefaultState() {
   });
 }
 
-bool IsApplicationManged() {
+bool IsApplicationManaged() {
   return [[[NSUserDefaults standardUserDefaults]
              dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
 }

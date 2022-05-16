@@ -59,6 +59,6 @@ void RecordMetricsReportingDefaultState();
 
 // Returns whether the browser is managed based on the presence of policy data
 // in the app configuration.
-bool IsApplicationManged();
+bool IsApplicationManaged();
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_UTIL_H_

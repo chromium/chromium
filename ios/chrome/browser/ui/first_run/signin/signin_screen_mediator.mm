@@ -248,7 +248,7 @@
       _consumer.signinStatus = SigninScreenConsumerSigninStatusDisabled;
       break;
   }
-  self.consumer.isManaged = IsApplicationManged();
+  self.consumer.isManaged = IsApplicationManaged();
   if (!self.showFREConsent) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {

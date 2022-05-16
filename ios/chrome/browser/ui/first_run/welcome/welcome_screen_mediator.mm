@@ -44,7 +44,7 @@
 
 - (void)setConsumer:(id<WelcomeScreenConsumer>)consumer {
   _consumer = consumer;
-  self.consumer.isManaged = IsApplicationManged();
+  self.consumer.isManaged = IsApplicationManaged();
 }
 
 @end
