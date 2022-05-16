@@ -2420,6 +2420,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         @VisualState
         int newVisualState = computeVisualState();
 
+        if (newVisualState == VisualState.NEW_TAB_NORMAL && mHomeButton != null) {
+            mHomeButton.setAccessibilityTraversalBefore(R.id.toolbar_buttons);
+        } else {
+            mHomeButton.setAccessibilityTraversalBefore(View.NO_ID);
+        }
+
         // If we are navigating to or from a brand color, allow the transition animation
         // to run to completion as it will handle the triggering this path again and committing
         // the proper visual state when it finishes.  Brand color transitions are only valid
