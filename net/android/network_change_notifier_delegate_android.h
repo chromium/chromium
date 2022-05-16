@@ -165,6 +165,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierDelegateAndroid {
     return register_network_callback_failed_;
   }
 
+  static void EnableNetworkChangeNotifierAutoDetectForTest();
+
  private:
   friend class BaseNetworkChangeNotifierAndroidTest;
 

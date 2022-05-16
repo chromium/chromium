@@ -282,6 +282,12 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // latency.
   uint32_t GetPeerToPeerConnectionsCountChange() const;
 
+  // Forces NetworkQualityEstimator reports
+  // NetworkChangeNotifier::CONNECTION_WIFI(2) as
+  // EFFECTIVE_CONNECTION_TYPE_SLOW_2G(2) since EffectiveConnectionType and the
+  // production receivers doesn't notice Wifi.
+  void ForceReportWifiAsSlow2GForTesting();
+
   typedef nqe::internal::Observation Observation;
   typedef nqe::internal::ObservationBuffer ObservationBuffer;
 
@@ -640,6 +646,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Whether the network id should be obtained on a worker thread.
   bool get_network_id_asynchronously_ = false;
 #endif
+
+  bool force_report_wifi_as_slow_2g_for_testing_ = false;
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
 };

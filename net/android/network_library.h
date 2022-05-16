@@ -82,6 +82,9 @@ NET_EXPORT bool GetIsCaptivePortal();
 // point or its SSID is unavailable, an empty string is returned.
 NET_EXPORT_PRIVATE std::string GetWifiSSID();
 
+// Call WifiManager.setWifiEnabled.
+NET_EXPORT_PRIVATE void SetWifiEnabledForTesting(bool enabled);
+
 // Returns the signal strength level (between 0 and 4, both inclusive) of the
 // currently registered Wifi connection. If the value is unavailable, an
 // empty value is returned.

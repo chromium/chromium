@@ -510,4 +510,10 @@ void NetworkChangeNotifierDelegateAndroid::FakeDefaultNetworkActive() {
       env, java_network_active_notifier_);
 }
 
+void NetworkChangeNotifierDelegateAndroid::
+    EnableNetworkChangeNotifierAutoDetectForTest() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NetworkChangeNotifier_setAutoDetectConnectivityState(env, true);
+}
+
 }  // namespace net

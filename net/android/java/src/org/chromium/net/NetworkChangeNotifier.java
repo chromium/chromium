@@ -151,10 +151,12 @@ public class NetworkChangeNotifier {
      * Note that passing true here requires the embedding app have the platform ACCESS_NETWORK_STATE
      * permission. Also note that in this case the auto detection is enabled based on the status of
      * the application (@see ApplicationStatus).
+     * Declare @CalledByNative only for testing.
      *
      * @param shouldAutoDetect true if the NetworkChangeNotifier should listen for system changes in
      *    network connectivity.
      */
+    @CalledByNative
     public static void setAutoDetectConnectivityState(boolean shouldAutoDetect) {
         getInstance().setAutoDetectConnectivityStateInternal(
                 shouldAutoDetect, new RegistrationPolicyApplicationStatus());

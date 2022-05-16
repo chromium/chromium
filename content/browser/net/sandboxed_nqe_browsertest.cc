@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/network_service_instance.h"
@@ -15,8 +17,28 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "net/android/network_change_notifier_delegate_android.h"
+#include "net/android/network_library.h"
+#endif
+
 namespace content {
 namespace {
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const std::vector<net::EffectiveConnectionType>& types) {
+  os << "[";
+  bool is_first = true;
+  for (auto& type : types) {
+    if (is_first)
+      is_first = false;
+    else
+      os << ",";
+    os << type;
+  }
+  return os << "]";
+}
 
 class TestNetworkQualityObserver
     : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
@@ -26,32 +48,36 @@ class TestNetworkQualityObserver
   // NetworkQualityTracker::EffectiveConnectionTypeObserver implementation:
   void OnEffectiveConnectionTypeChanged(
       net::EffectiveConnectionType type) override {
-    effective_connection_type_ = type;
-    if (effective_connection_type_ != run_loop_wait_effective_connection_type_)
+    received_types_.push_back(type);
+    if (type != run_loop_wait_type_)
       return;
     run_loop_->Quit();
   }
 
-  void WaitForNotification(
-      net::EffectiveConnectionType run_loop_wait_effective_connection_type) {
-    if (effective_connection_type_ == run_loop_wait_effective_connection_type)
+  void WaitForNotification(net::EffectiveConnectionType run_loop_wait_type) {
+    if (std::any_of(received_types_.begin(), received_types_.end(),
+                    [=](net::EffectiveConnectionType type) {
+                      return type == run_loop_wait_type;
+                    })) {
+      received_types_.clear();
       return;
-    run_loop_wait_effective_connection_type_ =
-        run_loop_wait_effective_connection_type;
+    }
+    run_loop_wait_type_ = run_loop_wait_type;
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
-  }
-
-  net::EffectiveConnectionType EffectiveConnectionType() const {
-    return effective_connection_type_;
+    if (!run_loop_->AnyQuitCalled()) {
+      LOG(ERROR) << "Timed out waiting run_loop_wait_type="
+                 << run_loop_wait_type
+                 << ", received_types_=" << received_types_;
+    }
+    received_types_.clear();
   }
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  net::EffectiveConnectionType run_loop_wait_effective_connection_type_ =
+  net::EffectiveConnectionType run_loop_wait_type_ =
       net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-  net::EffectiveConnectionType effective_connection_type_ =
-      net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+  std::vector<net::EffectiveConnectionType> received_types_;
 };
 
 class SandboxedNQEBrowserTest : public ContentBrowserTest {
@@ -88,7 +114,6 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
 
   // Simulates a network quality change.
   void SimulateNetworkQualityChange(net::EffectiveConnectionType type) {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     DCHECK(content::GetNetworkService());
 
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
@@ -97,6 +122,19 @@ class SandboxedNQEBrowserTest : public ContentBrowserTest {
     base::RunLoop run_loop;
     network_service_test->SimulateNetworkQualityChange(type,
                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void ForceNetworkQualityEstimatorReportWifiAsSlow2G() {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    DCHECK(content::GetNetworkService());
+
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test.BindNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    network_service_test->ForceNetworkQualityEstimatorReportWifiAsSlow2G(
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -131,14 +169,10 @@ IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, MAYBE_NetworkQualityTracker) {
   SimulateNetworkQualityChange(net::EFFECTIVE_CONNECTION_TYPE_4G);
   network_quality_observer.WaitForNotification(
       net::EFFECTIVE_CONNECTION_TYPE_4G);
-  EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_4G,
-            network_quality_observer.EffectiveConnectionType());
 
   SimulateNetworkQualityChange(net::EFFECTIVE_CONNECTION_TYPE_3G);
   network_quality_observer.WaitForNotification(
       net::EFFECTIVE_CONNECTION_TYPE_3G);
-  EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_3G,
-            network_quality_observer.EffectiveConnectionType());
 
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
@@ -146,6 +180,40 @@ IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, MAYBE_NetworkQualityTracker) {
   EXPECT_EQ(base::Milliseconds(400), tracker->GetTransportRTT());
   EXPECT_EQ(400, tracker->GetDownstreamThroughputKbps());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Turn on/off Wifi on Android and listen it in the network service.
+IN_PROC_BROWSER_TEST_F(SandboxedNQEBrowserTest, TurnWifiEnabled) {
+  const std::string wifi_ssid = net::android::GetWifiSSID();
+  if (wifi_ssid.empty()) {
+    GTEST_SKIP() << "This test requires wifi network.";
+  }
+  // Let NetworkQualityEstimator reports NetworkChangeNotifier::CONNECTION_WIFI
+  // as EFFECTIVE_CONNECTION_TYPE_SLOW_2G since EffectiveConnectionType and
+  // the production receivers doesn't notice Wifi.
+  ForceNetworkQualityEstimatorReportWifiAsSlow2G();
+  net::NetworkChangeNotifierDelegateAndroid::
+      EnableNetworkChangeNotifierAutoDetectForTest();
+
+  std::unique_ptr<network::NetworkQualityTracker> tracker =
+      std::make_unique<network::NetworkQualityTracker>(
+          base::BindRepeating(&GetNetworkService));
+  TestNetworkQualityObserver network_quality_observer;
+  tracker->AddEffectiveConnectionTypeObserver(&network_quality_observer);
+
+  net::android::SetWifiEnabledForTesting(true);
+  network_quality_observer.WaitForNotification(
+      net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+
+  net::android::SetWifiEnabledForTesting(false);
+  network_quality_observer.WaitForNotification(
+      net::EFFECTIVE_CONNECTION_TYPE_4G);
+
+  net::android::SetWifiEnabledForTesting(true);
+  network_quality_observer.WaitForNotification(
+      net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+}
+#endif
 
 }  // namespace
 }  // namespace content

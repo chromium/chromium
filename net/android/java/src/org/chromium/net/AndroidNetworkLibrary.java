@@ -275,6 +275,18 @@ class AndroidNetworkLibrary {
         return "";
     }
 
+    // For testing, turn Wifi on/off. Only for testing but we can not append
+    // "ForTest" hooter because jni generator creates code for @CalledByNative
+    // regardless of the hooter but Chromium Binary Size checker warns
+    // "XXXForTest" is included in the production binary.
+    @CalledByNative
+    public static void setWifiEnabled(boolean enabled) {
+        WifiManager wifiManager =
+                (WifiManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(enabled);
+    }
+
     /**
      * Gets the signal strength from the currently associated WiFi access point if there is one, and
      * it is available. Signal strength may not be available if the app does not have permissions to

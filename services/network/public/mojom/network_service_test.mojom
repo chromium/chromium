@@ -128,6 +128,11 @@ interface NetworkServiceTest {
   // NetworkQualityEstimatorManagerClient implementations.
   SimulateNetworkQualityChange(EffectiveConnectionType type) => ();
 
+  // Let NetworkQualityEstimator reports NetworkChangeNotifier::CONNECTION_WIFI
+  // as EFFECTIVE_CONNECTION_TYPE_SLOW_2G since EffectiveConnectionType and
+  // the production receivers doesn't notice Wifi.
+  ForceNetworkQualityEstimatorReportWifiAsSlow2G() => ();
+
   // Crash the process where network service is running.
   SimulateCrash();
 

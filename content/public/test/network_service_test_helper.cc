@@ -494,6 +494,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
+  void ForceNetworkQualityEstimatorReportWifiAsSlow2G(
+      SimulateNetworkChangeCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->network_quality_estimator()
+        ->ForceReportWifiAsSlow2GForTesting();
+    std::move(callback).Run();
+  }
+
   void SimulateCrash() override {
     LOG(ERROR) << "Intentionally terminating current process to simulate"
                   " NetworkService crash for testing.";

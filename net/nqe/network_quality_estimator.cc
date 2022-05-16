@@ -842,6 +842,11 @@ NetworkQualityEstimator::GetRecentEffectiveConnectionTypeUsingMetrics(
     return EFFECTIVE_CONNECTION_TYPE_OFFLINE;
   }
 
+  if (force_report_wifi_as_slow_2g_for_testing_ &&
+      current_network_id_.type == NetworkChangeNotifier::CONNECTION_WIFI) {
+    return EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
+  }
+
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP, base::TimeTicks(),
                     http_rtt, nullptr)) {
     *http_rtt = nqe::internal::InvalidRTT();
@@ -1484,6 +1489,11 @@ void NetworkQualityEstimator::SimulateNetworkQualityChangeForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   params_->SetForcedEffectiveConnectionTypeForTesting(type);
   ComputeEffectiveConnectionType();
+}
+
+void NetworkQualityEstimator::ForceReportWifiAsSlow2GForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  force_report_wifi_as_slow_2g_for_testing_ = true;
 }
 
 void NetworkQualityEstimator::RecordSpdyPingLatency(

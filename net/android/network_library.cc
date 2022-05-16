@@ -122,6 +122,11 @@ std::string GetWifiSSID() {
           base::android::AttachCurrentThread()));
 }
 
+void SetWifiEnabledForTesting(bool enabled) {
+  Java_AndroidNetworkLibrary_setWifiEnabled(
+      base::android::AttachCurrentThread(), enabled);
+}
+
 absl::optional<int32_t> GetWifiSignalLevel() {
   const int count_buckets = 5;
   int signal_strength = Java_AndroidNetworkLibrary_getWifiSignalLevel(
