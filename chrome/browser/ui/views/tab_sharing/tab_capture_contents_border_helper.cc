@@ -23,7 +23,7 @@ constexpr int kMinContentsBorderWidth = 20;
 constexpr int kMinContentsBorderHeight = 20;
 
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class BorderView : public views::View {
  public:
   BorderView() = default;
@@ -84,7 +84,7 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
   // After this fix, capturing a given tab X twice will still yield one widget.
   browser_view->set_contents_border_widget(widget);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -142,7 +142,7 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
 
 void TabCaptureContentsBorderHelper::Update() {
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* const web_contents = &GetWebContents();
@@ -179,7 +179,7 @@ void TabCaptureContentsBorderHelper::Update() {
   } else {
     contents_border_widget->Hide();
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void TabCaptureContentsBorderHelper::UpdateBlueBorderLocation() {

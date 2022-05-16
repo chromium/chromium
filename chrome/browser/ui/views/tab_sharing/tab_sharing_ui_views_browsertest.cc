@@ -193,7 +193,7 @@ class TabSharingUIViewsBrowserTest
     DCHECK((capturing_tab != kNullTabIndex && captured_tab != kNullTabIndex) ||
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
     has_border = false;
 #endif
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
         capture_indicator->IsBeingMirrored(GetWebContents(browser(), i)));
 
   views::Widget* contents_border = GetContentsBorder(browser());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
   EXPECT_EQ(nullptr, contents_border);
 #else
