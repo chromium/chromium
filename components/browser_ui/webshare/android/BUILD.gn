@@ -37,7 +37,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//build/android:build_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",

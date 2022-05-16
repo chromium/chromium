@@ -15,7 +15,6 @@ android_library("aw_net_java_test_support") {
   deps = [
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
@@ -65,10 +64,7 @@ android_apk("aw_net_test_support_apk") {
   # just disable it.
   enable_multidex = false
 
-  deps = [
-    ":aw_net_java_test_support",
-    "//build/android:build_java",
-  ]
+  deps = [ ":aw_net_java_test_support" ]
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"
   shared_libraries = [ ":aw_net_java_test_native_support" ]

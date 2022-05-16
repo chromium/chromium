@@ -46,10 +46,7 @@ source_set("native_test_native_code") {
 android_library("native_main_runner_java") {
   testonly = true
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
-  deps = [
-    "//base:jni_java",
-    "//build/android:build_java",
-  ]
+  deps = [ "//base:jni_java" ]
 }
 
 android_library("native_test_java") {

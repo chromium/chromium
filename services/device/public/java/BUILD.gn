@@ -32,7 +32,6 @@ android_library("geolocation_java_test_support") {
   ]
   deps = [
     ":geolocation_java",
-    "//build/android:build_java",
 
     # Ideally this dependency should be removed. http://crbug.com/850357
     "//services/device/geolocation:geolocation_java",

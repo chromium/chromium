@@ -28,7 +28,6 @@ android_library("webview_ui_test_app_java") {
   deps = [
     ":webview_ui_test_app_apk_resources",
     "//base:base_java",
-    "//build/android:build_java",
   ]
 }
 
@@ -59,7 +58,6 @@ instrumentation_test_apk("webview_ui_test_app_test_apk") {
     ":webview_ui_test_app_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:rules_java",

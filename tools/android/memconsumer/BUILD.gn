@@ -21,10 +21,7 @@ android_apk("memconsumer_apk") {
   ]
   shared_libraries = [ ":libmemconsumer" ]
 
-  deps = [
-    ":memconsumer_apk_resources",
-    "//build/android:build_java",
-  ]
+  deps = [ ":memconsumer_apk_resources" ]
 }
 
 shared_library("libmemconsumer") {

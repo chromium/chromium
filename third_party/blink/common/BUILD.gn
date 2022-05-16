@@ -300,10 +300,7 @@ test("blink_common_unittests") {
     "//ui/gfx:test_support",
   ]
   if (is_android) {
-    deps += [
-      "//build/android:build_java",
-      "//media/base/android:media_java",
-    ]
+    deps += [ "//media/base/android:media_java" ]
   }
 
   if (is_fuchsia) {

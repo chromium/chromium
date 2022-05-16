@@ -702,7 +702,6 @@ if (is_android) {
       ":components_browsertests_resources",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//build/android:build_java",
       "//content/public/test/android:content_java_test_support",
       "//content/shell/android:content_shell_browsertests_java",
       "//testing/android/native_test:native_test_java",

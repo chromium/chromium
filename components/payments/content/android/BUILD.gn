@@ -348,7 +348,6 @@ java_library("junit") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",

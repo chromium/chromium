@@ -82,7 +82,6 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/favicon/android:java",
@@ -107,7 +106,6 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_test_support",

@@ -185,7 +185,6 @@ if (is_android) {
       ":java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//build/android:build_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/video_tutorials:java",
       "//chrome/browser/video_tutorials:test_support_java",

@@ -122,7 +122,6 @@ android_library("mojo_javatests") {
     ":test_support_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import2_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import_java",
@@ -166,7 +165,6 @@ instrumentation_test_apk("mojo_test_apk") {
   deps = [
     ":mojo_javatests",
     ":system_impl_java",
-    "//build/android:build_java",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
     "//mojo/public/java:bindings_java",
     "//third_party/androidx:androidx_test_monitor_java",

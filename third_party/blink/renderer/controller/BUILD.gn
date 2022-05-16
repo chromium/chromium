@@ -137,7 +137,6 @@ test("blink_unittests") {
 
   if (is_android) {
     deps += [
-      "//build/android:build_java",
       "//content/public/android:content_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",

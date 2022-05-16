@@ -132,7 +132,6 @@ if (is_android) {
     deps = [
       ":java",
       "//base:base_java",
-      "//build/android:build_java",
       "//components/image_fetcher:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/gif_player:gif_player_java",

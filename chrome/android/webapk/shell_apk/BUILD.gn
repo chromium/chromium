@@ -372,7 +372,6 @@ android_library("shell_apk_javatests") {
     ":webapk_generated_webapk_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android/webapk/libs/common:common_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",

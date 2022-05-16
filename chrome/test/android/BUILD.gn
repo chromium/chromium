@@ -41,7 +41,6 @@ android_library("chrome_java_test_pagecontroller") {
     ":chrome_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/ui/android/appmenu/test:test_support_java",
     "//third_party/android_deps:guava_android_java",
@@ -100,7 +99,6 @@ instrumentation_test_apk("chrome_java_test_wpr_tests") {
   deps = [
     ":chrome_java_test_support",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
@@ -136,7 +134,6 @@ instrumentation_test_apk("chrome_java_test_feed_test") {
   deps = [
     ":chrome_java_test_support",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
@@ -170,7 +167,6 @@ instrumentation_test_apk("chrome_webapk_integration_tests") {
     ":chrome_java_test_pagecontroller",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/android/webapk/libs/client:client_java",
     "//chrome/android/webapk/libs/runtime_library:runtime_library_javatests",
@@ -229,7 +225,6 @@ junit_binary("chrome_java_test_pagecontroller_junit_tests") {
     ":chrome_java_test_pagecontroller",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//third_party/ub-uiautomator:ub_uiautomator_java",
   ]
 }

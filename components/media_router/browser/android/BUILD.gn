@@ -150,7 +150,6 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

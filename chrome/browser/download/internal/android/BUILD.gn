@@ -288,7 +288,6 @@ android_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/util/android:java",

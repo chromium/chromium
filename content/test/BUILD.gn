@@ -1079,7 +1079,6 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",
-      "//build/android:build_java",
       "//components/download/internal/common:internal_java",
       "//components/viz/service:service_java",
       "//content/public/android:content_java",
@@ -2989,7 +2988,6 @@ if (is_android) {
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//base:jni_java",
-      "//build/android:build_java",
       "//content/public/android:content_java",
       "//ui/android:ui_full_java",
     ]

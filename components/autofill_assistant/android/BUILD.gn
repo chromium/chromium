@@ -179,7 +179,6 @@ android_library("public_java") {
     ":public_dependencies_java",
     "//base:base_java",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
@@ -362,7 +361,6 @@ android_library("autofill_assistant_public_impl_java") {
   deps = [
     ":animated_poodle_resources",
     "//base:base_java",
-    "//build/android:build_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]

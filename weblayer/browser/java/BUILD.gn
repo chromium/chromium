@@ -414,7 +414,6 @@ android_library("junit_test_support") {
   testonly = true
   deps = [
     ":java",
-    "//build/android:build_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
@@ -445,7 +444,6 @@ junit_binary("weblayer_junit_tests") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",

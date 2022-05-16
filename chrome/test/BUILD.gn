@@ -1053,7 +1053,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//base:base_java_test_support",
-      "//build/android:build_java",
       "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
       "//chrome/android:base_module_java",
       "//chrome/android:chrome_all_java",
@@ -6181,7 +6180,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//build/android:build_java",
       "//chrome:chrome_android_core",
       "//chrome/android:chrome_apk_paks",
       "//chrome/android:chrome_java",
@@ -9522,7 +9520,6 @@ if (is_android) {
     testonly = true
     deps = [
       "//base:jni_java",
-      "//build/android:build_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_test_support",

@@ -35,7 +35,6 @@ java_library("junit") {
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/test/android:chrome_java_test_support",

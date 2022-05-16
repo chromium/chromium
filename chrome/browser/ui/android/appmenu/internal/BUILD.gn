@@ -74,7 +74,6 @@ android_library("javatests") {
     ":test_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/appmenu:java",

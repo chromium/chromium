@@ -74,7 +74,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
-    "//build/android:build_java",
     "//content/public/android:content_full_java",
     "//third_party/junit",
   ]

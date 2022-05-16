@@ -4359,10 +4359,7 @@ if (is_android) {
   android_library("base_java_process_launcher_test_support") {
     testonly = true
 
-    deps = [
-      ":base_java",
-      "//build/android:build_java",
-    ]
+    deps = [ ":base_java" ]
 
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]
   }
@@ -4389,7 +4386,6 @@ if (is_android) {
 
     deps = [
       ":base_java",
-      "//build/android:build_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -4457,7 +4453,6 @@ if (is_android) {
       ":base_java_test_support",
       ":base_junit_test_support",
       "//base/test:test_support_java",
-      "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
@@ -4505,7 +4500,6 @@ if (is_android) {
     deps = [
       ":base_java",
       "//base:jni_java",
-      "//build/android:build_java",
     ]
 
     sources = [

@@ -34,7 +34,6 @@ android_library("module_installer_java") {
   deps = [
     "//base:base_java",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/crash/android:java",
     "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

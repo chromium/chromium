@@ -109,7 +109,6 @@ android_apk("webview_instrumentation_apk") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
     "//components/content_capture/android/test_support:java",
     "//components/embedder_support/android:util_java",
@@ -250,7 +249,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:jni_java",
-    "//build/android:build_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
     "//components/autofill/android:autofill_java",
@@ -491,7 +489,6 @@ android_library("webview_instrumentation_test_mock_services_java") {
     "//android_webview/nonembedded:services_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//build/android:build_java",
     "//components/component_updater/android:component_provider_service_aidl_java",
     "//third_party/junit",
   ]
@@ -647,7 +644,6 @@ android_library("android_webview_unittests_java") {
   deps = [
     "//android_webview:android_webview_java",
     "//base:jni_java",
-    "//build/android:build_java",
     "//content/public/test/android:content_java_test_support",
   ]
   sources = [ "../unittestjava/src/org/chromium/android_webview/unittest/MockAwContentsClientBridge.java" ]
@@ -683,7 +679,6 @@ junit_binary("android_webview_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//build/android:build_java",
     "//components/component_updater/android:embedded_component_loader_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
