@@ -6780,6 +6780,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_1": "name:iph_shared_highlighting_receiver_trigger;comparator:==0;window:7;storage:360",
+                        "event_trigger": "name:iph_shared_highlighting_receiver_trigger;comparator:<5;window:360;storage:360",
+                        "event_used": "name:iph_shared_highlighting_used;comparator:<2;window:360;storage:360",
+                        "session_rate": "any"
+                    },
                     "enable_features": [
                         "IPH_SharedHighlightingBuilder",
                         "IPH_SharedHighlightingReceiver"
@@ -6800,6 +6807,13 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_1": "name:iph_desktop_shared_highlighting_trigger;comparator:==0;window:7;storage:360",
+                        "event_trigger": "name:iph_desktop_shared_highlighting_trigger;comparator:<5;window:360;storage:360",
+                        "event_used": "name:iph_desktop_shared_highlighting_used;comparator:<2;window:360;storage:360",
+                        "session_rate": "any"
+                    },
                     "enable_features": [
                         "IPH_DesktopSharedHighlighting"
                     ]
