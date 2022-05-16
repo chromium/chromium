@@ -181,7 +181,7 @@ template <typename ProtocolCallback>
 bool CanExecuteGlobalCommands(
     RenderFrameHost* host,
     const std::unique_ptr<ProtocolCallback>& callback) {
-  if (!host || !host->GetParent())
+  if (!host || host->IsInPrimaryMainFrame())
     return true;
   callback->sendFailure(
       Response::ServerError(kCommandIsOnlyAvailableAtTopTarget));
