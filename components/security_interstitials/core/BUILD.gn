@@ -79,6 +79,7 @@ static_library("unsafe_resource") {
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common:common",
     "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/mojom",
   ]
 }

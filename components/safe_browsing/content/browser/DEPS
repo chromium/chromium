@@ -25,6 +25,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",
+  "+services/metrics/public/cpp",
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/blink/public/mojom/loader",
   "+ui/base",

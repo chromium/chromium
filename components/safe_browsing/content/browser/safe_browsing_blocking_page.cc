@@ -29,6 +29,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 using content::BrowserThread;
 using content::WebContents;
@@ -71,7 +72,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       get_user_population_callback_(get_user_population_callback),
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
-      trigger_manager_(trigger_manager) {
+      trigger_manager_(trigger_manager),
+      ukm_id_(unsafe_resources[0].ukm_id) {
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
@@ -130,6 +132,13 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
       metrics_collector_->AddBypassEventToPref(threat_source_);
     }
   }
+
+  if (threat_source_ == ThreatSource::CLIENT_SIDE_DETECTION) {
+    ukm::builders::SBClientPhishing_WarningShown builder(ukm_id_);
+    builder.SetClickedThrough(proceeded());
+    builder.Record(ukm::UkmRecorder::Get());
+  }
+
   BaseBlockingPage::OnInterstitialClosing();
 }
 

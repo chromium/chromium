@@ -58,6 +58,7 @@ if (safe_browsing_mode > 0) {
       "//components/security_interstitials/core",
       "//components/security_interstitials/core:unsafe_resource",
       "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 }
@@ -225,6 +226,7 @@ source_set("client_side_detection") {
     "//google_apis:google_apis",
     "//net:net",
     "//net/traffic_annotation:traffic_annotation",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//url:url",
   ]

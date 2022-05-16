@@ -17340,6 +17340,63 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SBClientPhishing.ClassificationDone">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safe-browsing-alerts@google.com</owner>
+  <summary>
+    Recorded whenever client side phishing classification finishes.
+  </summary>
+  <metric name="IsPhishing" enum="BooleanIsPhishing">
+    <summary>
+      Whether the client side model flagged the page as phishing.
+    </summary>
+  </metric>
+</event>
+
+<event name="SBClientPhishing.ClassificationStart">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safe-browsing-alerts@google.com</owner>
+  <summary>
+    Recorded on each navigation when Chrome decides whether or not to start
+    client side phishing classification.
+  </summary>
+  <metric name="PreClassificationCheckResult"
+      enum="SBClientDetectionPreClassificationCheckResult">
+    <summary>
+      The result of pre-classification checks: did we choose to classify, and if
+      not, for what reason.
+    </summary>
+  </metric>
+</event>
+
+<event name="SBClientPhishing.ServerClassificationDone">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safe-browsing-alerts@google.com</owner>
+  <summary>
+    Recorded whenever the client-side model identified a page as phishing, and
+    the server-side classification is complete.
+  </summary>
+  <metric name="IsPhishing" enum="BooleanIsPhishing">
+    <summary>
+      Whether the server side model flagged the page as phishing.
+    </summary>
+  </metric>
+</event>
+
+<event name="SBClientPhishing.WarningShown">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safe-browsing-alerts@google.com</owner>
+  <summary>
+    Recorded whenever the user interacts with a warning shown by client side
+    phishing protection.
+  </summary>
+  <metric name="ClickedThrough" enum="BooleanClickedThroughSBInterstitial">
+    <summary>
+      Whether the user clicked through the interstitial warning.
+    </summary>
+  </metric>
+</event>
+
 <event name="SchemefulSameSiteContextDowngrade">
   <owner>bingler@chromium.org</owner>
   <metric name="RequestPerCookie"

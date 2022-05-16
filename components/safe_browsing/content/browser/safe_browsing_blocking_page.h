@@ -145,6 +145,10 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       nullptr;
   raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_ = nullptr;
   raw_ptr<TriggerManager> trigger_manager_ = nullptr;
+
+  // UKM ID for the navigation to the unsafe resource. Currently only populated
+  // when `threat_source_` is `CLIENT_SIDE_DETECTION`.
+  ukm::SourceId ukm_id_;
 };
 
 }  // namespace safe_browsing
