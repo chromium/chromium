@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -937,14 +936,6 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
   // Size limit is a lower |memory_limit_before_paging()| if we have disk space.
   while (disk_used_ < limits_.effective_max_disk_space &&
          total_memory_usage > in_memory_limit) {
-    const char* reason = nullptr;
-    if (memory_pressure_level !=
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-      reason = "OnMemoryPressure";
-    } else {
-      reason = "SizeExceededInMemoryLimit";
-    }
-
     // We only page when we have enough items to fill a whole page file.
     if (populated_memory_items_bytes_ < min_page_file_size)
       break;
@@ -989,8 +980,7 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
                        total_items_size),
         base::BindOnce(&BlobMemoryController::OnEvictionComplete,
                        weak_factory_.GetWeakPtr(), std::move(file_reference),
-                       std::move(items_to_swap), total_items_size, reason,
-                       total_memory_usage));
+                       std::move(items_to_swap), total_items_size));
 
     last_eviction_time_ = base::TimeTicks::Now();
   }
@@ -1001,8 +991,6 @@ void BlobMemoryController::OnEvictionComplete(
     scoped_refptr<ShareableFileReference> file_reference,
     std::vector<scoped_refptr<ShareableBlobDataItem>> items,
     size_t total_items_size,
-    const char* evict_reason,
-    size_t memory_usage_before_eviction,
     std::pair<FileCreationInfo, int64_t /* avail_disk */> result) {
   if (!file_paging_enabled_)
     return;
@@ -1035,16 +1023,6 @@ void BlobMemoryController::OnEvictionComplete(
     offset += shareable_item->item()->length();
   }
   in_flight_memory_used_ -= total_items_size;
-
-  // Record change in memory usage at the last eviction reply.
-  size_t total_usage = blob_memory_used_ + pending_memory_quota_total_size_;
-  if (!pending_evictions_ && memory_usage_before_eviction >= total_usage) {
-    std::string full_histogram_name =
-        std::string("Storage.Blob.SizeEvictedToDiskInKB.") + evict_reason;
-    base::UmaHistogramCounts100000(
-        full_histogram_name,
-        (memory_usage_before_eviction - total_usage) / 1024);
-  }
 
   // We want callback on blobs up to the amount we've freed.
   MaybeGrantPendingMemoryRequests();

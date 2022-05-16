@@ -10109,18 +10109,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.TimeSinceLastStartup"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Storage_BlobEvictReason" separator=".">
-  <suffix name="OnMemoryPressure"
-      label="Eviction was triggered because of memory pressure signal."/>
-  <suffix name="SizeExceededInMemoryLimit"
-      label="Eviction was triggered because the total size exceeded maximum
-             in memory size allwed"/>
-  <suffix name="SizeExceededMaxDiskSpace"
-      label="Eviction was triggered because the total size exceeded maximum
-             available disk space"/>
-  <affected-histogram name="Storage.Blob.SizeEvictedToDiskInKB"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Storage_Bytes" separator=".">
   <suffix name="DiskCache.AppCache" label="AppCache usage."/>
   <suffix name="DiskCache.CacheStorage" label="CacheStorage usage."/>

@@ -442,13 +442,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Storage.Blob.SizeEvictedToDiskInKB" units="KB"
-    expires_after="2020-07-06">
-  <owner>ssid@chromium.org</owner>
-  <owner>mek@chromium.org</owner>
-  <summary>Records the total size of in-memory blobs evicted to disk.</summary>
-</histogram>
-
 <histogram name="Storage.Blob.TotalSize" units="KB" expires_after="M95">
   <owner>mek@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
