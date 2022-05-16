@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+async function instantiateAndRunModule(url)
+{
+  let {module, instance} = await WebAssembly.instantiateStreaming(fetch(url));
+
+  // Check if there is any TurboFan function in the compiled module.
+  let has_turbofan = false;
+  for (f in instance.exports) {
+    if (%IsTurboFanFunction(instance.exports[f])) {
+      has_turbofan = true;
+      break;
+    }
+  }
+
+  // Run all functions as long as unoptimized functions are left.
+  let has_unoptimized = true;
+  while (has_unoptimized) {
+    has_unoptimized = false;
+    for (f in instance.exports) {
+      // If this assert fails, it will cause a timeout and not an error.
+      assert_equals(42, instance.exports[f](1, 2, 4));
+      has_unoptimized ||= %IsLiftoffFunction(instance.exports[f]);
+    }
+  }
+  return has_turbofan;
+}
+
+promise_test(async () => {
+  const url = 'http://127.0.0.1:8000/wasm/resources/load-wasm.php?name=large.wasm&cors';
+  // Instantiate and run the module 3 times, as caching only happens after the
+  // second run.
+  let has_turbofan = await instantiateAndRunModule(url);
+  // The initial compilation should not have any TurboFan functions.
+  assert_false(has_turbofan);
+  // Collect the other instances to avoid the in-process module caching.
+  gc();
+  await instantiateAndRunModule(url);
+  gc();
+  has_turbofan = await instantiateAndRunModule(url);
+  // The compiled module should have been loaded from the cache, and should
+  // contain at least one TurboFan function.
+  assert_true(has_turbofan);
+}, "Test that wasm code caching works");
+
+promise_test(async () => {
+  const url = 'http://127.0.0.1:8000/wasm/resources/load-wasm.php?name=small.wasm&cors';
+  // Instantiate and run the module 3 times, as caching only happens after the
+  // second run.
+  let has_turbofan = await instantiateAndRunModule(url);
+  // The initial compilation should not have any TurboFan functions.
+  assert_false(has_turbofan);
+  // Collect the other instances to avoid the in-process module caching.
+  gc();
+  await instantiateAndRunModule(url);
+  gc();
+  has_turbofan = await instantiateAndRunModule(url);
+  // The module should be too small for caching, there should be no TurboFan.
+  assert_false(has_turbofan);
+}, "Test that small wasm modules don't get cached");
+
+promise_test(async () => {
+  const url1 = 'http://127.0.0.1:8000/wasm/resources/load-wasm.php?name=small.wasm&cors';
+  const url2 = 'http://localhost:8000/wasm/resources/load-wasm.php?name=small.wasm&cors';
+  let has_turbofan = await instantiateAndRunModule(url1);
+  // The module has already been optimized in the first test.
+  assert_true(has_turbofan);
+  gc();
+  // Load the same module again, but from a different origin.
+  has_turbofan = await instantiateAndRunModule(url2);
+  // Compiled modules of different origins should not share the cache.
+  assert_false(has_turbofan);
+}, "Test that different origins don't share the cache.");
+</script>
+</html>

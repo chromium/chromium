@@ -461,11 +461,10 @@
     "args": ["--enable-blink-features=ExtraWebGLVideoTextureMetadata"]
   },
   {
-    "prefix": "wasm-site-isolated-code-cache",
+    "prefix": "wasm-code-caching",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/devtools/wasm-isolated-code-cache"],
-    "args": ["--disable-features=WebAssemblyBaseline",
-             "--site-per-process"]
+    "bases": ["http/tests/wasm/caching"],
+    "args": ["--js-flags=--allow-natives-syntax"]
   },
   {
     "prefix": "wasm-csp",

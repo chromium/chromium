@@ -1787,10 +1787,10 @@ crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.
 crbug.com/1016767 js/weakrefs/* [ Skip ]
 virtual/weakrefs/js/weakrefs/* [ Pass ]
 
-# The Wasm code cache requires disabling the baseline compiler, so only the
+# The Wasm code cache test requires access to V8 internals, so only the
 # virtual test should be run.
-http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
-virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass ]
+http/tests/wasm/caching/code-cache.html [ Skip ]
+virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Pass ]
 
 # This test run under virtual suites only.
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]

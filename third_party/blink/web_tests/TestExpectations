@@ -5933,7 +5933,6 @@ crbug.com/1222097 external/wpt/mediacapture-image/detached-HTMLCanvasElement.htm
 crbug.com/1222097 http/tests/canvas/captureStream-on-detached-canvas.html [ Skip ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Skip ]
-crbug.com/1222097 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Skip ]
 
 # Sheriff 2021-06-25
