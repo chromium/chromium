@@ -4,7 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 
-// <if expr="is_linux">
+// <if expr="is_linux or chromeos_ash or chromeos_lacros">
 import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
@@ -132,7 +132,7 @@ function androidHandler() {
 }
 // </if>
 
-// <if expr="is_linux">
+// <if expr="is_linux or chromeos_ash or chromeos_lacros">
 /**
  * Main page handler for desktop Linux.
  */
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // <if expr="is_android">
   androidHandler();
   // </if>
-  // <if expr="is_linux">
+  // <if expr="is_linux or chromeos_ash or chromeos_lacros">
   linuxHandler();
   // </if>
 });

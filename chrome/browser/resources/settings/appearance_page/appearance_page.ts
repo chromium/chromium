@@ -168,7 +168,7 @@ export class SettingsAppearancePageElement extends
       'themeChanged_(' +
           'prefs.extensions.theme.id.value, useSystemTheme_, isForcedTheme_)',
 
-      // <if expr="is_linux and not chromeos_ash">
+      // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
       // NOTE: this pref only exists on Linux.
       'useSystemThemePrefChanged_(prefs.extensions.theme.use_system.value)',
       // </if>
@@ -265,7 +265,7 @@ export class SettingsAppearancePageElement extends
     this.appearanceBrowserProxy_.useDefaultTheme();
   }
 
-  // <if expr="is_linux and not chromeos_ash">
+  // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
   private useSystemThemePrefChanged_(useSystemTheme: boolean) {
     this.useSystemTheme_ = useSystemTheme;
   }

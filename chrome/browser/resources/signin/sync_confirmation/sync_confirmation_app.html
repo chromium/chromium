@@ -274,7 +274,7 @@
             consent-confirmation autofocus>
           $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-        <if expr="is_macosx or is_linux">
+        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
@@ -284,7 +284,7 @@
             disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
-        <if expr="not is_macosx and not is_linux">
+        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
@@ -328,7 +328,7 @@
             consent-confirmation>
           $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-        <if expr="is_macosx or is_linux">
+        <if expr="is_macosx or is_linux or chromeos_ash or chromeos_lacros">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
@@ -338,7 +338,7 @@
           disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
           $i18n{syncConfirmationUndoLabel}
         </cr-button>
-        <if expr="not is_macosx and not is_linux">
+        <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
           <cr-button id="settingsButton" on-click="onGoToSettings_"
               disabled="[[anyButtonClicked_]]" consent-confirmation>
             $i18n{syncConfirmationSettingsLabel}
