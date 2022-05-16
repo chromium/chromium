@@ -36,6 +36,12 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   void Stop() override;
   bool IsRunning() const override;
 
+ protected:
+  // Creates an onboarding coordinator. Protected to allow for overrides
+  // by test classes.
+  virtual std::unique_ptr<ApcOnboardingCoordinator> CreateOnboardingCoordinator(
+      AssistantDisplayDelegate* display_delegate);
+
  private:
   explicit ApcClientImpl(content::WebContents* web_contents);
   friend class content::WebContentsUserData<ApcClientImpl>;

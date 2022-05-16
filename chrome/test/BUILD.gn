@@ -6266,6 +6266,7 @@ test("unit_tests") {
       "../browser/apps/intent_helper/intent_picker_internal_unittest.cc",
       "../browser/apps/intent_helper/page_transition_util_unittest.cc",
       "../browser/autofill_assistant/password_change/apc_client_impl_unittest.cc",
+      "../browser/autofill_assistant/password_change/apc_onboarding_coordinator_impl_unittest.cc",
       "../browser/browser_commands_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
       "../browser/cart/cart_discount_fetcher_unittest.cc",

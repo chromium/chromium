@@ -7,12 +7,16 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 ApcOnboardingCoordinatorImpl::ApcOnboardingCoordinatorImpl(
+    Profile* profile,
     AssistantDisplayDelegate* display_delegate)
-    : display_delegate_(display_delegate) {}
+    : pref_service_(profile->GetPrefs()), display_delegate_(display_delegate) {}
 
 ApcOnboardingCoordinatorImpl::~ApcOnboardingCoordinatorImpl() = default;
 
@@ -38,7 +42,8 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
           base::Unretained(this)));
 }
 
-std::unique_ptr<AssistantOnboardingController> CreateOnboardingController(
+std::unique_ptr<AssistantOnboardingController>
+ApcOnboardingCoordinatorImpl::CreateOnboardingController(
     const AssistantOnboardingInformation& onboarding_information) {
   return AssistantOnboardingController::Create(onboarding_information);
 }
@@ -50,10 +55,20 @@ AssistantOnboardingPrompt* ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
 }
 
 bool ApcOnboardingCoordinatorImpl::IsOnboardingAlreadyAccepted() {
-  // TODO(crbug.com/1322387): Check preference key.
-  return false;
+  return pref_service_->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled);
 }
 
 void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(bool success) {
+  if (success) {
+    pref_service_->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
+  }
   std::move(callback_).Run(success);
+}
+
+// static
+std::unique_ptr<ApcOnboardingCoordinator> ApcOnboardingCoordinator::Create(
+    Profile* profile,
+    AssistantDisplayDelegate* display_delegate) {
+  return std::make_unique<ApcOnboardingCoordinatorImpl>(profile,
+                                                        display_delegate);
 }
