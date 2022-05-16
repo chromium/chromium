@@ -51,7 +51,7 @@ android_resources("java_resources") {
     "java/res/color/switch_thumb_tint.xml",
     "java/res/color/switch_thumb_tint_incognito.xml",
     "java/res/color/switch_track_tint.xml",
-    "java/res/color/switch_track_tint_incognito.xml",
+    "java/res/color/switch_track_tint_incognito_baseline_list.xml",
     "java/res/color/text_highlight_color.xml",
     "java/res/drawable-hdpi/btn_star_filled.png",
     "java/res/drawable-hdpi/ic_chrome.png",
