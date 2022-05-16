@@ -3576,7 +3576,9 @@ Unknown properties are collapsed to zero. -->
   <int value="44" label="Help App (Updates page)"/>
   <int value="45" label="Help App (Discover page)"/>
   <int value="46" label="Keyboard Shortcut"/>
-  <int value="47" label="None"/>
+  <int value="47" label="Open Tab"/>
+  <int value="48" label="None"/>
+  <int value="49" label="Game search"/>
   <int value="50" label="Personalization"/>
 </enum>
 
