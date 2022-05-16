@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -33,10 +34,13 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/browser_context.h"
+#include "extensions/browser/app_window/test_app_window_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
@@ -333,18 +337,56 @@ class TestKioskLoaderVisitor
   std::set<std::string> pending_update_urls_;
 };
 
+void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
+  // Create a TestAppWindowContents for the ShellAppDelegate to initialize the
+  // ShellExtensionWebContentsObserver with.
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(app_window->browser_context())));
+  auto app_window_contents =
+      std::make_unique<extensions::TestAppWindowContents>(
+          std::move(web_contents));
+
+  // Initialize the web contents and AppWindow.
+  app_window->app_delegate()->InitWebContents(
+      app_window_contents->GetWebContents());
+
+  content::RenderFrameHost* main_frame =
+      app_window_contents->GetWebContents()->GetMainFrame();
+  DCHECK(main_frame);
+
+  extensions::AppWindow::CreateParams params;
+  params.content_spec.bounds = bounds;
+  app_window->Init(GURL(), app_window_contents.release(), main_frame, params);
+}
+
+extensions::AppWindow* CreateAppWindow(Profile* profile,
+                                       const TestKioskExtensionBuilder& builder,
+                                       gfx::Rect bounds = {}) {
+  extensions::AppWindow* app_window = new extensions::AppWindow(
+      profile, new ChromeAppDelegate(profile, true), builder.Build().get());
+  InitAppWindow(app_window, bounds);
+  return app_window;
+}
+
 }  // namespace
 
 class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
                                public KioskAppManager::Overrides {
  public:
-  StartupAppLauncherTest() = default;
+  StartupAppLauncherTest()
+      : extensions::ExtensionServiceTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
+
   StartupAppLauncherTest(const StartupAppLauncherTest&) = delete;
   StartupAppLauncherTest& operator=(const StartupAppLauncherTest&) = delete;
   ~StartupAppLauncherTest() override = default;
 
   // testing::Test:
   void SetUp() override {
+    ash_test_helper_.SetUp();
+
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
     command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
@@ -355,7 +397,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
     extensions::ExtensionServiceTestBase::SetUp();
 
-    InitializeKioskAppUser();
     InitializeEmptyExtensionService();
     external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
         browser_context(), registry(), service());
@@ -385,6 +426,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     accounts_settings_helper_.reset();
 
     extensions::ExtensionServiceTestBase::TearDown();
+
+    ash_test_helper_.TearDown();
   }
 
   // KioskAppManager::Overrides:
@@ -568,17 +611,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   }
 
  protected:
-  void InitializeKioskAppUser() {
-    const AccountId kiosk_account_id(
-        AccountId::FromUserEmail(kTestUserAccount));
-    auto fake_user_manager_ = std::make_unique<FakeChromeUserManager>();
-    fake_user_manager_->AddKioskAppUser(kiosk_account_id);
-    fake_user_manager_->LoginUser(kiosk_account_id);
-
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager_));
-  }
-
   TestAppLaunchDelegate startup_launch_delegate_;
 
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
@@ -590,6 +622,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   bool kiosk_app_session_initialized_ = false;
 
  private:
+  ash::AshTestHelper ash_test_helper_;
   base::test::ScopedCommandLine command_line_;
 
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
@@ -630,6 +663,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -672,6 +706,7 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -704,6 +739,7 @@ TEST_F(StartupAppLauncherTest,
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -844,6 +880,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
   EXPECT_FALSE(kiosk_app_session_initialized_);
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
@@ -893,6 +930,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -944,6 +982,7 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   EXPECT_TRUE(startup_launch_delegate_.launch_state_changes().empty());
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -977,6 +1016,7 @@ TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -1006,6 +1046,7 @@ TEST_F(StartupAppLauncherTest,
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   // When trying to launch app we should realize that the app is not offline
   // enabled and request a network connection.
@@ -1026,6 +1067,7 @@ TEST_F(StartupAppLauncherTest,
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -1079,6 +1121,7 @@ TEST_F(StartupAppLauncherTest,
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());
@@ -1115,6 +1158,7 @@ TEST_F(StartupAppLauncherTest,
   startup_launch_delegate_.ClearLaunchStateChanges();
 
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_THAT(startup_launch_delegate_.launch_state_changes(),
               ElementsAre(LaunchState::kLaunchSucceeded));
@@ -1148,6 +1192,7 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
   startup_app_launcher_->LaunchApp();
+  CreateAppWindow(profile(), primary_app_builder);
 
   EXPECT_EQ(std::vector<LaunchState>({LaunchState::kLaunchSucceeded}),
             startup_launch_delegate_.launch_state_changes());

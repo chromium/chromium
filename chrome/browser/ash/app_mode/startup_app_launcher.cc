@@ -24,8 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "net/base/load_flags.h"
 
 namespace ash {
@@ -44,10 +42,7 @@ StartupAppLauncher::StartupAppLauncher(Profile* profile,
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
 }
 
-StartupAppLauncher::~StartupAppLauncher() {
-  if (state_ == LaunchState::kWaitingForWindow)
-    window_registry_->RemoveObserver(this);
-}
+StartupAppLauncher::~StartupAppLauncher() = default;
 
 void StartupAppLauncher::Initialize() {
   DCHECK(state_ != LaunchState::kReadyToLaunch &&
@@ -241,26 +236,9 @@ void StartupAppLauncher::OnLaunchComplete(
 }
 
 void StartupAppLauncher::OnLaunchSuccess() {
+  state_ = LaunchState::kLaunchSucceeded;
   delegate_->OnAppLaunched();
-  state_ = LaunchState::kWaitingForWindow;
-
-  window_registry_ = extensions::AppWindowRegistry::Get(profile_);
-  // Start waiting for app window.
-  if (!window_registry_->GetAppWindowsForApp(app_id_).empty()) {
-    delegate_->OnAppWindowCreated();
-    state_ = LaunchState::kLaunchSucceeded;
-    return;
-  } else {
-    window_registry_->AddObserver(this);
-  }
-}
-
-void StartupAppLauncher::OnAppWindowAdded(extensions::AppWindow* app_window) {
-  if (app_window->extension_id() == app_id_) {
-    state_ = LaunchState::kLaunchSucceeded;
-    window_registry_->RemoveObserver(this);
-    delegate_->OnAppWindowCreated();
-  }
+  delegate_->OnAppWindowCreated();
 }
 
 void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {

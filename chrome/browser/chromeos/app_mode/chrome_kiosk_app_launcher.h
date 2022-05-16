@@ -6,13 +6,16 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_CHROME_KIOSK_APP_LAUNCHER_H_
 
 #include "base/callback.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/extension.h"
 
 namespace ash {
 
-class ChromeKioskAppLauncher {
+class ChromeKioskAppLauncher : public extensions::AppWindowRegistry::Observer {
  public:
   using LaunchResult = crosapi::mojom::ChromeKioskLaunchResult;
   using LaunchCallback =
@@ -23,11 +26,16 @@ class ChromeKioskAppLauncher {
                          bool network_available);
   ChromeKioskAppLauncher(const ChromeKioskAppLauncher&) = delete;
   ChromeKioskAppLauncher& operator=(const ChromeKioskAppLauncher&) = delete;
-  ~ChromeKioskAppLauncher();
+  ~ChromeKioskAppLauncher() override;
 
   void LaunchApp(LaunchCallback callback);
 
  private:
+  // AppWindowRegistry::Observer:
+  void OnAppWindowAdded(extensions::AppWindow* app_window) override;
+
+  void WaitForAppWindow();
+
   void ReportLaunchSuccess();
   void ReportLaunchFailure(LaunchResult result);
 
@@ -46,6 +54,10 @@ class ChromeKioskAppLauncher {
   Profile* const profile_;
   std::string app_id_;
   bool network_available_ = false;
+
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
+      app_window_observation_{this};
 
   LaunchCallback on_ready_callback_;
 };

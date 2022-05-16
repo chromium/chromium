@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_command_line.h"
@@ -15,7 +16,11 @@
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/test_app_window_contents.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/common/api/app_runtime.h"
 
@@ -74,13 +79,53 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
       observation_{this};
   std::vector<std::string> launched_apps_;
 };
+
+void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
+  // Create a TestAppWindowContents for the ShellAppDelegate to initialize the
+  // ShellExtensionWebContentsObserver with.
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(app_window->browser_context())));
+  auto app_window_contents =
+      std::make_unique<extensions::TestAppWindowContents>(
+          std::move(web_contents));
+
+  // Initialize the web contents and AppWindow.
+  app_window->app_delegate()->InitWebContents(
+      app_window_contents->GetWebContents());
+
+  content::RenderFrameHost* main_frame =
+      app_window_contents->GetWebContents()->GetMainFrame();
+  DCHECK(main_frame);
+
+  extensions::AppWindow::CreateParams params;
+  params.content_spec.bounds = bounds;
+  app_window->Init(GURL(), app_window_contents.release(), main_frame, params);
+}
+
+extensions::AppWindow* CreateAppWindow(Profile* profile,
+                                       const extensions::Extension* extension,
+                                       gfx::Rect bounds = {}) {
+  extensions::AppWindow* app_window = new extensions::AppWindow(
+      profile, new ChromeAppDelegate(profile, true), extension);
+  InitAppWindow(app_window, bounds);
+  return app_window;
+}
+
 }  // namespace
 
 class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
                                    extensions::TestEventRouter::EventObserver {
  public:
+  ChromeKioskAppLauncherTest()
+      : extensions::ExtensionServiceTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
+
   // testing::Test:
   void SetUp() override {
+    ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
+
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
     command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
@@ -97,6 +142,7 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
     app_launch_tracker_.reset();
 
     extensions::ExtensionServiceTestBase::TearDown();
+    ash_test_helper_.TearDown();
   }
 
  protected:
@@ -105,6 +151,11 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
         profile(), kTestPrimaryAppId, is_network_ready);
   }
 
+  void SimulateAppWindowLaunch(const extensions::Extension* extension) {
+    CreateAppWindow(profile(), extension);
+  }
+
+  ash::AshTestHelper ash_test_helper_;
   std::unique_ptr<ChromeKioskAppLauncher> launcher_;
   std::unique_ptr<AppLaunchTracker> app_launch_tracker_;
 
@@ -172,6 +223,8 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
   TestFuture<LaunchResult> future;
   launcher_->LaunchApp(future.GetCallback());
 
+  SimulateAppWindowLaunch(primary_app.get());
+
   ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
 
   EXPECT_THAT(app_launch_tracker_->launched_apps(),
@@ -208,6 +261,8 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
 
   TestFuture<LaunchResult> future;
   launcher_->LaunchApp(future.GetCallback());
+
+  SimulateAppWindowLaunch(primary_app.get());
 
   ASSERT_THAT(future.Get(), Eq(LaunchResult::kSuccess));
 

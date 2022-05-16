@@ -11,6 +11,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
@@ -92,7 +94,25 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromKiosk));
 
-  ReportLaunchSuccess();
+  WaitForAppWindow();
+}
+
+void ChromeKioskAppLauncher::WaitForAppWindow() {
+  auto* window_registry_ = extensions::AppWindowRegistry::Get(profile_);
+  if (!window_registry_->GetAppWindowsForApp(app_id_).empty()) {
+    ReportLaunchSuccess();
+  } else {
+    // Start waiting for app window.
+    app_window_observation_.Observe(window_registry_);
+  }
+}
+
+void ChromeKioskAppLauncher::OnAppWindowAdded(
+    extensions::AppWindow* app_window) {
+  if (app_window->extension_id() == app_id_) {
+    app_window_observation_.Reset();
+    ReportLaunchSuccess();
+  }
 }
 
 void ChromeKioskAppLauncher::MaybeUpdateAppData() {
@@ -108,6 +128,7 @@ void ChromeKioskAppLauncher::MaybeUpdateAppData() {
 }
 
 void ChromeKioskAppLauncher::ReportLaunchSuccess() {
+  SYSLOG(INFO) << "App launch completed";
   std::move(on_ready_callback_)
       .Run(ChromeKioskAppLauncher::LaunchResult::kSuccess);
 }

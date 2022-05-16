@@ -15,20 +15,14 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 
 class Profile;
-
-namespace extensions {
-class AppWindowRegistry;
-}
 
 namespace ash {
 
 // Responsible for the startup of the app for Chrome App kiosk.
 class StartupAppLauncher : public KioskAppLauncher,
-                           public KioskAppManagerObserver,
-                           public extensions::AppWindowRegistry::Observer {
+                           public KioskAppManagerObserver {
  public:
   StartupAppLauncher(Profile* profile,
                      const std::string& app_id,
@@ -71,9 +65,6 @@ class StartupAppLauncher : public KioskAppLauncher,
   bool RetryWhenNetworkIsAvailable();
   void OnKioskAppDataLoadStatusChanged(const std::string& app_id);
 
-  // AppWindowRegistry::Observer:
-  void OnAppWindowAdded(extensions::AppWindow* app_window) override;
-
   // KioskAppManagerObserver overrides.
   void OnKioskExtensionLoadedInCache(const std::string& app_id) override;
   void OnKioskExtensionDownloadFailed(const std::string& app_id) override;
@@ -85,8 +76,6 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   std::unique_ptr<ChromeKioskAppInstaller> installer_;
   std::unique_ptr<ChromeKioskAppLauncher> launcher_;
-
-  extensions::AppWindowRegistry* window_registry_;
 
   base::ScopedObservation<KioskAppManagerBase, KioskAppManagerObserver>
       kiosk_app_manager_observation_{this};
