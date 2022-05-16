@@ -184,6 +184,26 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
+    public void testBrandIconDownloadFails() {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback<Bitmap> callback = (Callback<Bitmap>) invocation.getArguments()[1];
+                callback.onResult(null);
+                return null;
+            }
+        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any(Callback.class));
+
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertNull(headerModel.get(IDP_BRAND_ICON));
+    }
+
+    @Test
     public void testShowAccountSignUpHeader() {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(NEW_USER),
                 IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
