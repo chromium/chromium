@@ -378,9 +378,9 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
   return accounts;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
+AccountInfo GetSingleAccountForPromos(Profile* profile) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
       profile, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
@@ -388,7 +388,7 @@ AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
   return AccountInfo();
 }
 
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,

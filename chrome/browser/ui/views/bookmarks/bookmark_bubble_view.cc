@@ -26,8 +26,8 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
 #endif
 
 using base::UserMetricsAction;
@@ -167,7 +167,7 @@ void BookmarkBubbleView::ShowBubble(
     bool already_bookmarked) {
   if (bookmark_bubble_)
     return;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   BubbleSyncPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bookmarks::BookmarkModel* bookmark_model =
@@ -230,13 +230,13 @@ void BookmarkBubbleView::ShowBubble(
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<DiceBubbleSyncPromoView>(
+    bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,

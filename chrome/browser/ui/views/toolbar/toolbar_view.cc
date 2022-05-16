@@ -525,8 +525,7 @@ void ToolbarView::ShowBookmarkBubble(
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // BookmarkBubbleSignInDelegate requires DICE.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser_);
 #endif
   BookmarkBubbleView::ShowBubble(anchor_view, bookmark_star_icon, observer,

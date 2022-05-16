@@ -3466,8 +3466,6 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
-        "bookmarks/bookmark_bubble_sign_in_delegate.cc",
-        "bookmarks/bookmark_bubble_sign_in_delegate.h",
         "passwords/account_storage_auth_helper.cc",
         "passwords/account_storage_auth_helper.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
@@ -3482,10 +3480,6 @@ static_library("ui") {
         "views/profiles/profile_picker_dice_sign_in_provider.h",
         "views/profiles/profile_picker_dice_sign_in_toolbar.cc",
         "views/profiles/profile_picker_dice_sign_in_toolbar.h",
-        "views/sync/dice_bubble_sync_promo_view.cc",
-        "views/sync/dice_bubble_sync_promo_view.h",
-        "views/sync/dice_signin_button_view.cc",
-        "views/sync/dice_signin_button_view.h",
         "webui/signin/dice_web_signin_intercept_handler.cc",
         "webui/signin/dice_web_signin_intercept_handler.h",
         "webui/signin/dice_web_signin_intercept_ui.cc",
@@ -5136,6 +5130,8 @@ static_library("ui") {
 
     if (!is_chromeos_ash) {
       sources += [
+        "bookmarks/bookmark_bubble_sign_in_delegate.cc",
+        "bookmarks/bookmark_bubble_sign_in_delegate.h",
         "dialogs/outdated_upgrade_bubble.cc",
         "dialogs/outdated_upgrade_bubble.h",
         "views/accessibility/accessibility_focus_highlight.cc",
@@ -5151,6 +5147,10 @@ static_library("ui") {
         "views/relaunch_notification/relaunch_required_dialog_view.cc",
         "views/relaunch_notification/relaunch_required_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
+        "views/sync/bubble_sync_promo_signin_button_view.cc",
+        "views/sync/bubble_sync_promo_signin_button_view.h",
+        "views/sync/bubble_sync_promo_view.cc",
+        "views/sync/bubble_sync_promo_view.h",
       ]
     }
 

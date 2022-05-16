@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_signin_button_view.h"
 
 #include <memory>
 #include <string>
@@ -20,11 +20,11 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 
-DiceSigninButtonView::DiceSigninButtonView(
+BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
     views::Button::PressedCallback callback,
     bool prominent)
     : account_(absl::nullopt) {
-  views::Builder<DiceSigninButtonView>(this)
+  views::Builder<BubbleSyncPromoSigninButtonView>(this)
       .SetUseDefaultFillLayout(true)
       .AddChild(
           // Regular MD text button when there is no account.
@@ -36,7 +36,7 @@ DiceSigninButtonView::DiceSigninButtonView(
       .BuildChildren();
 }
 
-DiceSigninButtonView::DiceSigninButtonView(
+BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
     const AccountInfo& account,
     const gfx::Image& account_icon,
     views::Button::PressedCallback callback,
@@ -48,7 +48,7 @@ DiceSigninButtonView::DiceSigninButtonView(
           ? base::UTF8ToUTF16(account.full_name)
           : l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
 
-  views::Builder<DiceSigninButtonView>(this)
+  views::Builder<BubbleSyncPromoSigninButtonView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(), 16))
       .AddChildren(
@@ -68,7 +68,7 @@ DiceSigninButtonView::DiceSigninButtonView(
       .BuildChildren();
 }
 
-DiceSigninButtonView::~DiceSigninButtonView() = default;
+BubbleSyncPromoSigninButtonView::~BubbleSyncPromoSigninButtonView() = default;
 
-BEGIN_METADATA(DiceSigninButtonView, views::View)
+BEGIN_METADATA(BubbleSyncPromoSigninButtonView, views::View)
 END_METADATA

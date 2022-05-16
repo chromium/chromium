@@ -90,9 +90,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/url_constants.h"
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"

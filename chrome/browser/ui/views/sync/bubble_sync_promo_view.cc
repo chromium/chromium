@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
 
 #include <utility>
 
@@ -15,14 +15,14 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_signin_button_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
+BubbleSyncPromoView::BubbleSyncPromoView(
     Profile* profile,
     BubbleSyncPromoDelegate* delegate,
     signin_metrics::AccessPoint access_point,
@@ -34,7 +34,7 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   AccountInfo account;
   // Signin promos can be shown in incognito, they use an empty account list.
   if (!profile->IsOffTheRecord())
-    account = signin_ui_util::GetSingleAccountForDicePromos(profile);
+    account = signin_ui_util::GetSingleAccountForPromos(profile);
 
   // Always show the accounts promo message for now.
   const int title_resource_id = accounts_promo_message_resource_id;
@@ -57,36 +57,34 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   }
 
   views::Button::PressedCallback callback = base::BindRepeating(
-      &DiceBubbleSyncPromoView::EnableSync, base::Unretained(this));
+      &BubbleSyncPromoView::EnableSync, base::Unretained(this));
 
   if (account.IsEmpty()) {
-    signin_button_view_ = AddChildView(std::make_unique<DiceSigninButtonView>(
-        std::move(callback), signin_button_prominent));
+    signin_button_view_ =
+        AddChildView(std::make_unique<BubbleSyncPromoSigninButtonView>(
+            std::move(callback), signin_button_prominent));
   } else {
     gfx::Image account_icon = account.account_image;
     if (account_icon.IsEmpty()) {
       account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
-    signin_button_view_ = AddChildView(std::make_unique<DiceSigninButtonView>(
-        account, account_icon, std::move(callback),
-        /*use_account_name_as_title=*/true));
+    signin_button_view_ =
+        AddChildView(std::make_unique<BubbleSyncPromoSigninButtonView>(
+            account, account_icon, std::move(callback),
+            /*use_account_name_as_title=*/true));
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
   signin_metrics::RecordSigninImpressionWithAccountUserActionForAccessPoint(
       access_point, !account.IsEmpty() /* with_account */);
 }
 
-DiceBubbleSyncPromoView::~DiceBubbleSyncPromoView() = default;
+BubbleSyncPromoView::~BubbleSyncPromoView() = default;
 
-views::View* DiceBubbleSyncPromoView::GetSigninButtonForTesting() {
-  return signin_button_view_ ? signin_button_view_->signin_button() : nullptr;
-}
-
-void DiceBubbleSyncPromoView::EnableSync() {
+void BubbleSyncPromoView::EnableSync() {
   absl::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 
-BEGIN_METADATA(DiceBubbleSyncPromoView, views::View)
+BEGIN_METADATA(BubbleSyncPromoView, views::View)
 END_METADATA

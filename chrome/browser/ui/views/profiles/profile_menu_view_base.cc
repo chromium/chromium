@@ -62,7 +62,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 #endif
 
 namespace {

@@ -90,9 +90,9 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     Profile* profile,
     bool restrict_to_accounts_eligible_for_sync);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Returns single account to use in Dice promos.
-AccountInfo GetSingleAccountForDicePromos(Profile* profile);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns single account to use in promos.
+AccountInfo GetSingleAccountForPromos(Profile* profile);
 
 #endif
 
