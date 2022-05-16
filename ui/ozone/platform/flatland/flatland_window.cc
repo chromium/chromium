@@ -275,8 +275,8 @@ void FlatlandWindow::SizeConstraintsChanged() {
 }
 
 void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
-  device_pixel_ratio_ =
-      std::max(info.pixel_scale().width, info.pixel_scale().height);
+  // TODO(https://fxbug.dev/99312): Read device pixel ratio from LayoutInfo when
+  // available.
   view_properties_ = info.logical_size();
 
   if (view_properties_ || device_pixel_ratio_ > 0.0)
