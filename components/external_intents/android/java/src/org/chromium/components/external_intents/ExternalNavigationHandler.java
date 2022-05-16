@@ -561,13 +561,19 @@ public class ExternalNavigationHandler {
             public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && mDelegate.hasValidTab()) {
+                    if (params.isMainFrame()
+                            && params.getAsyncActionTakenInMainFrameCallback() != null) {
+                        params.getAsyncActionTakenInMainFrameCallback().onResult(
+                                new ExternalNavigationParams.AsyncActionTakenParams(false, true));
+                    }
                     clobberCurrentTab(params.getUrl(), params.getReferrerUrl());
                 } else {
                     // TODO(tedchoc): Show an indication to the user that the navigation failed
                     //                instead of silently dropping it on the floor.
-                    if (params.shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent()) {
-                        // If the access was not granted, then close the tab if necessary.
-                        mDelegate.closeTab();
+                    if (params.isMainFrame()
+                            && params.getAsyncActionTakenInMainFrameCallback() != null) {
+                        params.getAsyncActionTakenInMainFrameCallback().onResult(
+                                new ExternalNavigationParams.AsyncActionTakenParams(true, false));
                     }
                 }
             }
@@ -1086,7 +1092,6 @@ public class ExternalNavigationHandler {
      * @param intent The intent for external application that will be sent.
      * @param referrerUrl The referrer for the current navigation.
      * @param fallbackUrl The URL to load if the user doesn't proceed with external intent.
-     * @param needsToCloseTab Whether the current tab has to be closed after the intent is sent.
      * @param proxy Whether we need to proxy the intent through AuthenticatedProxyActivity (this is
      *              used by Instant Apps intents.
      * @return True if the function returned error free, false if it threw an exception.
@@ -1160,21 +1165,36 @@ public class ExternalNavigationHandler {
     private void onUserDecidedWhetherToLaunchIncognitoIntent(final boolean shouldLaunch,
             final ExternalNavigationParams params, final Intent intent, final GURL fallbackUrl,
             final boolean proxy) {
-        boolean closeTab = params.shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent();
         if (shouldLaunch) {
             try {
                 startActivity(intent, proxy);
-                if (mDelegate.canCloseTabOnIncognitoIntentLaunch() && closeTab) {
-                    mDelegate.closeTab();
+                if (params.isMainFrame()
+                        && params.getAsyncActionTakenInMainFrameCallback() != null) {
+                    params.getAsyncActionTakenInMainFrameCallback().onResult(
+                            new ExternalNavigationParams.AsyncActionTakenParams(
+                                    mDelegate.canCloseTabOnIncognitoIntentLaunch(), false));
                 }
+                return;
             } catch (ActivityNotFoundException e) {
                 // The activity that we thought was going to handle the intent
-                // no longer exists, so catch the exception and assume Chrome
-                // can handle it.
-                handleFallbackUrl(params, intent, fallbackUrl, false);
+                // no longer exists, so catch the exception and fall through to handling the
+                // fallback URL.
             }
-        } else {
-            handleFallbackUrl(params, intent, fallbackUrl, false);
+        }
+
+        OverrideUrlLoadingResult result = handleFallbackUrl(params, intent, fallbackUrl, false);
+        if (params.isMainFrame() && params.getAsyncActionTakenInMainFrameCallback() != null) {
+            if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
+                // There was no fallback URL and we can't handle the URL the intent was targeting.
+                // In this case we'll return to the last committed URL.
+                params.getAsyncActionTakenInMainFrameCallback().onResult(
+                        new ExternalNavigationParams.AsyncActionTakenParams(false, false));
+            } else {
+                assert result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB;
+                params.getAsyncActionTakenInMainFrameCallback().onResult(
+                        new ExternalNavigationParams.AsyncActionTakenParams(false, true));
+            }
         }
     }
 
