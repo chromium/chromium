@@ -213,6 +213,11 @@ const base::Feature kVulkan {
 const base::Feature kEnableDrDc{"EnableDrDc",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_ANDROID)
+const base::Feature kEnableDrDcVulkan{"EnableDrDcVulkan",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enable WebGPU on gpu service side only. This is used with origin trial
 // before gpu service is enabled by default.
 const base::Feature kWebGPUService{"WebGPUService",
@@ -341,7 +346,11 @@ bool IsDrDcEnabled() {
   if (IsDeviceBlocked(build_info->device(), kDrDcBlockListByDevice.Get()))
     return false;
 
-  return base::FeatureList::IsEnabled(kEnableDrDc);
+  if (!base::FeatureList::IsEnabled(kEnableDrDc))
+    return false;
+
+  return IsUsingVulkan() ? base::FeatureList::IsEnabled(kEnableDrDcVulkan)
+                         : true;
 #else
   return false;
 #endif

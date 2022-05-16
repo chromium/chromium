@@ -173,6 +173,10 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
+const char kEnableDrDcVulkanName[] =
+    " Use this flag along with flag enable-drdc to enable DrDc on Vulkan. "
+    " Note that this flag will be a no-op if enable-drdc is disabled. ";
+
 const char kU2FPermissionPromptName[] =
     "Enable a permission prompt for the U2F Security Key API";
 const char kU2FPermissionPromptDescription[] =

@@ -64,6 +64,12 @@ GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
 
 GPU_EXPORT extern const base::Feature kEnableDrDc;
 
+#if BUILDFLAG(IS_ANDROID)
+// This flag is use additionally with kEnableDrDc to enable the feature for
+// vulkan enabled android devices.
+GPU_EXPORT extern const base::Feature kEnableDrDcVulkan;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 GPU_EXPORT extern const base::Feature kWebGPUService;
 
 GPU_EXPORT bool IsUsingVulkan();

@@ -123,6 +123,8 @@ extern const char kWebBluetoothBondOnDemandDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
+extern const char kEnableDrDcVulkanName[];
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kWebFilterInterstitialRefreshName[];
 extern const char kWebFilterInterstitialRefreshDescription[];

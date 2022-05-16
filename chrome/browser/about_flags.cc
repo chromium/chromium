@@ -7962,6 +7962,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-drdc", flag_descriptions::kEnableDrDcName,
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-drdc-vulkan", flag_descriptions::kEnableDrDcVulkanName,
+     flag_descriptions::kEnableDrDcDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kEnableDrDcVulkan)},
+#endif  //   BUILDFLAG(IS_ANDROID)
+
     {"autofill-fill-merchant-promo-code-fields",
      flag_descriptions::kAutofillFillMerchantPromoCodeFieldsName,
      flag_descriptions::kAutofillFillMerchantPromoCodeFieldsDescription, kOsAll,

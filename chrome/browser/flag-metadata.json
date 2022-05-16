@@ -1988,6 +1988,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "enable-drdc-vulkan",
+    "owners": [ "vikassoni", "sunnyps" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-enhanced-safe-browsing",
     "owners": [ "ajuma", "joemerramos", "bling-flags@google.com"],
     "expiry_milestone": 110

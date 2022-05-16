@@ -55523,6 +55523,7 @@ from previous Chrome versions.
   <int value="124590378" label="LensStandalone:disabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
+  <int value="126341641" label="EnableDrDcVulkan:enabled"/>
   <int value="127338155" label="NtpSafeBrowsingModule:disabled"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
@@ -55899,6 +55900,7 @@ from previous Chrome versions.
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="381195146" label="LacrosResourcesFileSharing:disabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
+  <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
