@@ -88,7 +88,7 @@ void BlockAllocator::InitializeRegion() const {
   free_block_at(last_block_index()).SetNextFreeBlock(kFrontBlockIndex);
 }
 
-void* BlockAllocator::Alloc() const {
+void* BlockAllocator::Allocate() const {
   BlockHeader front =
       block_header_at(kFrontBlockIndex).load(std::memory_order_relaxed);
   for (;;) {

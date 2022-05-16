@@ -60,10 +60,10 @@ class BlockAllocator {
   // Allocates a block from the allocator's managed region of memory and returns
   // a pointer to its base address, where `block_size()` contiguous bytes are
   // then owned by the caller. May return null if out of blocks.
-  void* Alloc() const;
+  void* Allocate() const;
 
   // Frees a block back to the allocator, given its base address as returned by
-  // a prior call to Alloc(). Returns true on success, or false on failure.
+  // a prior call to Allocate(). Returns true on success, or false on failure.
   // Failure implies that `ptr` was not a valid block to free.
   bool Free(void* ptr) const;
 
@@ -84,7 +84,7 @@ class BlockAllocator {
     // Only meaningful within the first block.
     //
     // This field is incremented any time the block's header changes, and it's
-    // used to resolve races between concurrent Alloc() or Free() operations
+    // used to resolve races between concurrent Allocate() or Free() operations
     // modifying the head of the free-list.
     //
     // For blocks other than the first block, this is always zero.
