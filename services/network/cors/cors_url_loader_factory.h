@@ -134,7 +134,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // Used when constructed by NetworkContext.
   // The NetworkContext owns `this`.
   const raw_ptr<NetworkContext> context_ = nullptr;
-  scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
   // If false, ResourceRequests cannot have their `trusted_params` fields set.
   bool is_trusted_;
