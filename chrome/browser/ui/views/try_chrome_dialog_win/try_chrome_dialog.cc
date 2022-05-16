@@ -295,6 +295,10 @@ class TryChromeDialog::Context {
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
 
+  // Suppresses use of the TaskbarIconFinder for the sake of tests. This omits
+  // costly work that leads to flaky test failures.
+  void BypassTaskbarIconSearch();
+
   // Begins asynchronous initialization of the context (i.e., runs a search for
   // the taskbar icon), running |closure| when done.
   void Initialize(base::OnceClosure closure);
@@ -535,6 +539,8 @@ class TryChromeDialog::Context {
   // The location of the taskbar on the primary display, or kUnknown.
   const TaskbarLocation taskbar_location_;
 
+  bool bypass_taskbar_icon_search_ = false;
+
   // The bounding rectangle of Chrome's icon in the primary taskbar.
   gfx::Rect taskbar_icon_rect_;
 
@@ -551,10 +557,25 @@ TryChromeDialog::Context::Context()
       taskbar_rect_(GetTaskbarRect(taskbar_window_)),
       taskbar_location_(FindTaskbarLocation(primary_display_, taskbar_rect_)) {}
 
+void TryChromeDialog::Context::BypassTaskbarIconSearch() {
+  bypass_taskbar_icon_search_ = true;
+}
+
 void TryChromeDialog::Context::Initialize(base::OnceClosure closure) {
+  auto result_callback =
+      base::BindOnce(&TryChromeDialog::Context::OnTaskbarIconRect,
+                     base::Unretained(this), std::move(closure));
+
+  if (bypass_taskbar_icon_search_) {
+    // When testing, skip the search for the taskbar icon and simply proceed
+    // with an empty rect indicating that no taskbar icon was found.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(result_callback), gfx::Rect()));
+    return;
+  }
+
   // Get the bounding rectangle of Chrome's taskbar icon on the primary monitor.
-  FindTaskbarIcon(base::BindOnce(&TryChromeDialog::Context::OnTaskbarIconRect,
-                                 base::Unretained(this), std::move(closure)));
+  FindTaskbarIcon(std::move(result_callback));
 }
 
 void TryChromeDialog::Context::AddBorderToContents(views::Widget* popup,
@@ -1086,6 +1107,11 @@ TryChromeDialog::TryChromeDialog(size_t group, Delegate* delegate)
 TryChromeDialog::~TryChromeDialog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   CHECK(!IsInObserverList());
+}
+
+void TryChromeDialog::BypassTaskbarIconSearchForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  context_->BypassTaskbarIconSearch();
 }
 
 void TryChromeDialog::ShowDialogAsync() {
