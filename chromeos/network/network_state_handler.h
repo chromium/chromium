@@ -124,8 +124,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Add/remove observers.
   void AddObserver(NetworkStateHandlerObserver* observer,
                    const base::Location& from_here);
+  void AddObserver(NetworkStateHandlerObserver* observer);
+
   void RemoveObserver(NetworkStateHandlerObserver* observer,
                       const base::Location& from_here);
+  void RemoveObserver(NetworkStateHandlerObserver* observer);
+
   bool HasObserver(NetworkStateHandlerObserver* observer);
 
   // Returns the state for technology |type|. Only

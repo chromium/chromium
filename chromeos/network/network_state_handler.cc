@@ -268,6 +268,10 @@ void NetworkStateHandler::AddObserver(NetworkStateHandlerObserver* observer,
       base::StringPrintf("NetworkStateHandler::AddObserver: 0x%p", observer));
 }
 
+void NetworkStateHandler::AddObserver(NetworkStateHandlerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
 void NetworkStateHandler::RemoveObserver(NetworkStateHandlerObserver* observer,
                                          const base::Location& from_here) {
   observers_.RemoveObserver(observer);
@@ -276,6 +280,11 @@ void NetworkStateHandler::RemoveObserver(NetworkStateHandlerObserver* observer,
       device_event_log::LOG_TYPE_NETWORK, device_event_log::LOG_LEVEL_DEBUG,
       base::StringPrintf("NetworkStateHandler::RemoveObserver: 0x%p",
                          observer));
+}
+
+void NetworkStateHandler::RemoveObserver(
+    NetworkStateHandlerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool NetworkStateHandler::HasObserver(NetworkStateHandlerObserver* observer) {
@@ -2191,10 +2200,9 @@ void NetworkStateHandler::LogPropertyUpdated(const ManagedState* state,
                                              const std::string& key,
                                              const base::Value& value) {
   std::string type_str =
-      state->managed_type() == ManagedState::MANAGED_TYPE_DEVICE
-          ? "Device"
-          : state->path() == default_network_path_ ? "DefaultNetwork"
-                                                   : "Network";
+      state->managed_type() == ManagedState::MANAGED_TYPE_DEVICE ? "Device"
+      : state->path() == default_network_path_ ? "DefaultNetwork"
+                                               : "Network";
   device_event_log::LogLevel log_level = device_event_log::LOG_LEVEL_EVENT;
   if (key == shill::kSignalStrengthProperty && !state->IsActive())
     log_level = device_event_log::LOG_LEVEL_DEBUG;
