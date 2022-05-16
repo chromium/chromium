@@ -118,8 +118,7 @@ TEST(SendTabToSelfEntry, IsExpired) {
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
 }
 
-// Tests that the send tab to self entry rejects strings that are not utf8
-// gracefully.
+// Tests that the send tab to self entry rejects strings that are not utf8.
 TEST(SendTabToSelfEntry, InvalidStrings) {
   const char16_t term[1] = {u'\uFDD1'};
   std::string invalid_utf8;
@@ -129,25 +128,25 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
                               base::Time::FromTimeT(10),
                               base::Time::FromTimeT(10), "device", "device");
 
-  EXPECT_EQ(std::string(), invalid1.GetGUID());
+  EXPECT_EQ("1", invalid1.GetGUID());
 
   SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"), "title",
                               base::Time::FromTimeT(10),
                               base::Time::FromTimeT(10), "device", "device");
 
-  EXPECT_EQ(std::string(), invalid2.GetGUID());
+  EXPECT_EQ(invalid_utf8, invalid2.GetGUID());
 
   SendTabToSelfEntry invalid3(
       "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
       base::Time::FromTimeT(10), invalid_utf8, "device");
 
-  EXPECT_EQ(std::string(), invalid3.GetGUID());
+  EXPECT_EQ("1", invalid3.GetGUID());
 
   SendTabToSelfEntry invalid4(
       "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
       base::Time::FromTimeT(10), "device", invalid_utf8);
 
-  EXPECT_EQ(std::string(), invalid4.GetGUID());
+  EXPECT_EQ("1", invalid4.GetGUID());
 
   std::unique_ptr<sync_pb::SendTabToSelfSpecifics> pb_entry =
       std::make_unique<sync_pb::SendTabToSelfSpecifics>();
@@ -163,7 +162,7 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   std::unique_ptr<SendTabToSelfEntry> invalid_entry(
       SendTabToSelfEntry::FromProto(*pb_entry, base::Time::FromTimeT(10)));
 
-  EXPECT_EQ(invalid_entry, nullptr);
+  EXPECT_EQ(invalid_entry->GetGUID(), invalid_utf8);
 }
 
 // Tests that the send tab to self entry is correctly encoded to

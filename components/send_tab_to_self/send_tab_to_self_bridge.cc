@@ -619,6 +619,7 @@ void SendTabToSelfBridge::DoGarbageCollection() {
   auto entry = entries_.begin();
   while (entry != entries_.end()) {
     DCHECK_EQ(entry->first, entry->second->GetGUID());
+
     std::string guid = entry->first;
     bool expired = entry->second->IsExpired(clock_->Now());
     entry++;

@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
 
 namespace send_tab_to_self {
 
@@ -50,12 +49,6 @@ SendTabToSelfEntry::SendTabToSelfEntry(
       opened_(false) {
   DCHECK(!guid_.empty());
   DCHECK(url_.is_valid());
-  if (!base::IsStringUTF8(guid_) || !base::IsStringUTF8(title_) ||
-      !base::IsStringUTF8(target_device_sync_cache_guid_) ||
-      !base::IsStringUTF8(device_name_)) {
-    // Set GUID as an empty strings to make entry invalid.
-    guid_ = std::string();
-  }
 }
 
 SendTabToSelfEntry::~SendTabToSelfEntry() {}
@@ -128,13 +121,7 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
     const sync_pb::SendTabToSelfSpecifics& pb_entry,
     base::Time now) {
   std::string guid(pb_entry.guid());
-  std::string title(pb_entry.title());
-  std::string device_name(pb_entry.device_name());
-  std::string target_device_sync_cache_guid(
-      pb_entry.target_device_sync_cache_guid());
-  if (guid.empty() || !base::IsStringUTF8(guid) || !base::IsStringUTF8(title) ||
-      !base::IsStringUTF8(device_name) ||
-      !base::IsStringUTF8(target_device_sync_cache_guid)) {
+  if (guid.empty()) {
     return nullptr;
   }
 
@@ -156,8 +143,8 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
 
   // Protobuf parsing enforces utf8 encoding for all strings.
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, title, shared_time, navigation_time, device_name,
-      target_device_sync_cache_guid);
+      guid, url, pb_entry.title(), shared_time, navigation_time,
+      pb_entry.device_name(), pb_entry.target_device_sync_cache_guid());
 
   if (pb_entry.opened()) {
     entry->MarkOpened();
