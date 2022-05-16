@@ -100,8 +100,8 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
                : EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfigRule::NOT_SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -158,8 +158,8 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const override {
+    return EmeConfigRule::SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const override {

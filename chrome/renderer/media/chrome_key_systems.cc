@@ -45,8 +45,9 @@
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN)
 
+using media::CdmSessionType;
+using media::EmeConfigRule;
 using media::EmeFeatureSupport;
-using media::EmeSessionTypeSupport;
 using media::KeySystemProperties;
 using media::KeySystemPropertiesVector;
 using media::SupportedCodecs;
@@ -181,18 +182,13 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
   return supported_codecs;
 }
 
-// Returns persistent-license session support.
-EmeSessionTypeSupport GetPersistentLicenseSupport(bool supported_by_the_cdm) {
+// Returns whether persistent-license session can be supported.
+bool CanSupportPersistentLicense() {
   // Do not support persistent-license if the process cannot persist data.
   // TODO(crbug.com/457487): Have a better plan on this. See bug for details.
   if (ChromeRenderThreadObserver::is_incognito_process()) {
     DVLOG(2) << __func__ << ": Not supported in incognito process.";
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
-
-  if (!supported_by_the_cdm) {
-    DVLOG(2) << __func__ << ": Not supported by the CDM.";
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+    return false;
   }
 
 // On ChromeOS, platform verification is similar to CDM host verification.
@@ -206,24 +202,31 @@ EmeSessionTypeSupport GetPersistentLicenseSupport(bool supported_by_the_cdm) {
   // support persistent-license.
   if (!cdm_host_verification_potentially_supported) {
     DVLOG(2) << __func__ << ": Not supported without CDM host verification.";
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+    return false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, platform verification (similar to CDM host verification)
-  // requires identifier to be allowed.
   // TODO(jrummell): Currently the ChromeOS CDM does not require storage ID
   // to support persistent license. Update this logic when the new CDM requires
   // storage ID.
-  return EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER;
+  return true;
 #elif BUILDFLAG(ENABLE_CDM_STORAGE_ID)
   // On other platforms, we require storage ID to support persistent license.
-  return EmeSessionTypeSupport::SUPPORTED;
+  return true;
 #else
   // Storage ID not implemented, so no support for persistent license.
   DVLOG(2) << __func__ << ": Not supported without CDM storage ID.";
-  return EmeSessionTypeSupport::NOT_SUPPORTED;
+  return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+// Remove `kPersistentLicense` support if it's not supported by the platform.
+base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
+    const base::flat_set<CdmSessionType> session_types) {
+  auto updated_session_types = session_types;
+  if (!CanSupportPersistentLicense())
+    updated_session_types.erase(CdmSessionType::kPersistentLicense);
+  return updated_session_types;
 }
 
 bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
@@ -233,21 +236,18 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
   base::flat_set<::media::EncryptionScheme> encryption_schemes;
   base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
-  bool cdm_supports_persistent_license = false;
+  base::flat_set<CdmSessionType> session_types;
+  base::flat_set<CdmSessionType> hw_secure_session_types;
 
   if (capability->sw_secure_capability) {
     codecs = GetSupportedCodecs(capability->sw_secure_capability.value());
     encryption_schemes = capability->sw_secure_capability->encryption_schemes;
-    if (!base::Contains(capability->sw_secure_capability->session_types,
-                        media::CdmSessionType::kTemporary)) {
+    session_types = UpdatePersistentLicenseSupport(
+        capability->sw_secure_capability->session_types);
+    if (!base::Contains(session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return false;
     }
-
-    cdm_supports_persistent_license =
-        base::Contains(capability->sw_secure_capability->session_types,
-                       media::CdmSessionType::kPersistentLicense);
-
     DVLOG(2) << "Software secure Widevine supported";
   }
 
@@ -256,16 +256,12 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
         GetSupportedCodecs(capability->hw_secure_capability.value());
     hw_secure_encryption_schemes =
         capability->hw_secure_capability->encryption_schemes;
-    if (!base::Contains(capability->hw_secure_capability->session_types,
-                        media::CdmSessionType::kTemporary)) {
+    hw_secure_session_types = UpdatePersistentLicenseSupport(
+        capability->hw_secure_capability->session_types);
+    if (!base::Contains(hw_secure_session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return false;
     }
-
-    // TODO(b/186035558): With a single flag we can't distinguish persistent
-    // session support between software and hardware CDMs. This should be
-    // fixed so that if there is both a software and a hardware CDM, persistent
-    // session support can be different between the versions.
     DVLOG(2) << "Hardware secure Widevine supported";
   }
 
@@ -286,9 +282,6 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   }
 #endif
 
-  auto persistent_license_support =
-      GetPersistentLicenseSupport(cdm_supports_persistent_license);
-
   // Others.
   auto persistent_state_support = EmeFeatureSupport::REQUESTABLE;
   auto distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
@@ -297,9 +290,10 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
 #endif
 
   key_systems->emplace_back(new cdm::WidevineKeySystemProperties(
-      codecs, encryption_schemes, hw_secure_codecs,
-      hw_secure_encryption_schemes, max_audio_robustness, max_video_robustness,
-      persistent_license_support, persistent_state_support,
+      codecs, std::move(encryption_schemes), std::move(session_types),
+      hw_secure_codecs, std::move(hw_secure_encryption_schemes),
+      std::move(hw_secure_session_types), max_audio_robustness,
+      max_video_robustness, persistent_state_support,
       distinctive_identifier_support));
   return true;
 }
