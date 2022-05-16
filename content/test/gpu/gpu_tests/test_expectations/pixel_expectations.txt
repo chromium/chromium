@@ -402,6 +402,12 @@ crbug.com/1321305 [ mac release apple-apple-m1 ] Pixel_WebGPUImportVideoFrameOff
 crbug.com/1325002 [ mac ] Pixel_WebGPUImportVideoFrame* [ Failure ]
 crbug.com/1325002 [ win ] Pixel_WebGPUImportVideoFrame* [ Failure ]
 
+# Vulkan Swiftshader WebGPU interop flipped destination image
+crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUCopyExternalImage* [ Failure ]
+
+# Vulkan Swiftshader WebGPU unaccelerated OffscreenCanvas missing source image
+crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
