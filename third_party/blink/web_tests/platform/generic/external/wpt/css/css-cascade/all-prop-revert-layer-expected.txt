@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 311 tests; 304 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 311 tests; 306 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS accent-color
 PASS align-content
 PASS align-items
@@ -226,7 +226,7 @@ PASS padding-right
 PASS padding-top
 PASS paint-order
 PASS perspective
-FAIL perspective-origin assert_equals: Layer 3 should rollback to layer 2. expected "123px 0px" but got "0px 0px"
+PASS perspective-origin
 PASS pointer-events
 PASS position
 PASS r
@@ -288,7 +288,7 @@ PASS text-underline-position
 PASS top
 PASS touch-action
 PASS transform
-FAIL transform-origin assert_equals: Layer 3 should rollback to layer 2. expected "123px 123px 123px" but got "0px 0px"
+PASS transform-origin
 PASS transform-style
 PASS transition-delay
 PASS transition-duration

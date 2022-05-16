@@ -190,13 +190,22 @@ class CORE_EXPORT StyleCascade {
   // we don't have an appearance.
   void ApplyAppearance(CascadeResolver&);
 
-  // Applies -webkit-border-image (if present), and skips any border-image
-  // longhands found with lower priority than -webkit-border-image.
+  // Some legacy properties are "overlapping", in that they share parts of
+  // a computed value with other properties.
   //
-  // The -webkit-border-image property is unique (in a bad way), since it's
-  // a surrogate of a shorthand. Therefore it needs special treatment to
-  // behave correctly.
-  void ApplyWebkitBorderImage(CascadeResolver&);
+  // * -webkit-border-image (longhand) overlaps with border-image (shorthand).
+  // * -webkit-perspective-origin-x/y overlaps with perspective-origin.
+  // * -webkit-transform-origin-x/y/z overlaps with transform-origin.
+  //
+  // This overlap breaks the general rule that properties can be applied in
+  // any order (they need to be applied in the order they are declared).
+  //
+  // This function applies the "widest" of those overlapping properties
+  // (that is, properties which represent an entire computed-value),
+  // and conditionally marks narrow ones with a lower priority as already done,
+  // so that later apply steps do not apply them (ie., effectively causes them
+  // to be skipped).
+  void ApplyWideOverlapping(CascadeResolver&);
 
   void ApplyMatchResult(CascadeResolver&);
   void ApplyInterpolations(CascadeResolver&);

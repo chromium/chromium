@@ -207,8 +207,6 @@ void StyleCascade::Apply(CascadeFilter filter) {
   // high-priority properties.
   LookupAndApply(GetCSSPropertyMathDepth(), resolver);
 
-  ApplyWebkitBorderImage(resolver);
-
   // -webkit-mask-image needs to be applied before -webkit-mask-composite,
   // otherwise -webkit-mask-composite has no effect.
   LookupAndApply(GetCSSPropertyWebkitMaskImage(), resolver);
@@ -218,6 +216,8 @@ void StyleCascade::Apply(CascadeFilter filter) {
   LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
 
   ApplyHighPriority(resolver);
+
+  ApplyWideOverlapping(resolver);
 
   ApplyMatchResult(resolver);
   ApplyInterpolations(resolver);
@@ -423,29 +423,55 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
   state_.SetConversionZoom(state_.Style()->EffectiveZoom());
 }
 
-void StyleCascade::ApplyWebkitBorderImage(CascadeResolver& resolver) {
-  const CascadePriority* priority =
-      map_.Find(CSSPropertyName(CSSPropertyID::kWebkitBorderImage));
-  if (!priority)
-    return;
+void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
+  // Overlapping properties are handled as follows:
+  //
+  // 1. Apply the "wide" longhand which represents the entire computed value
+  //    first. This is not always the non-legacy property,
+  //    e.g.-webkit-border-image is one such longhand.
+  // 2. For the other overlapping longhands (each of which represent a *part*
+  //    of that computed value), *skip* applying that longhand if the wide
+  //    longhand has a higher priority.
+  //
+  // This allows us to always apply the "wide" longhand in a fixed order versus
+  // the other overlapping longhands, but still produce the same result as if
+  // everything was applied in the order the properties were specified.
 
-  // -webkit-border-image is a surrogate for the border-image (shorthand).
-  // By applying -webkit-border-image first, we avoid having to "partially"
-  // apply -webkit-border-image depending on the border-image-* longhands that
-  // have already been applied.
-  // See also crbug.com/1056600
-  LookupAndApply(GetCSSPropertyWebkitBorderImage(), resolver);
-
-  const auto& shorthand = borderImageShorthand();
-  const CSSProperty** longhands = shorthand.properties();
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSProperty& longhand = *longhands[i];
-    if (CascadePriority* p = map_.Find(longhand.GetCSSPropertyName())) {
-      // If -webkit-border-image has higher priority than a border-image
-      // longhand, we skip applying that longhand.
-      if (*p < *priority)
+  // Skip `property` if its priority is lower than the incoming priority.
+  // Skipping basically means pretending it's already applied by setting the
+  // generation.
+  auto maybe_skip = [this, &resolver](const CSSProperty& property,
+                                      CascadePriority priority) {
+    if (CascadePriority* p = map_.Find(property.GetCSSPropertyName())) {
+      if (*p < priority)
         *p = CascadePriority(*p, resolver.generation_);
     }
+  };
+
+  if (const CascadePriority* priority =
+          map_.Find(CSSPropertyName(CSSPropertyID::kWebkitBorderImage))) {
+    LookupAndApply(GetCSSPropertyWebkitBorderImage(), resolver);
+
+    const auto& shorthand = borderImageShorthand();
+    const CSSProperty** longhands = shorthand.properties();
+    for (unsigned i = 0; i < shorthand.length(); ++i) {
+      maybe_skip(*longhands[i], *priority);
+    }
+  }
+
+  if (const CascadePriority* priority =
+          map_.Find(CSSPropertyName(CSSPropertyID::kPerspectiveOrigin))) {
+    LookupAndApply(GetCSSPropertyPerspectiveOrigin(), resolver);
+    maybe_skip(GetCSSPropertyWebkitPerspectiveOriginX(), *priority);
+    maybe_skip(GetCSSPropertyWebkitPerspectiveOriginY(), *priority);
+  }
+
+  if (const CascadePriority* priority =
+          map_.Find(CSSPropertyName(CSSPropertyID::kTransformOrigin))) {
+    LookupAndApply(GetCSSPropertyTransformOrigin(), resolver);
+    maybe_skip(GetCSSPropertyWebkitTransformOriginX(), *priority);
+    maybe_skip(GetCSSPropertyWebkitTransformOriginY(), *priority);
+    maybe_skip(GetCSSPropertyWebkitTransformOriginZ(), *priority);
   }
 }
 
