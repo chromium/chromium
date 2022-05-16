@@ -251,7 +251,7 @@ vars = {
   'dawn_standalone': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.62.0.0a58116-gomaip',
+  'reclient_version': 're_client_version:0.64.0.d7886b3-gomaip',
 
   # Enable fetching Rust-related packages.
   'use_rust': False,
