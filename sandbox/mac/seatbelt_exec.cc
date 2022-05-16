@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -191,7 +192,7 @@ SeatbeltExecServer::CreateFromArguments(const char* executable_path,
     return result;
   }
 
-  char full_exec_path[MAXPATHLEN];
+  char full_exec_path[PATH_MAX];
   if (realpath(executable_path, full_exec_path) == NULL) {
     logging::PError("realpath");
     return result;

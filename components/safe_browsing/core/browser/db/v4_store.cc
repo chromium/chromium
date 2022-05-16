@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::TimeTicks;
 
@@ -581,7 +582,8 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
   // picked is not the same as merged. A picked element isn't merged if its
   // index is on the raw_removals list.
   int total_picked_from_old = 0;
-  const int* removals_iter = raw_removals ? raw_removals->begin() : nullptr;
+  auto removals_iter =
+      raw_removals ? absl::make_optional(raw_removals->begin()) : absl::nullopt;
   while (old_has_unmerged || additions_has_unmerged) {
     // If the same hash prefix appears in the existing store and the additions
     // list, something is clearly wrong. Discard the update.
@@ -605,8 +607,8 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
       // prefix of size |next_smallest_prefix_size| from the old store.
       old_iterator_map[next_smallest_prefix_size] += next_smallest_prefix_size;
 
-      if (!raw_removals || removals_iter == raw_removals->end() ||
-          *removals_iter != total_picked_from_old) {
+      if (!raw_removals || *removals_iter == raw_removals->end() ||
+          **removals_iter != total_picked_from_old) {
         // Append the smallest hash to the appropriate list.
         hash_prefix_map_[next_smallest_prefix_size] += next_smallest_prefix_old;
 
@@ -616,7 +618,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
         }
       } else {
         // Element not added to new map. Move the removals iterator forward.
-        removals_iter++;
+        (*removals_iter)++;
       }
 
       total_picked_from_old++;
@@ -648,7 +650,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
     }
   }
 
-  if (raw_removals && removals_iter != raw_removals->end()) {
+  if (raw_removals && *removals_iter != raw_removals->end()) {
     return REMOVALS_INDEX_TOO_LARGE_FAILURE;
   }
 

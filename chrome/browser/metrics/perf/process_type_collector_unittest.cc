@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 
+#include <stdint.h>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,46 +42,26 @@ void GetExampleProcessTypeDataset(std::string* ps_output,
    25000 /run/imageloader/lacros-dogfood-dev/95.0.4623.2/chrome --type=zygote
   129000 /opt/google/chrome/chrome --ppapi-flash-path=..../libpepflashplayer.so"
   180000 [kswapd0])";
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      1000, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      1500, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      2000, Process::RENDERER_PROCESS));
-  process_types->insert(
-      google::protobuf::MapPair<uint32_t, Process>(3000, Process::GPU_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      4000, Process::UTILITY_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      5000, Process::ZYGOTE_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      6000, Process::PPAPI_PLUGIN_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      7100, Process::OTHER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      7200, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      129000, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      11000, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      12000, Process::RENDERER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      13000, Process::GPU_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      14000, Process::UTILITY_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      15000, Process::ZYGOTE_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      21000, Process::BROWSER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      22000, Process::RENDERER_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      23000, Process::GPU_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      24000, Process::UTILITY_PROCESS));
-  process_types->insert(google::protobuf::MapPair<uint32_t, Process>(
-      25000, Process::ZYGOTE_PROCESS));
+  process_types->insert(std::pair(1000, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(1500, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(2000, Process::RENDERER_PROCESS));
+  process_types->insert(std::pair(3000, Process::GPU_PROCESS));
+  process_types->insert(std::pair(4000, Process::UTILITY_PROCESS));
+  process_types->insert(std::pair(5000, Process::ZYGOTE_PROCESS));
+  process_types->insert(std::pair(6000, Process::PPAPI_PLUGIN_PROCESS));
+  process_types->insert(std::pair(7100, Process::OTHER_PROCESS));
+  process_types->insert(std::pair(7200, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(129000, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(11000, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(12000, Process::RENDERER_PROCESS));
+  process_types->insert(std::pair(13000, Process::GPU_PROCESS));
+  process_types->insert(std::pair(14000, Process::UTILITY_PROCESS));
+  process_types->insert(std::pair(15000, Process::ZYGOTE_PROCESS));
+  process_types->insert(std::pair(21000, Process::BROWSER_PROCESS));
+  process_types->insert(std::pair(22000, Process::RENDERER_PROCESS));
+  process_types->insert(std::pair(23000, Process::GPU_PROCESS));
+  process_types->insert(std::pair(24000, Process::UTILITY_PROCESS));
+  process_types->insert(std::pair(25000, Process::ZYGOTE_PROCESS));
 
   lacros_pids->emplace_back(11000);
   lacros_pids->emplace_back(12000);
@@ -140,66 +122,36 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   31814 34416 ServiceWorker t   )"
       R"(/run/imageloader/lacros-dogfood-dev/95.0.4623.2/chrome --type=renderer
   13456 13566 Compositor/6      non_chrome_exec --some-flag=foo)";
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(12000, Thread::MAIN_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(4726, Thread::IO_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(12107, Thread::IO_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      12207, Thread::COMPOSITOR_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      12112, Thread::COMPOSITOR_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      12699, Thread::COMPOSITOR_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      15112, Thread::THREAD_POOL_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      13521, Thread::GPU_MEMORY_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      16112, Thread::COMPOSITOR_TILE_WORKER_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      17021, Thread::MEMORY_INFRA_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(18211, Thread::MEDIA_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      19008, Thread::DEDICATED_WORKER_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      19234, Thread::SERVICE_WORKER_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      19335, Thread::WEBRTC_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(12456, Thread::OTHER_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(21609, Thread::MAIN_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      21667, Thread::THREAD_POOL_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(21669, Thread::IO_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      21671, Thread::COMPOSITOR_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      21713, Thread::GPU_MEMORY_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      21718, Thread::COMPOSITOR_TILE_WORKER_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      23600, Thread::MEMORY_INFRA_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      21784, Thread::WEBRTC_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(31609, Thread::MAIN_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      31668, Thread::THREAD_POOL_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      31732, Thread::COMPOSITOR_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      31783, Thread::WEBRTC_THREAD));
-  thread_types->insert(
-      google::protobuf::MapPair<uint32_t, Thread>(31785, Thread::MEDIA_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      31790, Thread::DEDICATED_WORKER_THREAD));
-  thread_types->insert(google::protobuf::MapPair<uint32_t, Thread>(
-      34416, Thread::SERVICE_WORKER_THREAD));
+  thread_types->insert(std::pair(12000, Thread::MAIN_THREAD));
+  thread_types->insert(std::pair(4726, Thread::IO_THREAD));
+  thread_types->insert(std::pair(12107, Thread::IO_THREAD));
+  thread_types->insert(std::pair(12207, Thread::COMPOSITOR_THREAD));
+  thread_types->insert(std::pair(12112, Thread::COMPOSITOR_THREAD));
+  thread_types->insert(std::pair(12699, Thread::COMPOSITOR_THREAD));
+  thread_types->insert(std::pair(15112, Thread::THREAD_POOL_THREAD));
+  thread_types->insert(std::pair(13521, Thread::GPU_MEMORY_THREAD));
+  thread_types->insert(std::pair(16112, Thread::COMPOSITOR_TILE_WORKER_THREAD));
+  thread_types->insert(std::pair(17021, Thread::MEMORY_INFRA_THREAD));
+  thread_types->insert(std::pair(18211, Thread::MEDIA_THREAD));
+  thread_types->insert(std::pair(19008, Thread::DEDICATED_WORKER_THREAD));
+  thread_types->insert(std::pair(19234, Thread::SERVICE_WORKER_THREAD));
+  thread_types->insert(std::pair(19335, Thread::WEBRTC_THREAD));
+  thread_types->insert(std::pair(12456, Thread::OTHER_THREAD));
+  thread_types->insert(std::pair(21609, Thread::MAIN_THREAD));
+  thread_types->insert(std::pair(21667, Thread::THREAD_POOL_THREAD));
+  thread_types->insert(std::pair(21669, Thread::IO_THREAD));
+  thread_types->insert(std::pair(21671, Thread::COMPOSITOR_THREAD));
+  thread_types->insert(std::pair(21713, Thread::GPU_MEMORY_THREAD));
+  thread_types->insert(std::pair(21718, Thread::COMPOSITOR_TILE_WORKER_THREAD));
+  thread_types->insert(std::pair(23600, Thread::MEMORY_INFRA_THREAD));
+  thread_types->insert(std::pair(21784, Thread::WEBRTC_THREAD));
+  thread_types->insert(std::pair(31609, Thread::MAIN_THREAD));
+  thread_types->insert(std::pair(31668, Thread::THREAD_POOL_THREAD));
+  thread_types->insert(std::pair(31732, Thread::COMPOSITOR_THREAD));
+  thread_types->insert(std::pair(31783, Thread::WEBRTC_THREAD));
+  thread_types->insert(std::pair(31785, Thread::MEDIA_THREAD));
+  thread_types->insert(std::pair(31790, Thread::DEDICATED_WORKER_THREAD));
+  thread_types->insert(std::pair(34416, Thread::SERVICE_WORKER_THREAD));
 }
 
 class TestProcessTypeCollector : public ProcessTypeCollector {

@@ -57,7 +57,7 @@ const size_t kMaxSendQueueSize = 10 * 1024;
 const int kMaxMessageBytes = 4 * 1024;  // 4KB, like the server.
 
 // Helper for converting a proto persistent id list to a vector of strings.
-bool BuildPersistentIdListFromProto(const google::protobuf::string& bytes,
+bool BuildPersistentIdListFromProto(const std::string& bytes,
                                     std::vector<std::string>* id_list) {
   mcs_proto::SelectiveAck selective_ack;
   if (!selective_ack.ParseFromString(bytes))
