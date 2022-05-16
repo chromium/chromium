@@ -54,8 +54,9 @@ void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
-void AuthFactorEditor::AddContextKey(std::unique_ptr<UserContext> context,
-                                     AuthOperationCallback callback) {
+void AuthFactorEditor::AddContextKnowledgeKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
     if (context->GetKey()->GetLabel().empty()) {
@@ -67,7 +68,7 @@ void AuthFactorEditor::AddContextKey(std::unique_ptr<UserContext> context,
     return;
   }  // plain-text password
 
-  LOGIN_LOG(EVENT) << "Adding key from context "
+  LOGIN_LOG(EVENT) << "Adding knowledge key from the context "
                    << context->GetKey()->GetKeyType();
 
   user_data_auth::AddCredentialsRequest request;
@@ -83,13 +84,35 @@ void AuthFactorEditor::AddContextKey(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthFactorEditor::AddContextChallengeResponseKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  DCHECK(!context->GetChallengeResponseKeys().empty());
+
+  LOGIN_LOG(EVENT) << "Adding challenge-response key from the context";
+
+  user_data_auth::AddCredentialsRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  // Note that we need to specify key_delegate even when we set up a factor,
+  // not only when we use it.
+  *request.mutable_authorization() = CreateAuthorizationRequestFromKeyDef(
+      cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
+          *context));
+
+  UserDataAuthClient::Get()->AddCredentials(
+      request, base::BindOnce(&AuthFactorEditor::OnAddCredentials,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 void AuthFactorEditor::HashContextKeyAndAdd(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     const std::string& system_salt) {
   context->GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                                system_salt);
-  AddContextKey(std::move(context), std::move(callback));
+  AddContextKnowledgeKey(std::move(context), std::move(callback));
 }
 
 void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,

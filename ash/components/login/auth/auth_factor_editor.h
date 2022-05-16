@@ -40,10 +40,18 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFactorEditor {
   void AddKioskKey(std::unique_ptr<UserContext> context,
                    AuthOperationCallback callback);
 
-  // Attempts to add Key contained in `context` to corresponding user.
+  // Attempts to add knowledge-based Key contained in `context` to corresponding
+  // user. Until migration to AuthFactors this method supports both password and
+  // PIN keys.
   // Session should be authenticated.
-  void AddContextKey(std::unique_ptr<UserContext> context,
-                     AuthOperationCallback callback);
+  void AddContextKnowledgeKey(std::unique_ptr<UserContext> context,
+                              AuthOperationCallback callback);
+
+  // Attempts to add Challenge-response Key contained in `context` to
+  // corresponding user.
+  // Session should be authenticated.
+  void AddContextChallengeResponseKey(std::unique_ptr<UserContext> context,
+                                      AuthOperationCallback callback);
 
   // Attempts to replace factor labeled by Key contained in `context`
   // with key stored in ReplacementKey in the `context`.

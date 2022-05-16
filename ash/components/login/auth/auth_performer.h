@@ -53,13 +53,22 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
                         StartSessionCallback callback);
 
   // Attempts to authenticate session using Key in `context`.
-  // If key is a plain text, it is assumed that it is a password key,
+  // If key is a plain text, it is assumed that it is a knowledge-based key,
   // so it will be hashed accordingly, and key label would be backfilled
-  // if not specified explicitly.
+  // if not specified explicitly. Note that before migration to AuthFactors
+  // this flow includes both Password and PIN key types.
   // In all other cases it is assumed that all fields are filled correctly.
   // Session will become authenticated upon success.
-  void AuthenticateUsingKey(std::unique_ptr<UserContext> context,
-                            AuthOperationCallback callback);
+  void AuthenticateUsingKnowledgeKey(std::unique_ptr<UserContext> context,
+                                     AuthOperationCallback callback);
+
+  // Attempts to authenticate session using Key in `context`.
+  // It is expected that the `challenge_response_keys` field is correctly filled
+  // in the `context`.
+  // Session will become authenticated upon success.
+  void AuthenticateUsingChallengeResponseKey(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback);
 
   // Attempts to authenticate session using plain text password.
   // Does not fill any password-related fields in `context`.

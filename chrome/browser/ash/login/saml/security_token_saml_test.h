@@ -58,7 +58,10 @@ namespace ash {
 //   test::WaitForPrimaryUserSessionStart();
 // }
 
-class SecurityTokenSamlTest : public OobeBaseTest {
+// Test parameter controls if new AuthSession-based cryptohome API
+// should be used.
+class SecurityTokenSamlTest : public OobeBaseTest,
+                              public testing::WithParamInterface<bool> {
  protected:
   SecurityTokenSamlTest();
   SecurityTokenSamlTest(const SecurityTokenSamlTest&) = delete;

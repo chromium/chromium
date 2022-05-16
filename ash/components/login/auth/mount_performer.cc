@@ -67,6 +67,7 @@ void MountPerformer::MountPersistentDirectory(
 void MountPerformer::MountForMigration(std::unique_ptr<UserContext> context,
                                        AuthOperationCallback callback) {
   user_data_auth::PrepareVaultForMigrationRequest request;
+  LOGIN_LOG(EVENT) << "Mount persistent directory for migration";
   request.set_auth_session_id(context->GetAuthSessionId());
   UserDataAuthClient::Get()->PrepareVaultForMigration(
       request, base::BindOnce(&MountPerformer::OnPrepareVaultForMigration,
