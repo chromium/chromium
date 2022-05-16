@@ -175,6 +175,14 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * @private
+       */
+      hasUserPods_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -209,7 +217,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * @type {boolean}
    */
   get closable() {
-    return Oobe.getInstance().hasUserPods && !this.is_persistent_error_;
+    return this.hasUserPods_ && !this.is_persistent_error_;
   }
 
   /**
@@ -395,6 +403,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
   onBeforeShow(data) {
     this.enableWifiScans_ = true;
     this.$.backButton.disabled = !this.closable;
+    this.hasUserPods_ = data && ('hasUserPods' in data) && data.hasUserPods;
   }
 
   /**

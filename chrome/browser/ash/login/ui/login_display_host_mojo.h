@@ -212,8 +212,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   OobeUIDialogDelegate* dialog_ = nullptr;  // Not owned.
   std::unique_ptr<WizardController> wizard_controller_;
 
-  // Number of users that are visible in the views login screen.
-  int user_count_ = 0;
+  // Whether or not there are users that are visible in the views login screen.
+  bool has_user_pods_ = false;
 
   // The account id of the user pod that's being focused.
   AccountId focused_pod_account_id_;

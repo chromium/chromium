@@ -81,9 +81,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Show or hide OOBE UI.
   void ShowOobeUI(bool show);
 
-  // Notify WebUI of the user count on the views login screen.
-  void SetLoginUserCount(int user_count);
-
   // Forwards an accelerator value to cr.ui.Oobe.handleAccelerator.
   void ForwardAccelerator(std::string accelerator_name);
 

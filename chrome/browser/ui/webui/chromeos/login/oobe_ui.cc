@@ -796,10 +796,6 @@ void OobeUI::OnDisplayConfigurationChanged() {
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
 }
 
-void OobeUI::SetLoginUserCount(int user_count) {
-  core_handler_->SetLoginUserCount(user_count);
-}
-
 void OobeUI::OnSystemTrayBubbleShown() {
   if (current_screen_ == WelcomeView::kScreenId)
     GetHandler<WelcomeScreenHandler>()->CancelChromeVoxHintIdleDetection();

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -31,7 +33,11 @@ void ErrorScreenHandler::Show() {
     show_on_init_ = true;
     return;
   }
-  ShowInWebUI();
+
+  base::Value::Dict data;
+  data.Set("hasUserPods", ash::LoginDisplayHost::default_host()->HasUserPods());
+  ShowInWebUI(std::move(data));
+
   if (screen_)
     screen_->DoShow();
   showing_ = true;

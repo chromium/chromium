@@ -197,10 +197,6 @@ void CoreOobeHandler::ShowOobeUI(bool show) {
   CallJS("cr.ui.Oobe.showOobeUI", show);
 }
 
-void CoreOobeHandler::SetLoginUserCount(int user_count) {
-  CallJS("cr.ui.Oobe.setLoginUserCount", user_count);
-}
-
 void CoreOobeHandler::ForwardAccelerator(std::string accelerator_name) {
   CallJS("cr.ui.Oobe.handleAccelerator", accelerator_name);
 }

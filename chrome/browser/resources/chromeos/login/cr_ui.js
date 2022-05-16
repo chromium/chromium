@@ -142,14 +142,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Sets the number of users on the views login screen.
-     * @param {number} userCount The number of users.
-     */
-    static setLoginUserCount(userCount) {
-      Oobe.getInstance().setLoginUserCount(userCount);
-    }
-
-    /**
      * Skip to login screen for telemetry.
      */
     static skipToLoginForTesting() {

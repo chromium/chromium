@@ -116,9 +116,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Re-evaluate OOBE display placement.
   void OnDisplayConfigurationChanged();
 
-  // Notify WebUI of the user count on the views login screen.
-  void SetLoginUserCount(int user_count);
-
   void OnSystemTrayBubbleShown();
 
   // Find a *View instance provided by a given *Handler type.

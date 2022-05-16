@@ -102,15 +102,6 @@ cr.define('cr.ui.login', function() {
       this.displayType_ = DISPLAY_TYPE.UNKNOWN;
 
       /**
-       * Number of users in the login screen UI. This is used by the views login
-       * screen, and is always 0 for WebUI login screen.
-       * TODO(crbug.com/808271): WebUI and views implementation should return
-       * the same user list.
-       * @type {number}
-       */
-      this.userCount_ = 0;
-
-      /**
        * Stored OOBE configuration for newly registered screens.
        * @type {OobeTypes.OobeConfiguration|undefined}
        */
@@ -156,14 +147,6 @@ cr.define('cr.ui.login', function() {
      */
     get showingViewsLogin() {
       return this.displayType_ == DISPLAY_TYPE.GAIA_SIGNIN;
-    }
-
-    /**
-     * Returns true if the login screen has user pods.
-     * @return {boolean}
-     */
-    get hasUserPods() {
-      return this.showingViewsLogin && this.userCount_ > 0;
     }
 
     /**
@@ -222,14 +205,6 @@ cr.define('cr.ui.login', function() {
      */
     toggleSystemInfo() {
       $('version-labels').hidden = !$('version-labels').hidden;
-    }
-
-    /**
-     * Sets the number of users on the views login screen.
-     * @param {number} userCount The number of users.
-     */
-    setLoginUserCount(userCount) {
-      this.userCount_ = userCount;
     }
 
     /**
