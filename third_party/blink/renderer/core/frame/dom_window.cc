@@ -524,6 +524,7 @@ void DOMWindow::InstallCoopAccessMonitor(
   CoopAccessMonitor monitor;
 
   DCHECK(accessing_frame->IsMainFrame());
+  DCHECK(!accessing_frame->IsInFencedFrameTree());
   monitor.report_type = coop_reporter_params->report_type;
   monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
   monitor.endpoint_defined = coop_reporter_params->endpoint_defined;

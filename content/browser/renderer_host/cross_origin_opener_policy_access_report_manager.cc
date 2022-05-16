@@ -77,6 +77,10 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
   std::vector<FrameTreeNode*> other_main_frames =
       CollectOtherWindowForCoopAccess(frame);
 
+  // Fenced frame roots are in their own browsing instance and shouldn't be
+  // joined with any other main frames.
+  DCHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty());
+
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
 
