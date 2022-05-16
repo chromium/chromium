@@ -4,6 +4,8 @@
 
 #import "content/app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h"
 
+#include <memory>
+
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
@@ -13,22 +15,10 @@
 
 using features::kMacWebContentsOcclusion;
 
-namespace {
-
-const base::mac::ScopedObjCClassSwizzler* GetWindowClassSwizzler() {
-  static const base::NoDestructor<base::mac::ScopedObjCClassSwizzler>
-      window_class_swizzler([NSWindow class],
-                            [WebContentsOcclusionCheckerMac class],
-                            @selector(orderWindow:relativeTo:));
-  return window_class_swizzler.get();
-}
-
 const base::FeatureParam<bool> kEnhancedWindowOcclusionDetection{
     &kMacWebContentsOcclusion, "EnhancedWindowOcclusionDetection", false};
 const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
     &kMacWebContentsOcclusion, "DisplaySleepAndAppHideDetection", false};
-
-}  // namespace
 
 @interface WebContentsOcclusionCheckerMac () {
   NSWindow* _windowResizingMovingOrClosing;
@@ -36,7 +26,15 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
   BOOL _displaysAreAsleep;
   BOOL _willUpdateWebContentsVisibility;
   BOOL _updatingWebContentsVisibility;
+  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> _windowClassSwizzler;
 }
+
+// Returns a pointer to the shared instance that can be cleared during tests.
++ (base::scoped_nsobject<WebContentsOcclusionCheckerMac>*)
+    sharedOcclusionChecker;
+
+- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler;
+
 // Computes and returns the `window`'s visibility state, a hybrid of
 // macOS's and our manual occlusion calculation.
 - (remote_cocoa::mojom::Visibility)
@@ -49,16 +47,25 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
 @implementation WebContentsOcclusionCheckerMac
 
++ (base::scoped_nsobject<WebContentsOcclusionCheckerMac>*)
+    sharedOcclusionChecker {
+  static base::NoDestructor<
+      base::scoped_nsobject<WebContentsOcclusionCheckerMac>>
+      sharedOcclusionChecker;
+  return sharedOcclusionChecker.get();
+}
+
 + (instancetype)sharedInstance {
-  static WebContentsOcclusionCheckerMac* sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-    if (kEnhancedWindowOcclusionDetection.Get()) {
-      GetWindowClassSwizzler();
-    }
-  });
-  return sharedInstance;
+  base::scoped_nsobject<WebContentsOcclusionCheckerMac>* sharedInstance =
+      [self sharedOcclusionChecker];
+  if (sharedInstance->get() == nil) {
+    sharedInstance->reset([[self alloc] init]);
+  }
+  return sharedInstance->get();
+}
+
++ (void)resetSharedInstanceForTesting {
+  [self sharedOcclusionChecker]->reset();
 }
 
 - (instancetype)init {
@@ -66,15 +73,27 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 
   DCHECK(base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
   [self setUpNotifications];
+  _windowClassSwizzler = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      [NSWindow class], [WebContentsOcclusionCheckerMac class],
+      @selector(orderWindow:relativeTo:));
 
   return self;
 }
 
 - (void)dealloc {
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (_notifyUpdateWebContentsVisibility)
+                                             object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+  _windowClassSwizzler.reset();
 
   [super dealloc];
+}
+
+- (base::mac::ScopedObjCClassSwizzler*)windowClassSwizzler {
+  return _windowClassSwizzler.get();
 }
 
 // Alternative implementation of orderWindow:relativeTo:. Replaces
@@ -83,7 +102,7 @@ const base::FeatureParam<bool> kDisplaySleepAndAppHideDetection{
 - (void)orderWindow:(NSWindowOrderingMode)orderingMode
          relativeTo:(NSInteger)otherWindowNumber {
   // Super.
-  GetWindowClassSwizzler()
+  [[WebContentsOcclusionCheckerMac sharedInstance] windowClassSwizzler]
       ->InvokeOriginal<void, NSWindowOrderingMode, NSInteger>(
           self, _cmd, orderingMode, otherWindowNumber);
 
