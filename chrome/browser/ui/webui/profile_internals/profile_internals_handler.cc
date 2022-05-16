@@ -22,7 +22,8 @@ namespace {
 
 base::Value CreateProfileEntry(
     const ProfileAttributesEntry* entry,
-    const base::flat_set<base::FilePath>& loaded_profile_paths) {
+    const base::flat_set<base::FilePath>& loaded_profile_paths,
+    const base::flat_set<base::FilePath>& has_off_the_record_profile) {
   base::Value profile_entry(base::Value::Type::DICTIONARY);
   profile_entry.SetKey("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.SetStringKey("localProfileName", entry->GetLocalProfileName());
@@ -75,6 +76,8 @@ base::Value CreateProfileEntry(
   profile_entry.SetKey("signedAccounts", std::move(signedAccounts));
   profile_entry.SetBoolKey("isLoaded",
                            loaded_profile_paths.contains(entry->GetPath()));
+  profile_entry.SetBoolKey(
+      "hasOffTheRecord", has_off_the_record_profile.contains(entry->GetPath()));
   return profile_entry;
 }
 
@@ -114,8 +117,15 @@ base::Value ProfileInternalsHandler::GetProfilesList() {
   base::flat_set<base::FilePath> loaded_profile_paths =
       base::MakeFlatSet<base::FilePath>(
           loaded_profiles, {}, [](const auto& it) { return it->GetPath(); });
+  base::flat_set<base::FilePath> has_off_the_record_profile;
+  for (Profile* profile : loaded_profiles) {
+    if (profile->GetAllOffTheRecordProfiles().size() > 0) {
+      has_off_the_record_profile.insert(profile->GetPath());
+    }
+  }
   for (const ProfileAttributesEntry* entry : entries) {
-    profiles_list.Append(CreateProfileEntry(entry, loaded_profile_paths));
+    profiles_list.Append(CreateProfileEntry(entry, loaded_profile_paths,
+                                            has_off_the_record_profile));
   }
   return profiles_list;
 }
