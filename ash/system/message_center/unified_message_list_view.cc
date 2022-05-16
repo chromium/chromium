@@ -705,10 +705,23 @@ void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
   if (!notification)
     return;
 
+  // A group child notification should be added to its parent's message view.
+  if (is_notifications_refresh_enabled_ && notification->group_child())
+    return;
+
   InterruptClearAll();
 
   // Collapse all notifications before adding new one.
   CollapseAllNotifications();
+
+  // We only need to update if we already have a message view associated with
+  // the notification. This happens when we convert a single notification to a
+  // group notification, ConvertNotificationViewToGroupedNotificationView()
+  // changes the id of the single notification to the parent's.
+  if (is_notifications_refresh_enabled_ && GetNotificationById(id)) {
+    OnNotificationUpdated(id);
+    return;
+  }
 
   // Find the correct index to insert the new notification based on the sorted
   // order.
