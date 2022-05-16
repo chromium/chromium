@@ -157,6 +157,11 @@ DEFINE_TEXT_PROTO_FUZZER(
     return page_holder.release();
   }();
 
+  // The platform audio encoder and some Image related classes that use
+  // base::Singleton will expect this to exist for registering exit
+  // callbacks (e.g. DarkModeImageClassifier).
+  base::AtExitManager exit_manager;
+
 #if HAS_AAC_ENCODER
   base::test::ScopedFeatureList platform_aac(media::kPlatformAudioEncoder);
   static const bool kSetTestBinder = []() {
@@ -170,10 +175,6 @@ DEFINE_TEXT_PROTO_FUZZER(
   }();
   CHECK(kSetTestBinder) << "Failed to register media interface binder.";
 #endif
-
-  // Some Image related classes that use base::Singleton will expect this to
-  // exist for registering exit callbacks (e.g. DarkModeImageClassifier).
-  base::AtExitManager exit_manager;
 
   //
   // NOTE: GC objects that need to survive iterations of the loop below
