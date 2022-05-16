@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 
 // Each shared worker has a corresponding host. The host controls the lifetime

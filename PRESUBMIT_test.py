@@ -2292,6 +2292,14 @@ class CorrectProductNameInMessagesTest(unittest.TestCase):
 
 
 class _SecurityOwnersTestCase(unittest.TestCase):
+  def _setupFakeChange(self, input_api):
+    class FakeGerrit(object):
+      def IsOwnersOverrideApproved(self, issue):
+        return False
+
+    input_api.change.issue = 123
+    input_api.gerrit = FakeGerrit()
+
   def _injectFakeOwnersClient(self, input_api, owners):
     class FakeOwnersClient(object):
       def ListOwners(self, f):
@@ -2328,6 +2336,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
     mock_input_api.files = [
       MockAffectedFile(f'services/goat/public/goat.mojom',
                        ['// Scary contents.'])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(
         mock_input_api,
         ['apple@chromium.org', 'orange@chromium.org'])
@@ -2350,6 +2359,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
     mock_input_api.files = [
       MockAffectedFile(f'services/goat/public/goat.mojom',
                        ['// Scary contents.'])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(
         mock_input_api,
         ['apple@chromium.org', 'orange@chromium.org'])
@@ -2372,6 +2382,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
     mock_input_api.files = [
       MockAffectedFile(f'services/goat/public/goat.mojom',
                        ['// Scary contents.'])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(
         mock_input_api,
         ['apple@chromium.org', 'orange@chromium.org'])
@@ -2396,6 +2407,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
         mock_input_api.files = [
           MockAffectedFile(f'services/goat/public/{filename}',
                            ['// Scary contents.'])]
+        self._setupFakeChange(mock_input_api)
         self._injectFakeOwnersClient(
             mock_input_api,
             ['apple@chromium.org', 'orange@chromium.org'])
@@ -2421,6 +2433,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
           mock_input_api.files = [
             MockAffectedFile(f'services/goat/public/{filename}',
                              ['// Scary contents.'])]
+          self._setupFakeChange(mock_input_api)
           self._injectFakeOwnersClient(
               mock_input_api,
               ['apple@chromium.org', 'orange@chromium.org'])
@@ -2455,6 +2468,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
                          '#include "services/goat/public/cpp/manifest.h"',
                          'const service_manager::Manifest& GetManifest() {}',
                        ])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
@@ -2497,6 +2511,7 @@ class FuchsiaSecurityOwnerTest(_SecurityOwnersTestCase):
                        [
                          'library test.fidl'
                        ])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
@@ -2519,6 +2534,7 @@ class FuchsiaSecurityOwnerTest(_SecurityOwnersTestCase):
                        [
                          '{ "that is no": "manifest!" }'
                        ])]
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
@@ -2541,11 +2557,12 @@ class FuchsiaSecurityOwnerTest(_SecurityOwnersTestCase):
                        [
                          '{ "that is no": "manifest!" }'
                        ])]
-    mock_output_api = MockOutputApi()
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
         mock_input_api, 'owner@chromium.org', ['banana@chromium.org'])
+    mock_output_api = MockOutputApi()
     errors = PRESUBMIT.CheckSecurityOwners(
         mock_input_api, mock_output_api)
     self.assertEqual(2, len(errors))
@@ -2639,6 +2656,7 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
 
   def testChangeOwnersMissing(self):
     mock_input_api = MockInputApi()
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
@@ -2659,6 +2677,7 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
 
   def testChangeOwnersMissingAtCommit(self):
     mock_input_api = MockInputApi()
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(
@@ -2694,6 +2713,7 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
 
   def testChangeOwnerIsSecurityOwner(self):
     mock_input_api = MockInputApi()
+    self._setupFakeChange(mock_input_api)
     self._injectFakeOwnersClient(mock_input_api,
                                  ['apple@chromium.org', 'orange@chromium.org'])
     self._injectFakeChangeOwnerAndReviewers(

@@ -1420,8 +1420,8 @@ mojom_component("script_type_mojo_bindings") {
 mojom_component("web_feature_mojo_bindings") {
   generate_java = true
   sources = [
-    "use_counter/css_property_id.mojom",
-    "web_feature/web_feature.mojom",
+    "use_counter/metrics/css_property_id.mojom",
+    "use_counter/metrics/web_feature.mojom",
   ]
 
   macro_prefix = "WEB_FEATURE_MOJO_BINDINGS_MOJOM"

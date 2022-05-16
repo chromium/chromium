@@ -14,7 +14,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_sample.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -82,7 +82,7 @@ namespace blink {
 //
 // 1. A simple web exposed API that's represented using a |WebFeature|
 //    constant. Values are defined in
-//    blink/public/mojom/web_feature/web_feature.mojom.
+//    blink/public/mojom/use_counter/metrics/web_feature.mojom.
 //
 //        identifiable_surface = IdentifiableSurface::FromTypeAndToken(
 //            IdentifiableSurface::Type::kWebFeature,

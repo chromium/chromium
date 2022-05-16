@@ -35718,7 +35718,7 @@ Called by update_extension_permission.py.-->
 </enum>
 
 <enum name="FeatureObserver">
-<!-- Generated from third_party/blink/public/mojom/web_feature/web_feature.mojom.
+<!-- Generated from third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.
 Called by update_use_counter_feature_enum.py.-->
 
   <int value="0" label="OBSOLETE_PageDestruction"/>
@@ -61762,7 +61762,7 @@ from previous Chrome versions.
 </enum>
 
 <enum name="MappedCSSProperties">
-<!-- Generated from third_party/blink/public/mojom/use_counter/css_property_id.mojom.
+<!-- Generated from third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.
 Called by update_use_counter_css.py.-->
 
   <int value="1" label="Total Pages Measured"/>

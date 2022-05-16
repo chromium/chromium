@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/video_track_generator.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_track_generator.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

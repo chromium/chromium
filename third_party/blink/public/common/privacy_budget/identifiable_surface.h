@@ -95,7 +95,7 @@ class IdentifiableSurface {
     //     IdentifiableSurface = { mojom::WebFeature, kWebFeature }
     //     Value = IdentifiableToken( $(output of the attribute or method) )
     //
-    // [1]: //blink/public/mojom/web_feature/web_feature.mojom
+    // [1]: //blink/public/mojom/use_counter/metrics/web_feature.mojom
     kWebFeature = 1,
 
     // Reserved 2.
