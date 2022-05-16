@@ -629,6 +629,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     // is enabled.
     [self reloadAllData];
   }
+  [self.discoverFeedDelegate contentSuggestionsWasUpdated];
 }
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
