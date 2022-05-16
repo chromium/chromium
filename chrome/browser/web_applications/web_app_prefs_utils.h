@@ -20,8 +20,6 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-extern const char kWasExternalAppUninstalledByUser[];
-
 extern const char kIphIgnoreCount[];
 
 extern const char kIphLastIgnoreTime[];

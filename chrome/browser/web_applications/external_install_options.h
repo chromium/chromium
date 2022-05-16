@@ -87,7 +87,8 @@ struct ExternalInstallOptions {
   bool is_disabled = false;
 
   // Whether the app should be reinstalled even if the user has previously
-  // uninstalled it.
+  // uninstalled it. Only applies to preinstalled apps and/or apps that can be
+  // uninstalled by the user.
   bool override_previous_user_uninstall = false;
 
   // Whether the app should only be installed if the user is using Chrome for

@@ -62,7 +62,6 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
         return it.first;
     }
   }
-
   return absl::nullopt;
 }
 
@@ -115,6 +114,48 @@ int UserUninstalledPreinstalledWebAppPrefs::Size() {
 
   const base::Value::Dict* pref_info = ids_to_urls->GetIfDict();
   return pref_info->size();
+}
+
+bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
+    const AppId& app_id,
+    const GURL& install_url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const base::Value* ids_to_urls = pref_service_->GetDictionary(
+      prefs::kUserUninstalledPreinstalledWebAppPref);
+
+  // Prefs are empty, so no need of removal.
+  if (!ids_to_urls)
+    return false;
+
+  // Pref does not contain the app_id, so no need of removal.
+  const base::Value::Dict& pref_info = ids_to_urls->GetDict();
+  if (!pref_info.contains(app_id))
+    return false;
+
+  const base::Value::List* url_list = pref_info.FindList(app_id);
+  base::Value::List install_urls;
+  for (const base::Value& url : *url_list) {
+    const std::string* url_str = url.GetIfString();
+    if (!url_str || (url_str && *url_str == install_url.spec()))
+      continue;
+    install_urls.Append(*url_str);
+  }
+
+  // This means the URL did not exist and was hence not deleted.
+  if (install_urls.size() == url_list->size())
+    return false;
+
+  DictionaryPrefUpdate update(pref_service_,
+                              prefs::kUserUninstalledPreinstalledWebAppPref);
+
+  // Add the URLs back to the pref and clear pref in case there are
+  // app_ids with empty URLs.
+  if (install_urls.size() == 0)
+    return update->RemoveKey(app_id);
+
+  // Add the remaining URLs to the preinstalled prefs after deletion.
+  update->SetKey(app_id, base::Value(std::move(install_urls)));
+  return true;
 }
 
 }  // namespace web_app

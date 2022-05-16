@@ -241,7 +241,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     NOTIMPLEMENTED();
   }
 
-  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override {
+  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) {
     NOTIMPLEMENTED();
     return false;
   }

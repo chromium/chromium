@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -87,6 +88,7 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
 
 bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
+bool g_override_previous_user_uninstall_for_testing_ = false;
 const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
@@ -419,6 +421,18 @@ absl::optional<std::string> GetDisableReason(
   base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
                                 DisabledReason::kNotDisabled);
 
+  // Remove from install configs of preinstalled_apps
+  // if it was uninstalled by user and if |override_previous_user_uninstall| is
+  // false.
+  if (UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .LookUpAppIdByInstallUrl(options.install_url)
+          .has_value() &&
+      !options.override_previous_user_uninstall) {
+    return options.install_url.spec() +
+           " is not being installed because it was previously uninstalled "
+           "by user.";
+  }
+
   return absl::nullopt;
 }
 
@@ -473,6 +487,11 @@ void PreinstalledWebAppManager::SkipStartupForTesting() {
 
 void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
+}
+
+void PreinstalledWebAppManager::
+    OverridePreviousUserUninstallConfigForTesting() {
+  g_override_previous_user_uninstall_for_testing_ = true;
 }
 
 void PreinstalledWebAppManager::SetConfigDirForTesting(
@@ -657,6 +676,10 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     options.add_to_desktop = false;
     options.add_to_quick_launch_bar = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    if (g_override_previous_user_uninstall_for_testing_) {
+      options.override_previous_user_uninstall = true;
+    }
   }
 
   // TODO(crbug.com/1175196): Move this constant into some shared constants.h

@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -415,6 +416,11 @@ class WebAppInstallManagerTest
           return std::unique_ptr<WebAppDataRetriever>(
               std::move(data_retriever));
         }));
+  }
+
+  bool WasPreinstalledWebAppUninstalled(const AppId app_id) {
+    return UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
+        .DoesAppIdExist(app_id);
   }
 
   void DestroyManagers() {
@@ -973,7 +979,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
   InitRegistrarWithApp(std::move(policy_and_user_app));
 
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
   WebAppInstallManagerObserverAdapter observer(&install_manager());
@@ -992,7 +998,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
@@ -1010,7 +1016,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
   InitRegistrarWithApp(std::move(policy_and_user_app));
 
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
   WebAppInstallManagerObserverAdapter observer(&install_manager());
@@ -1029,7 +1035,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
@@ -1049,7 +1055,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   InitRegistrarWithApp(std::move(default_and_user_app));
 
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   WebAppInstallManagerObserverAdapter observer(&install_manager());
@@ -1069,7 +1075,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   EXPECT_FALSE(registrar().GetAppById(app_id));
   EXPECT_TRUE(observer_uninstalled_called);
   EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
-  EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 }
 
@@ -1090,7 +1096,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   InitRegistrarWithApp(std::move(default_and_user_app));
 
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
-  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
 
   WebAppInstallManagerObserverAdapter observer(&install_manager());
@@ -1110,7 +1116,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_FALSE(registrar().GetAppById(app_id));
   EXPECT_TRUE(observer_uninstalled_called);
   EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
-  EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(WasPreinstalledWebAppUninstalled(app_id));
   EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 }
 

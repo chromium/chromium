@@ -100,11 +100,6 @@ void FakeInstallFinalizer::RetryIncompleteUninstalls(
   NOTREACHED();
 }
 
-bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
-    const AppId& app_id) const {
-  return base::Contains(user_uninstalled_external_apps_, app_id);
-}
-
 bool FakeInstallFinalizer::CanReparentTab(const AppId& app_id,
                                           bool shortcut_created) const {
   return true;
@@ -138,6 +133,11 @@ void FakeInstallFinalizer::SimulateExternalAppUninstalledByUser(
     const AppId& app_id) {
   DCHECK(!base::Contains(user_uninstalled_external_apps_, app_id));
   user_uninstalled_external_apps_.insert(app_id);
+}
+
+bool FakeInstallFinalizer::WasPreinstalledWebAppUninstalled(
+    const AppId& app_id) {
+  return base::Contains(user_uninstalled_external_apps_, app_id);
 }
 
 void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,

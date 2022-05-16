@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -129,6 +130,9 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
       // app and re-trigger migration.
       if (ExternallyInstalledWebAppPrefs(profile_.GetPrefs())
               .Remove(migration.install_url)) {
+        UserUninstalledPreinstalledWebAppPrefs(profile_.GetPrefs())
+            .RemoveByInstallUrl(migration.expected_web_app_id,
+                                migration.install_url);
         ++fix_count;
       }
     }

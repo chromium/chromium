@@ -274,8 +274,6 @@ void WebAppInstallFinalizer::UninstallWebApp(
   DCHECK(app->CanUserUninstallWebApp());
 
   if (app->IsPreinstalledApp()) {
-    UpdateBoolWebAppPref(profile_->GetPrefs(), app_id,
-                         kWasExternalAppUninstalledByUser, true);
     // Update the default uninstalled web_app prefs if it is a preinstalled app
     // but being removed by user.
     UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
@@ -338,12 +336,6 @@ void WebAppInstallFinalizer::RetryIncompleteUninstalls(
                        base::DoNothing()));
     pending_uninstalls_[app_id] = std::move(uninstall_task);
   }
-}
-
-bool WebAppInstallFinalizer::WasPreinstalledWebAppUninstalled(
-    const AppId& app_id) const {
-  return GetBoolWebAppPref(profile_->GetPrefs(), app_id,
-                           kWasExternalAppUninstalledByUser);
 }
 
 bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,

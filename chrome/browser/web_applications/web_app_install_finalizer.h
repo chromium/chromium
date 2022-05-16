@@ -142,11 +142,6 @@ class WebAppInstallFinalizer {
 
   virtual bool CanUserUninstallWebApp(const AppId& app_id) const;
 
-  // Returns true if the app with |app_id| was previously uninstalled by the
-  // user. For example, if a user uninstalls a default app ('default apps' are
-  // considered external apps), then this will return true.
-  virtual bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const;
-
   virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
   virtual void ReparentTab(const AppId& app_id,
                            bool shortcut_created,

@@ -50,7 +50,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
                        UninstallWebAppCallback callback) override;
   void RetryIncompleteUninstalls(
       const base::flat_set<AppId>& apps_to_uninstall) override;
-  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
   bool CanReparentTab(const AppId& app_id,
                       bool shortcut_created) const override;
   void ReparentTab(const AppId& app_id,
@@ -68,6 +67,8 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   // uninstalled by the user. May be called on an app that isn't installed to
   // simulate that the app was uninstalled previously.
   void SimulateExternalAppUninstalledByUser(const AppId& app_id);
+
+  bool WasPreinstalledWebAppUninstalled(const AppId& app_id);
 
   std::unique_ptr<WebAppInstallInfo> web_app_info() {
     return std::move(web_app_info_copy_);

@@ -1386,53 +1386,6 @@ TEST_F(ExternallyManagedAppManagerImplTest, AppUninstalled) {
   }
 }
 
-TEST_F(ExternallyManagedAppManagerImplTest, ExternalAppUninstalled) {
-  const GURL kFooWebAppUrl("https://foo.example");
-  externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-      kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
-  {
-    auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
-                                      GetInstallOptions(kFooWebAppUrl));
-
-    EXPECT_EQ(1u, install_run_count());
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-  }
-
-  // Simulate external app for the app getting uninstalled by the user.
-  const std::string app_id = GenerateFakeAppId(kFooWebAppUrl);
-  install_finalizer().SimulateExternalAppUninstalledByUser(app_id);
-  if (registrar().IsInstalled(app_id))
-    controller().UnregisterApp(app_id);
-
-  // The app was uninstalled by the user. Installing again should succeed
-  // or fail depending on whether we set override_previous_user_uninstall. We
-  // try with override_previous_user_uninstall false first, true second.
-  {
-    auto [url, code] = InstallAndWait(
-        &externally_managed_app_manager_impl(),
-        GetInstallOptions(kFooWebAppUrl,
-                          false /* override_previous_user_uninstall */));
-
-    // The app shouldn't be installed because the user previously uninstalled
-    // it, so there shouldn't be any new installation task runs.
-    EXPECT_EQ(1u, install_run_count());
-    EXPECT_EQ(webapps::InstallResultCode::kPreviouslyUninstalled, code);
-  }
-
-  {
-    externally_managed_app_manager_impl().SetNextInstallationTaskResult(
-        kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
-
-    auto [url, code] = InstallAndWait(
-        &externally_managed_app_manager_impl(),
-        GetInstallOptions(kFooWebAppUrl,
-                          true /* override_previous_user_uninstall */));
-
-    EXPECT_EQ(2u, install_run_count());
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-  }
-}
-
 TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Succeeds) {
   const GURL kFooWebAppUrl("https://foo.example");
   auto web_app = test::CreateWebApp(kFooWebAppUrl, WebAppManagement::kPolicy);

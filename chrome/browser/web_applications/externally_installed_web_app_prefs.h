@@ -26,6 +26,11 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
+// This field is being retired from prefs::kWebAppsPreferences, but is
+// needed for migration to UserUninstalledPreinstalledWebAppPrefs.
+constexpr char kWasExternalAppUninstalledByUser[] =
+    "was_external_app_uninstalled_by_user";
+
 // A Prefs-backed map from web app URLs to app IDs and their InstallSources.
 //
 // This lets us determine, given a web app's URL, whether that web app was

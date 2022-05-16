@@ -104,9 +104,6 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //       microseconds since the Windows epoch, using base::TimeToValue().
 //       "IPH_last_ignore_time": "13249617864945580",
 //     },
-//     "<app_id_N>": {
-//       "was_external_app_uninstalled_by_user": false,
-//     }
 //   },
 //   "app_agnostic_iph_state": {
 //     "IPH_num_of_consecutive_ignore": 3,
@@ -121,8 +118,6 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //     },
 //   }
 //
-const char kWasExternalAppUninstalledByUser[] =
-    "was_external_app_uninstalled_by_user";
 
 const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";
 
