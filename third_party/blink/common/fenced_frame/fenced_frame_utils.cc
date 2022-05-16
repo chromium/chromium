@@ -13,6 +13,8 @@
 namespace blink {
 
 bool IsValidFencedFrameURL(GURL url) {
+  if (!url.is_valid())
+    return false;
   return url.SchemeIs(url::kHttpsScheme) || url.IsAboutBlank() ||
          net::IsLocalhost(url);
 }
