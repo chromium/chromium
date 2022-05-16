@@ -15,6 +15,8 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -282,6 +284,31 @@ TEST_F(EcheTrayTest, EcheTrayBackButtonClicked) {
   ClickButton(eche_tray()->GetArrowBackButtonForTesting());
 
   EXPECT_EQ(2u, num_web_content_go_back_calls_);
+}
+
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_Minimize) {
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Press a random key that is NOT supposed to minimize Eche.
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_1, ui::EF_ALT_DOWN);
+
+  // Make sure it is still there.
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Now press the alt+- that closes the bubble.
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_OEM_MINUS,
+                                ui::EF_ALT_DOWN);
+
+  // Check to see if the bubble is closed.
+  EXPECT_FALSE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_FALSE(is_web_content_unloaded_);
 }
 
 }  // namespace ash

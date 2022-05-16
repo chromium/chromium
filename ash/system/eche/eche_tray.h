@@ -25,6 +25,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
@@ -169,6 +171,24 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);
 
+  // Intercepts all the events targeted to the internal webview in order to
+  // process the accelerator keys.
+  class EventInterceptor : public ui::EventHandler {
+   public:
+    EventInterceptor(EcheTray* eche_tray);
+
+    EventInterceptor(const EventInterceptor&) = delete;
+    EventInterceptor& operator=(const EventInterceptor&) = delete;
+
+    ~EventInterceptor() override;
+
+    // ui::EventHandler:
+    void OnKeyEvent(ui::KeyEvent* event) override;
+
+   private:
+    EcheTray* const eche_tray_;
+  };
+
   // Calculates and returns the size of the Exo bubble based on the screen size
   // and orientation.
   gfx::Size CalculateSizeForEche() const;
@@ -238,6 +258,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   views::Button* close_button_ = nullptr;
   views::Button* minimize_button_ = nullptr;
   views::Button* arrow_back_button_ = nullptr;
+  std::unique_ptr<EventInterceptor> event_interceptor_;
 
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.

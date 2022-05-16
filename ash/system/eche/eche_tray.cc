@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -57,6 +58,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/views_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -108,10 +110,32 @@ std::unique_ptr<views::Button> CreateButton(
 
 }  // namespace
 
+EcheTray::EventInterceptor::EventInterceptor(EcheTray* eche_tray)
+    : eche_tray_(eche_tray) {}
+EcheTray::EventInterceptor::~EventInterceptor() = default;
+
+void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
+  // To provide consistent behavior with a menu, process accelerator as a menu
+  // is open if the event is not handled by the widget.
+  ui::Accelerator accelerator(*event);
+  if (AcceleratorController::Get()->DoesAcceleratorMatchAction(
+          accelerator, AcceleratorAction::WINDOW_MINIMIZE)) {
+    eche_tray_->CloseBubble();
+    event->StopPropagation();
+    return;
+  }
+  if (AcceleratorController::Get()->IsRegistered(accelerator)) {
+    views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+        accelerator);
+    event->StopPropagation();
+  }
+}
+
 EcheTray::EcheTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
-      icon_(tray_container()->AddChildView(
-          std::make_unique<views::ImageView>())) {
+      icon_(
+          tray_container()->AddChildView(std::make_unique<views::ImageView>())),
+      event_interceptor_(std::make_unique<EventInterceptor>(this)) {
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
@@ -192,6 +216,8 @@ void EcheTray::ShowBubble() {
   // We need this as `WorkspaceLayoutManager` conflicts with our resizing.
   // See b/229111865#comment5
   window_state->set_ignore_keyboard_bounds_change(true);
+  bubble_->GetBubbleWidget()->GetNativeWindow()->AddPreTargetHandler(
+      event_interceptor_.get());
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {
@@ -364,6 +390,10 @@ void EcheTray::StartGracefulClose() {
 }
 
 void EcheTray::HideBubble() {
+  if (!bubble_)
+    return;
+  bubble_->GetBubbleWidget()->GetNativeWindow()->RemovePreTargetHandler(
+      event_interceptor_.get());
   SetIsActive(false);
   bubble_->bubble_view()->SetVisible(false);
   bubble_->GetBubbleWidget()->Deactivate();
