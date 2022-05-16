@@ -310,8 +310,6 @@ void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
 
 void BackForwardCacheMetrics::AddNotRestoredFlattenedReasonsToExistingResult(
     BackForwardCacheCanStoreDocumentResult& flattened) {
-  // TODO(yuzus): Add DCHECK to ensure the flattened reasons and the tree
-  // reasons match.
   page_store_result_->AddReasonsFrom(flattened);
 
   const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons&
@@ -331,6 +329,7 @@ void BackForwardCacheMetrics::AddNotRestoredFlattenedReasonsToExistingResult(
 
 void BackForwardCacheMetrics::SetNotRestoredReasons(
     BackForwardCacheCanStoreDocumentResultWithTree& can_store) {
+  DCHECK(can_store.tree_reasons->FlattenTree() == can_store.flattened_reasons);
   page_store_tree_result_ = std::move(can_store.tree_reasons);
   AddNotRestoredFlattenedReasonsToExistingResult(can_store.flattened_reasons);
 }

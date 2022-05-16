@@ -43,6 +43,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
       BackForwardCacheCanStoreDocumentResult&&);
   ~BackForwardCacheCanStoreDocumentResult();
 
+  bool operator==(const BackForwardCacheCanStoreDocumentResult& other) const;
+
   // Add reasons contained in the |other| to |this|.
   void AddReasonsFrom(const BackForwardCacheCanStoreDocumentResult& other);
   bool HasNotRestoredReason(
@@ -77,6 +79,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
 
   const std::set<BackForwardCache::DisabledReason>& disabled_reasons() const {
     return disabled_reasons_;
+  }
+
+  const absl::optional<ShouldSwapBrowsingInstance>
+  browsing_instance_swap_result() const {
+    return browsing_instance_swap_result_;
   }
 
   const std::set<uint64_t>& disallow_activation_reasons() const {

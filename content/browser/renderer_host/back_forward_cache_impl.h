@@ -567,6 +567,10 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
     return document_result_;
   }
 
+  // Flatten the tree and return a flattened list of not restored reasons that
+  // includes all the reasons in the tree.
+  const BackForwardCacheCanStoreDocumentResult FlattenTree();
+
   // The children nodes. We can access the children nodes of this
   // node/document from this vector.
   const ChildrenVector& GetChildren() const { return children_; }
@@ -589,6 +593,9 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
       const url::Origin& main_document_origin,
       BackForwardCacheCanStoreDocumentResult& result_for_this_document,
       ChildrenVector children);
+
+  void FlattenTreeHelper(
+      BackForwardCacheCanStoreDocumentResult* document_result);
 
   // See |GetDocumentResult|
   BackForwardCacheCanStoreDocumentResult document_result_;

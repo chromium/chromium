@@ -596,6 +596,7 @@ BackForwardCacheImpl::GetCurrentBackForwardCacheEligibility(
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
               flattened_result);
 
+  DCHECK(tree->FlattenTree() == flattened_result);
   return BackForwardCacheCanStoreDocumentResultWithTree(flattened_result,
                                                         std::move(tree));
 }
@@ -604,16 +605,17 @@ BackForwardCacheCanStoreDocumentResultWithTree
 BackForwardCacheImpl::GetFutureBackForwardCacheEligibilityPotential(
     RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult flattened;
-  auto result = PopulateReasonsForPage(rfh, flattened,
-                                       /*include_non_sticky = */ false);
+  auto tree = PopulateReasonsForPage(rfh, flattened,
+                                     /*include_non_sticky = */ false);
   DVLOG(1) << "GetFutureBackForwardCacheEligibilityPotential: "
            << rfh->GetLastCommittedURL() << " : " << flattened.ToString();
   TRACE_EVENT(
       "navigation",
       "BackForwardCacheImpl::GetFutureBackForwardCacheEligibilityPotential",
       ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, flattened);
+  DCHECK(tree->FlattenTree() == flattened);
   return BackForwardCacheCanStoreDocumentResultWithTree(flattened,
-                                                        std::move(result));
+                                                        std::move(tree));
 }
 
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
@@ -878,6 +880,8 @@ BackForwardCacheCanStoreDocumentResultWithTree
 BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
     RenderFrameHostImpl& rfh,
     BackForwardCacheCanStoreDocumentResult& eviction_reason) {
+  // At this point the page already has some NotRestoredReasons for eviction, so
+  // we should always record cache_control:no-store related reasons.
   BackForwardCacheImpl::NotRestoredReasonBuilder builder(
       rfh.GetMainFrame(),
       /* include_non_sticky = */ false,
@@ -1385,6 +1389,21 @@ BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
 void BackForwardCacheCanStoreTreeResult::AddReasonsToSubtreeRootFrom(
     const BackForwardCacheCanStoreDocumentResult& result) {
   document_result_.AddReasonsFrom(result);
+}
+
+const BackForwardCacheCanStoreDocumentResult
+BackForwardCacheCanStoreTreeResult::FlattenTree() {
+  BackForwardCacheCanStoreDocumentResult document_result;
+  FlattenTreeHelper(&document_result);
+  return document_result;
+}
+
+void BackForwardCacheCanStoreTreeResult::FlattenTreeHelper(
+    BackForwardCacheCanStoreDocumentResult* document_result) {
+  document_result->AddReasonsFrom(document_result_);
+  for (const auto& subtree : GetChildren()) {
+    subtree->FlattenTreeHelper(document_result);
+  }
 }
 
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>

@@ -202,6 +202,17 @@ void BackForwardCacheCanStoreDocumentResult::WriteIntoTrace(
   }
 }
 
+bool BackForwardCacheCanStoreDocumentResult::operator==(
+    const BackForwardCacheCanStoreDocumentResult& other) const {
+  return not_restored_reasons() == other.not_restored_reasons() &&
+         blocklisted_features() == other.blocklisted_features() &&
+         disabled_reasons() == other.disabled_reasons() &&
+         browsing_instance_swap_result() ==
+             other.browsing_instance_swap_result() &&
+         disallow_activation_reasons() == other.disallow_activation_reasons() &&
+         ax_events() == other.ax_events();
+}
+
 bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) const {
   return not_restored_reasons_.Has(reason);
