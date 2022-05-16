@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -52,6 +53,10 @@
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
+#endif  // BUIDLFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
@@ -63,7 +68,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"
 #include "extensions/common/constants.h"
@@ -701,16 +705,16 @@ void ExternalProviderImpl::CreateExternalProviders(
   // Load the KioskAppExternalProvider when running in the Chrome App kiosk
   // mode.
   if (chrome::IsRunningInForcedAppMode()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (profiles::IsChromeAppKioskSession()) {
+      ManifestLocation location = ManifestLocation::kExternalPolicy;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
-      // Kiosk primary app external provider.
-      // For enterprise managed kiosk apps, change the location to
-      // "force-installed by policy".
       policy::BrowserPolicyConnectorAsh* const connector =
           g_browser_process->platform_part()->browser_policy_connector_ash();
-      ManifestLocation location = ManifestLocation::kExternalPref;
-      if (connector && connector->IsDeviceEnterpriseManaged())
-        location = ManifestLocation::kExternalPolicy;
+      if (!connector || !connector->IsDeviceEnterpriseManaged())
+        location = ManifestLocation::kExternalPref;
+#endif
 
       auto kiosk_app_provider = std::make_unique<ExternalProviderImpl>(
           service,

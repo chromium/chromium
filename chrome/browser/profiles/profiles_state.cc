@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -303,6 +304,19 @@ bool IsKioskSession() {
       chromeos::LacrosService::Get()->init_params()->session_type;
   return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
          session_type == crosapi::mojom::SessionType::kAppKioskSession;
+#else
+  return false;
+#endif
+}
+
+bool IsChromeAppKioskSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  crosapi::mojom::SessionType session_type =
+      chromeos::LacrosService::Get()->init_params()->session_type;
+  return session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
   return false;
 #endif

@@ -66,9 +66,11 @@ void ChromeBrowserMainPartsLacros::PostCreateThreads() {
 void ChromeBrowserMainPartsLacros::PreProfileInit() {
   ChromeBrowserMainPartsLinux::PreProfileInit();
 
-  // Apply specific flags if this is a Web Kiosk session.
+  // Apply specific flags if this is a Kiosk session.
   if (chromeos::LacrosService::Get()->init_params()->session_type ==
-      crosapi::mojom::SessionType::kWebKioskSession) {
+          crosapi::mojom::SessionType::kWebKioskSession ||
+      chromeos::LacrosService::Get()->init_params()->session_type ==
+          crosapi::mojom::SessionType::kAppKioskSession) {
     // Hide certain system UI elements.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kForceAppMode);
