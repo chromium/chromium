@@ -2858,6 +2858,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                    base::NumberToString(
                        HashFormSignature(field->host_form_signature))});
     buffer << Tr{} << "Name:" << field->parseable_name();
+    buffer << Tr{} << "Placeholder:" << field->placeholder;
 
     auto type = field->Type().ToString();
     auto heuristic_type = AutofillType(field->heuristic_type()).ToString();

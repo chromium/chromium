@@ -47,6 +47,8 @@ extern const base::Feature kAutofillAllowNonHttpActivation;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillComplementCountryCodeOnImport;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillConsiderPlaceholderForParsing;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableWithinFencedFrame;

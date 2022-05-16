@@ -91,6 +91,10 @@ const base::Feature kAutofillAllowNonHttpActivation{
 const base::Feature kAutofillComplementCountryCodeOnImport{
     "AutofillComplementCountryCodeOnImport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, local heuristics fall back to the fields placeholder attribute.
+const base::Feature kAutofillConsiderPlaceholderForParsing{
+    "AutofillConsiderPlaceholderForParsing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the variation country code is used as the phone number's region,
 // instead of defaulting to app locale.
 // TODO(crbug.com/1295721): Cleanup when launched.

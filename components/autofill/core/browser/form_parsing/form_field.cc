@@ -337,8 +337,9 @@ bool FormField::Match(const AutofillField* field,
 
   const std::u16string& name = field->parseable_name();
 
-  if (match_type.attributes.contains(MatchAttribute::kLabel) &&
-      MatchesPattern(label, pattern, &match)) {
+  const bool match_label =
+      match_type.attributes.contains(MatchAttribute::kLabel);
+  if (match_label && MatchesPattern(label, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in label";
     value = label;
@@ -347,6 +348,17 @@ bool FormField::Match(const AutofillField* field,
     found_match = true;
     match_type_string = "Match in name";
     value = name;
+  } else if (match_label &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillConsiderPlaceholderForParsing) &&
+             MatchesPattern(field->placeholder, pattern, &match)) {
+    // TODO(crbug.com/1317961): The label and placeholder cases should logically
+    // be grouped together. Placeholder is currently last, because for the finch
+    // study we want the group assignment to happen as late as possible.
+    // Reorder once the change is rolled out.
+    found_match = true;
+    match_type_string = "Match in placeholder";
+    value = field->placeholder;
   }
 
   if (found_match && logging.log_manager) {
