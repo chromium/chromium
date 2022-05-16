@@ -40,7 +40,7 @@ constexpr char kDefaultModelEnabledParam[] = "enable_default_model";
 
 constexpr int kDummyFeatureSelectionTTLDays = 1;
 
-constexpr int kChromeLowUserEngagementSelectionTTLDays = 30;
+constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
 
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
 constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
@@ -158,7 +158,7 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
 std::unique_ptr<ModelProvider> GetLowEngagementDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kSegmentationPlatformLowEngagementFeature,
-          kDefaultModelEnabledParam, false)) {
+          kDefaultModelEnabledParam, true)) {
     return nullptr;
   }
   return std::make_unique<LowUserEngagementModel>();
@@ -190,7 +190,9 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
       feature_guide::features::kSegmentationModelLowEngagedUsers,
       "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
 #else
-  int segment_selection_ttl_days = kChromeLowUserEngagementSelectionTTLDays;
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      features::kSegmentationPlatformLowEngagementFeature,
+      "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
 #endif
 
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);

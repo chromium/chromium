@@ -4,19 +4,10 @@
 
 #include "components/segmentation_platform/public/features.h"
 
-#include "build/build_config.h"
+namespace segmentation_platform::features {
 
-namespace segmentation_platform {
-namespace features {
-
-const base::Feature kSegmentationPlatformFeature {
-  "SegmentationPlatform",
-#if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kSegmentationPlatformFeature{
+    "SegmentationPlatform", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSegmentationPlatformDummyFeature{
     "SegmentationPlatformDummyFeature", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -29,11 +20,10 @@ const base::Feature kSegmentationPlatformUkmEngine{
 
 const base::Feature kSegmentationPlatformLowEngagementFeature{
     "SegmentationPlatformLowEngagementFeature",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSegmentationPlatformFeedSegmentFeature{
     "SegmentationPlatformFeedSegmentFeature",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-}  // namespace features
-}  // namespace segmentation_platform
+}  // namespace segmentation_platform::features
