@@ -150,10 +150,9 @@ class ClipboardHtmlReader final : public ClipboardReader {
     // Now sanitize the HTML string.
     // This must be called on the main thread because HTML DOM nodes can
     // only be used on the main thread.
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *frame->GetDocument(), html_string, fragment_start, fragment_end, url);
-    String sanitized_html =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_html = CreateSanitizedMarkupWithContext(
+        *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
+        kIncludeNode, kResolveAllURLs);
 
     if (sanitized_html.IsEmpty()) {
       NextRead(Vector<uint8_t>());
@@ -224,11 +223,9 @@ class ClipboardSvgReader final : public ClipboardReader {
     // Now sanitize the SVG string.
     KURL url;
     unsigned fragment_start = 0;
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
+    String sanitized_svg = CreateSanitizedMarkupWithContext(
         *frame->GetDocument(), svg_string, fragment_start, svg_string.length(),
-        url);
-    String sanitized_svg =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+        url, kIncludeNode, kResolveAllURLs);
 
     if (sanitized_svg.IsEmpty()) {
       NextRead(Vector<uint8_t>());

@@ -160,10 +160,9 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     if (!local_frame)
       return;
     Document* document = local_frame->GetDocument();
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *document, html_string, fragment_start, fragment_end, url);
-    String sanitized_html =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_html = CreateSanitizedMarkupWithContext(
+        *document, html_string, fragment_start, fragment_end, url, kIncludeNode,
+        kResolveAllURLs);
     Write(sanitized_html, url);
   }
 
@@ -202,10 +201,9 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     if (!local_frame)
       return;
     Document* document = local_frame->GetDocument();
-    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
-        *document, svg_string, fragment_start, fragment_end, url);
-    String sanitized_svg =
-        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    String sanitized_svg = CreateSanitizedMarkupWithContext(
+        *document, svg_string, fragment_start, fragment_end, url, kIncludeNode,
+        kResolveAllURLs);
     Write(sanitized_svg);
   }
 

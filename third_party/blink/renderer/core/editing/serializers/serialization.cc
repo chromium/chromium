@@ -842,14 +842,20 @@ constexpr unsigned kMaxSanitizationIterations = 16;
 
 }  // namespace
 
-DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
-    Document& document,
-    const String& raw_markup,
-    unsigned fragment_start,
-    unsigned fragment_end,
-    const String& base_url) {
+String CreateSanitizedMarkupWithContext(Document& document,
+                                        const String& raw_markup,
+                                        unsigned fragment_start,
+                                        unsigned fragment_end,
+                                        const String& base_url,
+                                        ChildrenOnly children_only,
+                                        AbsoluteURLs should_resolve_urls,
+                                        IncludeShadowRoots include_shadow_roots,
+                                        ClosedRootsSet include_closed_roots) {
   if (raw_markup.IsEmpty())
-    return nullptr;
+    return String();
+
+  Document* staging_document = CreateStagingDocumentForMarkupSanitization(
+      *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
 
   // Iterate on parsing, sanitization and serialization until the markup is
   // stable, or if we have exceeded the maximum allowed number of iterations.
@@ -860,16 +866,12 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
        ++iteration) {
     last_markup = markup;
 
-    Document* staging_document = CreateStagingDocumentForMarkupSanitization(
-        *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
-    Element* body = staging_document->body();
-
     DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(
         *staging_document, last_markup, fragment_start, fragment_end, KURL(),
         kDisallowScriptingAndPluginContent);
     if (!fragment) {
       staging_document->GetPage()->WillBeDestroyed();
-      return nullptr;
+      return String();
     }
 
     bool needs_sanitization = false;
@@ -881,7 +883,8 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
     if (!needs_sanitization) {
       markup = CreateMarkup(fragment);
     } else {
-      body->appendChild(fragment);
+      Element* body = staging_document->body();
+      staging_document->body()->appendChild(fragment);
       staging_document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
       // This sanitizes stylesheets in the markup into element inline styles
@@ -891,18 +894,39 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
                                 .SetShouldAnnotateForInterchange(true)
                                 .SetIsForMarkupSanitization(true)
                                 .Build());
+
+      body->RemoveChildren();
     }
-    staging_document->GetPage()->WillBeDestroyed();
 
     fragment_start = 0;
     fragment_end = markup.length();
   }
 
-  // Sanitization failed because markup can't stabilize.
-  if (last_markup != markup)
-    return nullptr;
+  String final_markup;
+  // Sanitization succeeds only if the markup can stabilize.
+  if (last_markup == markup) {
+    DocumentFragment* final_fragment =
+        CreateFragmentFromMarkup(*staging_document, markup, base_url,
+                                 kDisallowScriptingAndPluginContent);
+    final_markup =
+        CreateMarkup(final_fragment, children_only, should_resolve_urls,
+                     include_shadow_roots, include_closed_roots);
+  }
+  staging_document->GetPage()->WillBeDestroyed();
+  return final_markup;
+}
 
-  return CreateFragmentFromMarkup(document, markup, base_url,
+DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
+    Document& document,
+    const String& raw_markup,
+    unsigned fragment_start,
+    unsigned fragment_end,
+    const String& base_url) {
+  String sanitized_markup = CreateSanitizedMarkupWithContext(
+      document, raw_markup, fragment_start, fragment_end, KURL());
+  if (sanitized_markup.IsNull())
+    return nullptr;
+  return CreateFragmentFromMarkup(document, sanitized_markup, base_url,
                                   kDisallowScriptingAndPluginContent);
 }
 
