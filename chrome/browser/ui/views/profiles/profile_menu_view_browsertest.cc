@@ -225,11 +225,8 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                                       public extensions::ExtensionBrowserTest {
  public:
   ProfileMenuViewExtensionsTest() {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The IPH is not implemented on Lacros.
     scoped_feature_list_.InitAndEnableFeature(
         feature_engagement::kIPHProfileSwitchFeature);
-#endif
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -342,16 +339,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       }));
   loop.Run();
   ASSERT_TRUE(tracker->IsInitialized());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The IPH is not implemented on Lacros.
-  bool should_show = false;
-#else
-  bool should_show = true;
-#endif
-  EXPECT_EQ(should_show, promo_controller->MaybeShowPromo(
-                             feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_EQ(should_show, promo_controller->IsPromoActive(
-                             feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(promo_controller->MaybeShowPromo(
+      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
