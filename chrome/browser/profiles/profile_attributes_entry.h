@@ -183,8 +183,6 @@ class ProfileAttributesEntry {
   void SetIsEphemeral(bool value);
   void SetUserAcceptedAccountManagement(bool value);
   bool UserAcceptedAccountManagement() const;
-  // TODO(msalama): Remove this function.
-  void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
   void SetAvatarIconIndex(size_t icon_index);
   // absl::nullopt resets colors to default.

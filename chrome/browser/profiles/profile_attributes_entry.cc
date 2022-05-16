@@ -703,11 +703,6 @@ bool ProfileAttributesEntry::UserAcceptedAccountManagement() const {
   return GetBool(kUserAcceptedAccountManagement);
 }
 
-void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
-  if (SetBool(kIsUsingDefaultNameKey, value))
-    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
-}
-
 void ProfileAttributesEntry::SetIsUsingDefaultAvatar(bool value) {
   SetBool(kIsUsingDefaultAvatarKey, value);
 }
