@@ -102,21 +102,20 @@ class BasicVector {
     return static_cast<const D&>(*this).Data()[b];
   }
 
-  // TODO(user): Relationals should be nonmembers.
-  bool operator==(const D& b) const {
-    const T* ap = static_cast<const D&>(*this).Data();
-    return std::equal(ap, ap + this->Size(), b.Data());
+  bool operator==(const BasicVector& b) const {
+    const T* ap = AsD().Data();
+    return std::equal(ap, ap + this->Size(), b.AsD().Data());
   }
-  bool operator!=(const D& b) const { return !(AsD() == b); }
-  bool operator<(const D& b) const {
-    const T* ap = static_cast<const D&>(*this).Data();
-    const T* bp = b.Data();
+  bool operator!=(const BasicVector& b) const { return !(*this == b); }
+  bool operator<(const BasicVector& b) const {
+    const T* ap = AsD().Data();
+    const T* bp = b.AsD().Data();
     return std::lexicographical_compare(ap, ap + this->Size(), bp,
                                         bp + b.Size());
   }
-  bool operator>(const D& b) const { return b < AsD(); }
-  bool operator<=(const D& b) const { return !(AsD() > b); }
-  bool operator>=(const D& b) const { return !(AsD() < b); }
+  bool operator>(const BasicVector& b) const { return b < *this; }
+  bool operator<=(const BasicVector& b) const { return !(*this > b); }
+  bool operator>=(const BasicVector& b) const { return !(*this < b); }
 
   D& operator+=(const D& b) {
     Idx::PlusEq(static_cast<D&>(*this).Data(), b.Data(), IdxSeqN{});
