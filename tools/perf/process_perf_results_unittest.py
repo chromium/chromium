@@ -99,7 +99,6 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
   @decorators.Disabled('chromeos')  # crbug.com/865800
   @decorators.Disabled('win')  # crbug.com/860677, mock doesn't integrate well
   # with multiprocessing on Windows.
-  @decorators.Disabled('all')  # crbug.com/967125
   def testIntegration(self):
     build_properties = json.dumps({
         'perf_dashboard_machine_group': 'test-builder',
