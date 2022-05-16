@@ -60922,6 +60922,13 @@ from previous Chrome versions.
   <int value="2" label="Unknown or invalid switch found"/>
 </enum>
 
+<enum name="LoginFlowUserLoginType">
+  <int value="0" label="New User Online Login"/>
+  <int value="1" label="Existing User Online Login"/>
+  <int value="2" label="User Offline Login"/>
+  <int value="3" label="Ephemeral User Login"/>
+</enum>
+
 <enum name="LoginIsKnownUser">
   <int value="0" label="Unknown user"/>
   <int value="1" label="Known user"/>

@@ -125,6 +125,27 @@ chromium-metrics-reviews@google.com.
   <summary>Chrome OS login failure reason.</summary>
 </histogram>
 
+<histogram name="Login.Flow.{UserVisibility}.{UserCount}"
+    enum="LoginFlowUserLoginType" expires_after="2022-12-15">
+  <owner>sherrilin@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Report the type of user login and the number of it on a device. It is
+    triggered when a login is successful
+  </summary>
+  <token key="UserVisibility">
+    <variant name="HideUsers" summary="ShowUserOnSignin policy is set false"/>
+    <variant name="ShowUsers" summary="ShowUserOnSignin policy is set true"/>
+  </token>
+  <token key="UserCount">
+    <variant name="0" summary="0 users"/>
+    <variant name="1" summary="1 users"/>
+    <variant name="2" summary="2 users"/>
+    <variant name="Few" summary="3 to 5 users"/>
+    <variant name="Many" summary="More than 5 users"/>
+  </token>
+</histogram>
+
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
     enum="AllowedUsersPoliciesInvalidState" expires_after="2022-10-17">
   <owner>emaamari@google.com</owner>

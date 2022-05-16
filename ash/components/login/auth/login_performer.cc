@@ -15,6 +15,7 @@
 #include "chromeos/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -57,6 +58,13 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
 
   // Do not distinguish between offline and online success.
   metrics_recorder_->OnLoginSuccess(OFFLINE_AND_ONLINE);
+  const bool is_known_user = user_manager::UserManager::Get()->IsKnownUser(
+      user_context.GetAccountId());
+  metrics_recorder_->OnIsUserNew(is_known_user);
+  bool is_login_offline =
+      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE ||
+      user_context.GetAuthFlow() == UserContext::AUTH_FLOW_EASY_UNLOCK;
+  metrics_recorder_->OnIsLoginOffline(is_login_offline);
 
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
