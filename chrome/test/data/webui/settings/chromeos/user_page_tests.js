@@ -92,8 +92,8 @@ suite('UserPage', () => {
   });
 
   test('Focus add user button after all managed users are removed', () => {
-    const userList = page.$$('settings-user-list');
-    const addUserButton = page.$$('#add-user-button a');
+    const userList = page.shadowRoot.querySelector('settings-user-list');
+    const addUserButton = page.shadowRoot.querySelector('#add-user-button a');
 
     // Setup and initialize fake users API.
     userList.usersPrivate_ = new FakeUsersPrivate();
@@ -116,8 +116,8 @@ suite('UserPage', () => {
     params.append('settingId', settingId);
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
-    const deepLinkElement =
-        page.$$('#allowGuestBrowsing').shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement = page.shadowRoot.querySelector('#allowGuestBrowsing')
+                                .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -133,7 +133,8 @@ suite('UserPage', () => {
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     const deepLinkElement =
-        page.$$('#showUserNamesOnSignIn').shadowRoot.querySelector('cr-toggle');
+        page.shadowRoot.querySelector('#showUserNamesOnSignIn')
+            .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -149,8 +150,8 @@ suite('UserPage', () => {
     params.append('settingId', settingId);
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
-    const deepLinkElement =
-        page.$$('#restrictSignIn').shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement = page.shadowRoot.querySelector('#restrictSignIn')
+                                .shadowRoot.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(

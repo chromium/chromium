@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-  /**
-   * @enum {number}
-   * These values must be kept in sync with the values in
-   * third_party/cros_system_api/dbus/service_constants.h.
-   */
+/**
+ * @enum {number}
+ * These values must be kept in sync with the values in
+ * third_party/cros_system_api/dbus/service_constants.h.
+ */
 export const FingerprintResultType = {
   SUCCESS: 0,
   PARTIAL: 1,
@@ -142,6 +140,17 @@ export class FingerprintBrowserProxyImpl {
   fakeScanComplete() {
     chrome.send('fakeScanComplete');
   }
+
+  /** @return {!FingerprintBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new FingerprintBrowserProxyImpl());
+  }
+
+  /** @param {!FingerprintBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(FingerprintBrowserProxyImpl);
+/** @type {?FingerprintBrowserProxy} */
+let instance = null;

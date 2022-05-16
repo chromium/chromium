@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// clang-format on
 
 /**
  * Information for an account managed by Chrome OS AccountManager.

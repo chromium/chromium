@@ -64,7 +64,7 @@ function assertHasClass(element, className) {
  * @return {Element}
  */
 function getFromElement(selector) {
-  let childElement = testElement.$$(selector);
+  let childElement = testElement.shadowRoot.querySelector(selector);
   if (!childElement && testElement.$.pinKeyboard) {
     childElement = testElement.$.pinKeyboard.$$(selector);
   }
@@ -276,13 +276,15 @@ function registerLockScreenTests() {
 
     function isSetupPinButtonVisible() {
       flush();
-      const setupPinButton = testElement.$$('#setupPinButton');
+      const setupPinButton =
+          testElement.shadowRoot.querySelector('#setupPinButton');
       return isVisible(setupPinButton);
     }
 
     function isEnablePinAutosubmitToggleVisible() {
       flush();
-      const autosubmitToggle = testElement.$$('#enablePinAutoSubmit');
+      const autosubmitToggle =
+          testElement.shadowRoot.querySelector('#enablePinAutoSubmit');
       return autosubmitToggle && isVisible(autosubmitToggle);
     }
 
@@ -451,7 +453,9 @@ function registerLockScreenTests() {
       assertRadioButtonChecked(pinPasswordRadioButton);
       assertTrue(isSetupPinButtonVisible());
       flush();
-      assertEquals(testElement.$$('#setupPinButton').innerText, 'Change PIN');
+      assertEquals(
+          testElement.shadowRoot.querySelector('#setupPinButton').innerText,
+          'Change PIN');
 
       // Clicking will trigger an async call which setActiveModes([]) fakes.
       passwordRadioButton.click();
@@ -466,7 +470,9 @@ function registerLockScreenTests() {
       flush();
       assertRadioButtonChecked(pinPasswordRadioButton);
       assertTrue(isSetupPinButtonVisible());
-      assertEquals(testElement.$$('#setupPinButton').innerText, 'Set up PIN');
+      assertEquals(
+          testElement.shadowRoot.querySelector('#setupPinButton').innerText,
+          'Set up PIN');
     });
 
     // Tapping the PIN configure button opens up the setup PIN dialog, and
@@ -485,7 +491,7 @@ function registerLockScreenTests() {
       getFromElement('#setupPinButton').click();
       flush();
       const setupPinDialog = getFromElement('#setupPin');
-      assertTrue(setupPinDialog.$$('#dialog').open);
+      assertTrue(setupPinDialog.shadowRoot.querySelector('#dialog').open);
       assertEquals(
           1,
           fakeUma.getHistogramValue(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD));
@@ -502,11 +508,11 @@ function registerLockScreenTests() {
       getFromElement('#enablePinAutoSubmit').click();
       flush();
       const autosubmitDialog = getFromElement('#pinAutosubmitDialog');
-      assertTrue(autosubmitDialog.$$('#dialog').open);
+      assertTrue(autosubmitDialog.shadowRoot.querySelector('#dialog').open);
 
       // Cancel button closes the dialog.
-      autosubmitDialog.$$('#cancelButton').click();
-      assertFalse(autosubmitDialog.$$('#dialog').open);
+      autosubmitDialog.shadowRoot.querySelector('#cancelButton').click();
+      assertFalse(autosubmitDialog.shadowRoot.querySelector('#dialog').open);
     });
   });
 }
@@ -766,7 +772,7 @@ function registerSetupPinDialogTests() {
     // Hitting cancel at the setup step dismisses the dialog.
     test('HittingBackButtonResetsState', function() {
       backButton.click();
-      assertFalse(testElement.$$('#dialog').open);
+      assertFalse(testElement.shadowRoot.querySelector('#dialog').open);
     });
 
     // Hitting cancel at the confirm step dismisses the dialog.
@@ -774,7 +780,7 @@ function registerSetupPinDialogTests() {
       pinKeyboard.value = '1111';
       continueButton.click();
       backButton.click();
-      assertFalse(testElement.$$('#dialog').open);
+      assertFalse(testElement.shadowRoot.querySelector('#dialog').open);
     });
 
     // User has to re-enter PIN for confirm step.

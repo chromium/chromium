@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AccountManagerBrowserProxyImpl, ParentalControlsBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -165,7 +166,7 @@ suite('AccountManagerTests', function() {
 
     accountManager = document.createElement('settings-account-manager');
     document.body.appendChild(accountManager);
-    accountList = accountManager.$$('#account-list');
+    accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
 
     Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
@@ -186,10 +187,12 @@ suite('AccountManagerTests', function() {
   });
 
   test('AddAccount', function() {
-    assertFalse(accountManager.$$('#add-account-button').disabled);
+    assertFalse(accountManager.shadowRoot.querySelector('#add-account-button')
+                    .disabled);
     assertTrue(
-        accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
-    accountManager.$$('#add-account-button').click();
+        accountManager.shadowRoot.querySelector(
+            '.secondary-accounts-disabled-tooltip') === null);
+    accountManager.shadowRoot.querySelector('#add-account-button').click();
     assertEquals(1, browserProxy.getCallCount('addAccount'));
   });
 
@@ -227,10 +230,13 @@ suite('AccountManagerTests', function() {
     // to have the hamburger menu).
     accountManager.root.querySelectorAll('cr-icon-button')[0].click();
     // Click on 'Remove account' (the first button in the menu).
-    accountManager.$$('cr-action-menu').querySelectorAll('button')[0].click();
+    accountManager.shadowRoot.querySelector('cr-action-menu')
+        .querySelectorAll('button')[0]
+        .click();
 
     if (loadTimeData.getBoolean('lacrosEnabled')) {
-      const confirmationDialog = accountManager.$$('#removeConfirmationDialog');
+      const confirmationDialog =
+          accountManager.shadowRoot.querySelector('#removeConfirmationDialog');
       assertTrue(!!confirmationDialog);
       confirmationDialog.querySelector('#removeConfirmationButton').click();
     }
@@ -239,7 +245,7 @@ suite('AccountManagerTests', function() {
     assertEquals('456', account.id);
     // Add account button should be in focus now.
     assertEquals(
-        accountManager.$$('#add-account-button'),
+        accountManager.shadowRoot.querySelector('#add-account-button'),
         accountManager.root.activeElement);
   });
 
@@ -262,7 +268,7 @@ suite('AccountManagerTests', function() {
 
   test('AccountListIsUpdatedWhenAccountManagerUpdates', function() {
     assertEquals(1, browserProxy.getCallCount('getAccounts'));
-    cr.webUIListenerCallback('accounts-changed');
+    webUIListenerCallback('accounts-changed');
     assertEquals(2, browserProxy.getCallCount('getAccounts'));
   });
 
@@ -306,7 +312,9 @@ suite('AccountManagerTests', function() {
     accountManager.root.querySelectorAll('cr-icon-button')[0].click();
     // Click on the button to change ARC availability (the second button in
     // the menu).
-    accountManager.$$('cr-action-menu').querySelectorAll('button')[1].click();
+    accountManager.shadowRoot.querySelector('cr-action-menu')
+        .querySelectorAll('button')[1]
+        .click();
 
     const args = await browserProxy.whenCalled('changeArcAvailability');
     assertEquals(args[0], testAccount);
@@ -334,7 +342,7 @@ suite('AccountManagerUnmanagedAccountTests', function() {
 
     accountManager = document.createElement('settings-account-manager');
     document.body.appendChild(accountManager);
-    accountList = accountManager.$$('#account-list');
+    accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
 
     Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
@@ -372,7 +380,7 @@ suite('AccountManagerAccountAdditionDisabledTests', function() {
 
     accountManager = document.createElement('settings-account-manager');
     document.body.appendChild(accountManager);
-    accountList = accountManager.$$('#account-list');
+    accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
 
     Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
@@ -384,15 +392,19 @@ suite('AccountManagerAccountAdditionDisabledTests', function() {
   });
 
   test('AddAccountCanBeDisabledByPolicy', function() {
-    assertTrue(accountManager.$$('#add-account-button').disabled);
+    assertTrue(accountManager.shadowRoot.querySelector('#add-account-button')
+                   .disabled);
     assertFalse(
-        accountManager.$$('.secondary-accounts-disabled-tooltip') === null);
+        accountManager.shadowRoot.querySelector(
+            '.secondary-accounts-disabled-tooltip') === null);
   });
 
   test('UserMessageSetForAccountType', function() {
     assertEquals(
         loadTimeData.getString('accountManagerSecondaryAccountsDisabledText'),
-        accountManager.$$('.secondary-accounts-disabled-tooltip').tooltipText);
+        accountManager.shadowRoot
+            .querySelector('.secondary-accounts-disabled-tooltip')
+            .tooltipText);
   });
 });
 
@@ -413,7 +425,7 @@ suite('AccountManagerAccountAdditionDisabledChildAccountTests', function() {
 
     accountManager = document.createElement('settings-account-manager');
     document.body.appendChild(accountManager);
-    accountList = accountManager.$$('#account-list');
+    accountList = accountManager.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
 
     Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
@@ -428,7 +440,9 @@ suite('AccountManagerAccountAdditionDisabledChildAccountTests', function() {
     assertEquals(
         loadTimeData.getString(
             'accountManagerSecondaryAccountsDisabledChildText'),
-        accountManager.$$('.secondary-accounts-disabled-tooltip').tooltipText);
+        accountManager.shadowRoot
+            .querySelector('.secondary-accounts-disabled-tooltip')
+            .tooltipText);
   });
 });
 
@@ -457,7 +471,8 @@ suite('AccountManagerAccountChildAccountTests', function() {
   });
 
   test('FamilyLinkIcon', function() {
-    const icon = accountManager.$$('.managed-message cr-icon-button');
+    const icon = accountManager.shadowRoot.querySelector(
+        '.managed-message cr-icon-button');
     assertTrue(!!icon, 'Could not find the managed icon');
 
     assertEquals('cr20:kite', icon.ironIcon);

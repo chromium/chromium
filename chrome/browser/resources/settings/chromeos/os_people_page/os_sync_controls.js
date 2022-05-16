@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_components/localized_link/localized_link.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {StatusAction, SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
-import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.js';
 
@@ -52,75 +50,94 @@ const SyncPrefsIndividualDataTypes = [
  * @fileoverview
  * 'os-sync-controls' contains all OS sync data type controls.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-sync-controls',
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const OsSyncControlsElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
+      WebUIListenerBehavior
+    ],
+    PolymerElement);
 
-  properties: {
-    hidden: {
-      type: Boolean,
-      value: true,
-      computed: 'syncControlsHidden_(osSyncPrefs)',
-      reflectToAttribute: true,
-    },
+/** @polymer */
+class OsSyncControlsElement extends OsSyncControlsElementBase {
+  static get is() {
+    return 'os-sync-controls';
+  }
 
-    /**
-     * The current OS sync preferences. Cached so we can restore individual
-     * toggle state when turning "sync everything" on and off, without affecting
-     * the underlying chrome prefs.
-     * @type {OsSyncPrefs|undefined}
-     */
-    osSyncPrefs: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    areDataTypeTogglesDisabled_: {
-      type: Boolean,
-      value: true,
-      computed: `computeDataTypeTogglesDisabled_(osSyncPrefs.syncAllOsTypes)`,
-    },
+  static get properties() {
+    return {
+      hidden: {
+        type: Boolean,
+        value: true,
+        computed: 'syncControlsHidden_(osSyncPrefs)',
+        reflectToAttribute: true,
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([chromeos.settings.mojom.Setting.kSplitSyncOnOff]),
-    },
-  },
+      /**
+       * The current OS sync preferences. Cached so we can restore individual
+       * toggle state when turning "sync everything" on and off, without
+       * affecting the underlying chrome prefs.
+       * @type {OsSyncPrefs|undefined}
+       */
+      osSyncPrefs: Object,
 
-  /** @private {?OsSyncBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      areDataTypeTogglesDisabled_: {
+        type: Boolean,
+        value: true,
+        computed: `computeDataTypeTogglesDisabled_(osSyncPrefs.syncAllOsTypes)`,
+      },
 
-  /**
-   * Caches the individually selected synced data types. This is used to
-   * be able to restore the selections after checking and unchecking Sync All.
-   * @private {?Object}
-   */
-  cachedOsSyncPrefs_: null,
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([chromeos.settings.mojom.Setting.kSplitSyncOnOff]),
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!OsSyncBrowserProxy} */
     this.browserProxy_ = OsSyncBrowserProxyImpl.getInstance();
-  },
+
+    /**
+     * Caches the individually selected synced data types. This is used to
+     * be able to restore the selections after checking and unchecking Sync All.
+     * @private {?Object}
+     */
+    this.cachedOsSyncPrefs_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'os-sync-prefs-changed', this.handleOsSyncPrefsChanged_.bind(this));
-  },
+  }
 
   /**
    * RouteObserverBehavior
-   * @param {!Route|undefined} newRoute
-   * @param {!Route|undefined} oldRoute
+   * @param {!Route} newRoute
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
@@ -131,7 +148,7 @@ Polymer({
     if (oldRoute === routes.OS_SYNC) {
       this.browserProxy_.didNavigateAwayFromOsSyncPage();
     }
-  },
+  }
 
   /**
    * Handler for when the sync preferences are updated.
@@ -144,7 +161,7 @@ Polymer({
     if (!this.osSyncPrefs.osPreferencesSynced) {
       this.set('osSyncPrefs.wallpaperEnabled', false);
     }
-  },
+  }
 
   /**
    * Computed binding returning the selected sync data radio button.
@@ -153,7 +170,7 @@ Polymer({
   selectedSyncDataRadio_() {
     return this.osSyncPrefs.syncAllOsTypes ? RadioButtonNames.SYNC_EVERYTHING :
                                              RadioButtonNames.CUSTOMIZE_SYNC;
-  },
+  }
 
   /**
    * Called when the sync data radio button selection changes.
@@ -180,7 +197,7 @@ Polymer({
     }
 
     this.sendOsSyncDatatypes_();
-  },
+  }
 
   /**
    * Handler for when any sync data type checkbox is changed.
@@ -188,7 +205,7 @@ Polymer({
    */
   onSingleSyncDataTypeChanged_() {
     this.sendOsSyncDatatypes_();
-  },
+  }
 
   /**
    * Handler for changes to the settings sync state; settings have a special
@@ -201,7 +218,7 @@ Polymer({
         'osSyncPrefs.wallpaperEnabled', this.osSyncPrefs.osPreferencesSynced);
 
     this.onSingleSyncDataTypeChanged_();
-  },
+  }
 
   /**
    * Sends the osSyncPrefs dictionary back to the C++ handler.
@@ -210,7 +227,7 @@ Polymer({
   sendOsSyncDatatypes_() {
     assert(this.osSyncPrefs);
     this.browserProxy_.setOsSyncDatatypes(this.osSyncPrefs);
-  },
+  }
 
   /**
    * @return {boolean} Whether the sync data type toggles should be disabled.
@@ -218,7 +235,7 @@ Polymer({
    */
   computeDataTypeTogglesDisabled_() {
     return this.osSyncPrefs !== undefined && this.osSyncPrefs.syncAllOsTypes;
-  },
+  }
 
   /**
    * @return {boolean} Whether the sync controls are hidden.
@@ -228,7 +245,7 @@ Polymer({
     // Hide everything until the initial prefs are received from C++,
     // otherwise there is a visible layout reshuffle on first load.
     return !this.osSyncPrefs;
-  },
+  }
 
   /**
    * @return {boolean} Whether the wallpaper checkbox and label should be
@@ -238,5 +255,7 @@ Polymer({
   shouldWallpaperSyncSectionBeDisabled_() {
     return this.areDataTypeTogglesDisabled_ || !this.osSyncPrefs ||
         !this.osSyncPrefs.osPreferencesSynced;
-  },
-});
+  }
+}
+
+customElements.define(OsSyncControlsElement.is, OsSyncControlsElement);

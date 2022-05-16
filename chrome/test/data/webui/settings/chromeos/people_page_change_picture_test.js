@@ -4,6 +4,7 @@
 
 import {ChangePictureBrowserProxyImpl, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {CrPicture} from 'chrome://resources/cr_elements/chromeos/cr_picture/cr_picture_types.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,7 +27,7 @@ class TestChangePictureBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   initialize() {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'profile-image-changed', 'fake-profile-image-url',
         false /* selected */);
 
@@ -42,7 +43,7 @@ class TestChangePictureBrowserProxy extends TestBrowserProxy {
         url: 'chrome://foo/3.png',
       },
     ];
-    cr.webUIListenerCallback('default-images-changed', {
+    webUIListenerCallback('default-images-changed', {
       current_default_images: fakeCurrentDefaultImages,
     });
 
@@ -51,13 +52,13 @@ class TestChangePictureBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   selectDefaultImage(imageUrl) {
-    cr.webUIListenerCallback('selected-image-changed', imageUrl);
+    webUIListenerCallback('selected-image-changed', imageUrl);
     this.methodCalled('selectDefaultImage', imageUrl);
   }
 
   /** @override */
   selectOldImage() {
-    cr.webUIListenerCallback('old-image-changed', {
+    webUIListenerCallback('old-image-changed', {
       url: 'fake-old-image.jpg',
       index: 1,
     });
@@ -66,7 +67,7 @@ class TestChangePictureBrowserProxy extends TestBrowserProxy {
 
   /** @override */
   selectProfileImage() {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'profile-image-changed', 'fake-profile-image-url', true /* selected */);
     this.methodCalled('selectProfileImage');
   }
@@ -125,10 +126,10 @@ suite('ChangePictureTests', function() {
     changePicture = document.createElement('settings-change-picture');
     document.body.appendChild(changePicture);
 
-    crPicturePane = changePicture.$$('cr-picture-pane');
+    crPicturePane = changePicture.shadowRoot.querySelector('cr-picture-pane');
     assertTrue(!!crPicturePane);
 
-    crPictureList = changePicture.$$('cr-picture-list');
+    crPictureList = changePicture.shadowRoot.querySelector('cr-picture-list');
     assertTrue(!!crPictureList);
 
     changePicture.currentRouteChanged(routes.CHANGE_PICTURE);
@@ -143,7 +144,7 @@ suite('ChangePictureTests', function() {
 
   test('TraverseCameraIconUsingArrows', function() {
     // Force the camera to be present.
-    cr.webUIListenerCallback('camera-presence-changed', true);
+    webUIListenerCallback('camera-presence-changed', true);
     flush();
     assertTrue(crPictureList.cameraPresent);
 
@@ -153,7 +154,7 @@ suite('ChangePictureTests', function() {
     flush();
 
     assertTrue(crPictureList.cameraSelected_);
-    const crCamera = crPicturePane.$$('#camera');
+    const crCamera = crPicturePane.shadowRoot.querySelector('#camera');
     assertTrue(!!crCamera);
 
     // Mock camera's video stream beginning to play.
@@ -192,23 +193,23 @@ suite('ChangePictureTests', function() {
 
   test('ChangePictureSelectCamera', async function() {
     // Force the camera to be absent, even if it's actually present.
-    cr.webUIListenerCallback('camera-presence-changed', false);
+    webUIListenerCallback('camera-presence-changed', false);
     flush();
 
     await new Promise(function(resolve) {
       changePicture.async(resolve);
     });
-    let camera = crPicturePane.$$('#camera');
+    let camera = crPicturePane.shadowRoot.querySelector('#camera');
     assertFalse(crPicturePane.cameraPresent);
     assertFalse(crPicturePane.cameraActive_);
     assertFalse(!!camera && camera.hidden);
 
-    cr.webUIListenerCallback('camera-presence-changed', true);
+    webUIListenerCallback('camera-presence-changed', true);
     flush();
     await new Promise(function(resolve) {
       changePicture.async(resolve);
     });
-    camera = crPicturePane.$$('#camera');
+    camera = crPicturePane.shadowRoot.querySelector('#camera');
     assertTrue(crPicturePane.cameraPresent);
     assertFalse(crPicturePane.cameraActive_);
     assertFalse(!!camera && camera.hidden);
@@ -219,13 +220,13 @@ suite('ChangePictureTests', function() {
     await new Promise(function(resolve) {
       changePicture.async(resolve);
     });
-    camera = crPicturePane.$$('#camera');
+    camera = crPicturePane.shadowRoot.querySelector('#camera');
     assertTrue(crPicturePane.cameraActive_);
     assertTrue(!!camera && !camera.hidden);
     assertEquals(
         CrPicture.SelectionTypes.CAMERA,
         changePicture.selectedItem_.dataset.type);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!discard || discard.hidden);
 
     // Ensure that the camera is deactivated if user navigates away.
@@ -250,7 +251,7 @@ suite('ChangePictureTests', function() {
         CrPicture.SelectionTypes.PROFILE,
         changePicture.selectedItem_.dataset.type);
     assertFalse(crPicturePane.cameraActive_);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!discard || discard.hidden);
 
     // Ensure that the selection is restored after navigating away and
@@ -261,16 +262,16 @@ suite('ChangePictureTests', function() {
   });
 
   test('ChangePictureDeprecatedImage', async function() {
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'preview-deprecated-image', {url: 'fake-old-image.jpg'});
     flush();
 
     // Expect the deprecated image is presented in picture pane.
     assertEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
-    const image = crPicturePane.$$('#image');
+    const image = crPicturePane.shadowRoot.querySelector('#image');
     assertTrue(!!image);
     assertFalse(image.hidden);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!!discard);
     assertTrue(discard.hidden);
   });
@@ -278,7 +279,7 @@ suite('ChangePictureTests', function() {
   test('ChangePictureDeprecatedImageWithSourceInfo', async function() {
     const fakeAuthor = 'FakeAuthor';
     const fakeWebsite = 'http://foo1.com';
-    cr.webUIListenerCallback('preview-deprecated-image', {
+    webUIListenerCallback('preview-deprecated-image', {
       url: 'fake-old-image.jpg',
       author: fakeAuthor,
       website: fakeWebsite,
@@ -287,13 +288,13 @@ suite('ChangePictureTests', function() {
 
     // Expect the deprecated image is presented in picture pane.
     assertEquals(CrPicture.SelectionTypes.DEPRECATED, crPicturePane.imageType);
-    const image = crPicturePane.$$('#image');
+    const image = crPicturePane.shadowRoot.querySelector('#image');
     assertTrue(!!image);
     assertFalse(image.hidden);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!!discard);
     assertTrue(discard.hidden);
-    const sourceInfo = changePicture.$$('#sourceInfo');
+    const sourceInfo = changePicture.shadowRoot.querySelector('#sourceInfo');
     assertTrue(!!sourceInfo);
     assertFalse(sourceInfo.hidden);
     assertEquals(changePicture.authorInfo_, 'Photo by ' + fakeAuthor);
@@ -308,7 +309,7 @@ suite('ChangePictureTests', function() {
     assertTrue(!!oldImage);
     assertTrue(oldImage.hidden);
 
-    cr.webUIListenerCallback('old-image-changed', 'file-image.jpg');
+    webUIListenerCallback('old-image-changed', 'file-image.jpg');
     flush();
 
     await new Promise(function(resolve) {
@@ -321,16 +322,17 @@ suite('ChangePictureTests', function() {
         CrPicture.SelectionTypes.OLD, changePicture.selectedItem_.dataset.type);
     assertFalse(oldImage.hidden);
     assertFalse(crPicturePane.cameraActive_);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!!discard);
     assertFalse(discard.hidden);
     // Ensure the file image does not show the source info.
-    const sourceInfo = changePicture.$$('#sourceInfo');
+    const sourceInfo = changePicture.shadowRoot.querySelector('#sourceInfo');
     assertTrue(!sourceInfo || sourceInfo.hidden);
   });
 
   test('ChangePictureSelectFirstDefaultImage', async function() {
-    const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
+    const firstDefaultImage =
+        crPictureList.shadowRoot.querySelector('img[data-type="default"]');
     assertTrue(!!firstDefaultImage);
 
     firstDefaultImage.click();
@@ -344,7 +346,7 @@ suite('ChangePictureTests', function() {
         changePicture.selectedItem_.dataset.type);
     assertEquals(firstDefaultImage, changePicture.selectedItem_);
     assertFalse(crPicturePane.cameraActive_);
-    const discard = crPicturePane.$$('#discard');
+    const discard = crPicturePane.shadowRoot.querySelector('#discard');
     assertTrue(!discard || discard.hidden);
 
     // Now verify that arrow keys actually select the new image.
@@ -355,7 +357,8 @@ suite('ChangePictureTests', function() {
   });
 
   test('ChangePictureRestoreImageAfterDiscard', async function() {
-    const firstDefaultImage = crPictureList.$$('img[data-type="default"]');
+    const firstDefaultImage =
+        crPictureList.shadowRoot.querySelector('img[data-type="default"]');
     assertTrue(!!firstDefaultImage);
 
     firstDefaultImage.click();
@@ -364,13 +367,14 @@ suite('ChangePictureTests', function() {
     flush();
     assertEquals(firstDefaultImage, changePicture.selectedItem_);
 
-    cr.webUIListenerCallback('old-image-changed', 'fake-old-image.jpg');
+    webUIListenerCallback('old-image-changed', 'fake-old-image.jpg');
 
     flush();
     assertEquals(
         CrPicture.SelectionTypes.OLD, changePicture.selectedItem_.dataset.type);
 
-    const discardButton = crPicturePane.$$('#discard cr-icon-button');
+    const discardButton =
+        crPicturePane.shadowRoot.querySelector('#discard cr-icon-button');
     assertTrue(!!discardButton);
     discardButton.click();
 
@@ -390,7 +394,7 @@ suite('ChangePictureTests', function() {
     // oldImagePending_ should be true due to pending camera image.
     assertTrue(changePicture.oldImagePending_);
 
-    cr.webUIListenerCallback('old-image-changed', 'camera-image.jpg');
+    webUIListenerCallback('old-image-changed', 'camera-image.jpg');
     flush();
     // oldImagePending_ should be false after the image has been received.
     assertFalse(changePicture.oldImagePending_);

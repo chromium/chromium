@@ -94,7 +94,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
 
   setup(function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
