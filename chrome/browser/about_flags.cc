@@ -97,6 +97,7 @@
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
+#include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
@@ -1433,6 +1434,27 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxDynamicMaxAutocomplete101), nullptr},
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
+
+const FeatureEntry::FeatureParam kFiveOrganicRepeatableQueries[] = {
+    {"MaxNumRepeatableQueries", "5"}};
+const FeatureEntry::FeatureParam kFiveOrganicRepeatableQueriesScaled[] = {
+    {"MaxNumRepeatableQueries", "5"},
+    {"ScaleRepeatableQueriesScores", "true"}};
+const FeatureEntry::FeatureParam
+    kFiveOrganicRepeatableQueriesScaledPrivileged[] = {
+        {"MaxNumRepeatableQueries", "5"},
+        {"ScaleRepeatableQueriesScores", "true"},
+        {"PrivilegeRepeatableQueries", "true"}};
+
+const FeatureEntry::FeatureVariation kOrganicRepeatableQueriesVariations[] = {
+    {"- up to 5 repeatable queries", kFiveOrganicRepeatableQueries,
+     std::size(kFiveOrganicRepeatableQueries), nullptr},
+    {"- up to 5 repeatable queries - scaled for mixing",
+     kFiveOrganicRepeatableQueriesScaled,
+     std::size(kFiveOrganicRepeatableQueriesScaled), nullptr},
+    {"- up to 5 repeatable queries - scaled and privileged for mixing",
+     kFiveOrganicRepeatableQueriesScaledPrivileged,
+     std::size(kFiveOrganicRepeatableQueriesScaledPrivileged), nullptr}};
 
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {features::kMinimumTabWidthFeatureParameterName, "54"}};
@@ -5182,6 +5204,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOptimizationGuideDebugLogsName,
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,
      SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
+
+    {"organic-repeatable-queries",
+     flag_descriptions::kOrganicRepeatableQueriesName,
+     flag_descriptions::kOrganicRepeatableQueriesDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history::kOrganicRepeatableQueries,
+                                    kOrganicRepeatableQueriesVariations,
+                                    "OrganicRepeatableQueries")},
 
     {"history-journeys", flag_descriptions::kJourneysName,
      flag_descriptions::kJourneysDescription, kOsDesktop | kOsAndroid,

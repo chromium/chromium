@@ -970,6 +970,9 @@ extern const char kNotificationSchedulerImmediateBackgroundTaskDescription[];
 extern const char kNotificationsSystemFlagName[];
 extern const char kNotificationsSystemFlagDescription[];
 
+extern const char kOrganicRepeatableQueriesName[];
+extern const char kOrganicRepeatableQueriesDescription[];
+
 extern const char kOriginAgentClusterDefaultName[];
 extern const char kOriginAgentClusterDefaultDescription[];
 

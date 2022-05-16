@@ -4678,6 +4678,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "organic-repeatable-queries",
+    "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "origin-agent-cluster-default",
     "owners": [ "vogelheim", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 109

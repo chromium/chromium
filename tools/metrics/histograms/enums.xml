@@ -59590,6 +59590,7 @@ from previous Chrome versions.
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
   <int value="1278512661" label="SmartDimNewMlAgent:disabled"/>
+  <int value="1278580122" label="OrganicRepeatableQueries:enabled"/>
   <int value="1279422279" label="query-tiles-country-code"/>
   <int value="1279584261" label="enable-carrier-switching"/>
   <int value="1280614081" label="show-overdraw-feedback"/>
@@ -59718,6 +59719,7 @@ from previous Chrome versions.
   <int value="1367529437" label="NTPAssetDownloadSuggestions:enabled"/>
   <int value="1367671275" label="enable-proximity-auth-proximity-detection"/>
   <int value="1368907760" label="GoogleLensSdkIntent:disabled"/>
+  <int value="1369022678" label="OrganicRepeatableQueries:disabled"/>
   <int value="1369449914" label="SysInternals:disabled"/>
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>

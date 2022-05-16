@@ -36,6 +36,9 @@ namespace history {
 
 class TopSitesImplTest;
 
+// How many top sites to store in the cache.
+static constexpr size_t kTopSitesNumber = 10;
+
 // This class allows requests for most visited urls on any thread. All other
 // methods must be invoked on the UI thread. All mutations to internal state
 // happen on the UI thread and are scheduled to update the db using
@@ -45,9 +48,6 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // Called to check whether an URL can be added to the history. Must be
   // callable multiple time and during the whole lifetime of TopSitesImpl.
   using CanAddURLToHistoryFn = base::RepeatingCallback<bool(const GURL&)>;
-
-  // How many top sites to store in the cache.
-  static constexpr size_t kTopSitesNumber = 10;
 
   TopSitesImpl(PrefService* pref_service,
                HistoryService* history_service,

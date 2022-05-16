@@ -1922,6 +1922,12 @@ const char kEnableDeJellyDescription[] =
     "bugs, visual artifacts, and performance cost. This implementation may be "
     "removed at any time.";
 
+const char kOrganicRepeatableQueriesName[] =
+    "Organic repeatable queries in Most Visited tiles";
+const char kOrganicRepeatableQueriesDescription[] =
+    "Enables showing the most repeated queries, from the device browsing "
+    "history, organically among the most visited sites in the MV tiles.";
+
 const char kOriginAgentClusterDefaultName[] =
     "Origin-keyed Agent Clusters by default";
 const char kOriginAgentClusterDefaultDescription[] =
