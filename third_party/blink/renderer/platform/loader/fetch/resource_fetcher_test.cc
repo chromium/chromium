@@ -105,10 +105,16 @@ class PartialResourceRequest {
 
 class ResourceFetcherTest : public testing::Test {
  public:
-  ResourceFetcherTest() = default;
+  ResourceFetcherTest() {
+    Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
+  }
+  ~ResourceFetcherTest() override {
+    GetMemoryCache()->EvictResources();
+    Resource::SetClockForTesting(nullptr);
+  }
+
   ResourceFetcherTest(const ResourceFetcherTest&) = delete;
   ResourceFetcherTest& operator=(const ResourceFetcherTest&) = delete;
-  ~ResourceFetcherTest() override { GetMemoryCache()->EvictResources(); }
 
   class TestResourceLoadObserver final : public ResourceLoadObserver {
    public:
