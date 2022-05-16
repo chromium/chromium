@@ -60,10 +60,8 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
     bool has_knowledge_factor = !context->GetKey()->GetSecret().empty();
     bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
     if (!has_knowledge_factor && !challenge_response_auth) {
-      NOTIMPLEMENTED();
-      NotifyFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME,
-                    std::move(context));
-      return;
+      // TODO(crbug.com/1325411): Restore non-empty password check.
+      LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
   auth_performer_->StartAuthSession(
@@ -178,10 +176,8 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   // For now we don't support empty passwords:
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     if (context->GetKey()->GetSecret().empty() && !challenge_response_auth) {
-      NOTIMPLEMENTED();
-      NotifyFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME,
-                    std::move(context));
-      return;
+      // TODO(crbug.com/1325411): Restore non-empty password check.
+      LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
   auth_performer_->StartAuthSession(
