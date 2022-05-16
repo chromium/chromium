@@ -71,10 +71,10 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   bool IsAnimating();
 
-  // Called from `SavedDeskLibraryWindowTargeter`. Returns true if `location`
-  // intersects with an interactive part of the library UI. This includes saved
-  // desk items and the feedback button.
-  bool IntersectsWithUi(const gfx::Point& location);
+  // Called from `SavedDeskLibraryWindowTargeter`. Returns true if
+  // `screen_location` intersects with an interactive part of the library UI.
+  // This includes saved desk items and the feedback button.
+  bool IntersectsWithUi(const gfx::Point& screen_location);
 
   // If this view is attached to a widget, returns its window (or nullptr).
   aura::Window* GetWidgetWindow();
