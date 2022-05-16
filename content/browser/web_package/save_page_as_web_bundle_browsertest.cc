@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -102,6 +103,8 @@ class MockWebBundler : public data_decoder::mojom::WebBundler {
   }
 
   void ResetReceiver() { receiver_.reset(); }
+
+  size_t GetSnapshotSize() { return snapshots_.size(); }
 
  private:
   // mojom::WebBundleParserFactory implementation.
@@ -324,6 +327,81 @@ IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleBrowserTest,
   EXPECT_EQ(0ULL, result_file_size);
   EXPECT_EQ(data_decoder::mojom::WebBundlerError::kWebBundlerConnectionError,
             result_error);
+}
+
+class SavePageAsWebBundleFencedFrameBrowserTest
+    : public SavePageAsWebBundleBrowserTest {
+ public:
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ protected:
+  test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// If fenced frames become savable, this test will need to be updated.
+// See https://crbug.com/1321102
+IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleFencedFrameBrowserTest,
+                       SnapshotOnePageWithFencedFrame) {
+  const auto page_url = embedded_test_server()->GetURL(kOnePageSimplePath);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), page_url, 1);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetMainFrame(), fenced_frame_url);
+
+  mojo::Remote<data_decoder::mojom::ResourceSnapshotForWebBundle> snapshot;
+  static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+      ->GetAssociatedLocalFrame()
+      ->GetResourceSnapshotForWebBundle(snapshot.BindNewPipeAndPassReceiver());
+
+  ASSERT_EQ(1u, GetResourceCount(snapshot));
+
+  auto data = GetResourceBody(snapshot, 0);
+  ASSERT_TRUE(data);
+
+  EXPECT_EQ(
+      "<html>"
+      "<head>"
+      "<meta http-equiv=\"Content-Type\" content=\"text/html; "
+      "charset=UTF-8\">\n"
+      "<title>Hello</title>\n"
+      "</head>"
+      "<body><h1>hello world</h1>\n"
+      "<fencedframe></fencedframe></body></html>",
+      std::string(reinterpret_cast<const char*>(data->data()), data->size()));
+}
+
+// If fenced frames become savable, this test will need to be updated.
+// See https://crbug.com/1321102
+IN_PROC_BROWSER_TEST_F(SavePageAsWebBundleFencedFrameBrowserTest,
+                       IgnoreSnapshotFencedFrameInWebBundle) {
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+  MockWebBundler mock_web_bundler;
+  in_process_data_decoder.service().SetWebBundlerBinderForTesting(
+      base::BindRepeating(&MockWebBundler::Bind,
+                          base::Unretained(&mock_web_bundler)));
+
+  const auto page_url = embedded_test_server()->GetURL(kOnePageSimplePath);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), page_url, 1);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  fenced_frame_test_helper().CreateFencedFrame(
+      shell()->web_contents()->GetMainFrame(), fenced_frame_url);
+
+  ASSERT_TRUE(CreateSaveDir());
+  const auto file_path =
+      save_dir_.GetPath().Append(FILE_PATH_LITERAL("test.wbn"));
+  shell()->web_contents()->GenerateWebBundle(file_path, base::DoNothing());
+  mock_web_bundler.WaitUntilGenerateCalled();
+
+  // Verify the absence of the fenced frame's document.
+  EXPECT_EQ(1lu, mock_web_bundler.GetSnapshotSize());
 }
 
 }  // namespace content
