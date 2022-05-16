@@ -133,11 +133,12 @@ void SnoopingProtectionController::OnOrientationChanged(
   UpdateSnooperStatus(new_state);
 }
 
-void SnoopingProtectionController::OnHpsSenseChanged(hps::HpsResult) {}
+void SnoopingProtectionController::OnHpsSenseChanged(
+    const hps::HpsResultProto&) {}
 
 void SnoopingProtectionController::OnHpsNotifyChanged(
-    hps::HpsResult detection_state) {
-  const bool present = detection_state == hps::HpsResult::POSITIVE;
+    const hps::HpsResultProto& result) {
+  const bool present = result.value() == hps::HpsResult::POSITIVE;
 
   State new_state = state_;
   new_state.present = present;
@@ -280,12 +281,12 @@ void SnoopingProtectionController::StartServiceObservation(
 }
 
 void SnoopingProtectionController::UpdateServiceState(
-    absl::optional<hps::HpsResult> response) {
+    absl::optional<hps::HpsResultProto> response) {
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
 
   const bool present =
-      response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE;
+      response.has_value() && response->value() == hps::HpsResult::POSITIVE;
 
   State new_state = state_;
   new_state.present = present;

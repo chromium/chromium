@@ -34,10 +34,14 @@ var HumanPresenceInternalsUIBrowserTest = class extends testing.Test {
         chromeos::FakeHumanPresenceDBusClient::Get()->Reset();
         chromeos::FakeHumanPresenceDBusClient::Get()->
             set_hps_service_is_available(true);
+        hps::HpsResultProto result_proto;
+        result_proto.set_value(hps::HpsResult::POSITIVE);
         chromeos::FakeHumanPresenceDBusClient::Get()->set_hps_sense_result(
-            hps::HpsResult::POSITIVE);
+            result_proto);
+        result_proto.set_value(hps::HpsResult::NEGATIVE);
         chromeos::FakeHumanPresenceDBusClient::Get()->set_hps_notify_result(
-            hps::HpsResult::NEGATIVE);`);
+            result_proto);
+    `);
   }
 };
 

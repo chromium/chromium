@@ -64,8 +64,10 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
     chromeos::HumanPresenceDBusClient::InitializeFake();
     dbus_client_ = chromeos::FakeHumanPresenceDBusClient::Get();
     dbus_client_->set_hps_service_is_available(service_available_);
-    dbus_client_->set_hps_notify_result(
-        service_state_ ? hps::HpsResult::POSITIVE : hps::HpsResult::NEGATIVE);
+    hps::HpsResultProto state;
+    state.set_value(service_state_ ? hps::HpsResult::POSITIVE
+                                   : hps::HpsResult::NEGATIVE);
+    dbus_client_->set_hps_notify_result(state);
 
     AshTestBase::SetUp();
 
@@ -144,12 +146,15 @@ TEST_F(SnoopingProtectionControllerTestAbsent, PresenceChange) {
 
   EXPECT_FALSE(controller_->SnooperPresent());
 
-  controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
   task_environment()->FastForwardBy(kLongTime);
 
   EXPECT_TRUE(controller_->SnooperPresent());
 
-  controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
+  state.set_value(hps::HpsResult::NEGATIVE);
+  controller_->OnHpsNotifyChanged(state);
   task_environment()->FastForwardBy(kLongTime);
 
   EXPECT_FALSE(controller_->SnooperPresent());
@@ -395,7 +400,9 @@ TEST_F(SnoopingProtectionControllerTestPresent, PositiveWindow) {
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_TRUE(controller_->SnooperPresent());
-  controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
+  hps::HpsResultProto state;
+  state.set_value(hps::HpsResult::NEGATIVE);
+  controller_->OnHpsNotifyChanged(state);
 
   // The snooping status shouldn't immediately change, since we have a minimum
   // length that it should remain positive.
@@ -407,7 +414,8 @@ TEST_F(SnoopingProtectionControllerTestPresent, PositiveWindow) {
   EXPECT_FALSE(controller_->SnooperPresent());
 
   // Snooping status should always immediately become true and stay true.
-  controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
   EXPECT_TRUE(controller_->SnooperPresent());
   task_environment()->FastForwardBy(kLongTime);
   EXPECT_TRUE(controller_->SnooperPresent());

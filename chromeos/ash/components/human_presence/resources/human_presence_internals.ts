@@ -20,13 +20,21 @@ interface ConnectionState {
   connected: boolean;
 };
 
-interface HpsResultState {
+interface IncomingHpsResult {
   state?: number;
   disabled?: boolean;
+  inference_result?: number;
+  inference_result_valid?: boolean;
 };
 
-let g_senseState = HpsResult.DISABLED;
-let g_notifyState = HpsResult.DISABLED;
+interface HpsResultState {
+  result: HpsResult;
+  inference_result?: number;
+  inference_result_valid?: boolean;
+};
+
+let g_senseState: HpsResultState = {result: HpsResult.DISABLED};
+let g_notifyState: HpsResultState = {result: HpsResult.DISABLED};
 let g_pollTimer: number|undefined = undefined;
 
 function hpsResultToString(result: HpsResult) {
@@ -73,33 +81,41 @@ function onEnableError() {
   $('enable-error').style.display = 'block';
 }
 
-function onSenseChanged(value: HpsResultState) {
+function onSenseChanged(value: IncomingHpsResult) {
   if (value.disabled) {
     enableButton('enable-sense', true);
     enableButton('disable-sense', false);
-    g_senseState = HpsResult.DISABLED;
+    g_senseState = {result: HpsResult.DISABLED};
   } else {
     enableButton('enable-sense', false);
     enableButton('disable-sense', true);
-    g_senseState = value.state!;
+    g_senseState = {
+      result: value.state!,
+      inference_result: value.inference_result!,
+      inference_result_valid: value.inference_result_valid!
+    };
   }
-  $('sense-state').textContent = hpsResultToString(g_senseState);
-  $('sense-state').className = hpsResultToClass(g_senseState);
+  $('sense-state').textContent = hpsResultToString(g_senseState.result);
+  $('sense-state').className = hpsResultToClass(g_senseState.result);
   updatePolling();
 }
 
-function onNotifyChanged(value: HpsResultState) {
+function onNotifyChanged(value: IncomingHpsResult) {
   if (value.disabled) {
     enableButton('enable-notify', true);
     enableButton('disable-notify', false);
-    g_notifyState = HpsResult.DISABLED;
+    g_notifyState = {result: HpsResult.DISABLED};
   } else {
     enableButton('enable-notify', false);
     enableButton('disable-notify', true);
-    g_notifyState = value.state!;
+    g_notifyState = {
+      result: value.state!,
+      inference_result: value.inference_result!,
+      inference_result_valid: value.inference_result_valid!
+    };
   }
-  $('notify-state').textContent = hpsResultToString(g_notifyState);
-  $('notify-state').className = hpsResultToClass(g_notifyState);
+  $('notify-state').textContent = hpsResultToString(g_notifyState.result);
+  $('notify-state').className = hpsResultToClass(g_notifyState.result);
   updatePolling();
 }
 
@@ -144,8 +160,8 @@ function disableNotify() {
 
 function updatePolling() {
   const shouldPoll =
-      g_notifyState !== HpsResult.DISABLED ||
-      g_senseState !== HpsResult.DISABLED;
+      g_notifyState.result !== HpsResult.DISABLED ||
+      g_senseState.result !== HpsResult.DISABLED;
   if (shouldPoll && g_pollTimer === undefined) {
     g_pollTimer = setInterval(recordSample, POLL_INTERVAL_MS);
     recordSample();
@@ -162,19 +178,36 @@ function pruneSamples(container: HTMLElement) {
   }
 }
 
+function recordSampleForFeature(state: HpsResultState, featureName: String) {
+  if (state.result === undefined)
+    return;
+  let sample = document.createElement('span');
+  sample.className = hpsResultToClass(state.result);
+  $(`${featureName}-history`).appendChild(sample);
+
+  sample = document.createElement('span');
+  let height = '64px';
+  if (state.inference_result !== undefined) {
+    let score = state.inference_result!;
+    height = Math.max(0, Math.min(128, Math.floor(score / 2) + 64)) + 'px';
+    $(`${featureName}-inference-result`).textContent = score.toString();
+  } else {
+    $(`${featureName}-inference-result`).textContent = "—";
+  }
+  if (!state.inference_result_valid) {
+    sample.classList.add("invalid");
+  }
+  sample.style.height = height;
+  $(`${featureName}-inference-result`).style.height = height;
+  $(`${featureName}-inference-history`).appendChild(sample);
+
+  pruneSamples($(`${featureName}-history`));
+  pruneSamples($(`${featureName}-inference-history`));
+}
+
 function recordSample() {
-  if (g_senseState !== undefined) {
-    let sample = document.createElement('span');
-    sample.className = hpsResultToClass(g_senseState);
-    $('sense-history').appendChild(sample);
-    pruneSamples($('sense-history'));
-  }
-  if (g_notifyState !== undefined) {
-    let sample = document.createElement('span');
-    sample.className = hpsResultToClass(g_notifyState);
-    $('notify-history').appendChild(sample);
-    pruneSamples($('notify-history'));
-  }
+  recordSampleForFeature(g_senseState, 'sense');
+  recordSampleForFeature(g_notifyState, 'notify');
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
