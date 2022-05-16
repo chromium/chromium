@@ -954,6 +954,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2{TabletOrClamshell}"
+    units="ms" expires_after="M107">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The time duration between showing the app list sort education nudge and the
+    first sort usage. This metric is recorded when app list sort is triggered
+    after the sort nudge is shown. The collected data are separated by the
+    tablet mode state under which the sort nudge is shown. In detail, if the
+    sort nudge shows initially in tablet (or clamshell), then the discovery
+    duration is reported using the histogram for tablet (or clamshell).
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
     enum="AppListSortOrder" expires_after="2022-09-01">
   <owner>andrewxu@chromium.org</owner>

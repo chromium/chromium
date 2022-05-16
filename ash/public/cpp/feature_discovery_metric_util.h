@@ -29,6 +29,11 @@ enum class ASH_PUBLIC_EXPORT TrackableFeature {
   // clamshell and another one for tablet.
   kAppListReorderAfterEducationNudge,
 
+  // Similar to `kAppListReorderAfterEducationNudge`. The only difference
+  // is that the collected data is separated by the tablet mode state under
+  // which the reorder education nudge shows.
+  kAppListReorderAfterEducationNudgePerTabletMode,
+
   // App list reorder after the user session activation.
   // TODO(https://crbug.com/1316185): split this histogram into the one for
   // clamshell and another one for tablet.

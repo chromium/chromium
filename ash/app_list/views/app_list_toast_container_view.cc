@@ -148,8 +148,13 @@ void AppListToastContainerView::CreateReorderNudgeView() {
                             base::Unretained(this)));
   }
 
-  FeatureDiscoveryDurationReporter::GetInstance()->MaybeActivateObservation(
+  FeatureDiscoveryDurationReporter* reporter =
+      FeatureDiscoveryDurationReporter::GetInstance();
+  reporter->MaybeActivateObservation(
       feature_discovery::TrackableFeature::kAppListReorderAfterEducationNudge);
+  reporter->MaybeActivateObservation(
+      feature_discovery::TrackableFeature::
+          kAppListReorderAfterEducationNudgePerTabletMode);
 
   toast_view_ = AddChildView(
       toast_view_builder.SetStyleForTabletMode(tablet_mode_)

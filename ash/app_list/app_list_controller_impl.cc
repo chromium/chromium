@@ -583,6 +583,9 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
         FeatureDiscoveryDurationReporter::GetInstance();
     reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
                                          kAppListReorderAfterEducationNudge);
+    reporter->MaybeFinishObservation(
+        feature_discovery::TrackableFeature::
+            kAppListReorderAfterEducationNudgePerTabletMode);
     reporter->MaybeFinishObservation(feature_discovery::TrackableFeature::
                                          kAppListReorderAfterSessionActivation);
   }
