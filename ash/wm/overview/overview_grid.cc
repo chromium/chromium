@@ -1928,18 +1928,16 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   SaveDeskTemplateButtonContainer* container =
       static_cast<SaveDeskTemplateButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
-  // TODO(yongshun): Once `GetEntryCount()` and `GetMaxEntryCount()` support
-  // `DeskTemplateType`, update `kSaveForLaterButton` to use its own count.
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveAsTemplate,
-      saved_desk_presenter->GetEntryCount(),
-      saved_desk_presenter->GetMaxEntryCount(), num_incognito_windows_,
-      num_unsupported_windows_, size());
+      saved_desk_presenter->GetDeskTemplateEntryCount(),
+      saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
+      num_incognito_windows_, num_unsupported_windows_, size());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveForLater,
-      saved_desk_presenter->GetEntryCount(),
-      saved_desk_presenter->GetMaxEntryCount(), num_incognito_windows_,
-      num_unsupported_windows_, size());
+      saved_desk_presenter->GetSaveAndRecallDeskEntryCount(),
+      saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
+      num_incognito_windows_, num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
   // and height.
