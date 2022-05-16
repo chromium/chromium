@@ -1578,6 +1578,8 @@ android_library("chrome_test_java") {
     "//components/offline_items_collection/core:core_java",
     "//components/offline_pages/core/prefetch:offline_prefetch_proto_java",
     "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:javatests",
+    "//components/omnibox/browser:test_util_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",

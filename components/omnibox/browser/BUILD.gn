@@ -445,6 +445,29 @@ if (is_android) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
+  android_library("javatests") {
+    testonly = true
+    sources = [ "//components/omnibox/browser/android/javatests/src/org/chromium/components/omnibox/AutocompleteResultUnitTest.java" ]
+    deps = [
+      ":browser_java",
+      ":test_util_java",
+      "//base:base_java_test_support",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+    ]
+  }
+
+  android_library("test_util_java") {
+    testonly = true
+    sources = [ "//components/omnibox/browser/android/javatests/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java" ]
+    deps = [
+      "//components/omnibox/browser:browser_java",
+      "//components/query_tiles:query_tile_java",
+      "//third_party/androidx:androidx_collection_collection_java",
+      "//url:gurl_java",
+    ]
+  }
+
   java_cpp_enum("browser_java_enums_srcjar") {
     sources = [
       "actions/omnibox_action_concepts.h",
