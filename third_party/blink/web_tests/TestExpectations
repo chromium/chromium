@@ -5674,6 +5674,7 @@ crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Fail
 crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
 
 # Sheriff 2021-04-14
+crbug.com/1198828 [ Win ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Failure Pass ]
 crbug.com/1198828 [ Linux ] virtual/scroll-unification/fast/events/mouse-events-on-node-deletion.html [ Failure Pass ]
 
 # Sheriff 2021-04-15
