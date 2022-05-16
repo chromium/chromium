@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/auction_runner.h"
+#include "build/build_config.h"
 
 #include <stdint.h>
 
@@ -4348,7 +4349,13 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                   /*expected_sellers=*/1);
 }
 
-TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
+// TODO(crbug.com/1326214): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TrustedScoringSignals DISABLED_TrustedScoringSignals
+#else
+#define MAYBE_TrustedScoringSignals TrustedScoringSignals
+#endif
+TEST_F(AuctionRunnerTest, MAYBE_TrustedScoringSignals) {
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");
 
