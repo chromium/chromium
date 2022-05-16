@@ -186,7 +186,7 @@ class CredentialProviderWebUIMessageHandler
     result.SetKey(credential_provider::kKeyExitCode,
                   base::Value(credential_provider::kUiecAbort));
     base::ListValue args;
-    args.Append(base::Value::ToUniquePtrValue(std::move(result)));
+    args.GetList().Append(std::move(result));
     OnSigninComplete(&args);
   }
 

@@ -4010,8 +4010,7 @@ class StartupBrowserCreatorPickerInfobarTest
   void OpenProfileFromPicker(const base::FilePath& profile_path,
                              bool open_settings) {
     base::ListValue args;
-    args.Append(
-        base::Value::ToUniquePtrValue(base::FilePathToValue(profile_path)));
+    args.GetList().Append(base::FilePathToValue(profile_path));
     profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, &args);
   }
 
