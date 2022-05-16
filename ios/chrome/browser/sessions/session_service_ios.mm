@@ -179,12 +179,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
       contentsOfDirectoryAtPath:sessionsDirectory
                           error:nil];
 
-  // If there were no session ids, then scenes are not supported fall back to
-  // the original location.
-  if ([allSessionIDs count] == 0) {
-    allSessionIDs = @[ @"" ];
-  }
-
   [self deleteSessions:allSessionIDs
              directory:directory
             completion:std::move(callback)];
