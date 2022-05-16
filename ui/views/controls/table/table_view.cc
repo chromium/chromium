@@ -281,6 +281,8 @@ int TableView::GetFirstSelectedRow() const {
              : *selection_model_.selected_indices().begin();
 }
 
+// TODO(dpenning) : Prevent the last column from being closed. See
+// crbug.com/1324306 for details.
 void TableView::SetColumnVisibility(int id, bool is_visible) {
   if (is_visible == IsColumnVisible(id))
     return;
