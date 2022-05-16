@@ -34,6 +34,9 @@ consoles.list_view(
 
 try_.builder(
     name = "cast_shell_audio_linux",
+    mirrors = [
+        "ci/Cast Audio Linux",
+    ],
 )
 
 try_.builder(
