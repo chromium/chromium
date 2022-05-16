@@ -26,17 +26,6 @@ pub use types::MojoTimeTicks;
 pub type MojoDeadline = u64;
 pub static MOJO_INDEFINITE: MojoDeadline = u64::MAX;
 
-pub type CreateFlags = u32;
-pub type DuplicateFlags = u32;
-pub type InfoFlags = u32;
-pub type MapFlags = u32;
-pub type WriteFlags = u32;
-pub type ReadFlags = u32;
-pub type CreateMessageFlags = u32;
-pub type AppendMessageFlags = u32;
-pub type GetMessageFlags = u32;
-pub type AddFlags = u32;
-
 pub use crate::system::wait_set::WaitSetResult;
 
 /// MojoResult represents anything that can happen
@@ -128,41 +117,33 @@ impl fmt::Display for MojoResult {
     }
 }
 
-/// This tuple struct represents a bit vector configuration of possible
-/// Mojo signals. Used in wait() and wait_many() primarily as a convenience.
-#[repr(transparent)]
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct HandleSignals(MojoHandleSignals);
+bitflags::bitflags! {
+    #[derive(Default)]
+    #[repr(transparent)]
+    pub struct HandleSignals: MojoHandleSignals {
+        const READABLE = 1 << 0;
+        const WRITABLE = 1 << 1;
+        const PEER_CLOSED = 1 <<2;
+        const NEW_DATA_READABLE = 1 <<3;
+        const PEER_REMOTE = 1 << 4;
+        const QUOTA_EXCEEDED = 1 << 5;
+    }
+}
 
 impl HandleSignals {
-    /// Create a new HandleSignals given the raw MojoHandleSignals.
-    pub fn new(s: MojoHandleSignals) -> HandleSignals {
-        HandleSignals(s)
-    }
-
-    /// Get the raw inner value.
-    pub fn as_raw(&self) -> &MojoHandleSignals {
-        &self.0
-    }
-
     /// Check if the readable flag is set.
     pub fn is_readable(&self) -> bool {
-        (self.0 & (Signals::Readable as u32)) != 0
+        self.contains(HandleSignals::READABLE)
     }
 
     /// Check if the writable flag is set.
     pub fn is_writable(&self) -> bool {
-        (self.0 & (Signals::Writable as u32)) != 0
+        self.contains(HandleSignals::WRITABLE)
     }
 
     /// Check if the peer-closed flag is set.
     pub fn is_peer_closed(&self) -> bool {
-        (self.0 & (Signals::PeerClosed as u32)) != 0
-    }
-
-    /// Pull the raw MojoHandleSignals out of the data structure.
-    pub fn get_bits(&self) -> MojoHandleSignals {
-        self.0
+        self.contains(HandleSignals::PEER_CLOSED)
     }
 }
 
@@ -176,17 +157,17 @@ impl SignalsState {
     /// Generates a new SignalsState
     pub fn new(satisfied: HandleSignals, satisfiable: HandleSignals) -> SignalsState {
         SignalsState(MojoHandleSignalsState {
-            satisfied_signals: satisfied.get_bits(),
-            satisfiable_signals: satisfiable.get_bits(),
+            satisfied_signals: satisfied.bits(),
+            satisfiable_signals: satisfiable.bits(),
         })
     }
     /// Gets a reference to the satisfied signals
     pub fn satisfied(&self) -> HandleSignals {
-        HandleSignals(self.0.satisfied_signals)
+        HandleSignals::from_bits_truncate(self.0.satisfied_signals)
     }
     /// Gets a reference to the satisfiable signals
     pub fn satisfiable(&self) -> HandleSignals {
-        HandleSignals(self.0.satisfiable_signals)
+        HandleSignals::from_bits_truncate(self.0.satisfiable_signals)
     }
 
     /// Return the wrapped Mojo FFI struct.
@@ -204,34 +185,4 @@ impl std::default::Default for SignalsState {
     fn default() -> Self {
         SignalsState(MojoHandleSignalsState { satisfied_signals: 0, satisfiable_signals: 0 })
     }
-}
-
-/// The different signals options that can be
-/// used by wait() and wait_many(). You may use
-/// these directly to build a bit-vector, but
-/// the signals! macro will already do it for you.
-/// See the root of the library for more information.
-#[repr(u32)]
-pub enum Signals {
-    None = 0,
-    /// Wait for the handle to be readable
-    Readable = 1 << 0,
-
-    /// Wait for the handle to be writable
-    Writable = 1 << 1,
-
-    /// Wait for the handle to be closed by the peer
-    /// (for message pipes and data pipes, this is
-    /// the counterpart handle to the pipe)
-    PeerClosed = 1 << 2,
-
-    /// Wait for the handle to have at least some
-    /// readable data
-    NewDataReadable = 1 << 3,
-
-    /// ???
-    PeerRemote = 1 << 4,
-
-    // ???
-    QuotaExceeded = 1 << 5,
 }

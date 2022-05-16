@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Require unsafe blocks for unsafe operations even in an unsafe fn.
-#![deny(unsafe_op_in_unsafe_fn)]
-
 use crate::system::ffi::{self, raw_ffi, types::MojoTriggerCondition};
 use crate::system::handle::*;
 use crate::system::mojo_types::*;
@@ -145,7 +142,7 @@ impl UnsafeTrap {
             MojoResult::from_code(ffi::MojoAddTrigger(
                 self.handle.get_native_handle(),
                 handle,
-                *signals.as_raw(),
+                signals.bits(),
                 condition.to_raw(),
                 context,
                 ffi::MojoAddTriggerOptions::new(0).inner_ptr(),

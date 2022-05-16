@@ -102,14 +102,45 @@ impl UntypedHandle {
     /// Get a pointer to the wrapped `MojoHandle` value. Use with care: if a
     /// valid handle is overwritten, it will be leaked. This method is unsafe
     /// because writing a valid handle value owned by another `UntypedHandle`
-    /// instance can cause undefined behavior.
+    /// instance can cause undefined behavior. Furthermore, an arbitrary
+    /// non-zero value may at any time become a valid handle owned somewhere
+    /// else.
     ///
     /// # Safety
     ///
-    /// The user must ensure a `MojoHandle` stored here is not owned by another
-    /// instance.
+    /// The caller must ensure a `MojoHandle` stored here is either 0 or a valid
+    /// handle returned from Mojo. Additionally, the handle must not be owned by
+    /// any other instance.
+    ///
+    /// The caller must ensure `self` outlives the returned pointer.
     pub unsafe fn as_mut_ptr(&mut self) -> *mut MojoHandle {
         &mut self.value as *mut _
+    }
+
+    /// Get an immutable pointer to a slice of wrapped handle.
+    ///
+    /// The caller must ensure `handles` outlives the returned pointer. The
+    /// handle must not be closed or wrapped by another instance.
+    pub fn slice_as_ptr(handles: &[Self]) -> *const MojoHandle {
+        // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
+        // pointer cast is sound.
+        handles.as_ptr() as *const _
+    }
+
+    /// Get a mutable pointer to a slice of wrapped handles. Comes with the same
+    /// caveats as `as_mut_ptr()`.
+    ///
+    /// # Safety
+    ///
+    /// The caller must ensure that *all* stored `MojoHandle`s meet the
+    /// requirements of `as_mut_ptr()`. It follows that all handles must be
+    /// unique or 0.
+    ///
+    /// The caller must ensure `handles` outlives the returned pointer.
+    pub unsafe fn slice_as_mut_ptr(handles: &mut [Self]) -> *mut MojoHandle {
+        // `Self` is a repr(transparent) wrapper for `MojoHandle`, so the
+        // pointer cast is sound.
+        handles.as_mut_ptr() as *mut _
     }
 }
 

@@ -10,7 +10,7 @@
 
 use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
-use mojo::system::Handle;
+use mojo::system::{Handle, HandleSignals};
 
 use std::thread;
 
@@ -19,7 +19,7 @@ use crate::util::mojom_validation::*;
 tests! {
     // Tests basic client and server interaction over a thread
     fn send_and_recv() {
-        let (endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (endpt0, endpt1) = message_pipe::create().unwrap();
         // Client and server handles
         let client = IntegrationTestInterfaceClient::new(endpt0);
         let server = IntegrationTestInterfaceServer::with_version(endpt1, 0);
@@ -33,7 +33,7 @@ tests! {
                 },
             }).unwrap();
             // Wait for response
-            client.pipe().wait(signals!(Signals::Readable));
+            client.pipe().wait(HandleSignals::READABLE);
             // Decode response
             let (req_id, options) = client.recv_response().unwrap();
             assert_eq!(req_id, 5);
@@ -44,7 +44,7 @@ tests! {
             }
         });
         // Wait for request
-        server.pipe().wait(signals!(Signals::Readable));
+        server.pipe().wait(HandleSignals::READABLE);
         // Decode request
         let (req_id, options) = server.recv_response().unwrap();
         assert_eq!(req_id, 5);

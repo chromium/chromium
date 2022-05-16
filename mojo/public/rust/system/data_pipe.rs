@@ -10,43 +10,33 @@ use std::slice;
 use std::vec;
 
 use crate::system::ffi;
-// This full import is intentional; nearly every type in mojo_types needs to be used.
-use crate::system::handle;
-use crate::system::handle::{CastHandle, Handle};
+use crate::system::handle::{self, CastHandle, Handle, UntypedHandle};
 use crate::system::mojo_types::*;
 
-#[repr(u32)]
-/// Create flags for data pipes
-pub enum Create {
-    None = 0,
+bitflags::bitflags! {
+    #[derive(Default)]
+    pub struct WriteFlags: u32 {
+        /// Write all the data to the pipe if possible or none at all.
+        const ALL_OR_NONE = 1 << 0;
+    }
 }
 
-#[repr(u32)]
-/// Write flags for data pipes
-pub enum Write {
-    None = 0,
+bitflags::bitflags! {
+    #[derive(Default)]
+    pub struct ReadFlags: u32 {
+        /// Write all the data to the pipe if possible or none at all.
+        const ALL_OR_NONE = 1 << 0;
 
-    /// Write all the data to the pipe if possible or none at all
-    AllOrNone = 1 << 0,
-}
+        /// Dequeue the message recieved rather than reading it.
+        const DISCARD = 1 << 1;
 
-#[repr(u32)]
-/// Read flags for data pipes
-pub enum Read {
-    None = 0,
+        /// Get information about the queue on the pipe but do not perform the
+        /// read.
+        const QUERY = 1 << 2;
 
-    /// Read all the data from the pipe if possible, or none at all
-    AllOrNone = 1 << 0,
-
-    /// Dequeue the message recieved rather than reading it
-    Discard = 1 << 1,
-
-    /// Get information about the queue on the pipe but do not perform the
-    /// read
-    Query = 1 << 2,
-
-    /// Read data off the pipe's queue but do not dequeue it
-    Peek = 1 << 3,
+        /// Read data off the pipe's queue but do not dequeue it.
+        const PEEK = 1 << 3;
+    }
 }
 
 /// Intermediary structure in a two-phase read.
@@ -171,43 +161,27 @@ where
 /// Capacity, as an input, must be given in number of elements.
 /// Use a capacity of 0 in order to use some system-dependent
 /// default capacity.
-pub fn create<T>(
-    flags: CreateFlags,
-    capacity: u32,
-) -> Result<(Consumer<T>, Producer<T>), MojoResult> {
+pub fn create<T>(capacity: u32) -> Result<(Consumer<T>, Producer<T>), MojoResult> {
     let elem_size = mem::size_of::<T>() as u32;
-    let opts = ffi::MojoCreateDataPipeOptions::new(flags, elem_size, capacity * elem_size);
+    let opts = ffi::MojoCreateDataPipeOptions::new(0, elem_size, capacity * elem_size);
     // TODO(mknyszek): Make sure handles are valid
-    let mut chandle: MojoHandle = 0;
-    let mut phandle: MojoHandle = 0;
-    let raw_opts = opts.inner_ptr();
-    let r = MojoResult::from_code(unsafe {
-        ffi::MojoCreateDataPipe(
-            raw_opts,
-            &mut phandle as *mut MojoHandle,
-            &mut chandle as *mut MojoHandle,
-        )
-    });
-    if r != MojoResult::Okay {
-        Err(r)
-    } else {
-        Ok((
-            Consumer::<T> {
-                handle: unsafe { handle::acquire(chandle) },
-                _elem_type: marker::PhantomData,
-            },
-            Producer::<T> {
-                handle: unsafe { handle::acquire(phandle) },
-                _elem_type: marker::PhantomData,
-            },
-        ))
+    let mut chandle = UntypedHandle::invalid();
+    let mut phandle = UntypedHandle::invalid();
+    match MojoResult::from_code(unsafe {
+        ffi::MojoCreateDataPipe(opts.inner_ptr(), phandle.as_mut_ptr(), chandle.as_mut_ptr())
+    }) {
+        MojoResult::Okay => Ok((
+            Consumer::<T> { handle: chandle, _elem_type: marker::PhantomData },
+            Producer::<T> { handle: phandle, _elem_type: marker::PhantomData },
+        )),
+        e => Err(e),
     }
 }
 
 /// Creates a data pipe, represented as a consumer
 /// and a producer, using the default Mojo options.
 pub fn create_default() -> Result<(Consumer<u8>, Producer<u8>), MojoResult> {
-    create::<u8>(Create::None as u32, 0)
+    create(0)
 }
 
 /// Represents the consumer half of a data pipe.
@@ -218,7 +192,7 @@ pub fn create_default() -> Result<(Consumer<u8>, Producer<u8>), MojoResult> {
 /// a type with the consumer, as a data pipe works
 /// in elements.
 pub struct Consumer<T> {
-    handle: handle::UntypedHandle,
+    handle: UntypedHandle,
     _elem_type: marker::PhantomData<T>,
 }
 
@@ -226,7 +200,7 @@ impl<T> Consumer<T> {
     /// Perform a read operation on the consumer end of the data pipe. As
     /// a result, we get an std::vec::Vec filled with whatever was written.
     pub fn read(&self, flags: ReadFlags) -> Result<vec::Vec<T>, MojoResult> {
-        let mut options = ffi::MojoReadDataOptions::new(Read::Query as ReadFlags);
+        let mut options = ffi::MojoReadDataOptions::new(ReadFlags::QUERY.bits());
         let mut num_bytes: u32 = 0;
         let r_prelim = unsafe {
             ffi::MojoReadData(
@@ -240,7 +214,7 @@ impl<T> Consumer<T> {
             return Err(MojoResult::from_code(r_prelim));
         }
 
-        options.flags = flags;
+        options.flags = flags.bits();
         let elem_size: u32 = mem::size_of::<T>() as u32;
         // TODO(mknyszek): make sure elem_size divides into num_bytes
         let mut buf: vec::Vec<T> = vec::Vec::with_capacity((num_bytes / elem_size) as usize);
@@ -272,17 +246,19 @@ impl<T> Consumer<T> {
     unsafe fn begin_read(&self) -> Result<&[T], MojoResult> {
         let mut buf_num_bytes: u32 = 0;
         let mut pbuf: *const ffi::c_void = ptr::null();
-        let r = MojoResult::from_code(ffi::MojoBeginReadData(
-            self.handle.get_native_handle(),
-            ptr::null(),
-            &mut pbuf as *mut _,
-            &mut buf_num_bytes as *mut u32,
-        ));
+        let r = MojoResult::from_code(unsafe {
+            ffi::MojoBeginReadData(
+                self.handle.get_native_handle(),
+                ptr::null(),
+                &mut pbuf as *mut _,
+                &mut buf_num_bytes as *mut u32,
+            )
+        });
         if r != MojoResult::Okay {
             Err(r)
         } else {
             let buf_elems = (buf_num_bytes as usize) / mem::size_of::<T>();
-            let buf = slice::from_raw_parts(pbuf as *mut T, buf_elems);
+            let buf = unsafe { slice::from_raw_parts(pbuf as *mut T, buf_elems) };
             Ok(buf)
         }
     }
@@ -297,11 +273,13 @@ impl<T> Consumer<T> {
     /// getting a bad/strange runtime error, it might be for this reason.
     unsafe fn end_read(&self, elems_read: usize) -> MojoResult {
         let elem_size = mem::size_of::<T>();
-        MojoResult::from_code(ffi::MojoEndReadData(
-            self.handle.get_native_handle(),
-            (elems_read * elem_size) as u32,
-            ptr::null(),
-        ))
+        MojoResult::from_code(unsafe {
+            ffi::MojoEndReadData(
+                self.handle.get_native_handle(),
+                (elems_read * elem_size) as u32,
+                ptr::null(),
+            )
+        })
     }
 }
 
@@ -336,7 +314,7 @@ impl<T> Handle for Consumer<T> {
 /// a type with the consumer, as a data pipe works
 /// in elements.
 pub struct Producer<T> {
-    handle: handle::UntypedHandle,
+    handle: UntypedHandle,
     _elem_type: marker::PhantomData<T>,
 }
 
@@ -345,16 +323,18 @@ impl<T> Producer<T> {
     /// Returns the number of elements actually written.
     pub fn write(&self, data: &[T], flags: WriteFlags) -> Result<usize, MojoResult> {
         let mut num_bytes = (data.len() * mem::size_of::<T>()) as u32;
-        let options = ffi::MojoWriteDataOptions::new(flags);
-        let r = MojoResult::from_code(unsafe {
+        let options = ffi::MojoWriteDataOptions::new(flags.bits());
+        match MojoResult::from_code(unsafe {
             ffi::MojoWriteData(
                 self.handle.get_native_handle(),
                 data.as_ptr() as *const ffi::c_void,
                 &mut num_bytes as *mut u32,
                 options.inner_ptr(),
             )
-        });
-        if r != MojoResult::Okay { Err(r) } else { Ok(num_bytes as usize) }
+        }) {
+            MojoResult::Okay => Ok(num_bytes as usize),
+            e => Err(e),
+        }
     }
 
     /// Start two-phase write and return a WriteDataBuffer to perform
@@ -376,17 +356,19 @@ impl<T> Producer<T> {
     unsafe fn begin_write(&self) -> Result<&mut [T], MojoResult> {
         let mut buf_num_bytes: u32 = 0;
         let mut pbuf: *mut ffi::c_void = ptr::null_mut();
-        let r = MojoResult::from_code(ffi::MojoBeginWriteData(
-            self.handle.get_native_handle(),
-            ptr::null(),
-            &mut pbuf,
-            &mut buf_num_bytes as *mut u32,
-        ));
+        let r = MojoResult::from_code(unsafe {
+            ffi::MojoBeginWriteData(
+                self.handle.get_native_handle(),
+                ptr::null(),
+                &mut pbuf,
+                &mut buf_num_bytes as *mut u32,
+            )
+        });
         if r != MojoResult::Okay {
             Err(r)
         } else {
             let buf_elems = (buf_num_bytes as usize) / mem::size_of::<T>();
-            let buf = slice::from_raw_parts_mut(pbuf as *mut T, buf_elems);
+            let buf = unsafe { slice::from_raw_parts_mut(pbuf as *mut T, buf_elems) };
             Ok(buf)
         }
     }
@@ -401,11 +383,13 @@ impl<T> Producer<T> {
     /// getting a bad/strange runtime error, it might be for this reason.
     unsafe fn end_write(&self, elems_written: usize) -> MojoResult {
         let elem_size = mem::size_of::<T>();
-        MojoResult::from_code(ffi::MojoEndWriteData(
-            self.handle.get_native_handle(),
-            (elems_written * elem_size) as u32,
-            ptr::null(),
-        ))
+        MojoResult::from_code(unsafe {
+            ffi::MojoEndWriteData(
+                self.handle.get_native_handle(),
+                (elems_written * elem_size) as u32,
+                ptr::null(),
+            )
+        })
     }
 }
 

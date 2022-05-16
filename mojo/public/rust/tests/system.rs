@@ -11,12 +11,12 @@
 use mojo::system::core;
 use mojo::system::data_pipe;
 use mojo::system::message_pipe;
-use mojo::system::shared_buffer;
+use mojo::system::shared_buffer::{self, SharedBuffer};
 use mojo::system::trap::{
     ArmResult, Trap, TrapEvent, TriggerCondition, UnsafeTrap, UnsafeTrapEvent,
 };
 use mojo::system::wait_set;
-use mojo::system::{self, CastHandle, Handle, MojoResult, SignalsState};
+use mojo::system::{self, CastHandle, Handle, HandleSignals, MojoResult, SignalsState};
 
 use std::string::String;
 use std::sync::{Arc, Condvar, Mutex};
@@ -30,7 +30,7 @@ tests! {
     }
 
     fn handle() {
-        let sb = shared_buffer::create(sbflags!(Create::None), 1).unwrap();
+        let sb = SharedBuffer::new(1).unwrap();
         let handle = sb.as_untyped();
         unsafe {
             assert_eq!((handle.get_native_handle() != 0), handle.is_valid());
@@ -48,30 +48,30 @@ tests! {
         {
             let mut buf;
             {
-                let sb_c = shared_buffer::create(sbflags!(Create::None), bufsize).unwrap();
+                let sb_c = SharedBuffer::new(bufsize).unwrap();
                 // Extract original handle to check against
                 let sb_h = sb_c.get_native_handle();
                 // Test casting of handle types
                 let sb_u = sb_c.as_untyped();
                 assert_eq!(sb_u.get_native_handle(), sb_h);
-                let sb = unsafe { shared_buffer::SharedBuffer::from_untyped(sb_u) };
+                let sb = unsafe { SharedBuffer::from_untyped(sb_u) };
                 assert_eq!(sb.get_native_handle(), sb_h);
                 // Test map
-                buf = sb.map(0, bufsize, sbflags!(Map::None)).unwrap();
+                buf = sb.map(0, bufsize).unwrap();
                 assert_eq!(buf.len(), bufsize as usize);
                 // Test get info
                 let size = sb.get_info().unwrap();
                 assert_eq!(size, bufsize);
                 buf.write(50, 34);
                 // Test duplicate
-                sb1 = sb.duplicate(sbflags!(Duplicate::None)).unwrap();
+                sb1 = sb.duplicate(shared_buffer::DuplicateFlags::empty()).unwrap();
             }
             // sb gets closed
             buf.write(51, 35);
         }
         // buf just got closed
         // remap to buf1 from sb1
-        let buf1 = sb1.map(50, 50, sbflags!(Map::None)).unwrap();
+        let buf1 = sb1.map(50, 50).unwrap();
         assert_eq!(buf1.len(), 50);
         // verify buffer contents
         assert_eq!(buf1.read(0), 34);
@@ -79,7 +79,7 @@ tests! {
     }
 
     fn message_pipe() {
-        let (endpt, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (endpt, endpt1) = message_pipe::create().unwrap();
         // Extract original handle to check against
         let endpt_h = endpt.get_native_handle();
         // Test casting of handle types
@@ -89,21 +89,21 @@ tests! {
             let endpt0 = unsafe { message_pipe::MessageEndpoint::from_untyped(endpt_u) };
             assert_eq!(endpt0.get_native_handle(), endpt_h);
             {
-                let s: SignalsState = endpt0.wait(signals!(Signals::Writable)).satisfied().unwrap();
+                let s: SignalsState = endpt0.wait(HandleSignals::WRITABLE).satisfied().unwrap();
                 assert!(s.satisfied().is_writable());
                 assert!(s.satisfiable().is_readable());
                 assert!(s.satisfiable().is_writable());
                 assert!(s.satisfiable().is_peer_closed());
             }
-            match endpt0.read(mpflags!(Read::None)) {
+            match endpt0.read() {
                 Ok((_msg, _handles)) => panic!("Read should not have succeeded."),
                 Err(r) => assert_eq!(r, mojo::MojoResult::ShouldWait),
             }
             let hello = "hello".to_string().into_bytes();
-            let write_result = endpt1.write(&hello, Vec::new(), mpflags!(Write::None));
+            let write_result = endpt1.write(&hello, Vec::new());
             assert_eq!(write_result, mojo::MojoResult::Okay);
             {
-                let s: SignalsState = endpt0.wait(signals!(Signals::Readable)).satisfied().unwrap();
+                let s: SignalsState = endpt0.wait(HandleSignals::READABLE).satisfied().unwrap();
                 assert!(s.satisfied().is_readable());
                 assert!(s.satisfied().is_writable());
                 assert!(s.satisfiable().is_readable());
@@ -111,16 +111,16 @@ tests! {
                 assert!(s.satisfiable().is_peer_closed());
             }
             let hello_data;
-            match endpt0.read(mpflags!(Read::None)) {
+            match endpt0.read() {
                 Ok((msg, _handles)) => hello_data = msg,
                 Err(r) => panic!("Failed to read message on endpt0, error: {}", r),
             }
             assert_eq!(String::from_utf8(hello_data).unwrap(), "hello".to_string());
         }
-        let s: SignalsState = endpt1.wait(signals!(Signals::Readable, Signals::Writable)).unsatisfiable().unwrap();
+        let s: SignalsState = endpt1.wait(HandleSignals::READABLE | HandleSignals::WRITABLE).unsatisfiable().unwrap();
         assert!(s.satisfied().is_peer_closed());
         // For some reason QuotaExceeded is also set. TOOD(collinbaker): investigate.
-        assert!(s.satisfiable().get_bits() & (system::Signals::PeerClosed as u32) > 0);
+        assert!(s.satisfiable().is_peer_closed());
     }
 
     fn data_pipe() {
@@ -138,15 +138,15 @@ tests! {
         assert_eq!(cons.get_native_handle(), cons_h);
         assert_eq!(prod.get_native_handle(), prod_h);
         // Test waiting on producer
-        prod.wait(signals!(Signals::Writable)).satisfied().unwrap();
+        prod.wait(HandleSignals::WRITABLE).satisfied().unwrap();
         // Test one-phase read/write.
         // Writing.
         let hello = "hello".to_string().into_bytes();
-        let bytes_written = prod.write(&hello, dpflags!(Write::None)).unwrap();
+        let bytes_written = prod.write(&hello, data_pipe::WriteFlags::empty()).unwrap();
         assert_eq!(bytes_written, hello.len());
         // Reading.
-        cons.wait(signals!(Signals::Readable)).satisfied().unwrap();
-        let data_string = String::from_utf8(cons.read(dpflags!(Read::None)).unwrap()).unwrap();
+        cons.wait(HandleSignals::READABLE).satisfied().unwrap();
+        let data_string = String::from_utf8(cons.read(data_pipe::ReadFlags::empty()).unwrap()).unwrap();
         assert_eq!(data_string, "hello".to_string());
         {
             // Test two-phase read/write.
@@ -165,7 +165,7 @@ tests! {
                 None => (),
             }
             // Reading.
-            cons.wait(signals!(Signals::Readable)).satisfied().unwrap();
+            cons.wait(HandleSignals::READABLE).satisfied().unwrap();
             let mut data_goodbye: Vec<u8> = Vec::with_capacity(goodbye.len());
             {
                 let read_buf = match cons.begin() {
@@ -175,7 +175,7 @@ tests! {
                 for i in 0..read_buf.len() {
                     data_goodbye.push(read_buf[i]);
                 }
-                match cons.read(dpflags!(Read::None)) {
+                match cons.read(data_pipe::ReadFlags::empty()) {
                     Ok(_bytes) => assert!(false),
                     Err(r) => assert_eq!(r, mojo::MojoResult::Busy),
                 }
@@ -191,10 +191,10 @@ tests! {
 
     fn wait_set() {
         let mut set = wait_set::WaitSet::new().unwrap();
-        let (endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (endpt0, endpt1) = message_pipe::create().unwrap();
         let cookie1 = wait_set::WaitSetCookie(245);
         let cookie2 = wait_set::WaitSetCookie(123);
-        let signals = signals!(Signals::Readable);
+        let signals = HandleSignals::READABLE;
         assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::Okay);
         assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::AlreadyExists);
         assert_eq!(set.remove(cookie1), mojo::MojoResult::Okay);
@@ -202,7 +202,7 @@ tests! {
         assert_eq!(set.add(&endpt0, signals, cookie2), mojo::MojoResult::Okay);
         thread::spawn(move || {
             let hello = "hello".to_string().into_bytes();
-            let write_result = endpt1.write(&hello, Vec::new(), mpflags!(Write::None));
+            let write_result = endpt1.write(&hello, Vec::new());
             assert_eq!(write_result, mojo::MojoResult::Okay);
         });
         let mut output = Vec::with_capacity(2);
@@ -224,12 +224,12 @@ tests! {
         let (cons, prod) = data_pipe::create_default().unwrap();
         assert_eq!(MojoResult::Okay,
             trap.add_trigger(cons.get_native_handle(),
-                             signals!(Signals::Readable),
+                             HandleSignals::READABLE,
                              TriggerCondition::SignalsSatisfied,
                              1));
         assert_eq!(MojoResult::Okay,
             trap.add_trigger(prod.get_native_handle(),
-                             signals!(Signals::Writable),
+                             HandleSignals::WRITABLE,
                              TriggerCondition::SignalsUnsatisfied,
                              2));
 
@@ -247,7 +247,7 @@ tests! {
         assert_eq!(TRAP_EVENT_LIST.lock().unwrap().len(), 0);
 
         // Write to `prod` making `cons` readable.
-        assert_eq!(prod.write(&[128u8], dpflags!(Write::None)).unwrap(), 1);
+        assert_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()).unwrap(), 1);
         {
             let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
             assert_eq!(list.len(), 1);
@@ -276,7 +276,7 @@ tests! {
         clear_trap_events(1);
 
         // Read the data so we don't receive the same event again.
-        cons.read(dpflags!(Read::Discard)).unwrap();
+        cons.read(data_pipe::ReadFlags::DISCARD).unwrap();
         match trap.arm(Some(&mut blocking_events_buf)) {
             ArmResult::Armed => (),
             ArmResult::Blocked(events) => panic!("unexpected blocking events {:?}", events),
@@ -325,7 +325,7 @@ tests! {
         let (cons, _prod) = data_pipe::create_default().unwrap();
         assert_eq!(MojoResult::Okay,
             trap.add_trigger(cons.get_native_handle(),
-                             signals!(Signals::Readable),
+                             HandleSignals::READABLE,
                              TriggerCondition::SignalsSatisfied, 1));
 
         drop(cons);
@@ -365,19 +365,19 @@ tests! {
         let (cons, prod) = data_pipe::create_default().unwrap();
         let _cons_token = trap.add_trigger(
             cons.get_native_handle(),
-            signals!(Signals::Readable),
+            HandleSignals::READABLE,
             TriggerCondition::SignalsSatisfied,
             context.clone());
         let _prod_token = trap.add_trigger(
             prod.get_native_handle(),
-            signals!(Signals::Writable),
+            HandleSignals::WRITABLE,
             TriggerCondition::SignalsUnsatisfied,
             context.clone());
 
         assert_eq!(trap.arm(), MojoResult::Okay);
 
         // Make `cons` readable.
-        assert_eq!(prod.write(&[128u8], dpflags!(Write::None)), Ok(1));
+        assert_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()), Ok(1));
         {
             let mut events =
                 context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();

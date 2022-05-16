@@ -10,8 +10,7 @@
 
 use mojo::bindings::run_loop;
 use mojo::bindings::run_loop::{Handler, RunLoop, Token, WaitError};
-use mojo::system::message_pipe;
-use mojo::system::MOJO_INDEFINITE;
+use mojo::system::{message_pipe, HandleSignals, MOJO_INDEFINITE};
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -80,10 +79,10 @@ struct HandlerRegister {}
 
 impl Handler for HandlerRegister {
     fn on_ready(&mut self, runloop: &mut RunLoop, token: Token) {
-        let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_, endpt1) = message_pipe::create().unwrap();
         let _ = runloop.register(
             &endpt1,
-            signals!(Signals::Writable),
+            HandleSignals::WRITABLE,
             MOJO_INDEFINITE,
             HandlerDeregisterOther { other: token },
         );
@@ -124,10 +123,10 @@ impl Handler for HandlerReregister {
     }
     fn on_timeout(&mut self, runloop: &mut RunLoop, token: Token) {
         if self.count < 10 {
-            runloop.reregister(&token, signals!(Signals::Readable), 0);
+            runloop.reregister(&token, HandleSignals::READABLE, 0);
             self.count += 1;
         } else {
-            runloop.reregister(&token, signals!(Signals::Writable), MOJO_INDEFINITE);
+            runloop.reregister(&token, HandleSignals::WRITABLE, MOJO_INDEFINITE);
         }
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
@@ -147,13 +146,13 @@ impl Handler for HandlerNesting {
         let mut nested_runloop = run_loop::RunLoop::new();
         if self.count < 10 {
             let handler = HandlerNesting { count: self.count + 1 };
-            let (endpt0, _endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-            let _ = nested_runloop.register(&endpt0, signals!(Signals::Readable), 0, handler);
+            let (endpt0, _endpt1) = message_pipe::create().unwrap();
+            let _ = nested_runloop.register(&endpt0, HandleSignals::READABLE, 0, handler);
             nested_runloop.run();
         } else {
             let handler = HandlerNesting { count: self.count + 1 };
-            let (endpt0, _) = message_pipe::create(mpflags!(Create::None)).unwrap();
-            let _ = nested_runloop.register(&endpt0, signals!(Signals::Readable), 0, handler);
+            let (endpt0, _) = message_pipe::create().unwrap();
+            let _ = nested_runloop.register(&endpt0, HandleSignals::READABLE, 0, handler);
             nested_runloop.run();
         }
         runloop.deregister(token);
@@ -249,9 +248,9 @@ tests! {
     // left in a consistent state.
     fn add_remove() {
         run_loop::with_current(|runloop| {
-            let (endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-            let token0 = runloop.register(&endpt0, signals!(Signals::Writable), 0, HandlerExpectReady {});
-            let token1 = runloop.register(&endpt1, signals!(Signals::Writable), 0, HandlerExpectReady {});
+            let (endpt0, endpt1) = message_pipe::create().unwrap();
+            let token0 = runloop.register(&endpt0, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
+            let token1 = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
             runloop.deregister(token1);
             runloop.deregister(token0);
             runloop.run();
@@ -263,8 +262,8 @@ tests! {
         let mut vec = Vec::new();
         run_loop::with_current(|runloop| {
             for _ in 0..10 {
-                let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-                vec.push(runloop.register(&endpt1, signals!(Signals::None), 0, HandlerExpectReady {}));
+                let (_endpt0, endpt1) = message_pipe::create().unwrap();
+                vec.push(runloop.register(&endpt1, HandleSignals::empty(), 0, HandlerExpectReady {}));
             }
             for i in 0..10 {
                 for j in 0..10 {
@@ -278,9 +277,9 @@ tests! {
 
     // Verifies that the handler's "on_ready" function is called.
     fn notify_results() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), MOJO_INDEFINITE, HandlerExpectReady {});
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerExpectReady {});
             runloop.run();
         });
     }
@@ -288,10 +287,10 @@ tests! {
     // Verifies that the handler's "on_error" function is called.
     fn notify_error() {
         // Drop the first endpoint immediately
-        let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
             let was_called = Rc::new(Cell::new(false));
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0,
+            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0,
                 HandlerExpectError {
                     was_called: was_called.clone(),
             });
@@ -303,18 +302,18 @@ tests! {
     // Verifies that the handler's "on_ready" function is called which only
     // quits.
     fn notify_ready_quit() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), MOJO_INDEFINITE, HandlerQuit {});
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerQuit {});
             runloop.run();
         });
     }
 
     // Tests more complex behavior, i.e. the interaction between two handlers.
     fn register_deregister() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), MOJO_INDEFINITE, HandlerRegister {});
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerRegister {});
             runloop.run();
         });
     }
@@ -322,9 +321,9 @@ tests! {
     // Tests reregistering.
     #[ignore]
     fn reregister() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerReregister { count: 0 });
+            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerReregister { count: 0 });
             runloop.run();
         });
     }
@@ -332,9 +331,9 @@ tests! {
     // Tests nesting run loops by having a handler create a new one.
     #[ignore]
     fn nesting() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerNesting { count: 0 });
+            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerNesting { count: 0 });
             runloop.run();
         });
     }
@@ -343,9 +342,9 @@ tests! {
     #[should_panic]
     #[ignore]
     fn bad_nesting() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerBadNesting {});
+            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerBadNesting {});
             runloop.run();
         });
     }
@@ -358,7 +357,7 @@ tests! {
             // cannot prove it lives long enough to the borrow checker. It must
             // be cloned first.
             let was_called_clone = was_called.clone();
-            let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+            let (_, endpt1) = message_pipe::create().unwrap();
             // If `endpt1` is moved into the task closure, it is dropped at the
             // end of its call. This means we won't get the signal we're looking
             // for: we'll just get a notification that the handle was closed.
@@ -366,7 +365,7 @@ tests! {
             let endpt1 = Rc::new(endpt1);
             let endpt1_clone = endpt1.clone();
             let _ = runloop.post_task(move |runloop: &mut RunLoop| {
-                let _ = runloop.register(&*endpt1_clone, signals!(Signals::Readable), 0,
+                let _ = runloop.register(&*endpt1_clone, HandleSignals::READABLE, 0,
                     HandlerExpectError {
                         was_called: was_called_clone,
                     });
@@ -380,10 +379,10 @@ tests! {
 
     // Tests using a handler that adds a bunch of tasks.
     fn handler_tasks() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         let r = Rc::new(Cell::new(0));
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), 0, HandlerTasks { count: r.clone() });
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerTasks { count: r.clone() });
             runloop.run();
             assert!((*r).get() >= 11);
         });
@@ -391,10 +390,10 @@ tests! {
 
     // Tests using a handler that adds a bunch of tasks.
     fn nested_tasks() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         let r = Rc::new(Cell::new(0));
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), 0, NestedTasks { count: r.clone(), quitter: false });
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, NestedTasks { count: r.clone(), quitter: false });
             runloop.run();
             assert!((*r).get() >= 10);
         });
@@ -407,19 +406,19 @@ tests! {
     // interfere with later tests on the same thread.
     #[ignore]
     fn nested_tasks_quit() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         let r = Rc::new(Cell::new(0));
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), 0, NestedTasks { count: r.clone(), quitter: true });
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, NestedTasks { count: r.clone(), quitter: true });
             runloop.run();
             assert!((*r).get() >= 10);
         });
     }
 
     fn close_handle() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
+        let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Writable), 0, HandlerQuit {});
+            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerQuit {});
             drop(endpt1);
             runloop.run();
         })
