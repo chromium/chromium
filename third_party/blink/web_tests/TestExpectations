@@ -4754,9 +4754,6 @@ crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-anchors.html [ Skip ]
 crbug.com/664858 virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/ongoing-smooth-scroll-vertical-rl-anchors.html [ Skip ]
 
-crbug.com/900431 [ Mac ] css3/blending/mix-blend-mode-isolated-group-1.html [ Failure Pass ]
-crbug.com/900431 [ Mac ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
-
 # ====== Random order flaky tests end here ======
 
 # ====== Tests from enabling .any.js/.worker.js tests begin here ======
@@ -7774,3 +7771,21 @@ crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Fail
 crbug.com/1309975 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
 crbug.com/1309972 external/wpt/css/css-tables/tentative/table-width-redistribution-fixed-padding.html [ Failure ]
 crbug.com/1310332 editing/selection/mouse/drag-user-select-all-contenteditable.html [ Failure ]
+
+# Sheriff 2022-04-08
+crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-1.html [ Failure Pass ]
+crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-image.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-image-image.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-tiled-gradient.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/effect-background-blend-mode.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/effect-background-blend-mode-tiled.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-1.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-2.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-gradient.html [ Failure Pass ]
+
+# Sheriff 2022-04-11
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-image-color.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-crossfade-image-gradient.html [ Failure Pass ]
+crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-color.html [ Failure Pass ]
