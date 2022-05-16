@@ -67,7 +67,9 @@ suite('NearbyShare', function() {
    * @param {*} button button selector (i.e. #actionButton)
    */
   function getButton(page, button) {
-    return dialog.$$(page).$$('nearby-page-template').$$(button);
+    return dialog.$$(page)
+        .$$('nearby-page-template')
+        .shadowRoot.querySelector(button);
   }
 
   function selectAllContacts() {
@@ -99,14 +101,17 @@ suite('NearbyShare', function() {
       const confirmPage = dialog.$$('nearby-share-confirm-page');
       flush();
 
-      const progressIcon = confirmPage.$$('#progressIcon');
+      const progressIcon =
+          confirmPage.shadowRoot.querySelector('#progressIcon');
       assertTrue(!!progressIcon.shareTarget);
       assertEquals(target.name, progressIcon.shareTarget.name);
-      assertTrue(
-          confirmPage.$$('#connectionToken').textContent.includes('1234'));
+      assertTrue(confirmPage.shadowRoot.querySelector('#connectionToken')
+                     .textContent.includes('1234'));
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
-      confirmPage.$$('nearby-page-template').$$('#actionButton').click();
+      confirmPage.shadowRoot.querySelector('nearby-page-template')
+          .shadowRoot.querySelector('#actionButton')
+          .click();
       const shareTargetId = await fakeReceiveManager.whenCalled('accept');
       assertEquals(target.id, shareTargetId);
     });
@@ -122,14 +127,17 @@ suite('NearbyShare', function() {
       const confirmPage = dialog.$$('nearby-share-confirm-page');
       flush();
 
-      const progressIcon = confirmPage.$$('#progressIcon');
+      const progressIcon =
+          confirmPage.shadowRoot.querySelector('#progressIcon');
       assertTrue(!!progressIcon.shareTarget);
       assertEquals(target.name, progressIcon.shareTarget.name);
-      assertTrue(
-          confirmPage.$$('#connectionToken').textContent.includes('1234'));
+      assertTrue(confirmPage.shadowRoot.querySelector('#connectionToken')
+                     .textContent.includes('1234'));
       assertTrue(isChildVisible(confirmPage, 'nearby-preview'));
 
-      confirmPage.$$('nearby-page-template').$$('#cancelButton').click();
+      confirmPage.shadowRoot.querySelector('nearby-page-template')
+          .shadowRoot.querySelector('#cancelButton')
+          .click();
       const shareTargetId = await fakeReceiveManager.whenCalled('reject');
       assertEquals(target.id, shareTargetId);
     });

@@ -38,8 +38,9 @@ suite('nearby-visibility-page', function() {
     assertFalse(visibility_page.settings.enabled);
     await test_util.waitAfterNextRender(visibility_page);
     // Action button on the page template sets settings.enabled to true.
-    const page_template = visibility_page.$$('nearby-page-template');
-    page_template.$$('#actionButton').click();
+    const page_template =
+        visibility_page.shadowRoot.querySelector('nearby-page-template');
+    page_template.shadowRoot.querySelector('#actionButton').click();
     assertTrue(visibility_page.settings.enabled);
   });
 });

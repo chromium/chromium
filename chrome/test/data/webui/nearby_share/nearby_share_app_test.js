@@ -6,6 +6,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/app.js';
 
+import {NearbyShareAppElement} from 'chrome://nearby/app.js';
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 
@@ -23,7 +24,7 @@ suite('ShareAppTest', function() {
 
   /** @param {!string} page Page to check if it is active. */
   function isPageActive(page) {
-    return shareAppElement.$$(`nearby-${page}-page`)
+    return shareAppElement.shadowRoot.querySelector(`nearby-${page}-page`)
         .classList.contains('active');
   }
 
@@ -63,7 +64,7 @@ suite('ShareAppTest', function() {
 
     test('renders discovery page when enabled', async function() {
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-      assertEquals(null, shareAppElement.$$('.active'));
+      assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
@@ -79,7 +80,8 @@ suite('ShareAppTest', function() {
         async function() {
           sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ true);
           assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-          assertEquals(null, shareAppElement.$$('.active'));
+          assertEquals(
+              null, shareAppElement.shadowRoot.querySelector('.active'));
           // We have to wait for settings to return from the mojo after which
           // the app will route to the correct page.
           await waitAfterNextRender(shareAppElement);
@@ -94,7 +96,7 @@ suite('ShareAppTest', function() {
         'isOnePageOnboardingEnabled': false,
       });
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-      assertEquals(null, shareAppElement.$$('.active'));
+      assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
@@ -107,7 +109,7 @@ suite('ShareAppTest', function() {
         'isOnePageOnboardingEnabled': true,
       });
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-      assertEquals(null, shareAppElement.$$('.active'));
+      assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
@@ -117,13 +119,15 @@ suite('ShareAppTest', function() {
     test('changes page on event', async function() {
       sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
-      assertEquals(null, shareAppElement.$$('.active'));
+      assertEquals(null, shareAppElement.shadowRoot.querySelector('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('onboarding-one'));
 
-      shareAppElement.fire('change-page', {page: 'discovery'});
+      shareAppElement.dispatchEvent(new CustomEvent(
+          'change-page',
+          {bubbles: true, composed: true, detail: {page: 'discovery'}}));
 
       // Discovery page should now be active, other pages should not.
       assertTrue(isPageActive('discovery'));

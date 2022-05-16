@@ -364,7 +364,7 @@ suite('NearbyShare', function() {
             nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium;
         await waitAfterNextRender(highVisibilityDialog);
         highVisibilityDialog.$$('nearby-page-template')
-            .$$('#closeButton')
+            .shadowRoot.querySelector('#closeButton')
             .click();
         flush();
         assertFalse(highVisibilityToggle.checked);

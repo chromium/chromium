@@ -180,3 +180,11 @@ export const NearbyShareSettingsBehavior = {
   onSettingsRetrieved() {},
 
 };
+
+/** @interface */
+export class NearbyShareSettingsBehaviorInterface {
+  constructor() {
+    /** @type {!NearbySettings} */
+    this.settings;
+  }
+}

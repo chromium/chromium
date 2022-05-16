@@ -47,16 +47,20 @@ suite('nearby-onboarding-one-page', function() {
   test('Renders one-page onboarding page', async function() {
     assertEquals('NEARBY-ONBOARDING-ONE-PAGE', element.tagName);
     // Verify the device name is shown correctly.
-    assertEquals(deviceName, element.$$('#deviceName').value);
+    assertEquals(
+        deviceName, element.shadowRoot.querySelector('#deviceName').value);
   });
 
   test('Visibility button shows all contacts', async function() {
-    const buttonContent = element.$$('#visibilityModeLabel').textContent.trim();
+    const buttonContent =
+        element.shadowRoot.querySelector('#visibilityModeLabel')
+            .textContent.trim();
     assertEquals('All contacts', buttonContent);
   });
 
   test('Device name is focused', async () => {
-    const input = /** @type {!CrInputElement} */ (element.$$('#deviceName'));
+    const input = /** @type {!CrInputElement} */ (
+        element.shadowRoot.querySelector('#deviceName'));
     await test_util.waitAfterNextRender(/** @type {!HTMLElement} */ (input));
     assertEquals(input, element.shadowRoot.activeElement);
   });
@@ -68,8 +72,10 @@ suite('nearby-onboarding-one-page', function() {
       'nearbyShareDeviceNameInvalidCharactersError': 'non-empty'
     });
 
-    const input = /** @type {!CrInputElement} */ (element.$$('#deviceName'));
-    const pageTemplate = element.$$('nearby-page-template');
+    const input = /** @type {!CrInputElement} */ (
+        element.shadowRoot.querySelector('#deviceName'));
+    const pageTemplate =
+        element.shadowRoot.querySelector('nearby-page-template');
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);

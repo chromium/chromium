@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/shared_style_css.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloseReason} from './types.js';
 
@@ -13,118 +13,137 @@ import {CloseReason} from './types.js';
  * provide a consistent setup for all pages with title, sub-title, body slot
  * and button options.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'nearby-page-template',
 
-  properties: {
-    /** @type {?string} */
-    title: {
-      type: String,
-    },
+/** @polymer */
+export class NearbyPageTemplateElement extends PolymerElement {
+  static get is() {
+    return 'nearby-page-template';
+  }
 
-    /** @type {?string} */
-    subTitle: {
-      type: String,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Alternate subtitle for screen readers. If not falsey, then the
-     * #pageSubTitle is aria-hidden and the #a11yAnnouncedPageSubTitle is
-     * rendered on screen readers instead. Changes to this value will result in
-     * aria-live announcements.
-     * @type {?string}
-     * */
-    a11yAnnouncedSubTitle: {
-      type: String,
-      value: null,
-    },
+  static get properties() {
+    return {
+      /** @type {?string} */
+      title: {
+        type: String,
+      },
 
-    /**
-     * Text to show on the action button. If either this is falsey, or if
-     * |closeOnly| is true, then the action button is hidden.
-     * @type {?string}
-     * */
-    actionButtonLabel: {
-      type: String,
-    },
+      /** @type {?string} */
+      subTitle: {
+        type: String,
+      },
 
-    /** @type {string} */
-    actionButtonEventName: {type: String, value: 'action'},
+      /**
+       * Alternate subtitle for screen readers. If not falsey, then the
+       * #pageSubTitle is aria-hidden and the #a11yAnnouncedPageSubTitle is
+       * rendered on screen readers instead. Changes to this value will result
+       * in aria-live announcements.
+       * @type {?string}
+       * */
+      a11yAnnouncedSubTitle: {
+        type: String,
+        value: null,
+      },
 
-    actionDisabled: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Text to show on the action button. If either this is falsey, or if
+       * |closeOnly| is true, then the action button is hidden.
+       * @type {?string}
+       * */
+      actionButtonLabel: {
+        type: String,
+      },
 
-    /**
-     * Text to show on the cancel button. If either this is falsey, or if
-     * |closeOnly| is true, then the cancel button is hidden.
-     * @type {?string}
-     * */
-    cancelButtonLabel: {
-      type: String,
-    },
+      /** @type {string} */
+      actionButtonEventName: {type: String, value: 'action'},
 
-    /** @type {string} */
-    cancelButtonEventName: {
-      type: String,
-      value: 'cancel',
-    },
+      actionDisabled: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Text to show on the utility button. If either this is falsey, or if
-     * |closeOnly| is true, then the utility button is hidden.
-     * @type {?string}
-     * */
-    utilityButtonLabel: {
-      type: String,
-    },
+      /**
+       * Text to show on the cancel button. If either this is falsey, or if
+       * |closeOnly| is true, then the cancel button is hidden.
+       * @type {?string}
+       * */
+      cancelButtonLabel: {
+        type: String,
+      },
 
-    /**
-     * When true, shows the open-in-new icon to the left of the button label.
-     * @type {boolean}
-     * */
-    utilityButtonOpenInNew: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {string} */
+      cancelButtonEventName: {
+        type: String,
+        value: 'cancel',
+      },
 
-    /** @type {string} */
-    utilityButtonEventName: {
-      type: String,
-      value: 'utility',
-    },
+      /**
+       * Text to show on the utility button. If either this is falsey, or if
+       * |closeOnly| is true, then the utility button is hidden.
+       * @type {?string}
+       * */
+      utilityButtonLabel: {
+        type: String,
+      },
 
-    /**
-     * When true, hide all other buttons and show a close button.
-     * @type {boolean}
-     * */
-    closeOnly: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * When true, shows the open-in-new icon to the left of the button label.
+       * @type {boolean}
+       * */
+      utilityButtonOpenInNew: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @type {string} */
+      utilityButtonEventName: {
+        type: String,
+        value: 'utility',
+      },
+
+      /**
+       * When true, hide all other buttons and show a close button.
+       * @type {boolean}
+       * */
+      closeOnly: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @private */
   onActionClick_() {
-    this.fire(this.actionButtonEventName);
-  },
+    this.fire_(this.actionButtonEventName);
+  }
 
   /** @private */
   onCancelClick_() {
-    this.fire(this.cancelButtonEventName);
-  },
+    this.fire_(this.cancelButtonEventName);
+  }
 
   /** @private */
   onUtilityClick_() {
-    this.fire(this.utilityButtonEventName);
-  },
+    this.fire_(this.utilityButtonEventName);
+  }
 
   /** @private */
   onCloseClick_() {
-    this.fire('close', {reason: CloseReason.UNKNOWN});
-  },
+    this.fire_('close', {reason: CloseReason.UNKNOWN});
+  }
 
   /**
    * @return {string} aria-labelledby ids for the dialog
@@ -136,7 +155,7 @@ Polymer({
       labelIds += ' pageSubTitle';
     }
     return labelIds;
-  },
+  }
 
   /**
    * @return {string|undefined} aria-hidden value for the #subTitle div.
@@ -148,5 +167,7 @@ Polymer({
       return 'true';
     }
     return undefined;
-  },
-});
+  }
+}
+
+customElements.define(NearbyPageTemplateElement.is, NearbyPageTemplateElement);
