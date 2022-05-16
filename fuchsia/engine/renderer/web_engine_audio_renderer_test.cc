@@ -138,7 +138,7 @@ class TestStreamSink : public fuchsia::media::testing::StreamSink_TestBase {
   // fuchsia::media::StreamSink overrides.
   void SendPacket(fuchsia::media::StreamPacket packet,
                   SendPacketCallback callback) override {
-    EXPECT_EQ(received_end_of_stream_, 0);
+    EXPECT_FALSE(received_end_of_stream_);
     received_packets_.push_back(std::move(packet));
     callback();
   }
