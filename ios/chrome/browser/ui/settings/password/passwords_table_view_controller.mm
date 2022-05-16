@@ -577,7 +577,9 @@ bool IsFaviconEnabled() {
                                    update:NO];
 
   // On-device encryption.
-  [self updateOnDeviceEncryptionSessionWithUpdateTableView:NO];
+  [self updateOnDeviceEncryptionSessionWithUpdateTableView:NO
+                                          withRowAnimation:
+                                              UITableViewRowAnimationNone];
 
   // Saved passwords.
   if (!_savedForms.empty()) {
@@ -622,13 +624,13 @@ bool IsFaviconEnabled() {
 
 // Updates "on-device encryption" related UI.
 // |updateTableView| whether the Table View should be updated.
-- (void)updateOnDeviceEncryptionSessionWithUpdateTableView:
-    (BOOL)updateTableView {
+// |rowAnimation| the direction in which the row appears.
+- (void)updateOnDeviceEncryptionSessionWithUpdateTableView:(BOOL)updateTableView
+                                          withRowAnimation:
+                                              (UITableViewRowAnimation)
+                                                  rowAnimation {
   OnDeviceEncryptionState oldState = self.onDeviceEncryptionStateInModel;
-  OnDeviceEncryptionState newState =
-      self.navigationItem.searchController.active
-          ? OnDeviceEncryptionStateNotShown
-          : [self.delegate onDeviceEncryptionState];
+  OnDeviceEncryptionState newState = [self.delegate onDeviceEncryptionState];
   if (newState == oldState) {
     return;
   }
@@ -699,10 +701,10 @@ bool IsFaviconEnabled() {
   }
   if (oldState == OnDeviceEncryptionStateNotShown) {
     [self.tableView insertSections:sectionIdentifierOnDeviceEncryptionIndexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:rowAnimation];
   } else {
     [self.tableView reloadSections:sectionIdentifierOnDeviceEncryptionIndexSet
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:rowAnimation];
   }
 }
 
@@ -1213,7 +1215,12 @@ bool IsFaviconEnabled() {
 }
 
 - (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
-  [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES];
+  if (!self.navigationItem.searchController.active) {
+    [self
+        updateOnDeviceEncryptionSessionWithUpdateTableView:YES
+                                          withRowAnimation:
+                                              UITableViewRowAnimationAutomatic];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -1259,10 +1266,20 @@ bool IsFaviconEnabled() {
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
   [self showScrim];
-  // Remove save passwords switch section and password check section.
+  // Remove save passwords switch section, password check section and
+  // on device encryption.
+
   [self
       performBatchTableViewUpdates:^{
+        // Sections must be removed from bottom to top, otherwise it crashes
+        [self clearSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                        withRowAnimation:UITableViewRowAnimationTop];
+        self.onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
+
         [self clearSectionWithIdentifier:SectionIdentifierPasswordCheck
+                        withRowAnimation:UITableViewRowAnimationTop];
+
+        [self clearSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps
                         withRowAnimation:UITableViewRowAnimationTop];
 
         [self clearSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
@@ -1285,6 +1302,7 @@ bool IsFaviconEnabled() {
   TableViewModel* model = self.tableViewModel;
   [self.tableView
       performBatchUpdates:^{
+        // Add "Save Password Switch" section.
         [model insertSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
                                    atIndex:0];
         [model setHeader:_manageAccountLinkItem
@@ -1304,12 +1322,31 @@ bool IsFaviconEnabled() {
             arrayWithObjects:[NSIndexPath indexPathForRow:0
                                                 inSection:switchSection],
                              nil];
-        [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
+
+        // Add "Password in other app" section.
+        [model insertSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps
                                    atIndex:1];
+        NSInteger otherAppSection = [model
+            sectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
+                      withRowAnimation:UITableViewRowAnimationTop];
+        [model addItem:_passwordsInOtherAppsItem
+            toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+        [rowsIndexPaths
+            addObject:[NSIndexPath indexPathForRow:0
+                                         inSection:otherAppSection]];
+
+        [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
+                              withRowAnimation:UITableViewRowAnimationTop];
+
+        // Add "Password check" section.
+        [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
+                                   atIndex:2];
         NSInteger checkSection =
             [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
 
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
+        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:2]
                       withRowAnimation:UITableViewRowAnimationTop];
         [model addItem:_passwordProblemsItem
             toSectionWithIdentifier:SectionIdentifierPasswordCheck];
@@ -1328,6 +1365,11 @@ bool IsFaviconEnabled() {
                     kSupportForAddPasswordsInSettings)) {
           self.navigationController.toolbarHidden = NO;
         }
+
+        // Add "On-device encryption" section.
+        [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES
+                                                withRowAnimation:
+                                                    UITableViewRowAnimationTop];
       }
                completion:nil];
 }
