@@ -324,8 +324,8 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
         if (++num_draw_ops > max_ops_to_analyze)
           return absl::nullopt;
         const DrawColorOp* color_op = static_cast<const DrawColorOp*>(op);
-        CheckIfSolidColor(canvas, SkColor4f::FromColor(color_op->color),
-                          color_op->mode, &is_solid, &is_transparent, &color);
+        CheckIfSolidColor(canvas, color_op->color, color_op->mode, &is_solid,
+                          &is_transparent, &color);
         break;
       }
       case PaintOpType::ClipRect: {

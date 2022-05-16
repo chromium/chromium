@@ -384,7 +384,7 @@ TEST_F(OopPixelTest, DrawColor) {
   gfx::Rect rect(10, 10);
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  display_item_list->push<DrawColorOp>(SK_ColorBLUE, SkBlendMode::kSrc);
+  display_item_list->push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -398,7 +398,7 @@ TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
   gfx::Rect rect(10, 10);
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  display_item_list->push<DrawColorOp>(SK_ColorBLUE, SkBlendMode::kSrc);
+  display_item_list->push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -482,7 +482,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   display_item_list->push<SaveLayerOp>(nullptr, &record_flags);
   display_item_list->push<RestoreOp>();
   display_item_list->EndPaintOfUnpaired(gfx::Rect(output_size));
@@ -633,7 +633,7 @@ TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   display_item_list->push<ScaleOp>(2.f, 2.f);
   PaintFlags raster_flags;
   raster_flags.setShader(paint_record_shader);
@@ -2384,7 +2384,7 @@ class OopPathPixelTest : public OopPixelTest,
 
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
-    display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+    display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
     PaintFlags flags;
     flags.setStyle(PaintFlags::kFill_Style);
     flags.setColor(SK_ColorGREEN);
@@ -2420,7 +2420,7 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
   const SkRect rect = SkRect::MakeWH(max_texture_size + 10, 10);
 
   auto shader_record = sk_make_sp<PaintRecord>();
-  shader_record->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  shader_record->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SK_ColorGREEN);
@@ -2437,7 +2437,7 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   flags.setShader(shader);
   display_item_list->push<DrawRectOp>(rect, flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);

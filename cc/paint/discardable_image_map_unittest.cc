@@ -917,7 +917,7 @@ TEST_F(DiscardableImageMapTest, CapturesImagesInSaveLayers) {
   scoped_refptr<DisplayItemList> display_list = new DisplayItemList();
   display_list->StartPaint();
   display_list->push<SaveLayerOp>(nullptr, &flags);
-  display_list->push<DrawColorOp>(SK_ColorBLUE, SkBlendMode::kSrc);
+  display_list->push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
   display_list->EndPaintOfUnpaired(visible_rect);
   display_list->Finalize();
 

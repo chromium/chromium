@@ -64,13 +64,13 @@ class MaskContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
     flags.setStyle(PaintFlags::kStroke_Style);
     flags.setStrokeWidth(SkIntToScalar(2));
-    flags.setColor(SK_ColorWHITE);
+    flags.setColor4f(SkColors::kWhite);
 
     gfx::Rect inset_rect(bounds_);
     while (!inset_rect.IsEmpty()) {
@@ -444,7 +444,7 @@ class CheckerContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
@@ -491,7 +491,7 @@ class CircleContentLayerClient : public ContentLayerClient {
     display_list->push<SaveOp>();
     display_list->push<ClipRectOp>(gfx::RectToSkRect(PaintableRegion()),
                                    SkClipOp::kIntersect, false);
-    SkColor color = SK_ColorTRANSPARENT;
+    SkColor4f color = SkColors::kTransparent;
     display_list->push<DrawColorOp>(color, SkBlendMode::kSrc);
 
     PaintFlags flags;
@@ -783,14 +783,16 @@ class LayerTreeHostMaskAsBlendingPixelTest
 
   static scoped_refptr<Layer> CreateCheckerboardLayer(const gfx::Size& bounds) {
     constexpr int kGridSize = 8;
-    static const SkColor color_even = SkColorSetRGB(153, 153, 153);
-    static const SkColor color_odd = SkColorSetRGB(102, 102, 102);
+    static const SkColor4f color_even =
+        SkColor4f::FromColor(SkColorSetRGB(153, 153, 153));
+    static const SkColor4f color_odd =
+        SkColor4f::FromColor(SkColorSetRGB(102, 102, 102));
 
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();
     display_list->push<DrawColorOp>(color_even, SkBlendMode::kSrc);
     PaintFlags flags;
-    flags.setColor(color_odd);
+    flags.setColor4f(color_odd);
     for (int j = 0; j < (bounds.height() + kGridSize - 1) / kGridSize; j++) {
       for (int i = 0; i < (bounds.width() + kGridSize - 1) / kGridSize; i++) {
         bool is_odd_grid = (i ^ j) & 1;

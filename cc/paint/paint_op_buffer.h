@@ -520,7 +520,7 @@ class CC_PAINT_EXPORT DrawColorOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawColor;
   static constexpr bool kIsDrawOp = true;
-  DrawColorOp(SkColor color, SkBlendMode mode)
+  DrawColorOp(SkColor4f color, SkBlendMode mode)
       : PaintOp(kType), color(color), mode(mode) {}
   static void Raster(const DrawColorOp* op,
                      SkCanvas* canvas,
@@ -529,7 +529,7 @@ class CC_PAINT_EXPORT DrawColorOp final : public PaintOp {
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   HAS_SERIALIZATION_FUNCTIONS();
 
-  SkColor color;
+  SkColor4f color;
   SkBlendMode mode;
 
  private:

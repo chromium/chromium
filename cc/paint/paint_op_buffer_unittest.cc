@@ -158,7 +158,7 @@ class PaintOpAppendTest : public ::testing::Test {
  private:
   SkRect rect_;
   PaintFlags flags_;
-  SkColor draw_color_ = SK_ColorRED;
+  SkColor4f draw_color_ = SkColors::kRed;
   SkBlendMode blend_ = SkBlendMode::kSrc;
 };
 
@@ -433,7 +433,8 @@ TEST(PaintOpBufferTest, SaveLayerRestore_DrawColor) {
   SkColor original = SkColorSetA(50, SK_ColorRED);
 
   buffer.push<SaveLayerAlphaOp>(nullptr, alpha);
-  buffer.push<DrawColorOp>(original, SkBlendMode::kSrcOver);
+  buffer.push<DrawColorOp>(SkColor4f::FromColor(original),
+                           SkBlendMode::kSrcOver);
   buffer.push<RestoreOp>();
 
   SaveCountingCanvas canvas;
@@ -732,11 +733,11 @@ TEST_F(PaintOpBufferOffsetsTest, EmptyClipRectShouldRejectAnOp) {
 TEST_F(PaintOpBufferOffsetsTest, ContiguousIndices) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays all items.
   testing::Sequence s;
@@ -751,11 +752,11 @@ TEST_F(PaintOpBufferOffsetsTest, ContiguousIndices) {
 TEST_F(PaintOpBufferOffsetsTest, NonContiguousIndices) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays 0, 1, 3, 4 indices.
   testing::Sequence s;
@@ -769,11 +770,11 @@ TEST_F(PaintOpBufferOffsetsTest, NonContiguousIndices) {
 TEST_F(PaintOpBufferOffsetsTest, FirstTwoIndices) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays first two indices.
   testing::Sequence s;
@@ -785,11 +786,11 @@ TEST_F(PaintOpBufferOffsetsTest, FirstTwoIndices) {
 TEST_F(PaintOpBufferOffsetsTest, MiddleIndex) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays index 2.
   testing::Sequence s;
@@ -800,11 +801,11 @@ TEST_F(PaintOpBufferOffsetsTest, MiddleIndex) {
 TEST_F(PaintOpBufferOffsetsTest, LastTwoElements) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Plays last two elements.
   testing::Sequence s;
@@ -816,14 +817,14 @@ TEST_F(PaintOpBufferOffsetsTest, LastTwoElements) {
 TEST_F(PaintOpBufferOffsetsTest, ContiguousIndicesWithSaveLayerAlphaRestore) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
   uint8_t alpha = 100;
   push_op<SaveLayerAlphaOp>(nullptr, alpha);
   push_op<RestoreOp>();
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Items are {0, 1, save, restore, 2, 3, 4}.
 
@@ -842,14 +843,14 @@ TEST_F(PaintOpBufferOffsetsTest,
        NonContiguousIndicesWithSaveLayerAlphaRestore) {
   testing::StrictMock<MockCanvas> canvas;
 
-  push_op<DrawColorOp>(0u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(1u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(0u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(1u), SkBlendMode::kClear);
   uint8_t alpha = 100;
   push_op<SaveLayerAlphaOp>(nullptr, alpha);
-  push_op<DrawColorOp>(2u, SkBlendMode::kClear);
-  push_op<DrawColorOp>(3u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(2u), SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(3u), SkBlendMode::kClear);
   push_op<RestoreOp>();
-  push_op<DrawColorOp>(4u, SkBlendMode::kClear);
+  push_op<DrawColorOp>(SkColor4f::FromColor(4u), SkBlendMode::kClear);
 
   // Items are {0, 1, save, 2, 3, restore, 4}.
 
@@ -1205,10 +1206,9 @@ std::vector<PaintFlags> test_flags = {
     PaintFlags(),
 };
 
-std::vector<SkColor> test_colors = {
-    SkColorSetARGB(0, 0, 0, 0),      SkColorSetARGB(255, 255, 255, 255),
-    SkColorSetARGB(0, 255, 10, 255), SkColorSetARGB(255, 0, 20, 255),
-    SkColorSetARGB(30, 255, 0, 255), SkColorSetARGB(255, 40, 0, 0),
+std::vector<SkColor4f> test_colors = {
+    {0, 0, 0, 0},    {1, 1, 1, 1},    {1, 0.04, 1, 0},
+    {0, 0.08, 1, 1}, {1, 0, 1, 0.12}, {0.16, 0, 0, 1},
 };
 
 std::vector<std::string> test_strings = {
@@ -2229,7 +2229,7 @@ TEST(PaintOpSerializationTest, Preamble) {
   preamble.requires_clear = true;
 
   PaintOpBuffer buffer;
-  buffer.push<DrawColorOp>(SK_ColorBLUE, SkBlendMode::kSrc);
+  buffer.push<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc);
 
   std::unique_ptr<char, base::AlignedFreeDeleter> memory(
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
@@ -2304,7 +2304,7 @@ TEST(PaintOpSerializationTest, Preamble) {
       ASSERT_EQ(op->GetType(), PaintOpType::DrawColor)
           << PaintOpTypeToString(op->GetType());
       const auto* draw_color_op = static_cast<const DrawColorOp*>(op);
-      EXPECT_EQ(draw_color_op->color, SK_ColorTRANSPARENT);
+      EXPECT_EQ(draw_color_op->color, SkColors::kTransparent);
       EXPECT_EQ(draw_color_op->mode, SkBlendMode::kSrc);
       continue;
     }
@@ -2514,7 +2514,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
       static_cast<char*>(base::AlignedAlloc(kSize, kAlign)));
 
   PaintOpBuffer buffer;
-  buffer.push<DrawColorOp>(SK_ColorMAGENTA, SkBlendMode::kSrc);
+  buffer.push<DrawColorOp>(SkColors::kMagenta, SkBlendMode::kSrc);
 
   PaintOpBuffer::Iterator iter(&buffer);
   PaintOp* op = *iter;
@@ -2630,7 +2630,7 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
   PaintOpBuffer buffer;
 
   // Successful first two ops.
-  buffer.push<DrawColorOp>(SK_ColorMAGENTA, SkBlendMode::kDstIn);
+  buffer.push<DrawColorOp>(SkColors::kMagenta, SkBlendMode::kDstIn);
   PaintFlags good_flags = test_flags[0];
   good_flags.setBlendMode(SkBlendMode::kColorBurn);
   buffer.push<DrawRectOp>(test_rects[0], good_flags);
@@ -2663,7 +2663,7 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
   };
 
   for (size_t i = 0; i < std::size(bad_modes_for_draw_color); ++i) {
-    buffer.push<DrawColorOp>(SK_ColorMAGENTA, bad_modes_for_draw_color[i]);
+    buffer.push<DrawColorOp>(SkColors::kMagenta, bad_modes_for_draw_color[i]);
   }
 
   for (size_t i = 0; i < std::size(bad_modes_for_flags); ++i) {
@@ -2982,7 +2982,7 @@ TEST(PaintOpBufferTest, SkipsOpsWithFailedDecodes) {
   image_flags.setShader(PaintShader::MakeImage(paint_image, SkTileMode::kRepeat,
                                                SkTileMode::kRepeat, nullptr));
   buffer.push<DrawRectOp>(SkRect::MakeXYWH(110, 110, 100, 100), image_flags);
-  buffer.push<DrawColorOp>(SK_ColorRED, SkBlendMode::kSrcOver);
+  buffer.push<DrawColorOp>(SkColors::kRed, SkBlendMode::kSrcOver);
 
   testing::StrictMock<MockCanvas> canvas;
   testing::Sequence s;

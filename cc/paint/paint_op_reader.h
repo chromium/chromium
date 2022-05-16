@@ -68,6 +68,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkRect* rect);
   void Read(SkIRect* rect);
   void Read(SkRRect* rect);
+  void Read(SkColor4f* color);
 
   void Read(SkPath* path);
   void Read(PaintFlags* flags);

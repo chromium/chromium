@@ -91,7 +91,7 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
   auto layer_size = crash_ui_layer_->bounds();
   auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
   display_list->StartPaint();
-  display_list->push<cc::DrawColorOp>(SK_ColorGRAY, SkBlendMode::kSrc);
+  display_list->push<cc::DrawColorOp>(SkColors::kGray, SkBlendMode::kSrc);
 
   SkBitmap* sad_bitmap = child_frame_compositor_->GetSadPageBitmap();
   if (sad_bitmap) {

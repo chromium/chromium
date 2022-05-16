@@ -272,6 +272,11 @@ class PaintOpHelper {
                               SkColorGetA(color));
   }
 
+  static std::string SkiaTypeToString(const SkColor4f& color) {
+    return base::StringPrintf("rgba(%f, %f, %f, %f)", color.fR, color.fG,
+                              color.fB, color.fA);
+  }
+
   static std::string SkiaTypeToString(const SkBlendMode& mode) {
     switch (mode) {
       default:

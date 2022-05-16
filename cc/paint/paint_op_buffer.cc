@@ -3011,7 +3011,7 @@ PaintOpBuffer::PlaybackFoldingIterator::PlaybackFoldingIterator(
     const PaintOpBuffer* buffer,
     const std::vector<size_t>* offsets)
     : iter_(buffer, offsets),
-      folded_draw_color_(SK_ColorTRANSPARENT, SkBlendMode::kSrcOver) {
+      folded_draw_color_(SkColors::kTransparent, SkBlendMode::kSrcOver) {
   DCHECK(!buffer->are_ops_destroyed());
   FindNextOp();
 }
@@ -3058,10 +3058,9 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
                    static_cast<const DrawColorOp*>(draw_op)->mode ==
                        SkBlendMode::kSrcOver) {
           auto* draw_color_op = static_cast<const DrawColorOp*>(draw_op);
-          SkColor color = draw_color_op->color;
-          folded_draw_color_.color = SkColorSetARGB(
-              SkMulDiv255Round(save_op->alpha, SkColorGetA(color)),
-              SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
+          SkColor4f color = draw_color_op->color;
+          folded_draw_color_.color = {color.fR, color.fG, color.fB,
+                                      save_op->alpha / 255 * color.fA};
           current_op_ = &folded_draw_color_;
           break;
         }

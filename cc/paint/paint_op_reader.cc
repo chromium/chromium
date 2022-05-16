@@ -201,6 +201,10 @@ void PaintOpReader::Read(SkRRect* rect) {
   ReadSimple(rect);
 }
 
+void PaintOpReader::Read(SkColor4f* color) {
+  ReadSimple(color);
+}
+
 void PaintOpReader::Read(SkPath* path) {
   uint32_t path_id;
   ReadSimple(&path_id);
