@@ -177,6 +177,23 @@ linux_memory_builder(
         category = "cros|msan",
         short_name = "bld",
     ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_msan",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
+    ),
     execution_timeout = 4 * time.hour,
     ssd = True,
     cores = 16,
@@ -187,6 +204,24 @@ linux_memory_builder(
     console_view_entry = consoles.console_view_entry(
         category = "cros|msan",
         short_name = "tst",
+    ),
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_msan",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-memory-archive",
     ),
     execution_timeout = 4 * time.hour,
     triggered_by = ["Linux ChromiumOS MSan Builder"],

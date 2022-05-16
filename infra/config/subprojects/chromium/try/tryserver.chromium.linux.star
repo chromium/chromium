@@ -484,6 +484,10 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_chromeos_msan_rel_ng",
+    mirrors = [
+        "ci/Linux ChromiumOS MSan Builder",
+        "ci/Linux ChromiumOS MSan Tests",
+    ],
     goma_jobs = goma.jobs.J150,
 )
 
