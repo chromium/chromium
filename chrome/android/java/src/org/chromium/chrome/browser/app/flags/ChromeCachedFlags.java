@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -55,7 +54,6 @@ public class ChromeCachedFlags {
      */
     public void cacheNativeFlags() {
         if (mIsFinishedCachingNativeFlags) return;
-        FirstRunUtils.cacheFirstRunPrefs();
 
         // Workaround for crbug.com/1223545: Do not use Arrays.asList().
         List<String> featuresToCache = new ArrayList<String>() {

@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -425,8 +424,6 @@ public class ProcessInitializationHandler {
                 () -> OfflineContentAvailabilityStatusProvider.getInstance());
         deferredStartupHandler.addDeferredTask(
                 () -> EnterpriseInfo.getInstance().logDeviceEnterpriseInfo());
-        deferredStartupHandler.addDeferredTask(
-                () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineMeasurementsBackgroundTask.clearPersistedDataFromPrefs());
         deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNTP());

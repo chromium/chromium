@@ -24,7 +24,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -133,11 +132,6 @@ public class ChromeActionModeHandler {
 
             int allowedActionModes = ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
                     | ActionModeCallbackHelper.MENU_ITEM_SHARE;
-            // Disable options that expose additional Chrome functionality prior to the FRE being
-            // completed (i.e. creation of a new tab).
-            if (FirstRunStatus.getFirstRunFlowComplete()) {
-                allowedActionModes |= ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH;
-            }
             mHelper.setAllowedMenuItems(allowedActionModes);
 
             mHelper.onCreateActionMode(mode, menu);

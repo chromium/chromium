@@ -24,7 +24,6 @@ import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -193,10 +192,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     static boolean shouldShowFullString() {
-        boolean freIsNotNecessary = !FirstRunFlowSequencer.checkIfFirstRunIsNecessary(false, false);
-        boolean noNeedToCheckForSearchDialog =
-                !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
-        return freIsNotNecessary && noNeedToCheckForSearchDialog;
+        return !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
     }
 
     /** Sets an {@link SearchWidgetProviderDelegate} to interact with. */

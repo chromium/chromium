@@ -25,7 +25,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -142,12 +141,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // Check if we should launch an Instant App to handle the intent.
         if (InstantAppsHandler.getInstance().handleIncomingIntent(
                     mActivity, mIntent, false, false)) {
-            return Action.FINISH_ACTIVITY;
-        }
-
-        // Check if we should push the user through First Run.
-        if (FirstRunFlowSequencer.launch(mActivity, mIntent, false /* requiresBroadcast */,
-                    false /* preferLightweightFre */)) {
             return Action.FINISH_ACTIVITY;
         }
 

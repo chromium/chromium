@@ -17,7 +17,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -299,7 +298,7 @@ public class ContextualSearchTabHelper
             return false;
         }
 
-        boolean isActive = !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
+        boolean isActive = !webContents.isIncognito()
                 && !ContextualSearchPolicy.isContextualSearchDisabled()
                 && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
                 && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
@@ -312,8 +311,7 @@ public class ContextualSearchTabHelper
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
             Log.w(TAG,
-                    "!isIncognito: " + !webContents.isIncognito() + " getFirstRunFlowComplete: "
-                            + FirstRunStatus.getFirstRunFlowComplete()
+                    "!isIncognito: " + !webContents.isIncognito() + " getFirstRunFlowComplete: true"
                             + " !isContextualSearchDisabled: "
                             + !ContextualSearchManager.isContextualSearchDisabled()
                             + " isDefaultSearchEngineGoogle: "

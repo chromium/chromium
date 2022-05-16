@@ -17,12 +17,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.base.SplitCompatApplication;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -46,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -279,124 +275,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     @Override
     public void onRestore(BackupDataInput data, int appVersionCode, ParcelFileDescriptor newState)
             throws IOException {
-        // TODO(aberent) Check that this is not running on the UI thread. Doing so, however, makes
-        // testing difficult since the test code runs on the UI thread.
-
-        // Check that the user hasn't already seen FRE (not sure if this can ever happen, but if it
-        // does then restoring the backup will overwrite the user's choices).
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        if (FirstRunStatus.getFirstRunFlowComplete()
-                || FirstRunStatus.getLightweightFirstRunFlowComplete()) {
-            setRestoreStatus(RestoreStatus.RESTORE_AFTER_FIRST_RUN);
-            Log.w(TAG, "Restore attempted after first run");
-            return;
-        }
-
-        final ArrayList<String> backupNames = new ArrayList<>();
-        final ArrayList<byte[]> backupValues = new ArrayList<>();
-
-        String restoredUserName = null;
-        while (data.readNextHeader()) {
-            String key = data.getKey();
-            int dataSize = data.getDataSize();
-            byte[] buffer = new byte[dataSize];
-            data.readEntityData(buffer, 0, dataSize);
-            if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_KEY)) {
-                restoredUserName = new String(buffer);
-            } else {
-                backupNames.add(key);
-                backupValues.add(buffer);
-            }
-        }
-
-        // Start and wait for the Async init tasks. This loads the library, and attempts to load the
-        // first run variations seed. Since these are both slow it makes sense to run them in
-        // parallel as Android AsyncTasks, reusing some of Chrome's async startup logic.
-        //
-        // Note that this depends on onRestore being run from a background thread, since
-        // if it were called from the UI thread the broadcast would not be received until after it
-        // exited.
-        final CountDownLatch latch = new CountDownLatch(1);
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
-            // Chrome library loading depends on PathUtils.
-            PathUtils.setPrivateDataDirectorySuffix(
-                    SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
-            createAsyncInitTaskRunner(latch).startBackgroundTasks(
-                    false /* allocateChildConnection */, true /* initVariationSeed */);
-        });
-
-        try {
-            // Ignore result. It will only be false if it times out. Problems with fetching the
-            // variation seed can be ignored, and other problems will either recover or be repeated
-            // when Chrome is started synchronously.
-            latch.await(BACKGROUND_TASK_TIMEOUT_SECS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            // Should never happen, but can be ignored (as explained above) anyway.
-        }
-
-        // Chrome has to be running before it can check if the account exists. Because the native
-        // library is already loaded Chrome startup should be fast.
-        boolean browserStarted = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
-            // Start the browser if necessary.
-            return initializeBrowser();
-        });
-        if (!browserStarted) {
-            // Something went wrong starting Chrome, skip the restore.
-            setRestoreStatus(RestoreStatus.BROWSER_STARTUP_FAILED);
-            return;
-        }
-
-        // If the user hasn't signed in, or can't sign in, then don't restore anything.
-        if (!accountExistsOnDevice(restoredUserName)) {
-            setRestoreStatus(RestoreStatus.NOT_SIGNED_IN);
-            Log.i(TAG, "Chrome was not signed in with a known account name, not restoring");
-            return;
-        }
-
-        // Restore the native preferences on the UI thread
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
-            ArrayList<String> nativeBackupNames = new ArrayList<>();
-            boolean[] nativeBackupValues = new boolean[backupNames.size()];
-            int count = 0;
-            int prefixLength = NATIVE_PREF_PREFIX.length();
-            for (int i = 0; i < backupNames.size(); i++) {
-                String name = backupNames.get(i);
-                if (name.startsWith(NATIVE_PREF_PREFIX)) {
-                    nativeBackupNames.add(name.substring(prefixLength));
-                    nativeBackupValues[count] = bytesToBoolean(backupValues.get(i));
-                    count++;
-                }
-            }
-            ChromeBackupAgentImplJni.get().setBoolBackupPrefs(this,
-                    nativeBackupNames.toArray(new String[count]),
-                    Arrays.copyOf(nativeBackupValues, count));
-        });
-
-        // Now that everything looks good so restore the Android preferences.
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-
-        // Only restore preferences that we know about.
-        int prefixLength = ANDROID_DEFAULT_PREFIX.length();
-        for (int i = 0; i < backupNames.size(); i++) {
-            String name = backupNames.get(i);
-            if (name.startsWith(ANDROID_DEFAULT_PREFIX)
-                    && Arrays.asList(BACKUP_ANDROID_BOOL_PREFS)
-                               .contains(name.substring(prefixLength))) {
-                editor.putBoolean(
-                        name.substring(prefixLength), bytesToBoolean(backupValues.get(i)));
-            }
-        }
-
-        // Because FirstRunSignInProcessor.FIRST_RUN_FLOW_SIGNIN_COMPLETE is not restored Chrome
-        // will sign in the user on first run to the account in FIRST_RUN_FLOW_SIGNIN_ACCOUNT_NAME
-        // if any. If the rest of FRE has been completed this will happen silently.
-        editor.putString(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_ACCOUNT_NAME, restoredUserName);
-        editor.apply();
-
-        // The silent first run will change things, so there is no point in trying to prevent
-        // additional backups at this stage. Don't write anything to |newState|.
-        setRestoreStatus(RestoreStatus.RESTORE_COMPLETED);
-        Log.i(TAG, "Restore complete");
     }
 
     @VisibleForTesting

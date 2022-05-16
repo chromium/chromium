@@ -26,7 +26,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -505,10 +504,6 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      */
     @VisibleForTesting
     boolean isRandomlySelectedForSurvey() {
-        if (FirstRunStatus.isFirstRunTriggered()) {
-            recordSurveyFilteringResult(FilteringResult.FIRST_TIME_USER);
-            return false;
-        }
 
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         int lastDate = preferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1);

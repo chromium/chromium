@@ -3053,9 +3053,6 @@ static_library("browser") {
       "feature_guide/notifications/android/feature_notification_guide_service_factory_android.cc",
       "file_select_helper_contacts_android.cc",
       "file_select_helper_contacts_android.h",
-      "first_run/android/first_run_prefs.cc",
-      "first_run/android/first_run_prefs.h",
-      "first_run/android/first_run_utils.cc",
       "flags/android/chrome_feature_list.cc",
       "flags/android/chrome_feature_list.h",
       "geolocation/geolocation_permission_context_delegate_android.cc",
@@ -7976,9 +7973,6 @@ if (is_android) {
   }
   java_cpp_enum("sharing_dialog_type_generated_enum") {
     sources = [ "sharing/sharing_metrics.h" ]
-  }
-  java_cpp_enum("tos_dialog_behavior_generated_enum") {
-    sources = [ "first_run/android/first_run_prefs.h" ]
   }
 
   java_cpp_enum("survey_http_client_type_enum") {

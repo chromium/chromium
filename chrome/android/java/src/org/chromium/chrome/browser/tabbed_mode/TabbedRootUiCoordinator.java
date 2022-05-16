@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCo
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.HeightObserver;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -731,7 +730,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // http://crbug.com/354696
             boolean isLegacyMultiWindow =
                     MultiWindowUtils.getInstance().isLegacyMultiWindow(mActivity);
-            if (!isShowingPromo && !intentWithEffect && FirstRunStatus.getFirstRunFlowComplete()
+            if (!isShowingPromo && !intentWithEffect
                     && preferenceManager.readBoolean(
                             ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, false)
                     && !isLegacyMultiWindow) {

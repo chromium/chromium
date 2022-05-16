@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 
@@ -137,16 +136,6 @@ public class WebappLauncherActivity extends Activity {
 
         if (shouldRelaunchWebApk(intent, launchData)) {
             relaunchWebApk(this, intent, launchData);
-            return;
-        }
-
-        if (FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
-                    shouldPreferLightweightFre(launchData))) {
-            // Do not remove the current task. The full FRE reuses the task due to
-            // android:launchMode arguments, while the LWFRE does not. So removing the task would
-            // break the full FRE. The LWFRE will still clean up the task since this is the only
-            // activity in the current task. See https://crbug.com/1201353 for more details.
-            finish();
             return;
         }
 

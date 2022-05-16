@@ -113,7 +113,6 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/first_run/android/first_run_prefs.h"
 #include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/search/contextual_search_policy_handler_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
@@ -264,9 +263,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSitePerProcessAndroid,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
-  { key::kTosDialogBehavior,
-    first_run::kTosDialogBehavior,
-    base::Value::Type::INTEGER },
   { key::kWebXRImmersiveArEnabled,
     prefs::kWebXRImmersiveArEnabled,
     base::Value::Type::BOOLEAN },

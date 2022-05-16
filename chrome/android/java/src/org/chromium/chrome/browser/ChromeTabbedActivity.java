@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
-import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -103,7 +102,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
-import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -566,12 +564,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void refreshSignIn() {
-        try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.refreshSignIn")) {
-            FirstRunSignInProcessor.start(this);
-        }
-    }
-
     private void setupCompositorContentPreNativeForPhone() {
         if (isTablet()) return;
 
@@ -795,8 +787,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setupCompositorContentPostNative();
 
             // All this initialization can be expensive so it's split into multiple tasks.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    mCallbackController.makeCancelable(this::refreshSignIn));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                     mCallbackController.makeCancelable(this::initializeToolbarManager));
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,

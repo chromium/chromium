@@ -187,17 +187,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         }
     }
 
-    /**
-     * This method should be only called once during FRE in
-     * {@link org.chromium.chrome.browser.firstrun.FirstRunActivity} so that subsequent chrome runs
-     * don't override FRE experiment group information.
-     *
-     * FRE is launched either after first install of chrome or after a power wash. So there is be no
-     * previous experiment group information available when this method is called.
-     *
-     * The group information is registered as a synthetic field trial in native code inside
-     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
-     */
     @MainThread
     public static void createFirstRunTrial() {
         synchronized (LOCK) {

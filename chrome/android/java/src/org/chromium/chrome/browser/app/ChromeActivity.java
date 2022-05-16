@@ -100,7 +100,6 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1276,11 +1275,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .recordUserFontPrefOnStartup();
-        });
-
-        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
-            if (isActivityFinishingOrDestroyed()) return;
-            ForcedSigninProcessor.checkCanSignIn(ChromeActivity.this);
         });
 
         // GSA connection is not needed on low-end devices because Icing is disabled.

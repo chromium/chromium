@@ -10,7 +10,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.util.ArrayList;
@@ -76,12 +75,6 @@ class NativeInitializationController {
             return;
         }
 
-        // This is a fairly low cost way to check if fetching the variations seed is needed. It can
-        // produces false positives, but that's okay. There's a later mechanism that checks a
-        // dedicated durable field to make sure the actual network request is only made once.
-        boolean fetchVariationsSeed = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
-                false, mActivityDelegate.getInitialIntent());
-
         mBackgroundTasksComplete = false;
         new AsyncInitTaskRunner() {
 
@@ -101,7 +94,7 @@ class NativeInitializationController {
                 mActivityDelegate.onStartupFailure(failureCause);
             }
 
-        }.startBackgroundTasks(allocateChildConnection, fetchVariationsSeed);
+        }.startBackgroundTasks(allocateChildConnection, false);
     }
 
     private void signalNativeLibraryLoadedIfReady() {
