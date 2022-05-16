@@ -15,8 +15,8 @@
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "ios/web/public/browser_state.h"
+#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
-#include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #include "url/gurl.h"
 
@@ -37,8 +37,7 @@ std::unique_ptr<WebViewTranslateClient> WebViewTranslateClient::Create(
       WebViewLanguageModelManagerFactory::GetForBrowserState(browser_state)
           ->GetPrimaryModel(),
       web_state,
-      WebViewTranslateAcceptLanguagesFactory::GetForBrowserState(
-          browser_state));
+      WebViewAcceptLanguagesServiceFactory::GetForBrowserState(browser_state));
 }
 
 WebViewTranslateClient::WebViewTranslateClient(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/translate/translate_accept_languages_factory.h"
+#include "chrome/browser/language/accept_languages_service_factory.h"
 
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,35 +12,33 @@
 #include "components/prefs/pref_service.h"
 
 // static
-TranslateAcceptLanguagesFactory*
-TranslateAcceptLanguagesFactory::GetInstance() {
-  return base::Singleton<TranslateAcceptLanguagesFactory>::get();
+AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
+  return base::Singleton<AcceptLanguagesServiceFactory>::get();
 }
 
 // static
 language::AcceptLanguagesService*
-TranslateAcceptLanguagesFactory::GetForBrowserContext(
+AcceptLanguagesServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<language::AcceptLanguagesService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-TranslateAcceptLanguagesFactory::TranslateAcceptLanguagesFactory()
+AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "AcceptLanguagesService",
           BrowserContextDependencyManager::GetInstance()) {}
 
-TranslateAcceptLanguagesFactory::~TranslateAcceptLanguagesFactory() {}
+AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() {}
 
-KeyedService* TranslateAcceptLanguagesFactory::BuildServiceInstanceFor(
+KeyedService* AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return new language::AcceptLanguagesService(
       profile->GetPrefs(), language::prefs::kAcceptLanguages);
 }
 
-content::BrowserContext*
-TranslateAcceptLanguagesFactory::GetBrowserContextToUse(
+content::BrowserContext* AcceptLanguagesServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

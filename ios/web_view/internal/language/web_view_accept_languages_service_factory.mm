@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
+#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -10,8 +10,11 @@
 #include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/web_view/internal/web_view_browser_state.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -42,44 +45,50 @@ AcceptLanguagesServiceForBrowserState::AcceptLanguagesServiceForBrowserState(
     : accept_languages_(prefs, language::prefs::kAcceptLanguages) {}
 
 AcceptLanguagesServiceForBrowserState::
-    ~AcceptLanguagesServiceForBrowserState() {}
+    ~AcceptLanguagesServiceForBrowserState() = default;
 
 }  // namespace
 
+namespace ios_web_view {
+
 // static
-TranslateAcceptLanguagesFactory*
-TranslateAcceptLanguagesFactory::GetInstance() {
-  static base::NoDestructor<TranslateAcceptLanguagesFactory> instance;
+WebViewAcceptLanguagesServiceFactory*
+WebViewAcceptLanguagesServiceFactory::GetInstance() {
+  static base::NoDestructor<WebViewAcceptLanguagesServiceFactory> instance;
   return instance.get();
 }
 
 // static
 language::AcceptLanguagesService*
-TranslateAcceptLanguagesFactory::GetForBrowserState(ChromeBrowserState* state) {
+WebViewAcceptLanguagesServiceFactory::GetForBrowserState(
+    WebViewBrowserState* browser_state) {
   AcceptLanguagesServiceForBrowserState* service =
       static_cast<AcceptLanguagesServiceForBrowserState*>(
-          GetInstance()->GetServiceForBrowserState(state, true));
+          GetInstance()->GetServiceForBrowserState(browser_state, true));
   return &service->accept_languages();
 }
 
-TranslateAcceptLanguagesFactory::TranslateAcceptLanguagesFactory()
+WebViewAcceptLanguagesServiceFactory::WebViewAcceptLanguagesServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AcceptLanguagesServiceForBrowserState",
           BrowserStateDependencyManager::GetInstance()) {}
 
-TranslateAcceptLanguagesFactory::~TranslateAcceptLanguagesFactory() {
-}
+WebViewAcceptLanguagesServiceFactory::~WebViewAcceptLanguagesServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-TranslateAcceptLanguagesFactory::BuildServiceInstanceFor(
+WebViewAcceptLanguagesServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  WebViewBrowserState* browser_state =
+      WebViewBrowserState::FromBrowserState(context);
   return std::make_unique<AcceptLanguagesServiceForBrowserState>(
       browser_state->GetPrefs());
 }
 
-web::BrowserState* TranslateAcceptLanguagesFactory::GetBrowserStateToUse(
+web::BrowserState* WebViewAcceptLanguagesServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
+  WebViewBrowserState* browser_state =
+      WebViewBrowserState::FromBrowserState(context);
+  return browser_state->GetRecordingBrowserState();
 }
+
+}  // namespace ios_web_view

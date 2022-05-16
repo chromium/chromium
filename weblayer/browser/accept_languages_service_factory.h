@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
-#define WEBLAYER_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#ifndef WEBLAYER_BROWSER_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
+#define WEBLAYER_BROWSER_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -14,25 +14,23 @@ class AcceptLanguagesService;
 
 namespace weblayer {
 
-// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesServiceFactory is a way to associate an
 // AcceptLanguagesService instance to a BrowserContext.
-class TranslateAcceptLanguagesFactory
-    : public BrowserContextKeyedServiceFactory {
+class AcceptLanguagesServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
-  TranslateAcceptLanguagesFactory(const TranslateAcceptLanguagesFactory&) =
-      delete;
-  TranslateAcceptLanguagesFactory& operator=(
-      const TranslateAcceptLanguagesFactory&) = delete;
+  AcceptLanguagesServiceFactory(const AcceptLanguagesServiceFactory&) = delete;
+  AcceptLanguagesServiceFactory& operator=(
+      const AcceptLanguagesServiceFactory&) = delete;
 
   static language::AcceptLanguagesService* GetForBrowserContext(
       content::BrowserContext* browser_context);
-  static TranslateAcceptLanguagesFactory* GetInstance();
+  static AcceptLanguagesServiceFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<TranslateAcceptLanguagesFactory>;
+  friend class base::NoDestructor<AcceptLanguagesServiceFactory>;
 
-  TranslateAcceptLanguagesFactory();
-  ~TranslateAcceptLanguagesFactory() override;
+  AcceptLanguagesServiceFactory();
+  ~AcceptLanguagesServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
@@ -43,4 +41,4 @@ class TranslateAcceptLanguagesFactory
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#endif  // WEBLAYER_BROWSER_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_

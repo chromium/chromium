@@ -16,11 +16,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/translate/translate_accept_languages_factory.h"
 #include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -183,7 +183,7 @@ ChromeTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
 language::AcceptLanguagesService*
 ChromeTranslateClient::GetTranslateAcceptLanguages(
     content::BrowserContext* browser_context) {
-  return TranslateAcceptLanguagesFactory::GetForBrowserContext(browser_context);
+  return AcceptLanguagesServiceFactory::GetForBrowserContext(browser_context);
 }
 
 // static

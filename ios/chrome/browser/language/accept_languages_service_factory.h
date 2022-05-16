@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
-#define IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
+#define IOS_CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -16,24 +16,23 @@ namespace language {
 class AcceptLanguagesService;
 }
 
-// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesServiceFactory is a way to associate an
 // AcceptLanguagesService instance to a BrowserState.
-class TranslateAcceptLanguagesFactory : public BrowserStateKeyedServiceFactory {
+class AcceptLanguagesServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static language::AcceptLanguagesService* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static TranslateAcceptLanguagesFactory* GetInstance();
+  static AcceptLanguagesServiceFactory* GetInstance();
 
-  TranslateAcceptLanguagesFactory(const TranslateAcceptLanguagesFactory&) =
-      delete;
-  TranslateAcceptLanguagesFactory& operator=(
-      const TranslateAcceptLanguagesFactory&) = delete;
+  AcceptLanguagesServiceFactory(const AcceptLanguagesServiceFactory&) = delete;
+  AcceptLanguagesServiceFactory& operator=(
+      const AcceptLanguagesServiceFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<TranslateAcceptLanguagesFactory>;
+  friend class base::NoDestructor<AcceptLanguagesServiceFactory>;
 
-  TranslateAcceptLanguagesFactory();
-  ~TranslateAcceptLanguagesFactory() override;
+  AcceptLanguagesServiceFactory();
+  ~AcceptLanguagesServiceFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
@@ -42,4 +41,4 @@ class TranslateAcceptLanguagesFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_

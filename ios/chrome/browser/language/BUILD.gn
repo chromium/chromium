@@ -5,6 +5,8 @@
 source_set("language") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "accept_languages_service_factory.cc",
+    "accept_languages_service_factory.h",
     "language_model_manager_factory.h",
     "language_model_manager_factory.mm",
     "url_language_histogram_factory.cc",

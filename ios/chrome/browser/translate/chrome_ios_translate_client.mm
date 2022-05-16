@@ -24,9 +24,9 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/language/accept_languages_service_factory.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
 #include "ios/chrome/browser/translate/language_detection_model_service_factory.h"
-#include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #include "ios/chrome/browser/translate/translate_model_service_factory.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
@@ -138,7 +138,7 @@ ChromeIOSTranslateClient::GetTranslatePrefs() {
 language::AcceptLanguagesService*
 ChromeIOSTranslateClient::GetTranslateAcceptLanguages() {
   DCHECK(web_state_);
-  return TranslateAcceptLanguagesFactory::GetForBrowserState(
+  return AcceptLanguagesServiceFactory::GetForBrowserState(
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 }
 

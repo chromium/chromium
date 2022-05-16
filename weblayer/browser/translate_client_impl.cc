@@ -17,12 +17,12 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+#include "weblayer/browser/accept_languages_service_factory.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/page_impl.h"
 #include "weblayer/browser/tab_impl.h"
-#include "weblayer/browser/translate_accept_languages_factory.h"
 #include "weblayer/browser/translate_ranker_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -116,7 +116,7 @@ TranslateClientImpl::GetTranslatePrefs() {
 
 language::AcceptLanguagesService*
 TranslateClientImpl::GetTranslateAcceptLanguages() {
-  return TranslateAcceptLanguagesFactory::GetForBrowserContext(
+  return AcceptLanguagesServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
 }
 

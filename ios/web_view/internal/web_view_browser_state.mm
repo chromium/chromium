@@ -38,6 +38,7 @@
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
+#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 #include "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #include "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
@@ -50,7 +51,6 @@
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #include "ios/web_view/internal/web_view_download_manager.h"
 #include "ios/web_view/internal/web_view_url_request_context_getter.h"
@@ -188,7 +188,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewLanguageModelManagerFactory::GetInstance();
   WebViewTranslateRankerFactory::GetInstance();
   WebViewUrlLanguageHistogramFactory::GetInstance();
-  WebViewTranslateAcceptLanguagesFactory::GetInstance();
+  WebViewAcceptLanguagesServiceFactory::GetInstance();
   WebViewWebUIIOSControllerFactory::GetInstance();
   autofill::WebViewAutofillLogRouterFactory::GetInstance();
   WebViewPersonalDataManagerFactory::GetInstance();

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
-#define CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#ifndef CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -12,25 +12,23 @@ namespace language {
 class AcceptLanguagesService;
 }
 
-// TranslateAcceptLanguagesFactory is a way to associate an
+// AcceptLanguagesServiceFactory is a way to associate an
 // AcceptLanguagesService instance to a BrowserContext.
-class TranslateAcceptLanguagesFactory
-    : public BrowserContextKeyedServiceFactory {
+class AcceptLanguagesServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static language::AcceptLanguagesService* GetForBrowserContext(
       content::BrowserContext* browser_context);
-  static TranslateAcceptLanguagesFactory* GetInstance();
+  static AcceptLanguagesServiceFactory* GetInstance();
 
-  TranslateAcceptLanguagesFactory(const TranslateAcceptLanguagesFactory&) =
-      delete;
-  TranslateAcceptLanguagesFactory& operator=(
-      const TranslateAcceptLanguagesFactory&) = delete;
+  AcceptLanguagesServiceFactory(const AcceptLanguagesServiceFactory&) = delete;
+  AcceptLanguagesServiceFactory& operator=(
+      const AcceptLanguagesServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<TranslateAcceptLanguagesFactory>;
+  friend struct base::DefaultSingletonTraits<AcceptLanguagesServiceFactory>;
 
-  TranslateAcceptLanguagesFactory();
-  ~TranslateAcceptLanguagesFactory() override;
+  AcceptLanguagesServiceFactory();
+  ~AcceptLanguagesServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
@@ -39,4 +37,4 @@ class TranslateAcceptLanguagesFactory
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_TRANSLATE_TRANSLATE_ACCEPT_LANGUAGES_FACTORY_H_
+#endif  // CHROME_BROWSER_LANGUAGE_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_
