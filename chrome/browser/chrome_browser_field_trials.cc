@@ -94,6 +94,22 @@ void ChromeBrowserFieldTrials::SetUpFeatureControllingFieldTrials(
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
   }
+
+#if defined(DCHECK_IS_CONFIGURABLE)
+  // If DCHECK_IS_CONFIGURABLE then configure the DCheckIsFatal dynamic trial
+  // (see crbug.com/596231). This must be instantiated before the FeatureList
+  // is set, since FeatureList::SetInstance() will configure LOGGING_DCHECK
+  // based on the Feature's state, in DCHECK_IS_CONFIGURABLE builds.
+  // Always enable the trial at 50/50 per-session.
+  base::FieldTrial* const trial = base::FieldTrialList::FactoryGetFieldTrial(
+      "DCheckIsFatal", 100, "Default",
+      base::FieldTrial::RandomizationType::SESSION_RANDOMIZED,
+      /* default_group_number */ nullptr);
+  trial->AppendGroup("Enabled", 50);
+  trial->AppendGroup("Disabled", 50);
+
+  LOG(WARNING) << "DCheckIsFatal: " << trial->group_name();
+#endif  // defined(DCHECK_IS_CONFIGURABLE)
 }
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
