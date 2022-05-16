@@ -68,6 +68,12 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
                             ResultCallback callback,
                             base::ScopedClosureRunner fullscreen_block);
 
+  // Returns whether the specified extension receives special handling by the
+  // Windows shell. These extensions should be sanitized before being shown in
+  // the "save as" file picker.
+  static bool IsShellIntegratedExtension(
+      const base::FilePath::StringType& extension);
+
   FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
                     base::ScopedClosureRunner fullscreen_block);

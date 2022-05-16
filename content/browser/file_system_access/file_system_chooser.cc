@@ -70,33 +70,6 @@ base::FilePath::StringType GetLastExtension(
              : extension;
 }
 
-// Returns whether the specified extension receives special handling by the
-// Windows shell.
-bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
-  // TODO(https://crbug.com/1154757): Figure out some way to unify this with
-  // net::IsSafePortablePathComponent, with the result probably ending up in
-  // base/i18n/file_util_icu.h.
-  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
-
-  // .lnk files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568). .local files are used by
-  // Windows to determine which DLLs to load for an application.
-  if ((extension_lower == FILE_PATH_LITERAL("local")) ||
-      (extension_lower == FILE_PATH_LITERAL("lnk"))) {
-    return true;
-  }
-
-  // Setting a file's extension to a CLSID may conceal its actual file type on
-  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
-  if (!extension_lower.empty() &&
-      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
-    return true;
-  }
-
-  return false;
-}
-
 // Extension validation primarily takes place in the renderer. This checks for a
 // subset of invalid extensions in the event the renderer is compromised.
 bool IsInvalidExtension(base::FilePath::StringType& extension) {
@@ -104,7 +77,7 @@ bool IsInvalidExtension(base::FilePath::StringType& extension) {
   auto extension16 = base::UTF8ToUTF16(component8);
 
   return !base::i18n::IsFilenameLegal(extension16) ||
-         IsShellIntegratedExtension(GetLastExtension(extension));
+         FileSystemChooser::IsShellIntegratedExtension(extension);
 }
 
 // Converts the accepted mime types and extensions from `option` into a list
@@ -287,6 +260,40 @@ void FileSystemChooser::CreateAndShow(
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
       /*params=*/nullptr);
+}
+
+// static
+bool FileSystemChooser::IsShellIntegratedExtension(
+    const base::FilePath::StringType& extension) {
+  // TODO(https://crbug.com/1154757): Figure out some way to unify this with
+  // net::IsSafePortablePathComponent, with the result probably ending up in
+  // base/i18n/file_util_icu.h.
+  // - For the sake of consistency across platforms, we sanitize '.lnk' and
+  //   '.local' files on all platforms (not just Windows)
+  // - There are some extensions (i.e. '.scf') we would like to sanitize which
+  //   `net::GenerateFileName()` does not
+  base::FilePath::StringType extension_lower =
+      base::ToLowerASCII(GetLastExtension(extension));
+
+  // .lnk and .scf files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
+  // https://crbug.com/1227995, respectively). .local files are used by Windows
+  // to determine which DLLs to load for an application.
+  if ((extension_lower == FILE_PATH_LITERAL("lnk")) ||
+      (extension_lower == FILE_PATH_LITERAL("local")) ||
+      (extension_lower == FILE_PATH_LITERAL("scf"))) {
+    return true;
+  }
+
+  // Setting a file's extension to a CLSID may conceal its actual file type on
+  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
+  if (!extension_lower.empty() &&
+      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
+      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
+    return true;
+  }
+
+  return false;
 }
 
 FileSystemChooser::FileSystemChooser(ui::SelectFileDialog::Type type,

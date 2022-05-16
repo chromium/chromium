@@ -529,6 +529,16 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     suggested_name_path =
         net::GenerateFileName(GURL(), std::string(), std::string(),
                               suggested_name, std::string(), std::string());
+
+    auto suggested_extension = suggested_name_path.Extension();
+    // Our version of `IsShellIntegratedExtension()` is more stringent than
+    // the version used in `net::GenerateFileName()`. See
+    // `FileSystemChooser::IsShellIntegratedExtension()` for details.
+    if (FileSystemChooser::IsShellIntegratedExtension(suggested_extension)) {
+      suggested_extension = FILE_PATH_LITERAL("download");
+      suggested_name_path =
+          suggested_name_path.ReplaceExtension(suggested_extension);
+    }
   }
 
   FileSystemChooser::Options file_system_chooser_options(

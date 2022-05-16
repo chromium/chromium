@@ -189,7 +189,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({}),
       std::vector<std::string>(
-          {"lnk", "foo.lnk", "foo.bar.local", "text", "local"})));
+          {"lnk", "foo.lnk", "foo.bar.local", "text", "local", "scf"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
 
   ASSERT_TRUE(dialog_params.file_types);
