@@ -1493,7 +1493,7 @@ const base::Feature kWallpaperFullScreenPreview{
 // Enable Google Photos integration in the new wallpaper experience. Note that
 // this feature flag does not have any effect if `kWallpaperWebUI` is disabled.
 const base::Feature kWallpaperGooglePhotosIntegration{
-    "WallpaperGooglePhotosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WallpaperGooglePhotosIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable different wallpapers per desk.
 const base::Feature kWallpaperPerDesk{"WallpaperPerDesk",

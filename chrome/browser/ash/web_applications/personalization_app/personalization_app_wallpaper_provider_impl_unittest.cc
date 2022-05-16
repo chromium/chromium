@@ -222,12 +222,18 @@ class PersonalizationAppWallpaperProviderImplTest
   PersonalizationAppWallpaperProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    std::vector<base::Feature> features = {ash::features::kWallpaperWebUI};
-    if (GooglePhotosEnabled())
-      features.push_back(ash::features::kWallpaperGooglePhotosIntegration);
+    std::vector<base::Feature> disabled_features;
+    std::vector<base::Feature> enabled_features = {
+        ash::features::kWallpaperWebUI};
+
+    // Conditionally enable/disable Google Photos integration based on test
+    // parameterization.
+    (GooglePhotosEnabled() ? enabled_features : disabled_features)
+        .push_back(ash::features::kWallpaperGooglePhotosIntegration);
+
     // Note: `scoped_feature_list_` should be initialized before `SetUp()`
     // (see crbug.com/846380).
-    scoped_feature_list_.InitWithFeatures(features, /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   PersonalizationAppWallpaperProviderImplTest(

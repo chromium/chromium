@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
   loop.Run();
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     PersonalizationAppIntegrationTest);
 
 }  // namespace personalization_app
