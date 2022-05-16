@@ -54,6 +54,11 @@ void FakeConnectionManager::RegisterPayloadFile(
   }
 }
 
+void FakeConnectionManager::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  std::move(callback).Run(absl::nullopt);
+}
+
 void FakeConnectionManager::SendFileTransferUpdate(
     mojom::FileTransferUpdatePtr update) {
   auto payload_id = update->payload_id;

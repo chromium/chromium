@@ -209,6 +209,19 @@ void ConnectionManagerImpl::RegisterPayloadFile(
                                 std::move(registration_result_callback));
 }
 
+void ConnectionManagerImpl::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  const absl::optional<multidevice::RemoteDeviceRef> remote_device =
+      multidevice_setup_client_->GetHostStatus().second;
+  if (!remote_device) {
+    std::move(callback).Run(/*timestamp=*/absl::nullopt);
+    return;
+  }
+
+  secure_channel_client_->GetLastSeenTimestamp(remote_device->GetDeviceId(),
+                                               std::move(callback));
+}
+
 void ConnectionManagerImpl::OnConnectionAttemptFailure(
     mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "AttemptConnection() failed to establish connection with "

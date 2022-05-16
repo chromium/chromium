@@ -69,6 +69,9 @@ class SecureChannelClientImpl : public SecureChannelClient {
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
   void SetNearbyConnector(NearbyConnector* nearby_connector) override;
+  void GetLastSeenTimestamp(
+      const std::string& remote_device_id,
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
   void PerformInitiateConnectionToDevice(
       multidevice::RemoteDeviceRef device_to_connect,

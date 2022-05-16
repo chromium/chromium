@@ -115,6 +115,14 @@ void SecureChannelInitializer::InitiateConnectionToDevice(
       device_to_connect, local_device, feature, connection_medium,
       connection_priority, std::move(delegate), false /* is_listen_request */));
 }
+void SecureChannelInitializer::GetLastSeenTimestamp(
+    const std::string& remote_device_id,
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  if (secure_channel_impl_) {
+    secure_channel_impl_->GetLastSeenTimestamp(remote_device_id,
+                                               std::move(callback));
+  }
+}
 
 void SecureChannelInitializer::SetNearbyConnector(
     mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {

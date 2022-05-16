@@ -79,5 +79,10 @@ UserActionRecorder* FakePhoneHubManager::GetUserActionRecorder() {
   return &fake_user_action_recorder_;
 }
 
+void FakePhoneHubManager::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  std::move(callback).Run(host_last_seen_timestamp_);
+}
+
 }  // namespace phonehub
 }  // namespace ash

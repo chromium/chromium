@@ -247,6 +247,13 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     return test_devices_;
   }
 
+  void ExpectHostSeenTimestamp(bool present) {
+    EXPECT_EQ(
+        present,
+        ble_scanner_->GetLastSeenTimestamp(test_devices()[0].GetDeviceId())
+            .has_value());
+  }
+
  private:
   std::unique_ptr<FakeBluetoothDevice> SimulateScanResult(
       const std::string& service_data) {
@@ -300,6 +307,7 @@ TEST_F(SecureChannelBleScannerImplTest, UnrelatedScanResults) {
   RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(false);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
@@ -323,6 +331,7 @@ TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
   RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(false);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
@@ -341,6 +350,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
   RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(true);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_BleAndNearby) {
@@ -372,6 +382,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_BleAndNearby) {
   RemoveScanRequest(nearby_filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(true);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Foreground) {
@@ -390,6 +401,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Foreground) {
   RemoveScanRequest(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(true);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
@@ -438,6 +450,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
   RemoveScanRequest(filter_2);
   InvokeStopDiscoveryCallback(true /* success */, 3u /* command_index */);
   EXPECT_FALSE(discovery_session_is_active());
+  ExpectHostSeenTimestamp(true);
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {

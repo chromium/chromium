@@ -7,6 +7,7 @@ module ash.secure_channel.mojom;
 import "ash/components/multidevice/mojom/multidevice_types.mojom";
 import "ash/services/secure_channel/public/mojom/nearby_connector.mojom";
 import "ash/services/secure_channel/public/mojom/secure_channel_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 enum ConnectionAttemptFailureReason {
   // The local device could not authenticate with the remote device. This likely
@@ -244,4 +245,9 @@ interface SecureChannel {
   // called before requesting a connection with
   // ConnectionMedium::kNearbyConnections. Should only be called once.
   SetNearbyConnector(pending_remote<NearbyConnector> nearby_connector);
+
+  // Retrieves the timestamp of the last successful discovery for the given
+  // |remote_device_id|, or null if we haven't seen this remote device during
+  // the current Chrome session.
+  GetLastSeenTimestamp(string remote_device_id) => (mojo_base.mojom.Time? time);
 };

@@ -53,6 +53,7 @@ class ASH_EXPORT PhoneHubUiController
     kPhoneDisconnected,
     kPhoneConnected,
     kTetherConnectionPending,
+    kMaxValue = kTetherConnectionPending
   };
 
   PhoneHubUiController();
@@ -108,6 +109,10 @@ class ASH_EXPORT PhoneHubUiController
   // the content view to show a disconnected view.
   void OnConnectingViewTimerEnd();
 
+  void RecordStatusOnBubbleOpened();
+  void OnGetHostLastSeenTimestamp(UiState ui_state_when_opened,
+                                  absl::optional<base::Time> timestamp);
+
   // The PhoneHubManager that provides data for the UI.
   phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
@@ -127,6 +132,8 @@ class ASH_EXPORT PhoneHubUiController
   // confusing to users when it shows disconnecting view, rather, it will show
   // connecting view on this occasion.
   base::OneShotTimer connecting_view_grace_period_timer_;
+
+  base::WeakPtrFactory<PhoneHubUiController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

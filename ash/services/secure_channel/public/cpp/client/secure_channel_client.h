@@ -6,6 +6,7 @@
 #define ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_H_
 
 #include <string>
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
 namespace ash {
 
@@ -72,6 +73,13 @@ class SecureChannelClient {
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) = 0;
   virtual void SetNearbyConnector(NearbyConnector* nearby_connector) = 0;
+
+  // Retrieves the timestamp of the last successful discovery for the given
+  // |remote_device_id|, or nullopt if we haven't seen this remote device during
+  // the current Chrome session.
+  virtual void GetLastSeenTimestamp(
+      const std::string& remote_device_id,
+      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
 
  protected:
   SecureChannelClient() = default;

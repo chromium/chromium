@@ -63,10 +63,23 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
     ConnectionMedium connection_medium,
     ConnectionRole connection_role,
     const std::vector<uint8_t>& eid) {
+  remote_device_id_to_last_seen_timestamp_[remote_device.GetDeviceId()] =
+      base::Time::Now();
+
   for (auto& observer : observer_list_) {
     observer.OnReceivedAdvertisement(remote_device, bluetooth_device,
                                      connection_medium, connection_role, eid);
   }
+}
+
+absl::optional<base::Time> BleScanner::GetLastSeenTimestamp(
+    const std::string& remote_device_id) {
+  auto it = remote_device_id_to_last_seen_timestamp_.find(remote_device_id);
+  if (it == remote_device_id_to_last_seen_timestamp_.end()) {
+    return absl::nullopt;
+  }
+
+  return it->second;
 }
 
 }  // namespace ash::secure_channel

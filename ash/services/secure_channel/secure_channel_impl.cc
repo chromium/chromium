@@ -19,6 +19,7 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/nearby_connection_manager_impl.h"
 #include "ash/services/secure_channel/pending_connection_manager_impl.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "ash/services/secure_channel/secure_channel_disconnector_impl.h"
 #include "ash/services/secure_channel/timer_factory_impl.h"
 #include "base/memory/ptr_util.h"
@@ -127,6 +128,12 @@ void SecureChannelImpl::InitiateConnectionToDevice(
 void SecureChannelImpl::SetNearbyConnector(
     mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) {
   nearby_connection_manager_->SetNearbyConnector(std::move(nearby_connector));
+}
+
+void SecureChannelImpl::GetLastSeenTimestamp(
+    const std::string& remote_device_id,
+    GetLastSeenTimestampCallback callback) {
+  std::move(callback).Run(ble_scanner_->GetLastSeenTimestamp(remote_device_id));
 }
 
 void SecureChannelImpl::OnDisconnected(

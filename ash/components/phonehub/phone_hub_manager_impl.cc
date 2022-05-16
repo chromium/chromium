@@ -225,6 +225,11 @@ UserActionRecorder* PhoneHubManagerImpl::GetUserActionRecorder() {
   return user_action_recorder_.get();
 }
 
+void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  connection_manager_->GetHostLastSeenTimestamp(std::move(callback));
+}
+
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
