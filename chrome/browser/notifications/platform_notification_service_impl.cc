@@ -226,6 +226,15 @@ void PlatformNotificationServiceImpl::DisplayNotification(
   permissions::PermissionUmaUtil::RecordPermissionUsage(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification.origin_url());
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kNotificationInteractionHistory)) {
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile_);
+    // This service might be missing for incognito profiles and in tests.
+    if (service)
+      service->RecordNotificationDisplayed(notification.origin_url());
+  }
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(

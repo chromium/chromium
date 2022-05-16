@@ -9,7 +9,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
@@ -62,6 +64,15 @@ void NonPersistentNotificationHandler::OnClick(
               &NonPersistentNotificationHandler::DidDispatchClickEvent,
               weak_ptr_factory_.GetWeakPtr(), profile, origin, notification_id,
               std::move(completed_closure)));
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kNotificationInteractionHistory)) {
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile);
+    // This service might be missing for incognito profiles and in tests.
+    if (service)
+      service->RecordNotificationInteraction(origin);
+  }
 }
 
 void NonPersistentNotificationHandler::DidDispatchClickEvent(
