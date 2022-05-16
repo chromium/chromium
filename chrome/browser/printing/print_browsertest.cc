@@ -339,7 +339,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t expected_rendered_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
 
-  const bool wait_for_loaded_ = false;
+  const bool wait_for_loaded_;
   raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 };
