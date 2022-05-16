@@ -490,9 +490,10 @@ bool DisplayManager::IsDisplayIdValid(int64_t display_id) const {
 
 const Display& DisplayManager::FindDisplayContainingPoint(
     const gfx::Point& point_in_screen) const {
-  auto iter = display::FindDisplayContainingPoint(active_display_list_,
+  const Displays& active_only_displays = active_only_display_list();
+  auto iter = display::FindDisplayContainingPoint(active_only_displays,
                                                   point_in_screen);
-  return iter == active_display_list_.end() ? GetInvalidDisplay() : *iter;
+  return iter == active_only_displays.end() ? GetInvalidDisplay() : *iter;
 }
 
 bool DisplayManager::UpdateWorkAreaOfDisplay(int64_t display_id,

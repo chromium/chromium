@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/window_state.h"
@@ -40,6 +41,8 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view.h"
@@ -1751,6 +1754,75 @@ TEST_F(WindowTreeHostManagerTest,
   UpdateDisplay("400x300");
   watcher.Stop();
 
+  widget->CloseNow();
+}
+
+// Replicates the behavior of MouseWatcher MouseEvent handling that led to crash
+// in https://crbug.com/1278429.
+class RootWindowTestEventHandler : public ui::EventHandler {
+ public:
+  explicit RootWindowTestEventHandler() = default;
+
+  RootWindowTestEventHandler(const RootWindowTestEventHandler&) = delete;
+  RootWindowTestEventHandler& operator=(const RootWindowTestEventHandler&) =
+      delete;
+
+  ~RootWindowTestEventHandler() override = default;
+
+ private:
+  // ui::EventHandler overrides:
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // Crash happened when finding the display in
+    // |screen::GetDisplayNearestPoint()|, we got the display that was being
+    // removed and in turn got null root window from
+    // |window_util::GetRootWindowAt| since the root window was moved to the new
+    // primary display.
+    display::Screen::GetScreen()->GetWindowAtScreenPoint(
+        display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
+};
+
+// Tests for the crash during the replacement of the primary display.
+// See https://crbug.com/1278429.
+TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
+  // We observed a crash during handling of a MouseEvent.
+  UpdateDisplay("800x600");
+  aura::Window* root_window =
+      Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
+          GetPrimaryDisplay().id());
+
+  // Creating a window at the lower right end of the primary display with a
+  // view.
+  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
+  views::View* view =
+      widget->GetContentsView()->AddChildView(std::make_unique<views::View>());
+
+  view->SetBounds(0, 0, 200, 200);
+  widget->Show();
+
+  RootWindowTestEventHandler handler;
+  root_window->AddPreTargetHandler(&handler);
+
+  ui::test::EventGenerator generator(root_window, widget->GetNativeWindow());
+
+  // Move the cursor to a coordinates that is in the logical bounds of the older
+  // display[0,0 800x600] and in the physical bounds[0,0 700x500] of new display
+  // but not in the logical bound[0,0 350x250] as the crash happens before full
+  // propagation of device_scale_factor effect.
+  generator.MoveMouseTo(400, 300);
+
+  // Replace the primary display with a newer display with a different device
+  // scale factor compared to original display.
+  display::ManagedDisplayInfo first_display_info =
+      CreateDisplayInfo(100, 0, display::Display::ROTATE_0);
+  first_display_info.SetBounds(gfx::Rect(0, 0, 700, 500));
+  first_display_info.set_device_scale_factor(2.0);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(first_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  root_window->RemovePreTargetHandler(&handler);
   widget->CloseNow();
 }
 
