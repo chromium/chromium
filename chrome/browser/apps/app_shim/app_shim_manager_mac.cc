@@ -722,9 +722,7 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
            it != browsers->end_browsers_ordered_by_activation(); ++it) {
         if ((*it)->profile() != profile)
           continue;
-        if (!(*it)->app_controller())
-          continue;
-        if ((*it)->app_controller()->app_id() != params.app_id)
+        if (!web_app::AppBrowserController::IsForWebApp(*it, params.app_id))
           continue;
         browser = *it;
         break;

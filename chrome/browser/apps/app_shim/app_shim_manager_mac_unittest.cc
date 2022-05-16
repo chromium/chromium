@@ -1267,6 +1267,86 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
 }
 
+namespace {
+// A helper that records when Show is called on a BrowserWindow to verify
+// activation of existing browser windows.
+class TestBrowserWindowShow : public TestBrowserWindow {
+ public:
+  void Show() override { did_show = true; }
+
+  bool did_show = false;
+};
+}  // namespace
+
+TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(false));
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  ShimLaunchedCallback launched_callback;
+  delegate_->SetCaptureShimLaunchedCallback(&launched_callback);
+  ShimTerminatedCallback terminated_callback;
+  delegate_->SetCaptureShimTerminatedCallback(&terminated_callback);
+
+  // Launch the app for profile A. This should trigger a shim launch request.
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA,
+                                       false /* recreate_shim */));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_a_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+  EXPECT_FALSE(host_aa_->did_connect_to_host());
+
+  // Indicate the profile A that its launch succeeded.
+  EXPECT_TRUE(launched_callback);
+  EXPECT_TRUE(terminated_callback);
+  std::move(launched_callback).Run(base::Process(5));
+  EXPECT_FALSE(launched_callback);
+  EXPECT_TRUE(terminated_callback);
+
+  // Notify manager that a new browser has been associated with the app.
+  auto browser_window_a = std::make_unique<TestBrowserWindowShow>();
+  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
+  Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
+      app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
+  params_a.window = browser_window_a.get();
+  auto browser_a = std::unique_ptr<Browser>(Browser::Create(params_a));
+  manager_->OnBrowserAdded(browser_a.get());
+
+  // Select profile B from the menu. This should request that the app be
+  // launched.
+  EXPECT_CALL(*delegate_,
+              LaunchApp(&profile_b_, kTestAppIdA, _, _, _,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone));
+  host_aa_->ProfileSelectedFromMenu(profile_path_b_);
+  EXPECT_CALL(*delegate_, DoLaunchShim(_, _, _)).Times(0);
+  manager_->OnAppActivated(&profile_b_, kTestAppIdA);
+
+  // Notify manager that a new browser has been associated with the app.
+  auto browser_window_b = std::make_unique<TestBrowserWindowShow>();
+  Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
+      app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
+  params_b.window = browser_window_b.get();
+  auto browser_b = std::unique_ptr<Browser>(Browser::Create(params_b));
+  manager_->OnBrowserAdded(browser_b.get());
+
+  EXPECT_FALSE(browser_window_a->did_show);
+  EXPECT_FALSE(browser_window_b->did_show);
+
+  // Select profile A and B from the menu -- this should not request a launch,
+  // because the profiles are already enabled.
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(*delegate_,
+              LaunchApp(_, _, _, _, _,
+                        chrome::mojom::AppShimLoginItemRestoreState::kNone))
+      .Times(0);
+  host_aa_->ProfileSelectedFromMenu(profile_path_a_);
+  EXPECT_TRUE(browser_window_a->did_show);
+  EXPECT_FALSE(browser_window_b->did_show);
+  browser_window_a->did_show = false;
+
+  host_aa_->ProfileSelectedFromMenu(profile_path_b_);
+  EXPECT_FALSE(browser_window_a->did_show);
+  EXPECT_TRUE(browser_window_b->did_show);
+}
+
 TEST_F(AppShimManagerTest, ProfileMenuOneProfile) {
   {
     auto item_a = chrome::mojom::ProfileMenuItem::New();
