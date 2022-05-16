@@ -322,8 +322,6 @@ void CorsURLLoaderFactory::ClearBindings() {
 }
 
 void CorsURLLoaderFactory::DeleteIfNeeded() {
-  if (!context_)
-    return;
   if (receivers_.empty() && url_loaders_.empty() && cors_url_loaders_.empty())
     context_->DestroyURLLoaderFactory(this);
 }
@@ -508,7 +506,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       return false;
   }
 
-  if (context_ && !GetAllowAnyCorsExemptHeaderForBrowser() &&
+  if (!GetAllowAnyCorsExemptHeaderForBrowser() &&
       !IsValidCorsExemptHeaders(*context_->cors_exempt_header_list(),
                                 request.cors_exempt_headers)) {
     return false;
@@ -612,7 +610,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
 }
 
 bool CorsURLLoaderFactory::GetAllowAnyCorsExemptHeaderForBrowser() const {
-  return context_ && process_id_ == mojom::kBrowserProcessId &&
+  return process_id_ == mojom::kBrowserProcessId &&
          context_->allow_any_cors_exempt_header_for_browser();
 }
 
