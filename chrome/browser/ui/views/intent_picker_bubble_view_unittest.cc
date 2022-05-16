@@ -26,17 +26,14 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/resources/grit/views_resources.h"
-#include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -101,16 +98,13 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
                             app.display_name);
     }
 
-    auto* widget = IntentPickerBubbleView::ShowBubble(
+    IntentPickerBubbleView::ShowBubble(
         anchor_view_, /*highlighted_button=*/nullptr, bubble_type, web_contents,
         std::move(app_info), show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)));
     bubble_ = IntentPickerBubbleView::intent_picker_bubble();
-    event_generator_.reset();  // Mac only allows one EventGenerator at a time.
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        views::GetRootWindow(widget));
   }
 
   // Add an app to the bubble opened by CreateBubbleView. Manually added apps
@@ -129,32 +123,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
       app.icon_model = dummy_icon_model;
   }
 
-  views::LabelButton* GetButtonAtIndex(size_t index) {
-    auto children =
-        bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-            ->children();
-    CHECK_LT(index, children.size());
-    return static_cast<views::LabelButton*>(children[index]);
-  }
-
-  void ClickApp(size_t index) {
-    event_generator_->MoveMouseTo(
-        GetButtonAtIndex(index)->GetBoundsInScreen().CenterPoint());
-    event_generator_->ClickLeftButton();
-  }
-
-  views::InkDropState GetInkDropState(size_t index) {
-    return views::InkDrop::Get(GetButtonAtIndex(index))
-        ->GetInkDrop()
-        ->GetTargetInkDropState();
-  }
-
-  size_t GetScrollViewSize() {
-    return bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-        ->children()
-        .size();
-  }
-
   // Dummy method to be called upon bubble closing.
   void OnBubbleClosed(const std::string& selected_app_package,
                       apps::PickerEntryType entry_type,
@@ -164,7 +132,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   raw_ptr<IntentPickerBubbleView> bubble_;
   raw_ptr<views::View> anchor_view_;
   std::vector<AppInfo> app_info_;
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
 // Verifies that we didn't set up an image for any LabelButton.
@@ -172,10 +139,9 @@ TEST_F(IntentPickerBubbleViewTest, NullIcons) {
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
-  size_t size = GetScrollViewSize();
+  size_t size = bubble_->GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
-    gfx::ImageSkia image =
-        GetButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
+    gfx::ImageSkia image = bubble_->GetAppImageForTesting(i);
     EXPECT_TRUE(image.isNull()) << i;
   }
 }
@@ -185,10 +151,9 @@ TEST_F(IntentPickerBubbleViewTest, NonNullIcons) {
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
-  size_t size = GetScrollViewSize();
+  size_t size = bubble_->GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
-    gfx::ImageSkia image =
-        GetButtonAtIndex(i)->GetImage(views::Button::STATE_NORMAL);
+    gfx::ImageSkia image = bubble_->GetAppImageForTesting(i);
     EXPECT_FALSE(image.isNull()) << i;
   }
 }
@@ -203,7 +168,7 @@ TEST_F(IntentPickerBubbleViewTest, LabelsPtrVectorSize) {
                    /*initiating_origin=*/absl::nullopt);
   size_t size = app_info_.size();
 
-  EXPECT_EQ(size, GetScrollViewSize());
+  EXPECT_EQ(size, bubble_->GetScrollViewSize());
 }
 
 // Verifies that the first item is activated by default when creating a new
@@ -212,10 +177,12 @@ TEST_F(IntentPickerBubbleViewTest, VerifyStartingInkDrop) {
   CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
-  size_t size = GetScrollViewSize();
-  EXPECT_EQ(GetInkDropState(0), views::InkDropState::ACTIVATED);
+  size_t size = bubble_->GetScrollViewSize();
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(0),
+            views::InkDropState::ACTIVATED);
   for (size_t i = 1; i < size; ++i) {
-    EXPECT_EQ(GetInkDropState(i), views::InkDropState::HIDDEN);
+    EXPECT_EQ(bubble_->GetInkDropStateForTesting(i),
+              views::InkDropState::HIDDEN);
   }
 }
 
@@ -227,11 +194,13 @@ TEST_F(IntentPickerBubbleViewTest, InkDropStateTransition) {
                    /*initiating_origin=*/absl::nullopt);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  size_t size = GetScrollViewSize();
+  size_t size = bubble_->GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
-    ClickApp((i + 1) % size);
-    EXPECT_EQ(GetInkDropState(i), views::InkDropState::HIDDEN);
-    EXPECT_EQ(GetInkDropState((i + 1) % size), views::InkDropState::ACTIVATED);
+    bubble_->PressButtonForTesting((i + 1) % size, event);
+    EXPECT_EQ(bubble_->GetInkDropStateForTesting(i),
+              views::InkDropState::HIDDEN);
+    EXPECT_EQ(bubble_->GetInkDropStateForTesting((i + 1) % size),
+              views::InkDropState::ACTIVATED);
   }
 }
 
@@ -242,11 +211,13 @@ TEST_F(IntentPickerBubbleViewTest, PressButtonTwice) {
                    /*initiating_origin=*/absl::nullopt);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
-  EXPECT_EQ(GetInkDropState(1), views::InkDropState::HIDDEN);
-  ClickApp(1);
-  EXPECT_EQ(GetInkDropState(1), views::InkDropState::ACTIVATED);
-  ClickApp(1);
-  EXPECT_EQ(GetInkDropState(1), views::InkDropState::ACTIVATED);
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1), views::InkDropState::HIDDEN);
+  bubble_->PressButtonForTesting(1, event);
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1),
+            views::InkDropState::ACTIVATED);
+  bubble_->PressButtonForTesting(1, event);
+  EXPECT_EQ(bubble_->GetInkDropStateForTesting(1),
+            views::InkDropState::ACTIVATED);
 }
 
 // Check that a non nullptr WebContents() has been created and observed.
@@ -328,18 +299,19 @@ TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
 
-  views::Checkbox* checkbox = static_cast<views::Checkbox*>(
-      bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
 
   // kDevice entries should not allow persistence.
-  ClickApp(0);
-  ASSERT_FALSE(checkbox->GetEnabled());
+  bubble_->PressButtonForTesting(0, event);
+  ASSERT_FALSE(bubble_->remember_selection_checkbox_->GetEnabled());
 
   // kWeb entries should allow persistence when PWA persistence is enabled.
-  ClickApp(1);
-  ASSERT_EQ(checkbox->GetEnabled(), apps::IntentPickerPwaPersistenceEnabled());
+  bubble_->PressButtonForTesting(1, event);
+  ASSERT_EQ(bubble_->remember_selection_checkbox_->GetEnabled(),
+            apps::IntentPickerPwaPersistenceEnabled());
 
   // Other app types can be persisted.
-  ClickApp(2);
-  ASSERT_TRUE(checkbox->GetEnabled());
+  bubble_->PressButtonForTesting(2, event);
+  ASSERT_TRUE(bubble_->remember_selection_checkbox_->GetEnabled());
 }

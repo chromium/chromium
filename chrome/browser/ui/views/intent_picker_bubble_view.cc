@@ -99,6 +99,10 @@ class IntentPickerLabelButton : public views::LabelButton {
     views::InkDrop::Get(this)->AnimateToState(
         views::InkDropState::ACTIVATED, ui::LocatedEvent::FromIfValid(event));
   }
+
+  views::InkDropState GetTargetInkDropState() {
+    return views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState();
+  }
 };
 
 BEGIN_METADATA(IntentPickerLabelButton, views::LabelButton)
@@ -300,7 +304,6 @@ void IntentPickerBubbleView::Initialize() {
   auto scrollable_view = std::make_unique<views::View>();
   scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  scrollable_view->SetID(ViewId::kItemContainer);
 
   for (size_t i = 0; i < app_info_.size(); i++) {
     auto app_button = std::make_unique<IntentPickerLabelButton>(
@@ -390,7 +393,6 @@ void IntentPickerBubbleView::Initialize() {
     remember_selection_checkbox_ = AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION)));
-    remember_selection_checkbox_->SetID(ViewId::kRememberCheckbox);
     remember_selection_checkbox_->SetProperty(views::kMarginsKey, insets);
     UpdateCheckboxState();
   }
@@ -424,6 +426,10 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
   }
 }
 
+size_t IntentPickerBubbleView::GetScrollViewSize() const {
+  return scroll_view_->contents()->children().size();
+}
+
 void IntentPickerBubbleView::AdjustScrollViewVisibleRegion() {
   const views::ScrollBar* bar = scroll_view_->vertical_scroll_bar();
   if (bar) {
@@ -449,7 +455,7 @@ void IntentPickerBubbleView::SetSelectedAppIndex(size_t index,
 }
 
 size_t IntentPickerBubbleView::CalculateNextAppIndex(int delta) {
-  size_t size = scroll_view_->contents()->children().size();
+  size_t size = GetScrollViewSize();
   return static_cast<size_t>((selected_app_tag_ + size + delta) % size);
 }
 
@@ -477,6 +483,21 @@ void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
   // else.
   if (intent_picker_bubble_ == this)
     intent_picker_bubble_ = nullptr;
+}
+
+gfx::ImageSkia IntentPickerBubbleView::GetAppImageForTesting(size_t index) {
+  return GetIntentPickerLabelButtonAt(index)->GetImage(
+      views::Button::ButtonState::STATE_NORMAL);
+}
+
+views::InkDropState IntentPickerBubbleView::GetInkDropStateForTesting(
+    size_t index) {
+  return GetIntentPickerLabelButtonAt(index)->GetTargetInkDropState();
+}
+
+void IntentPickerBubbleView::PressButtonForTesting(size_t index,
+                                                   const ui::Event& event) {
+  AppButtonPressed(index, event);
 }
 
 BEGIN_METADATA(IntentPickerBubbleView, LocationBarBubbleDelegateView)
