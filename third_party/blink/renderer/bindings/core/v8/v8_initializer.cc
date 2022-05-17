@@ -467,7 +467,8 @@ bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(v8::Local<v8::Co
   return false;
 }
 
-static bool SharedArrayBufferConstructorEnabledCallback(
+namespace {
+bool SharedArrayBufferConstructorEnabledCallback(
     v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
   if (!execution_context)
@@ -475,7 +476,7 @@ static bool SharedArrayBufferConstructorEnabledCallback(
   return execution_context->SharedArrayBufferTransferAllowed();
 }
 
-static bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
+bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
   if (!execution_context)
     return false;
@@ -484,7 +485,7 @@ static bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-static bool WasmDynamicTieringEnabledCallback(v8::Local<v8::Context> context) {
+bool WasmDynamicTieringEnabledCallback(v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
   if (!execution_context)
     return false;
@@ -511,8 +512,7 @@ void ThrowRangeException(v8::Isolate* isolate, const char* message) {
   isolate->ThrowException(NewRangeException(isolate, message));
 }
 
-static bool WasmModuleOverride(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+bool WasmModuleOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // Return false if we want the base behavior to proceed.
   if (!WTF::IsMainThread() || args.Length() < 1)
     return false;
@@ -534,8 +534,7 @@ static bool WasmModuleOverride(
   return false;
 }
 
-static bool WasmInstanceOverride(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+bool WasmInstanceOverride(const v8::FunctionCallbackInfo<v8::Value>& args) {
   // Return false if we want the base behavior to proceed.
   if (!WTF::IsMainThread() || args.Length() < 1)
     return false;
@@ -556,7 +555,7 @@ static bool WasmInstanceOverride(
   return false;
 }
 
-static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
+v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::Data> v8_host_defined_options,
     v8::Local<v8::Value> v8_referrer_resource_url,
@@ -621,9 +620,9 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 }
 
 // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
-static void HostGetImportMetaProperties(v8::Local<v8::Context> context,
-                                        v8::Local<v8::Module> module,
-                                        v8::Local<v8::Object> meta) {
+void HostGetImportMetaProperties(v8::Local<v8::Context> context,
+                                 v8::Local<v8::Module> module,
+                                 v8::Local<v8::Object> meta) {
   ScriptState* script_state = ScriptState::From(context);
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -640,7 +639,7 @@ static void HostGetImportMetaProperties(v8::Local<v8::Context> context,
   meta->CreateDataProperty(context, url_key, url_value).ToChecked();
 }
 
-static void InitializeV8Common(v8::Isolate* isolate) {
+void InitializeV8Common(v8::Isolate* isolate) {
   // Set up garbage collection before setting up anything else as V8 may trigger
   // GCs during Blink setup.
   V8PerIsolateData::From(isolate)->SetGCCallbacks(
@@ -679,18 +678,36 @@ void ReportV8FatalError(const char* location, const char* message) {
   LOG(FATAL) << "V8 error: " << message << " (" << location << ").";
 }
 
-void ReportV8OOMError(const char* location, bool is_js_heap) {
+struct PrintV8OOM {
+  const char* location;
+  const v8::OOMDetails& details;
+};
+
+std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
+  const auto [location, details] = oom_details;
+  os << "V8 " << (details.is_heap_oom ? "javascript" : "process") << " OOM ("
+     << location;
+  if (details.detail) {
+    os << "; detail: " << details.detail;
+  }
+  os << ").";
+  return os;
+}
+
+void ReportV8OOMError(const char* location, const v8::OOMDetails& details) {
   if (location) {
     static crash_reporter::CrashKeyString<64> location_key("v8-oom-location");
     location_key.Set(location);
   }
 
-  LOG(ERROR) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
-             << location << ").";
+  if (details.detail) {
+    static crash_reporter::CrashKeyString<128> detail_key("v8-oom-detail");
+    detail_key.Set(details.detail);
+  }
+
+  LOG(ERROR) << PrintV8OOM{location, details};
   OOM_CRASH(0);
 }
-
-namespace {
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:

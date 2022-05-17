@@ -29,10 +29,9 @@ namespace gin {
 class GIN_EXPORT V8Initializer {
  public:
   // This should be called by IsolateHolder::Initialize().
-  static void Initialize(
-      IsolateHolder::ScriptMode mode,
-      const std::string js_command_line_flags = {},
-      v8::LegacyOOMErrorCallback oom_error_callback = nullptr);
+  static void Initialize(IsolateHolder::ScriptMode mode,
+                         const std::string js_command_line_flags = {},
+                         v8::OOMErrorCallback oom_error_callback = nullptr);
 
   // Get address and size information for currently loaded snapshot.
   // If no snapshot is loaded, the return values are null for addresses
