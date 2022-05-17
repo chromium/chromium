@@ -1493,8 +1493,15 @@ class PrivateNetworkAccessAutoReloadBrowserTest
 // This test verifies that when a document in the `local` address space fails to
 // load due to a transient network error, it is auto-reloaded a short while
 // later and that fetch is not blocked as a private network request.
+//
+// TODO(crbug.com/1326341): Flaky on Linux ChromiumOS MSAN.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AutoReloadWorks DISABLED_AutoReloadWorks
+#else
+#define MAYBE_AutoReloadWorks AutoReloadWorks
+#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
-                       AutoReloadWorks) {
+                       MAYBE_AutoReloadWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/defaultresponse");
 
