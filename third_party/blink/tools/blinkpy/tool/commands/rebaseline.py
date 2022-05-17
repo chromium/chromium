@@ -75,11 +75,11 @@ class AbstractRebaseliningCommand(Command):
     builder_option = optparse.make_option(
         '--builder',
         help=('Name of the builder to pull new baselines from, '
-              'e.g. "WebKit Mac10.12".'))
+              'e.g. "Mac11 Tests".'))
     port_name_option = optparse.make_option(
         '--port-name',
         help=('Fully-qualified name of the port that new baselines belong to, '
-              'e.g. "mac-mac10.12". If not given, this is determined based on '
+              'e.g. "mac-mac11". If not given, this is determined based on '
               '--builder.'))
     test_option = optparse.make_option('--test', help='Test to rebaseline.')
     build_number_option = optparse.make_option(

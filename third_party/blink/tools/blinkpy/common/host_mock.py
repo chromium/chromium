@@ -77,9 +77,9 @@ class MockHost(MockSystemHost):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Debug']
             },
-            'Fake Test Mac10.12': {
-                'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release'],
+            'Fake Test Mac11': {
+                'port_name': 'mac-mac11',
+                'specifiers': ['Mac11', 'Release'],
                 'is_try_builder': True,
             },
             'fake_blink_try_linux': {

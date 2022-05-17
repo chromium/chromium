@@ -35,8 +35,8 @@ _log = logging.getLogger(__name__)
 
 
 class MacPort(base.Port):
-    SUPPORTED_VERSIONS = ('mac10.12', 'mac10.13', 'mac10.14', 'mac10.15',
-                          'mac11', 'mac11-arm64')
+    SUPPORTED_VERSIONS = ('mac10.13', 'mac10.14', 'mac10.15', 'mac11',
+                          'mac11-arm64')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
@@ -47,7 +47,6 @@ class MacPort(base.Port):
     FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11']
     FALLBACK_PATHS['mac10.14'] = ['mac-mac10.14'] + FALLBACK_PATHS['mac10.15']
     FALLBACK_PATHS['mac10.13'] = ['mac-mac10.13'] + FALLBACK_PATHS['mac10.14']
-    FALLBACK_PATHS['mac10.12'] = ['mac-mac10.12'] + FALLBACK_PATHS['mac10.13']
 
     CONTENT_SHELL_NAME = 'Content Shell'
 
@@ -63,12 +62,6 @@ class MacPort(base.Port):
                 # to `version = host.platform.os_version + '-arm64'`. This
                 # must be done before macOS 12 capability for this script.
                 version = 'mac11-arm64'
-            # TODO(crbug.com/1114885): This is to workaround the failure of
-            # blink_python_tests on mac10.10 and 10.11 waterfall bots. Remove this
-            # when we remove the step from the bots.
-            elif (host.platform.os_version == 'mac10.10'
-                  or host.platform.os_version == 'mac10.11'):
-                version = 'mac10.12'
             # TODO(crbug.com/1126062): Workaround for Big sur using 10.16 version,
             # use mac11 instead. This must be done before macOS 12 capability
             # for this script.
@@ -122,9 +115,7 @@ class MacPort(base.Port):
 
     def default_smoke_test_only(self):
         # only run platform specific tests on older mac versions
-        if self.host.platform.os_version in [
-                'mac10.12', 'mac10.13', 'mac10.14'
-        ]:
+        if self.host.platform.os_version in ['mac10.13', 'mac10.14']:
             return True
         return False
 

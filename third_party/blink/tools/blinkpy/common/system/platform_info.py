@@ -178,7 +178,7 @@ class PlatformInfo(object):
         major_release = int(mac_version_string.split('.')[0])
         minor_release = int(mac_version_string.split('.')[1])
         if major_release == 10:
-            assert 10 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
+            assert 13 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
             return 'mac{major_release}.{minor_release}'.format(
                 major_release=major_release,
                 minor_release=minor_release,

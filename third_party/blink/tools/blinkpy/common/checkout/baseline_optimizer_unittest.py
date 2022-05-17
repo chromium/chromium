@@ -93,17 +93,13 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'port_name': 'mac-mac10.13',
                 'specifiers': ['Mac10.13', 'Release']
             },
-            'Fake Test Mac10.12': {
-                'port_name': 'mac-mac10.12',
-                'specifiers': ['Mac10.12', 'Release']
-            },
         })
         # Note: this is a pre-assumption of the tests in this file. If this
         # assertion fails, port configurations are likely changed, and the
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
-            'linux-trusty', 'mac-mac10.12', 'mac-mac10.13', 'mac-mac10.14',
-            'mac-mac10.15', 'mac-mac11', 'win-win10.20h2', 'win-win11'
+            'linux-trusty', 'mac-mac10.13', 'mac-mac10.14', 'mac-mac10.15',
+            'mac-mac11', 'win-win10.20h2', 'win-win11'
         ])
 
     def _assert_optimization(self,

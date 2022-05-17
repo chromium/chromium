@@ -45,9 +45,6 @@ class WebTestBuilders(builders.Builders):
                     'linux-blink-rel',
                     'v8_linux_blink_rel',
                 },
-                'mac10.12-blink-rel-dummy': {
-                    'mac10.12-blink-rel',
-                },
                 'mac10.13-blink-rel-dummy': {
                     'mac10.13-blink-rel',
                 },
