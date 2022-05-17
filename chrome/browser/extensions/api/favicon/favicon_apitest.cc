@@ -29,7 +29,7 @@ class FaviconApiTest : public ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ScopedCurrentChannel current_cnannel_{version_info::Channel::CANARY};
+  ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
 };
 
 // TODO(crbug.com/1319934): Test is flaky on Mac.
