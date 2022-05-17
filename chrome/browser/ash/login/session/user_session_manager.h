@@ -452,9 +452,6 @@ class UserSessionManager
   // profile is ready.
   void InitializeBrowser(Profile* profile);
 
-  // Starts out-of-box flow with the specified screen.
-  void ActivateWizard(OobeScreenId screen);
-
   // Launches the Help App depending on flags / prefs / user.
   void MaybeLaunchHelpApp(Profile* profile) const;
 

@@ -1769,12 +1769,6 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   }
 }
 
-void UserSessionManager::ActivateWizard(OobeScreenId screen) {
-  LoginDisplayHost* host = LoginDisplayHost::default_host();
-  CHECK(host);
-  host->StartWizard(screen);
-}
-
 void UserSessionManager::MaybeLaunchHelpApp(Profile* profile) const {
   if (first_run::ShouldLaunchHelpApp(profile)) {
     // Don't open default Chrome window if we're going to launch the first-run
