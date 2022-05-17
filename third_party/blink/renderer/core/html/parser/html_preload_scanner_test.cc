@@ -1173,12 +1173,12 @@ TEST_F(HTMLPreloadScannerTest, testScriptTypeAndLanguage) {
       {"http://example.test",
        "<script language='javascript1.1' src='test.js'></script>", "test.js",
        "http://example.test/", ResourceType::kScript, 0},
-      // Allow legacy languages in the "type" attribute.
+      // Do not allow legacy languages in the "type" attribute.
       {"http://example.test",
-       "<script type='javascript' src='test.js'></script>", "test.js",
+       "<script type='javascript' src='test.js'></script>", nullptr,
        "http://example.test/", ResourceType::kScript, 0},
       {"http://example.test",
-       "<script type='javascript1.7' src='test.js'></script>", "test.js",
+       "<script type='javascript1.7' src='test.js'></script>", nullptr,
        "http://example.test/", ResourceType::kScript, 0},
       // Do not allow invalid types in the "type" attribute.
       {"http://example.test", "<script type='invalid' src='test.js'></script>",

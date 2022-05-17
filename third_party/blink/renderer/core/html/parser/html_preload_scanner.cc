@@ -691,7 +691,7 @@ class TokenPreloadScanner::StartTagScanner {
       ScriptLoader::ScriptTypeAtPrepare script_type =
           ScriptLoader::GetScriptTypeAtPrepare(
               type_attribute_value_, language_attribute_value_,
-              ScriptLoader::kAllowLegacyTypeInTypeAttribute);
+              ScriptLoader::kDisallowLegacyTypeInTypeAttribute);
       switch (script_type) {
         case ScriptLoader::ScriptTypeAtPrepare::kInvalid:
           return false;
