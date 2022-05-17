@@ -179,6 +179,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
+  [HttpsOnlyModeAppInterface clearAllowlist];
 
   // Start the HTTP server.
   _HTTPResponseCounter = 0;
@@ -440,16 +441,16 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
       waitForWebStateContainingText:"You are seeing this warning because this "
                                     "site does not support HTTPS"];
   [self assertFailedUpgrade:1];
-  GREYAssertEqual(1, _HTTPResponseCounter,
-                  @"The page should have been loaded once");
+  GREYAssertEqual(2, _HTTPResponseCounter,
+                  @"The server should have responded twice");
 
   // Click through the interstitial.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
              @"Timer is still running");
-  GREYAssertEqual(2, _HTTPResponseCounter,
-                  @"The page should have been loaded twice");
+  GREYAssertEqual(3, _HTTPResponseCounter,
+                  @"The server should have responded three times");
 
   // Close all tabs and reopen. This clears the allowlist because it's currently
   // per-tab.
@@ -467,7 +468,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return self->_HTTPResponseCounter > 2;
+    return self->_HTTPResponseCounter > 3;
   });
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 

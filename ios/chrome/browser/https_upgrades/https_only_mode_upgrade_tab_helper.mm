@@ -252,47 +252,6 @@ void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {
   web_state()->Stop();
 }
 
-void HttpsOnlyModeUpgradeTabHelper::ShouldAllowRequest(
-    NSURLRequest* request,
-    WebStatePolicyDecider::RequestInfo request_info,
-    WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  // Ignore subframe requests.
-  if (!request_info.target_frame_is_main) {
-    std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
-    return;
-  }
-  DCHECK(!stopped_loading_to_upgrade_);
-
-  // Show an interstitial if this is a fallback HTTP navigation.
-  if (!is_http_fallback_navigation_) {
-    std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
-    return;
-  }
-  // This is a fallback navigation, no need to keep the slow upgrade timer
-  // running.
-  timer_.Stop();
-
-  // If the URL is in the allowlist, don't show any warning. This can happen
-  // if another tab allowlists the host before we initiate the fallback
-  // navigation.
-  DCHECK(!was_upgraded_);
-  is_http_fallback_navigation_ = false;
-  GURL url = net::GURLWithNSURL(request.URL);
-  if (IsHttpAllowedForUrl(url)) {
-    std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
-    return;
-  }
-  DCHECK(url.SchemeIs(url::kHttpScheme) && !IsFakeHTTPSForTesting(url));
-  DCHECK(!was_upgraded_);
-  HttpsOnlyModeContainer* container =
-      HttpsOnlyModeContainer::FromWebState(web_state());
-  container->SetHttpUrl(http_url_);
-  std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
-}
-
 void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
     WebStatePolicyDecider::ResponseInfo response_info,
@@ -300,15 +259,12 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
         callback) {
   GURL url = net::GURLWithNSURL(response.URL);
   // Ignore subframe navigations and schemes that we don't care about.
-  // TODO(crbug.com/1302509): Exclude prerender navigations here.
   if (!response_info.for_main_frame ||
       !(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
-  // Fallback navigations are handled in ShouldAllowRequest().
-  DCHECK(!is_http_fallback_navigation_);
 
   // If the URL is in the allowlist, don't upgrade.
   if (IsHttpAllowedForUrl(url)) {
@@ -316,10 +272,23 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
+
   // If already HTTPS (real or faux), simply allow the response.
   if (url.SchemeIs(url::kHttpsScheme) || IsFakeHTTPSForTesting(url)) {
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  if (is_http_fallback_navigation_) {
+    DCHECK(!stopped_loading_to_upgrade_);
+    DCHECK(!was_upgraded_);
+    DCHECK(!timer_.IsRunning());
+    is_http_fallback_navigation_ = false;
+    HttpsOnlyModeContainer* container =
+        HttpsOnlyModeContainer::FromWebState(web_state());
+    container->SetHttpUrl(http_url_);
+    std::move(callback).Run(CreateHttpsOnlyModeErrorDecision());
     return;
   }
 

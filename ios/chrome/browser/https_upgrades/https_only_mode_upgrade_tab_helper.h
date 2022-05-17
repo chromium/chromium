@@ -82,10 +82,6 @@ class HttpsOnlyModeUpgradeTabHelper
   void FallbackToHttp();
 
   // web::WebStatePolicyDecider implementation
-  void ShouldAllowRequest(
-      NSURLRequest* request,
-      WebStatePolicyDecider::RequestInfo request_info,
-      WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void ShouldAllowResponse(
       NSURLResponse* response,
       WebStatePolicyDecider::ResponseInfo response_info,
