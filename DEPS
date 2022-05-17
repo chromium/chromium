@@ -1699,7 +1699,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/SeleniumHQ/selenium/py.git' + '@' + 'd0045ec570c1a77612db35d1e92f05e1d27b4d53',
 
   'src/third_party/webgl/src':
-    Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '91203c5008bd0de7afac257d29ae0ad8cc0deae0',
+    Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + 'd4d598789af1e73a1bdd6c9eec246e75ff43551a',
 
   'src/third_party/webgpu-cts/src':
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'e518bfe8a42b5a3070cde35d03dc7317187801c1',
