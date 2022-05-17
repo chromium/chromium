@@ -42,23 +42,12 @@ class VaapiVideoEncoderDelegate {
                             base::RepeatingClosure error_cb);
   virtual ~VaapiVideoEncoderDelegate();
 
-  enum class BitrateControl {
-    kConstantBitrate,  // Constant Bitrate mode. This class relies on other
-                       // parts (e.g. driver) to achieve the specified bitrate.
-    kConstantQuantizationParameter  // Constant Quantization Parameter mode.
-                                    // This class needs to compute a proper
-                                    // quantization parameter and give other
-                                    // parts (e.g. the driver) the value.
-  };
-
   struct Config {
     // Maximum number of reference frames.
     // For H.264 encoding, the value represents the maximum number of reference
     // frames for both the reference picture list 0 (bottom 16 bits) and the
     // reference picture list 1 (top 16 bits).
     size_t max_num_ref_frames;
-
-    BitrateControl bitrate_control = BitrateControl::kConstantBitrate;
   };
 
   // EncodeResult owns the necessary resource to keep the encoded buffer. The
@@ -195,9 +184,8 @@ class VaapiVideoEncoderDelegate {
   virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
 
   // Notifies the encoded chunk size in bytes to update a bitrate controller in
-  // VaapiVideoEncoderDelegate. This should be called only if
-  // VaapiVideoEncoderDelegate is configured with
-  // BitrateControl::kConstantQuantizationParameter.
+  // VaapiVideoEncoderDelegate. This should be called only if constant
+  // quantization encoding is used, which currently is true for VP8 and VP9.
   virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
 };
 }  // namespace media

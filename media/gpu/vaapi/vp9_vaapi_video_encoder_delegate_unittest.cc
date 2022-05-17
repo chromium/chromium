@@ -49,9 +49,7 @@ constexpr uint8_t kTemporalLayerPattern[][4] = {
 };
 
 VaapiVideoEncoderDelegate::Config kDefaultVaapiVideoEncoderDelegateConfig{
-    .max_num_ref_frames = kDefaultMaxNumRefFrames,
-    .bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
-        kConstantQuantizationParameter};
+    .max_num_ref_frames = kDefaultMaxNumRefFrames};
 
 VideoEncodeAccelerator::Config kDefaultVideoEncodeAcceleratorConfig(
     PIXEL_FORMAT_I420,
@@ -261,8 +259,6 @@ struct VP9VaapiVideoEncoderDelegateTestParam;
 class VP9VaapiVideoEncoderDelegateTest
     : public ::testing::TestWithParam<VP9VaapiVideoEncoderDelegateTestParam> {
  public:
-  using BitrateControl = VaapiVideoEncoderDelegate::BitrateControl;
-
   VP9VaapiVideoEncoderDelegateTest() = default;
   ~VP9VaapiVideoEncoderDelegateTest() override = default;
 

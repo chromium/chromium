@@ -274,14 +274,6 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
-  // Even though VP8VaapiVideoEncoderDelegate might support other bitrate
-  // control modes, only the kConstantQuantizationParameter is used.
-  if (ave_config.bitrate_control != VaapiVideoEncoderDelegate::BitrateControl::
-                                        kConstantQuantizationParameter) {
-    DVLOGF(1) << "Only CQ bitrate control is supported";
-    return false;
-  }
-
   if (config.HasSpatialLayer()) {
     DVLOGF(1) << "Invalid configuration. Spatial layers not supported in VP8";
     return false;

@@ -363,27 +363,18 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
         encoder_ = std::make_unique<H264VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
-
-      DCHECK_EQ(ave_config.bitrate_control,
-                VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
       break;
     case VideoCodec::kVP8:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP8VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
-
-      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
-          kConstantQuantizationParameter;
       break;
     case VideoCodec::kVP9:
       if (!IsConfiguredForTesting()) {
         encoder_ = std::make_unique<VP9VaapiVideoEncoderDelegate>(
             vaapi_wrapper_, error_cb);
       }
-
-      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
-          kConstantQuantizationParameter;
       break;
     default:
       NOTREACHED() << "Unsupported codec type " << GetCodecName(output_codec_);

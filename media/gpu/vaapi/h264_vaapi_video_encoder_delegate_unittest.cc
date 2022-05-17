@@ -23,8 +23,6 @@ namespace {
 
 VaapiVideoEncoderDelegate::Config kDefaultVEADelegateConfig{
     .max_num_ref_frames = 4,
-    .bitrate_control =
-        VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate,
 };
 
 VideoEncodeAccelerator::Config kDefaultVEAConfig(

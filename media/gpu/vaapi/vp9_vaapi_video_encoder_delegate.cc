@@ -185,14 +185,6 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
-  // Even though VP9VaapiVideoEncoderDelegate might support other bitrate
-  // control modes, only the kConstantQuantizationParameter is used.
-  if (ave_config.bitrate_control != VaapiVideoEncoderDelegate::BitrateControl::
-                                        kConstantQuantizationParameter) {
-    DVLOGF(1) << "Only CQ bitrate control is supported";
-    return false;
-  }
-
   visible_size_ = config.input_visible_size;
   coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
                           base::bits::AlignUp(visible_size_.height(), 16));
