@@ -9,15 +9,36 @@
 #include <string>
 
 #include "base/callback.h"
+#include "url/gurl.h"
 
 class AssistantOnboardingPrompt;
 
-// Holds information for the consent text.
-// TODO(crbug.com/1322387): Add remaining fields, place proper internationalized
-// strings.
+// Holds information for the consent dialog.
 struct AssistantOnboardingInformation {
-  std::u16string consent_caption;
+  AssistantOnboardingInformation();
+  ~AssistantOnboardingInformation();
+
+  AssistantOnboardingInformation(const AssistantOnboardingInformation&);
+  AssistantOnboardingInformation& operator=(
+      const AssistantOnboardingInformation&);
+
+  AssistantOnboardingInformation(AssistantOnboardingInformation&&);
+  AssistantOnboardingInformation& operator=(AssistantOnboardingInformation&&);
+
+  // The header title and sub-title.
+  std::u16string title;
+  std::u16string sub_title;
+
+  // The consent text containing the legal disclaimer.
   std::u16string consent_text;
+
+  // The shown text and the URL of the "learn more" link.
+  std::u16string learn_more_title;
+  GURL learn_more_url;
+
+  // The text on the buttons for declining and granting consent.
+  std::u16string button_cancel_text;
+  std::u16string button_accept_text;
 };
 
 // Abstract interface for a controller of an |OnboardingPrompt|.

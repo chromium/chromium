@@ -31,8 +31,8 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
   // If not, construct controller and view and wait for signal.
   // TODO(crbug.com/1322387): User proper consent texts.
   AssistantOnboardingInformation info;
-  info.consent_caption = u"Do you give consent to use Autofill Assistant?";
-  info.consent_text = u"This is what you agree to.";
+  info.title = u"Dummy string 1";
+  info.sub_title = u"Dummy string 2";
 
   dialog_controller_ = CreateOnboardingController(info);
   dialog_controller_->Show(

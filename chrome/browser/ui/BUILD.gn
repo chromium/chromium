@@ -958,6 +958,7 @@ static_library("ui") {
       "apps/directory_access_confirmation_dialog.cc",
       "apps/directory_access_confirmation_dialog.h",
       "autofill_assistant/password_change/assistant_display_delegate.h",
+      "autofill_assistant/password_change/assistant_onboarding_controller.cc",
       "autofill_assistant/password_change/assistant_onboarding_controller.h",
       "autofill_assistant/password_change/assistant_onboarding_controller_impl.cc",
       "autofill_assistant/password_change/assistant_onboarding_controller_impl.h",
