@@ -233,11 +233,14 @@ ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
   builder.Add("brands", brands());
   builder.Add("mobile", mobile());
+  builder.Add("platform", platform());
 
-  // Record IdentifiabilityStudy metrics for `mobile()` (the `brands()` part is
-  // already recorded inside that function).
+  // Record IdentifiabilityStudy metrics for `mobile()` and `platform()`
+  // (the `brands()` part is already recorded inside that function).
   Dactyloscoper::RecordDirectSurface(
       GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
+  Dactyloscoper::RecordDirectSurface(
+      GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
 
   return builder.GetScriptValue();
 }
