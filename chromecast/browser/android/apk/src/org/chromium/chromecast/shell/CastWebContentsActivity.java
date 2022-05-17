@@ -223,6 +223,10 @@ public class CastWebContentsActivity extends Activity {
             CastWebContentsComponent.onComponentClosed(
                     CastWebContentsIntentUtils.getSessionId(getIntent()));
             mIsFinishingState.set("User exit while in lock task mode");
+        } else if (mIsInPictureInPictureMode) {
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit while in picture-in-picture mode");
         }
         super.onStop();
     }

@@ -367,6 +367,34 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    @Config(shadows = {ExtendedShadowActivity.class}, sdk = {Build.VERSION_CODES.O})
+    public void testStopWhileNotInPipModeDoesNotCloseActivity() {
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        mActivityLifecycle.create().start().resume();
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
+                    mActivityLifecycle.pause().stop();
+                    assertFalse(mShadowActivity.isFinishing());
+                }, false);
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class}, sdk = {Build.VERSION_CODES.O})
+    public void testStopWhileInPipModeClosesActivity() {
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        mActivityLifecycle.create().start().resume();
+        mActivity.onUserLeaveHint();
+        mActivity.onPictureInPictureModeChanged(true, null);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
+                    mActivityLifecycle.pause().stop();
+                    assertTrue(mShadowActivity.isFinishing());
+                }, true);
+    }
+
+    @Test
     public void
     testComponentNotClosedWhenDestroyedBeforeIsFinishingStateAndActitivityIsNotFinishing() {
         mActivityLifecycle.create();
