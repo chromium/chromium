@@ -5434,7 +5434,7 @@
   {
     "name": "shimless-rma-flow",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "shopping-list",
