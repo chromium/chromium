@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
@@ -91,6 +92,14 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
 // TODO(vmpstr): This could be optimized by caching values for individual layout
 // boxes. However, it's unclear when the cache should be cleared.
 PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
+  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(*box)) {
+    // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
+    // opposed to the intersection between the clip-path and the border box
+    // bounds. This seems suboptimal, but that's the rect that we use further
+    // down the pipeline to generate the texture.
+    return PhysicalRect::EnclosingRect(*clip_path_bounds);
+  }
+
   PhysicalRect result;
   for (auto* child = box->Layer()->FirstChild(); child;
        child = child->NextSibling()) {
@@ -103,26 +112,7 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
   // in the visual overflow from the own painting layer.
   result.Intersect(box->OverflowClipRect(PhysicalOffset()));
   result.Unite(box->PhysicalVisualOverflowRectIncludingFilters());
-
-  const ComputedStyle& style = box->StyleRef();
-  if (!style.HasClipPath())
-    return result;
-
-  ClipPathOperation* clip_path = style.ClipPath();
-  if (clip_path->GetType() != ClipPathOperation::kShape)
-    return result;
-
-  ShapeClipPathOperation* shape =
-      static_cast<ShapeClipPathOperation*>(clip_path);
-  // TODO(vmpstr): Should this by PhysicalBorderBoxRect or Logical?
-  const Path& path = shape->GetPath(
-      static_cast<gfx::RectF>(box->BorderBoxRect()), style.EffectiveZoom());
-
-  // TODO(vmpstr): This is just the bounds of the clip-path, as opposed to the
-  // intersection between the clip-path and the border box bounds. This seems
-  // suboptimal, but that's the rect that we use further down the pipeline to
-  // generate the texture.
-  return static_cast<PhysicalRect>(gfx::ToEnclosingRect(path.BoundingRect()));
+  return result;
 }
 
 }  // namespace
