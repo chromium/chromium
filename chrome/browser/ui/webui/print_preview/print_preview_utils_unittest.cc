@@ -17,6 +17,7 @@ namespace {
 const char kCollate[] = "collate";
 const char kDisplayName[] = "display_name";
 const char kDpi[] = "dpi";
+const char kHorizontalDpi[] = "horizontal_dpi";
 const char kId[] = "id";
 const char kIsDefault[] = "is_default";
 const char kMediaSizes[] = "media_sizes";
@@ -26,6 +27,7 @@ const char kPrinter[] = "printer";
 const char kResetToDefault[] = "reset_to_default";
 const char kValue[] = "value";
 const char kVendorCapability[] = "vendor_capability";
+const char kVerticalDpi[] = "vertical_dpi";
 
 base::Value::Dict GetCapabilitiesFull() {
   base::Value::Dict printer;
@@ -35,9 +37,15 @@ base::Value::Dict GetCapabilitiesFull() {
   list_media.Append("A4");
   printer.Set(kMediaSizes, std::move(list_media));
 
+  base::Value::Dict dpi_300;
+  dpi_300.Set(kHorizontalDpi, 300);
+  dpi_300.Set(kVerticalDpi, 300);
+  base::Value::Dict dpi_600;
+  dpi_600.Set(kHorizontalDpi, 600);
+  dpi_600.Set(kVerticalDpi, 600);
   base::Value::List list_dpi;
-  list_dpi.Append(300);
-  list_dpi.Append(600);
+  list_dpi.Append(std::move(dpi_300));
+  list_dpi.Append(std::move(dpi_600));
 
   base::Value::Dict options;
   options.Set(kOptionKey, std::move(list_dpi));
@@ -131,15 +139,16 @@ void ValidateDpi(const base::Value::Dict* printer_out,
     EXPECT_FALSE(dpi_option_out);
     return;
   }
-  const base::Value::List* dpi_list = expected_dpi->FindList(kOptionKey);
-  if (!HasValidEntry(dpi_list)) {
+  const base::Value::List* expected_dpi_list =
+      expected_dpi->FindList(kOptionKey);
+  if (!HasValidEntry(expected_dpi_list)) {
     EXPECT_FALSE(dpi_option_out);
     return;
   }
   ASSERT_TRUE(dpi_option_out);
   const base::Value::List* dpi_list_out = dpi_option_out->FindList(kOptionKey);
   ASSERT_TRUE(dpi_list_out);
-  ValidateList(dpi_list_out, dpi_list);
+  ValidateList(dpi_list_out, expected_dpi_list);
 }
 
 void ValidateCollate(const base::Value::Dict* printer_out) {
@@ -237,31 +246,49 @@ TEST_F(PrintPreviewUtilsTest, FilterBadList) {
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadOptionOneElement) {
+  // Set up the test expectations.
   base::Value::Dict printer = GetCapabilitiesFull();
   printer.Remove(kDpi);
-  base::Value::Dict options;
+  base::Value::Dict dpi_600;
+  dpi_600.Set(kHorizontalDpi, 600);
+  dpi_600.Set(kVerticalDpi, 600);
   base::Value::List list_dpi;
-  list_dpi.Append(base::Value());
-  list_dpi.Append(600);
+  list_dpi.Append(std::move(dpi_600));
+  base::Value::Dict options;
   options.Set(kOptionKey, std::move(list_dpi));
   printer.Set(kDpi, std::move(options));
+
+  // Clone the test expectations, and insert a bad DPI value.
   base::Value::Dict cdd;
-  cdd.Set(kPrinter, printer.Clone());
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
+  base::Value::Dict* cdd_printer_dpi_dict = cdd_printer.FindDict(kDpi);
+  ASSERT_TRUE(cdd_printer_dpi_dict);
+  base::Value::List* cdd_printer_dpi_list =
+      cdd_printer_dpi_dict->FindList(kOptionKey);
+  ASSERT_TRUE(cdd_printer_dpi_list);
+  cdd_printer_dpi_list->Insert(cdd_printer_dpi_list->begin(), base::Value());
+
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadOptionAllElement) {
+  // Set up the test expectations.
   base::Value::Dict printer = GetCapabilitiesFull();
   printer.Remove(kDpi);
-  base::Value::Dict options;
+
+  // Clone the test expectations, and insert bad DPI values.
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
   base::Value::List list_dpi;
   list_dpi.Append(base::Value());
   list_dpi.Append(base::Value());
+  base::Value::Dict options;
   options.Set(kOptionKey, std::move(list_dpi));
-  printer.Set(kDpi, std::move(options));
-  base::Value::Dict cdd;
-  cdd.Set(kPrinter, printer.Clone());
+  cdd_printer.Set(kDpi, std::move(options));
+
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(cdd_out, printer);
 }
