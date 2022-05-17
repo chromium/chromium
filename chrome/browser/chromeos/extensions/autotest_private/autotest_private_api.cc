@@ -1385,13 +1385,13 @@ AutotestPrivateGetAllEnterprisePoliciesFunction::Run() {
 
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       browser_context());
-  base::Value all_policies_array =
+  base::Value::Dict all_policies_dict =
       policy::DictionaryPolicyConversions(std::move(client))
           .EnableDeviceLocalAccountPolicies(true)
           .EnableDeviceInfo(true)
-          .ToValue();
+          .ToValueDict();
 
-  return RespondNow(OneArgument(std::move(all_policies_array)));
+  return RespondNow(OneArgument(base::Value(std::move(all_policies_dict))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

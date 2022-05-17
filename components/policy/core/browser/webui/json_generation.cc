@@ -23,8 +23,8 @@ JsonGenerationParams::~JsonGenerationParams() = default;
 std::string GenerateJson(std::unique_ptr<PolicyConversionsClient> client,
                          base::Value status,
                          const JsonGenerationParams& params) {
-  base::Value chrome_metadata(base::Value::Type::DICTIONARY);
-  chrome_metadata.SetKey("application", base::Value(params.application_name));
+  base::Value::Dict chrome_metadata;
+  chrome_metadata.Set("application", params.application_name);
 
   std::string version = base::StringPrintf(
       "%s (%s)%s %s%s", version_info::GetVersionNumber().c_str(),
@@ -36,25 +36,23 @@ std::string GenerateJson(std::unique_ptr<PolicyConversionsClient> client,
       params.processor_variation.c_str(),
       params.cohort_name ? params.cohort_name->c_str() : "");
 
-  chrome_metadata.SetKey("version", base::Value(version));
+  chrome_metadata.Set("version", version);
 
   if (params.os_name && !params.os_name->empty()) {
-    chrome_metadata.SetKey("OS", base::Value(params.os_name.value()));
+    chrome_metadata.Set("OS", params.os_name.value());
   }
 
   if (params.platform_name && !params.platform_name->empty()) {
-    chrome_metadata.SetKey("platform",
-                           base::Value(params.platform_name.value()));
+    chrome_metadata.Set("platform", params.platform_name.value());
   }
 
-  chrome_metadata.SetKey("revision",
-                         base::Value(version_info::GetLastChange()));
+  chrome_metadata.Set("revision", version_info::GetLastChange());
 
-  base::Value dict =
-      policy::DictionaryPolicyConversions(std::move(client)).ToValue();
+  base::Value::Dict dict =
+      policy::DictionaryPolicyConversions(std::move(client)).ToValueDict();
 
-  dict.SetKey("chromeMetadata", std::move(chrome_metadata));
-  dict.SetKey("status", std::move(status));
+  dict.Set("chromeMetadata", std::move(chrome_metadata));
+  dict.Set("status", std::move(status));
 
   std::string json_policies;
   base::JSONWriter::WriteWithOptions(
