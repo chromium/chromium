@@ -100,7 +100,7 @@ void LockProcessIfNeeded(int process_id,
       site_instance->GetSiteInfo().ShouldLockProcessToSite(
           site_instance->GetIsolationContext())) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(), process_id,
+        site_instance->GetIsolationContext(), process_id, false,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
   }
 }
@@ -3044,6 +3044,7 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
 
     EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
@@ -3098,6 +3099,7 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
         SiteInstanceImpl::CreateForUrlInfo(&context, url_info,
                                            /*is_guest=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
 
     EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
@@ -3176,6 +3178,7 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     // BrowsingInstanceId will not be '1' in general.
     p->Add(kRendererID, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   /*is_process_used=*/false,
                    ProcessLock::CreateAllowAnySite(
                        StoragePartitionConfig::CreateDefault(&context),
                        WebExposedIsolationInfo::CreateNonIsolated()));
@@ -3202,5 +3205,43 @@ TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
   // We need to remove it otherwise other tests may fail.
   p->Remove(kRendererID);
 }
+
+// Regression test for https://crbug.com/1324407.
+// This does not pass on Android due to a difference with threads in the
+// EXPECT_DEATH_IF_SUPPORTED block.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  TestBrowserContext context;
+
+  scoped_refptr<SiteInstanceImpl> foo_instance =
+      SiteInstanceImpl::CreateForTesting(&context, GURL("https://foo.com"));
+  scoped_refptr<SiteInstanceImpl> bar_instance =
+      SiteInstanceImpl::CreateForTesting(&context, GURL("https://bar.com"));
+
+  // Start by putting foo.com into an allows-any-site process.
+  p->Add(kRendererID, &context);
+  p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                 /*is_process_used=*/false,
+                 ProcessLock::CreateAllowAnySite(
+                     StoragePartitionConfig::CreateDefault(&context),
+                     WebExposedIsolationInfo::CreateNonIsolated()));
+  EXPECT_TRUE(p->GetProcessLock(kRendererID).allows_any_site());
+  EXPECT_FALSE(p->GetProcessLock(kRendererID).is_locked_to_site());
+
+  // If the process is then considered used (e.g., by loading content), it
+  // should not be possible to lock it to another site.
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        p->LockProcess(bar_instance->GetIsolationContext(), kRendererID,
+                       /*is_process_used=*/true,
+                       ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
+      },
+      // Regular expression expected to be found in the output. Note that braces
+      // aren't supported in the matching (e.g., for "{ https://bar.com }").
+      "Cannot lock an already used process to . https://bar.com/ .");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

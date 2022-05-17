@@ -426,9 +426,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // directly. |isolation_context| provides the context, such as
   // BrowsingInstance, from which this process locked was created. This
   // information is used when making isolation decisions for this process, such
-  // as determining which isolated origins pertain to it.
+  // as determining which isolated origins pertain to it. |is_process_used|
+  // indicates whether any content has been loaded in the process already.
   void LockProcess(const IsolationContext& isolation_context,
                    int child_id,
+                   bool is_process_used,
                    const ProcessLock& process_lock);
 
   // Testing helper method that generates a lock_url from |url| and then
