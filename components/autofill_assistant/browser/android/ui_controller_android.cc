@@ -246,17 +246,18 @@ std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   JNIEnv* env = AttachCurrentThread();
-  if (!Java_AutofillAssistantUiController_shouldCreateNewInstance(
+  if (!Java_AutofillAssistantUiController_canAttachUi(
           env, web_contents->GetJavaWebContents(), jdependencies)) {
     return nullptr;
   }
 
-  return std::make_unique<UiControllerAndroid>(env, jdependencies,
+  return std::make_unique<UiControllerAndroid>(env, web_contents, jdependencies,
                                                joverlay_coordinator);
 }
 
 UiControllerAndroid::UiControllerAndroid(
     JNIEnv* env,
+    content::WebContents* web_contents,
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator)
     : overlay_delegate_(this),
@@ -268,7 +269,8 @@ UiControllerAndroid::UiControllerAndroid(
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)) {
   java_object_ = Java_AutofillAssistantUiController_Constructor(
-      env, reinterpret_cast<intptr_t>(this), jdependencies,
+      env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
+      jdependencies,
       /* allowTabSwitching= */
       base::FeatureList::IsEnabled(features::kAutofillAssistantChromeEntry),
       joverlay_coordinator);
@@ -282,8 +284,8 @@ UiControllerAndroid::UiControllerAndroid(
   // Register header_delegate_ as delegate for clicks on header buttons.
   header_model_->SetDelegate(header_delegate_);
 
-  // Register collect_user_data_delegate_ as delegate for the collect user data
-  // UI.
+  // Register collect_user_data_delegate_ as delegate for the collect user
+  // data UI.
   Java_AssistantCollectUserDataModel_setDelegate(
       env, GetCollectUserDataModel(),
       collect_user_data_delegate_.GetJavaObject());
@@ -316,12 +318,11 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
 
   JNIEnv* env = AttachCurrentThread();
   auto java_web_contents = web_contents->GetJavaWebContents();
-  Java_AutofillAssistantUiController_setWebContents(env, java_object_,
-                                                    java_web_contents);
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   Java_AssistantOverlayModel_setWebContents(env, GetOverlayModel(),
                                             java_web_contents);
+
   OnClientSettingsChanged(execution_delegate_->GetClientSettings());
   Java_AssistantModel_setPeekModeDisabled(env, GetModel(), false);
 
@@ -806,13 +807,13 @@ void UiControllerAndroid::UpdateActions(
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
-          /* content_description= */ nullptr);
+          /* contentDescription= */ nullptr);
     } else if (execution_delegate_->GetState() !=
                AutofillAssistantState::INACTIVE) {
       jcancel_chip = Java_AutofillAssistantUiController_createCancelButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""), -1,
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
-          /* content_description= */ nullptr);
+          /* contentDescription= */ nullptr);
     }
     if (jcancel_chip) {
       Java_AutofillAssistantUiController_appendChipToList(env, jchips,

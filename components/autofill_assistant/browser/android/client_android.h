@@ -65,10 +65,6 @@ class ClientAndroid : public Client,
              const absl::optional<TriggerScriptProto>& trigger_script);
   void OnJavaDestroyUI(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcaller);
-  void TransferUITo(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& jother_web_contents);
 
   base::android::ScopedJavaLocalRef<jstring> GetPrimaryAccountName(
       JNIEnv* env,

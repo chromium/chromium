@@ -121,20 +121,6 @@ public class AutofillAssistantClient {
                 mNativeClientAndroid, AutofillAssistantClient.this);
     }
 
-    /**
-     * Transfers ownership of the UI to an instance of Autofill Assistant running on
-     * the given tab/WebContents. Leaves Autofill Assistant running.
-     *
-     * <p>If Autofill Assistant is not running on the given WebContents, the UI is destroyed, as if
-     * {@link #destroyUi} was called.
-     */
-    public void transferUiTo(WebContents otherWebContents) {
-        if (mNativeClientAndroid == 0) return;
-
-        AutofillAssistantClientJni.get().transferUITo(
-                mNativeClientAndroid, AutofillAssistantClient.this, otherWebContents);
-    }
-
     /** Starts the controller and fetching scripts for websites. */
     public void fetchWebsiteActions(String userName, String experimentIds,
             Map<String, String> arguments, Callback<Boolean> callback) {
@@ -404,8 +390,6 @@ public class AutofillAssistantClient {
                 long nativeClientAndroid, AutofillAssistantClient caller, byte[] clientToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);
         void onJavaDestroyUI(long nativeClientAndroid, AutofillAssistantClient caller);
-        void transferUITo(
-                long nativeClientAndroid, AutofillAssistantClient caller, Object otherWebContents);
         void fetchWebsiteActions(long nativeClientAndroid, AutofillAssistantClient caller,
                 String experimentIds, String[] argumentNames, String[] argumentValues,
                 Object callback);

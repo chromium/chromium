@@ -54,6 +54,7 @@ class UiControllerAndroid : public ControllerObserver, UiControllerObserver {
 
   UiControllerAndroid(
       JNIEnv* env,
+      content::WebContents* web_contents,
       const base::android::JavaRef<jobject>& jdependencies,
       const base::android::JavaRef<jobject>& joverlay_coordinator);
 

@@ -185,33 +185,6 @@ void ClientAndroid::OnJavaDestroyUI(
   DestroyUI();
 }
 
-void ClientAndroid::TransferUITo(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jother_web_contents) {
-  if (!ui_controller_android_)
-    return;
-
-  auto ui_ptr = std::move(ui_controller_android_);
-  // From this point on, the UIController, in ui_ptr, is either transferred or
-  // deleted.
-
-  if (!jother_web_contents)
-    return;
-
-  auto* other_web_contents =
-      content::WebContents::FromJavaWebContents(jother_web_contents);
-  DCHECK_NE(other_web_contents, GetWebContents());
-
-  ClientAndroid* other_client =
-      ClientAndroid::FromWebContents(other_web_contents);
-  if (!other_client || !other_client->NeedsUI())
-    return;
-
-  other_client->ui_controller_android_ = std::move(ui_ptr);
-  other_client->AttachUI();
-}
-
 base::android::ScopedJavaLocalRef<jstring> ClientAndroid::GetPrimaryAccountName(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {

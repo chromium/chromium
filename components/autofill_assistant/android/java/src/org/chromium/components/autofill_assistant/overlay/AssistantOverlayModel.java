@@ -10,7 +10,6 @@ import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -101,7 +100,6 @@ public class AssistantOverlayModel extends PropertyModel {
     }
 
     @CalledByNative
-    @VisibleForTesting
     private void setWebContents(WebContents webContents) {
         set(WEB_CONTENTS, webContents);
     }
