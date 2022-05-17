@@ -254,8 +254,7 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
 
   EXPECT_EQ(GetTypeOf("console"), "object");
   EXPECT_EQ(GetTypeOf("console.log"), "function");
-  EXPECT_EQ(GetTypeOf("registerURLSelectionOperation"), "function");
-  EXPECT_EQ(GetTypeOf("registerOperation"), "function");
+  EXPECT_EQ(GetTypeOf("register"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage"), "object");
   EXPECT_EQ(GetTypeOf("sharedStorage.set"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.append"), "function");
@@ -337,8 +336,7 @@ TEST_F(SharedStorageAddModuleTest, VanillaScriptError) {
 TEST_F(SharedStorageAddModuleTest, ObjectDefinedStatusDuringAddModule) {
   SimulateAddModule(R"(
     if (typeof(console) !== 'object' ||
-        typeof(registerOperation) !== 'function' ||
-        typeof(registerURLSelectionOperation) !== 'function' ||
+        typeof(register) !== 'function' ||
         typeof(sharedStorage) !== 'undefined') {
       throw Error('Unexpected object defined status.');
     }
@@ -350,7 +348,7 @@ TEST_F(SharedStorageAddModuleTest, ObjectDefinedStatusDuringAddModule) {
 
 TEST_F(SharedStorageAddModuleTest, RegisterOperation_MissingOperationName) {
   SimulateAddModule(R"(
-    registerOperation();
+    register();
   )");
 
   EXPECT_FALSE(success());
@@ -361,7 +359,7 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_MissingOperationName) {
 
 TEST_F(SharedStorageAddModuleTest, RegisterOperation_EmptyOperationName) {
   SimulateAddModule(R"(
-    registerOperation("");
+    register("");
   )");
 
   EXPECT_FALSE(success());
@@ -373,7 +371,7 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_EmptyOperationName) {
 TEST_F(SharedStorageAddModuleTest,
        RegisterOperation_MissingClassName_MissingArgument) {
   SimulateAddModule(R"(
-    registerOperation("test-operation");
+    register("test-operation");
   )");
 
   EXPECT_FALSE(success());
@@ -385,7 +383,7 @@ TEST_F(SharedStorageAddModuleTest,
 TEST_F(SharedStorageAddModuleTest,
        RegisterOperation_MissingClassName_NotAnObject) {
   SimulateAddModule(R"(
-    registerOperation("test-operation", 1);
+    register("test-operation", 1);
   )");
 
   EXPECT_FALSE(success());
@@ -396,7 +394,7 @@ TEST_F(SharedStorageAddModuleTest,
 
 TEST_F(SharedStorageAddModuleTest, RegisterOperation_ClassNameNotAConstructor) {
   SimulateAddModule(R"(
-    registerOperation("test-operation", {});
+    register("test-operation", {});
   )");
 
   EXPECT_FALSE(success());
@@ -413,7 +411,7 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_MissingRunFunction) {
       }
     }
 
-    registerOperation("test-operation", TestClass);
+    register("test-operation", TestClass);
   )");
 
   EXPECT_FALSE(success());
@@ -428,7 +426,7 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_Success) {
       async run() {}
     }
 
-    registerOperation("test-operation", TestClass);
+    register("test-operation", TestClass);
   )");
 
   EXPECT_TRUE(success());
@@ -445,8 +443,8 @@ TEST_F(SharedStorageAddModuleTest, RegisterOperation_AlreadyRegistered) {
       async run() {}
     }
 
-    registerOperation("test-operation", TestClass1);
-    registerOperation("test-operation", TestClass2);
+    register("test-operation", TestClass1);
+    register("test-operation", TestClass2);
   )");
 
   EXPECT_FALSE(success());
@@ -559,7 +557,7 @@ TEST_F(SharedStorageRunOperationTest,
         async run() {}
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation-1", /*serialized_data=*/{});
@@ -577,7 +575,7 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_FunctionError) {
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -595,7 +593,7 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_ReturnValueNotAPromise) {
         run() {}
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -615,7 +613,7 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_Microtask) {
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -632,7 +630,7 @@ TEST_F(SharedStorageRunOperationTest,
         async run() {}
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -651,7 +649,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -671,7 +669,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -694,7 +692,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunOperation("test-operation", /*serialized_data=*/{});
@@ -719,7 +717,7 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_ExpectedCustomData) {
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   std::vector<uint8_t> serialized_data;
@@ -751,7 +749,7 @@ TEST_F(SharedStorageRunOperationTest, UnnamedOperation_UnexpectedCustomData) {
         }
       }
 
-      registerOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   std::vector<uint8_t> serialized_data;
@@ -783,7 +781,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerURLSelectionOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunURLSelectionOperation(
@@ -805,7 +803,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerURLSelectionOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunURLSelectionOperation(
@@ -828,7 +826,7 @@ TEST_F(SharedStorageRunOperationTest,
         }
       }
 
-      registerURLSelectionOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunURLSelectionOperation(
@@ -855,7 +853,7 @@ TEST_F(
         }
       }
 
-      registerURLSelectionOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunURLSelectionOperation(
@@ -883,7 +881,7 @@ TEST_F(
         }
       }
 
-      registerURLSelectionOperation("test-operation", TestClass);
+      register("test-operation", TestClass);
     )");
 
   SimulateRunURLSelectionOperation("test-operation", {GURL("https://foo.com")},

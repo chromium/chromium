@@ -24,17 +24,17 @@ class SharedStorageWorkletHost;
 extern CONTENT_EXPORT const char kSharedStorageDisabledMessage[];
 
 // Handle renderer-initiated shared storage access and worklet operations. The
-// worklet operations (i.e. addModule and runOperation) will be dispatched to
-// the `SharedStorageWorkletHost` to be handled.
+// worklet operations (i.e. `addModule()`, `selectURL()`, `run()`) will be
+// dispatched to the `SharedStorageWorkletHost` to be handled.
 class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
     : public DocumentUserData<SharedStorageDocumentServiceImpl>,
       public blink::mojom::SharedStorageDocumentService {
  public:
   // If true, allows operations to bypass the permission check in
   // `IsSharedStorageAllowed()` for testing, in order to simulate the situation
-  // where permission is allowed at the stage where `RunOperation()` is called
-  // but becomes disallowed when subsequent operations are called from inside
-  // the worklet.
+  // where permission is allowed at the stage where `run()` is called but
+  // becomes disallowed when subsequent operations are called from inside the
+  // worklet.
   static bool& GetBypassIsSharedStorageAllowedForTesting();
 
   ~SharedStorageDocumentServiceImpl() final;

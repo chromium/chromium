@@ -144,7 +144,7 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
         /*success=*/false,
         /*error_message=*/
         "sharedStorage.worklet.addModule() has to be called before "
-        "sharedStorage.runOperation().");
+        "sharedStorage.run().");
     return;
   }
 
@@ -164,7 +164,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
         "sharedStorage.worklet.addModule() has to be called before "
-        "sharedStorage.runURLSelectionOperation().",
+        "sharedStorage.selectURL().",
         /*opaque_url=*/{});
     return;
   }
@@ -498,7 +498,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     // This could indicate a compromised worklet environment, so let's terminate
     // it.
     mojo::ReportBadMessage(
-        "Unexpected index number returned from runURLSelectionOperation().");
+        "Unexpected index number returned from selectURL().");
     return;
   }
 

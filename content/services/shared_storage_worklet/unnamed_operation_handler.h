@@ -21,11 +21,11 @@ class UnnamedOperationHandler {
  public:
   struct PendingRequest;
 
-  UnnamedOperationHandler();
+  explicit UnnamedOperationHandler(
+      const std::map<std::string, v8::Global<v8::Function>>&
+          operation_definition_map);
 
   ~UnnamedOperationHandler();
-
-  void RegisterOperation(gin::Arguments* args);
 
   void RunOperation(
       v8::Local<v8::Context> context,
@@ -38,7 +38,8 @@ class UnnamedOperationHandler {
   void OnPromiseRejected(PendingRequest* request, gin::Arguments* args);
 
  private:
-  std::map<std::string, v8::Global<v8::Function>> operation_definition_map_;
+  const std::map<std::string, v8::Global<v8::Function>>&
+      operation_definition_map_;
 
   std::map<PendingRequest*, std::unique_ptr<PendingRequest>> pending_requests_;
 

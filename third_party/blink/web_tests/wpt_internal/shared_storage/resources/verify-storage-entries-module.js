@@ -19,7 +19,7 @@ class VerifyStorageEntriesURLSelectionOperation {
   }
 }
 
-registerOperation("set-key0-operation", SetKey0Operation);
+register("set-key0-operation", SetKey0Operation);
 
-registerURLSelectionOperation("verify-storage-entries-url-selection-operation",
-                              VerifyStorageEntriesURLSelectionOperation);
+register("verify-storage-entries-url-selection-operation",
+         VerifyStorageEntriesURLSelectionOperation);

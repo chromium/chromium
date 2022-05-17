@@ -11,12 +11,12 @@
       iframe.remove();
 
       try {
-        await childSharedStorage.runOperation("operation1");
+        await childSharedStorage.run("operation1");
       } catch (e) {
         assert_equals(e.name, 'InvalidAccessError');
         return;
       }
       assert_unreached("did not reject");
-    }, 'runOperation when frame is detached');
+    }, 'run() when frame is detached');
   </script>
 </body>

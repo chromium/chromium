@@ -12,4 +12,4 @@ class TestURLSelectionOperation {
   }
 }
 
-registerURLSelectionOperation("test-url-selection-operation", TestURLSelectionOperation);
+register("test-url-selection-operation", TestURLSelectionOperation);

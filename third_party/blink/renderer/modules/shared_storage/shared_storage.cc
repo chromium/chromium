@@ -251,17 +251,16 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorage::runURLSelectionOperation(
-    ScriptState* script_state,
-    const String& name,
-    const Vector<String>& urls,
-    ExceptionState& exception_state) {
-  return runURLSelectionOperation(
-      script_state, name, urls,
-      SharedStorageRunOperationMethodOptions::Create(), exception_state);
+ScriptPromise SharedStorage::selectURL(ScriptState* script_state,
+                                       const String& name,
+                                       const Vector<String>& urls,
+                                       ExceptionState& exception_state) {
+  return selectURL(script_state, name, urls,
+                   SharedStorageRunOperationMethodOptions::Create(),
+                   exception_state);
 }
 
-ScriptPromise SharedStorage::runURLSelectionOperation(
+ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
     const Vector<String>& urls,
@@ -287,8 +286,7 @@ ScriptPromise SharedStorage::runURLSelectionOperation(
     // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md#url-selection
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        "sharedStorage.runURLSelectionOperation() is not allowed in fenced "
-        "frame."));
+        "sharedStorage.selectURL() is not allowed in fenced frame."));
     return promise;
   }
 
@@ -343,15 +341,14 @@ ScriptPromise SharedStorage::runURLSelectionOperation(
   return promise;
 }
 
-ScriptPromise SharedStorage::runOperation(ScriptState* script_state,
-                                          const String& name,
-                                          ExceptionState& exception_state) {
-  return runOperation(script_state, name,
-                      SharedStorageRunOperationMethodOptions::Create(),
-                      exception_state);
+ScriptPromise SharedStorage::run(ScriptState* script_state,
+                                 const String& name,
+                                 ExceptionState& exception_state) {
+  return run(script_state, name,
+             SharedStorageRunOperationMethodOptions::Create(), exception_state);
 }
 
-ScriptPromise SharedStorage::runOperation(
+ScriptPromise SharedStorage::run(
     ScriptState* script_state,
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,

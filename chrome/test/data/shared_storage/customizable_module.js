@@ -10,6 +10,6 @@ class TestOperation {
   }
 }
 
-registerOperation("test-operation", TestOperation);
+register("test-operation", TestOperation);
 
 console.log('Finish executing customizable_module.js')

@@ -16,27 +16,27 @@ promise_test(async () => {
 
   await sharedStorage.worklet.addModule("resources/simple-module.js");
 
-  let uuid0 = await sharedStorage.runURLSelectionOperation(
+  let uuid0 = await sharedStorage.selectURL(
     "test-url-selection-operation", [url0, url1], {data: {'mockResult': 0}});
   assert_true(uuid0.startsWith('urn:uuid:'));
   attachFencedFrame(uuid0, 'opaque-ads');
   const result0 = await nextValueFromServer(ancestor_key);
   assert_equals(result0, "frame0_loaded");
 
-  let uuid1 = await sharedStorage.runURLSelectionOperation(
+  let uuid1 = await sharedStorage.selectURL(
     "test-url-selection-operation", [url0, url1], {data: {'mockResult': 1}});
   assert_true(uuid1.startsWith('urn:uuid:'));
   attachFencedFrame(uuid1, 'opaque-ads');
   const result1 = await nextValueFromServer(ancestor_key);
   assert_equals(result1, "frame1_loaded");
 
-  let uuid2 = await sharedStorage.runURLSelectionOperation(
+  let uuid2 = await sharedStorage.selectURL(
     "test-url-selection-operation", [url0, url1], {data: {'mockResult': -1}});
   assert_true(uuid2.startsWith('urn:uuid:'));
   attachFencedFrame(uuid2, 'opaque-ads');
   const result2 = await nextValueFromServer(ancestor_key);
   assert_equals(result2, "frame0_loaded");
-}, 'runURLSelectionOperation');
+}, 'selectURL()');
 
 </script>
 </body>

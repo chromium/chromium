@@ -28,13 +28,13 @@
   [
     CallWith=ScriptState,
     RaisesException
-  ] Promise<USVString> runURLSelectionOperation(DOMString name, FrozenArray<USVString> urls,
-                                                optional SharedStorageRunOperationMethodOptions options);
+  ] Promise<USVString> selectURL(DOMString name, FrozenArray<USVString> urls,
+                                 optional SharedStorageRunOperationMethodOptions options);
 
   [
     CallWith=ScriptState,
     RaisesException
-  ] Promise<any> runOperation(DOMString name, optional SharedStorageRunOperationMethodOptions options);
+  ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
   [CallWith=ScriptState, RaisesException] readonly attribute SharedStorageWorklet worklet;
 };

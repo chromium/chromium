@@ -45,59 +45,12 @@ UrlSelectionOperationHandler::PendingRequest::PendingRequest(
 
 UrlSelectionOperationHandler::PendingRequest::~PendingRequest() = default;
 
-UrlSelectionOperationHandler::UrlSelectionOperationHandler() = default;
+UrlSelectionOperationHandler::UrlSelectionOperationHandler(
+    const std::map<std::string, v8::Global<v8::Function>>&
+        operation_definition_map)
+    : operation_definition_map_(operation_definition_map) {}
 
 UrlSelectionOperationHandler::~UrlSelectionOperationHandler() = default;
-
-void UrlSelectionOperationHandler::RegisterOperation(gin::Arguments* args) {
-  std::string name;
-  if (!args->GetNext(&name)) {
-    args->ThrowTypeError("Missing \"name\" argument in operation registration");
-    return;
-  }
-
-  if (name.empty()) {
-    args->ThrowTypeError("Operation name cannot be empty");
-    return;
-  }
-
-  if (operation_definition_map_.count(name)) {
-    args->ThrowTypeError("Operation name already registered");
-    return;
-  }
-
-  v8::Local<v8::Object> class_definition;
-  if (!args->GetNext(&class_definition)) {
-    args->ThrowTypeError(
-        "Missing class name argument in operation registration");
-    return;
-  }
-
-  if (!class_definition->IsConstructor()) {
-    args->ThrowTypeError("Unexpected class argument: not a constructor");
-    return;
-  }
-
-  v8::Isolate* isolate = args->isolate();
-  v8::Local<v8::Context> context = args->GetHolderCreationContext();
-
-  v8::Local<v8::Value> class_prototype =
-      class_definition->Get(context, gin::StringToV8(isolate, "prototype"))
-          .ToLocalChecked();
-
-  v8::Local<v8::Value> run_function =
-      class_prototype.As<v8::Object>()
-          ->Get(context, gin::StringToV8(isolate, "run"))
-          .ToLocalChecked();
-
-  if (run_function->IsUndefined() || !run_function->IsFunction()) {
-    args->ThrowTypeError("Missing \"run()\" function in the class");
-    return;
-  }
-
-  operation_definition_map_.emplace(
-      name, v8::Global<v8::Function>(isolate, run_function.As<v8::Function>()));
-}
 
 void UrlSelectionOperationHandler::RunOperation(
     v8::Local<v8::Context> context,

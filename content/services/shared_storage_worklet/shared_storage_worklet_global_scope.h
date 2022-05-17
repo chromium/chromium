@@ -47,10 +47,6 @@ class SharedStorageWorkletGlobalScope {
       std::unique_ptr<std::string> response_body,
       std::string error_message);
 
-  void RegisterURLSelectionOperation(gin::Arguments* args);
-
-  void RegisterOperation(gin::Arguments* args);
-
   void RunURLSelectionOperation(
       const std::string& name,
       const std::vector<GURL>& urls,
@@ -64,6 +60,8 @@ class SharedStorageWorkletGlobalScope {
       mojom::SharedStorageWorkletService::RunOperationCallback callback);
 
  private:
+  void Register(gin::Arguments* args);
+
   friend class SharedStorageWorkletGlobalScopeTest;
 
   v8::Isolate* Isolate();
@@ -81,6 +79,8 @@ class SharedStorageWorkletGlobalScope {
   std::unique_ptr<UrlSelectionOperationHandler>
       url_selection_operation_handler_;
   std::unique_ptr<UnnamedOperationHandler> unnamed_operation_handler_;
+
+  std::map<std::string, v8::Global<v8::Function>> operation_definition_map_;
 
   base::WeakPtrFactory<SharedStorageWorkletGlobalScope> weak_ptr_factory_{this};
 };

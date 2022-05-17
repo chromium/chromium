@@ -26,8 +26,8 @@ class SharedStorageWorkletDriver;
 class PageImpl;
 
 // The SharedStorageWorkletHost is responsible for getting worklet operation
-// requests (i.e. addModule and runOperation) from the renderer (i.e. document
-// that is hosting the worklet) and running it on the
+// requests (i.e. `addModule()`, `selectURL()`, `run()`) from the renderer (i.e.
+// document that is hosting the worklet) and running it on the
 // `SharedStorageWorkletService`. It will also handle the commands from the
 // `SharedStorageWorkletService` (i.e. storage access, console log) which
 // could happen while running those worklet operations.
@@ -71,8 +71,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       blink::mojom::SharedStorageDocumentService::
           RunURLSelectionOperationOnWorkletCallback callback);
 
-  // Whether there are unfinished worklet operations (i.e. addModule() and
-  // runOperation()).
+  // Whether there are unfinished worklet operations (i.e. `addModule()`,
+  // `selectURL()`, or `run()`.
   bool HasPendingOperations();
 
   // Called by the `SharedStorageWorkletHostManager` for this host to enter
@@ -136,12 +136,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // the keep-alive phase.
   void FinishKeepAlive();
 
-  // Increment `pending_operations_count_`. Called when receiving a addModule
-  // or runOperation operation.
+  // Increment `pending_operations_count_`. Called when receiving an
+  // `addModule()`, `selectURL()`, or `run()`.
   void IncrementPendingOperationsCount();
 
-  // Decrement `pending_operations_count_`. Called when finishing handling a
-  // addModule or runOperation operation.
+  // Decrement `pending_operations_count_`. Called when finishing handling an
+  // `addModule()`, `selectURL()`, or `run()`.
   void DecrementPendingOperationsCount();
 
   // virtual for testing
@@ -193,8 +193,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // removed from `unresolved_urns_`.
   std::map<GURL, std::vector<GURL>> unresolved_urns_;
 
-  // The number of unfinished worklet requests, including addModule and
-  // runOperation.
+  // The number of unfinished worklet requests, including `addModule()`,
+  // `selectURL()`, or `run()`.
   uint32_t pending_operations_count_ = 0u;
 
   // Timer for starting and ending the keep-alive phase.

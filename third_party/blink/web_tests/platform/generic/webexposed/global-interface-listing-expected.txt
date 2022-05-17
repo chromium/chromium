@@ -8516,8 +8516,8 @@ interface SharedStorage
     method clear
     method constructor
     method delete
-    method runOperation
-    method runURLSelectionOperation
+    method run
+    method selectURL
     method set
 interface SharedWorker : EventTarget
     attribute @@toStringTag

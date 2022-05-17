@@ -16,9 +16,9 @@ promise_test(async () => {
 
   await sharedStorage.set('key0-set-from-document', 'value0');
   await sharedStorage.worklet.addModule("resources/verify-storage-entries-module.js");
-  await sharedStorage.runOperation("set-key0-operation");
+  await sharedStorage.run("set-key0-operation");
 
-  let uuid1 = await sharedStorage.runURLSelectionOperation(
+  let uuid1 = await sharedStorage.selectURL(
     "verify-storage-entries-url-selection-operation", [url0, url1]);
 
   attachFencedFrame(uuid1, 'opaque-ads');
