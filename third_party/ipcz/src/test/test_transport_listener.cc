@@ -47,7 +47,7 @@ void TestTransportListener::OnRawMessage(GenericMessageHandler handler) {
 
 void TestTransportListener::OnStringMessage(
     std::function<void(std::string_view)> handler) {
-  OnRawMessage([handler](const DriverTransport::Message& message) {
+  OnRawMessage([handler](const DriverTransport::RawMessage& message) {
     EXPECT_TRUE(message.handles.empty());
     handler(std::string_view(reinterpret_cast<const char*>(message.data.data()),
                              message.data.size()));
@@ -71,7 +71,7 @@ void TestTransportListener::ActivateTransportIfNecessary() {
 }
 
 IpczResult TestTransportListener::OnTransportMessage(
-    const DriverTransport::Message& message) {
+    const DriverTransport::RawMessage& message) {
   ABSL_ASSERT(message_handler_);
   return message_handler_(message);
 }

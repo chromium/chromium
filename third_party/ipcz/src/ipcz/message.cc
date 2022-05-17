@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipcz/message_internal.h"
+#include "ipcz/message.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/safe_math.h"
 
-namespace ipcz::internal {
+namespace ipcz {
 
 namespace {
 
@@ -32,8 +32,8 @@ namespace {
 IpczResult SerializeDriverObject(
     DriverObject object,
     const DriverTransport& transport,
-    MessageBase& message,
-    DriverObjectData& data,
+    Message& message,
+    internal::DriverObjectData& data,
     absl::InlinedVector<IpczDriverHandle, 2>& transmissible_handles) {
   if (!object.is_valid()) {
     // This is not a valid driver handle and it cannot be serialized.
@@ -69,7 +69,7 @@ IpczResult SerializeDriverObject(
 // Returns `true` if and only if it will be safe to use GetArrayView() to access
 // the contents of a serialized array beginning at `array_offset` bytes from
 // the start of `message`, where each element is `element_size` bytes wide.
-bool IsArrayValid(MessageBase& message,
+bool IsArrayValid(Message& message,
                   uint32_t array_offset,
                   size_t element_size) {
   if (array_offset == 0) {
@@ -82,18 +82,18 @@ bool IsArrayValid(MessageBase& message,
   }
 
   size_t bytes_available = data.size() - array_offset;
-  if (bytes_available < sizeof(ArrayHeader)) {
+  if (bytes_available < sizeof(internal::ArrayHeader)) {
     return false;
   }
 
-  ArrayHeader& header = *reinterpret_cast<ArrayHeader*>(&data[array_offset]);
+  auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data[array_offset]);
   if (bytes_available < header.num_bytes ||
-      header.num_bytes < sizeof(ArrayHeader)) {
+      header.num_bytes < sizeof(internal::ArrayHeader)) {
     return false;
   }
 
   size_t max_num_elements =
-      (header.num_bytes - sizeof(ArrayHeader)) / element_size;
+      (header.num_bytes - sizeof(internal::ArrayHeader)) / element_size;
   if (header.num_elements > max_num_elements) {
     return false;
   }
@@ -103,10 +103,11 @@ bool IsArrayValid(MessageBase& message,
 
 // Deserializes a driver object encoded within `message`, returning the object
 // on success. On failure, an invalid DriverObject is returned.
-DriverObject DeserializeDriverObject(MessageBase& message,
-                                     const DriverObjectData& object_data,
-                                     absl::Span<const IpczDriverHandle> handles,
-                                     const DriverTransport& transport) {
+DriverObject DeserializeDriverObject(
+    Message& message,
+    const internal::DriverObjectData& object_data,
+    absl::Span<const IpczDriverHandle> handles,
+    const DriverTransport& transport) {
   if (!IsArrayValid(message, object_data.driver_data_array, sizeof(uint8_t))) {
     return {};
   }
@@ -130,41 +131,41 @@ DriverObject DeserializeDriverObject(MessageBase& message,
 
 }  // namespace
 
-MessageBase::MessageBase(uint8_t message_id, size_t params_size)
-    : data_(sizeof(MessageHeader) + params_size) {
-  MessageHeader& h = header();
+Message::Message(uint8_t message_id, size_t params_size)
+    : data_(sizeof(internal::MessageHeader) + params_size) {
+  internal::MessageHeader& h = header();
   h.size = sizeof(h);
   h.version = 0;
   h.message_id = message_id;
   h.driver_object_data_array = 0;
 }
 
-MessageBase::~MessageBase() = default;
+Message::~Message() = default;
 
-uint32_t MessageBase::AllocateGenericArray(size_t element_size,
-                                           size_t num_elements) {
+uint32_t Message::AllocateGenericArray(size_t element_size,
+                                       size_t num_elements) {
   if (num_elements == 0) {
     return 0;
   }
   size_t offset = Align(data_.size());
-  size_t num_bytes = Align(
-      CheckAdd(sizeof(ArrayHeader), CheckMul(element_size, num_elements)));
+  size_t num_bytes = Align(CheckAdd(sizeof(internal::ArrayHeader),
+                                    CheckMul(element_size, num_elements)));
   data_.resize(CheckAdd(offset, num_bytes));
-  ArrayHeader& header = *reinterpret_cast<ArrayHeader*>(&data_[offset]);
+  auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
   header.num_bytes = checked_cast<uint32_t>(num_bytes);
   header.num_elements = checked_cast<uint32_t>(num_elements);
   return offset;
 }
 
-uint32_t MessageBase::AppendDriverObject(DriverObject object) {
+uint32_t Message::AppendDriverObject(DriverObject object) {
   const uint32_t index = checked_cast<uint32_t>(driver_objects_.size());
   driver_objects_.push_back(std::move(object));
   return index;
 }
 
-DriverObjectArrayData MessageBase::AppendDriverObjects(
+internal::DriverObjectArrayData Message::AppendDriverObjects(
     absl::Span<DriverObject> objects) {
-  const DriverObjectArrayData data = {
+  const internal::DriverObjectArrayData data = {
       .first_object_index = checked_cast<uint32_t>(driver_objects_.size()),
       .num_objects = checked_cast<uint32_t>(objects.size()),
   };
@@ -175,19 +176,19 @@ DriverObjectArrayData MessageBase::AppendDriverObjects(
   return data;
 }
 
-DriverObject MessageBase::TakeDriverObject(uint32_t index) {
+DriverObject Message::TakeDriverObject(uint32_t index) {
   // Note that `index` has already been validated by now.
   ABSL_HARDENING_ASSERT(index < driver_objects_.size());
   return std::move(driver_objects_[index]);
 }
 
-absl::Span<DriverObject> MessageBase::GetDriverObjectArrayView(
-    const DriverObjectArrayData& data) {
+absl::Span<DriverObject> Message::GetDriverObjectArrayView(
+    const internal::DriverObjectArrayData& data) {
   return absl::MakeSpan(driver_objects_)
       .subspan(data.first_object_index, data.num_objects);
 }
 
-bool MessageBase::CanTransmitOn(const DriverTransport& transport) {
+bool Message::CanTransmitOn(const DriverTransport& transport) {
   for (DriverObject& object : driver_objects_) {
     if (!object.CanTransmitOn(transport)) {
       return false;
@@ -196,14 +197,14 @@ bool MessageBase::CanTransmitOn(const DriverTransport& transport) {
   return true;
 }
 
-void MessageBase::Serialize(const DriverTransport& transport) {
+void Message::Serialize(const DriverTransport& transport) {
   ABSL_ASSERT(CanTransmitOn(transport));
   if (driver_objects_.empty()) {
     return;
   }
 
   const uint32_t array_offset =
-      AllocateArray<DriverObjectData>(driver_objects_.size());
+      AllocateArray<internal::DriverObjectData>(driver_objects_.size());
   header().driver_object_data_array = array_offset;
 
   // NOTE: In Chromium, a vast majority of IPC messages have 0, 1, or 2 OS
@@ -211,44 +212,43 @@ void MessageBase::Serialize(const DriverTransport& transport) {
   // the stack to avoid some heap allocation in the most common cases.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_handles;
   for (size_t i = 0; i < driver_objects().size(); ++i) {
-    DriverObjectData data = {};
+    internal::DriverObjectData data = {};
     const IpczResult result =
         SerializeDriverObject(std::move(driver_objects()[i]), transport, *this,
                               data, transmissible_handles);
     ABSL_ASSERT(result == IPCZ_RESULT_OK);
-    GetArrayView<DriverObjectData>(array_offset)[i] = data;
+    GetArrayView<internal::DriverObjectData>(array_offset)[i] = data;
   }
 
   transmissible_driver_handles_ = std::move(transmissible_handles);
 }
 
-bool MessageBase::DeserializeFromTransport(
+bool Message::DeserializeFromTransport(
     size_t params_size,
     uint32_t params_current_version,
-    absl::Span<const ParamMetadata> params_metadata,
-    absl::Span<const uint8_t> data,
-    absl::Span<const IpczDriverHandle> handles,
+    absl::Span<const internal::ParamMetadata> params_metadata,
+    const DriverTransport::RawMessage& message,
     const DriverTransport& transport) {
   // Copy the data into a local message object to avoid any TOCTOU issues in
   // case `data` is in unsafe shared memory.
-  data_.resize(data.size());
-  memcpy(data_.data(), data.data(), data.size());
+  data_.resize(message.data.size());
+  memcpy(data_.data(), message.data.data(), message.data.size());
 
   // Validate the header. The message must at least be large enough to encode a
   // v0 MessageHeader, and the encoded header size and version must make sense
   // (e.g. version 0 size must be sizeof(MessageHeader))
-  if (data_.size() < sizeof(MessageHeaderV0)) {
+  if (data_.size() < sizeof(internal::MessageHeaderV0)) {
     return false;
   }
 
   const auto& message_header =
-      *reinterpret_cast<const MessageHeaderV0*>(data_.data());
+      *reinterpret_cast<const internal::MessageHeaderV0*>(data_.data());
   if (message_header.version == 0) {
-    if (message_header.size != sizeof(MessageHeaderV0)) {
+    if (message_header.size != sizeof(internal::MessageHeaderV0)) {
       return false;
     }
   } else {
-    if (message_header.size < sizeof(MessageHeaderV0)) {
+    if (message_header.size < sizeof(internal::MessageHeaderV0)) {
       return false;
     }
   }
@@ -263,18 +263,18 @@ bool MessageBase::DeserializeFromTransport(
   bool all_driver_objects_ok = true;
   if (driver_object_array_offset > 0) {
     if (!IsArrayValid(*this, driver_object_array_offset,
-                      sizeof(DriverObjectData))) {
+                      sizeof(internal::DriverObjectData))) {
       // The header specified an invalid DriverObjectData array offset, or the
       // array itself was invalid or out-of-bounds.
       return false;
     }
 
     auto driver_object_data =
-        GetArrayView<DriverObjectData>(driver_object_array_offset);
+        GetArrayView<internal::DriverObjectData>(driver_object_array_offset);
     driver_objects_.reserve(driver_object_data.size());
-    for (const DriverObjectData& object_data : driver_object_data) {
-      DriverObject object =
-          DeserializeDriverObject(*this, object_data, handles, transport);
+    for (const internal::DriverObjectData& object_data : driver_object_data) {
+      DriverObject object = DeserializeDriverObject(*this, object_data,
+                                                    message.handles, transport);
       if (object.is_valid()) {
         driver_objects_.push_back(std::move(object));
       } else {
@@ -292,12 +292,12 @@ bool MessageBase::DeserializeFromTransport(
   // Validate parameter data. There must be at least enough bytes following the
   // header to encode a StructHeader and to account for all parameter data.
   absl::Span<uint8_t> params_data = params_data_view();
-  if (params_data.size() < sizeof(StructHeader)) {
+  if (params_data.size() < sizeof(internal::StructHeader)) {
     return false;
   }
 
-  StructHeader& params_header =
-      *reinterpret_cast<StructHeader*>(params_data.data());
+  auto& params_header =
+      *reinterpret_cast<internal::StructHeader*>(params_data.data());
   if (params_current_version < params_header.version) {
     params_header.version = params_current_version;
   }
@@ -320,7 +320,7 @@ bool MessageBase::DeserializeFromTransport(
   // Note that it is not an error for some objects to go unclaimed, as they may
   // be provided for fields from a newer version of the protocol that isn't
   // known to this receipient.
-  for (const ParamMetadata& param : params_metadata) {
+  for (const internal::ParamMetadata& param : params_metadata) {
     if (param.offset >= params_header.size ||
         param.offset + param.size > params_header.size) {
       return false;
@@ -335,7 +335,7 @@ bool MessageBase::DeserializeFromTransport(
     }
 
     switch (param.type) {
-      case ParamType::kDriverObject: {
+      case internal::ParamType::kDriverObject: {
         const uint32_t index = GetParamValueAt<uint32_t>(param.offset);
         if (is_object_claimed[index]) {
           return false;
@@ -344,9 +344,9 @@ bool MessageBase::DeserializeFromTransport(
         break;
       }
 
-      case ParamType::kDriverObjectArray: {
-        const DriverObjectArrayData array_data =
-            GetParamValueAt<DriverObjectArrayData>(param.offset);
+      case internal::ParamType::kDriverObjectArray: {
+        const internal::DriverObjectArrayData array_data =
+            GetParamValueAt<internal::DriverObjectArrayData>(param.offset);
         const size_t begin = array_data.first_object_index;
         for (size_t i = begin; i < begin + array_data.num_objects; ++i) {
           if (is_object_claimed[i]) {
@@ -365,4 +365,4 @@ bool MessageBase::DeserializeFromTransport(
   return true;
 }
 
-}  // namespace ipcz::internal
+}  // namespace ipcz

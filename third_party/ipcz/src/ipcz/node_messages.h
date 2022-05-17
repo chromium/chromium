@@ -10,7 +10,7 @@
 
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
-#include "ipcz/message_internal.h"
+#include "ipcz/message.h"
 #include "ipcz/node_name.h"
 #include "ipcz/sublink_id.h"
 

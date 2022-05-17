@@ -7,15 +7,15 @@
 #define IPCZ_MSG_ID(x)
 #define IPCZ_MSG_VERSION(x)
 
-#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)                          \
-  name::name() = default;                                                    \
-  name::~name() = default;                                                   \
-  bool name::Deserialize(const DriverTransport::Message& message,            \
-                         const DriverTransport& transport) {                 \
-    return DeserializeFromTransport(sizeof(ParamsType), kVersion,            \
-                                    absl::MakeSpan(kMetadata), message.data, \
-                                    message.handles, transport);             \
-  }                                                                          \
+#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)                     \
+  name::name() = default;                                               \
+  name::~name() = default;                                              \
+  bool name::Deserialize(const DriverTransport::RawMessage& message,    \
+                         const DriverTransport& transport) {            \
+    return DeserializeFromTransport(sizeof(ParamsType), kVersion,       \
+                                    absl::MakeSpan(kMetadata), message, \
+                                    transport);                         \
+  }                                                                     \
   constexpr internal::ParamMetadata name::kMetadata[];
 
 #define IPCZ_MSG_END()

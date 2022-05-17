@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ipcz/message_internal.h"
+#include "ipcz/message.h"
 
 #include <cstdint>
 #include <queue>
@@ -32,15 +32,12 @@ struct ReceivedMessage {
   std::vector<uint8_t> data;
   std::vector<IpczDriverHandle> handles;
 
-  DriverTransport::Message AsTransportMessage() {
-    return DriverTransport::Message(absl::MakeSpan(data),
-                                    absl::MakeSpan(handles));
-  }
+  DriverTransport::RawMessage AsTransportMessage() { return {data, handles}; }
 };
 
-class MessageInternalTest : public testing::Test {
+class MessageTest : public testing::Test {
  public:
-  MessageInternalTest() {
+  MessageTest() {
     // All serialized messages transmitted through `transport()` will be
     // captured directly in `received_messages_`.
     EXPECT_CALL(driver(), Transmit(kTransportHandle, _, _, _, _, _, _))
@@ -100,7 +97,7 @@ class MessageInternalTest : public testing::Test {
         });
   }
 
-  ~MessageInternalTest() override {
+  ~MessageTest() override {
     EXPECT_CALL(driver_, Close(kTransportHandle, _, _));
   }
 
@@ -132,7 +129,7 @@ class MessageInternalTest : public testing::Test {
   bool reject_driver_objects_ = false;
 };
 
-TEST_F(MessageInternalTest, BasicMessage) {
+TEST_F(MessageTest, BasicMessage) {
   test::msg::BasicTestMessage in;
   EXPECT_GE(sizeof(internal::MessageHeaderV0), in.header().size);
   EXPECT_EQ(0u, in.header().version);
@@ -161,7 +158,7 @@ TEST_F(MessageInternalTest, BasicMessage) {
   EXPECT_EQ(7u, out.params().bar);
 }
 
-TEST_F(MessageInternalTest, DataArray) {
+TEST_F(MessageTest, DataArray) {
   test::msg::MessageWithDataArray in;
   in.params().values = in.AllocateArray<uint64_t>(3);
 
@@ -183,7 +180,7 @@ TEST_F(MessageInternalTest, DataArray) {
   EXPECT_EQ(17u, values[2]);
 }
 
-TEST_F(MessageInternalTest, DriverObject) {
+TEST_F(MessageTest, DriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
 
   test::msg::MessageWithDriverObject in;
@@ -200,7 +197,7 @@ TEST_F(MessageInternalTest, DriverObject) {
   EXPECT_EQ(kObjectHandle, object.release());
 }
 
-TEST_F(MessageInternalTest, DriverObjectArray) {
+TEST_F(MessageTest, DriverObjectArray) {
   constexpr IpczDriverHandle kObjectHandles[] = {0x12345678, 0x5a5aa5a5,
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
@@ -224,90 +221,84 @@ TEST_F(MessageInternalTest, DriverObjectArray) {
   }
 }
 
-TEST_F(MessageInternalTest, ShortMessage) {
+TEST_F(MessageTest, ShortMessage) {
   test::msg::BasicTestMessage m;
-  EXPECT_FALSE(m.Deserialize(
-      DriverTransport::Message(m.data_view().subspan(0, 4)), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view().subspan(0, 4), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ShortHeader) {
+TEST_F(MessageTest, ShortHeader) {
   test::msg::BasicTestMessage m;
   m.header().size = sizeof(internal::MessageHeaderV0) - 1;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, HeaderOverflow) {
+TEST_F(MessageTest, HeaderOverflow) {
   test::msg::BasicTestMessage m;
   m.header().size = 255;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ShortParamsHeader) {
+TEST_F(MessageTest, ShortParamsHeader) {
   test::msg::BasicTestMessage m;
-  EXPECT_FALSE(m.Deserialize(DriverTransport::Message(m.data_view().subspan(
-                                 0, sizeof(internal::MessageHeader) + 1)),
-                             transport()));
+  EXPECT_FALSE(m.Deserialize(
+      {m.data_view().subspan(0, sizeof(internal::MessageHeader) + 1), {}},
+      transport()));
 }
 
-TEST_F(MessageInternalTest, ShortPrams) {
+TEST_F(MessageTest, ShortPrams) {
   test::msg::BasicTestMessage m;
   m.params().header.size = 1;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ParamsOverflow) {
+TEST_F(MessageTest, ParamsOverflow) {
   test::msg::BasicTestMessage m;
   m.params().header.size = 100000;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ArrayOffsetOverflow) {
+TEST_F(MessageTest, ArrayOffsetOverflow) {
   test::msg::MessageWithDataArray m;
   m.params().values = 10000000;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ArraySizeOverflow) {
+TEST_F(MessageTest, ArraySizeOverflow) {
   test::msg::MessageWithDataArray m;
   m.params().values = m.AllocateArray<uint64_t>(10);
 
   auto& header = m.GetValueAt<internal::ArrayHeader>(m.params().values);
   header.num_bytes = 1000000;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, ArrayElementsOverflow) {
+TEST_F(MessageTest, ArrayElementsOverflow) {
   test::msg::MessageWithDataArray m;
   m.params().values = m.AllocateArray<uint64_t>(10);
 
   auto& header = m.GetValueAt<internal::ArrayHeader>(m.params().values);
   header.num_elements = 1000000;
-  EXPECT_FALSE(
-      m.Deserialize(DriverTransport::Message(m.data_view()), transport()));
+  EXPECT_FALSE(m.Deserialize({m.data_view(), {}}, transport()));
 }
 
-TEST_F(MessageInternalTest, MalformedDriverObject) {
+TEST_F(MessageTest, MalformedDriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
   test::msg::MessageWithDriverObject in;
   in.params().object =
       in.AppendDriverObject(DriverObject(node(), kObjectHandle));
-  transport().Transmit(in);
 
   // Force driver object deserialization to fail. This must result in failure of
   // overall message deserialization.
   set_reject_driver_objects(true);
+
+  transport().Transmit(in);
+
   ReceivedMessage message = TakeNextReceivedMessage();
   test::msg::MessageWithDriverObject out;
   EXPECT_FALSE(out.Deserialize(message.AsTransportMessage(), transport()));
 }
 
-TEST_F(MessageInternalTest, DriverObjectClaimedTwice) {
+TEST_F(MessageTest, DriverObjectClaimedTwice) {
   // Tests that if a single driver object is claimed more than once by a message
   // parameter, the message is rejected.
 
@@ -339,7 +330,7 @@ TEST_F(MessageInternalTest, DriverObjectClaimedTwice) {
   EXPECT_FALSE(out.Deserialize(message.AsTransportMessage(), transport()));
 }
 
-TEST_F(MessageInternalTest, UnclaimedDriverObjects) {
+TEST_F(MessageTest, UnclaimedDriverObjects) {
   // Smoke test to verify that a message with unclaimed DriverObject attachments
   // does not leak.
 
@@ -369,7 +360,7 @@ TEST_F(MessageInternalTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
 }
 
-TEST_F(MessageInternalTest, TolerateNewerVersion) {
+TEST_F(MessageTest, TolerateNewerVersion) {
   test::msg::BasicTestMessageV1 in;
   in.params().foo = 1;
   in.params().bar = 2;

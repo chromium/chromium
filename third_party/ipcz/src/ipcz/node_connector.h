@@ -50,7 +50,7 @@ class NodeConnector : public RefCounted, public DriverTransport::Listener {
 
   virtual bool Connect() = 0;
   virtual bool OnMessage(uint8_t message_id,
-                         const DriverTransport::Message& message) = 0;
+                         const DriverTransport::RawMessage& message) = 0;
 
  protected:
   NodeConnector(Ref<Node> node,
@@ -88,7 +88,7 @@ class NodeConnector : public RefCounted, public DriverTransport::Listener {
 
   // DriverTransport::Listener:
   IpczResult OnTransportMessage(
-      const DriverTransport::Message& message) override;
+      const DriverTransport::RawMessage& message) override;
   void OnTransportError() override;
 
   const ConnectCallback callback_;

@@ -12,7 +12,7 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/link_type.h"
-#include "ipcz/message_internal.h"
+#include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/remote_router_link.h"
@@ -117,14 +117,7 @@ void NodeLink::Deactivate() {
   transport_->Deactivate();
 }
 
-SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
-  return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
-      1, std::memory_order_relaxed));
-}
-
-void NodeLink::TransmitMessage(
-    internal::MessageBase& message,
-    absl::Span<const internal::ParamMetadata> metadata) {
+void NodeLink::Transmit(Message& message) {
   if (!message.CanTransmitOn(*transport_)) {
     // The driver has indicated that it can't transmit this message through our
     // transport, so the message must instead be relayed through a broker.
@@ -134,15 +127,17 @@ void NodeLink::TransmitMessage(
     return;
   }
 
-  message.Serialize(*transport_);
   message.header().sequence_number = GenerateOutgoingSequenceNumber();
-  transport_->TransmitMessage(
-      DriverTransport::Message(DriverTransport::Data(message.data_view()),
-                               message.transmissible_driver_handles()));
+  transport_->Transmit(message);
+}
+
+SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
+  return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
+      1, std::memory_order_relaxed));
 }
 
 IpczResult NodeLink::OnTransportMessage(
-    const DriverTransport::Message& message) {
+    const DriverTransport::RawMessage& message) {
   return DispatchMessage(message);
 }
 
@@ -175,7 +170,8 @@ bool NodeLink::OnRouteClosed(const msg::RouteClosed& route_closed) {
       sublink->router_link->GetType(), route_closed.params().sequence_length);
 }
 
-IpczResult NodeLink::DispatchMessage(const DriverTransport::Message& message) {
+IpczResult NodeLink::DispatchMessage(
+    const DriverTransport::RawMessage& message) {
   if (message.data.size() < sizeof(internal::MessageHeader)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }

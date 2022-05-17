@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include "ipcz/ipcz.h"
+#include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
@@ -41,25 +42,12 @@ IpczResult IPCZ_API NotifyTransport(IpczHandle transport,
     return IPCZ_RESULT_OK;
   }
 
-  return t->Notify(DriverTransport::Message(
-      absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-      absl::MakeSpan(driver_handles, num_driver_handles)));
+  return t->Notify(
+      {absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
+       absl::MakeSpan(driver_handles, num_driver_handles)});
 }
 
 }  // namespace
-
-DriverTransport::Message::Message(Data data) : data(data) {}
-
-DriverTransport::Message::Message(Data data,
-                                  absl::Span<const IpczDriverHandle> handles)
-    : data(data), handles(handles) {}
-
-DriverTransport::Message::Message(const Message&) = default;
-
-DriverTransport::Message& DriverTransport::Message::operator=(const Message&) =
-    default;
-
-DriverTransport::Message::~Message() = default;
 
 DriverTransport::DriverTransport(DriverObject transport)
     : transport_(std::move(transport)) {}
@@ -83,20 +71,19 @@ IpczResult DriverTransport::Deactivate() {
       transport_.handle(), IPCZ_NO_FLAGS, nullptr);
 }
 
-IpczResult DriverTransport::TransmitMessage(const Message& message) {
-  return transport_.node()->driver().Transmit(
-      transport_.handle(), message.data.data(), message.data.size(),
-      message.handles.data(), message.handles.size(), IPCZ_NO_FLAGS, nullptr);
-}
-
-IpczResult DriverTransport::Transmit(internal::MessageBase& message) {
+IpczResult DriverTransport::Transmit(Message& message) {
   ABSL_ASSERT(message.CanTransmitOn(*this));
   message.Serialize(*this);
-  return TransmitMessage(
-      Message(message.data_view(), message.transmissible_driver_handles()));
+
+  const absl::Span<const uint8_t> data = message.data_view();
+  const absl::Span<const IpczDriverHandle> handles =
+      message.transmissible_driver_handles();
+  return transport_.node()->driver().Transmit(
+      transport_.handle(), data.data(), data.size(), handles.data(),
+      handles.size(), IPCZ_NO_FLAGS, nullptr);
 }
 
-IpczResult DriverTransport::Notify(const Message& message) {
+IpczResult DriverTransport::Notify(const RawMessage& message) {
   ABSL_ASSERT(listener_);
   return listener_->OnTransportMessage(message);
 }

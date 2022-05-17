@@ -7,17 +7,17 @@
 #define IPCZ_MSG_ID(x) static constexpr uint8_t kId = x
 #define IPCZ_MSG_VERSION(x) static constexpr uint32_t kVersion = x
 
-#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)      \
-  class name : public internal::Message<name##_Params> { \
-   public:                                               \
-    using ParamsType = name##_Params;                    \
-    id_decl;                                             \
-    version_decl;                                        \
-    name();                                              \
-    ~name();                                             \
-    bool Deserialize(const DriverTransport::Message&,    \
-                     const DriverTransport& transport);  \
-                                                         \
+#define IPCZ_MSG_BEGIN(name, id_decl, version_decl)              \
+  class name : public MessageWithParams<name##_Params> {         \
+   public:                                                       \
+    using ParamsType = name##_Params;                            \
+    id_decl;                                                     \
+    version_decl;                                                \
+    name();                                                      \
+    ~name();                                                     \
+    bool Deserialize(const DriverTransport::RawMessage& message, \
+                     const DriverTransport& transport);          \
+                                                                 \
     static constexpr internal::ParamMetadata kMetadata[] = {
 #define IPCZ_MSG_END() \
   }                    \

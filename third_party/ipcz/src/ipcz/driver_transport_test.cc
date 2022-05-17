@@ -14,6 +14,7 @@
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/node.h"
+#include "ipcz/test_messages.h"
 #include "test/mock_driver.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,11 +26,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
-
-DriverTransport::Message MakeMessage(std::string_view s) {
-  return DriverTransport::Message(
-      absl::MakeSpan(reinterpret_cast<const uint8_t*>(s.data()), s.size()));
-}
 
 class DriverTransportTest : public testing::Test {
  public:
@@ -159,13 +155,15 @@ TEST_F(DriverTransportTest, Transmit) {
   constexpr IpczDriverHandle kTransport1 = 42;
   auto [a, b] = CreateTransportPair(kTransport0, kTransport1);
 
-  const std::string kTestMessage = "hihihihi";
-  EXPECT_CALL(driver(),
-              Transmit(kTransport0, kTestMessage.data(), kTestMessage.size(),
-                       nullptr, 0, IPCZ_NO_FLAGS, nullptr))
+  test::msg::BasicTestMessage message;
+  message.params().foo = 5;
+  message.params().bar = 7;
+
+  EXPECT_CALL(driver(), Transmit(kTransport0, message.data_view().data(),
+                                 message.data_view().size(), _, _, _, _))
       .WillOnce(Return(IPCZ_RESULT_OK));
 
-  a->TransmitMessage(MakeMessage(kTestMessage));
+  a->Transmit(message);
 
   EXPECT_CALL(driver(), Close(kTransport1, _, _));
   EXPECT_CALL(driver(), Close(kTransport0, _, _));

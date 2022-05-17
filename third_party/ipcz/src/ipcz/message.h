@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IPCZ_SRC_IPCZ_MESSAGE_INTERNAL_H_
-#define IPCZ_SRC_IPCZ_MESSAGE_INTERNAL_H_
+#ifndef IPCZ_SRC_IPCZ_MESSAGE_H_
+#define IPCZ_SRC_IPCZ_MESSAGE_H_
 
 #include <cstddef>
 #include <cstdint>
 
 #include "ipcz/driver_object.h"
+#include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -17,8 +18,6 @@
 #include "util/safe_math.h"
 
 namespace ipcz {
-
-class DriverTransport;
 
 namespace internal {
 
@@ -161,20 +160,20 @@ struct ParamMetadata {
   ParamType type;
 };
 
-// Base class for all ipcz-internal wire messages. This provides helpers for
-// building messages for transmission, as well as for introspecting messages
-// upon receipt.
-class IPCZ_ALIGN(8) MessageBase {
- public:
-  MessageBase(uint8_t message_id, size_t params_size);
-  ~MessageBase();
+}  // namespace internal
 
-  MessageHeader& header() {
-    return *reinterpret_cast<MessageHeader*>(data_.data());
+// Message helps build, serialize, and deserialize ipcz-internal messages.
+class IPCZ_ALIGN(8) Message {
+ public:
+  Message(uint8_t message_id, size_t params_size);
+  ~Message();
+
+  internal::MessageHeader& header() {
+    return *reinterpret_cast<internal::MessageHeader*>(data_.data());
   }
 
-  const MessageHeader& header() const {
-    return *reinterpret_cast<const MessageHeader*>(data_.data());
+  const internal::MessageHeader& header() const {
+    return *reinterpret_cast<const internal::MessageHeader*>(data_.data());
   }
 
   absl::Span<uint8_t> data_view() { return absl::MakeSpan(data_); }
@@ -220,7 +219,8 @@ class IPCZ_ALIGN(8) MessageBase {
   //
   // Note that this does NOT serialize `object` yet. Serialization of all
   // attached objects occurs during Serialize().
-  DriverObjectArrayData AppendDriverObjects(absl::Span<DriverObject> objects);
+  internal::DriverObjectArrayData AppendDriverObjects(
+      absl::Span<DriverObject> objects);
 
   // Takes ownership of a DriverObject that was attached to this message, given
   // an index into the message's unified DriverObject array. This should be the
@@ -233,15 +233,16 @@ class IPCZ_ALIGN(8) MessageBase {
   // returned by a prior call to AppendDriverObjects() when serializing the
   // original message.
   absl::Span<DriverObject> GetDriverObjectArrayView(
-      const DriverObjectArrayData& data);
+      const internal::DriverObjectArrayData& data);
 
   // Returns the address of the first element of an array whose header begins
   // at `offset` bytes from the beginning of this message.
   void* GetArrayData(size_t offset) {
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
-    ABSL_ASSERT(CheckAdd(offset, sizeof(ArrayHeader)) <= data_.size());
-    ArrayHeader& header = *reinterpret_cast<ArrayHeader*>(&data_[offset]);
+    ABSL_ASSERT(CheckAdd(offset, sizeof(internal::ArrayHeader)) <=
+                data_.size());
+    auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
     return &header + 1;
   }
 
@@ -256,14 +257,15 @@ class IPCZ_ALIGN(8) MessageBase {
 
     // NOTE: Any offset plugged into this method must be validated ahead of
     // time.
-    ABSL_ASSERT(CheckAdd(offset, sizeof(ArrayHeader)) <= data_.size());
-    ArrayHeader& header = *reinterpret_cast<ArrayHeader*>(&data_[offset]);
+    ABSL_ASSERT(CheckAdd(offset, sizeof(internal::ArrayHeader)) <=
+                data_.size());
+    auto& header = *reinterpret_cast<internal::ArrayHeader*>(&data_[offset]);
 
     // The ArrayHeader itself must also have been validated already to ensure
     // that the span of array contents will not exceed the bounds of `data_`.
     ABSL_ASSERT(CheckAdd(CheckMul(sizeof(ElementType),
                                   static_cast<size_t>(header.num_elements)),
-                         sizeof(ArrayHeader)) <= data_.size());
+                         sizeof(internal::ArrayHeader)) <= data_.size());
     return absl::MakeSpan(reinterpret_cast<ElementType*>(&header + 1),
                           header.num_elements);
   }
@@ -335,12 +337,12 @@ class IPCZ_ALIGN(8) MessageBase {
   //
   // `transport` is the transport from which the incoming data and handles were
   // received.
-  bool DeserializeFromTransport(size_t params_size,
-                                uint32_t params_current_version,
-                                absl::Span<const ParamMetadata> params_metadata,
-                                absl::Span<const uint8_t> data,
-                                absl::Span<const IpczDriverHandle> handles,
-                                const DriverTransport& transport);
+  bool DeserializeFromTransport(
+      size_t params_size,
+      uint32_t params_current_version,
+      absl::Span<const internal::ParamMetadata> params_metadata,
+      const DriverTransport::RawMessage& message,
+      const DriverTransport& transport);
 
   // Raw serialized data for this message. This always begins with MessageHeader
   // (or potentially some newer or older version thereof), whose actual size
@@ -382,7 +384,7 @@ class IPCZ_ALIGN(8) MessageBase {
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_driver_handles_;
 };
 
-// Template helper to wrap the MessageBase type for a specific macro-generated
+// Template helper to wrap the Message type for a specific macro-generated
 // parameter structure. This primarily exists for safe, convenient construction
 // of message payloads with correct header information and no leaky padding
 // bits, as well as for convenient access to parameters within size-validated,
@@ -393,15 +395,15 @@ class IPCZ_ALIGN(8) MessageBase {
 // parameters, as well as a msg::Foo which is an alias for an instance of this
 // template, namely Message<msg::Foo_Params>.
 template <typename ParamDataType>
-class Message : public MessageBase {
+class MessageWithParams : public Message {
  public:
-  Message() : MessageBase(ParamDataType::kId, sizeof(ParamDataType)) {
+  MessageWithParams() : Message(ParamDataType::kId, sizeof(ParamDataType)) {
     ParamDataType& p = *(new (&params()) ParamDataType());
     p.header.size = sizeof(p);
     p.header.version = ParamDataType::kVersion;
   }
 
-  ~Message() = default;
+  ~MessageWithParams() = default;
 
   // Convenient accessors for the message's main parameters struct, whose
   // location depends on the size of the header. Note that because this may be
@@ -409,9 +411,9 @@ class Message : public MessageBase {
   // than what's defined above in MessageHeader, we index based on the header's
   // encoded size rather than the compile-time size of MessageHeader.
   //
-  // If this Message was deserialized from the wire, it must already have been
+  // If this object was deserialized from the wire, it must already have been
   // validated to have an enough space for `header().size` bytes plus the size
-  // if ParamDataType.
+  // if ParamDataType (TODO: or some older version thereof.)
   ParamDataType& params() {
     return *reinterpret_cast<ParamDataType*>(&data_[header().size]);
   }
@@ -421,7 +423,6 @@ class Message : public MessageBase {
   }
 };
 
-}  // namespace internal
 }  // namespace ipcz
 
-#endif  // IPCZ_SRC_IPCZ_MESSAGE_INTERNAL_H_
+#endif  // IPCZ_SRC_IPCZ_MESSAGE_H_

@@ -57,7 +57,7 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
   }
 
   bool OnMessage(uint8_t message_id,
-                 const DriverTransport::Message& message) override {
+                 const DriverTransport::RawMessage& message) override {
     if (message_id != msg::ConnectFromNonBrokerToBroker::kId) {
       return false;
     }
@@ -109,7 +109,7 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
   }
 
   bool OnMessage(uint8_t message_id,
-                 const DriverTransport::Message& message) override {
+                 const DriverTransport::RawMessage& message) override {
     if (message_id != msg::ConnectFromBrokerToNonBroker::kId) {
       return false;
     }
@@ -278,7 +278,7 @@ void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
 }
 
 IpczResult NodeConnector::OnTransportMessage(
-    const DriverTransport::Message& message) {
+    const DriverTransport::RawMessage& message) {
   const auto& header =
       *reinterpret_cast<const internal::MessageHeader*>(message.data.data());
   if (!OnMessage(header.message_id, message)) {

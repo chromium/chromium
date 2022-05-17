@@ -13,13 +13,13 @@
 #include "ipcz/api_object.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/ipcz.h"
-#include "ipcz/message_internal.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
 
+class Message;
 class Node;
 
 // Encapsulates shared ownership of a transport endpoint created by an ipcz
@@ -30,18 +30,10 @@ class DriverTransport
     : public APIObjectImpl<DriverTransport, APIObject::kTransport> {
  public:
   using Pair = std::pair<Ref<DriverTransport>, Ref<DriverTransport>>;
-  using Data = absl::Span<const uint8_t>;
 
-  // A view into a transport message. Does not own the underlying data or
-  // handles.
-  struct Message {
-    explicit Message(Data data);
-    Message(Data data, absl::Span<const IpczDriverHandle> handles);
-    Message(const Message&);
-    Message& operator=(const Message&);
-    ~Message();
-
-    Data data;
+  // A view into the unowned raw contents of an incoming transport message.
+  struct RawMessage {
+    absl::Span<const uint8_t> data;
     absl::Span<const IpczDriverHandle> handles;
   };
 
@@ -52,7 +44,7 @@ class DriverTransport
 
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
-    virtual IpczResult OnTransportMessage(const Message& message) = 0;
+    virtual IpczResult OnTransportMessage(const RawMessage& message) = 0;
 
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
@@ -95,18 +87,14 @@ class DriverTransport
   // reactivated.
   IpczResult Deactivate();
 
-  // Asks the driver to submit the data and driver objects in `message` for
-  // transmission from this transport endpoint to the opposite endpoint.
-  IpczResult TransmitMessage(const Message& message);
-
   // Helper for transmitting macro-generated ipcz messages. This performs any
   // necessary in-place serialization of driver objects before transmitting,
   // hence it takes a mutable reference to `message`.
-  IpczResult Transmit(internal::MessageBase& message);
+  IpczResult Transmit(Message& message);
 
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.
-  IpczResult Notify(const Message& message);
+  IpczResult Notify(const RawMessage& message);
   void NotifyError();
 
   // APIObject:
