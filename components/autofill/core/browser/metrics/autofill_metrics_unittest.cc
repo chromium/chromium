@@ -12154,8 +12154,10 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
   autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
                                           TimeTicks());
   // Simulate Autocomplete filling twice.
-  autofill_manager().OnSingleFieldSuggestionSelected(u"");
-  autofill_manager().OnSingleFieldSuggestionSelected(u"");
+  autofill_manager().OnSingleFieldSuggestionSelected(
+      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+  autofill_manager().OnSingleFieldSuggestionSelected(
+      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
   // Simulate Autofill filling.
   std::string guid(kTestGuid);
   autofill_manager().FillOrPreviewForm(

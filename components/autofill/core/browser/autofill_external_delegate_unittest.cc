@@ -823,7 +823,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),
-              OnSingleFieldSuggestionSelected(dummy_string))
+              OnSingleFieldSuggestionSelected(dummy_string,
+                                              POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
       .Times(1);
   base::HistogramTester histogram_tester;
   external_delegate_->DidAcceptSuggestion(

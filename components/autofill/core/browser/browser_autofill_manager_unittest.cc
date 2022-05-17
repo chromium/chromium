@@ -1184,10 +1184,12 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        OnSingleFieldSuggestionSelected) {
   std::u16string test_value = u"TestValue";
   EXPECT_CALL(*single_field_form_fill_router_,
-              OnSingleFieldSuggestionSelected(test_value))
+              OnSingleFieldSuggestionSelected(test_value,
+                                              POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY))
       .Times(1);
 
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(test_value);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
 
 // Test that we return all address profile suggestions when all form fields

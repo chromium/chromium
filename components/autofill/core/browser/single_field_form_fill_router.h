@@ -12,8 +12,11 @@
 
 namespace autofill {
 
-// Routes single field form filling requests, such as choosing whether to direct
-// them to Autocomplete or merchant promo code filling functionality.
+struct SuggestionsContext;
+
+// Owned by AutofillClient, and is one per tab. Routes single field form filling
+// requests, such as choosing whether to direct them to Autocomplete or merchant
+// promo code filling functionality.
 class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  public:
   explicit SingleFieldFormFillRouter(
@@ -23,6 +26,12 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   SingleFieldFormFillRouter& operator=(const SingleFieldFormFillRouter&) =
       delete;
 
+  // Routes every field in a form to its correct SingleFieldFormFiller, calling
+  // SingleFieldFormFiller::OnWillSubmitFormWithFields() with the vector of
+  // fields for that specific SingleFieldFormFiller.
+  virtual void OnWillSubmitForm(const FormData& form,
+                                bool is_autocomplete_enabled);
+
   // SingleFieldFormFiller overrides:
   void OnGetSingleFieldSuggestions(
       int query_id,
@@ -31,16 +40,17 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
       const std::u16string& name,
       const std::u16string& prefix,
       const std::string& form_control_type,
-      base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler)
-      override;
-  void OnWillSubmitForm(const FormData& form,
-                        bool is_autocomplete_enabled) override;
+      base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+      const SuggestionsContext& context) override;
+  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
+                                  bool is_autocomplete_enabled) override;
   void CancelPendingQueries(
       const SingleFieldFormFiller::SuggestionsHandler* handler) override;
-  void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
+  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
+                                            const std::u16string& value,
+                                            int frontend_id) override;
+  void OnSingleFieldSuggestionSelected(const std::u16string& value,
+                                       int frontend_id) override;
 
  private:
   // Available single field form fillers:

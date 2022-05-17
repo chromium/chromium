@@ -170,6 +170,8 @@ static_library("browser") {
     "autofill/autofill_image_fetcher_factory.h",
     "autofill/autofill_offer_manager_factory.cc",
     "autofill/autofill_offer_manager_factory.h",
+    "autofill/merchant_promo_code_manager_factory.cc",
+    "autofill/merchant_promo_code_manager_factory.h",
     "autofill/personal_data_manager_factory.cc",
     "autofill/personal_data_manager_factory.h",
     "autofill/risk_util.cc",

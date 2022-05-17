@@ -404,4 +404,37 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
       &local_card, form_structure));
 }
 
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetPromoCodeSuggestionsFromPromoCodeOffers) {
+  std::vector<const AutofillOfferData*> promo_code_offers;
+  AutofillOfferData offer1;
+  offer1.promo_code = "test_promo_code_1";
+  offer1.display_strings.value_prop_text = "test_value_prop_text_1";
+  offer1.offer_id = 1;
+  promo_code_offers.push_back(&offer1);
+
+  AutofillOfferData offer2;
+  offer2.promo_code = "test_promo_code_2";
+  offer2.display_strings.value_prop_text = "test_value_prop_text_2";
+  offer2.offer_id = 2;
+  promo_code_offers.push_back(&offer2);
+
+  std::vector<Suggestion> promo_code_suggestions =
+      AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
+          promo_code_offers);
+  EXPECT_TRUE(promo_code_suggestions.size() == 2);
+
+  EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
+  EXPECT_EQ(promo_code_suggestions[0].label, u"test_value_prop_text_1");
+  EXPECT_EQ(promo_code_suggestions[0].backend_id, "1");
+  EXPECT_EQ(promo_code_suggestions[0].frontend_id,
+            POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+
+  EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
+  EXPECT_EQ(promo_code_suggestions[1].label, u"test_value_prop_text_2");
+  EXPECT_EQ(promo_code_suggestions[1].backend_id, "2");
+  EXPECT_EQ(promo_code_suggestions[1].frontend_id,
+            POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+}
+
 }  // namespace autofill

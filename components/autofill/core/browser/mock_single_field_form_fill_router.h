@@ -17,17 +17,17 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
       AutocompleteHistoryManager* autocomplete_history_manager);
   ~MockSingleFieldFormFillRouter() override;
 
-  MOCK_METHOD(
-      void,
-      OnGetSingleFieldSuggestions,
-      (int query_id,
-       bool is_autocomplete_enabled,
-       bool autoselect_first_suggestion,
-       const std::u16string& name,
-       const std::u16string& prefix,
-       const std::string& form_control_type,
-       base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler),
-      (override));
+  MOCK_METHOD(void,
+              OnGetSingleFieldSuggestions,
+              (int query_id,
+               bool is_autocomplete_enabled,
+               bool autoselect_first_suggestion,
+               const std::u16string& name,
+               const std::u16string& prefix,
+               const std::string& form_control_type,
+               base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+               const SuggestionsContext& context),
+              (override));
   MOCK_METHOD(void,
               OnWillSubmitForm,
               (const FormData& form, bool is_autocomplete_enabled),
@@ -38,11 +38,11 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&, const std::u16string&, int),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&),
+              (const std::u16string&, int),
               (override));
 };
 

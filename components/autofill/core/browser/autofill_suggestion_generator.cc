@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -124,6 +125,23 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
         autofill_client_->GetLastCommittedURL(), suggestions);
   }
 
+  return suggestions;
+}
+
+// static
+std::vector<Suggestion>
+AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
+    const std::vector<const AutofillOfferData*>& promo_code_offers) {
+  std::vector<Suggestion> suggestions;
+  for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
+    // For each promo code, create a suggestion.
+    suggestions.emplace_back(base::ASCIIToUTF16(promo_code_offer->promo_code));
+    Suggestion* suggestion = &suggestions.back();
+    suggestion->label =
+        base::ASCIIToUTF16(promo_code_offer->display_strings.value_prop_text);
+    suggestion->backend_id = base::NumberToString(promo_code_offer->offer_id);
+    suggestion->frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
+  }
   return suggestions;
 }
 

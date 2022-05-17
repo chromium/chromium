@@ -73,6 +73,8 @@ struct Suggestion {
   // profile that generated this suggestion.
   std::string backend_id;
 
+  // TODO(crbug.com/1325509): Convert |frontend_id| from an int to a
+  // PopupItemId.
   // ID for the frontend to use in identifying the particular result. Positive
   // values are sent over IPC to identify the item selected. Negative values
   // (see popup_item_ids.h) have special built-in meanings.

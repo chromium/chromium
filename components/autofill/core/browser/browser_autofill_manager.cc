@@ -1049,7 +1049,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     single_field_form_fill_router_->OnGetSingleFieldSuggestions(
         query_id, client()->IsAutocompleteEnabled(),
         autoselect_first_suggestion, field.name, field.value,
-        field.form_control_type, weak_ptr_factory_.GetWeakPtr());
+        field.form_control_type, weak_ptr_factory_.GetWeakPtr(), context);
     return;
   }
 
@@ -1418,14 +1418,17 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(int unique_id) {
 
 void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
     const std::u16string& name,
-    const std::u16string& value) {
-  single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(name,
-                                                                       value);
+    const std::u16string& value,
+    int frontend_id) {
+  single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
+      name, value, frontend_id);
 }
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
-    const std::u16string& value) {
-  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value);
+    const std::u16string& value,
+    int frontend_id) {
+  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value,
+                                                                  frontend_id);
   form_interactions_counter_->OnAutocompleteFill();
 }
 

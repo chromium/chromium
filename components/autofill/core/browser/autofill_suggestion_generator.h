@@ -18,6 +18,7 @@ class Time;
 namespace autofill {
 
 class AutofillClient;
+struct AutofillOfferData;
 class AutofillType;
 class CreditCard;
 struct FormFieldData;
@@ -43,6 +44,11 @@ class AutofillSuggestionGenerator {
       const AutofillType& type,
       const std::string& app_locale,
       bool* should_display_gpay_logo);
+
+  // Converts the vector of promo code offers that is passed in to a vector of
+  // suggestions that can be displayed to the user for a promo code field.
+  static std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
+      const std::vector<const AutofillOfferData*>& promo_code_offers);
 
   // Remove credit cards that are expired at |comparison_time| and not used
   // since |min_last_used| from |cards|. The relative ordering of |cards| is

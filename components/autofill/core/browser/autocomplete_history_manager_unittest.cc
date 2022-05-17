@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -163,8 +164,9 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   form.fields.push_back(valid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Contrary test to AutocompleteHistoryManagerTest.CreditCardNumberValue.  The
@@ -186,8 +188,9 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   form.fields.push_back(invalid_cc);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that SSNs are not sent to the WebDatabase to be saved.
@@ -206,8 +209,9 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   form.fields.push_back(ssn);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Verify that autocomplete text is saved for search fields.
@@ -227,8 +231,9 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
@@ -247,8 +252,9 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/false);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/false);
 }
 
 // Verify that we don't save invalid values in Autocomplete.
@@ -286,8 +292,9 @@ TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that text entered into fields specifying autocomplete="off" is not sent
@@ -311,8 +318,9 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Shouldn't save entries when in Incognito mode.
@@ -334,8 +342,9 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -359,8 +368,9 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 #endif
 
@@ -383,8 +393,9 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
-  autocomplete_manager_->OnWillSubmitForm(form,
-                                          /*is_autocomplete_enabled=*/true);
+  autocomplete_manager_->OnWillSubmitFormWithFields(
+      form.fields,
+      /*is_autocomplete_enabled=*/true);
 }
 
 // Tests that the Init function will trigger the Autocomplete Retention Policy
@@ -468,7 +479,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
@@ -501,7 +512,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -530,7 +541,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -565,7 +576,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -600,7 +611,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -635,7 +646,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -677,7 +688,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/true, test_name, test_prefix, "Some Type",
-      suggestions_handler->GetWeakPtr());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -719,7 +730,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -758,7 +769,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -810,7 +821,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -820,7 +831,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Now simulate one autocomplete entry being selected, and expect a metric
   // being logged for that value alone.
-  autocomplete_manager_->OnSingleFieldSuggestionSelected(test_value);
+  autocomplete_manager_->OnSingleFieldSuggestionSelected(
+      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 
   histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse",
                                      days_since_last_use, 1);
@@ -859,7 +871,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Simulate request for the second suggestions (this will cancel the first
   // one).
@@ -868,7 +880,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler->GetWeakPtr());
+      "Some Type", suggestions_handler->GetWeakPtr(), SuggestionsContext());
 
   // Setting up mock to verify that we can get the second response first.
   EXPECT_CALL(*suggestions_handler.get(),
@@ -929,13 +941,15 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_first->GetWeakPtr());
+      "Some Type", suggestions_handler_first->GetWeakPtr(),
+      SuggestionsContext());
 
   // Simulate request for the second suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_second->GetWeakPtr());
+      "Some Type", suggestions_handler_second->GetWeakPtr(),
+      SuggestionsContext());
 
   // Setting up mock to verify that we get the second response first.
   EXPECT_CALL(*suggestions_handler_second.get(),
@@ -998,13 +1012,13 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_one, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_one->GetWeakPtr());
+      "Some Type", suggestions_handler_one->GetWeakPtr(), SuggestionsContext());
 
   // Simlate second handler request for autocomplete suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_two, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_two->GetWeakPtr());
+      "Some Type", suggestions_handler_two->GetWeakPtr(), SuggestionsContext());
 
   // Simlate first handler cancelling its request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_one))
@@ -1052,7 +1066,8 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      field.form_control_type, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext());
 
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 0);
@@ -1081,7 +1096,8 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      field.form_control_type, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext());
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1111,7 +1127,8 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field.name, field.value,
-      field.form_control_type, suggestions_handler->GetWeakPtr());
+      field.form_control_type, suggestions_handler->GetWeakPtr(),
+      SuggestionsContext());
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 2);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1147,13 +1164,15 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_first->GetWeakPtr());
+      "Some Type", suggestions_handler_first->GetWeakPtr(),
+      SuggestionsContext());
 
   // Simulate request for the second suggestions.
   autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_name, test_prefix,
-      "Some Type", suggestions_handler_second->GetWeakPtr());
+      "Some Type", suggestions_handler_second->GetWeakPtr(),
+      SuggestionsContext());
 
   // Expect cancel calls for both requests.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))

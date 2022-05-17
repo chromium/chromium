@@ -252,7 +252,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // User selected an Autocomplete, so we fill directly.
     driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
     AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
-    manager_->OnSingleFieldSuggestionSelected(value);
+    manager_->OnSingleFieldSuggestionSelected(value, frontend_id);
   } else if (frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
     manager_->client()->ScanCreditCard(base::BindOnce(
         &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
@@ -310,7 +310,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const std::u16string& value,
     return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
 
   if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
-    manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value);
+    manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value,
+                                                 frontend_id);
     return true;
   }
 

@@ -46,7 +46,6 @@ class SingleFieldFormFillRouterTest : public testing::Test {
     // Mock such that we don't trigger the cleanup.
     prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                        CHROME_VERSION_MAJOR);
-
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_history_manager_ =
         std::make_unique<MockAutocompleteHistoryManager>();
@@ -75,14 +74,15 @@ TEST_F(SingleFieldFormFillRouterTest,
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
       /*prefix=*/u"SomePrefix",
-      /*form_control_type=*/"SomeType", suggestions_handler->GetWeakPtr());
+      /*form_control_type=*/"SomeType", suggestions_handler->GetWeakPtr(),
+      SuggestionsContext());
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
 // OnWillSubmitForm call.
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToAutocompleteHistoryManager_OnWillSubmitForm) {
-  EXPECT_CALL(*autocomplete_history_manager_, OnWillSubmitForm);
+  EXPECT_CALL(*autocomplete_history_manager_, OnWillSubmitFormWithFields);
 
   single_field_form_fill_router_->OnWillSubmitForm(
       FormData(), /*is_autocomplete_enabled=*/true);
@@ -108,7 +108,8 @@ TEST_F(SingleFieldFormFillRouterTest,
               OnRemoveCurrentSingleFieldSuggestion);
 
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
-      /*field_name=*/u"Field Name", /*value=*/u"Value");
+      /*field_name=*/u"Field Name", /*value=*/u"Value",
+      POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -118,7 +119,7 @@ TEST_F(SingleFieldFormFillRouterTest,
   EXPECT_CALL(*autocomplete_history_manager_, OnSingleFieldSuggestionSelected);
 
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(
-      /*value=*/u"Value");
+      /*value=*/u"Value", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
 
 }  // namespace autofill

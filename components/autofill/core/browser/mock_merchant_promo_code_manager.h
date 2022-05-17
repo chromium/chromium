@@ -1,20 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 
-class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
+class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
  public:
-  MockAutocompleteHistoryManager();
-  ~MockAutocompleteHistoryManager();
+  MockMerchantPromoCodeManager();
+  ~MockMerchantPromoCodeManager() override;
 
   MOCK_METHOD(
       void,
@@ -25,7 +25,7 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
        const std::u16string& name,
        const std::u16string& prefix,
        const std::string& form_control_type,
-       base::WeakPtr<AutocompleteHistoryManager::SuggestionsHandler> handler,
+       base::WeakPtr<MerchantPromoCodeManager::SuggestionsHandler> handler,
        const SuggestionsContext& context),
       (override));
   MOCK_METHOD(void,
@@ -34,12 +34,8 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
                bool is_autocomplete_enabled),
               (override));
   MOCK_METHOD(void,
-              OnWebDataServiceRequestDone,
-              (WebDataServiceBase::Handle, std::unique_ptr<WDTypedResult>),
-              (override));
-  MOCK_METHOD(void,
               CancelPendingQueries,
-              (const AutocompleteHistoryManager::SuggestionsHandler*),
+              (const MerchantPromoCodeManager::SuggestionsHandler*),
               (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
@@ -53,4 +49,4 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
