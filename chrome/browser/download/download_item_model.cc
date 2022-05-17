@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -128,6 +130,22 @@ DownloadItemModelData::DownloadItemModelData()
       should_prefer_opening_in_browser_(false),
       danger_level_(DownloadFileType::NOT_DANGEROUS),
       is_being_revived_(false) {}
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
+  switch (danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return true;
+    default:
+      return false;
+  }
+}
+#endif
 
 }  // namespace
 
@@ -743,23 +761,30 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         break;
       }
       DCHECK(IsDangerous());
-// Only sends uncommon download accept report if :
+// Only sends dangerous download accept report if :
 // 1. FULL_SAFE_BROWSING is enabled, and
-// 2. Download verdict is uncommon, and
+// 2. Download verdict is one of the dangerous types, and
 // 3. Download URL is not empty, and
 // 4. User is not in incognito mode.
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
-          !GetURL().is_empty() && !profile()->IsOffTheRecord()) {
+      if (ShouldSendDownloadReport(GetDangerType()) && !GetURL().is_empty() &&
+          !profile()->IsOffTheRecord()) {
+        // The bypassed danger type can only be uncommon in the old UI, because
+        // the other danger types are not bypassable in the download shelf.
+        // However, it can be any dangerous danger type in the new UI.
+        DCHECK(GetDangerType() ==
+                   download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT ||
+               download::IsDownloadBubbleEnabled(profile()));
         safe_browsing::SafeBrowsingService* sb_service =
             g_browser_process->safe_browsing_service();
-        // Compiles the uncommon download warning report.
+        // Compiles the dangerous download warning report.
         auto report =
             std::make_unique<safe_browsing::ClientSafeBrowsingReportRequest>();
         report->set_type(safe_browsing::ClientSafeBrowsingReportRequest::
                              DANGEROUS_DOWNLOAD_WARNING);
         report->set_download_verdict(
-            safe_browsing::ClientDownloadResponse::UNCOMMON);
+            safe_browsing::DownloadDangerTypeToDownloadResponseVerdict(
+                GetDangerType()));
         report->set_url(GetURL().spec());
         report->set_did_proceed(true);
         *report->mutable_population() =
@@ -785,8 +810,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
                       safe_browsing::WebUIInfoSingleton::GetInstance()),
                   std::move(report)));
         } else {
-          DCHECK(false)
-              << "Unable to serialize the uncommon download warning report.";
+          DCHECK(false) << "Unable to serialize the download warning report.";
         }
       }
 #endif
