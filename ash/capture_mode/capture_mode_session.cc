@@ -60,7 +60,6 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -107,12 +106,6 @@ constexpr MagnifierGlass::Params kMagnifierParams{
 constexpr int kSizeLabelBorderRadius = 4;
 
 constexpr int kSizeLabelHorizontalPadding = 8;
-
-// Dimming shield color in the capture session. It is set to be the same color
-// in both dark and light mode. We will investigate whether to do this kind of
-// change to ShieldLayer globally.
-// Grey900 at 40%.
-constexpr SkColor kDimmingShieldColor = SkColorSetA(gfx::kGoogleGrey900, 102);
 
 // Values for the shadows of the capture region components.
 constexpr int kRegionAffordanceCircleShadow2Blur = 6;
@@ -1076,7 +1069,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   }
 
   ui::PaintRecorder recorder(context, layer()->size());
-  recorder.canvas()->DrawColor(kDimmingShieldColor);
+  recorder.canvas()->DrawColor(capture_mode::kDimmingShieldColor);
 
   PaintCaptureRegion(recorder.canvas());
 }

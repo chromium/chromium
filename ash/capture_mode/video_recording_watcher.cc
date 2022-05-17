@@ -420,10 +420,7 @@ void VideoRecordingWatcher::OnPaintLayer(const ui::PaintContext& context) {
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
-  auto* color_provider = AshColorProvider::Get();
-  const SkColor dimming_color = color_provider->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield40);
-  canvas->DrawColor(dimming_color);
+  canvas->DrawColor(capture_mode::kDimmingShieldColor);
 
   // We don't draw a region border around the recorded window. We just paint the
   // above shield as a backdrop.
