@@ -360,9 +360,8 @@ void PageLoadMetricsForwardObserver::OnStorageAccessed(
 }
 
 void PageLoadMetricsForwardObserver::OnPrefetchLikely() {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnPrefetchLikely();
+  // This event is delivered only for the primary page.
+  NOTREACHED();
 }
 
 void PageLoadMetricsForwardObserver::DidActivatePortal(

@@ -137,7 +137,8 @@ class PageLoadMetricsObserverInterface {
   // directly delivered to the observers need FORWARD_OBSERVING. See
   // PageLoadMetricsForwardObserver to know which events need the observer layer
   // forwarding. Eventually, we may treat all forwarding at the PageLoadTracker
-  // layer to deprecate the FORWARD_OBSERVING for simplicity.
+  // layer to deprecate the FORWARD_OBSERVING for simplicity. FORWARD_OBSERVING
+  // is available only for OnFencedFramesStart().
   enum ObservePolicy {
     CONTINUE_OBSERVING,
     STOP_OBSERVING,

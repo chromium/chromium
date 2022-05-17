@@ -231,7 +231,8 @@ PageLoadTracker::PageLoadTracker(
                                       navigation_handle,
                                       currently_committed_url);
                                 },
-                                navigation_handle, currently_committed_url));
+                                navigation_handle, currently_committed_url),
+                            /*permit_forwarding=*/false);
     base::UmaHistogramEnumeration(
         internal::kPageLoadPrerender2Event,
         internal::PageLoadPrerenderEvent::kNavigationInPrerenderedMainFrame);
@@ -248,7 +249,8 @@ PageLoadTracker::PageLoadTracker(
                                       navigation_handle,
                                       currently_committed_url);
                                 },
-                                navigation_handle, currently_committed_url));
+                                navigation_handle, currently_committed_url),
+                            /*permit_forwarding=*/true);
     RecordPageType(internal::PageLoadTrackerPageType::kFencedFramesPage);
   } else {
     DCHECK_NE(ukm::kInvalidSourceId, source_id_);
@@ -262,8 +264,8 @@ PageLoadTracker::PageLoadTracker(
                                        currently_committed_url,
                                        started_in_foreground);
             },
-            navigation_handle, currently_committed_url,
-            started_in_foreground_));
+            navigation_handle, currently_committed_url, started_in_foreground_),
+        /*permit_forwarding=*/false);
     RecordPageType(internal::PageLoadTrackerPageType::kPrimaryPage);
   }
 
@@ -342,7 +344,8 @@ void PageLoadTracker::PageHidden() {
                                  PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnHidden(*timing);
                               },
-                              &metrics_update_dispatcher_.timing()));
+                              &metrics_update_dispatcher_.timing()),
+                          /*permit_forwarding=*/false);
 }
 
 void PageLoadTracker::PageShown() {
@@ -364,7 +367,8 @@ void PageLoadTracker::PageShown() {
       "PageLoadMetricsObserver::OnShown",
       base::BindRepeating([](PageLoadMetricsObserverInterface* observer) {
         return observer->OnShown();
-      }));
+      }),
+      /*permit_forwarding=*/false);
 }
 
 void PageLoadTracker::SubFrameDeleted(int frame_tree_node_id) {
@@ -422,14 +426,16 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
              PageLoadMetricsObserverInterface* observer) {
             return observer->ShouldObserveMimeType(mime_type);
           },
-          navigation_handle->GetWebContents()->GetContentsMimeType()));
+          navigation_handle->GetWebContents()->GetContentsMimeType()),
+      /*permit_forwarding=*/false);
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnCommit",
                           base::BindRepeating(
                               [](content::NavigationHandle* navigation_handle,
                                  PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnCommit(navigation_handle);
                               },
-                              navigation_handle));
+                              navigation_handle),
+                          /*permit_forwarding=*/false);
 }
 
 void PageLoadTracker::DidActivatePrerenderedPage(
@@ -525,7 +531,8 @@ void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {
                                  PageLoadMetricsObserverInterface* observer) {
                                 return observer->OnRedirect(navigation_handle);
                               },
-                              navigation_handle));
+                              navigation_handle),
+                          /*permit_forwarding=*/false);
 }
 
 void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
@@ -549,7 +556,8 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
              PageLoadMetricsObserverInterface* observer) {
             return observer->FlushMetricsOnAppEnterBackground(*timing);
           },
-          &metrics_update_dispatcher_.timing()));
+          &metrics_update_dispatcher_.timing()),
+      /*permit_forwarding=*/false);
 }
 
 void PageLoadTracker::OnLoadedResource(
@@ -1071,7 +1079,8 @@ void PageLoadTracker::OnEnterBackForwardCache() {
              PageLoadMetricsObserverInterface* observer) {
             return observer->OnEnterBackForwardCache(*timing);
           },
-          &metrics_update_dispatcher_.timing()));
+          &metrics_update_dispatcher_.timing()),
+      /*permit_forwarding=*/false);
   metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
   metrics_update_dispatcher_
       .UpdateResponsivenessMetricsNormalizationForBfcache();
@@ -1144,7 +1153,8 @@ base::WeakPtr<PageLoadTracker> PageLoadTracker::GetWeakPtr() {
 
 void PageLoadTracker::InvokeAndPruneObservers(
     const char* trace_name,
-    PageLoadTracker::InvokeCallback callback) {
+    PageLoadTracker::InvokeCallback callback,
+    bool permit_forwarding) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), trace_name);
   std::vector<std::unique_ptr<PageLoadMetricsObserverInterface>>
       forward_observers;
@@ -1160,6 +1170,7 @@ void PageLoadTracker::InvokeAndPruneObservers(
         it = observers_.erase(it);
         break;
       case PageLoadMetricsObserver::FORWARD_OBSERVING:
+        DCHECK(permit_forwarding);
         DCHECK((*it)->GetObserverName())
             << "GetObserverName should be implemented";
         auto target_observer =

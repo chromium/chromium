@@ -446,7 +446,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   using InvokeCallback =
       base::RepeatingCallback<PageLoadMetricsObserver::ObservePolicy(
           PageLoadMetricsObserverInterface*)>;
-  void InvokeAndPruneObservers(const char* trace_name, InvokeCallback callback);
+  void InvokeAndPruneObservers(const char* trace_name,
+                               InvokeCallback callback,
+                               bool permit_forwarding);
 
   void AddObserverInterface(
       std::unique_ptr<PageLoadMetricsObserverInterface> observer);
