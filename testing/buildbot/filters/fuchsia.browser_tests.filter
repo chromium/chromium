@@ -332,7 +332,6 @@
 -WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsEnabled
 -WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsDisabled
 -WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsEnabled
--WorkerDevToolsTest.PauseInSharedWorkerInitialization
 
 # TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
 # enabled without PPAPI.
