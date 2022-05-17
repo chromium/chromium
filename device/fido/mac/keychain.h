@@ -25,7 +25,7 @@ namespace mac {
 // keychain-access-group entitlements, and therefore requires code signing with
 // a real Apple developer ID. We therefore group these function here, so they
 // can be mocked out in testing.
-class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(10.12.2)) Keychain {
+class COMPONENT_EXPORT(DEVICE_FIDO) Keychain {
  public:
   static Keychain& GetInstance();
 

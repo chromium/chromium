@@ -28,8 +28,7 @@ namespace mac {
 //
 // For documentation on the keychain item metadata, see
 // |MakeCredentialOperation|.
-class API_AVAILABLE(macosx(10.12.2))
-    COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionOperation : public Operation {
+class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionOperation : public Operation {
  public:
   using Callback = base::OnceCallback<void(
       CtapDeviceResponseCode,

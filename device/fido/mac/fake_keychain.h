@@ -15,7 +15,7 @@ namespace device {
 namespace fido {
 namespace mac {
 
-class API_AVAILABLE(macos(10.12.2)) FakeKeychain : public Keychain {
+class FakeKeychain : public Keychain {
  public:
   struct Item {
     Item();

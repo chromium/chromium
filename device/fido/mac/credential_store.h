@@ -72,7 +72,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // CreateCredential inserts a new credential into the keychain. It returns
   // the new credential and its public key, or absl::nullopt if an error
   // occurred.
-  API_AVAILABLE(macosx(10.12.2))
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredential(const std::string& rp_id,
                    const PublicKeyCredentialUserEntity& user,
@@ -85,7 +84,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // FidoTransportProtocol::kInternal, and if its id() is the credential ID.
   // The returned credentials may be resident or non-resident. If any
   // unexpected keychain API error occurs, absl::nullopt is returned instead.
-  API_AVAILABLE(macosx(10.12.2))
   absl::optional<std::list<Credential>>
   FindCredentialsFromCredentialDescriptorList(
       const std::string& rp_id,
@@ -93,13 +91,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 
   // FindResidentCredentials returns the resident credentials for the given
   // |rp_id|, or base::nulltopt if an error occurred.
-  API_AVAILABLE(macosx(10.12.2))
   absl::optional<std::list<Credential>> FindResidentCredentials(
       const std::string& rp_id) const;
 
   // UnsealMetadata returns the CredentialMetadata for the given credential's
   // ID if it was encoded for the given RP ID, or absl::nullopt otherwise.
-  API_AVAILABLE(macosx(10.12.2))
   absl::optional<CredentialMetadata> UnsealMetadata(
       const std::string& rp_id,
       const Credential& credential) const;
@@ -107,7 +103,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // DeleteCredentialsForUserId deletes all (resident or non-resident)
   // credentials for the given RP and user ID. Returns true if deleting
   // succeeded or no matching credential exists, and false otherwise.
-  API_AVAILABLE(macosx(10.12.2))
   bool DeleteCredentialsForUserId(const std::string& rp_id,
                                   base::span<const uint8_t> user_id) const;
 
@@ -129,7 +124,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
                               base::Time created_not_after);
 
  private:
-  API_AVAILABLE(macosx(10.12.2))
   absl::optional<std::list<Credential>> FindCredentialsImpl(
       const std::string& rp_id,
       const std::set<std::vector<uint8_t>>& credential_ids) const;

@@ -72,8 +72,7 @@ absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
 QueryKeychainItemsForProfile(const std::string& keychain_access_group,
                              const std::string& metadata_secret,
                              base::Time created_not_before,
-                             base::Time created_not_after)
-    API_AVAILABLE(macosx(10.12.2)) {
+                             base::Time created_not_after) {
   // Query the keychain for all items tagged with the given access group, which
   // should in theory yield all WebAuthentication credentials (for all
   // profiles). Sadly, the kSecAttrAccessGroup filter doesn't quite work, and
@@ -149,69 +148,6 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
   return result;
 }
 
-bool DoDeleteWebAuthnCredentials(const std::string& keychain_access_group,
-                                 const std::string& metadata_secret,
-                                 base::Time created_not_before,
-                                 base::Time created_not_after)
-    API_AVAILABLE(macosx(10.12.2)) {
-  bool result = true;
-  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
-      keychain_items =
-          QueryKeychainItemsForProfile(keychain_access_group, metadata_secret,
-                                       created_not_before, created_not_after);
-  if (!keychain_items) {
-    return false;
-  }
-
-  // The sane way to delete this item would be to build a query that has the
-  // kSecMatchItemList field set to a list of SecKeyRef objects that need
-  // deleting. Sadly, on macOS that appears to work only if you also set
-  // kSecAttrNoLegacy (which is an internal symbol); otherwise it appears to
-  // only search the "legacy" keychain and return errSecItemNotFound. What
-  // does work however, is to look up and delete by the (unique)
-  // kSecAttrApplicationLabel (which stores the credential id). So we clumsily
-  // do this for each item instead.
-  for (const base::ScopedCFTypeRef<CFDictionaryRef>& attributes :
-       *keychain_items) {
-    CFDataRef sec_attr_app_label = base::mac::GetValueFromDictionary<CFDataRef>(
-        attributes.get(), kSecAttrApplicationLabel);
-    if (!sec_attr_app_label) {
-      DLOG(ERROR) << "missing application label";
-      continue;
-    }
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> delete_query(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(delete_query, kSecClass, kSecClassKey);
-    CFDictionarySetValue(delete_query, kSecAttrApplicationLabel,
-                         sec_attr_app_label);
-    OSStatus status = Keychain::GetInstance().ItemDelete(delete_query);
-    if (status != errSecSuccess) {
-      OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
-      result = false;
-      continue;
-    }
-  }
-  return result;
-}
-
-size_t DoCountWebAuthnCredentials(const std::string& keychain_access_group,
-                                  const std::string& metadata_secret,
-                                  base::Time created_not_before,
-                                  base::Time created_not_after)
-    API_AVAILABLE(macosx(10.12.2)) {
-  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
-      keychain_items =
-          QueryKeychainItemsForProfile(keychain_access_group, metadata_secret,
-                                       created_not_before, created_not_after);
-  if (!keychain_items) {
-    DLOG(ERROR) << "Failed to query credentials in keychain";
-    return 0;
-  }
-
-  return keychain_items->size();
-}
 }  // namespace
 
 Credential::Credential(base::ScopedCFTypeRef<SecKeyRef> private_key_,
@@ -366,28 +302,62 @@ void TouchIdCredentialStore::CountCredentials(
 bool TouchIdCredentialStore::DeleteCredentialsSync(
     base::Time created_not_before,
     base::Time created_not_after) {
-  // Touch ID uses macOS APIs available in 10.12.2 or newer. No need to check
-  // for credentials in lower OS versions.
-  if (__builtin_available(macos 10.12.2, *)) {
-    return DoDeleteWebAuthnCredentials(config_.keychain_access_group,
-                                       config_.metadata_secret,
-                                       created_not_before, created_not_after);
+  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
+      keychain_items = QueryKeychainItemsForProfile(
+          config_.keychain_access_group, config_.metadata_secret,
+          created_not_before, created_not_after);
+  if (!keychain_items) {
+    return false;
   }
-  return true;
+
+  // The sane way to delete this item would be to build a query that has the
+  // kSecMatchItemList field set to a list of SecKeyRef objects that need
+  // deleting. Sadly, on macOS that appears to work only if you also set
+  // kSecAttrNoLegacy (which is an internal symbol); otherwise it appears to
+  // only search the "legacy" keychain and return errSecItemNotFound. What
+  // does work however, is to look up and delete by the (unique)
+  // kSecAttrApplicationLabel (which stores the credential id). So we clumsily
+  // do this for each item instead.
+  bool result = true;
+  for (const base::ScopedCFTypeRef<CFDictionaryRef>& attributes :
+       *keychain_items) {
+    CFDataRef sec_attr_app_label = base::mac::GetValueFromDictionary<CFDataRef>(
+        attributes.get(), kSecAttrApplicationLabel);
+    if (!sec_attr_app_label) {
+      DLOG(ERROR) << "missing application label";
+      continue;
+    }
+    base::ScopedCFTypeRef<CFMutableDictionaryRef> delete_query(
+        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                  &kCFTypeDictionaryKeyCallBacks,
+                                  &kCFTypeDictionaryValueCallBacks));
+    CFDictionarySetValue(delete_query, kSecClass, kSecClassKey);
+    CFDictionarySetValue(delete_query, kSecAttrApplicationLabel,
+                         sec_attr_app_label);
+    OSStatus status = Keychain::GetInstance().ItemDelete(delete_query);
+    if (status != errSecSuccess) {
+      // Indicate failure but keep deleting remaining items.
+      OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
+      result = false;
+    }
+  }
+  return result;
 }
 
 size_t TouchIdCredentialStore::CountCredentialsSync(
     base::Time created_not_before,
     base::Time created_not_after) {
-  if (__builtin_available(macos 10.12.2, *)) {
-    return DoCountWebAuthnCredentials(config_.keychain_access_group,
-                                      config_.metadata_secret,
-                                      created_not_before, created_not_after);
+  absl::optional<std::vector<base::ScopedCFTypeRef<CFDictionaryRef>>>
+      keychain_items = QueryKeychainItemsForProfile(
+          config_.keychain_access_group, config_.metadata_secret,
+          created_not_before, created_not_after);
+  if (!keychain_items) {
+    DLOG(ERROR) << "Failed to query credentials in keychain";
+    return 0;
   }
-  return 0;
+  return keychain_items->size();
 }
 
-API_AVAILABLE(macosx(10.12.2))
 absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindCredentialsImpl(
     const std::string& rp_id,

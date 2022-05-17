@@ -8169,7 +8169,6 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
-
   for (const bool touch_id_available : {false, true}) {
     SCOPED_TRACE(::testing::Message()
                  << "touch_id_available=" << touch_id_available);

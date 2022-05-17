@@ -45,8 +45,7 @@ namespace mac {
 //  (keychain_access_group_), so that they are logically
 //  separate from any other data that Chrome may store in the keychain in
 //  the future.
-class API_AVAILABLE(macosx(10.12.2))
-    COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
+class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
  public:
   using Callback = base::OnceCallback<void(
       CtapDeviceResponseCode,

@@ -10,8 +10,7 @@ namespace device {
 namespace fido {
 namespace mac {
 
-static API_AVAILABLE(macos(10.12.2)) Keychain* g_keychain_instance_override =
-    nullptr;
+static Keychain* g_keychain_instance_override = nullptr;
 
 // static
 Keychain& Keychain::GetInstance() {

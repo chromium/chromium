@@ -102,7 +102,7 @@ AuthenticatorData MakeAuthenticatorData(
 absl::optional<std::vector<uint8_t>> GenerateSignature(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash,
-    SecKeyRef private_key) API_AVAILABLE(macosx(10.12.2)) {
+    SecKeyRef private_key) {
   const std::vector<uint8_t> serialized_authenticator_data =
       authenticator_data.SerializeToByteArray();
   size_t capacity =
@@ -130,8 +130,7 @@ absl::optional<std::vector<uint8_t>> GenerateSignature(
 // SecKeyRefToECPublicKey converts a SecKeyRef for a public key into an
 // equivalent |PublicKey| instance. It returns |nullptr| if the key cannot
 // be converted.
-std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
-    API_AVAILABLE(macosx(10.12.2)) {
+std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
   CHECK(public_key_ref);
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> data_ref(
@@ -153,22 +152,9 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
 }
 
 CodeSigningState ProcessIsSigned() {
-  // SecTaskCopySigningIdentifier is not decorated with availability attributes
-  // in the header, but it was only introduced in 10.12. For prior versions,
-  // `nullopt` is returned to indicate that the signing status of the process
-  // is unknown.
-  //
-  // `@available` cannot be negated, so the code is a little awkward around
-  // that.
-
-  base::ScopedCFTypeRef<SecTaskRef> task;
-  if (@available(macOS 10.12, *)) {
-    task.reset(SecTaskCreateFromSelf(nullptr));
-    if (!task) {
-      return CodeSigningState::kNotSigned;
-    }
-  } else {
-    return CodeSigningState::kUnknown;
+  base::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
+  if (!task) {
+    return CodeSigningState::kNotSigned;
   }
 
   base::ScopedCFTypeRef<CFStringRef> sign_id(

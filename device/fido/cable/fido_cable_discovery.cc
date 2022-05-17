@@ -275,19 +275,12 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1314404): turn this into a user-visible UI if we believe
   // that it's a good signal.
-
   switch (fido::mac::ProcessIsSigned()) {
-    case fido::mac::CodeSigningState::kUnknown:
-      FIDO_LOG(DEBUG) << "Cannot determine whether build is signed. Assuming "
-                         "Bluetooth permission is granted.";
-      break;
-
     case fido::mac::CodeSigningState::kSigned:
       FIDO_LOG(DEBUG) << "Bluetooth authorized: "
                       << (adapter_->GetOsPermissionStatus() !=
                           BluetoothAdapter::PermissionStatus::kDenied);
       break;
-
     case fido::mac::CodeSigningState::kNotSigned:
       FIDO_LOG(DEBUG)
           << "Build not signed. Assuming Bluetooth permission is granted.";

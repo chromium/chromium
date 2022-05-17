@@ -36,11 +36,7 @@ namespace mac {
 void TouchIdAuthenticator::IsAvailable(
     AuthenticatorConfig config,
     base::OnceCallback<void(bool is_available)> callback) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    TouchIdContext::TouchIdAvailable(std::move(config), std::move(callback));
-    return;
-  }
-  std::move(callback).Run(false);
+  TouchIdContext::TouchIdAvailable(std::move(config), std::move(callback));
 }
 
 // static
@@ -61,84 +57,65 @@ void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {
 void TouchIdAuthenticator::GetCredentialInformationForRequest(
     const CtapGetAssertionRequest& request,
     GetCredentialInformationForRequestCallback callback) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    if (!request.allow_list.empty()) {
-      // Non resident credentials request.
-      absl::optional<std::list<Credential>> credentials =
-          credential_store_.FindCredentialsFromCredentialDescriptorList(
-              request.rp_id, request.allow_list);
-      if (!credentials) {
-        FIDO_LOG(ERROR)
-            << "FindCredentialsFromCredentialDescriptorList() failed";
-        std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
-        return;
-      }
-      std::move(callback).Run(/*credentials=*/{},
-                              /*has_credentials=*/!credentials->empty());
-      return;
-    }
-
-    // Resident credentials request.
-    absl::optional<std::list<Credential>> resident_credentials =
-        credential_store_.FindResidentCredentials(request.rp_id);
-    if (!resident_credentials) {
-      FIDO_LOG(ERROR) << "GetResidentCredentialsForRequest() failed";
+  if (!request.allow_list.empty()) {
+    // Non resident credentials request.
+    absl::optional<std::list<Credential>> credentials =
+        credential_store_.FindCredentialsFromCredentialDescriptorList(
+            request.rp_id, request.allow_list);
+    if (!credentials) {
+      FIDO_LOG(ERROR) << "FindCredentialsFromCredentialDescriptorList() failed";
       std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
       return;
     }
-    std::vector<DiscoverableCredentialMetadata> result;
-    for (const auto& credential : *resident_credentials) {
-      absl::optional<CredentialMetadata> metadata =
-          credential_store_.UnsealMetadata(request.rp_id, credential);
-      if (!metadata) {
-        FIDO_LOG(ERROR) << "Could not unseal metadata from resident credential";
-        continue;
-      }
-      result.emplace_back(DiscoverableCredentialMetadata(
-          credential.credential_id,
-          metadata->ToPublicKeyCredentialUserEntity()));
-    }
-    std::move(callback).Run(std::move(result), !resident_credentials->empty());
+    std::move(callback).Run(/*credentials=*/{},
+                            /*has_credentials=*/!credentials->empty());
     return;
   }
-  NOTREACHED();
-  std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
+
+  // Resident credentials request.
+  absl::optional<std::list<Credential>> resident_credentials =
+      credential_store_.FindResidentCredentials(request.rp_id);
+  if (!resident_credentials) {
+    FIDO_LOG(ERROR) << "GetResidentCredentialsForRequest() failed";
+    std::move(callback).Run(/*credentials=*/{}, /*has_credentials=*/false);
+    return;
+  }
+  std::vector<DiscoverableCredentialMetadata> result;
+  for (const auto& credential : *resident_credentials) {
+    absl::optional<CredentialMetadata> metadata =
+        credential_store_.UnsealMetadata(request.rp_id, credential);
+    if (!metadata) {
+      FIDO_LOG(ERROR) << "Could not unseal metadata from resident credential";
+      continue;
+    }
+    result.emplace_back(DiscoverableCredentialMetadata(
+        credential.credential_id, metadata->ToPublicKeyCredentialUserEntity()));
+  }
+  std::move(callback).Run(std::move(result), !resident_credentials->empty());
 }
 
 void TouchIdAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
                                           MakeCredentialOptions options,
                                           MakeCredentialCallback callback) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    DCHECK(!operation_);
-    operation_ = std::make_unique<MakeCredentialOperation>(
-        std::move(request), &credential_store_, std::move(callback));
-    operation_->Run();
-    return;
-  }
-  NOTREACHED();
+  DCHECK(!operation_);
+  operation_ = std::make_unique<MakeCredentialOperation>(
+      std::move(request), &credential_store_, std::move(callback));
+  operation_->Run();
 }
 
 void TouchIdAuthenticator::GetAssertion(CtapGetAssertionRequest request,
                                         CtapGetAssertionOptions options,
                                         GetAssertionCallback callback) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    DCHECK(!operation_);
-    operation_ = std::make_unique<GetAssertionOperation>(
-        std::move(request), &credential_store_, std::move(callback));
-    operation_->Run();
-    return;
-  }
-  NOTREACHED();
+  DCHECK(!operation_);
+  operation_ = std::make_unique<GetAssertionOperation>(
+      std::move(request), &credential_store_, std::move(callback));
+  operation_->Run();
 }
 
 void TouchIdAuthenticator::GetNextAssertion(GetAssertionCallback callback) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    DCHECK(operation_);
-    reinterpret_cast<GetAssertionOperation*>(operation_.get())
-        ->GetNextAssertion(std::move(callback));
-    return;
-  }
-  NOTREACHED();
+  DCHECK(operation_);
+  reinterpret_cast<GetAssertionOperation*>(operation_.get())
+      ->GetNextAssertion(std::move(callback));
 }
 
 void TouchIdAuthenticator::Cancel() {

@@ -32,8 +32,7 @@ struct AuthenticatorConfig;
 // cancel any other pending evaluations with an error. Deleting an instance
 // will invalidate any pending evaluation prompts (i.e. the dialog will
 // disappear and evaluation will fail with an error).
-class COMPONENT_EXPORT(DEVICE_FIDO)
-    API_AVAILABLE(macosx(10.12.2)) TouchIdContext {
+class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdContext {
  public:
   // The callback is invoked when the local user authentication prompt
   // completes. It receives a boolean indicating whether obtaining the
