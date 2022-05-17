@@ -1215,9 +1215,7 @@ TEST_F(AccountReconcilorDiceTest, UnverifiedAccountMerge) {
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
 }
 
-TEST_F(AccountReconcilorTest, DiceDeleteCookie) {
-  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
-
+TEST_F(AccountReconcilorDiceTest, DeleteCookie) {
   const CoreAccountId primary_account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable("user@gmail.com",
