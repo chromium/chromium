@@ -4810,6 +4810,9 @@ New install
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
         settings
       </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES" desc="One of possible rotating providers listed in the placeholder text for the search box shown within the ChromeOS launcher. The provider is injected into string 'Search your $1, files, apps, and more...'">
+        games
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
