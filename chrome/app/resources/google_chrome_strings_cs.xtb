@@ -116,6 +116,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3149510190863420837">Aplikace Chrome</translation>
 <translation id="3169523567916669830">Během zkoušek můžete zobrazovat a odstraňovat zájmy, které weby používají k zobrazování reklam. Chromium zájmy odhaduje na základě vaší nedávné historie prohlížení.</translation>
 <translation id="3245429137663807393">Pokud také sdílíte přehledy využití Chromu, budou zahrnovat adresy URL, které navštěvujete</translation>
+<translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se nyní restartuje}=1{Chrome se za 1 sekundu restartuje}few{Chrome se za # sekundy restartuje}many{Chrome se za # sekundy restartuje}other{Chrome se za # sekund restartuje}}</translation>
 <translation id="3396977131400919238">Během instalace došlo k chybě operačního systému. Stáhněte prosím Google Chrome ještě jednou.</translation>
@@ -191,6 +192,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4969674060580488087">Systém ChromeOS Flex nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="4970761609246024540">Vítejte v profilech Chrome</translation>
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
+<translation id="4970947549776831107">Chrome tento soubor zablokoval, protože tento typ souboru je nebezpečný</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém MacOS 10.13 nebo novější. Tento počítač používá systém OS X 10.11.</translation>
 <translation id="5112116809696021727">Pokud se chcete podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení ChromeOS<ph name="LINK_END" /></translation>
@@ -299,7 +301,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
-<translation id="7748512868279796735">Pro tento profil Chrome jsou k dispozici následující účty</translation>
 <translation id="7761834446675418963">Chcete-li otevřít Chrome a začít procházet Internet, klikněte na svoje jméno.</translation>
 <translation id="7777080907402804672">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="7781002470561365167">K dispozici je nová verze prohlížeče Google Chrome.</translation>

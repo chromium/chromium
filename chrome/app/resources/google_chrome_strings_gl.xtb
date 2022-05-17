@@ -115,6 +115,7 @@
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
 <translation id="3169523567916669830">Durante as probas, podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
 <translation id="3245429137663807393">Se, ademais, compartes os informes de uso de Chrome, neles inclúense os URL que visitas</translation>
+<translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
@@ -190,6 +191,7 @@
 <translation id="4969674060580488087">Chrome OS Flex non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="4970761609246024540">Dámosche a benvida aos perfís de Chrome</translation>
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
+<translation id="4970947549776831107">Chrome bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten OS X 10.11.</translation>
 <translation id="5112116809696021727">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
@@ -298,7 +300,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
-<translation id="7748512868279796735">As seguintes contas están dispoñibles para este perfil de Chrome</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="7781002470561365167">Hai unha nova versión de Google Chrome dispoñible.</translation>

@@ -37,6 +37,7 @@
 <translation id="131421566576084655">تاریخ آخرین بازنشانی داده دردسترس نیست</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">شبکه اصلی، بدون فراگردی</translation>
+<translation id="132712914231403017">نصب تصویر سفت‌افزار</translation>
 <translation id="1327977588028644528">دروازه</translation>
 <translation id="1328223165223065150">رنگ کاغذدیواری</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
 <translation id="1643449475550628585">تغییر روزانه کاغذدیواری</translation>
 <translation id="1644574205037202324">سابقه</translation>
+<translation id="1645954272419197032">لطفاً اطلاعات دستگاه را تأیید کنید</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">قابلیت اتصال</translation>
 <translation id="2008685064673031089">جستجوی اصلی</translation>
 <translation id="2016697457005847575">مراحل عیب‌یابی را امتحان کنید</translation>
+<translation id="2016848882344942759">--بدون برچسب-سفید--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">زمان‌بندی حالت تاریک</translation>
 <translation id="2275586345903859204">تعمیر انجام شد</translation>
 <translation id="2287186687001756809">تصویری وجود ندارد. برای افزودن عکس به <ph name="LINK" /> بروید</translation>
+<translation id="2294753434210277304">‏فضای ذخیره‌سازی خارجی، مثل درایو USB یا کارت SD حاوی تصویر «ابزار بازیابی Chromebook» بارگیری‌شده را وارد کنید</translation>
 <translation id="2307344026739914387">استفاده از جفت‌کلید فعلی</translation>
 <translation id="2320295602967756579">فعال کردن زمینه روشن</translation>
 <translation id="2323506179655536734">رد شد</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">کلید اصالت‌سنجی «امنیت لایه انتقال»</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2717139507051041123">فعال کردن حالت رنگ تیره</translation>
+<translation id="2727250716596204208">‏تصویر سفت‌افزار پیدا نشد. فضای ذخیره‌سازی خارجی، مثل درایو USB یا کارت SD حاوی تصویر «ابزار بازیابی Chromebook» بارگیری‌شده را وارد کنید.</translation>
 <translation id="2740531572673183784">تأیید</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
 <translation id="2756652381241102009">اجرای عیب‌یابی</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">دستگاه متصل شده است.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحه حذف شود؟}=1{{PAGE_NUMBER} صفحه حذف شود؟}one{{PAGE_NUMBER} صفحه حذف شود؟}other{{PAGE_NUMBER} صفحه حذف شود؟}}</translation>
+<translation id="3137983112374760826">درحال آماده کردن دستگاه…</translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
 <translation id="3156846309055100599">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
+<translation id="3383751554789092165">اطلاعات دستگاه را درصورت لزوم تغییر دهید.</translation>
 <translation id="3404249063913988450">فعال کردن محافظ صفحه</translation>
 <translation id="3404770484521709967">قطعات به‌درستی نصب شده‌اند.</translation>
 <translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
+<translation id="3774059845329307709">شماره سریال</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">باتری <ph name="CHARGE_VALUE" /> میلی‌آمپرساعت</translation>
 <translation id="4561801978359312462">قفل سیم‌کارت باز است</translation>
 <translation id="4562494484721939086">بدون سرویس</translation>
+<translation id="4568938274596692027">نصب کامل شد. درحال آماده‌سازی برای بازراه‌اندازی…</translation>
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">انتخاب فوری موردی جدید</translation>
 <translation id="4891842000192098784">استرس</translation>
 <translation id="4897058166682006107">باتری هدفون توگوشی سمت چپ دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
+<translation id="4908030561598728899">درحال نصب سفت‌افزار…</translation>
 <translation id="4915052247106771211">‏با این کار، دستگاه به تنظیمات کارخانه بازنشانی خواهد شد (Powerwash).</translation>
 <translation id="4917385247580444890">قوی</translation>
 <translation id="4917889632206600977">متوقف شد - کاغذ تمام شده است</translation>
@@ -615,8 +625,10 @@
 <translation id="6768237774506518020">میزان خطای تفکیک ساناد بالا است</translation>
 <translation id="680983167891198932">کلید</translation>
 <translation id="6816797338148849397">اطلاعات مرتبط با انتخاب شما دردسترس است. برای دسترسی، از کلید «پیکان روبه بالا» استفاده کنید.</translation>
+<translation id="6822504384524564824">‏SKU تنها درصورتی باید تغییر کند که جزء (اجزای) جدید با اجزای قبلی که جایگزین شده‌اند متفاوت باشد. برای مثال، صفحه لمسی‌ای که جایگزین صفحه غیرلمسی می‌شود، یا حافظه‌ای که از ۸ گیگابایت به ۱۶ گیگابایت ارتقا می‌یابد.</translation>
 <translation id="6840315122969944400">تعمیر <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">سرعت تخلیه شارژ</translation>
+<translation id="6876833053687020046">‏شماره قطعه DRAM</translation>
 <translation id="6889786074662672253">درحین بازراه‌اندازی، این دستگاه خارجی را از برق نکشید یا رایانه را خاموش نکنید. می‌توانید این پنجره را کوچک کنید. این کار ممکن است چند دقیقه طول بکشد و در این مدت ممکن است دستگاه خارجی‌تان کار نکند.</translation>
 <translation id="6905724422583748843">بازگشت به <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">پوشش اسکنر باز است. پوشش را ببندید و دوباره امتحان کنید.</translation>
@@ -664,6 +676,7 @@
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7359657277149375382">نوع فایل</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">تغییر محافظ صفحه‌نمایش</translation>
 <translation id="7397270852490618635">خاموش کردن زمینه روشن</translation>
 <translation id="741244894080940828">تبدیل</translation>
@@ -763,6 +776,7 @@
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
 <translation id="8372477600026034341">میزبان‌های اضافی</translation>
 <translation id="8378855320830505539">منطقه</translation>
+<translation id="8382302752385457774">برچسب-سفید</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -854,6 +868,7 @@
 <translation id="9126720536733509015">‏ذخیره چند صفحه در یک فایل PDF</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
+<translation id="9148058034647219655">خروج</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
 <translation id="9173638680043580060">کمتر از یک دقیقه باقیمانده است</translation>
 <translation id="917720651393141712">آزمایش کردن</translation>

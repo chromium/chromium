@@ -326,6 +326,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Chiffre suivant</translation>
 <translation id="2981684127883932071">Affichage de suggestions</translation>
+<translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
 <translation id="2995447421581609334">Afficher les appareils Cast.</translation>
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
@@ -464,6 +465,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
+<translation id="3761848338953536304">Votre administrateur vous demande de désactiver le paramètre de verrouillage de la carte SIM</translation>
 <translation id="3765841986579723851">Modifié aujourd'hui</translation>
 <translation id="3771549900096082774">Mode Contraste élevé</translation>
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
@@ -828,6 +830,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
 <translation id="5992218262414051481">Le mode Contraste élevé est activé. Appuyez de nouveau sur Ctrl+Recherche+H pour le désactiver.</translation>
+<translation id="6009656393242168182">Désactiver votre paramètre de verrouillage de la carte SIM</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
@@ -862,6 +865,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166852626429024716">Faire des recherches sur votre appareil, dans vos applications et paramètres, sur le Web, etc.</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Pour commencer, ouvrez l'application Fichiers.</translation>
+<translation id="6182592640011875895">Ouvrir le bureau</translation>
 <translation id="619279033188484792">Afficher les photos, contenus multimédias et notifications récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Recharger complètement</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant enregistrer votre écran et vous-même en même temps</translation>
@@ -1168,6 +1172,7 @@ Nouvelle installation</translation>
 <translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
+<translation id="8083540854303889870">Bureaux enregistrés</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>

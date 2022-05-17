@@ -176,6 +176,7 @@
 <translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
 <translation id="1972950159383891558">ہائے، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">متن ان پٹ</translation>
+<translation id="1982717156487272186">پچھلا ہفتہ دکھائیں</translation>
 <translation id="1989113344093894667">مواد کیپچر نہیں کیا جا سکتا</translation>
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
 <translation id="1993072747612765854">تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، ستارہ کی درجہ بندی <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ایک دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# دن کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
+<translation id="4644727592819780893">کیمرا فٹ کرنے کے لیے علاقہ بہت چھوٹا ہے</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، ایپ کی تجویز</translation>
 <translation id="4657775630156561295">درج ذیل تجویز آپ کے اکاؤنٹ کی تجویز کی سرگزشت سے مستقل طور پر ہٹا دی جائے گی:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">‏آپ کی ترتیبات کی مطابقت پذیری کے بعد '<ph name="FROM_LOCALE" />' سے '‎'‎<ph name="TO_LOCALE" />‎ میں۔</translation>
 <translation id="5675363643668471212">شیلف آئٹم</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
+<translation id="5678564054339031017">اگلا ہفتہ دکھائیں</translation>
 <translation id="5679050765726761783">کم پاور ایڈاپٹر منسلک ہوگیا</translation>
 <translation id="5682642926269496722">‏Google اسسٹنٹ موجودہ صارف اکاؤنٹ کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="5689633613396158040">نائٹ لائٹ سے مدھم روشنی میں اپنی اسکرین کو دیکھنا یا پڑھنا آسان ہو جاتا ہے۔ نائٹ لائٹ کے آن ہونے کے وقت کو تبدیل کرنے کے لئے تھپتھپائیں یا اسے مکمل طور پر آف کر دیں۔</translation>

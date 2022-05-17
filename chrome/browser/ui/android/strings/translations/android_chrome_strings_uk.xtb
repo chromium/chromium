@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384704387250346179">Переклад через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">У мережі <ph name="LAST_UPDATED" /> дн. тому</translation>
+<translation id="13931502444227376">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте <ph name="BEGIN_LINK1" />Умови використання<ph name="END_LINK1" /> цього сайту.</translation>
 <translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Ви можете будь-коли змінити свій вибір у налаштуваннях Chrome. Зміни не почнуть діяти відразу, оскільки одночасно з пробними версіями застосовується поточна система показу оголошень.</translation>
 <translation id="1406000523432664303">"Не відстежувати"</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">Про Privacy Sandbox</translation>
 <translation id="1736419249208073774">Огляд</translation>
 <translation id="1749561566933687563">Синхронізуйте свої закладки</translation>
+<translation id="1750259112639922169">Група вкладок – <ph name="TAB_COUNT" /> шт.</translation>
 <translation id="17513872634828108">Відкриті вкладки</translation>
 <translation id="1754404134430936718">Текст скопійовано</translation>
 <translation id="1779766957982586368">Закрити вікно</translation>
@@ -171,6 +173,7 @@
 <translation id="1928696683969751773">Оновлення</translation>
 <translation id="19288952978244135">Знову відкрийте Chrome.</translation>
 <translation id="1933845786846280168">Вибрана вкладка</translation>
+<translation id="193571872656840963">Подякувати цьому автору</translation>
 <translation id="1943432128510653496">Зберігання паролів</translation>
 <translation id="1952172573699511566">Якщо можливо, текст на веб-сайтах відображатиметься вибраною мовою.</translation>
 <translation id="1959679933317802873">Очікується контент</translation>
@@ -788,6 +791,7 @@
 <translation id="5368227114232678694">Щоб працювати на цьому пристрої в Інтернеті приватно, спробуйте анонімний режим</translation>
 <translation id="5375577065097716013">Шукати через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Реакцію змінено</translation>
+<translation id="5401851137404501592">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту.</translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>
 <translation id="5409881200985013443">Надіслати код <ph name="ONE_TIME_CODE" /> на пристрій "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
@@ -1128,6 +1132,7 @@
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7177959540995930968">Дізнатися більше про ці функції можна в налаштуваннях Chrome.</translation>
 <translation id="718226107353899806">Можна додати до стількох реакцій: <ph name="MAX_NUM_REACTIONS" /></translation>
+<translation id="7183693674623539380">Група вкладок – "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="7191430249889272776">Вкладку відкрито у фоновому режимі.</translation>
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>

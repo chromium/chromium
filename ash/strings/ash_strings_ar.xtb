@@ -327,6 +327,7 @@
 <translation id="2970920913501714344">تثبيت التطبيقات والإضافات والتصاميم</translation>
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2981684127883932071">عرض الاقتراحات</translation>
+<translation id="2985148236010982088">عرض كل التطبيقات</translation>
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
 <translation id="2995447421581609334">عرض أجهزة البث.</translation>
 <translation id="2996462380875591307">‏تم تفعيل المكبّر. يمكنك إيقافه بالضغط على Ctrl+Search+D مرة أخرى.</translation>
@@ -465,6 +466,7 @@
 <translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
 <translation id="3735740477244556633">ترتيب بحسب</translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
+<translation id="3761848338953536304">‏يطلب المشرف إيقاف ميزة قفل شريحة SIM.</translation>
 <translation id="3765841986579723851">تم تعديله اليوم.</translation>
 <translation id="3771549900096082774">وضع التباين العالي</translation>
 <translation id="3773700760453577392">منع أحد المشرفين الدخول المتعدد لـ <ph name="USER_EMAIL" />. لذا على جميع المستخدمين تسجيل الخروج للمتابعة.</translation>
@@ -829,6 +831,7 @@
 <translation id="598407983968395253">استخدام النموذج</translation>
 <translation id="598882571027504733">‏للحصول على التحديث، يُرجى إعادة تشغيل جهاز Chromebook مع توصيل لوحة المفاتيح.</translation>
 <translation id="5992218262414051481">‏تم تفعيل وضع التباين العالي. اضغط على "Ctrl+Search+H" مرة أخرى لإيقافه.</translation>
+<translation id="6009656393242168182">‏إيقاف ميزة قفل شريحة SIM</translation>
 <translation id="6012623610530968780">صفحة <ph name="SELECTED_PAGE" /> من <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
@@ -863,6 +866,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166852626429024716">البحث في الجهاز والتطبيقات والإعدادات والويب...</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
+<translation id="6182592640011875895">فتح سطح المكتب</translation>
 <translation id="619279033188484792">يمكنك عرض الصور والوسائط والإشعارات الحديثة في هاتفك على <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">الشحن بالكامل الآن</translation>
 <translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
@@ -1169,6 +1173,7 @@
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
 <translation id="8061464966246066292">تباين عالٍ</translation>
+<translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">مفعلة، كل التطبيقات</translation>
 <translation id="8120151603115102514">‏شاشة القفل غير مفعّلة على هاتفك. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>

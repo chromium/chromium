@@ -113,6 +113,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3169523567916669830">Durante as avaliações, pode ver e remover tópicos de interesse que os sites usam para lhe mostrar anúncios. O Chrome estima os seus interesses com base no seu histórico de navegação recente.</translation>
 <translation id="3245429137663807393">Se também partilhar relatórios de utilização do Chrome, esses relatórios incluem os URLs que visita</translation>
+<translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operativo durante a instalação. Descarregue de novo o Google Chrome.</translation>
@@ -188,6 +189,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4969674060580488087">O ChromeOS Flex não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="4970761609246024540">Damos-lhe as boas-vindas aos perfis do Chrome</translation>
 <translation id="4970880042055371251">Versão do ChromeOS</translation>
+<translation id="4970947549776831107">O Chrome bloqueou este ficheiro porque este tipo de ficheiro é perigoso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Para obter atualizações futuras do Google Chrome, precisa do macOS 10.13 posterior. Este computador está a utilizar o OS X 10.11.</translation>
 <translation id="5112116809696021727">Para ver se o seu dispositivo está atualizado, aceda às <ph name="LINK_BEGIN" />Definições do ChromeOS<ph name="LINK_END" /></translation>
@@ -293,7 +295,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7651907282515937834">Logótipo do Chrome Enterprise</translation>
 <translation id="7655455401911432608">O seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
-<translation id="7748512868279796735">As seguintes contas estão disponíveis para este perfil do Chrome</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>
 <translation id="7781002470561365167">Está disponível uma versão nova do Google Chrome.</translation>

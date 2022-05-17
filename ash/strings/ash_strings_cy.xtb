@@ -326,6 +326,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2970920913501714344">Gosod apiau, estyniadau, a themâu</translation>
 <translation id="2977598380246111477">Rhif nesaf</translation>
 <translation id="2981684127883932071">Wrthi'n dangos awgrymiadau</translation>
+<translation id="2985148236010982088">Gweld pob ap</translation>
 <translation id="2992327365391326550">Mae botwm meicroffon y ddyfais wedi'i ddiffodd.</translation>
 <translation id="2995447421581609334">Dangos dyfeisiau castio.</translation>
 <translation id="2996462380875591307">Mae'r Chwyddwr sydd wedi'i Docio wedi'i alluogi. Pwyswch Ctrl+Search+D eto i'w toglo.</translation>
@@ -464,6 +465,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3726171378575546917">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, a <ph name="UNAVAILABLE_APPS_COUNT" /> arall ar y ddyfais hon.</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3742055079367172538">Wedi tynnu sgrinlun</translation>
+<translation id="3761848338953536304">Mae eich gweinyddwr yn gofyn i chi ddiffodd y gosodiad Lock SIM</translation>
 <translation id="3765841986579723851">Golygwyd heddiw</translation>
 <translation id="3771549900096082774">Modd Cyferbyniad Uchel</translation>
 <translation id="3773700760453577392">Mae gweinyddwr wedi gwrthod mewngofnodi o sawl cyfrif ar gyfer <ph name="USER_EMAIL" />. Rhaid i bob defnyddiwr allgofnodi i barhau.</translation>
@@ -828,6 +830,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="598407983968395253">Defnyddio templed</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
 <translation id="5992218262414051481">Mae'r Modd Cyferbyniad Uchel wedi'i alluogi. Pwyswch Ctrl+Search+H eto i'w toglo.</translation>
+<translation id="6009656393242168182">Analluogwch eich gosodiad SIM Lock</translation>
 <translation id="6012623610530968780">Tudalen <ph name="SELECTED_PAGE" /> o <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Wrthi'n gadael y modd adlewyrchu</translation>
 <translation id="602001110135236999">Sgrolio i'r chwith</translation>
@@ -862,6 +865,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6166852626429024716">Chwilio eich dyfais, apiau, gosodiadau, gwe...</translation>
 <translation id="6179832488876878285">Gallwch binio'ch ffeiliau pwysig yma. Agorwch yr ap Files i gychwyn arni.</translation>
+<translation id="6182592640011875895">Agor desg</translation>
 <translation id="619279033188484792">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Gwefru'n llawn nawr</translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
@@ -1168,6 +1172,7 @@ Gosodiad newydd</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
 <translation id="8061464966246066292">Cyferbyniad uchel</translation>
+<translation id="8083540854303889870">Cadwyd ar gyfer nes ymlaen</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ymlaen, pob ap</translation>
 <translation id="8120151603115102514">Nid oes clo sgrîn ar eich ffôn. I ddatgloi eich Chromebook, rhowch eich cyfrinair.</translation>

@@ -519,7 +519,6 @@
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取您的相機。</translation>
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
-<translation id="1507884455975553832">串流播放訊息應用程式</translation>
 <translation id="1509163368529404530">還原群組</translation>
 <translation id="1509281256533087115">使用 USB 存取所有 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1510238584712386396">啟動器</translation>
@@ -842,6 +841,7 @@
 <translation id="1784707308176068866">合作內置應用程式提出要求時在背景執行</translation>
 <translation id="1784849162047402014">裝置的磁碟儲存空間即將用盡</translation>
 <translation id="1787350673646245458">使用者圖片</translation>
+<translation id="1788329699711791226">透過 <ph name="ACCOUNT_EMAIL" /> 存取 Chrome 瀏覽器資料</translation>
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">延伸顯示屏</translation>
@@ -4664,6 +4664,7 @@
 <translation id="5539221284352502426">伺服器已拒絕您輸入的密碼。原因可能包括：密碼太短、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">您的管理員已停用此操作</translation>
 <translation id="5542132724887566711">設定檔</translation>
+<translation id="554229901779827904">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，包括書籤、記錄和密碼。</translation>
 <translation id="5542750926112347543">已封鎖來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至 <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在檢查狀態…</translation>
@@ -5074,7 +5075,6 @@
 <translation id="5957987129450536192">輕按個人檔案相片附近的「選取以朗讀」圖示，然後選取您想聽到的內容。</translation>
 <translation id="5959471481388474538">網絡無法使用</translation>
 <translation id="595959584676692139">重新載入網頁即可使用此擴充程式</translation>
-<translation id="5960410286721553511">查看手機最近的相片和媒體</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有書籤(&amp;N)}=1{在新視窗中開啟書籤(&amp;N)}other{在新視窗中開啟全部 {COUNT} 個書籤(&amp;N)}}</translation>
 <translation id="5965661248935608907">這個擴充功能也會管制您在使用 [主頁] 按鈕或網址列搜尋時所顯示的網頁。</translation>

@@ -518,7 +518,6 @@
 <translation id="1506061864768559482">Претраживач</translation>
 <translation id="1507170440449692343">Овој страници је забрањен приступ камери.</translation>
 <translation id="1507246803636407672">&amp;Одбаци</translation>
-<translation id="1507884455975553832">Стримујте апликације за размену порука</translation>
 <translation id="1509163368529404530">&amp;Врати групу</translation>
 <translation id="1509281256533087115">Приступај било ком уређају <ph name="DEVICE_NAME_AND_VENDOR" /> преко USB-а</translation>
 <translation id="1510238584712386396">Покретач</translation>
@@ -831,6 +830,7 @@
 <translation id="1784707308176068866">Покрени у позадини када то затражи матична апликација за сарадњу</translation>
 <translation id="1784849162047402014">Уређају понестаје простора на диску</translation>
 <translation id="1787350673646245458">Слика корисника</translation>
+<translation id="1788329699711791226">Приступите садржају из Chrome прегледача преко <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Уклони приступ</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Проширени приказ</translation>
@@ -4646,6 +4646,7 @@
 <translation id="5539221284352502426">Сервер је одбио лозинку коју сте унели. Могући разлози обухватају: Лозинка је прекратка. Лозинка мора да садржи бројеве или симболе. Лозинка мора да се разликује од претходних лозинки.</translation>
 <translation id="5541694225089836610">Администратор је онемогућио радњу</translation>
 <translation id="5542132724887566711">Профил</translation>
+<translation id="554229901779827904">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chrome прегледачу и његове податке Подаци обухватају обележиваче, историју и лозинке.</translation>
 <translation id="5542750926112347543">Колачићи са <ph name="DOMAIN" /> су блокирани</translation>
 <translation id="5542949973455282971">Повезује се са мрежом <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Провера статуса...</translation>
@@ -5060,7 +5061,6 @@
 <translation id="5957987129450536192">Додирните икону Изаберите за говор поред слике профила, па изаберите оно што желите да чујете.</translation>
 <translation id="5959471481388474538">Мрежа није доступна</translation>
 <translation id="595959584676692139">Поново учитајте ову страницу да бисте користили овај додатак</translation>
-<translation id="5960410286721553511">Прегледајте недавне слике и медијски садржај са телефона</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (највише <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори све у &amp;новом прозору}=1{Отвори у &amp;новом прозору}one{Отвори све ({COUNT}) у &amp;новом прозору}few{Отвори све ({COUNT}) у &amp;новом прозору}other{Отвори све ({COUNT}) у &amp;новом прозору}}</translation>
 <translation id="5965661248935608907">Контролише и страницу која се приказује када кликнете на дугме Почетак или претражујете из омнибокса.</translation>

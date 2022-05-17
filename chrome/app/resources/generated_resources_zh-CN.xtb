@@ -514,7 +514,6 @@
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
 <translation id="1507246803636407672">舍弃(&amp;D)</translation>
-<translation id="1507884455975553832">信息流消息应用</translation>
 <translation id="1509163368529404530">恢复组(&amp;R)</translation>
 <translation id="1509281256533087115">通过 USB 访问任何<ph name="DEVICE_NAME_AND_VENDOR" /></translation>
 <translation id="1510238584712386396">启动器</translation>
@@ -827,6 +826,7 @@
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1787350673646245458">用户图片</translation>
+<translation id="1788329699711791226">从 <ph name="ACCOUNT_EMAIL" /> 访问您的 Chrome 浏览器信息</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -1248,7 +1248,7 @@
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
-<translation id="2188881192257509750">打开 <ph name="APPLICATION" /></translation>
+<translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
 <translation id="2189787291884708275">分享标签页中的音频</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
@@ -3768,6 +3768,7 @@
 <translation id="4648491805942548247">权限不足</translation>
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
+<translation id="4651921906638302153">无法使用此帐号登录</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
 <translation id="465406513924180949">系统会显示购物车，方便您回来购买网购时留在购物车中的商品。
@@ -4635,6 +4636,7 @@
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
 <translation id="5542132724887566711">个人资料</translation>
+<translation id="554229901779827904">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据。您的数据包括书签、历史记录和密码。</translation>
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
@@ -5045,7 +5047,6 @@
 <translation id="5957987129450536192">点按您的个人资料图片附近的“随选朗读”图标，然后选择您想听到的内容。</translation>
 <translation id="5959471481388474538">网络不可用</translation>
 <translation id="595959584676692139">如果您想使用该扩展程序，请先重新加载网页</translation>
-<translation id="5960410286721553511">查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5965661248935608907">它还能够控制您点击“主页”按钮后或通过多功能框进行搜索时系统显示的页面。</translation>
@@ -5421,6 +5422,7 @@
 <translation id="6327785803543103246">网络代理自动发现</translation>
 <translation id="6331818708794917058">网站可以请求连接到 MIDI 设备</translation>
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
+<translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6335920438823100346">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
@@ -5829,6 +5831,7 @@
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
+<translation id="6738430949033571771">正在验证帐号…</translation>
 <translation id="6739923123728562974">显示桌面快捷方式</translation>
 <translation id="6740234557573873150">“<ph name="FILE_NAME" />”已暂停</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />您的管理员<ph name="END_LINK" />已关闭“安全浏览”功能</translation>
@@ -7647,6 +7650,8 @@
 <translation id="8546306075665861288">图片缓存</translation>
 <translation id="8546930481464505581">自定义触摸栏</translation>
 <translation id="8547013269961688403">启用全屏放大镜</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 由 <ph name="MANAGER" /> 管理。您无法将此电子邮件地址添加为其他帐号。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />若要使用 <ph name="USER_EMAIL" />，请先在 <ph name="DEVICE_TYPE" /> 上退出您的帐号，然后在登录屏幕的底部选择“添加用户”。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">按住搜索键可切换顶行键的行为</translation>
 <translation id="8549316893834449916">您将使用自己的 Google 帐号登录 Chromebook - 此帐号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的帐号相同。</translation>
 <translation id="8551388862522347954">许可</translation>

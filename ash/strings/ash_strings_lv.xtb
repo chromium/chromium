@@ -326,6 +326,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2981684127883932071">Tiek rādīti ieteikumi</translation>
+<translation id="2985148236010982088">Skatīt visas lietotnes</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
 <translation id="2995447421581609334">Rādīt apraides ierīces</translation>
 <translation id="2996462380875591307">Dokotās lupas režīms ir iespējots. Lai to izslēgtu, nospiediet taustiņu kombināciju Ctrl+Search+D.</translation>
@@ -464,6 +465,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3726171378575546917">Šajā ierīcē nav lietotņu <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> un vēl <ph name="UNAVAILABLE_APPS_COUNT" /> lietotnes(-ņu).</translation>
 <translation id="3735740477244556633">Kārtot pēc</translation>
 <translation id="3742055079367172538">Ekrānuzņēmums ir uzņemts</translation>
+<translation id="3761848338953536304">Jūsu administrators pieprasa, lai jūs izslēgtu SIM bloķēšanas iestatījumu.</translation>
 <translation id="3765841986579723851">Rediģēts šodien</translation>
 <translation id="3771549900096082774">Augsta kontrasta režīms</translation>
 <translation id="3773700760453577392">Administrators ir aizliedzis lietotājam <ph name="USER_EMAIL" /> vairākkārtēju pierakstīšanos. Lai turpinātu, visiem lietotājiem ir jāizrakstās.</translation>
@@ -828,6 +830,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="598407983968395253">Izmantot veidni</translation>
 <translation id="598882571027504733">Lai iegūtu atjauninājumu, restartējiet savu Chromebook datoru ar pievienoto tastatūru.</translation>
 <translation id="5992218262414051481">Augsta kontrasta režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet Ctrl+Search+H.</translation>
+<translation id="6009656393242168182">Atspējojiet savu SIM bloķēšanas iestatījumu</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. lapa no <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Notiek iziešana no spoguļošanas režīma</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
@@ -862,6 +865,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6166852626429024716">Varat meklēt ierīcē, lietotnēs, iestatījumos, tīmeklī…</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
+<translation id="6182592640011875895">Atvērt darbvietu</translation>
 <translation id="619279033188484792">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="619335566042889110">Pilnībā uzlādēt</translation>
 <translation id="6220928844947387476">Tagad varat ierakstīt gan savu video, gan savu ekrānu vienlaikus.</translation>
@@ -1168,6 +1172,7 @@ Jauna instalācija</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>
 <translation id="8054466585765276473">Notiek akumulatora darbības ilguma aprēķināšana.</translation>
 <translation id="8061464966246066292">Augsts kontrasts</translation>
+<translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
 <translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>

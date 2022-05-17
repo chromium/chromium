@@ -323,6 +323,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2970920913501714344">Apps, Erweiterungen und Designs installieren</translation>
 <translation id="2977598380246111477">Nächste Nummer</translation>
 <translation id="2981684127883932071">Vorschläge werden angezeigt</translation>
+<translation id="2985148236010982088">Alle Apps anzeigen</translation>
 <translation id="2992327365391326550">Das Mikrofon des Geräts ist ausgeschaltet.</translation>
 <translation id="2995447421581609334">Streaminggeräte anzeigen</translation>
 <translation id="2996462380875591307">Angedockte Lupe aktiviert. Drücke Strg + Suchtaste + D, um sie zu deaktivieren.</translation>
@@ -461,6 +462,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> und <ph name="UNAVAILABLE_APPS_COUNT" /> weitere sind nicht auf diesem Gerät installiert.</translation>
 <translation id="3735740477244556633">Sortieren nach</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
+<translation id="3761848338953536304">Dein Administrator bittet dich, die Einstellung zum Sperren der SIM-Karte zu deaktivieren</translation>
 <translation id="3765841986579723851">Heute bearbeitet</translation>
 <translation id="3771549900096082774">Modus mit hohem Kontrast</translation>
 <translation id="3773700760453577392">Ein Administrator hat die Mehrfachanmeldung für <ph name="USER_EMAIL" /> deaktiviert. Alle Nutzer müssen sich abmelden, um fortfahren zu können.</translation>
@@ -825,6 +827,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="598407983968395253">Vorlage verwenden</translation>
 <translation id="598882571027504733">Du kannst das Update vornehmen, indem du dein Chromebook mit angeschlossener Tastatur neu startest.</translation>
 <translation id="5992218262414051481">Modus mit hohem Kontrast aktiviert. Drücke Strg + Suche + H, um ihn zu deaktivieren.</translation>
+<translation id="6009656393242168182">Deaktiviere deine Einstellung zum Sperren der SIM-Karte</translation>
 <translation id="6012623610530968780">Seite <ph name="SELECTED_PAGE" /> von <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Spiegelungsmodus wird beendet</translation>
 <translation id="602001110135236999">Nach links scrollen</translation>
@@ -859,6 +862,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6166852626429024716">Auf deinem Gerät, in Apps, Einstellungen oder im Web suchen…</translation>
 <translation id="6179832488876878285">Du kannst wichtige Dateien hier anpinnen. Öffne die Dateien App, um zu starten.</translation>
+<translation id="6182592640011875895">Desktop öffnen</translation>
 <translation id="619279033188484792">Letzte Fotos, Medien und Benachrichtigungen von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="619335566042889110">Jetzt vollständig aufladen</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
@@ -1164,6 +1168,7 @@ Neuinstallation</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
 <translation id="8061464966246066292">Hoher Kontrast</translation>
+<translation id="8083540854303889870">Für später gespeichert</translation>
 <translation id="8098591350844501178">Streamen von Bildschirm an <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="8113423164597455979">An: alle Apps</translation>
 <translation id="8120151603115102514">Dein Smartphone hat keinen Sperrbildschirm. Gib zum Entsperren das Passwort ein.</translation>

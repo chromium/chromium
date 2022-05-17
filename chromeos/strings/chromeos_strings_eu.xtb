@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Sare-zerbitzuaren ataria dirudi</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aktibatu idazketaren aurkako babesa</translation>
 <translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
 <translation id="1310380015393971138">Ez dago <ph name="NETWORK_NAME" /> sarerik erabilgarri</translation>
 <translation id="131421566576084655">Ez dago erabilgarri azken datu-berrezartzearen data</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">Erantzun bizkorrak eginbidearen ezarpenak</translation>
 <translation id="5168185087976003268">Bateriaren egoera</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
+<translation id="5179530508336824319">Gaitu idazketaren aurkako babesa hurrengo pantailara joateko. Argibideak lortzeko, joan gailuaren fabrikatzailearen laguntza-zerbitzuaren orrira.</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="5212543919916444558">Ezin dizut lagundu pantailako ezerekin.
 Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
@@ -854,6 +856,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="9126720536733509015">Gorde hainbat orri PDF bakar batean</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9138630967333032450">Ezkerreko Maius tekla</translation>
+<translation id="9148058034647219655">Irten</translation>
 <translation id="9149391708638971077">Egin memoriaren proba</translation>
 <translation id="9173638680043580060">Minutu bat baino gutxiago geratzen da</translation>
 <translation id="917720651393141712">Proba</translation>

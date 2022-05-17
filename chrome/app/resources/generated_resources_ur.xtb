@@ -89,6 +89,9 @@
 <translation id="1082214733466244292">آپ کے منتظم نے اس آلے کے لیے کچھ فعالیت کو مسدود کر دیا ہے</translation>
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی Chrome ترتیبات کو ان کے اصل ڈیفالٹس پر بحال کرنا چاہتا ہے۔ یہ آپ کے ہوم صفحہ، نئے ٹیب صفحے اور سرچ انجن کو دوبارہ ترتیب دے دے گا، آپ کی ایکسٹینشنز کو غیر فعال کر دے گا اورسبھی ٹیبز سے پن ہٹا دے گا۔ یہ دیگر عارضی اور کیش کردہ ڈیٹا جیسے کوکیز، مواد اور سائٹ ڈیٹا کو بھی صاف کر دے گا۔</translation>
 <translation id="1084096383128641877">اس پاس ورڈ کو ہٹانے سے آپ کا اکاؤنٹ <ph name="DOMAIN" /> سے حذف نہیں ہوگا۔ اپنا اکاؤنٹ دوسروں سے محفوظ رکھنے کیلئے اپنا پاس ورڈ تبدیل کریں یا <ph name="DOMAIN_LINK" /> سے اپنا اکاؤنٹ حذف کریں۔</translation>
+<translation id="1084288067399862432">متاثرہ پاس ورڈ کو کامیابی کے ساتھ تبدیل کر دیا گیا۔
+
+<ph name="GOOGLE_PASSWORD_MANAGER" /> میں اپنے پاس ورڈز کو کسی بھی وقت چیک کریں۔</translation>
 <translation id="1084824384139382525">لنک پ&amp;تہ کاپی کریں</translation>
 <translation id="1085064499066015002">ہمیشہ سبھی سائٹس پر</translation>
 <translation id="1085697365578766383">ورچوئل مشین شروع کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
@@ -516,7 +519,6 @@
 <translation id="1506061864768559482">تلاش انجن</translation>
 <translation id="1507170440449692343">اس صفحہ کو آپ کے کیمرا تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="1507246803636407672">&amp;مسترد کریں</translation>
-<translation id="1507884455975553832">پیغام رسانی ایپس کی سلسلہ بندی کریں</translation>
 <translation id="1509163368529404530">&amp;گروپ بحال کریں</translation>
 <translation id="1509281256533087115">‏USB کے ذریعے کسی بھی <ph name="DEVICE_NAME_AND_VENDOR" /> تک رسائی حاصل کریں</translation>
 <translation id="1510238584712386396">لانچر</translation>
@@ -832,6 +834,7 @@
 <translation id="1784707308176068866">تعاون کرنے والی اصل ایپلیکیشن کی درخواست پر پس منظر میں چلائیں</translation>
 <translation id="1784849162047402014">آلہ میں ڈسک کی جگہ کم ہے</translation>
 <translation id="1787350673646245458">صارف تصویر</translation>
+<translation id="1788329699711791226">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کی سہولیات تک رسائی حاصل کریں</translation>
 <translation id="1790976235243700817">رسائی ہٹائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792619191750875668">توسیع کردہ ڈسپلے</translation>
@@ -1680,6 +1683,7 @@
 <translation id="2554553592469060349">‏منتخب کردہ فائل کافی بڑی ہے (زیادہ سے زیادہ سائز: 3mb)۔</translation>
 <translation id="2558569818338050235">آپ کی براؤزنگ کی سرگزشت آپ کے دیکھے جانے والے اشتہارات کو متاثر کرتی ہے</translation>
 <translation id="2558896001721082624">سسٹم مینو میں ایکسیسبیلٹی کے اختیارات ہمیشہ دکھائیں</translation>
+<translation id="2559889124253841528">آلہ پر محفوظ کریں</translation>
 <translation id="2564520396658920462">‏AppleScript کے ذریعے JavaScript کو رو بہ عمل لانا آف ہے۔ مینو بار سے اسے آن کرنے کے لئے دیکھیں &gt; ڈویلپر &gt; Apple ایونٹس سے JavaScript کو اجازت دیں پر جائیں۔ مزید معلومات کے لئے: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">بہتر کردہ املا کی جانچ</translation>
 <translation id="2568774940984945469">معلومات بار کنٹینر</translation>
@@ -1690,6 +1694,7 @@
 <translation id="2575247648642144396">جب ایکسٹینشن موجودہ صفحہ پر کارروائی کر سکے گا تو یہ آئیکن دیکھا جا سکے گا۔ آئیکن پر کلک کر کے یا <ph name="EXTENSION_SHORTCUT" /> کو دبا کر اس ایکسٹینشن کو استعمال کریں۔</translation>
 <translation id="2575407791320728464">‏غلط URL۔ یقینی بنائیں کہ اسے صحیح طریقے سے فارمیٹ کیا گیا ہے۔</translation>
 <translation id="2575441894380764255">دخل انداز یا گمراہ کن اشتہارات دکھانے کی اجازت نہیں ہے</translation>
+<translation id="2575713839157415345">{YEARS,plural, =1{یہ آلہ 1 سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {YEARS} سال کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="257779572837908839">‏Chromebox برائے میٹنگز کے طور پر سیٹ کریں</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> کو ہمیشہ متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت دیں</translation>
 <translation id="258095186877893873">طویل</translation>
@@ -2987,6 +2992,7 @@
 <translation id="3856800405688283469">ٹائم زون منتخب کریں</translation>
 <translation id="3857807444929313943">اٹھائیں، پھر دوبارہ ٹچ کریں</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="385939467708172187">مضبوط پاس ورڈ استعمال کریں</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" صارف نام دستیاب نہیں ہے</translation>
 <translation id="3861977424605124250">اسٹارٹ اپ پر دکھائیں</translation>
 <translation id="386239283124269513">&amp;گروپ بحال کریں</translation>
@@ -3230,6 +3236,7 @@
 <translation id="4089235344645910861">ترتیبات محفوظ ہو گئیں۔ مطابقت پذیری شروع ہو گئی۔</translation>
 <translation id="4090103403438682346">توثیق شدہ رسائی فعال کریں</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> کیلئے سائٹ کی اجازتیں دوبارہ ترتیب دیں؟</translation>
+<translation id="4092636882861724179">آپ <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کردہ پاس ورڈز کو دیکھ اور ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="4093865285251893588">پروفائل تصویر</translation>
 <translation id="4093955363990068916">مقامی فائل:</translation>
 <translation id="4094647278880271855">آپ ماحول کے ایک غیر تعاون یافتہ تغیر کا استعمال کر رہے ہیں: <ph name="BAD_VAR" />۔ استحکام اور سیکیورٹی متاثر ہوگی۔</translation>
@@ -3520,6 +3527,7 @@
 <translation id="4392896746540753732">کنفیگریشن فائل میں ترمیم کریں</translation>
 <translation id="4394049700291259645">غیر فعال کریں</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{سبھی کو &amp;کھولیں}=1{بُک مارک &amp;کھولیں}other{سبھی ({COUNT}) کو &amp;کھولیں}}</translation>
+<translation id="4397372003838952832">آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے <ph name="EMAIL" /> کے لیے <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ کیا جائے گا۔</translation>
 <translation id="439817266247065935">‏آپ کا آلہ صحیح سے بند نہیں ہوا ہے۔ Linux ایپس کو استعمال کرنے کیلئے Linux کو ری سٹارٹ کریں۔</translation>
 <translation id="4400367121200150367">جو سائٹس کبھی بھی پاس ورڈز محفوظ نہیں کرتی ہیں وہ یہاں ظاہر ہوں گی</translation>
 <translation id="4400632832271803360">سر فہرست قطار کی کلیدوں کے برتاؤ کو سوئچ کرنے کیلئے، لانچر کی کلید کو دبائے رکھیں</translation>
@@ -3533,6 +3541,7 @@
 <translation id="4405117686468554883">‎*.jpeg, *.jpg, *.png</translation>
 <translation id="440653823335387109">آپ کے پڑھے ہوئے صفحات</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
+<translation id="4407039574263172582">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="4408599188496843485">&amp;مدد</translation>
 <translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4409697491990005945">مارجنز</translation>
@@ -3716,6 +3725,7 @@
 <translation id="4579453506923101210">منسلک کردہ فون کو بھول جائیں</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر۔</translation>
 <translation id="4579876313423027742">‏براؤزر کی اطلاعات کے لیے، <ph name="LINK_BEGIN" />Chrome براؤزر کی ترتیبات<ph name="LINK_END" /> پر جائیں</translation>
+<translation id="4580596421317071374">اس آلے پر پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہوتے ہیں۔</translation>
 <translation id="4581774856936278355">‏Linux کو بحال کرنے کے دوران خرابی</translation>
 <translation id="4582297591746054421">آپ کے کاپی کردہ ٹیکسٹ کی فارمیٹنگ برقرار رکھنے جیسی خصوصیات کے لیے سائٹس عام طور پر آپ کی کلپ بورڈ پڑھتی ہیں</translation>
 <translation id="4582563038311694664">سبھی ترتیبات کو دوبارہ سیٹ کریں</translation>
@@ -3888,6 +3898,7 @@
 <translation id="4761104368405085019">اپنا مائیکروفون استعمال کریں</translation>
 <translation id="4762718786438001384">آلہ کے ڈسک کی جگہ انتہائی کم ہے</translation>
 <translation id="4763408175235639573">جب آپ نے یہ صفحہ ملاحظہ کیا تو مندرجہ ذیل کوکیز سیٹ کی گئی تھیں</translation>
+<translation id="4765524037138975789">{MONTHS,plural, =1{یہ آلہ 1 ماہ کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {MONTHS} ماہ کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="4765582662863429759">‏Android پیغامات کو آپ کے فون سے آپ کے Chromebook پر متنی پیغامت بھیجنے کی اجازت دیتی ہے</translation>
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
@@ -4502,6 +4513,7 @@
 <translation id="5398497406011404839">چھپے ہوئے بُک مارکس</translation>
 <translation id="5398572795982417028">صفحہ کے حوالہ کی حدوں سے باہر، حد <ph name="MAXIMUM_PAGE" /> ہے</translation>
 <translation id="5401426944298678474">سائٹ کی پیروی ختم کریں</translation>
+<translation id="5401851137404501592">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے نام، ای میل پتہ اور پروفائل کی تصویر کا اشتراک کرے گا۔</translation>
 <translation id="5402815541704507626">موبائل ڈیٹا استعمال کرتے ہوۓ اپڈیٹ ڈاؤن لوڈ کریں</translation>
 <translation id="540296380408672091"><ph name="HOST" /> پر کوکیز کو ہمیشہ مسدود کریں</translation>
 <translation id="5404740137318486384">اسے "<ph name="ACTION" />" کو تفویض کرنے کیلئے سوئچ یا کی بورڈ کی کلید دبائیں۔ آپ اس کارروائی کو متعدد سوئچز تفویض کر سکتے ہیں۔</translation>
@@ -4648,6 +4660,7 @@
 <translation id="5539221284352502426">آپ کا درج کردہ پاس ورڈ سرور کی طرف سے مسترد کر دیا گیا۔ ممکنہ وجوہات میں شامل ہیں: پاس ورڈ کافی چھوٹا ہے۔ پاس ورڈ میں نمبرز یا علامتوں کا شامل ہونا ضروری ہے۔ پاس ورڈ کا پرانے پاس ورڈز سے مختلف ہونا ضروری ہے۔</translation>
 <translation id="5541694225089836610">آپ کے منتظم نے کارروائی کو غیر فعال کر دیا ہے</translation>
 <translation id="5542132724887566711">پروفائل</translation>
+<translation id="554229901779827904">‏آپ کا اکاؤنٹ <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ آپ کا منتظم اس Chrome براؤزر کی پروفائل اور اس کے ڈیٹا کو دیکھ اور اس میں ترمیم کر سکتا ہے۔ آپ کے ڈیٹا میں بک مارکس، سرگزشت اور پاس ورڈز شامل ہیں۔</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> کی کوکیز مسدود ہو گئیں</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="5543983818738093899">اسٹیٹس چیک کیا جا رہا ہے…</translation>
@@ -5061,7 +5074,6 @@
 <translation id="5957987129450536192">اپنی پروفائل تصویر کے قریب موجود "سننے کیلئے منتخب کریں" آئیکن کو تھپتھپائیں، پھر جو آپ سننا چاہتے ہیں اسے منتخب کریں۔</translation>
 <translation id="5959471481388474538">نیٹ ورک دستیاب نہیں ہے</translation>
 <translation id="595959584676692139">اس ایکسٹینشن کا استعمال کرنے کے لیے صفحہ دوبارہ لوڈ کریں</translation>
-<translation id="5960410286721553511">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھیں</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> پیک)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
 <translation id="5965661248935608907">یہ اس کو بھی کنٹرول کرتا ہے کہ جب آپ ہوم بٹن پر کلک یا اومنی باکس سے تلاش کرتے ہیں تو کون سا صفحہ دکھایا جاتا ہے۔</translation>
@@ -5356,6 +5368,7 @@
 <translation id="6250186368828697007">آپ کی جانب سے اپنی اسکرین کے اشتراک کے دوران تفصیلات پوشیدہ ہوتی ہیں</translation>
 <translation id="6251870443722440887">‏GDI ہینڈلز</translation>
 <translation id="625369703868467034">نیٹ ورک کی صحت</translation>
+<translation id="6253801023880399036">پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہیں۔</translation>
 <translation id="6254503684448816922">کلید سے سمجھوتہ</translation>
 <translation id="6254892857036829079">کامل</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
@@ -6380,6 +6393,7 @@
 <translation id="7282547042039404307">ہموار</translation>
 <translation id="7282992757463864530">معلومات بار</translation>
 <translation id="7283555985781738399">مہمان وضع</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{یہ آلہ 1 دن کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {DAYS} دن کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="7284411326658527427">ہر شخص اپنے اکاؤنٹ کو ذاتی نوعیت کا بنا اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
 <translation id="7287143125007575591">رسائی مسترد کر دی گئی۔</translation>
 <translation id="7287411021188441799">ڈیفالٹ پس منظر بحال کریں</translation>
@@ -6584,6 +6598,7 @@
 <translation id="7488682689406685343">ممکن ہے یہ سائٹ آپ کو دھوکہ سے دخل انداز اطلاعات کی اجازت دینے کی کوشش کر رہی ہو۔</translation>
 <translation id="7489761397368794366">اپنے آلہ سے کال کریں</translation>
 <translation id="749028671485790643">شخص <ph name="VALUE" /></translation>
+<translation id="7490683549040131791">باقی ماندہ پاس ورڈز چیک کریں</translation>
 <translation id="7491962110804786152">ٹیب</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 کوکی}other{{NUM_COOKIES} کوکیز}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ایکسٹینشن آپ کے ٹائپ کردہ سبھی متن، بشمول ذاتی ڈیٹا مثلاً پاس ورڈز اور کریڈٹ کارڈ نمبرز کو اکٹھا کر سکتا ہے۔ کیا آپ اس ایکسٹینشن کو استعمال کرنا چاہتے ہیں؟</translation>
@@ -7474,6 +7489,7 @@
 <translation id="8335587457941836791">شیلف سے پن ہٹائیں</translation>
 <translation id="8336407002559723354">اپ ڈیٹس <ph name="MONTH_AND_YEAR" /> کو ختم ہو جائیں گی</translation>
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
+<translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="8337047789441383384">آپ یہ سیکیورٹی کلید پہلے ہی رجسٹر کر چکے ہیں۔ آپ کو اسے دوبارہ رجسٹر کرنے کی ضرورت نہیں ہے۔</translation>
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> کا مقامی طور پر اسٹور کردہ ڈیٹا</translation>

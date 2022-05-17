@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Kontroleringsportaal vermoed</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Skakel Skryfbeskerming aan</translation>
 <translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beskikbaar nie</translation>
 <translation id="131421566576084655">Datum van laaste dataterugstelling is nie beskikbaar nie</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Tuisnetwerk, swerf tans nie</translation>
+<translation id="132712914231403017">Installeer fermwareprent</translation>
 <translation id="1327977588028644528">Deurgang</translation>
 <translation id="1328223165223065150">Muurpapierkleur</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
 <translation id="1643449475550628585">Verander muurpapierprent daagliks</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
+<translation id="1645954272419197032">Bevestig asseblief die toestelinligting</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1668469839109562275">Ingeboude VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Konnektiwiteit</translation>
 <translation id="2008685064673031089">Hoofsoektog</translation>
 <translation id="2016697457005847575">Probeer foutsporingstappe</translation>
+<translation id="2016848882344942759">--geen wit etiket nie--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2085089206770112532">Verlaag skermhelderheid</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Donkermodus-skedule</translation>
 <translation id="2275586345903859204">Herstelling is voltooi</translation>
 <translation id="2287186687001756809">Geen prent is beskikbaar nie. Gaan na <ph name="LINK" /> om foto's by te voeg</translation>
+<translation id="2294753434210277304">Sit eksterne berging in, soos ’n USB-datastokkie of ’n SD-kaart, met die afgelaaide Chromebook-terugstellingnutsdingprent</translation>
 <translation id="2307344026739914387">Gebruik huidige sleutelpaar</translation>
 <translation id="2320295602967756579">Aktiveer ligtema</translation>
 <translation id="2323506179655536734">OORGESLAAN</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS-stawingsleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2717139507051041123">Aktiveer donkerkleurmodus</translation>
+<translation id="2727250716596204208">Kon nie fermwareprent vind nie. Sit eksterne berging in, soos ’n USB-datastokkie of ’n SD-kaart, met die afgelaaide Chromebook-terugstellingnutsdingprent.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP se fase 2-stawing</translation>
 <translation id="2756652381241102009">Laat loop diagnostiek</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Toestel is gekoppel.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Verwyder bladsy?}=1{Verwyder bladsy {PAGE_NUMBER}?}other{Verwyder bladsy {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Stel tans die toestel op …</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Skandeer tans bladsy <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Kontroleringsportaal is bespeur</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in regterknoppie.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3369013195428705271">Is jy seker jy wil alle drukgeskiedenis uitvee? Jou aangaande druktake sal nie uitgevee word nie.</translation>
+<translation id="3383751554789092165">Verander toestelinligting soos nodig.</translation>
 <translation id="3404249063913988450">Aktiveer sluimerskerm</translation>
 <translation id="3404770484521709967">Komponente is korrek geïnstalleer.</translation>
 <translation id="3413935475507503304">Klik Volgende om met die opdatering voort te gaan.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Nie gekoppel nie</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
 <translation id="3771294271822695279">Videolêers</translation>
+<translation id="3774059845329307709">Reeksnommer</translation>
 <translation id="3784455785234192852">Sluit</translation>
 <translation id="38114475217616659">Vee alle geskiedenis uit</translation>
 <translation id="3820172043799983114">Ongeldige PIN.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
 <translation id="4561801978359312462">SIM is ontsluit</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
+<translation id="4568938274596692027">Installasie is afgehandel. Berei tans voor om te herbegin …</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4609350030397390689">Verlaag sleutelbordhelderheid</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Kies onmiddellik 'n nuwe een</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Toestel het <ph name="BATTERY_PERCENTAGE" />% batterykrag in linkerknoppie.</translation>
+<translation id="4908030561598728899">Installeer tans fermware …</translation>
 <translation id="4915052247106771211">Dit sal die toestel na fabriekinstellings terugstel (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestop – papier is op</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
 <translation id="5168185087976003268">Batterygesondheid</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
+<translation id="5179530508336824319">Aktiveer skryfbeskerming om na die volgende skerm voort te gaan. Gaan na die toestelvervaardiger se steundienstebladsy vir instruksies.</translation>
 <translation id="5190187232518914472">Herleef jou gunstelingherinneringe. Gaan na <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> toe om albums by te voeg of te wysig.</translation>
 <translation id="5212543919916444558">Ek kry niks op jou skerm waarmee ek kan help nie.
 Probeer die mikrofoon tik om my enigiets te vra.</translation>
@@ -615,8 +627,10 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
+<translation id="6822504384524564824">Die SKU behoort net verander te word as die nuwe komponent(e) verskil van die komponente wat vervang is. Byvoorbeeld, ’n raakskerm wat ’n nie-raakskerm vervang, of geheue wat van 8 GB na 16 GB opgradeer word.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> herstel</translation>
 <translation id="6853312040151791195">Ontlaaikoers</translation>
+<translation id="6876833053687020046">DRAM-deelnommer</translation>
 <translation id="6889786074662672253">Moenie hierdie eksterne toestel uitprop of jou rekenaar afskakel terwyl dit herbegin het. Jy kan hierdie venster klein maak. Dit kan 'n paar minute neem, en jou eksterne toestel sal dalk nie in hierdie tyd werk nie.</translation>
 <translation id="6905724422583748843">Terug na <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die skandeerder se deksel is oop. Maak die deksel toe en probeer weer.</translation>
@@ -664,6 +678,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Verander sluimerskerm</translation>
 <translation id="7397270852490618635">Skakel ligtema af</translation>
 <translation id="741244894080940828">omskakeling</translation>
@@ -763,6 +778,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
 <translation id="8372477600026034341">Ekstra gashere</translation>
 <translation id="8378855320830505539">Streek</translation>
+<translation id="8382302752385457774">Wit etiket</translation>
 <translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
 <translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -854,6 +870,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="9126720536733509015">Stoor veelvuldige bladsye as een PDF</translation>
 <translation id="9137526406337347448">Google-dienste</translation>
 <translation id="9138630967333032450">Linker-shift-sleutel</translation>
+<translation id="9148058034647219655">Gaan uit</translation>
 <translation id="9149391708638971077">Laat loop geheuetoets</translation>
 <translation id="9173638680043580060">Minder as 'n minuut oor</translation>
 <translation id="917720651393141712">Toets</translation>

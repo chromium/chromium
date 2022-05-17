@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Ative a proteção contra escrita</translation>
 <translation id="1308754910631152188">A atualizar (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
 <translation id="131421566576084655">A data da última reposição de dados não está disponível</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">Definições das Respostas rápidas</translation>
 <translation id="5168185087976003268">Condição da bateria</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
+<translation id="5179530508336824319">Ative a proteção contra escrita para continuar para o ecrã seguinte. Aceda à página de apoio técnico do fabricante do dispositivo para obter instruções.</translation>
 <translation id="5190187232518914472">Reviva as suas memórias favoritas. Para adicionar ou editar álbuns, aceda ao <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
@@ -854,6 +856,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9126720536733509015">Guardar várias páginas num PDF</translation>
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9138630967333032450">Shift do lado esquerdo</translation>
+<translation id="9148058034647219655">Sair</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>

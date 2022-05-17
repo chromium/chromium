@@ -116,6 +116,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3169523567916669830">Pendant ces tests, vous pouvez afficher et supprimer les centres d'intérêt que les sites utilisent pour vous proposer des annonces. Chrome se base sur votre historique de navigation récent pour prédire les sujets qui vous intéressent.</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
+<translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va être relancé maintenant}=1{Chrome va être relancé dans 1 seconde}one{Chrome va être relancé dans # seconde}other{Chrome va être relancé dans # secondes}}</translation>
 <translation id="3396977131400919238">Erreur de système d'exploitation pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
@@ -191,6 +192,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4969674060580488087">Chrome OS Flex n'a pas pu synchroniser vos données, car les infos de connexion de votre compte sont obsolètes.</translation>
 <translation id="4970761609246024540">Bienvenue sur la page de profils Chrome</translation>
 <translation id="4970880042055371251">Version de Chrome OS</translation>
+<translation id="4970947549776831107">Chrome a bloqué ce fichier, car ce type de fichier est dangereux</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Vous devez disposer de macOS 10.13 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS X 10.11 qui est installée sur cet ordinateur.</translation>
 <translation id="5112116809696021727">Pour savoir si votre appareil est à jour, accédez aux <ph name="LINK_BEGIN" />paramètres Chrome OS<ph name="LINK_END" /></translation>
@@ -299,7 +301,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Votre historique de navigation, qui liste tous les sites que vous avez consultés dans Chrome sur cet appareil.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
-<translation id="7748512868279796735">Les comptes suivants sont disponibles pour ce profil Chrome</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="7781002470561365167">Une nouvelle version de Google Chrome est disponible.</translation>

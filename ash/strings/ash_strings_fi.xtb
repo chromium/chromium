@@ -325,6 +325,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2970920913501714344">asentaa sovelluksia, laajennuksia ja teemoja</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
 <translation id="2981684127883932071">Ehdotuksia näytetään</translation>
+<translation id="2985148236010982088">Katso kaikki sovellukset</translation>
 <translation id="2992327365391326550">Laitteen mikrofonipainike ei ole päällä.</translation>
 <translation id="2995447421581609334">Näytä Cast-laitteet.</translation>
 <translation id="2996462380875591307">Kiinnitetty suurennus on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + D.</translation>
@@ -463,6 +464,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja <ph name="UNAVAILABLE_APPS_COUNT" /> muuta puuttuvat laitteelta.</translation>
 <translation id="3735740477244556633">Lajitteluperuste</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
+<translation id="3761848338953536304">Järjestelmänvalvoja pyytää sinua laittamaan SIM-kortin lukitusasetuksen pois päältä</translation>
 <translation id="3765841986579723851">Muokattu tänään</translation>
 <translation id="3771549900096082774">Suuri kontrasti ‑tila</translation>
 <translation id="3773700760453577392">Järjestelmänvalvoja on estänyt käyttäjää <ph name="USER_EMAIL" /> kirjautumasta sisään useille tileille. Kaikkien käyttäjien on kirjauduttava ulos jatkaakseen käyttöä.</translation>
@@ -827,6 +829,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="598407983968395253">Käytä mallia</translation>
 <translation id="598882571027504733">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen niin, että näppäimistö on kytkettynä.</translation>
 <translation id="5992218262414051481">Suuri kontrasti ‑tila on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + H.</translation>
+<translation id="6009656393242168182">Poista SIM-kortin lukitusasetus käytöstä</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
@@ -861,6 +864,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6166852626429024716">Hae laitteelta, sovelluksista, asetuksista, verkosta…</translation>
 <translation id="6179832488876878285">Voit kiinnittää tärkeitä tiedostoja tähän. Aloita avaamalla Files-sovellus.</translation>
+<translation id="6182592640011875895">Avaa työpöytä</translation>
 <translation id="619279033188484792">Katsele puhelimesi viimeisimpiä kuvia, mediaa ja ilmoituksia <ph name="DEVICE_TYPE" />-laitteella</translation>
 <translation id="619335566042889110">Lataa täyteen nyt</translation>
 <translation id="6220928844947387476">Voit nyt kuvata itseäsi ja näyttöäsi samaan aikaan</translation>
@@ -1167,6 +1171,7 @@ Uusi asennus</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
 <translation id="8061464966246066292">Suuri kontrasti</translation>
+<translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
 <translation id="8098591350844501178">Lopeta suoratoisto: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>
 <translation id="8120151603115102514">Puhelimessasi ei ole lukitusnäyttöä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>

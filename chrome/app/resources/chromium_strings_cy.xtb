@@ -305,7 +305,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7867198900892795913">Ni allai Chromium ddiweddaru i'r fersiwn ddiweddaraf, felly nid oes gennych nodweddion newydd na gwelliannau diogelwch sydd ar gael.</translation>
 <translation id="7872446069773932638">Wrthi'n lawrlwytho... Mae <ph name="SECONDS" /> eiliad ar ôl</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
-<translation id="788352880609666695">Mae'r cyfrifon canlynol ar gael ar gyfer y proffil Chromium hwn</translation>
 <translation id="7937630085815544518">Roeddech wedi'ch mewngofnodi i Chromium fel <ph name="USER_EMAIL_ADDRESS" />. Defnyddiwch yr un cyfrif i fewngofnodi eto.</translation>
 <translation id="7975919845073681630">Gosodiad eilaidd o Chromium yw hwn, ac ni ellir ei wneud yn borwr diofyn i chi.</translation>
 <translation id="7982481011030453202">Os nad yw gosodiad yn ymddangos ar y dudalen hon, edrychwch yn eich <ph name="LINK_BEGIN" />
@@ -317,6 +316,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8133124826068723441">Nid oedd ChromiumOS yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="81770708095080097">Mae'r ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
+<translation id="8213374284266571500">Gwnaeth Chromium rwystro'r ffeil hon oherwydd bod y math hwn o ffeil yn beryglus</translation>
 <translation id="8248265253516264921">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau. Gallwch ddiffodd hyn yn y gosodiadau ar unrhyw adeg.</translation>
 <translation id="8266560134891435528">Ni all Chromium wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="8276522524898344151">Mae Chromium yn ceisio copïo cyfrineiriau.</translation>
@@ -352,6 +352,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8986207147630327271">Rydych yn ychwanegu proffil gwaith i'r porwr hwn ac yn rhoi rheolaeth i'ch gweinyddwr dros y proffil gwaith yn unig.</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
+<translation id="9022552996538154597">Mewngofnodi i Chromium</translation>
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>
 <translation id="9093206154853821181">{0,plural, =1{Bydd Chromium yn ail-lansio mewn awr}zero{Bydd Chromium yn ail-lansio mewn # awr}two{Bydd Chromium yn ail-lansio mewn # awr}few{Bydd Chromium yn ail-lansio mewn # awr}many{Bydd Chromium yn ail-lansio mewn # awr}other{Bydd Chromium yn ail-lansio mewn # awr}}</translation>
 <translation id="91086099826398415">Agor Dolen mewn Tab Chromium &amp;Newydd</translation>

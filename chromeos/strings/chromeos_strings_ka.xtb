@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">სავარაუდოდ, გამოიყენება ავტორიზაციის პორტალი</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">ჩართეთ ჩაწერისგან დაცვა</translation>
 <translation id="1308754910631152188">მიმდინარეობს განახლება (დასრულებულია <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ქსელი მიუწვდომელია</translation>
 <translation id="131421566576084655">მონაცემთა ბოლო გადაყენების თარიღი მიუწვდომელია</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">სწრაფი პასუხების პარამეტრები</translation>
 <translation id="5168185087976003268">ბატარეის მდგომარეობა</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
+<translation id="5179530508336824319">მომდევნო ეკრანზე გადასასვლელად ჩართეთ ჩაწერისგან დაცვა. ინსტრუქციას შეგიძლიათ გაეცნოთ მოწყობილობის მწარმოებლის მხარდაჭერის გვერდზე.</translation>
 <translation id="5190187232518914472">გააცოცხლეთ თქვენი ყველაზე თბილი მოგონებები. ალბომების დასამატებლად ან რედაქტირებისთვის გადადით <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ზე.</translation>
 <translation id="5212543919916444558">თქვენს ეკრანზე ვერაფერი მოიძებნა, რითაც თქვენს დახმარებას შევძლებდი.
 გთხოვთ, შეეხოთ მიკროფონს და მკითხოთ, რაც გსურთ.</translation>
@@ -868,6 +870,7 @@
 <translation id="9126720536733509015">რამდენიმე გვერდის შენახვა ერთიანი PDF-ის სახით</translation>
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9138630967333032450">მარცხენა shift</translation>
+<translation id="9148058034647219655">გასვლა</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
 <translation id="917720651393141712">შემოწმება</translation>

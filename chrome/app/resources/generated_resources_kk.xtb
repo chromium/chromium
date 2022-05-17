@@ -516,7 +516,6 @@
 <translation id="1506061864768559482">Іздеу жүйесі</translation>
 <translation id="1507170440449692343">Бұл бетке камераны пайдалануға тыйым салынған.</translation>
 <translation id="1507246803636407672">&amp;Алып тастау</translation>
-<translation id="1507884455975553832">Хабар алмасу қолданбаларын трансляциялау</translation>
 <translation id="1509163368529404530">&amp;Топты қалпына келтіру</translation>
 <translation id="1509281256533087115">USB арқылы <ph name="DEVICE_NAME_AND_VENDOR" /> кез келгеніне өту</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
@@ -829,6 +828,7 @@
 <translation id="1784707308176068866">Тиісті қолданба тарапынан сұралғанда, фондық режимде іске қосу</translation>
 <translation id="1784849162047402014">Құрылғы дискінде бос орын аз қалды</translation>
 <translation id="1787350673646245458">Пайдаланушы суреті</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> аккаунтынан Chrome браузерінің материалдарын пайдаланыңыз.</translation>
 <translation id="1790976235243700817">Кіру рұқсатын өшіру</translation>
 <translation id="1791662854739702043">Орнатылды</translation>
 <translation id="1792619191750875668">Кеңейтілген дисплей</translation>
@@ -3776,6 +3776,7 @@
 <translation id="4648491805942548247">Рұқсаттар жеткіліксіз</translation>
 <translation id="4650591383426000695">Телефонды <ph name="DEVICE_TYPE" /> құрылғысынан ажыратыңыз.</translation>
 <translation id="4651484272688821107">Демо режиміндегі ресурстары бар онлайн компонент жүктелмеді.</translation>
+<translation id="4651921906638302153">Бұл аккаунтпен кіру мүмкін емес</translation>
 <translation id="4652935475563630866">Камераның параметріне өзгеріс енгізілгендіктен, Parallels Desktop қайта іске қосылуы қажет. Жалғастыру үшін Parallels Desktop қолданбасын қайта іске қосыңыз.</translation>
 <translation id="4653405415038586100">Linux-ті конфигурациялау қатесі шықты</translation>
 <translation id="465406513924180949">Интернеттегі сатып алу себеттерінде сақталған элементтерге оңай оралуға көмектесетін себеттерді көріп тұрсыз.
@@ -4643,6 +4644,7 @@
 <translation id="5539221284352502426">Енгізген құпия сөзіңізді сервер қабылдамады. Себептері: Құпия сөз тым қысқа.  Құпия сөзде сандар немесе таңбалар болуы керек. Құпия сөз алдыңғы құпия сөздерден басқа болуы керек.</translation>
 <translation id="5541694225089836610">Әрекетті сіздің әкімшіңіз өшірді.</translation>
 <translation id="5542132724887566711">Профиль</translation>
+<translation id="554229901779827904">Аккаунтыңызды <ph name="MANAGER_NAME" /> басқарады. Әкімші осы Chrome браузері профилі мен ондағы деректерді көре және өзгерте алады. Деректерге бетбелгілер, тарих және құпия сөздер кіреді.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> cookie файлдары бөгелді</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> операторына қосылуда</translation>
 <translation id="5543983818738093899">Күйі тексерілуде…</translation>
@@ -5053,7 +5055,6 @@
 <translation id="5957987129450536192">Профиль суретіңіздің жанындағы Select-to-Speak белгішесін түртіп, естігіңіз келетін нәрсені таңдаңыз.</translation>
 <translation id="5959471481388474538">Желі қолжетімсіз</translation>
 <translation id="595959584676692139">Осы кеңейтімді қолдану үшін бетті қайта жүктеңіз</translation>
-<translation id="5960410286721553511">Телефондағы соңғы фотосуреттер мен медиафайлдарды көріңіз.</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (ең көбі – <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Барлығын &amp;жаңа терезеден ашу}=1{&amp;Жаңа терезеден ашу}other{Барлығын ({COUNT}) &amp;жаңа терезеден ашу}}</translation>
 <translation id="5965661248935608907">Ол сондай-ақ сіз "Негізгі бет" түймесін басқан немесе Omnibox ішінен бірдеңе іздеген кезде қандай бет көрсетілетінін реттейді.</translation>
@@ -5429,6 +5430,7 @@
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
 <translation id="6331818708794917058">Сайттар MIDI құрылғыларына қосылуға рұқсат сұрайды.</translation>
 <translation id="6333064448949140209">Қатесі түзетілуі үшін файл Google қызметіне жіберіледі</translation>
+<translation id="6333170995003625229">Электрондық мекенжайыңыз не құпия сөзіңіз расталмады. Қайта кіріп көріңіз.</translation>
 <translation id="6335920438823100346">Linux жүйесін іске қосу үшін <ph name="MANAGER" /> деректердің сақтық көшірмесін жасауды және Chromebook құрылғысын зауыттық параметрлерге қайтаруды талап етеді.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> сайты ADB түзетуін өшірді. <ph name="DEVICE_TYPE" /> құрылғыңыз 24 сағаттан кейін бастапқы күйіне қайтарылады. Қалдырғыңыз келетін файлдардың сақтық көшірмесін жасаңыз.</translation>
 <translation id="6338981933082930623">Сайттардың барлығы сізге кез келген жарнаманы көрсете алады.</translation>
@@ -5837,6 +5839,7 @@
 <translation id="6735304988756581115">Cookie файлдары мен басқа сайт деректерін көрсету…</translation>
 <translation id="6736243959894955139">Мекенжай</translation>
 <translation id="6737663862851963468">Kerberos билетін өшіру</translation>
+<translation id="6738430949033571771">Аккаунт расталуда...</translation>
 <translation id="6739923123728562974">Жұмыс үстелі таңбашасын көрсету</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> кідіртілді</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Әкімшіңіз<ph name="END_LINK" /> "Қауіпсіз шолу" функциясын өшірген.</translation>
@@ -7654,6 +7657,8 @@
 <translation id="8546306075665861288">Кескін кэші</translation>
 <translation id="8546930481464505581">Touch Bar реттеу</translation>
 <translation id="8547013269961688403">Толық экран ұлғайтқышын қосу</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> басқарушысы: <ph name="MANAGER" />. Осы электрондық мекенжайды қосымша аккаунт ретінде қоса алмайсыз.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> электрондық мекенжайын пайдалану үшін алдымен <ph name="DEVICE_TYPE" /> құрылғысынан шығыңыз. Аккаунтқа кіру экранының төменгі жағындағы "Адам қосу" опциясын таңдаңыз.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Жоғарғы қатардағы пернелердің әрекетін ауыстыру үшін "Іздеу" пернесін басып тұрыңыз</translation>
 <translation id="8549316893834449916">Chromebook құрылғысына кіруге Gmail, Drive, YouTube, т.б. үшін қолданатын Google аккаунтыңызды пайдаланыңыз.</translation>
 <translation id="8551388862522347954">Лицензиялар</translation>

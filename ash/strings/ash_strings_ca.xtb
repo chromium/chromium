@@ -326,6 +326,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2981684127883932071">S'estan mostrant suggeriments</translation>
+<translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
 <translation id="2995447421581609334">Mostra els dispositius d'emissió</translation>
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
@@ -464,6 +465,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
+<translation id="3761848338953536304">L'administrador sol·licita que desactivis la configuració de bloqueig de la SIM</translation>
 <translation id="3765841986579723851">Editat avui</translation>
 <translation id="3771549900096082774">Mode d'alt contrast</translation>
 <translation id="3773700760453577392">Un administrador ha desactivat l'inici de sessió múltiple per a <ph name="USER_EMAIL" />. Tots els usuaris han de tancar la sessió per continuar.</translation>
@@ -828,6 +830,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5992218262414051481">El mode d'alt contrast està activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
+<translation id="6009656393242168182">Desactiva la configuració de bloqueig de la SIM</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">S'està sortint del mode de mirall</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
@@ -862,6 +865,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166852626429024716">Cerca al dispositiu, en aplicacions, a la configuració i al web...</translation>
 <translation id="6179832488876878285">Pots fixar els teus fitxers importants aquí. Obre l'aplicació Fitxers per començar.</translation>
+<translation id="6182592640011875895">Obre l'escriptori</translation>
 <translation id="619279033188484792">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Carrega completament ara</translation>
 <translation id="6220928844947387476">Ara pots gravar-te a tu i gravar la teva pantalla alhora</translation>
@@ -1168,6 +1172,7 @@ Instal·lació nova</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
+<translation id="8083540854303889870">Desat per a més tard</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, en totes</translation>
 <translation id="8120151603115102514">El telèfon no té una pantalla de bloqueig. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>

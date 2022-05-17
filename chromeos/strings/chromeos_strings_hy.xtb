@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Հնարավոր մուտքի էջ</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Միացրեք Write Protect-ը</translation>
 <translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
 <translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
 <translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">Արագ պատասխանների կարգավորումներ</translation>
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
+<translation id="5179530508336824319">Հաջորդ էկրանին անցնելու համար միացրեք write-protect-ը։ Անցեք սարքի արտադրողի աջակցման ծառայության էջ՝ ցուցումներին ծանոթանալու համար։</translation>
 <translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
@@ -854,6 +856,7 @@
 <translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9138630967333032450">Ձախ Shift</translation>
+<translation id="9148058034647219655">Ելնել</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
 <translation id="917720651393141712">Ստուգում</translation>

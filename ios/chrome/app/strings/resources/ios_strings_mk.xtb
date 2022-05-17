@@ -74,7 +74,7 @@
 <translation id="1509960214886564027">Функциите на многу сајтови може да не функционираат</translation>
 <translation id="152234381334907219">Никогаш не зачувувај лозинки</translation>
 <translation id="1523341279170789507">Дозволи ги сите колачиња</translation>
-<translation id="1524563461097350801">Не, благодарам</translation>
+<translation id="1524563461097350801">Не, фала</translation>
 <translation id="1535268707340844072">Вашата тековна поставка може да предизвика падови кај некои сајтови. За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="1545749641540134597">Скенирајте QR код</translation>
@@ -581,6 +581,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6012140227487808125">Се шифрира...</translation>
 <translation id="6021332621416007159">Отвори во...</translation>
 <translation id="6027945736510816438">Дали мислевте на <ph name="WEBSITE" />?</translation>
+<translation id="6036215966221662377">Избриши податоци од прелистување</translation>
 <translation id="6036514205982097558">Сите ваши картички во еден прелистувач</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -902,6 +903,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8592752150819985187">Автоматско пополнување лозинки</translation>
 <translation id="8605219856220328675">Затвори ја картичката.</translation>
 <translation id="8620640915598389714">Измени</translation>
+<translation id="8620785403235741379">Изберете опција</translation>
 <translation id="8626393685701737946">Можете да го промените стандардниот приказ на сајт да биде приказ наменет за компјутер во „Поставки &gt; Поставки за содржини“</translation>
 <translation id="863090005774946393">Вашата организација управува со прелистувачот. Некои функции можеби се оневозможени.</translation>
 <translation id="8636825310635137004">За да ги добиете картичките од другите уреди, вклучете ја синхронизацијата.</translation>

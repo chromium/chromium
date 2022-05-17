@@ -176,6 +176,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
+<translation id="1982717156487272186">Prikaz prethodnog tjedna</translation>
 <translation id="1989113344093894667">Nije moguće snimanje sadržaja</translation>
 <translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" /></translation>
@@ -465,7 +466,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i još <ph name="UNAVAILABLE_APPS_COUNT" /> aplikacije(a) nisu na ovom uređaju.</translation>
 <translation id="3735740477244556633">Poredaj po</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
-<translation id="3761848338953536304">Administrator traži da isključite postavku zaključavanja SIM-a</translation>
+<translation id="3761848338953536304">Administrator zahtijeva da isključite postavku zaključavanja SIM-a</translation>
 <translation id="3765841986579723851">Uređeno danas</translation>
 <translation id="3771549900096082774">Način rada visokog kontrasta</translation>
 <translation id="3773700760453577392">Administrator nije dozvolio višestruku prijavu za korisnika <ph name="USER_EMAIL" />. Svi korisnici se moraju odjaviti kako bi se nastavilo.</translation>
@@ -622,6 +623,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocjena zvjezdicama <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od jednog dana}one{Vratite uređaj na prethodnu verziju u roku od # dana}few{Vratite uređaj na prethodnu verziju u roku od # dana}other{Vratite uređaj na prethodnu verziju u roku od # dana}}</translation>
 <translation id="4642092649622328492">Napravite djelomičan snimak ekrana</translation>
+<translation id="4644727592819780893">Područje je premaleno za pregled na fotoaparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
 <translation id="4657775630156561295">Sljedeći prijedlog će se trajno ukloniti it historije pretraživanja vašeg računa:
 
@@ -776,6 +778,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5673434351075758678">Nakon sinhroniziranja postavki, jezik se promijenio iz jezika "<ph name="FROM_LOCALE" />" u jezik "<ph name="TO_LOCALE" />".</translation>
 <translation id="5675363643668471212">Stavka na polici</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5678564054339031017">Prikaz sljedećeg tjedna</translation>
 <translation id="5679050765726761783">Povezan je adapter za napajanje male snage</translation>
 <translation id="5682642926269496722">Google Asistent nije dostupan za račun trenutnog korisnika.</translation>
 <translation id="5689633613396158040">Noćno svjetlo olakšava gledanje u ekran ili čitanje pod prigušenim svjetlom. Dodirnite da promijenite vrijeme uključivanja Noćnog svjetla ili ga isključite u potpunosti.</translation>
@@ -1172,7 +1175,7 @@ Nova instalacija</translation>
 <translation id="8052898407431791827">Kopirano u međumemoriju</translation>
 <translation id="8054466585765276473">Izračunava se vrijeme baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
-<translation id="8083540854303889870">Spremljeno za kasnije</translation>
+<translation id="8083540854303889870">Sačuvano za kasnije</translation>
 <translation id="8098591350844501178">Prestanak emitiranja ekrana na prijemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
 <translation id="8120151603115102514">Vaš telefon nema zaključavanje ekrana. Da otključate Chromebook, unesite lozinku.</translation>

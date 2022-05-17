@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1384704387250346179">‏ترجمه تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">آخرین فعالیت: <ph name="LAST_UPDATED" /> روز قبل</translation>
+<translation id="13931502444227376">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />شرایط خدمات<ph name="END_LINK1" /> این سایت را ببینید.</translation>
 <translation id="1397811292916898096">جستجو با <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">‏هروقت بخواهید می‌توانید در تنظیمات Chrome نظرتان را عوض کنید. دوره‌های آزمایشی به‌موازات روش کنونی ارائه آگهی اجرا می‌شود، بنابراین تغییرات بلافاصله ظاهر نمی‌شوند.</translation>
 <translation id="1406000523432664303">«ردیابی نشود»</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">درباره «جعبه ایمنی حریم‌خصوصی»</translation>
 <translation id="1736419249208073774">کاوش</translation>
 <translation id="1749561566933687563">همگام‌سازی نشانک‌ها</translation>
+<translation id="1750259112639922169">گروه برگه - <ph name="TAB_COUNT" /> برگه</translation>
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
 <translation id="1754404134430936718">نوشتار کپی شد</translation>
 <translation id="1779766957982586368">بستن پنجره</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">برای مرور خصوصی در این دستگاه،‌ حالت «ناشناس» را امتحان کنید</translation>
 <translation id="5375577065097716013">‏جستجوی تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">واکنش تغییر کرد</translation>
+<translation id="5401851137404501592">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد.</translation>
 <translation id="5403644198645076998">فقط بعضی از سایت‌ها مجاز هستند</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5414836363063783498">در حال تأیید...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">رمزینه پاسخ‌سریع ایجاد نمی‌شود. نشانی وب بیشتر از <ph name="CHARACTER_LIMIT" /> نویسه دارد.</translation>
 <translation id="7177959540995930968">‏در تنظیمات Chrome می‌توانید اطلاعات بیشتری درباره این ویژگی‌ها کسب کنید.</translation>
 <translation id="718226107353899806">می‌توانید تا <ph name="MAX_NUM_REACTIONS" /> واکنش اضافه کنید</translation>
+<translation id="7183693674623539380">گروه برگه - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود.</translation>
 <translation id="7191430249889272776">برگه در پس‌زمینه باز شد.</translation>
 <translation id="7196215469483532480">شرح «راهنمای حریم‌خصوصی» به‌صورت کامل باز شده است</translation>

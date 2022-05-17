@@ -323,6 +323,7 @@
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2981684127883932071">显示了建议</translation>
+<translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
 <translation id="2995447421581609334">显示投射设备。</translation>
 <translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
@@ -461,6 +462,7 @@
 <translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
+<translation id="3761848338953536304">您的管理员正在要求您关闭 SIM 卡锁定设置</translation>
 <translation id="3765841986579723851">今天修改过</translation>
 <translation id="3771549900096082774">高反差模式</translation>
 <translation id="3773700760453577392">管理员已禁止 <ph name="USER_EMAIL" /> 使用多帐号登录功能。所有用户都必须先退出帐号才能继续。</translation>
@@ -825,6 +827,7 @@
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5992218262414051481">已启用高反差模式。再按一次 Ctrl+搜索键+H 组合键即可关闭此模式。</translation>
+<translation id="6009656393242168182">停用您的 SIM 卡锁定设置</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="602001110135236999">向左滚动</translation>
@@ -859,6 +862,7 @@
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
 <translation id="6179832488876878285">您可将自己的重要文件固定在此处。打开“文件”应用即可开始操作。</translation>
+<translation id="6182592640011875895">打开桌面</translation>
 <translation id="619279033188484792">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片、播放的媒体和收到的通知</translation>
 <translation id="619335566042889110">立即充满电</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
@@ -1164,6 +1168,7 @@
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8061464966246066292">高对比度</translation>
+<translation id="8083540854303889870">已保存供日后使用</translation>
 <translation id="8098591350844501178">停止将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
 <translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>

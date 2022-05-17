@@ -117,6 +117,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3149510190863420837">„Chrome“ programos</translation>
 <translation id="3169523567916669830">Bandomuoju laikotarpiu matysite ir galėsite pašalinti pomėgių svetainių temas, pagal kurias parenkami jums rodomi skelbimai. „Chrome“ pagal jūsų naršymo istoriją įvertina temas, kurios jus domina.</translation>
 <translation id="3245429137663807393">Jei taip pat bendrinate „Chrome“ naudojimo ataskaitas, į tas ataskaitas įtraukiami URL, kuriais lankėtės</translation>
+<translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3360895254066713204">„Chrome“ pagalbos priemonė</translation>
 <translation id="3379938682270551431">{0,plural, =0{„Chrome“ bus paleista iš naujo dabar}=1{„Chrome“ bus paleista iš naujo po 1 sekundės}one{„Chrome“ bus paleista iš naujo po # sekundės}few{„Chrome“ bus paleista iš naujo po # sekundžių}many{„Chrome“ bus paleista iš naujo po # sekundės}other{„Chrome“ bus paleista iš naujo po # sekundžių}}</translation>
 <translation id="3396977131400919238">Diegimo metu įvyko operacinės sistemos klaida. Atsisiųskite „Google Chrome“ dar kartą.</translation>
@@ -192,6 +193,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4969674060580488087">„ChromeOS Flex“ negali sinchronizuoti jūsų duomenų, nes paskyros išsami prisijungimo informacija yra pasenusi.</translation>
 <translation id="4970761609246024540">Sveiki, tai – „Chrome“ profiliai</translation>
 <translation id="4970880042055371251">„Chrome“ OS versija</translation>
+<translation id="4970947549776831107">„Chrome“ užblokavo šį failą, nes šio tipo failai pavojingi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 10.13 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.11 versijos „OS X“.</translation>
 <translation id="5112116809696021727">Jei norite sužinoti, ar įrenginys atnaujintas, eikite į <ph name="LINK_BEGIN" />„Chrome“ OS nustatymus<ph name="LINK_END" /></translation>
@@ -301,7 +303,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7651907282515937834">„Chrome Enterprise“ logotipas</translation>
 <translation id="7655455401911432608">Jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, įrašas.</translation>
 <translation id="7747138024166251722">Diegimo programai nepavyko sukurti laikino katalogo. Patikrinkite, ar yra laisvos vietos diske ir, ar leidžiama įdiegti programinę įrangą.</translation>
-<translation id="7748512868279796735">Toliau nurodytos paskyros pasiekiamos šiame „Chrome“ profilyje</translation>
 <translation id="7761834446675418963">Spustelėkite savo vardą, kad atidarytumėte „Chrome“ ir pradėtumėte naršyti.</translation>
 <translation id="7777080907402804672">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="7781002470561365167">Galima nauja „Google Chrome“ versija.</translation>

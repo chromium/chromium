@@ -82,6 +82,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="4445542136948522167">Interrompi acquisizione foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Fotocamera anteriore</translation>
+<translation id="4620818268515773682">Attiva/disattiva audio del microfono. Opzione Disattiva audio non attiva</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Impossibile salvare il file</translation>
 <translation id="4695379108709712600">Spostamento in alto</translation>
@@ -158,6 +159,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8425673304802773841">Inclinazione verso il basso</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Attiva/disattiva audio del microfono. Opzione Disattiva audio attiva</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8732462232047530626">Anteprima metadati</translation>

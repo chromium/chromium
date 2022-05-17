@@ -117,6 +117,7 @@
 <translation id="3149510190863420837">Chrome 앱</translation>
 <translation id="3169523567916669830">시험 기간 중에는 사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
+<translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
@@ -192,6 +193,7 @@
 <translation id="4969674060580488087">계정의 로그인 세부정보가 오래되어 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4970761609246024540">Chrome 프로필에 오신 것을 환영합니다</translation>
 <translation id="4970880042055371251">ChromeOS 버전</translation>
+<translation id="4970947549776831107">위험한 유형의 파일이기 때문에 Chrome에서 파일을 차단했습니다.</translation>
 <translation id="4990567037958725628">Chrome Canary</translation>
 <translation id="5037581483200764584">향후 Chrome 업데이트를 받으려면 macOS 10.13 이상이 필요합니다. 이 컴퓨터에서는 OS X 10.11을 사용하고 있습니다.</translation>
 <translation id="5112116809696021727">기기가 최신 버전인지 확인하려면 <ph name="LINK_BEGIN" />ChromeOS 설정<ph name="LINK_END" />으로 이동하세요.</translation>
@@ -301,7 +303,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7651907282515937834">Chrome Enterprise 로고</translation>
 <translation id="7655455401911432608">이 기기에서 Chrome을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
-<translation id="7748512868279796735">이 Chrome 프로필에서는 다음 계정을 사용할 수 있습니다</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="7781002470561365167">Chrome의 새 버전이 출시되었습니다.</translation>

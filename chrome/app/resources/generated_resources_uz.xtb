@@ -520,7 +520,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1507170440449692343">Bu sahifaga kameradan foydalanish taqiqlandi.</translation>
 <translation id="1507246803636407672">&amp;Bekor qilish</translation>
-<translation id="1507884455975553832">Xabarlashuv ilovalari translatsiyasi</translation>
 <translation id="1509163368529404530">Guruhni tiklash</translation>
 <translation id="1509281256533087115">USB orqali har qanday <ph name="DEVICE_NAME_AND_VENDOR" /> qurilmasiga kirish</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
@@ -833,6 +832,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1784707308176068866">Original ilova tomonidan talab qilinganda fonda ishga tushirish</translation>
 <translation id="1784849162047402014">Diskda bo‘sh joy tugamoqda</translation>
 <translation id="1787350673646245458">Foydalanuvchi rasmi</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> bilan Chrome brauzeriga kiring</translation>
 <translation id="1790976235243700817">Ruxsatni olib tashlash</translation>
 <translation id="1791662854739702043">Oʻrnatilgan</translation>
 <translation id="1792619191750875668">Kengaytirilgan ekran</translation>
@@ -1709,7 +1709,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="25899519884572181">Mutolaa rejimidan chiqish</translation>
 <translation id="2593499352046705383">Boshlashdan oldin maʼlumotlaringizni zaxiralang. <ph name="DEVICE_OS" /> oʻrnatilsa, qattiq diskdagi barcha maʼlumotlar tozalanadi. Batafsil: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Qidiring yoki veb-sahifa manzilini kiriting</translation>
-<translation id="2597976513418770460">Chrome brauzeri maʼlumotlarini <ph name="ACCOUNT_EMAIL" /> profilidan oling</translation>
 <translation id="2602501489742255173">Boshlash uchun tepaga suring</translation>
 <translation id="2603115962224169880">Kompyuterni tozalash vositasi</translation>
 <translation id="2603355571917519942">Voice Match tayyor</translation>
@@ -4665,6 +4664,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5539221284352502426">Server kiritilgan parolni qabul qilmadi. Unutmangki: Parol juda qisqa, raqamlar va belgilardan iborat va avval ishlatilmagan bo‘lishi zarur.</translation>
 <translation id="5541694225089836610">Bu amalni administrator faolsizlantirgan</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi maʼlumotlarni koʻrib, tahrirlay oladi. Maʼlumotlaringizga xatchoʻplar, tarix va parollar kiradi.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> saytidan cookie fayllar bloklandi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> nomli tarmoqqa ulanmoqda</translation>
 <translation id="5543983818738093899">Holat tekshirilmoqda...</translation>
@@ -5079,7 +5079,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5957987129450536192">Profil rasmi yonidagi teginib tinglash belgisini bosib, o‘qiladigan maydonni belgilang.</translation>
 <translation id="5959471481388474538">Tarmoq ish faoliyatida emas</translation>
 <translation id="595959584676692139">Bu kengaytmani ishlatish uchun sahifani qayta yuklang</translation>
-<translation id="5960410286721553511">Telefoningizdagi oxirgi mediafayl va suratlarni oching</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Barchasini &amp;yangi oynada ochish}=1{&amp;Yangi oynada ochish}other{Barchasini ({COUNT}) &amp;yangi oynada ochish}}</translation>
 <translation id="5965661248935608907">Bundan tashqari kengaytma Bosh sahifa tugmasini bosganingizda yoki Omnibox orqali qidiruvda qaysi sahifa ko‘rsatilishini tayinlaydi.</translation>
@@ -7447,7 +7446,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8275080796245127762">Qurilmangizdan telefon qilish</translation>
 <translation id="8275339871947079271">Istalgan joydan xavfsiz kirish uchun parolingizni Google hisobingizga saqlang</translation>
 <translation id="8276560076771292512">Keshni tozalash va qurilmani qaytadan ishga tushirish</translation>
-<translation id="8281721647184388851">Chrome brauzeri sinxronizatsiyasi yoqilsinmi?</translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
 <translation id="8283475148136688298">“<ph name="DEVICE_NAME" />” qurilmasiga ulanishda haqiqiylik tekshiruvi kodi rad etildi.</translation>
 <translation id="8284279544186306258">barcha <ph name="WEBSITE_1" /> saytlari</translation>
@@ -7603,7 +7601,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8448729345478502352">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="8449008133205184768">Uslubni solishtirib joylash</translation>
 <translation id="8449036207308062757">Xotirani boshqarish</translation>
-<translation id="8451192282033883849">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi bukmarklar, tarix va parollar kabi maʼlumotlarni koʻrib, tahrirlay oladi.</translation>
 <translation id="8456512334795994339">Ish va hordiq uchun ilovalar</translation>
 <translation id="845702320058262034">Ulanilmadi. Telefoningizda Bluetooth yoniqligini tekshiring</translation>
 <translation id="8457451314607652708">Xatcho‘plarni import qilish</translation>

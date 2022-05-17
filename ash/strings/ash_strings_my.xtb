@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">မင်္ဂလာပါ <ph name="USERNAME" />၊</translation>
 <translation id="1978498689038657292">စာရိုက်ရန်အကွက်</translation>
+<translation id="1982717156487272186">ယခင်သီတင်းပတ်ကို ပြပါ</translation>
 <translation id="1989113344093894667">အကြောင်းအရာကို ပုံဖမ်းယူ၍မရပါ</translation>
 <translation id="1990046457226896323">တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="1993072747612765854">နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />၊ ကြယ်ပွင့် အဆင့်သတ်မှတ်ချက် <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ တစ်ရက်အတွင်း ပြောင်းပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # ရက်အတွင်း ပြောင်းပါ}}</translation>
 <translation id="4642092649622328492">ဖန်သားပြင်ဓာတ်ပုံကို တစ်စိတ်တစ်ပိုင်းသာ ရိုက်ရန်</translation>
+<translation id="4644727592819780893">ကင်မရာနေရာတကျဖြစ်ရန် နေရာအလွန်သေးသည်</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />၊ အက်ပ်အကြံပြုချက်</translation>
 <translation id="4657775630156561295">သင့်အကောင့်၏ အကြံပြုချက်မှတ်တမ်းမှ အောက်ပါအကြံပြုချက်ကို အပြီးတိုင် ဖယ်ရှားလိမ့်မည်-
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">သင့်ဆက်တင်များ စင့်ခ်လုပ်ပြီးနောက် "<ph name="FROM_LOCALE" />" မှ "<ph name="TO_LOCALE" />" သို့။</translation>
 <translation id="5675363643668471212">စင်ပစ္စည်း</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
+<translation id="5678564054339031017">လာမည့်ယခင်သီတင်းပတ်ကို ပြပါ</translation>
 <translation id="5679050765726761783">ပါဝါနိမ့် ကြားခံကိရိယာ ချိတ်ဆက်ထားသည်</translation>
 <translation id="5682642926269496722">လက်ရှိအသုံးပြုသူ အကောင့်အတွက် Google Assistant မရနိုင်ပါ။</translation>
 <translation id="5689633613396158040">'ညအလင်းရောင်' သည် ဖန်သားပြင်ကို ကြည့်ရှုရန် သို့မဟုတ် အလင်းအားနည်းချိန် စာဖတ်ရန် လွယ်ကူစေသည်။ 'ညအလင်းရောင်' ကို ဖွင့်ရန် သို့မဟုတ် အပြီးပိတ်ရန် အချိန်ကို ပြောင်းရန် တို့ပါ။</translation>

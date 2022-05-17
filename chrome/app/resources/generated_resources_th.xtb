@@ -519,7 +519,6 @@
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1507170440449692343">หน้านี้ถูกบล็อกไม่ให้เข้าถึงกล้องของคุณ</translation>
 <translation id="1507246803636407672">&amp;ยกเลิก</translation>
-<translation id="1507884455975553832">สตรีมแอปรับส่งข้อความ</translation>
 <translation id="1509163368529404530">&amp;กู้คืนกลุ่ม</translation>
 <translation id="1509281256533087115">เข้าถึง <ph name="DEVICE_NAME_AND_VENDOR" /> ใดก็ได้ผ่าน USB</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
@@ -835,6 +834,7 @@
 <translation id="1784707308176068866">ทำงานในเบื้องหลังเมื่อมีการขอจากแอปพลิเคชันที่มาพร้อมเครื่องที่ประสานงานกัน</translation>
 <translation id="1784849162047402014">อุปกรณ์เครื่องนี้เหลือพื้นที่ว่างในดิสก์ต่ำ</translation>
 <translation id="1787350673646245458">รูปภาพของผู้ใช้</translation>
+<translation id="1788329699711791226">เข้าถึงข้อมูลของคุณในเบราว์เซอร์ Chrome จาก <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">นำสิทธิ์การเข้าถึงออก</translation>
 <translation id="1791662854739702043">ติดตั้งแล้ว</translation>
 <translation id="1792619191750875668">การแสดงผลแบบขยาย</translation>
@@ -3790,6 +3790,7 @@
 <translation id="4648491805942548247">สิทธิ์ไม่เพียงพอ</translation>
 <translation id="4650591383426000695">ยกเลิกการเชื่อมต่อโทรศัพท์จาก <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">โหลดองค์ประกอบออนไลน์ที่มีทรัพยากรโหมดสาธิตไม่ได้</translation>
+<translation id="4651921906638302153">ลงชื่อเข้าใช้ด้วยบัญชีนี้ไม่ได้</translation>
 <translation id="4652935475563630866">ต้องเปิด Parallels Desktop อีกครั้งเพื่อให้การเปลี่ยนแปลงการตั้งค่ากล้องมีผล เปิด Parallels Desktop อีกครั้งเพื่อดำเนินการต่อ</translation>
 <translation id="4653405415038586100">เกิดข้อผิดพลาดขณะกำหนดค่า Linux</translation>
 <translation id="465406513924180949">สิ่งที่เห็นนี้คือรถเข็นซึ่งช่วยให้คุณกลับไปยังสินค้าที่เลือกใส่รถเข็นช็อปปิ้งในเว็บไซต์ต่างๆ ได้อย่างง่ายดาย
@@ -4659,6 +4660,7 @@
 <translation id="5539221284352502426">เซิร์ฟเวอร์ปฏิเสธรหัสผ่านที่คุณป้อน สาเหตุที่เป็นไปได้คือรหัสผ่านสั้นเกินไป ทั้งนี้รหัสผ่านต้องมีตัวเลขหรือสัญลักษณ์อยู่ด้วย และต้องแตกต่างจากรหัสผ่านที่เคยใช้</translation>
 <translation id="5541694225089836610">ผู้ดูแลระบบของคุณปิดการทำงาน</translation>
 <translation id="5542132724887566711">โปรไฟล์</translation>
+<translation id="554229901779827904">บัญชีของคุณจัดการโดย <ph name="MANAGER_NAME" /> ผู้ดูแลระบบสามารถดูและแก้ไขโปรไฟล์เบราว์เซอร์ Chrome นี้และข้อมูลในโปรไฟล์ได้ ข้อมูลดังกล่าวรวมถึงบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่าน</translation>
 <translation id="5542750926112347543">บล็อกคุกกี้จาก <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">กำลังเชื่อมต่อกับ <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">กำลังตรวจสอบสถานะ...</translation>
@@ -5069,7 +5071,6 @@
 <translation id="5957987129450536192">แตะไอคอน "เลือกเพื่อให้อ่าน" ใกล้ๆ รูปโปรไฟล์ จากนั้นเลือกสิ่งที่ต้องการฟัง</translation>
 <translation id="5959471481388474538">เครือข่ายไม่สามารถใช้งานได้</translation>
 <translation id="595959584676692139">โหลดหน้าซ้ำเพื่อใช้ส่วนขยายนี้</translation>
-<translation id="5960410286721553511">ดูรูปภาพและสื่อล่าสุดของโทรศัพท์</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (สูงสุด <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
 <translation id="5965661248935608907">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณคลิกปุ่ม "หน้าแรก" หรือทำการค้นหาจากแถบอเนกประสงค์</translation>
@@ -5446,6 +5447,7 @@
 <translation id="6327785803543103246">การค้นหาเว็บพร็อกซีอัตโนมัติ</translation>
 <translation id="6331818708794917058">เว็บไซต์ขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
 <translation id="6333064448949140209">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
+<translation id="6333170995003625229">ยืนยันอีเมลหรือรหัสผ่านของคุณไม่ได้ ลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6335920438823100346">ในการเริ่มต้น Linux นั้น <ph name="MANAGER" /> จะขอให้คุณสำรองข้อมูลและรีเซ็ต Chromebook เครื่องนี้เป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณใน 24 ชั่วโมง โปรดสำรองข้อมูลไฟล์ที่ต้องการเก็บไว้</translation>
 <translation id="6338981933082930623">เว็บไซต์ทั้งหมดแสดงโฆษณาใดก็ตามให้คุณเห็นได้</translation>
@@ -5854,6 +5856,7 @@
 <translation id="6735304988756581115">แสดงคุกกี้และข้อมูลอื่นของไซต์...</translation>
 <translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6737663862851963468">นำตั๋ว Kerberos ออก</translation>
+<translation id="6738430949033571771">กำลังยืนยันบัญชี...</translation>
 <translation id="6739923123728562974">แสดงทางลัดในเดสก์ท็อป</translation>
 <translation id="6740234557573873150">หยุด <ph name="FILE_NAME" /> ชั่วคราว</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />ผู้ดูแลระบบของคุณ<ph name="END_LINK" />ปิด Google Safe Browsing</translation>
@@ -7675,6 +7678,8 @@
 <translation id="8546306075665861288">แคชของภาพ</translation>
 <translation id="8546930481464505581">ปรับแต่ง Touch Bar</translation>
 <translation id="8547013269961688403">เปิดใช้แว่นขยายทั้งหน้าจอ</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> จัดการโดย <ph name="MANAGER" /> คุณเพิ่มอีเมลนี้เป็นบัญชีเสริมไม่ได้<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />หากต้องการใช้ <ph name="USER_EMAIL" /> ให้ออกจากระบบ <ph name="DEVICE_TYPE" /> ก่อน จากนั้นเลือก "เพิ่มบุคคล" ที่ด้านล่างของหน้าจอการเข้าสู่ระบบ<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">กดแป้น "ค้นหา" ค้างไว้เพื่อเปลี่ยนการทำงานของแป้นแถวบนสุด</translation>
 <translation id="8549316893834449916">ลงชื่อเข้าใช้ Chromebook ของคุณด้วยบัญชี Google ซึ่งเป็นบัญชีเดียวกันกับ Gmail, ไดรฟ์, YouTube และอื่นๆ</translation>
 <translation id="8551388862522347954">ใบอนุญาต</translation>

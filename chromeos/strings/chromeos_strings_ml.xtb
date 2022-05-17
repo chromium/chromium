@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">ക്യാപ്റ്റീവ് പോർട്ടൽ ആണെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">റൈറ്റ് പരിരക്ഷ ഓണാക്കുക</translation>
 <translation id="1308754910631152188">അപ്ഡേറ്റ് ചെയ്യുന്നു (<ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്ക് ഒന്നും ലഭ്യമല്ല</translation>
 <translation id="131421566576084655">അവസാനം ഡാറ്റാ റീസെറ്റ് ചെയ്ത തീയതി ലഭ്യമല്ല</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">'വേഗത്തിലുള്ള ഉത്തരങ്ങൾ' ക്രമീകരണം</translation>
 <translation id="5168185087976003268">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
+<translation id="5179530508336824319">അടുത്ത സ്ക്രീനിലേക്ക് പോകാൻ റൈറ്റ് പരിരക്ഷ പ്രവർത്തനക്ഷമമാക്കുക. നിർദ്ദേശങ്ങൾക്ക്, ഉപകരണ നിർമ്മാതാവിന്റെ പിന്തുണാ പേജിലേക്ക് പോകുക.</translation>
 <translation id="5190187232518914472">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഓർമ്മകളെ പുനരുജ്ജീവിപ്പിക്കുക. ആൽബങ്ങൾ ചേർക്കാനോ എഡിറ്റ് ചെയ്യാനോ <ph name="LINK_BEGIN" />Google Photos-ലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5212593641110061691">ടാബ്ലോയ്‌ഡ്</translation>
@@ -867,6 +869,7 @@
 <translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9138630967333032450">ഇടത് Shift കീ</translation>
+<translation id="9148058034647219655">പുറത്തുകടക്കുക</translation>
 <translation id="9149391708638971077">മെമ്മറി ടെസ്റ്റ് റണ്‍ ചെയ്യുക</translation>
 <translation id="9173638680043580060">ഒരു മിനിറ്റിലും താഴെ ശേഷിക്കുന്നു</translation>
 <translation id="917720651393141712">ടെസ്‌റ്റ്</translation>

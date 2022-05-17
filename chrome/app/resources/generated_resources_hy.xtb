@@ -518,7 +518,6 @@
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1507170440449692343">Այս էջին արգելված է օգտագործել ձեր տեսախցիկը:</translation>
 <translation id="1507246803636407672">&amp;Հրաժարվել</translation>
-<translation id="1507884455975553832">Հաղորդագրման հավելվածների հեռարձակում</translation>
 <translation id="1509163368529404530">&amp;Վերականգնել խումբը</translation>
 <translation id="1509281256533087115">Մուտք գործեք ցանկացած <ph name="DEVICE_NAME_AND_VENDOR" /> սարք USB-ի միջոցով</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
@@ -834,6 +833,7 @@
 <translation id="1784707308176068866">Աշխատեցնել ֆոնային ռեժիմում, եթե դա պահանջում է համագործակցող որևէ հավելված</translation>
 <translation id="1784849162047402014">Սարքի սկավառակում ազատ տարածքը քիչ է</translation>
 <translation id="1787350673646245458">Օգտատիրոջ պատկեր</translation>
+<translation id="1788329699711791226">Բացեք Chrome դիտարկիչի ձեր տվյալները <ph name="ACCOUNT_EMAIL" /> հաշվից</translation>
 <translation id="1790976235243700817">Հեռացնել մուտքի թույլտվությունը</translation>
 <translation id="1791662854739702043">Տեղադրվեց</translation>
 <translation id="1792619191750875668">Ընդարձակված էկրան</translation>
@@ -3440,6 +3440,7 @@
 <translation id="4307992518367153382">Հիմնական</translation>
 <translation id="4309165024397827958">Թույլ տվեք Android-ի հավելվածներին ու ծառայություններին օգտագործել սարքի գտնվելու վայրի մասին տվյալները։ Google-ը պարբերաբար հավաքում և անանուն օգտագործում է տեղադրության մասին տվյալները՝ տեղորոշման ճշգրտությունը և տեղորոշում օգտագործող ծառայությունների աշխատանքը բարելավելու համար։</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ԿԲ (ակտիվ է <ph name="NUM_KILOBYTES_LIVE" /> ԿԲ)</translation>
+<translation id="4310132194679586591">Ընտրեք հավելված ձեր սարքում՝ այս հղումը բացելու համար</translation>
 <translation id="4310139701823742692">Ֆայլի ձևաչափը սխալ է: Ստուգեք PPD ֆայլը և նորից փորձեք:</translation>
 <translation id="431076611119798497">&amp;Մանրամասներ</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google հաշիվ}one{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}other{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}}</translation>
@@ -4650,6 +4651,7 @@
 <translation id="5539221284352502426">Ձեր մուտքագրած գաղտնաբառը չի ընդունվում սերվերի կողմից: Հնարավոր պատճառներն են՝ գաղտնաբառը չափազանց կարճ է, գաղտնաբառը պետք է պարունակի թվեր կամ նշաններ, գաղտնաբառը պետք է տարբեր լինի նախորդ գաղտնաբառերից:</translation>
 <translation id="5541694225089836610">Ձեր ադմինիստրատորն անջատել է այս գործողությունը</translation>
 <translation id="5542132724887566711">Պրոֆիլ</translation>
+<translation id="554229901779827904">Ձեր հաշիվը պատկանում է <ph name="MANAGER_NAME" /> տիրույթին: Ձեր ադմինիստրատորը կարող է տեսնել և խմբագրել Chrome դիտարկիչի այս պրոֆիլը և դրա տվյալները՝ էջանիշները, պատմությունը և գաղտնաբառերը։</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> կայքի քուքիներն արգելափակվել են</translation>
 <translation id="5542949973455282971">Միանում է <ph name="CARRIER_NAME" /> ցանցին</translation>
 <translation id="5543983818738093899">Կարգավիճակի ստուգում...</translation>
@@ -4666,6 +4668,7 @@
 <translation id="5554403733534868102">Այսուհետ թարմացումներին սպասելու կարիք չի լինի</translation>
 <translation id="5554489410841842733">Այս պատկերակը կերևա, եթե ընդլայնումը կարող է աշխատել ընթացիկ էջում:</translation>
 <translation id="5554720593229208774">Էլփոստի հավաստագրման կենտրոն</translation>
+<translation id="5554866693883022680">Ընտրեք հավելված ձեր <ph name="DEVICE_TYPE" /> սարքում՝ այս հղումը բացելու համար</translation>
 <translation id="5555363196923735206">Շրջել տեսախցիկը</translation>
 <translation id="5555525474779371165">Ընտրեք Ապահով դիտարկման պաշտպանության տեսակը</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
@@ -5060,7 +5063,6 @@
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
 <translation id="595959584676692139">Կրկին բեռնեք էջը՝ այս ընդլայնումն օգտագործելու համար</translation>
-<translation id="5960410286721553511">Դիտեք վերջերս ձեր հեռախոսում ավելացված լուսանկարները և մեդիա ֆայլերը</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> առավելագույն)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="5965661248935608907">Այն նաև վերահսկում է, թե որ էջը պետք է ցուցադրվի` Սկիզբ կոճակը սեղմելիս կամ Omnibox-ից որոնում կատարելիս:</translation>

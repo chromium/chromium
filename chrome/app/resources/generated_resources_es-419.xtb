@@ -516,7 +516,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1507170440449692343">Esta página no tiene permiso para acceder a la cámara.</translation>
 <translation id="1507246803636407672">&amp;Descartar</translation>
-<translation id="1507884455975553832">Transmitir apps de mensajería</translation>
 <translation id="1509163368529404530">&amp;Restablecer grupo</translation>
 <translation id="1509281256533087115">Accede a cualquier <ph name="DEVICE_NAME_AND_VENDOR" /> a través de USB</translation>
 <translation id="1510238584712386396">Selector</translation>
@@ -829,6 +828,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784707308176068866">Ejecutar en segundo plano cuando lo solicita una app nativa cooperativa</translation>
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1787350673646245458">Imagen de usuario</translation>
+<translation id="1788329699711791226">Accede a todo lo que tienes en el navegador Chrome desde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -3777,6 +3777,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
 <translation id="4650591383426000695">Desconecta el teléfono de tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">No se pudo cargar el componente en línea con los recursos del modo de demostración.</translation>
+<translation id="4651921906638302153">No puedes acceder con esta cuenta</translation>
 <translation id="4652935475563630866">Es necesario que reinicies Parallels Desktop para aplicar los cambios en la configuración de la cámara. Para continuar, reinicia Parallels Desktop.</translation>
 <translation id="4653405415038586100">Se produjo un error al configurar Linux</translation>
 <translation id="465406513924180949">Estás viendo carritos para que puedas regresar a los elementos que dejaste en los carritos de compras en la Web.
@@ -4644,6 +4645,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
+<translation id="554229901779827904"><ph name="MANAGER_NAME" /> administra tu cuenta. El administrador puede ver y editar este perfil del navegador de Chrome y sus datos. Tus datos incluyen los favoritos, el historial y las contraseñas.</translation>
 <translation id="5542750926112347543">Las cookies de <ph name="DOMAIN" /> están bloqueadas</translation>
 <translation id="5542949973455282971">Conectando a <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando estado…</translation>
@@ -5057,7 +5059,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5957987129450536192">Presiona el ícono de Seleccionar para pronunciar que se encuentra cerca de tu imagen de perfil y, luego, elige lo que quieras escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="595959584676692139">Vuelve a cargar la página para usar esta extensión</translation>
-<translation id="5960410286721553511">Mira las fotos y el contenido multimedia recientes del teléfono</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="5965661248935608907">También controla qué página se muestra al hacer clic en el botón de página principal o al realizar búsquedas desde el cuadro multifunción.</translation>
@@ -5433,6 +5434,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6327785803543103246">Detección automática de proxy web</translation>
 <translation id="6331818708794917058">Permitir que los sitios soliciten permiso para conectarse con dispositivos MIDI</translation>
 <translation id="6333064448949140209">El archivo se enviará a Google para eliminar fallos</translation>
+<translation id="6333170995003625229">No se pudo verificar tu dirección de correo electrónico o contraseña. Inténtalo de nuevo.</translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y restablezcas esta Chromebook a la configuración de fábrica.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que deseas conservar.</translation>
 <translation id="6338981933082930623">Permitir que todos los sitios muestren cualquier anuncio</translation>
@@ -5841,6 +5843,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6735304988756581115">Mostrar cookies y otros datos de sitio...</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar el ticket de Kerberos</translation>
+<translation id="6738430949033571771">Verificando la cuenta…</translation>
 <translation id="6739923123728562974">Mostrar acceso directo de escritorio</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> en pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />El administrador<ph name="END_LINK" /> desactivó la Navegación segura</translation>
@@ -7660,6 +7663,8 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8546306075665861288">Caché de imagen</translation>
 <translation id="8546930481464505581">Personalizar la barra táctil</translation>
 <translation id="8547013269961688403">Habilitar lupa de pantalla completa</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" /> administra la cuenta <ph name="USER_EMAIL" />. No puedes agregar este correo electrónico como una cuenta adicional.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Si quieres usar <ph name="USER_EMAIL" />, primero debes salir de tu <ph name="DEVICE_TYPE" />. Luego, en la parte inferior de la pantalla de acceso, selecciona Agregar a una persona.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Mantén presionada la tecla de búsqueda para cambiar el comportamiento de las teclas en la fila superior</translation>
 <translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8551388862522347954">Licencias</translation>

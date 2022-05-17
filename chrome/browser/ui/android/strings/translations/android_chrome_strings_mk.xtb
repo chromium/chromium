@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384704387250346179">Преведете слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
+<translation id="13931502444227376">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ги <ph name="BEGIN_LINK1" />Условите за користење<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Ако се премислите може во секое време да извршите измена во поставките за Chrome. Пробните периоди се одвиваат заедно со тековниот начин на кој рекламите се прикажуваат и затоа нема да ги видите промените веднаш.</translation>
 <translation id="1406000523432664303">„Не ме следи“</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">Информации за Privacy Sandbox</translation>
 <translation id="1736419249208073774">Истражете</translation>
 <translation id="1749561566933687563">Синхронизирајте ги обележувачите</translation>
+<translation id="1750259112639922169">Група картички - <ph name="TAB_COUNT" /> картички</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
 <translation id="1754404134430936718">Текстот е копиран</translation>
 <translation id="1779766957982586368">Затвори го прозорецот</translation>
@@ -171,6 +173,7 @@
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="19288952978244135">Повторно отворете го Chrome.</translation>
 <translation id="1933845786846280168">Избрана картичка</translation>
+<translation id="193571872656840963">Заблагодарете му се на создавачов</translation>
 <translation id="1943432128510653496">Зачувај лозинки</translation>
 <translation id="1952172573699511566">Кога е можно, веб-сајтовите ќе прикажуваат текст на вашиот претпочитан јазик.</translation>
 <translation id="1959679933317802873">Се чекаат содржини</translation>
@@ -788,6 +791,7 @@
 <translation id="5368227114232678694">За приватно пребарување на уредов, испробајте го „Инкогнито“</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Реакцијата се промени</translation>
+<translation id="5401851137404501592">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов.</translation>
 <translation id="5403644198645076998">Дозволи само одредени сајтови</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
@@ -1128,6 +1132,7 @@
 <translation id="7177873915659574692">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="7177959540995930968">Може да дознаете повеќе за овие функции во поставките за Chrome.</translation>
 <translation id="718226107353899806">Може да додадете најмногу <ph name="MAX_NUM_REACTIONS" /> реакции.</translation>
+<translation id="7183693674623539380">Група картички - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>

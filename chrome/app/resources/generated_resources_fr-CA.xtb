@@ -517,7 +517,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page.</translation>
 <translation id="1507246803636407672">Supprim&amp;er</translation>
-<translation id="1507884455975553832">Diffuser des applications de messagerie</translation>
 <translation id="1509163368529404530">&amp;Restaurer le groupe</translation>
 <translation id="1509281256533087115">Accéder à n'importe quel appareil <ph name="DEVICE_NAME_AND_VENDOR" /> par USB</translation>
 <translation id="1510238584712386396">Lanceur</translation>
@@ -833,6 +832,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1784707308176068866">Exécuter en arrière-plan à la demande d'une application partenaire native</translation>
 <translation id="1784849162047402014">L'appareil manque d'espace disque</translation>
 <translation id="1787350673646245458">Image de l'utilisateur</translation>
+<translation id="1788329699711791226">Accédez à vos données relatives au navigateur Chrome à partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Révoquer l'accès</translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
@@ -3782,6 +3782,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4648491805942548247">Autorisations insuffisantes.</translation>
 <translation id="4650591383426000695">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode Démo.</translation>
+<translation id="4651921906638302153">Impossible de se connecter avec ce compte</translation>
 <translation id="4652935475563630866">Pour que la modification apportée à la caméra soit appliquée, Parallels Desktop doit être relancé. Relancez Parallels Desktop pour continuer.</translation>
 <translation id="4653405415038586100">Une erreur s'est produite lors de la configuration de Linux</translation>
 <translation id="465406513924180949">Des paniers sont affichés pour vous permettre de retourner aux articles que vous avez laissés dans les paniers d'achat sur le Web de façon conviviale.
@@ -4649,6 +4650,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5539221284352502426">Le mot de passe que vous avez entré a été refusé par le serveur. Voici des raisons possibles : le mot de passe est trop court. Le mot de passe doit comporter des chiffres ou des symboles. Le mot de passe doit être différent des mots de passe précédents.</translation>
 <translation id="5541694225089836610">Cette action est désactivée par votre administrateur</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données. Vos données comprennent les favoris, l'historique et les mots de passe.</translation>
 <translation id="5542750926112347543">Les témoins de <ph name="DOMAIN" /> sont bloqués</translation>
 <translation id="5542949973455282971">Connexion à <ph name="CARRIER_NAME" /> en cours…</translation>
 <translation id="5543983818738093899">Vérification de l'état en cours...</translation>
@@ -5062,7 +5064,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5957987129450536192">Appuyez sur l'icône Sélectionner pour énoncer à côté de votre image de profil, puis sélectionnez ce que vous voulez entendre.</translation>
 <translation id="5959471481388474538">Le réseau n'est pas accessible</translation>
 <translation id="595959584676692139">Recharger la page pour utiliser cette extension</translation>
-<translation id="5960410286721553511">Affichez les photos et les fichiers multimédias récents de votre téléphone</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pointe : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5965661248935608907">Elle définit également quelle page s'affiche lorsque vous cliquez sur le bouton Accueil ou que vous effectuez une recherche dans l'omnibox.</translation>
@@ -5438,6 +5439,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
 <translation id="6331818708794917058">Les sites peuvent demander à se connecter à des appareils MIDI</translation>
 <translation id="6333064448949140209">Le fichier sera envoyé à Google pour débogage</translation>
+<translation id="6333170995003625229">Impossible de vérifier votre adresse de courriel ni votre mot de passe. Essayez de vous connecter à nouveau.</translation>
 <translation id="6335920438823100346">Pour démarrer Linux, <ph name="MANAGER" /> vous demande de sauvegarder vos données et de réinitialiser ce Chromebook à ses paramètres par défaut.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> a désactivé le débogage PDA. Cela entraînera la réinitialisation de votre <ph name="DEVICE_TYPE" /> dans 24 heures. Sauvegardez tout fichier que vous souhaitez garder.</translation>
 <translation id="6338981933082930623">Tous les sites peuvent afficher n'importe quelle annonce</translation>
@@ -5848,6 +5850,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6735304988756581115">Afficher les témoins et les autres données de sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6737663862851963468">Supprimer le ticket Kerberos</translation>
+<translation id="6738430949033571771">Vérification du compte en cours…</translation>
 <translation id="6739923123728562974">Afficher le raccourci du bureau</translation>
 <translation id="6740234557573873150">Mettre en pause <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Votre administrateur<ph name="END_LINK" /> a désactivé la navigation sécurisée</translation>
@@ -7666,6 +7669,8 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8546306075665861288">Cache d'images</translation>
 <translation id="8546930481464505581">Personnaliser la barre tactile</translation>
 <translation id="8547013269961688403">Activer la loupe en mode plein écran</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> est gérée par <ph name="MANAGER" />. Vous ne pouvez pas ajouter cette adresse de courriel comme compte supplémentaire.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pour utiliser <ph name="USER_EMAIL" />, déconnectez-vous d'abord de votre <ph name="DEVICE_TYPE" />. Ensuite, en bas de l'écran de connexion, sélectionnez Ajouter une personne.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Maintenez le doigt sur la touche de recherche pour modifier la fonction des touches de la rangée supérieure</translation>
 <translation id="8549316893834449916">Vous utiliserez votre compte Google pour vous connecter à votre Chromebook. Il s'agit du même compte que vous utilisez pour Gmail, Disque, YouTube et d'autres produits.</translation>
 <translation id="8551388862522347954">Licences</translation>

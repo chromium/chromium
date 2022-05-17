@@ -326,6 +326,7 @@
 <translation id="2970920913501714344">Усталёўваць праграмы, пашырэнні, тэмы.</translation>
 <translation id="2977598380246111477">Наступная лічба</translation>
 <translation id="2981684127883932071">Паказваюцца прапановы</translation>
+<translation id="2985148236010982088">Паказаць усе праграмы</translation>
 <translation id="2992327365391326550">Стан кнопкі мікрафона прылады – "выключана".</translation>
 <translation id="2995447421581609334">Паказаць прылады для трансляцыі.</translation>
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
@@ -464,6 +465,7 @@
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
+<translation id="3761848338953536304">Ваш адміністратар просіць вас адключыць наладу блакіроўкі SIM-карты</translation>
 <translation id="3765841986579723851">Зменена сёння</translation>
 <translation id="3771549900096082774">Рэжым высокай кантраснасці</translation>
 <translation id="3773700760453577392">Адміністратар забараніў уваход у некалькі ўліковых запісаў для карыстальніка <ph name="USER_EMAIL" />. Каб працягнуць, усе карыстальнікі павінны выйсці.</translation>
@@ -828,6 +830,7 @@
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
 <translation id="5992218262414051481">Рэжым высокай кантраснасці ўключаны. Каб выключыць яго, зноў націсніце Ctrl + Пошук + H.</translation>
+<translation id="6009656393242168182">Адключыце наладу блакіроўкі SIM-карты</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Выхад з рэжыму адлюстравання</translation>
 <translation id="602001110135236999">Прагартаць улева</translation>
@@ -862,6 +865,7 @@
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6166852626429024716">Пошук на прыладзе, у праграмах, наладах і інтэрнэце...</translation>
 <translation id="6179832488876878285">Тут можна замацаваць важныя файлы. Каб пачаць, адкрыйце праграму "Файлы".</translation>
+<translation id="6182592640011875895">Адкрыць працоўны стол</translation>
 <translation id="619279033188484792">Праглядайце на прыладзе <ph name="DEVICE_TYPE" /> нядаўнія апавяшчэнні з тэлефона, а таксама медыяфайлы і фота</translation>
 <translation id="619335566042889110">Зарадзіць акумулятар поўнасцю</translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
@@ -1168,6 +1172,7 @@
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
 <translation id="8061464966246066292">Высокая кантраснасць</translation>
+<translation id="8083540854303889870">Захавана на будучыню</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Уключана, усе праграмы</translation>
 <translation id="8120151603115102514">На тэлефоне не выкарыстоўваецца функцыя экрана блакіроўкі. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>

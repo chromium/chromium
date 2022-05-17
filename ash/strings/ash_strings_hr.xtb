@@ -176,6 +176,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Pozdrav, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Unos teksta</translation>
+<translation id="1982717156487272186">Prikaz prethodnog tjedna</translation>
 <translation id="1989113344093894667">Snimanje sadržaja nije moguće</translation>
 <translation id="1990046457226896323">Govorne datoteke su preuzete</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" /></translation>
@@ -622,6 +623,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, broj zvjezdica <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Vratite uređaj na prethodnu verziju u roku od jednog dana}one{Vratite uređaj na prethodnu verziju u roku od # dana}few{Vratite uređaj na prethodnu verziju u roku od # dana}other{Vratite uređaj na prethodnu verziju u roku od # dana}}</translation>
 <translation id="4642092649622328492">Snimanje dijela zaslona</translation>
+<translation id="4644727592819780893">Područje je premaleno za pregled na fotoaparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporuka aplikacije</translation>
 <translation id="4657775630156561295">Sljedeći prijedlog trajno će se ukloniti iz povijesti prijedloga vašeg računa:
 
@@ -776,6 +778,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5673434351075758678">"<ph name="FROM_LOCALE" />" je promijenjen u "<ph name="TO_LOCALE" />" nakon sinkronizacije postavki.</translation>
 <translation id="5675363643668471212">Stavka police</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5678564054339031017">Prikaz sljedećeg tjedna</translation>
 <translation id="5679050765726761783">Povezan je pretvarač male snage</translation>
 <translation id="5682642926269496722">Google asistent nije dostupan za trenutačni korisnički račun.</translation>
 <translation id="5689633613396158040">Noćno svjetlo olakšava gledanje zaslona ili čitanje pri slabom svjetlu. Dodirnite da biste promijenili vrijeme uključivanja noćnog svjetla ili ga potpuno isključili.</translation>

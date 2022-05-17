@@ -176,6 +176,7 @@
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ورودی نوشتاری</translation>
+<translation id="1982717156487272186">نمایش هفته گذشته</translation>
 <translation id="1989113344093894667">نمی‌توان محتوا را ضبط کرد</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1993072747612765854">درباره جدیدترین به‌روزرسانی‌ <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
@@ -243,7 +244,7 @@
 <translation id="2408955596600435184">پین را وارد کنید</translation>
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
-<translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این کلیدواژه در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="243878895369688216">دیروز باز شده است</translation>
 <translation id="2441427462554639370">به‌دلیل فضای ذخیره‌سازی بسیار کم، ضبط به‌پایان رسید</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، رده‌بندی با ستاره <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ظرف یک روز آینده، دستگاه را به نسخه قبلی تغییر دهید}one{ظرف # روز آینده، دستگاه را به نسخه قبلی تغییر دهید}other{ظرف # روز آینده، دستگاه را به نسخه قبلی تغییر دهید}}</translation>
 <translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
+<translation id="4644727592819780893">ناحیه بسیار کوچک است و نمی‌توان آن را در پیش‌نمای دوربین نشان داد</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، توصیه برنامه</translation>
 <translation id="4657775630156561295">پیشنهاد زیر برای همیشه از سابقه پیشنهاد حسابتان برداشته می‌شود:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">از «<ph name="FROM_LOCALE" />» به «<ph name="TO_LOCALE" />» بعد از همگام‌سازی تنظیمات.</translation>
 <translation id="5675363643668471212">مورد قفسه</translation>
 <translation id="5677928146339483299">مسدود است</translation>
+<translation id="5678564054339031017">نمایش هفته آینده</translation>
 <translation id="5679050765726761783">آداپتور کم‌توان متصل شده است</translation>
 <translation id="5682642926269496722">‏«دستیار Google» برای حساب کاربری فعلی دردسترس نیست.</translation>
 <translation id="5689633613396158040">بااستفاده از «نور شب»، نگاه کردن به صفحه‌نمایش یا خواندن در نور کم آسان‌تر می‌شود. برای تغییر زمان روشن شدن «نور شب»، یا خاموش کردن آن به‌طور کامل، ضربه بزنید.</translation>
@@ -937,7 +940,7 @@
 <translation id="6641720045729354415">روشن/خاموش کردن «زیرنویس ناشنوایان زنده». <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">واگرد کردن مرتب‌سازی براساس نام</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> می‌خواهد تأیید کند این فرد شما هستید</translation>
-<translation id="6650933572246256093">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. لطفاً این کلیدواژه را در آن دستگاه وارد کنید: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. لطفاً این گذرکلید را در آن دستگاه وارد کنید: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6665545700722362599">به وب‌سایت‌ها، برنامه‌ها و افزونه‌ها برای استفاده از سرویس‌ها، میکروفون و دوربین یا سایر ویژگی‌های دستگاه مجوز بدهید</translation>
 <translation id="6667908387435388584">‏به نقطه اتصال تلفنتان وصل شوید، دستگاه‌تان را بی‌صدا و موقعیت‌یابی کنید، و برگه‌های اخیر Chrome را که در تلفنتان باز هستند مشاهده کنید</translation>

@@ -326,6 +326,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
 <translation id="2981684127883932071">Visar förslag</translation>
+<translation id="2985148236010982088">Visa alla appar</translation>
 <translation id="2992327365391326550">Enhetens mikrofon är avstängd.</translation>
 <translation id="2995447421581609334">Visa cast-enheter</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
@@ -464,6 +465,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
+<translation id="3761848338953536304">Administratören kräver att du inaktiverar SIM-låsinställningen</translation>
 <translation id="3765841986579723851">Redigerades i dag</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
@@ -828,6 +830,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="5992218262414051481">Högkontrastläget har aktiverats. Tryck på Ctrl+Sök+H igen om du vill inaktivera det.</translation>
+<translation id="6009656393242168182">Inaktivera SIM-låsinställningen</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
 <translation id="602001110135236999">Scrolla åt vänster</translation>
@@ -862,6 +865,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
+<translation id="6182592640011875895">Öppna skrivbordet</translation>
 <translation id="619279033188484792">Visa de senaste bilderna, mediefilerna och aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Ladda fullt nu</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
@@ -1168,6 +1172,7 @@ Nyligen installerad</translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>
 <translation id="8054466585765276473">Batteritiden beräknas.</translation>
 <translation id="8061464966246066292">Hög kontrast</translation>
+<translation id="8083540854303889870">Har sparats till senare</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Alla appar på</translation>
 <translation id="8120151603115102514">Telefonen saknar låsskärm. Lås upp Chromebook med lösenordet.</translation>

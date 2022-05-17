@@ -135,6 +135,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1715293566947629045">Profila desgaitzen. Itxaron minutu batzuk.</translation>
 <translation id="1719094688023114093">Istanteko azpitituluak aktibatuta daude.</translation>
 <translation id="1720011244392820496">Aktibatu Wifi-sinkronizazioa</translation>
+<translation id="1733996486177697563">Aldatu gai ilunetik gai argira, eta alderantziz. Eduki sakatuta mahaigaina eta hautatu Horma-papera eta estiloa.</translation>
 <translation id="1736898441010944794">Ezarri da ikusgai "<ph name="NAME" />" Bluetooth bidezko gailuetarako.</translation>
 <translation id="174102739345480129">Markatzailea desaktibatuta dago.</translation>
 <translation id="1743570585616704562">Ez da ezagutu</translation>
@@ -263,6 +264,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2573588302192866788">Ezin izan da konektatu <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Desgaitu egin da saio-hasiera anitza</translation>
 <translation id="2582112259361606227">Eguneratzeko, berrabiarazi</translation>
+<translation id="2586561057878260610">Sakatu Ktrl + W <ph name="DESK_NAME" /> lan-eremuarekin konbinatzeko. Sakatu Ktrl + Maius + W lan-eremua eta leihoak ixteko.</translation>
 <translation id="2595239820337756193">Zenbat da 5 km miliatan</translation>
 <translation id="2596078834055697711">Atera leihoaren pantaila-argazkia</translation>
 <translation id="2607678425161541573">Saioa hasi behar da sarean</translation>
@@ -668,6 +670,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4925542575807923399">Saio-hasiera anitzeko saioetan, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
+<translation id="4938176435186993759">Ezkutatu iradokizun guztiak</translation>
 <translation id="4945196315133970626">Desaktibatu jakinarazpenak</translation>
 <translation id="4946376291507881335">Atera argazkia</translation>
 <translation id="495046168593986294">Egin gora</translation>
@@ -734,6 +737,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5331975486040154427">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
 <translation id="5344128444027639014">% <ph name="BATTERY_PERCENTAGE" /> (eskuinekoa)</translation>
 <translation id="5352250171825660495">Aktibatuta dago gai iluna.</translation>
+<translation id="5356963482258194581">Aldatu gai ilunetik gai argira, eta alderantziz. Egin klik eskuineko botoiarekin mahaigainean eta hautatu Horma-papera eta estiloa.</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
 <translation id="5393156353051693207">Aplikazioen ordena aldatzeko, eduki sakatuta edozein toki</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> aplikazioaren gainean dago <ph name="DRAGGED_APP_NAME" />; aska ezazu karpeta bat sortzeko.</translation>
@@ -755,6 +759,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5520229639206813572">Administratzaileak eSIMaren profil guztiak kendu ditu. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> konektatzen ari da.</translation>
 <translation id="5532994612895037630">Sakatu edozein toki pantaila osoko moduan grabatzeko</translation>
+<translation id="5536723544185013515">Azken aplikazioak, erabili ezkerrera edo eskuinera egiteko gezi-teklak azken aplikazioak atzitzeko</translation>
 <translation id="553675580533261935">Saiotik irteten</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="554893713779400387">Aktibatu/Desaktibatu diktaketa</translation>
@@ -781,6 +786,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri oraingo erabiltzaile-kontuan.</translation>
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>
 <translation id="5691772641933328258">Ez da ezagutu hatz-marka</translation>
+<translation id="570390244361237317">Aplikazio guztiak, erabili gezi-teklak aplikazio guztiak atzitzeko</translation>
 <translation id="5707775774148071965">Gailuak kableak baino bizkorrago transferi ditzake datuak. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="5710450975648804523">Aktibatuta dago ez molestatzeko modua</translation>
 <translation id="571295407079589142">Desaktibatuta dago datu-konexioa</translation>

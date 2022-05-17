@@ -176,6 +176,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstfelt</translation>
+<translation id="1982717156487272186">Vis forrige uke</translation>
 <translation id="1989113344093894667">Kan ikke ta bilde av innhold</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
 <translation id="1993072747612765854">Finn ut mer om den nyeste <ph name="SYSTEM_APP_NAME" />-oppdateringen</translation>
@@ -622,6 +623,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernerangering <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en dag}other{Nedgrader enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
+<translation id="4644727592819780893">Regionen er for liten – det er ikke plass til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" /> – appanbefaling</translation>
 <translation id="4657775630156561295">Dette forslaget blir fjernet permanent fra kontoens forslagslogg:
 
@@ -776,6 +778,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5673434351075758678">Fra «<ph name="FROM_LOCALE" />» til «<ph name="TO_LOCALE" />» etter at innstillingene dine ble synkronisert.</translation>
 <translation id="5675363643668471212">Hylleelement</translation>
 <translation id="5677928146339483299">Blokkert</translation>
+<translation id="5678564054339031017">Vis neste uke</translation>
 <translation id="5679050765726761783">En svak strømadapter er koblet til</translation>
 <translation id="5682642926269496722">Google-assistenten er ikke tilgjengelig for denne brukerkontoen.</translation>
 <translation id="5689633613396158040">Nattlys gjør det lettere å se på skjermen og lese i svakt lys. Trykk for å endre når Nattlys slås på, eller slå det helt av.</translation>

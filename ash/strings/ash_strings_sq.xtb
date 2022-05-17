@@ -326,6 +326,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2970920913501714344">Instalo aplikacione, shtesa dhe tema</translation>
 <translation id="2977598380246111477">Numri tjetër</translation>
 <translation id="2981684127883932071">Po shfaq sugjerimet</translation>
+<translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
 <translation id="2992327365391326550">Butoni i mikrofonit të pajisjes është i çaktivizuar.</translation>
 <translation id="2995447421581609334">Shfaq pajisjet e transmetimit.</translation>
 <translation id="2996462380875591307">"Zmadhuesi i stacionuar" u aktivizua. Shtyp sërish "Ctrl+Kërko+D" për ta çaktivizuar.</translation>
@@ -464,6 +465,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dhe <ph name="UNAVAILABLE_APPS_COUNT" /> të tjera nuk gjenden në këtë pajisje.</translation>
 <translation id="3735740477244556633">Rendit sipas</translation>
 <translation id="3742055079367172538">Pamja e ekranit u mor</translation>
+<translation id="3761848338953536304">Administratori po kërkon që ta çaktivizosh cilësimin e kyçjes së kartës SIM</translation>
 <translation id="3765841986579723851">Modifikuar sot</translation>
 <translation id="3771549900096082774">Modaliteti i kontrastit të lartë</translation>
 <translation id="3773700760453577392">Një administrator ka ndaluar identifikimin e shumëfishtë për <ph name="USER_EMAIL" />. Të gjithë përdoruesit duhet të dalin për të vazhduar.</translation>
@@ -828,6 +830,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
 <translation id="5992218262414051481">Modaliteti i kontrastit të lartë u aktivizua. Shtyp përsëri Ctrl+Kërko+Shift+H për ta çaktivizuar.</translation>
+<translation id="6009656393242168182">Çaktivizo cilësimin e kyçjes së kartës SIM</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
@@ -862,6 +865,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6166852626429024716">Kërko në pajisjen tënde, aplikacione, cilësime, ueb...</translation>
 <translation id="6179832488876878285">Mund t'i gozhdosh skedarët e tu të rëndësishëm këtu. Hap aplikacionin "Skedarët" për të filluar.</translation>
+<translation id="6182592640011875895">Hap tavolinën e punës</translation>
 <translation id="619279033188484792">Shiko fotografitë, mediat dhe njoftimet më të fundit të telefonit tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Karikoje plotësisht tani</translation>
 <translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
@@ -1168,6 +1172,7 @@ Instalim i ri</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
 <translation id="8061464966246066292">Kontrast i lartë</translation>
+<translation id="8083540854303889870">Ruajtur për më vonë</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktiv, të gjitha aplikacionet</translation>
 <translation id="8120151603115102514">Telefoni yt nuk ka një ekran kyçjeje. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>

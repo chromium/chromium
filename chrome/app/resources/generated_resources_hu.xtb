@@ -519,7 +519,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1506061864768559482">Keresőmotor</translation>
 <translation id="1507170440449692343">Az oldal nem férhet hozzá az Ön kamerájához.</translation>
 <translation id="1507246803636407672">&amp;Elvetés</translation>
-<translation id="1507884455975553832">Üzenetküldő alkalmazások streamelése</translation>
 <translation id="1509163368529404530">&amp;Csoport visszaállítása</translation>
 <translation id="1509281256533087115">Bármely <ph name="DEVICE_NAME_AND_VENDOR" /> elérése USB-n keresztül</translation>
 <translation id="1510238584712386396">Indító</translation>
@@ -843,6 +842,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1784707308176068866">Futtatás a háttérben, amikor együttműködő natív alkalmazás kéri</translation>
 <translation id="1784849162047402014">Az eszközön kevés a lemezterület</translation>
 <translation id="1787350673646245458">Felhasználó képe</translation>
+<translation id="1788329699711791226">Hozzáférhet a következő profilban tárolt, Chrome böngészővel kapcsolatos dolgaihoz: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
@@ -3793,6 +3793,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4648491805942548247">Elégtelen engedélyek</translation>
 <translation id="4650591383426000695">A telefon leválasztása a következőről: <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Nem sikerült betölteni az online komponenst a demó mód forrásaival.</translation>
+<translation id="4651921906638302153">Nem lehet bejelentkezni ezzel a fiókkal</translation>
 <translation id="4652935475563630866">A kamerabeállítások módosítása miatt a Parallels Desktop újraindítására van szükség. A folytatáshoz indítsa újra a Parallels Desktopot.</translation>
 <translation id="4653405415038586100">Hiba történt a Linux konfigurálásakor</translation>
 <translation id="465406513924180949">Itt kosarakat láthat, amelyek segítségével könnyen visszatérhet a webes kosaraiban maradt termékekhez.
@@ -4661,6 +4662,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5539221284352502426">A szerver elutasította a megadott jelszót. Lehetséges okok: Túl rövid a jelszó. A jelszónak tartalmaznia kell számokat és szimbólumokat. A jelszó nem egyezhet meg korábbi jelszavakkal.</translation>
 <translation id="5541694225089836610">A rendszergazda letiltotta a műveletet.</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Az Ön fiókkezelője: <ph name="MANAGER_NAME" />. Rendszergazdája láthatja és szerkesztheti ezt a Chrome-böngészőprofilt és az adatait. Ezek közé az adatok közé tartoznak a könyvjelzők, az előzmények és a jelszavak is.</translation>
 <translation id="5542750926112347543">A(z) <ph name="DOMAIN" /> oldalról származó cookie-k le vannak tiltva</translation>
 <translation id="5542949973455282971">Csatlakozás a(z) <ph name="CARRIER_NAME" /> szolgáltatóhoz</translation>
 <translation id="5543983818738093899">Állapot ellenőrzése…</translation>
@@ -5075,7 +5077,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5957987129450536192">Koppintson a profilképe melletti Felolvasás ikonra, majd válassza ki, hogy mit szeretne hallani.</translation>
 <translation id="5959471481388474538">A hálózat nem érhető el</translation>
 <translation id="595959584676692139">Töltse be újra az oldalt a bővítmény használatához</translation>
-<translation id="5960410286721553511">A telefonon található friss fotók és médiatartalmak megtekintése</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (csúcs: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Összes megnyitása &amp;új ablakban}=1{Megnyitás &amp;új ablakban}other{Összes ({COUNT}) megnyitása &amp;új ablakban}}</translation>
 <translation id="5965661248935608907">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Kezdőlap gombra történő kattintáskor vagy a cím- és keresősávban indított kereséskor.</translation>
@@ -5451,6 +5452,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6327785803543103246">Webproxy automatikus észlelése</translation>
 <translation id="6331818708794917058">A webhelyek engedélyt kérhetnek a MIDI-eszközökhöz való csatlakozásra</translation>
 <translation id="6333064448949140209">A fájlt elküldjük a Google-nak hibakeresésre</translation>
+<translation id="6333170995003625229">Nem sikerült ellenőrizni az e-mail-címét vagy jelszavát. Próbáljon újra bejelentkezni.</translation>
 <translation id="6335920438823100346">A Linux indításához a(z) <ph name="MANAGER" /> szervezet megköveteli, hogy készítsen biztonsági másolatot az adatairól, és állítsa vissza ennek a Chromebooknak a gyári beállításait.</translation>
 <translation id="6336038146639916978">A(z) <ph name="MANAGER" /> letiltotta az ADB-hibakeresést. Ezzel visszaállítja <ph name="DEVICE_TYPE" /> eszközét 24 órán belül. Készítsen biztonsági másolatot a megőrizni kívánt fájlokról.</translation>
 <translation id="6338981933082930623">Minden webhely megjeleníthet hirdetéseket Önnek</translation>
@@ -5859,6 +5861,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6735304988756581115">Cookie-k és egyéb webhelyadatok megjelenítése...</translation>
 <translation id="6736243959894955139">Cím</translation>
 <translation id="6737663862851963468">Kerberos-jegy eltávolítása</translation>
+<translation id="6738430949033571771">Fiók ellenőrzése…</translation>
 <translation id="6739923123728562974">Asztali parancsikon megjelenítése</translation>
 <translation id="6740234557573873150">A(z) <ph name="FILE_NAME" /> letöltése szünetel</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Az Ön rendszergazdája<ph name="END_LINK" /> kikapcsolta a Biztonságos Böngészést</translation>
@@ -7677,6 +7680,8 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8546306075665861288">Képek gyorsítótára</translation>
 <translation id="8546930481464505581">Az érintősáv személyre szabása</translation>
 <translation id="8547013269961688403">Teljes képernyős nagyító engedélyezése</translation>
+<translation id="8547821378890700958">A(z) <ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> címet a következő kezeli: <ph name="MANAGER" />. Az e-mail-cím nem adható hozzá egyéb fiókként.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />A(z) <ph name="USER_EMAIL" /> használatához előbb jelentkezzen ki <ph name="DEVICE_TYPE" /> eszközéből. Majd a bejelentkezési képernyő alján válassza a Személy hozzáadása lehetőséget.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">A legfelső billentyűsor viselkedésének módosításához tartsa lenyomva a keresőgombot</translation>
 <translation id="8549316893834449916">A Chromebookba Google-fiókjával tud majd bejelentkezni – ugyanazzal a fiókkal, amellyel a Gmail, a Drive, a YouTube és a további kapcsolódó szolgáltatásokat is használja.</translation>
 <translation id="8551388862522347954">Licencek</translation>

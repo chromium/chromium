@@ -518,7 +518,6 @@
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
 <translation id="1507246803636407672">إل&amp;غاء</translation>
-<translation id="1507884455975553832">بث تطبيقات المراسلة</translation>
 <translation id="1509163368529404530">استعادة المجموعة</translation>
 <translation id="1509281256533087115">‏الوصول إلى أي <ph name="DEVICE_NAME_AND_VENDOR" /> عبر USB</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
@@ -834,6 +833,7 @@
 <translation id="1784707308176068866">التشغيل في الخلفية عندما يطلبه تطبيق تعاون أصلي</translation>
 <translation id="1784849162047402014">مساحة القرص الموجودة على الجهاز منخفضة.</translation>
 <translation id="1787350673646245458">صورة المستخدم</translation>
+<translation id="1788329699711791226">‏يمكنك الاطّلاع على بياناتك في متصفّح Chrome من <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="1790976235243700817">إزالة إمكانية الوصول</translation>
 <translation id="1791662854739702043">تم التثبيت</translation>
 <translation id="1792619191750875668">شاشة تم توسيعها</translation>
@@ -3781,6 +3781,7 @@
 <translation id="4648491805942548247">أذونات غير كافية</translation>
 <translation id="4650591383426000695">إلغاء ربط الهاتف من الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">تعذَّر تحميل المكوِّن على الإنترنت باستخدام موارد الوضع التجريبي.</translation>
+<translation id="4651921906638302153">لا يمكن تسجيل الدخول باستخدام هذا الحساب</translation>
 <translation id="4652935475563630866">‏يتطلب تغيير إعدادات الكاميرا إعادة تشغيل نظام Parallels Desktop. أعِد تشغيل نظام Parallels Desktop للمتابعة.</translation>
 <translation id="4653405415038586100">‏حدث خطأ أثناء إعداد نظام التشغيل Linux.</translation>
 <translation id="465406513924180949">‏تظهر لك سلّات تسوّق لمساعدتك في الرجوع بسهولة إلى السلع التي أضفتها إلى سلّات التسوّق على الويب.
@@ -4648,6 +4649,7 @@
 <translation id="5539221284352502426">رفض الخادم كلمة المرور التي أدخلتَها. وتتضمن الأسباب المحتملة ما يلي: كلمة المرور قصيرة جدًا. يجب أن تتضمن كلمة المرور أرقامًا أو رموزًا. يجب أن تكون كلمة المرور مختلفة عن كلمات المرور السابقة.</translation>
 <translation id="5541694225089836610">تم إيقاف الإجراء من قِبل المشرف.</translation>
 <translation id="5542132724887566711">الملف التعريفي</translation>
+<translation id="554229901779827904">‏يدير <ph name="MANAGER_NAME" /> حسابك. بإمكان المشرف الاطّلاع على هذا الملف الشخصي وبياناته في متصفّح Chrome وتعديلها. تشمل بياناتك الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="5542750926112347543">تم حظر ملفات تعريف الارتباط الواردة من <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">جارٍ الربط بشبكة <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">جارٍ التحقق من الحالة ...</translation>
@@ -5061,7 +5063,6 @@
 <translation id="5957987129450536192">يمكنك النقر على رمز"الاختيار والاستماع" بالقرب من الملف الشخصي، ثم اختيار ما ترغب بسماعه.</translation>
 <translation id="5959471481388474538">الشبكة غير متاحة</translation>
 <translation id="595959584676692139">يُرجى إعادة تحميل الصفحة لاستخدام هذه الإضافة</translation>
-<translation id="5960410286721553511">عرض الصور والوسائط الحديثة على هاتفك</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> في الذروة)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="5965661248935608907">كما أنها تتحكم في الصفحة التي تظهر عند النقر على زر الصفحة الرئيسية أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
@@ -5437,6 +5438,7 @@
 <translation id="6327785803543103246">اكتشاف الخادم الوكيل للويب تلقائيًا</translation>
 <translation id="6331818708794917058">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة MIDI</translation>
 <translation id="6333064448949140209">‏سيتم إرسال الملف إلى Google لتصحيح الأخطاء</translation>
+<translation id="6333170995003625229">تعذّر التحقُّق من عنوان بريدك الإلكتروني أو كلمة مرورك. حاوِل تسجيل الدخول مرة أخرى.</translation>
 <translation id="6335920438823100346">‏لبدء تشغيل نظام التشغيل Linux، يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6336038146639916978">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". وسيؤدي هذا إلى إعادة ضبط الجهاز <ph name="DEVICE_TYPE" /> خلال 24 ساعة. يُرجى الاحتفاظ بنسخة احتياطية من كل الملفات التي تريدها.</translation>
 <translation id="6338981933082930623">السماح لجميع المواقع الإلكترونية بعرض أيّ إعلانات لك</translation>
@@ -5853,6 +5855,7 @@
 <translation id="6735304988756581115">عرض ملفات تعريف الارتباط وبيانات الموقع الأخرى...</translation>
 <translation id="6736243959894955139">العنوان</translation>
 <translation id="6737663862851963468">‏إزالة تذكرة Kerberos</translation>
+<translation id="6738430949033571771">جارٍ إثبات ملكية الحساب...</translation>
 <translation id="6739923123728562974">عرض اختصار على سطح المكتب</translation>
 <translation id="6740234557573873150">إيقاف <ph name="FILE_NAME" /> مؤقتًا</translation>
 <translation id="6741063444351041466">أوقَف <ph name="BEGIN_LINK" />مشرفك<ph name="END_LINK" /> "التصفّح الآمن".</translation>
@@ -7674,6 +7677,8 @@
 <translation id="8546306075665861288">ذاكرة التخزين المؤقت للصور</translation>
 <translation id="8546930481464505581">تخصيص شريط اللمس</translation>
 <translation id="8547013269961688403">تفعيل المكبّر بملء الشاشة</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" />تتم إدارة <ph name="USER_EMAIL" /> من خلال <ph name="MANAGER" />. لا يمكنك إضافة هذا البريد الإلكتروني كحساب إضافي.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />لاستخدام <ph name="USER_EMAIL" />، سجِّل الخروج من جهاز <ph name="DEVICE_TYPE" /> أولاً. واختَر "إضافة شخص" في أسفل شاشة تسجيل الدخول.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">اضغط على مفتاح البحث باستمرار لتبديل سلوك مفاتيح الصف العلوي</translation>
 <translation id="8549316893834449916">‏يجب أن تستخدم حسابك على Google لتسجيل الدخول إلى جهاز Chromebook، وهو الحساب نفسه الذي تستخدمه على Gmail وDrive وYouTube وغيرها من المنتجات.</translation>
 <translation id="8551388862522347954">التراخيص</translation>

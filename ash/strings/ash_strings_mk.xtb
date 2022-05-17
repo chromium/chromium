@@ -135,6 +135,7 @@
 <translation id="1715293566947629045">Оневозможување на профилот. Почекајте неколку минути.</translation>
 <translation id="1719094688023114093">„Автоматските титлови“ се вклучени.</translation>
 <translation id="1720011244392820496">Вклучете синхронизирање на Wi-Fi</translation>
+<translation id="1733996486177697563">Сменете на темна и светла тема. Допрете и задржете на работната површина, а потоа изберете „Тапети и стил“.</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ е видлив за уреди со Bluetooth.</translation>
 <translation id="174102739345480129">Означувачот е исклучен.</translation>
 <translation id="1743570585616704562">Не е препознаен</translation>
@@ -176,6 +177,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Внесување текст</translation>
+<translation id="1982717156487272186">Прикажи ја претходната седмица</translation>
 <translation id="1989113344093894667">Не може да се снимаат содржините</translation>
 <translation id="1990046457226896323">Датотеките за говор се преземени</translation>
 <translation id="1993072747612765854">Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +265,7 @@
 <translation id="2573588302192866788">Не можеше да се поврзе <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
 <translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
+<translation id="2586561057878260610">Притиснете Ctrl + W за да комбинирате со <ph name="DESK_NAME" />. Притиснете Ctrl + Shift + W за да ги затворите работната површина и прозорците.</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
 <translation id="2607678425161541573">Задолжително е најавување онлајн</translation>
@@ -326,6 +329,7 @@
 <translation id="2970920913501714344">Инсталира апликации, екстензии и теми</translation>
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2981684127883932071">Се прикажуваат предлози</translation>
+<translation id="2985148236010982088">Приказ на сите апликации</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
 <translation id="2995447421581609334">Прикажи ги уредите со Cast.</translation>
 <translation id="2996462380875591307">Овозможена е закотвената лупа. Притиснете Ctrl+Search+D повторно за да ја исклучите.</translation>
@@ -464,6 +468,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и уште <ph name="UNAVAILABLE_APPS_COUNT" /> не се на уредов.</translation>
 <translation id="3735740477244556633">Подреди по</translation>
 <translation id="3742055079367172538">Направена е слика од екранот</translation>
+<translation id="3761848338953536304">Администраторот бара да ја исклучите поставката за заклучување SIM-картичка</translation>
 <translation id="3765841986579723851">Изменето денес</translation>
 <translation id="3771549900096082774">Режим на голем контраст</translation>
 <translation id="3773700760453577392">Администраторот оневозможил повеќекратно најавување за <ph name="USER_EMAIL" />.
@@ -621,6 +626,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцена со ѕвезди: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден ден}one{Променете го уредот на претходната верзија во рок од # ден}other{Променете го уредот на претходната верзија во рок од # дена}}</translation>
 <translation id="4642092649622328492">Снимете делумна слика од екранот</translation>
+<translation id="4644727592819780893">Регионот е премал за да се прикаже преглед на камерата</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, препорачана апликација</translation>
 <translation id="4657775630156561295">Следниов предлог ќе биде трајно отстранет од историјата на предлози на вашата сметка:
 
@@ -666,6 +672,7 @@
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4918086044614829423">Прифати</translation>
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
+<translation id="4938176435186993759">Сокриј ги сите предлози</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
@@ -732,6 +739,7 @@
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
+<translation id="5356963482258194581">Сменете на темна и светла тема. Кликнете со десното копче на работната површина и изберете „Тапети и стил“.</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
 <translation id="5393156353051693207">Допрете и задржете каде било за да ги преуредите апликациите</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> врз <ph name="IN_PLACE_APP" />, пуштете за да се создаде папка.</translation>
@@ -753,6 +761,7 @@
 <translation id="5520229639206813572">Администраторот ги отстрани сите профили на eSIM. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се поврзува.</translation>
 <translation id="5532994612895037630">Допрете каде било за да го снимате целиот екран</translation>
+<translation id="5536723544185013515">Неодамнешни апликации, користете ја стрелката за налево или надесно за да пристапите до неодамнешните апликации</translation>
 <translation id="553675580533261935">Излегува од сесијата</translation>
 <translation id="5537725057119320332">Емитувај</translation>
 <translation id="554893713779400387">Вклучи/исклучи диктат</translation>
@@ -775,10 +784,12 @@
 <translation id="5673434351075758678">Од „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ по синхронизацијата на поставките.</translation>
 <translation id="5675363643668471212">Ставка од полица</translation>
 <translation id="5677928146339483299">Блокирано</translation>
+<translation id="5678564054339031017">Прикажи ја следната седмица</translation>
 <translation id="5679050765726761783">Поврзан е слаб адаптер за напојување</translation>
 <translation id="5682642926269496722">„Помошникот на Google“ не е достапен за тековната корисничка сметка.</translation>
 <translation id="5689633613396158040">„Ноќно светло“ го олеснува гледањето во екранот или читањето при слаба светлина. Допрете за да го промените времето на вклучување на „Ноќно светло“ или исклучете го целосно.</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
+<translation id="570390244361237317">Сите апликации, користете ги стрелките за да пристапувате до сите апликации</translation>
 <translation id="5707775774148071965">Вашиот уред поддржува поголем проток на податоци отколку кабелот. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="5710450975648804523">Вклучено е „Не вознемирувај“</translation>
 <translation id="571295407079589142">Мобилниот интернет е исклучен</translation>
@@ -829,6 +840,7 @@
 <translation id="598407983968395253">Употреби го шаблонот</translation>
 <translation id="598882571027504733">За да го добиете ажурирањето, рестартирајте го Chromebook додека тастатурата е прикачена.</translation>
 <translation id="5992218262414051481">Режимот на висок контраст е овозможен. Притиснете „Ctrl+Пребарување+H“ повторно за да го исклучите.</translation>
+<translation id="6009656393242168182">Оневозможете ја поставката за заклучување SIM-картичка</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Се излегува од режим на огледало</translation>
 <translation id="602001110135236999">Лизгај налево</translation>
@@ -863,6 +875,7 @@
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6166852626429024716">Пребарувајте низ уредот, апликациите, поставките, на интернет…</translation>
 <translation id="6179832488876878285">Може да ги закачите вашите важни датотеки тука. Отворете ја апликацијата Files за да започнете.</translation>
+<translation id="6182592640011875895">Отвори работна површина</translation>
 <translation id="619279033188484792">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини и известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Целосно наполни сега</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
@@ -1169,6 +1182,7 @@
 <translation id="8052898407431791827">Копирано во привремената меморија</translation>
 <translation id="8054466585765276473">пресметување време на батерија.</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
+<translation id="8083540854303889870">Зачувани за подоцна</translation>
 <translation id="8098591350844501178">Престани со емитување на екранот на <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Вкл. за сите апл.</translation>
 <translation id="8120151603115102514">Немате заклучен екран на телефонот. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>

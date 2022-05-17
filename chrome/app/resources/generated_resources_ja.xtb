@@ -516,7 +516,6 @@
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
 <translation id="1507246803636407672">破棄(&amp;D)</translation>
-<translation id="1507884455975553832">ストリーム メッセージ アプリ</translation>
 <translation id="1509163368529404530">グループを復元(&amp;R)</translation>
 <translation id="1509281256533087115">あらゆる <ph name="DEVICE_NAME_AND_VENDOR" /> からの USB 経由のアクセス</translation>
 <translation id="1510238584712386396">ランチャー</translation>
@@ -831,6 +830,7 @@
 <translation id="1784707308176068866">連携するネイティブ アプリケーションからのリクエストに応じてバックグラウンドで実行する</translation>
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1787350673646245458">ユーザー画像</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> から Chrome ブラウザのアイテムにアクセス</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -4437,7 +4437,7 @@
 <translation id="5339031667684712858">削除したサイト</translation>
 <translation id="5340638867532133571">サイトに支払いハンドラのインストールを許可する（推奨）</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
-<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で作成してください</translation>
+<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で設定してください</translation>
 <translation id="5344036115151554031">Linux を復元しています</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>
@@ -4634,6 +4634,7 @@
 <translation id="5539221284352502426">入力したパスワードはサーバーによって拒否されました。考えられる原因は次のとおりです。パスワードが短すぎる。パスワードに数字または記号が含まれていない。以前と同じパスワードを指定した。</translation>
 <translation id="5541694225089836610">操作が管理者によって無効にされています</translation>
 <translation id="5542132724887566711">プロフィール</translation>
+<translation id="554229901779827904">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータを表示、編集できます。こうしたデータには、ブックマーク、履歴、パスワードが含まれます。</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> からの Cookie がブロックされました</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> に接続しています</translation>
 <translation id="5543983818738093899">ステータスを確認しています...</translation>
@@ -5047,7 +5048,6 @@
 <translation id="5957987129450536192">プロフィール画像の近くにある「選択して読み上げ」アイコンをタップして、読み上げる対象を選択します。</translation>
 <translation id="5959471481388474538">ネットワークは利用できません</translation>
 <translation id="595959584676692139">この拡張機能を使用するにはページを再読み込みします</translation>
-<translation id="5960410286721553511">スマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />（最大 <ph name="NUM_KILOBYTES_LIVE" />）</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5965661248935608907">この拡張機能では、ホーム ボタンのクリック時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>

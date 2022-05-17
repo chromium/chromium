@@ -519,7 +519,6 @@
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1507170440449692343">Достъпът на тази страница до камерата ви е блокиран.</translation>
 <translation id="1507246803636407672">&amp;Отхвърляне</translation>
-<translation id="1507884455975553832">Поточно предаване на приложенията за съобщения</translation>
 <translation id="1509163368529404530">&amp;Възстановяване на групата</translation>
 <translation id="1509281256533087115">Достъп до всяко устройство <ph name="DEVICE_NAME_AND_VENDOR" /> чрез USB</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
@@ -839,6 +838,7 @@
 <translation id="1784707308176068866">Изпълняване на заден план при поискване от съдействащо приложение с директно изпълнение</translation>
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1787350673646245458">Изображение на потребител</translation>
+<translation id="1788329699711791226">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
@@ -4660,6 +4660,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5539221284352502426">Въведената от вас парола бе отхвърлена от сървъра. Ето някои от възможните причини: паролата е твърде кратка; необходимо е да съдържа цифри или символи; трябва да е различна от предишните пароли.</translation>
 <translation id="5541694225089836610">Действието е деактивирано от администратора ви</translation>
 <translation id="5542132724887566711">Потребителски профил</translation>
+<translation id="554229901779827904">Профилът ви се управлява от <ph name="MANAGER_NAME" />. Администраторът ви може да вижда и редактира този потребителски профил в браузъра Chrome и данните му. Данните ви включват отметките, историята и паролите.</translation>
 <translation id="5542750926112347543">„Бисквитките“ от <ph name="DOMAIN" /> са блокирани</translation>
 <translation id="5542949973455282971">Установява се връзка с(ъс) <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Извършва се проверка за състоянието...</translation>
@@ -5074,7 +5075,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5957987129450536192">Докоснете иконата на Прочитане на глас до изображението на потребителския си профил и изберете текста, който искате да чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е налице</translation>
 <translation id="595959584676692139">Презаредете страницата, за да използвате това разширение</translation>
-<translation id="5960410286721553511">Преглед на скорошните снимки и мултимедийни файлове на телефона ви</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (най-много <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отваряне на всички в &amp;нов прозорец}=1{Отваряне в &amp;нов прозорец}other{Отваряне на всички ({COUNT}) в &amp;нов прозорец}}</translation>
 <translation id="5965661248935608907">То също контролира коя страница се показва при кликване върху бутона „Начална страница“ или при търсене от полето за всичко.</translation>

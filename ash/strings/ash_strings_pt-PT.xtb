@@ -135,6 +135,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1715293566947629045">A desativar o perfil. Aguarde alguns minutos.</translation>
 <translation id="1719094688023114093">As Legendas instantâneas estão ativadas.</translation>
 <translation id="1720011244392820496">Desative o Sync Wi-Fi</translation>
+<translation id="1733996486177697563">Alterne entre o tema claro e escuro. Toque sem soltar no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
@@ -263,6 +264,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
 <translation id="2582112259361606227">Reiniciar para atualizar</translation>
+<translation id="2586561057878260610">Prima Ctrl + W para combinar com <ph name="DESK_NAME" />. Prima Ctrl + Shift + W para fechar o espaço de trabalho e as janelas.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2607678425161541573">É necessário iniciar sessão online</translation>
@@ -326,6 +328,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2981684127883932071">A apresentar sugestões</translation>
+<translation id="2985148236010982088">Ver todas as apps</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
 <translation id="2995447421581609334">Mostrar dispositivos de transmissão.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
@@ -464,6 +467,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3726171378575546917">A app <ph name="UNAVAILABLE_APPS_ONE" />, a app <ph name="UNAVAILABLE_APPS_TWO" /> e mais <ph name="UNAVAILABLE_APPS_COUNT" /> apps não se encontram neste dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
+<translation id="3761848338953536304">O administrador está a pedir para desativar a definição de bloqueio do SIM</translation>
 <translation id="3765841986579723851">Editado hoje</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
@@ -665,6 +669,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4925542575807923399">O gestor para esta conta requer que esta conta seja a primeira conta com sessão iniciada num início de sessão integrado.</translation>
+<translation id="4938176435186993759">Ocultar todas as sugestões</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Deslocar para cima</translation>
@@ -731,6 +736,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
+<translation id="5356963482258194581">Alterne entre o tema claro e escuro. Clique com o botão direito do rato no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
 <translation id="5393156353051693207">Toque sem soltar em qualquer local para reordenar as suas apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
@@ -752,6 +758,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5520229639206813572">O seu administrador removeu todos os perfis do eSIM. Contacte o administrador para obter mais informações.</translation>
 <translation id="5523434445161341166">A funcionalidade <ph name="FEATURE_NAME" /> está a estabelecer ligação.</translation>
 <translation id="5532994612895037630">Toque em qualquer local para gravar o ecrã inteiro.</translation>
+<translation id="5536723544185013515">Apps recentes, navegue com as teclas de seta para a esquerda ou direita para aceder a todas as apps recentes</translation>
 <translation id="553675580533261935">A sair da sessão…</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554893713779400387">Ativar/desativar o ditado</translation>
@@ -778,6 +785,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5682642926269496722">O Assistente Google não está disponível para a conta do utilizador atual.</translation>
 <translation id="5689633613396158040">A Luz noturna torna mais fácil olhar para o ecrã ou ler com pouca luz. Toque para alterar a hora em que a Luz noturna é ativada ou desativada totalmente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
+<translation id="570390244361237317">Todas as apps, navegue com as teclas de seta para aceder a todas as apps</translation>
 <translation id="5707775774148071965">O dispositivo suporta uma taxa de dados mais elevada do que o cabo. O desempenho do dispositivo pode estar limitado.</translation>
 <translation id="5710450975648804523">Modo Não incomodar ativado</translation>
 <translation id="571295407079589142">Os dados móveis estão desativados</translation>
@@ -828,6 +836,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="598407983968395253">Utilizar modelo</translation>
 <translation id="598882571027504733">Para obter a atualização, reinicie o Chromebook com o teclado ligado.</translation>
 <translation id="5992218262414051481">Modo de alto contraste ativado. Prima Ctrl + Pesquisa + H novamente para o desativar.</translation>
+<translation id="6009656393242168182">Desative a definição de bloqueio do SIM</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">A sair do modo espelhado</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
@@ -862,6 +871,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquise no dispositivo, nas apps, nas definições, na Web…</translation>
 <translation id="6179832488876878285">Pode fixar os seus ficheiros importantes aqui. Abra a app Files para começar.</translation>
+<translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="619279033188484792">Veja as fotos, os conteúdos multimédia e as notificações recentes do telemóvel no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
@@ -1168,6 +1178,7 @@ Nova instalação</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">A calcular tempo da bateria.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
+<translation id="8083540854303889870">Guardados para mais tarde</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ativado, todas as aplicações</translation>
 <translation id="8120151603115102514">O telemóvel não tem ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>

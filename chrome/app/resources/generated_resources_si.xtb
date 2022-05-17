@@ -519,7 +519,6 @@
 <translation id="1506061864768559482">සෙවුම් යන්ත්‍රය</translation>
 <translation id="1507170440449692343">මෙම පිටුව ඔබේ කැමරාවට ප්‍රවේශ වීම බාධා කර ඇකත</translation>
 <translation id="1507246803636407672">ඉවතලන්න</translation>
-<translation id="1507884455975553832">පණිවිඩකරණ යෙදුම ප්‍රවාහ කරන්න</translation>
 <translation id="1509163368529404530">&amp;සමූහය ප්‍රතිසාධනය කරන්න</translation>
 <translation id="1509281256533087115">USB හරහා ඕනෑම <ph name="DEVICE_NAME_AND_VENDOR" /> වෙත ප්‍රවේශ වන්න</translation>
 <translation id="1510238584712386396">දියත්කරණය</translation>
@@ -832,6 +831,7 @@
 <translation id="1784707308176068866">සහයෝගය දක්වන ස්වකීය යෙදුමකින් ඉල්ලනු ලැබූ විට පසුබිමේ ධාවන වන්න</translation>
 <translation id="1784849162047402014">උපාංගයේ තැටි ඉඩ අඩුය</translation>
 <translation id="1787350673646245458">පරිශීලක රූපය</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> වෙතින් ඔබගේ Chrome බ්‍රවුසරයේ දේවල් වෙත ප්‍රවේශ වන්න</translation>
 <translation id="1790976235243700817">ප්‍රවේශය ඉවත් කරන්න</translation>
 <translation id="1791662854739702043">ස්ථාපිත</translation>
 <translation id="1792619191750875668">දීර්ඝ කළ සංදර්ශකය</translation>
@@ -3784,6 +3784,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4648491805942548247">අවසර ප්‍රමාණවත් නොවේ</translation>
 <translation id="4650591383426000695">ඔබේ දුරකථනය ඔබේ <ph name="DEVICE_TYPE" /> වෙතින් විසන්ධි කරන්න</translation>
 <translation id="4651484272688821107">ආදර්ශන ප්‍රකාර සම්පත් සමඟ සබැඳි අංගය පූරණ කළ නොහැකි විය.</translation>
+<translation id="4651921906638302153">මෙම ගිණුමෙන් පිරිය නොහැකිය</translation>
 <translation id="4652935475563630866">කැමරා සැකසීම තුළ වෙනස් කිරීමට නැවත දියත් කිරීම සඳහා Parallels Desktop අවශ්‍ය වේ ඉදිරියට යාමට Parallels Desktop නැවත දියත් කරන්න.</translation>
 <translation id="4653405415038586100">ලිනක්ස් වින්‍යාස කිරීමෝ දෝෂයයි</translation>
 <translation id="465406513924180949">වෙබය පුරා ඇති සාප්පු කරත්තවල ඔබ දමා ගිය අයිතම වෙත පහසුවෙන් ආපසු යාමට ඔබට උපකාර වන කරත්ත ඔබ දකියි.
@@ -4651,6 +4652,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5539221284352502426">ඔබ ඇතුළු කළ මුරපදය සේවාදායකය විසින් ප්‍රතික්ෂේප කරන ලදී. විය හැකි හේතුවල ඇතුළත් වන්නේ: මුරපදය ඉතා කෙටි වේ. මුරපදයේ අංක හෝ සංකේත ඇතුළත් විය යුතුය. මුරපදය මීට පෙර මුරපදවලින් වෙනස් විය යුතුය.</translation>
 <translation id="5541694225089836610">ක්‍රියාව ඔබේ පරිපාලකයා විසින් අබල කරනු ලැබ ඇත</translation>
 <translation id="5542132724887566711">පැතිකඩ</translation>
+<translation id="554229901779827904">ඔබගේ ගිණුම <ph name="MANAGER_NAME" /> විසින් කළමනාකරණය කෙරේ. ඔබගේ පරිපාලකට මෙම Chrome බ්‍රවුසර පැතිකඩ සහ එහි දත්ත බැලීමට සහ සංස්කරණය කිරීමට හැකිය. ඔබගේ දත්තවලට පිටුසන්, ඉතිහාසය සහ මුරපද ඇතුළත් වේ.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> වෙතින් කුකී අවහිරයි</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> වෙත සම්බන්ධ කිරීම</translation>
 <translation id="5543983818738093899">තත්වය සඳහා පරීක්ෂා කරමින්...</translation>
@@ -5065,7 +5067,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5957987129450536192">ඔබේ පැතිකඩ රූපය අසල කථා කිරීමට තෝරන්න නිරූපකය තට්ටු කර, ඔබට ඇසීමට අවශ්‍ය දේ තෝරන්න.</translation>
 <translation id="5959471481388474538">ජාලය ලද නොහැක</translation>
 <translation id="595959584676692139">මෙම දිගුව භාවිතා කිරීමට පිටුව පූරණය කරන්න</translation>
-<translation id="5960410286721553511">ඔබගේ දුරකථනයේ මෑත ඡායාරූප සහ මාධ්‍ය බලන්න</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> උච්චතම)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{සියල්ල &amp;නව කවුළුවක විවෘත කරන්න}=1{&amp;නව කවුළුවක විවෘත කරන්න}one{සියල්ල ({COUNT}) &amp;නව කවුළුවක විවෘත කරන්න}other{සියල්ල ({COUNT}) &amp;නව කවුළුවක විවෘත කරන්න}}</translation>
 <translation id="5965661248935608907">ඔබ මුල්පිටු බොත්තම ක්ලික් කළ විට හෝ Omnibox වෙතින් සොයන විට කුමන පිටුව පෙන්වන්නේද යන්නද එය පාලනය කරයි.</translation>
@@ -5441,6 +5442,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6327785803543103246">වෙබ් ප්‍රොක්සි ස්වයං අනාවරණය</translation>
 <translation id="6331818708794917058">අඩවි MIDI උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="6333064448949140209">ගොනුව නිදොස් කිරීම සඳහා Google වෙත යවනු ඇත</translation>
+<translation id="6333170995003625229">ඔබගේ ඉ-තැපැල් ලිපිනය හෝ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත පිරීමට උත්සාහ කරන්න.</translation>
 <translation id="6335920438823100346">Linux ආරම්භ කිරීමට, <ph name="MANAGER" /> හට ඔබ ඔබගේ දත්ත උපස්ථ කර මෙම Chromebook එක කර්මාන්තශාලා සැකසීම් වෙත යළි සැකසීම අවශ්‍යයි.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ADB නිදොස් කිරීම අබල කර ඇත. මෙය ඔබගේ <ph name="DEVICE_TYPE" /> පැය 24කින් යළි සකසනු ඇත. ඔබ තබා ගැනීමට කිනම් හෝ ගොනු උපස්ථ කරන්න</translation>
 <translation id="6338981933082930623">සියලු අඩවි ඔබට කිනම් හෝ වෙළඳ දැන්වීම් පෙන්විය හැකිය</translation>
@@ -5849,6 +5851,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6735304988756581115">කුකීස් සහ වෙනත් සයිට් දත්ත පෙන්වන්න..</translation>
 <translation id="6736243959894955139">ලිපිනය</translation>
 <translation id="6737663862851963468">Kerberos ප්‍රවේශපත්‍රය ඉවත් කරන්න</translation>
+<translation id="6738430949033571771">ගිණුම සත්‍යාපනය කරමින්...</translation>
 <translation id="6739923123728562974">ඩෙස්ක්ටොප් කෙටි මග පෙන්වන්න</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> විරාම කරන ලදී</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />ඔබේ පරිපාලකයා<ph name="END_LINK" /> ආරක්‍ෂිත බ්‍රවුස් කිරීම අක්‍රිය කර ඇත</translation>
@@ -7665,6 +7668,8 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8546306075665861288">අනුරූ කෑෂ්</translation>
 <translation id="8546930481464505581">ස්පර්ශ තීරුව අභිරුචිකරණය</translation>
 <translation id="8547013269961688403">පූර්ණ තිර විශාලකය සබල කරන්න</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> <ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ. ඔබට මෙම ඉ-තැපෑල අමතර ගිණුමක් ලෙස එක් කළ නොහැකිය.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> භාවිත කිරීමට, පළමුව ඔබගේ <ph name="DEVICE_TYPE" /> වෙතින් වරන්න. ඉන්පසු පිරීමේ තිරයේ පහළම, පුද්ගලයා එක් කරන්න තෝරන්න.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">ඉහළ පේළියේ යතුරු හැසිරීම මාරු කිරීමට සෙවීම් යතුර අල්ලාගෙන සිටින්න</translation>
 <translation id="8549316893834449916">ඔබගේ Chromebook වෙත පිරීමට ඔබ ඔබගේ Google ගිණුම භාවිත කරනු ඇත – Gmail, Drive, YouTube සහ තවත් දේ සඳහා ඔබ භාවිත කරන ගිණුම.</translation>
 <translation id="8551388862522347954">වරපත්</translation>

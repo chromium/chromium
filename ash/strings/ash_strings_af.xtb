@@ -135,6 +135,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1715293566947629045">Deaktiveer tans profiel. Wag ’n paar minute.</translation>
 <translation id="1719094688023114093">Intydse onderskrifte is aan.</translation>
 <translation id="1720011244392820496">Skakel Wi-Fi-sinkronisering aan</translation>
+<translation id="1733996486177697563">Wissel tussen donker- en ligtema. Raak en hou op die werkskerm en kies dan Muurpapier en Styl.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" is sigbaar vir Bluetooth-toestelle.</translation>
 <translation id="174102739345480129">Merker is af.</translation>
 <translation id="1743570585616704562">Nie herken nie</translation>
@@ -176,6 +177,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Teksinvoer</translation>
+<translation id="1982717156487272186">Wys vorige week</translation>
 <translation id="1989113344093894667">Kan nie inhoud vasvang nie</translation>
 <translation id="1990046457226896323">Spraaklêers is afgelaai</translation>
 <translation id="1993072747612765854">Kom meer te wete oor die jongste <ph name="SYSTEM_APP_NAME" />-opdatering</translation>
@@ -263,6 +265,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2573588302192866788">Kon nie <ph name="NAME" /> koppel nie</translation>
 <translation id="2575685495496069081">Veelvuldige aanmelding is gedeaktiveer</translation>
 <translation id="2582112259361606227">Herbegin om op te dateer</translation>
+<translation id="2586561057878260610">Druk Ctrl + W om met <ph name="DESK_NAME" /> te kombineer. Druk Ctrl + Shift + W om lessenaar en vensters toe te maak.</translation>
 <translation id="2595239820337756193">5K in myl</translation>
 <translation id="2596078834055697711">Neem vensterskermkiekie</translation>
 <translation id="2607678425161541573">Aanlyn aanmelding word vereis</translation>
@@ -623,6 +626,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, stergradering <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Verander toestel binne 'n dag na vorige weergawe}other{Verander toestel binne # dae na vorige weergawe}}</translation>
 <translation id="4642092649622328492">Neem gedeeltelike skermkiekie</translation>
+<translation id="4644727592819780893">Streek is te klein om kameravoorskou te wys</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, programaanbeveling</translation>
 <translation id="4657775630156561295">Die volgende voorstel sal permanent uit jou rekening se voorstelgeskiedenis verwyder word:
 
@@ -668,6 +672,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
+<translation id="4938176435186993759">Versteek alle voorstelle</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
 <translation id="4946376291507881335">Vang vas</translation>
 <translation id="495046168593986294">Rollees op</translation>
@@ -734,6 +739,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (regs)</translation>
 <translation id="5352250171825660495">Donkertema is aan</translation>
+<translation id="5356963482258194581">Wissel tussen donker- en ligtema. Regsklik op die werkskerm en kies Muurpapier en Styl.</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
 <translation id="5393156353051693207">Raak en hou op enige plek om jou programme te herrangskik</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bo-oor <ph name="IN_PLACE_APP" />; laat los om vouer te skep.</translation>
@@ -755,6 +761,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5520229639206813572">Jou administrateur het alle e-SIM-profiele verwyder. Kontak jou administrateur vir meer inligting.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> koppel tans.</translation>
 <translation id="5532994612895037630">Tik op enige plek om volskerm op te neem</translation>
+<translation id="5536723544185013515">Onlangse programme; navigeer met links- of regspylsleutel om toegang tot onlangse programme te kry</translation>
 <translation id="553675580533261935">Gaan tans uit sessie</translation>
 <translation id="5537725057119320332">Saai uit</translation>
 <translation id="554893713779400387">Wissel diktering</translation>
@@ -777,10 +784,12 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5673434351075758678">Van "<ph name="FROM_LOCALE" />" af na "<ph name="TO_LOCALE" />" toe nadat jou instellings gesinkroniseer is.</translation>
 <translation id="5675363643668471212">Rakitem</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
+<translation id="5678564054339031017">Wys volgende week</translation>
 <translation id="5679050765726761783">Laekragprop is gekoppel</translation>
 <translation id="5682642926269496722">Die Google Assistent is nie vir die huidige gebruikerrekening beskikbaar nie.</translation>
 <translation id="5689633613396158040">Aandbeligting maak dit makliker om in dowwe lig na jou skerm te kyk en te lees. Tik om te verander hoe laat Aandbeligting aanskakel, of skakel dit heeltemal af.</translation>
 <translation id="5691772641933328258">Vingerafdruk nie herken nie</translation>
+<translation id="570390244361237317">Alle programme; navigeer met pylsleutels om toegang tot alle programme te kry</translation>
 <translation id="5707775774148071965">Jou toestel steun ’n hoër datakoers as jou kabel. Toestelwerkverrigting kan beperk wees.</translation>
 <translation id="5710450975648804523">Moenie Steur Nie is aan</translation>
 <translation id="571295407079589142">Mobiele data is afgeskakel</translation>

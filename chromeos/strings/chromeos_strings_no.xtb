@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Datoen for forrige tilbakestilling av data er ikke tilgjengelig</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Hjemmenettverk, datastreifing ikke aktivert</translation>
+<translation id="132712914231403017">Installer fastvareavbildning</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Bakgrunnsfarge</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1643449475550628585">Endre bakgrunnsbilde daglig</translation>
 <translation id="1644574205037202324">Logg</translation>
+<translation id="1645954272419197032">Bekreft enhetsinformasjonen</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Tilkobling</translation>
 <translation id="2008685064673031089">Primtallsøk</translation>
 <translation id="2016697457005847575">Prøv feilsøkingstrinn</translation>
+<translation id="2016848882344942759">– ikke noe eget varemerke –</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2275586345903859204">Reparasjonen er fullført</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Sett inn en ekstern lagringsenhet, for eksempel en USB-stasjon eller et SD-kort, med den nedlastede avbildningen av Gjenopprettelsesverktøy for Chromebook</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">TLS-autentiseringsnøkkel</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2717139507051041123">Slå på modus for mørke farger</translation>
+<translation id="2727250716596204208">Fant ingen fastvareavbildning. Sett inn en ekstern lagringsenhet, for eksempel en USB-stasjon eller et SD-kort, med den nedlastede avbildningen av Gjenopprettelsesverktøy for Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fase 2-autentisering av EAP</translation>
 <translation id="2756652381241102009">Kjør diagnostikk</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3124039320086536031">Enheten er tilkoblet.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Klargjør enheten …</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3368922792935385530">Tilkoblet</translation>
 <translation id="3369013195428705271">Er du sikker på at du vil tømme hele utskriftsloggen? Utskriftsjobber som allerede er i gang, fjernes ikke.</translation>
+<translation id="3383751554789092165">Endre enhetsinformasjon etter behov.</translation>
 <translation id="3404249063913988450">Slå på skjermspareren</translation>
 <translation id="3404770484521709967">Komponentene er riktig installert.</translation>
 <translation id="3413935475507503304">For å gå videre med oppdateringen, klikk på Neste.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3774059845329307709">Serienummer</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="38114475217616659">Tøm hele loggen</translation>
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4561801978359312462">SIM-kortet er låst opp</translation>
 <translation id="4562494484721939086">Ingen tjeneste</translation>
+<translation id="4568938274596692027">Installasjonen er fullført. Klargjør for omstart …</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i venstre øreplugg.</translation>
+<translation id="4908030561598728899">Installerer fastvaren …</translation>
 <translation id="4915052247106771211">Dette medfører at enheten blir tilbakestilt til fabrikkstandard (Powerwash).</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stoppet – tom for papir</translation>
@@ -615,8 +625,10 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
 <translation id="680983167891198932">Nøkkel</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
+<translation id="6822504384524564824">Vareenheten skal bare endres hvis de nye komponentene er forskjellige fra dem som ble erstattet. Eksempel: En berøringsskjerm som erstatter en ikke-berøringsskjerm, eller minne som oppgraderes fra 8 GB til 16 GB.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />-reparasjon</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
+<translation id="6876833053687020046">DRAM-delenummer</translation>
 <translation id="6889786074662672253">Ikke koble fra denne eksterne enheten eller slå av datamaskinen mens enheten startes på nytt. Du kan minimere dette vinduet. Dette kan ta noen minutter, og det kan hende den eksterne enheten ikke fungerer i dette tidsrommet.</translation>
 <translation id="6905724422583748843">Tilbake til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
@@ -664,6 +676,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Vareenhet</translation>
 <translation id="7378886533986123738">Bytt skjermsparer</translation>
 <translation id="7397270852490618635">Slå av lyst tema</translation>
 <translation id="741244894080940828">omregning</translation>
@@ -763,6 +776,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>
 <translation id="8372477600026034341">Tilleggsverter</translation>
 <translation id="8378855320830505539">Region</translation>
+<translation id="8382302752385457774">Eget varemerke</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8422748173858722634">IMEI</translation>
@@ -854,6 +868,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Venstre Shift</translation>
+<translation id="9148058034647219655">Avslutt</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="917720651393141712">Test</translation>

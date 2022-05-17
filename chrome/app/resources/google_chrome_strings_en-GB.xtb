@@ -116,6 +116,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3169523567916669830">During the trials, you can see and remove topics of interest sites used to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
+<translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
@@ -301,7 +302,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
-<translation id="7748512868279796735">The following accounts are available for this Chrome profile</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="7781002470561365167">There is a new version of Google Chrome available.</translation>
