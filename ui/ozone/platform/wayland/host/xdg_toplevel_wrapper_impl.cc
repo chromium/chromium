@@ -111,16 +111,20 @@ bool XDGToplevelWrapperImpl::Initialize() {
       }
 
       if (features::IsWaylandScreenCoordinatesEnabled()) {
-        DCHECK(ProtocolSupportsScreenCoordinates());
-        zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
+        if (SupportsScreenCoordinates()) {
+          zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
 
-        static constexpr zaura_toplevel_listener aura_toplevel_listener = {
-            &ConfigureAuraTopLevel,
-            &OnOriginChange,
-        };
+          static constexpr zaura_toplevel_listener aura_toplevel_listener = {
+              &ConfigureAuraTopLevel,
+              &OnOriginChange,
+          };
 
-        zaura_toplevel_add_listener(aura_toplevel_.get(),
-                                    &aura_toplevel_listener, this);
+          zaura_toplevel_add_listener(aura_toplevel_.get(),
+                                      &aura_toplevel_listener, this);
+        } else {
+          LOG(WARNING) << "Server implementation of wayland is incompatible, "
+                          "WaylandScreenCoordinatesEnabled has no effect.";
+        }
       }
     }
   }
@@ -370,7 +374,7 @@ void XDGToplevelWrapperImpl::Unlock() {
 }
 
 void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
-  DCHECK(ProtocolSupportsScreenCoordinates());
+  DCHECK(SupportsScreenCoordinates());
   uint32_t id = wayland_window_->GetPreferredEnteredOutputId();
   auto* output = connection_->wayland_output_manager()->GetOutput(id);
   if (!output) {
@@ -395,7 +399,7 @@ void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
   }
 }
 
-bool XDGToplevelWrapperImpl::ProtocolSupportsScreenCoordinates() {
+bool XDGToplevelWrapperImpl::SupportsScreenCoordinates() const {
   return aura_toplevel_ &&
          zaura_toplevel_get_version(aura_toplevel_.get()) >=
              ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
