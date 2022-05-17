@@ -49,7 +49,7 @@ const CGPoint kPointOnLink = {5.0, 2.0};
 const CGPoint kPointOnImage = {50.0, 10.0};
 // A point in the web view's coordinate space within the document bounds but not
 // on the image returned by |GetHtmlForImage()|.
-const CGPoint kPointOutsideImage = {50.0, 75.0};
+const CGPoint kPointOutsideImage = {50.0, 100.0};
 
 // A point in the web view's coordinate space on the svg link returned by
 // |GetHtmlForSvgLink()| and |GetHtmlForSvgXlink()|.
