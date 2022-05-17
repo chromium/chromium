@@ -453,7 +453,6 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void OnDataExportDone(base::FilePath path, std::set<SupportToolError> errors);
 
   std::set<feedback::PIIType> selected_pii_to_keep_;
-  base::Time data_collection_time_;
   base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -580,9 +579,6 @@ void SupportToolMessageHandler::HandleStartDataCollection(
                             *issue_details->FindString("emailAddress"),
                             *issue_details->FindString("issueDescription"),
                             GetIncludedDataCollectorTypes(data_collectors));
-  // TODO(b/214196981): Add data collection timestamp as a class field to
-  // SupportToolHandler.
-  data_collection_time_ = base::Time::NowFromSystemTime();
   this->handler_->CollectSupportData(
       base::BindOnce(&SupportToolMessageHandler::OnDataCollectionDone,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -635,8 +631,8 @@ void SupportToolMessageHandler::HandleStartDataExport(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE,
       /*title=*/std::u16string(),
       /*default_path=*/
-      GetDefaultFileToExport(suggested_path, handler_->GetCaseID(),
-                             data_collection_time_),
+      GetDefaultFileToExport(suggested_path, handler_->GetCaseId(),
+                             handler_->GetDataCollectionTimestamp()),
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,

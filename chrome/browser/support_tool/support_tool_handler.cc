@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/browser/support_tool/support_packet_metadata.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,9 +66,7 @@ SupportToolHandler::SupportToolHandler()
 SupportToolHandler::SupportToolHandler(std::string case_id,
                                        std::string email_address,
                                        std::string issue_description)
-    : case_id_(case_id),
-      email_address_(email_address),
-      issue_description_(issue_description),
+    : metadata_(case_id, email_address, issue_description),
       task_runner_for_redaction_tool_(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::USER_VISIBLE,
@@ -95,8 +94,12 @@ void SupportToolHandler::CleanUp() {
   }
 }
 
-const std::string& SupportToolHandler::GetCaseID() {
-  return case_id_;
+const std::string& SupportToolHandler::GetCaseId() {
+  return metadata_.GetCaseId();
+}
+
+const base::Time& SupportToolHandler::GetDataCollectionTimestamp() {
+  return data_collection_timestamp_;
 }
 
 void SupportToolHandler::AddDataCollector(
@@ -119,6 +122,8 @@ void SupportToolHandler::CollectSupportData(
       data_collectors_.size(),
       base::BindOnce(&SupportToolHandler::OnAllDataCollected,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  data_collection_timestamp_ = base::Time::NowFromSystemTime();
 
   for (auto& data_collector : data_collectors_) {
     // DataCollectors will use `redaction_tool_container_` on
@@ -145,16 +150,29 @@ void SupportToolHandler::OnDataCollected(
   std::move(barrier_closure).Run();
 }
 
+void SupportToolHandler::AddDetectedPII(const PIIMap& pii_map) {
+  for (auto& pii_data : pii_map) {
+    detected_pii_[pii_data.first].insert(pii_data.second.begin(),
+                                         pii_data.second.end());
+  }
+}
+
 void SupportToolHandler::OnAllDataCollected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& data_collector : data_collectors_) {
-    const PIIMap& collected = data_collector->GetDetectedPII();
-    for (auto& pii_data : collected) {
-      detected_pii_[pii_data.first].insert(pii_data.second.begin(),
-                                           pii_data.second.end());
-    }
+    AddDetectedPII(data_collector->GetDetectedPII());
   }
 
+  metadata_.InsertErrors(collected_errors_);
+
+  metadata_.PopulateMetadataContents(
+      data_collection_timestamp_, data_collectors_,
+      base::BindOnce(&SupportToolHandler::OnMetadataContentsPopulated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SupportToolHandler::OnMetadataContentsPopulated() {
+  AddDetectedPII(metadata_.GetPII());
   std::move(on_data_collection_done_callback_)
       .Run(detected_pii_, collected_errors_);
 }
@@ -197,7 +215,8 @@ void SupportToolHandler::ExportIntoTempDir(
   base::RepeatingClosure export_data_barrier_closure = base::BarrierClosure(
       data_collectors_.size(),
       base::BindOnce(&SupportToolHandler::OnAllDataCollectorsDoneExporting,
-                     weak_ptr_factory_.GetWeakPtr(), temp_dir_, target_path));
+                     weak_ptr_factory_.GetWeakPtr(), temp_dir_, target_path,
+                     pii_types_to_keep));
 
   for (auto& data_collector : data_collectors_) {
     data_collector->ExportCollectedDataWithPII(
@@ -221,11 +240,23 @@ void SupportToolHandler::OnDataCollectorDoneExporting(
 
 void SupportToolHandler::OnAllDataCollectorsDoneExporting(
     base::FilePath tmp_path,
-    base::FilePath path) {
+    base::FilePath target_path,
+    std::set<feedback::PIIType> pii_types_to_keep) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Archive the contents in the `tmp_path` into `path` in a zip file.
+  metadata_.InsertErrors(collected_errors_);
+  metadata_.WriteMetadataFile(
+      tmp_path, pii_types_to_keep,
+      base::BindOnce(&SupportToolHandler::OnMetadataFileWritten,
+                     weak_ptr_factory_.GetWeakPtr(), tmp_path, target_path));
+}
+
+void SupportToolHandler::OnMetadataFileWritten(base::FilePath tmp_path,
+                                               base::FilePath target_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Archive the contents in the `tmp_path` into `target_path` in a zip file.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&ZipOutput, tmp_path, path),
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ZipOutput, tmp_path, target_path),
       base::BindOnce(&SupportToolHandler::OnDataExportDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
