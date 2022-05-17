@@ -24,6 +24,7 @@ import org.chromium.ui.dragdrop.DropDataContentProvider;
  */
 public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
+    private static final String PARAM_DROP_IN_CHROME = "DropInChrome";
     private final TabImpl mTab;
 
     /**
@@ -44,6 +45,10 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
                     DropDataContentProvider.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
             DropDataContentProvider.setClearCachedDataIntervalMs(delay);
+
+            boolean dropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
+            getDragAndDropDelegate().enableDropInChrome(dropInChrome);
         }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();

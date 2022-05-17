@@ -44,6 +44,25 @@ public class ContentFeatureList {
                 featureName, paramName, defaultValue);
     }
 
+    /**
+     * Returns a field trial param as a boolean for the specified feature.
+     *
+     * @param featureName The name of the feature to retrieve a param for.
+     * @param paramName The name of the param for which to get as a boolean.
+     * @param defaultValue The boolean value to use if the param is not available.
+     * @return The parameter value as a boolean. Default value if the feature does not exist or the
+     *         specified parameter does not exist or its string value is neither "true" nor "false".
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName, boolean defaultValue) {
+        String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
+        if (testValue != null) return Boolean.valueOf(testValue);
+        if (FeatureList.hasTestFeatures()) return defaultValue;
+        assert FeatureList.isInitialized();
+        return ContentFeatureListImpl.getFieldTrialParamByFeatureAsBoolean(
+                featureName, paramName, defaultValue);
+    }
+
     // Alphabetical:
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
 

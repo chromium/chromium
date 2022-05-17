@@ -69,6 +69,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private int mShadowWidth;
     private int mShadowHeight;
     private boolean mIsDragStarted;
+    private boolean mDropInChrome;
 
     /** Whether the current drop has happened on top of the view this object tracks.  */
     private boolean mIsDropOnView;
@@ -111,6 +112,11 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 createDragShadowBuilder(containerView.getContext(), shadowImage,
                         dropData.hasImage(), windowWidth, windowHeight),
                 null, buildFlags(dropData));
+    }
+
+    @Override
+    public void enableDropInChrome(boolean dropInChrome) {
+        mDropInChrome = dropInChrome;
     }
 
     // Implements DragStateTracker

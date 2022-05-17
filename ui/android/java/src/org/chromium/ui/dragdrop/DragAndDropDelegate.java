@@ -13,4 +13,7 @@ import android.view.View;
 public interface DragAndDropDelegate {
     /** @see View#startDragAndDrop */
     boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
+
+    /** Enable or disable the data handling for drop in Chrome */
+    default void enableDropInChrome(boolean dropInChrome) {}
 }
