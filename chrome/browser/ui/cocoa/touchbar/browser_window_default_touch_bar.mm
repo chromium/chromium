@@ -90,7 +90,6 @@ NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
 }
 
 // Creates an NSButton for the touch bar using an existing NSImage.
-API_AVAILABLE(macos(10.12.2))
 NSButton* CreateTouchBarButtonWithImage(NSImage* image,
                                         BrowserWindowDefaultTouchBar* owner,
                                         int command,
@@ -104,7 +103,6 @@ NSButton* CreateTouchBarButtonWithImage(NSImage* image,
 }
 
 // Creates an NSButton for the touch bar using a vector icon.
-API_AVAILABLE(macos(10.12.2))
 NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
                                BrowserWindowDefaultTouchBar* owner,
                                int command,
@@ -140,12 +138,11 @@ ui::TouchBarAction TouchBarActionFromCommand(int command) {
 
 // A class registered for C++ notifications. This is used to detect changes in
 // the profile preferences and the back/forward commands.
-class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
-    : public CommandObserver,
-      public BrowserListObserver,
-      public BookmarkTabHelperObserver,
-      public TabStripModelObserver,
-      public content::WebContentsObserver {
+class TouchBarNotificationBridge : public CommandObserver,
+                                   public BrowserListObserver,
+                                   public BookmarkTabHelperObserver,
+                                   public TabStripModelObserver,
+                                   public content::WebContentsObserver {
  public:
   TouchBarNotificationBridge(BrowserWindowDefaultTouchBar* owner,
                              Browser* browser)

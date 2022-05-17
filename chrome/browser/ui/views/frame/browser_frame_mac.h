@@ -27,7 +27,6 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   BrowserFrameMac(const BrowserFrameMac&) = delete;
   BrowserFrameMac& operator=(const BrowserFrameMac&) = delete;
 
-  API_AVAILABLE(macos(10.12.2))
   BrowserWindowTouchBarController* GetTouchBarController() const;
 
   // Overridden from views::NativeWidgetMac:

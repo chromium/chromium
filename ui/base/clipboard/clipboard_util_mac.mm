@@ -98,14 +98,6 @@ UniquePasteboard::UniquePasteboard()
 
 UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
-
-  if (base::mac::IsOS10_12()) {
-    // On 10.12, move ownership to the autorelease pool rather than possibly
-    // triggering -[NSPasteboard dealloc] here. This is a speculative workaround
-    // for https://crbug.com/877979 where a call to __CFPasteboardDeallocate
-    // from here is triggering "Semaphore object deallocated while in use".
-    pasteboard_.autorelease();
-  }
 }
 
 // static

@@ -126,10 +126,7 @@ void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
 }
 
 bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
-  // In OSX 10.11, caption buttons always get drawn on the left side of the
-  // browser frame instead of the leading edge. This causes a discrepancy in
-  // RTL mode.
-  return !base::i18n::IsRTL() || base::mac::IsAtLeastOS10_12();
+  return true;
 }
 
 gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(

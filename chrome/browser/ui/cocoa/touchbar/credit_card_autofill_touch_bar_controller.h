@@ -19,17 +19,16 @@ class AutofillPopupController;
 - (instancetype)initWithController:
     (autofill::AutofillPopupController*)controller;
 
-- (NSTouchBar*)makeTouchBar API_AVAILABLE(macos(10.12.2));
+- (NSTouchBar*)makeTouchBar;
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
-      makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
-    API_AVAILABLE(macos(10.12.2));
+      makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier;
 
 @end
 
 @interface CreditCardAutofillTouchBarController (ExposedForTesting)
 
-- (NSButton*)createCreditCardButtonAtRow:(int)row API_AVAILABLE(macos(10.12.2));
+- (NSButton*)createCreditCardButtonAtRow:(int)row;
 - (void)acceptCreditCard:(id)sender;
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup;
 

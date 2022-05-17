@@ -22,30 +22,28 @@
 
 namespace {
 
-// Specifies whether to skip certain test cases on specific platforms. This is
-// a weak-typed bitfield emoji and is passed as an int so that values can be
+// Specifies whether to skip certain test cases on specific platforms. This is a
+// weak-typed bitfield emoji and is passed as an int so that values can be
 // combined.
 //
 // Whether a single grapheme composed of multiple glyphs/codepoints correctly
-// displays on a system is dependent on the OS version and font. Some older
-// OSes (specifically Win7 and OSX10.11 or earlier) do not support some of the
-// more complex test graphemes we are using to test elision at grapheme
-// boundaries.
+// displays on a system is dependent on the OS version and font. Some older OSes
+// (specifically Win7) do not support some of the more complex test graphemes we
+// are using to test elision at grapheme boundaries.
 //
 // On systems which do not support a glyph or grapheme, a multi-codepoint
 // grapheme may appear as multiple glyphs. It's therefore possible for a test
 // that should have elided or shown an entire grapheme to display only one of
-// the incorrect [sub]glyphs, causing test output to be different than
-// expected. Rather than not testing these complex graphemes, we simply disable
-// these test cases on systems we know do not support them.
+// the incorrect [sub]glyphs, causing test output to be different than expected.
+// Rather than not testing these complex graphemes, we simply disable these test
+// cases on systems we know do not support them.
 enum OmitOnPlatforms {
   kRunOnAllPlatforms = 0,
   kOmitOnWin7 = 1 << 0,
-  kOmitOnOSX_10_11 = 1 << 1,
 
   // TODO(crbug/1267013): Remove once emoji (including modified/joined emoji)
   // are supported on Fuchsia.
-  kOmitOnFuchsia = 1 << 2,
+  kOmitOnFuchsia = 1 << 1,
 };
 
 bool ShouldOmitOnPlatform(int omit_on) {
@@ -54,9 +52,6 @@ bool ShouldOmitOnPlatform(int omit_on) {
     return base::win::OSInfo::GetInstance()->version() <=
            base::win::Version::WIN7;
   }
-#elif BUILDFLAG(IS_MAC)
-  if (omit_on & kOmitOnOSX_10_11)
-    return base::mac::IsOS10_11();
 #elif BUILDFLAG(IS_FUCHSIA)
   if (omit_on & kOmitOnFuchsia)
     return true;
@@ -303,22 +298,22 @@ const ElideTestParams kElideTestParams[]{
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 4, 10, 3,
      u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"\nefg",
      "First line ends with joined emoji, full string returned.",
-     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
+     kOmitOnWin7 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efgh", 4, 10, 3,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE, u"fgh"),
      "First line ends with joined emoji, string cut in middle (1).",
-     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
+     kOmitOnWin7 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"defghi", 5, 11, 4,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"d", u"fghi"),
      "First line ends with joined emoji, string cut in middle (2).",
-     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
+     kOmitOnWin7 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Joined emoji fully elided between lines."},
     {u"abcde" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE
          MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg",
      4, 4, 9, ELLIPSIZE(u"abcd", MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg"),
      "Joined emoji in sequence; first emoji is elided but not second.",
-     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
+     kOmitOnWin7 | kOmitOnFuchsia},
     // These test the combined function of the Elide() method, including the
     // intelligent overlapping and positioning of lines and extensions.
     {u"abcdef", 5, 5, 4, u"abcde\nf", "Wrap at last possible location."},

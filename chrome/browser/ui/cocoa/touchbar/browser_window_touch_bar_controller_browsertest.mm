@@ -49,7 +49,6 @@
 //
 // To get around these problems we store the flag and the swizzler in what are
 // essentially class variables so they are accessible from anywhere.
-API_AVAILABLE(macos(10.12.2))
 @interface TouchBarInvalidationWatcher : NSObject
 // Returns a new (non-autoreleased) TouchBarInvalidationWatcher.
 + (instancetype)newWatcher;
@@ -102,7 +101,6 @@ API_AVAILABLE(macos(10.12.2))
 //
 // See the explanation at the top of TouchBarInvalidationWatcher for info on
 // why this class is structured the way it is.
-API_AVAILABLE(macos(10.12.2))
 @interface PageReloadWatcher : NSObject
 // Returns a new (non-autoreleased) PageReloadWatcher.
 + (instancetype)newWatcher;
@@ -161,7 +159,6 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
   BrowserWindowTouchBarControllerTest& operator=(
       const BrowserWindowTouchBarControllerTest&) = delete;
 
-  API_AVAILABLE(macos(10.12.2))
   NSTouchBar* MakeTouchBar() {
     auto* delegate =
         static_cast<NSObject<WindowTouchBarDelegate>*>(native_window());
@@ -172,7 +169,6 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
     return browser()->window()->GetNativeWindow().GetNativeNSWindow();
   }
 
-  API_AVAILABLE(macos(10.12.2))
   BrowserWindowTouchBarController* browser_touch_bar_controller() const {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(native_window());
@@ -188,157 +184,145 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
 
 // Test if the touch bar gets invalidated when the active tab is changed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, TabChanges) {
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
-        [TouchBarInvalidationWatcher newWatcher]);
+  base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
+      [TouchBarInvalidationWatcher newWatcher]);
 
-    EXPECT_FALSE(browser_touch_bar_controller());
-    MakeTouchBar();
-    EXPECT_TRUE(browser_touch_bar_controller());
+  EXPECT_FALSE(browser_touch_bar_controller());
+  MakeTouchBar();
+  EXPECT_TRUE(browser_touch_bar_controller());
 
-    auto* current_touch_bar = [native_window() touchBar];
-    EXPECT_TRUE(current_touch_bar);
+  auto* current_touch_bar = [native_window() touchBar];
+  EXPECT_TRUE(current_touch_bar);
 
-    // Insert a new tab in the foreground. The window should invalidate its
-    // touch bar as a result.
-    [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
-    ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
-    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  // Insert a new tab in the foreground. The window should invalidate its
+  // touch bar as a result.
+  [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
+  ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
 
-    EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
+  EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
 
-    // Update the touch bar.
-    [native_window() touchBar];
+  // Update the touch bar.
+  [native_window() touchBar];
 
-    // Activating the original tab should invalidate the touch bar.
-    [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
-    ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
-    browser()->tab_strip_model()->ActivateTabAt(0);
+  // Activating the original tab should invalidate the touch bar.
+  [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
+  ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
+  browser()->tab_strip_model()->ActivateTabAt(0);
 
-    EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
-  }
+  EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
 }
 
 // Test if the touch bar receives a notification that the current tab is
 // loading.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest, PageReload) {
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<PageReloadWatcher> pageReloadWatcher(
-        [PageReloadWatcher newWatcher]);
+  base::scoped_nsobject<PageReloadWatcher> pageReloadWatcher(
+      [PageReloadWatcher newWatcher]);
 
-    EXPECT_FALSE(browser_touch_bar_controller());
-    MakeTouchBar();
-    EXPECT_TRUE(browser_touch_bar_controller());
+  EXPECT_FALSE(browser_touch_bar_controller());
+  MakeTouchBar();
+  EXPECT_TRUE(browser_touch_bar_controller());
 
-    // Make sure the touch bar exists for the window.
-    auto* current_touch_bar = [native_window() touchBar];
-    EXPECT_TRUE(current_touch_bar);
+  // Make sure the touch bar exists for the window.
+  auto* current_touch_bar = [native_window() touchBar];
+  EXPECT_TRUE(current_touch_bar);
 
-    // We can't just ask the BrowserWindowDefaultTouchBar for the value of the
-    // page loading flag like we can for the tab bookmark. The reload my happen
-    // so fast that the flag may be reset to NO by the time we check it. We
-    // have to use swizzling instead.
-    [PageReloadWatcher pageIsLoadingFlag] = NO;
-    ASSERT_FALSE([PageReloadWatcher pageIsLoadingFlag]);
+  // We can't just ask the BrowserWindowDefaultTouchBar for the value of the
+  // page loading flag like we can for the tab bookmark. The reload my happen
+  // so fast that the flag may be reset to NO by the time we check it. We
+  // have to use swizzling instead.
+  [PageReloadWatcher pageIsLoadingFlag] = NO;
+  ASSERT_FALSE([PageReloadWatcher pageIsLoadingFlag]);
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html, <html><body></body></html>")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html, <html><body></body></html>")));
 
-    EXPECT_TRUE([PageReloadWatcher pageIsLoadingFlag]);
-  }
+  EXPECT_TRUE([PageReloadWatcher pageIsLoadingFlag]);
 }
 
 // Test if the touch bar receives a notification that the current tab has been
 // bookmarked.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
                        BookmarkCurrentTab) {
-  if (@available(macOS 10.12.2, *)) {
-    EXPECT_FALSE(browser_touch_bar_controller());
-    MakeTouchBar();
-    EXPECT_TRUE(browser_touch_bar_controller());
+  EXPECT_FALSE(browser_touch_bar_controller());
+  MakeTouchBar();
+  EXPECT_TRUE(browser_touch_bar_controller());
 
-    // Make sure the touch bar exists for the window.
-    auto* current_touch_bar = [native_window() touchBar];
-    EXPECT_TRUE(current_touch_bar);
-    BrowserWindowDefaultTouchBar* touch_bar_delegate =
-        base::mac::ObjCCastStrict<BrowserWindowDefaultTouchBar>(
-            [current_touch_bar delegate]);
-    EXPECT_FALSE([touch_bar_delegate isStarred]);
+  // Make sure the touch bar exists for the window.
+  auto* current_touch_bar = [native_window() touchBar];
+  EXPECT_TRUE(current_touch_bar);
+  BrowserWindowDefaultTouchBar* touch_bar_delegate =
+      base::mac::ObjCCastStrict<BrowserWindowDefaultTouchBar>(
+          [current_touch_bar delegate]);
+  EXPECT_FALSE([touch_bar_delegate isStarred]);
 
-    chrome::BookmarkCurrentTab(browser());
+  chrome::BookmarkCurrentTab(browser());
 
-    EXPECT_TRUE([touch_bar_delegate isStarred]);
-  }
+  EXPECT_TRUE([touch_bar_delegate isStarred]);
 }
 
 // Tests if the touch bar's search button updates if the default search engine
 // has changed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
                        SearchEngineChanges) {
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
-        [TouchBarInvalidationWatcher newWatcher]);
+  base::scoped_nsobject<TouchBarInvalidationWatcher> invalidationWatcher(
+      [TouchBarInvalidationWatcher newWatcher]);
 
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    DCHECK(prefs);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  DCHECK(prefs);
 
-    EXPECT_FALSE(browser_touch_bar_controller());
-    MakeTouchBar();
+  EXPECT_FALSE(browser_touch_bar_controller());
+  MakeTouchBar();
 
-    // Force the window to create the touch bar.
-    [native_window() touchBar];
-    NSString* orig_search_button_title =
-        [[[browser_touch_bar_controller() defaultTouchBar] searchButton] title];
-    EXPECT_TRUE(orig_search_button_title);
+  // Force the window to create the touch bar.
+  [native_window() touchBar];
+  NSString* orig_search_button_title =
+      [[[browser_touch_bar_controller() defaultTouchBar] searchButton] title];
+  EXPECT_TRUE(orig_search_button_title);
 
-    // Change the default search engine.
-    [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
-    ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
-    std::unique_ptr<TemplateURLData> data =
-        GenerateDummyTemplateURLData("poutine");
-    prefs->Set(DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-               *TemplateURLDataToDictionary(*data));
+  // Change the default search engine.
+  [TouchBarInvalidationWatcher touchBarInvalidFlag] = NO;
+  ASSERT_FALSE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
+  std::unique_ptr<TemplateURLData> data =
+      GenerateDummyTemplateURLData("poutine");
+  prefs->Set(DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+             *TemplateURLDataToDictionary(*data));
 
-    // Confirm the touch bar was invalidated.
-    EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
+  // Confirm the touch bar was invalidated.
+  EXPECT_TRUE([TouchBarInvalidationWatcher touchBarInvalidFlag]);
 
-    // Ask the window again for its touch bar. Previously, changes like updates
-    // to the default search engine would completely regenerate the touch bar.
-    // That's expensive (view creation, autolayout, etc.). Instead we now retain
-    // the original touch bar and expect touch bar invalidation to force an
-    // update of the search item.
-    [native_window() touchBar];
-    EXPECT_FALSE([orig_search_button_title
-        isEqualToString:[[[browser_touch_bar_controller() defaultTouchBar]
-                            searchButton] title]]);
-  }
+  // Ask the window again for its touch bar. Previously, changes like updates
+  // to the default search engine would completely regenerate the touch bar.
+  // That's expensive (view creation, autolayout, etc.). Instead we now retain
+  // the original touch bar and expect touch bar invalidation to force an
+  // update of the search item.
+  [native_window() touchBar];
+  EXPECT_FALSE([orig_search_button_title
+      isEqualToString:[[[browser_touch_bar_controller() defaultTouchBar]
+                          searchButton] title]]);
 }
 
 // Tests to see if the touch bar's bookmark tab helper observer gets removed
 // when the touch bar is destroyed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
                        DestroyNotificationBridge) {
-  if (@available(macOS 10.12.2, *)) {
-    MakeTouchBar();
+  MakeTouchBar();
 
-    ASSERT_TRUE([browser_touch_bar_controller() defaultTouchBar]);
+  ASSERT_TRUE([browser_touch_bar_controller() defaultTouchBar]);
 
-    BookmarkTabHelperObserver* observer =
-        [[browser_touch_bar_controller() defaultTouchBar] bookmarkTabObserver];
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
-    browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
+  BookmarkTabHelperObserver* observer =
+      [[browser_touch_bar_controller() defaultTouchBar] bookmarkTabObserver];
+  std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  browser()->tab_strip_model()->AppendWebContents(std::move(contents), true);
 
-    BookmarkTabHelper* tab_helper = BookmarkTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    ASSERT_TRUE(tab_helper);
-    EXPECT_TRUE(tab_helper->HasObserver(observer));
+  BookmarkTabHelper* tab_helper = BookmarkTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(tab_helper);
+  EXPECT_TRUE(tab_helper->HasObserver(observer));
 
-    [[browser_touch_bar_controller() defaultTouchBar] setBrowser:nullptr];
-    EXPECT_FALSE(tab_helper->HasObserver(observer));
-  }
+  [[browser_touch_bar_controller() defaultTouchBar] setBrowser:nullptr];
+  EXPECT_FALSE(tab_helper->HasObserver(observer));
 }

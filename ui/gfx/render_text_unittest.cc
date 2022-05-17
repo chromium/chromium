@@ -6763,13 +6763,6 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmojiVariationSelectors) {
   EXPECT_EQ(gfx::Range(1, 1), render_text->selection());
   EXPECT_EQ(1 * kGlyphWidth, render_text->GetUpdatedCursorBounds().x());
 
-#if BUILDFLAG(IS_APPLE)
-  // Early versions of macOS provide a tofu glyph for the variation selector.
-  // Bail out early except on 10.12 and above.
-  if (base::mac::IsAtMostOS10_11())
-    return;
-#endif
-
   // TODO(865709): make this work on Android.
 #if !BUILDFLAG(IS_ANDROID)
   // Jump over the telephone: two codepoints, but a single glyph.
