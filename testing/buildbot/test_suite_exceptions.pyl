@@ -601,9 +601,7 @@
         # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
         # crbug.com/865455
         'swarming': {
-          # Fully MSAN instrumented ANGLE + SwiftShader Vulkan libraries offer more thorough coverage, at the cost of further slowdowns
-          # crbug.com/1313907
-          'shards': 60,
+          'shards': 48,
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
