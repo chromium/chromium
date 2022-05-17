@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import android.app.Activity;
 import android.os.Build;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -24,6 +25,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -62,23 +64,26 @@ public class SnackbarTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
+    private static FrameLayout sMainParent;
+    private static FrameLayout sAlternateParent;
     private boolean mDismissed;
 
     @BeforeClass
     public static void setupSuite() {
+        BlankUiTestActivity.setTestLayout(R.layout.test_snackbar_manager_activity_layout);
         activityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sActivity = activityTestRule.getActivity();
+            sMainParent = sActivity.findViewById(android.R.id.content);
+            sAlternateParent = sActivity.findViewById(R.id.alternate_parent);
             SnackbarManager.setDurationForTesting(1000);
         });
     }
 
     @Before
     public void setupTest() {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mManager = new SnackbarManager(
-                    sActivity, sActivity.findViewById(android.R.id.content), null);
-        });
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> { mManager = new SnackbarManager(sActivity, sMainParent, null); });
     }
 
     @Test
@@ -203,6 +208,82 @@ public class SnackbarTest {
                     SnackbarManager.getDefaultA11yDurationForTesting(),
                     mManager.getDuration(snackbar));
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testOverrideParent_BeforeShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.overrideParent(sAlternateParent);
+            mManager.showSnackbar(snackbar);
+        });
+        pollSnackbarCondition("Snackbar's parent should not have been overridden, but was.",
+                ()
+                        -> mManager.isShowing()
+                        && mManager.getCurrentSnackbarViewForTesting().mParent == sMainParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testOverrideParent_WhileShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.showSnackbar(snackbar);
+            mManager.overrideParent(sAlternateParent);
+        });
+        pollSnackbarCondition("Snackbar's parent should have been overridden, but wasn't.",
+                ()
+                        -> mManager.isShowing()
+                        && mManager.getCurrentSnackbarViewForTesting().mParent == sAlternateParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetParent_BeforeShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.setParentView(sAlternateParent);
+            mManager.showSnackbar(snackbar);
+        });
+        pollSnackbarCondition("Snackbar's parent should have been overridden, but wasn't.",
+                ()
+                        -> mManager.isShowing()
+                        && mManager.getCurrentSnackbarViewForTesting().mParent == sAlternateParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetParent_WhileShowing() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.showSnackbar(snackbar);
+            mManager.setParentView(sAlternateParent);
+        });
+        pollSnackbarCondition("Snackbar's parent should have been overridden, but wasn't.",
+                ()
+                        -> mManager.isShowing()
+                        && mManager.getCurrentSnackbarViewForTesting().mParent == sAlternateParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetParent_Null() {
+        final Snackbar snackbar = Snackbar.make(
+                "stack", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.setParentView(sAlternateParent);
+            mManager.showSnackbar(snackbar);
+            mManager.setParentView(null);
+        });
+        pollSnackbarCondition("Snackbar's parent should not have been overridden, but was.",
+                ()
+                        -> mManager.isShowing()
+                        && mManager.getCurrentSnackbarViewForTesting().mParent == sMainParent);
     }
 
     void pollSnackbarCondition(String message, Supplier<Boolean> condition) {

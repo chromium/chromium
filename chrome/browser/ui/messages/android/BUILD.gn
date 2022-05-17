@@ -77,11 +77,13 @@ java_library("junit") {
 
 android_library("javatests") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.messages.test"
 
   sources = [ "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarTest.java" ]
 
   deps = [
     ":java",
+    ":test_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/util:java",
@@ -94,4 +96,10 @@ android_library("javatests") {
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
   ]
+}
+
+android_resources("test_java_resources") {
+  testonly = true
+
+  sources = [ "test/java/res/layout/test_snackbar_manager_activity_layout.xml" ]
 }

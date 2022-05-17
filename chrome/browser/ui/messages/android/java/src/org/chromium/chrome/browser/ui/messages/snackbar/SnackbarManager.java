@@ -341,4 +341,12 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
     public Snackbar getCurrentSnackbarForTesting() {
         return mSnackbars.getCurrent();
     }
+
+    /**
+     * @return The currently showing snackbar view. For testing only.
+     */
+    @VisibleForTesting
+    public SnackbarView getCurrentSnackbarViewForTesting() {
+        return mView;
+    }
 }
