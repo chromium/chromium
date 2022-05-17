@@ -4207,44 +4207,6 @@
       'swarming_containment_auto',
     ],
     'machines': {
-      # BEGIN Fake builder used as mirror targets for ANGLE's GPU tryservers
-      'ANGLE GPU Android Release (Nexus 5X)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'marshmallow',
-          'bullhead',
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_gtests',
-          'gpu_telemetry_tests': 'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-        },
-      },
-      'ANGLE GPU Linux Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_linux_gtests',
-          'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
-        },
-      },
-      'ANGLE GPU Linux Release (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_linux_gtests',
-          'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
-        },
-      },
-      # END Fake builder used as mirror targets for ANGLE's GPU tryservers
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',
@@ -4370,12 +4332,6 @@
       },
       'GPU FYI Android arm Builder': {},
       'GPU FYI Android arm64 Builder': {},
-      'GPU FYI Fuchsia Builder' : {
-        'additional_compile_targets': [
-          'angle_end2end_tests',
-          'angle_unittests',
-        ],
-      },
       'GPU FYI Linux Builder' : {},
       'GPU FYI Linux Builder (dbg)' : {},
       'GPU FYI Mac Builder' : {},

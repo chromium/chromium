@@ -6151,19 +6151,6 @@
       'gpu_angle_unit_gtests',
     ],
 
-    'gpu_angle_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
-    ],
-
-    'gpu_angle_linux_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
-      'gpu_angle_white_box_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_gles2_conform_gtests',
-    ],
-
     'gpu_angle_linux_intel_gtests': [
       'gpu_angle_deqp_gles2_gl_gtests',
       'gpu_angle_end2end_gtests',

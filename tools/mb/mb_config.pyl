@@ -513,7 +513,6 @@
 
     'chromium.gpu.fyi': {
       # These all use the 'trybot' mixins to ensure that dcheck is on.
-      'ANGLE GPU Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient',
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
@@ -962,12 +961,9 @@
     'tryserver.chromium.angle': {
       'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild',
       'android-angle-try': 'angle_deqp_android_release_trybot_arm64',
-      'android_angle_rel_ng': 'gpu_tests_android_release_trybot_arm64',
-      'fuchsia-angle-rel': 'gpu_fyi_tests_release_trybot_fuchsia',
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot',
-      'linux-angle-rel': 'gpu_fyi_tests_release_trybot',
       'linux-angle-try': 'angle_deqp_release_trybot',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
@@ -2449,10 +2445,6 @@
 
     'gpu_fyi_tests_release_trybot_asan': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'asan', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_fuchsia': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'fuchsia', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_reclient': [

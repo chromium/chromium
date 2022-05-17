@@ -35,20 +35,8 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android_angle_rel_ng",
-)
-
-try_.builder(
-    name = "fuchsia-angle-rel",
-)
-
-try_.builder(
     name = "fuchsia-angle-try",
     executable = "recipe:angle_chromium_trybot",
-)
-
-try_.builder(
-    name = "linux-angle-rel",
 )
 
 try_.builder(

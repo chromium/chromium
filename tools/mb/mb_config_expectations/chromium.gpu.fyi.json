@@ -1,18 +1,4 @@
 {
-  "ANGLE GPU Android Release (Nexus 5X)": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true,
-      "use_static_angle": true
-    }
-  },
   "ChromeOS FYI Release (amd64-generic)": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {

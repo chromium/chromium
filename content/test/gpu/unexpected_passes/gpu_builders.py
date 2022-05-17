@@ -44,16 +44,9 @@ class GpuBuilders(builders.Builders):
       # chance of typos being introduced in the repeated trybot names.
       fake_try_builders = {
           # chromium.gpu.fyi
-          'android_angle_rel_ng': [
-              'ANGLE GPU Android Release (Nexus 5X)',
-          ],
           'android_optional_gpu_tests_rel': [
               'Optional Android Release (Nexus 5X)',
               'Optional Android Release (Pixel 4)',
-          ],
-          'linux-angle-rel': [
-              'ANGLE GPU Linux Release (Intel HD 630)',
-              'ANGLE GPU Linux Release (NVIDIA)',
           ],
           'mac_optional_gpu_tests_rel': [
               'Optional Mac Release (Intel)',

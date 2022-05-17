@@ -1597,10 +1597,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # are defined only to be mirrored into trybots, and don't actually
     # exist on any of the waterfalls or consoles.
     return [
-        'GPU FYI Fuchsia Builder',
-        'ANGLE GPU Android Release (Nexus 5X)',
-        'ANGLE GPU Linux Release (Intel HD 630)',
-        'ANGLE GPU Linux Release (NVIDIA)',
         'Optional Android Release (Nexus 5X)',
         'Optional Android Release (Pixel 4)',
         'Optional Linux Release (Intel HD 630)',
