@@ -2128,8 +2128,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"
-    expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time needed to create a lock screen apps profile. This metric
@@ -2141,8 +2141,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Success"
-    units="BooleanSuccess" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="BooleanSuccess" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Boolean indicating whether the lock screen apps profile creation succeeded.
@@ -2153,8 +2153,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.ClearTextItemSize"
-    units="bytes" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="bytes" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The size of a data item stored in the lock screen data item storage using
@@ -2164,8 +2164,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.EncryptedItemSize"
-    units="bytes" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="bytes" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The size of an encrypted data item stored in the lock screen data item
@@ -2175,8 +2175,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.FailedOperationDuration{LockScreenAppDataItemOperation}"
-    units="ms" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time it took to complete a lock screen data item storage
@@ -2189,12 +2189,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.OperationDuration{LockScreenAppDataItemOperation}"
-    units="ms" expires_after="2021-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
-    The amount of time it took to complete a lock screen data item storage
-    operation. Reported only on the operation success.
+    Warning: this histogram was expired from 2021-06-01 to 2022-05-16; data may
+    be missing. The amount of time it took to complete a lock screen data item
+    storage operation. Reported only on the operation success.
     {LockScreenAppDataItemOperation}
   </summary>
   <token key="LockScreenAppDataItemOperation"
@@ -2203,8 +2204,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.DataItemStorage.OperationResult{LockScreenAppDataItemOperation}"
-    enum="LockScreenDataItemOperationResult" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenDataItemOperationResult" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The result of a lock screen data item storage operation returned through
@@ -2215,8 +2216,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.DataItemStorage.RegisteredItemsCount"
-    units="units" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The number of data items saved in the lock screen data item storage per app.
@@ -2226,8 +2227,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AppStatusOnNoteLaunch"
-    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenNoteAppStatusOnLaunch" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Reported when a user attempts to launch a note taking app on the lock
@@ -2239,8 +2240,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.LockScreen.NoteTakingApp.AppWindowLifeTime{LockScreenNoteTakingAppWindowState}"
-    units="ms" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time a lock screen enabled app window spent in a certain state
@@ -2260,8 +2261,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.AvailabilityOnScreenLock"
-    enum="LockScreenActionAvailability" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenActionAvailability" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The note taking action availability state on the lock screen, recorded when
@@ -2270,8 +2271,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.FinalAppSessionState"
-    enum="LockScreenAppSessionState" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenAppSessionState" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The state in which lock screen enabled note taking app was when the note
@@ -2280,8 +2281,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchDurationAtLaunchCancel"
-    units="ms" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount time a lock screen app had been launching when the app launch was
@@ -2291,8 +2292,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestOrdinalNumber"
-    units="units" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Ordinal number of a note taking app launch request from a lock screen within
@@ -2303,8 +2304,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LaunchRequestReason"
-    enum="NewLockScreenNoteRequestType" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="NewLockScreenNoteRequestType" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The user action that launched note taking from the lock screen.
@@ -2312,8 +2313,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenAppUnloaded"
-    enum="LockScreenAppUnloadStatus" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenAppUnloadStatus" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Reported when a note taking app is unloaded from the lock screen apps
@@ -2326,8 +2327,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.LockScreenInstallationDuration"
-    units="ms" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Amount of time needed to install a copy of a lock screen note taking app
@@ -2336,8 +2337,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.NoteTakingExitReason"
-    enum="LockScreenNoteTakingExitReason" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="LockScreenNoteTakingExitReason" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The reason the note taking on lock screen was ended (and lock screen app
@@ -2346,8 +2347,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.ReloadCountOnAppTermination"
-    units="units" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="units" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     Reported when a note taking app is terminated in the lock screen apps
@@ -2358,8 +2359,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToLoadAppWindowContents"
-    units="ms" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    units="ms" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time needed to load a note taking app window contents on the
@@ -2369,8 +2370,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.NoteTakingApp.TimeToShowWindow" units="ms"
-    expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The amount of time needed to launch a note taking app window from the lock
