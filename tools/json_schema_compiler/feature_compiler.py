@@ -395,7 +395,6 @@ def DoesNotHaveAllowlistForHostedApps(value):
   # DO NOT ADD MORE.
   HOSTED_APP_EXCEPTIONS = [
       'B44D08FD98F1523ED5837D78D0A606EA9D6206E5',
-      '2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4',
   ]
 
   allowlist = cpp_list_to_list(value['allowlist'])

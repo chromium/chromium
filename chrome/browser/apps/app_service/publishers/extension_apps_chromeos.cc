@@ -672,7 +672,6 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
 
 void ExtensionAppsChromeOs::OnHideWebStoreIconPrefChanged() {
   UpdateShowInFields(extensions::kWebStoreAppId);
-  UpdateShowInFields(extension_misc::kEnterpriseWebStoreAppId);
 }
 
 void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {

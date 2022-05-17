@@ -991,8 +991,7 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "hosted_app"],
     "allowlist": [
-      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
-      "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
+      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
   },
   "wmDesksPrivate": {

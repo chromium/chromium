@@ -35,9 +35,6 @@ extern const char kDataSaverExtensionId[];
 // The extension id of the Google Docs Offline extension.
 extern const char kDocsOfflineExtensionId[];
 
-// The extension id of the Enterprise Web Store component application.
-extern const char kEnterpriseWebStoreAppId[];
-
 // The extension id of the Google Maps application.
 extern const char kGoogleMapsAppId[];
 

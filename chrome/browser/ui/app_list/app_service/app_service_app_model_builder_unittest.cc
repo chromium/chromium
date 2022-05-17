@@ -442,15 +442,9 @@ TEST_F(ExtensionAppTest, HideWebStore) {
               std::string(extensions::kWebStoreAppId));
   service_->AddExtension(store.get());
 
-  // Install an "enterprise web store" app.
-  scoped_refptr<extensions::Extension> enterprise_store =
-      MakeApp("enterprise_webstore", "0.0", "http://google.com",
-              std::string(extension_misc::kEnterpriseWebStoreAppId));
-  service_->AddExtension(enterprise_store.get());
-
   app_service_test_.SetUp(profile());
 
-  // Web stores should be present in the model.
+  // Web store should be present in the model.
   FakeAppListModelUpdater model_updater1(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder1(controller_.get());
@@ -459,16 +453,14 @@ TEST_F(ExtensionAppTest, HideWebStore) {
       &builder1, base::BindRepeating(&InitAppPosition));
   builder1.Initialize(nullptr, profile_.get(), &model_updater1);
   EXPECT_TRUE(model_updater1.FindItem(store->id()));
-  EXPECT_TRUE(model_updater1.FindItem(enterprise_store->id()));
 
   // Activate the HideWebStoreIcon policy.
   profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, true);
   app_service_test_.FlushMojoCalls();
-  // Now the web stores should not be present anymore.
+  // Now the web store should not be present anymore.
   EXPECT_FALSE(model_updater1.FindItem(store->id()));
-  EXPECT_FALSE(model_updater1.FindItem(enterprise_store->id()));
 
-  // Build a new model; web stores should NOT be present.
+  // Build a new model; web store should NOT be present.
   FakeAppListModelUpdater model_updater2(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder2(controller_.get());
@@ -478,14 +470,12 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   builder2.Initialize(nullptr, profile_.get(), &model_updater2);
   app_service_test_.FlushMojoCalls();
   EXPECT_FALSE(model_updater2.FindItem(store->id()));
-  EXPECT_FALSE(model_updater2.FindItem(enterprise_store->id()));
 
   // Deactivate the HideWebStoreIcon policy again.
   profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, false);
   app_service_test_.FlushMojoCalls();
-  // Now the web stores should have appeared.
+  // Now the web store should have appeared.
   EXPECT_TRUE(model_updater2.FindItem(store->id()));
-  EXPECT_TRUE(model_updater2.FindItem(enterprise_store->id()));
 
   // Destroy scoped callbacks before model builders.
   scoped_callback1.reset();
