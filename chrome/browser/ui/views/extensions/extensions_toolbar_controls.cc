@@ -49,10 +49,6 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
     request_access_button_->UpdateExtensionsRequestingAccess(
         extensions_requesting_access);
     request_access_button_->SetVisible(true);
-
-    // TODO(crbug.com/1239772): This call is made just for testing purposes.
-    // Delete once `ShowHoverCard` is called when the button is hovered.
-    request_access_button_->ShowHoverCard();
   }
 
   ResetLayout();
