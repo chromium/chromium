@@ -357,6 +357,7 @@ void Frame::RenderFallbackContentWithResourceTiming(
 }
 
 bool Frame::IsInFencedFrameTree() const {
+  DCHECK(!IsDetached());
   if (!blink::features::IsFencedFramesEnabled())
     return false;
 
