@@ -34,6 +34,7 @@ extern NSString* const kPlusSymbol;
 extern NSString* const kSearchSymbol;
 extern NSString* const kCheckmarkSymbol;
 extern NSString* const kArrowDownCircleFillSymbol;
+extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpFillSymbol;
 extern NSString* const kCheckMarkCircleFillSymbol;

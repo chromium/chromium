@@ -626,7 +626,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                  });
 
     self.reportIssueAction = CreateOverflowMenuAction(
-        IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningFillSymbol, YES,
+        IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningSymbol, YES,
         kToolsMenuReportAnIssueId, ^{
           [weakSelf reportAnIssue];
         });
