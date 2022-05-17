@@ -4347,13 +4347,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                   /*expected_sellers=*/1);
 }
 
-// TODO(crbug.com/1326214): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TrustedScoringSignals DISABLED_TrustedScoringSignals
-#else
-#define MAYBE_TrustedScoringSignals TrustedScoringSignals
-#endif
-TEST_F(AuctionRunnerTest, MAYBE_TrustedScoringSignals) {
+TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");
 
