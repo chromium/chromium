@@ -4,6 +4,7 @@
     "ref": "refs/branch-heads/4896",
     "chrome_project": "chrome-m100",
     "branch_types": [
-        "desktop-extended-stable"
+        "desktop-extended-stable",
+        "fuchsia-lts"
     ]
 }
