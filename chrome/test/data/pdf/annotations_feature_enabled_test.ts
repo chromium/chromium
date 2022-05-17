@@ -138,10 +138,16 @@ chrome.test.runTests([
 
 
     // Need to expand to use this color.
-    const highlighterOptions = viewerAnnotationsBar.shadowRoot!.querySelector(
-        '#highlighter viewer-pen-options')!;
-    highlighterOptions.shadowRoot!
-        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
+    const highlighterOptions =
+        viewerAnnotationsBar.$.highlighter.querySelector('viewer-pen-options');
+    chrome.test.assertTrue(!!highlighterOptions);
+    viewerAnnotationsBar.$.highlighter.click();
+    const collapsedColor =
+        highlighterOptions.shadowRoot!.querySelector<HTMLInputElement>(
+            '#colors [value="#d1c4e9"]');
+    chrome.test.assertTrue(!!collapsedColor);
+    chrome.test.assertTrue(collapsedColor.disabled);
+    collapsedColor.click();
     chrome.test.assertEq('#ffbc00', tool.color);
 
     // Selected size and expanded color.
@@ -149,8 +155,9 @@ chrome.test.runTests([
         .querySelector<HTMLElement>('#sizes [value="1"]')!.click();
     highlighterOptions.shadowRoot!
         .querySelector<HTMLElement>('#colors #expand')!.click();
-    highlighterOptions.shadowRoot!
-        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
+    chrome.test.assertFalse(collapsedColor.disabled);
+    collapsedColor.click();
+
     tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(1, tool.size);

@@ -5,7 +5,9 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './viewer-pen-options.html.js';
 
 type Color = {
@@ -122,7 +124,7 @@ export class ViewerPenOptionsElement extends PolymerElement {
   strings: any;
   private colors_: Color[];
   private expanded_: boolean;
-  private expandAnimations_: Animation[] = [];
+  private expandAnimations_: Animation[]|null = null;
   private sizes_: Size[];
 
   private sizeChanged_(e: Event) {
@@ -140,6 +142,7 @@ export class ViewerPenOptionsElement extends PolymerElement {
 
   private updateExpandedStateAndFinishAnimations_() {
     this.updateExpandedState_();
+    assert(this.expandAnimations_);
     for (const animation of this.expandAnimations_) {
       animation.finish();
     }
