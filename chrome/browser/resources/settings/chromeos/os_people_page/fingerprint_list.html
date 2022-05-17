@@ -17,15 +17,16 @@
   }
 
   #fingerprintTooltip {
-    --paper-tooltip-animation: {
-      box-shadow: var(--cr-card-shadow);
-    }
     --paper-tooltip-background: var(--cros-tooltip-background-color);
     --paper-tooltip-border-radius: 8px;
     --paper-tooltip-delay-out: 500ms;
     --paper-tooltip-opacity: 1;
     --paper-tooltip-padding: 12px 16px;
     --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
+
+  #fingerprintTooltip::part(tooltip) {
+    box-shadow: var(--cr-card-shadow);
   }
 
   #fingerprintNotice {
