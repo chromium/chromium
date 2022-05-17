@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/ios/block_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
@@ -47,25 +48,91 @@ PresentQLPreviewController GetHistogramEnum(
 
 }  // namespace
 
+// Helper class that acts as delegate and data source for the presented
+// QLPreviewController. It informs the WebState of its visibility changes
+// (as the USDZ preview will cover the WebState).
+@interface ARQuickLookPreviewControllerDelegate
+    : NSObject <QLPreviewControllerDataSource, QLPreviewControllerDelegate>
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+                       sourceURL:(NSURL*)sourceURL
+                    allowScaling:(BOOL)allowScaling
+                    dismissBlock:(ProceduralBlock)dismissBlock
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (void)viewPresented;
+
+@end
+
+@implementation ARQuickLookPreviewControllerDelegate {
+  base::WeakPtr<web::WebState> _weakWebState;
+  NSURL* _sourceURL;
+  BOOL _allowScaling;
+  ProceduralBlock _dismissBlock;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+                       sourceURL:(NSURL*)sourceURL
+                    allowScaling:(BOOL)allowScaling
+                    dismissBlock:(ProceduralBlock)dismissBlock {
+  if ((self = [super init])) {
+    DCHECK(webState);
+    DCHECK(sourceURL);
+    _weakWebState = webState->GetWeakPtr();
+    _sourceURL = sourceURL;
+    _allowScaling = allowScaling;
+    _dismissBlock = dismissBlock;
+  }
+  return self;
+}
+
+- (void)viewPresented {
+  web::WebState* webState = _weakWebState.get();
+  if (webState)
+    webState->DidCoverWebContent();
+}
+
+#pragma mark - QLPreviewControllerDataSource
+
+- (NSInteger)numberOfPreviewItemsInPreviewController:
+    (QLPreviewController*)controller {
+  return 1;
+}
+
+- (id<QLPreviewItem>)previewController:(QLPreviewController*)controller
+                    previewItemAtIndex:(NSInteger)index {
+  ARQuickLookPreviewItem* item =
+      [[ARQuickLookPreviewItem alloc] initWithFileAtURL:_sourceURL];
+  item.allowsContentScaling = _allowScaling;
+  return item;
+}
+
+#pragma mark - QLPreviewControllerDelegate
+
+- (void)previewControllerDidDismiss:(QLPreviewController*)controller {
+  web::WebState* webState = _weakWebState.get();
+  if (webState)
+    webState->DidRevealWebContent();
+
+  if (_dismissBlock) {
+    _dismissBlock();
+  }
+}
+
+@end
+
 @interface ARQuickLookCoordinator () <DependencyInstalling,
-                                      ARQuickLookTabHelperDelegate,
-                                      QLPreviewControllerDataSource,
-                                      QLPreviewControllerDelegate> {
+                                      ARQuickLookTabHelperDelegate> {
   // Bridge which observes WebStateList and alerts this coordinator when this
   // needs to register the Mediator with a new WebState.
   std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
+  // The delegate passed to the QLPreviewController. It informs the WebState
+  // that it may be hidden (during the presentation of the USDZ file) and it
+  // serves as a data source for the preview controller.
+  ARQuickLookPreviewControllerDelegate* _delegate;
 }
-
-// The file URL pointing to the downloaded USDZ format file.
-@property(nonatomic, copy) NSURL* fileURL;
-
-// Displays USDZ format files. Set as a weak reference so it only exists while
-// its being presented by baseViewController.
-@property(nonatomic, weak) QLPreviewController* viewController;
-
-@property(nonatomic, assign) BOOL allowsContentScaling;
-
-@property(nonatomic, assign) web::WebState* webState;
 
 @end
 
@@ -87,8 +154,7 @@ PresentQLPreviewController GetHistogramEnum(
   // ensure it detaches before |browser| and its WebStateList get destroyed.
   _dependencyInstallerBridge.reset();
 
-  self.viewController = nil;
-  self.fileURL = nil;
+  _delegate = nil;
 }
 
 #pragma mark - DependencyInstalling methods
@@ -107,61 +173,43 @@ PresentQLPreviewController GetHistogramEnum(
 
 #pragma mark - ARQuickLookTabHelperDelegate
 
-- (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL
-              allowsContentScaling:(BOOL)allowsScaling {
-  self.fileURL = fileURL;
-  self.allowsContentScaling = allowsScaling;
-
+- (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                      webState:(web::WebState*)webState
+           allowContentScaling:(BOOL)allowContentScaling {
   base::UmaHistogramEnumeration(
       kIOSPresentQLPreviewControllerHistogram,
-      GetHistogramEnum(self.baseViewController, self.fileURL));
+      GetHistogramEnum(self.baseViewController, fileURL));
 
-  // QLPreviewController should not be presented if the file URL is nil.
-  if (!self.fileURL) {
+  // Do not present if the URL is invalid or if there is already
+  // a preview in progress.
+  if (!fileURL || _delegate)
     return;
-  }
+
+  __weak ARQuickLookCoordinator* weakSelf = self;
+  _delegate = [[ARQuickLookPreviewControllerDelegate alloc]
+      initWithWebState:webState
+             sourceURL:fileURL
+          allowScaling:allowContentScaling
+          dismissBlock:^{
+            [weakSelf previewDismissed];
+          }];
 
   QLPreviewController* viewController = [[QLPreviewController alloc] init];
-  viewController.dataSource = self;
-  viewController.delegate = self;
-  self.webState = tabHelper->web_state();
-  __weak __typeof(self) weakSelf = self;
+  viewController.dataSource = _delegate;
+  viewController.delegate = _delegate;
 
-  [self.baseViewController
-      presentViewController:viewController
-                   animated:YES
-                 completion:^{
-                   if (weakSelf.webState)
-                     weakSelf.webState->DidCoverWebContent();
-                 }];
-  self.viewController = viewController;
+  __weak ARQuickLookPreviewControllerDelegate* weakDelegate = _delegate;
+  [self.baseViewController presentViewController:viewController
+                                        animated:YES
+                                      completion:^{
+                                        [weakDelegate viewPresented];
+                                      }];
 }
 
-#pragma mark - QLPreviewControllerDataSource
+#pragma mark - Private
 
-- (NSInteger)numberOfPreviewItemsInPreviewController:
-    (QLPreviewController*)controller {
-  return 1;
-}
-
-- (id<QLPreviewItem>)previewController:(QLPreviewController*)controller
-                    previewItemAtIndex:(NSInteger)index {
-  ARQuickLookPreviewItem* item =
-      [[ARQuickLookPreviewItem alloc] initWithFileAtURL:self.fileURL];
-  item.allowsContentScaling = self.allowsContentScaling;
-  return item;
-}
-
-#pragma mark - QLPreviewControllerDelegate
-
-- (void)previewControllerDidDismiss:(QLPreviewController*)controller {
-  if (self.webState)
-    self.webState->DidRevealWebContent();
-
-  self.webState = nullptr;
-  self.viewController = nil;
-  self.fileURL = nil;
+- (void)previewDismissed {
+  _delegate = nil;
 }
 
 @end

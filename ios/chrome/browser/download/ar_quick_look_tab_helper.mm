@@ -167,9 +167,9 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     allow_content_scaling = false;
   }
 
-  [delegate_ ARQuickLookTabHelper:this
-      didFinishDowloadingFileWithURL:fileURL
-                allowsContentScaling:allow_content_scaling];
+  [delegate_ presentUSDZFileWithURL:fileURL
+                           webState:web_state_
+                allowContentScaling:allow_content_scaling];
 }
 
 void ARQuickLookTabHelper::RemoveCurrentDownload() {

@@ -7,15 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-class ARQuickLookTabHelper;
+namespace web {
+class WebState;
+}  // namespace web
 
 @protocol ARQuickLookTabHelperDelegate
 
 // Called to preview the downloaded USDZ format file |fileURL| points to.
 // |fileURL| cannot be nil.
-- (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL
-              allowsContentScaling:(BOOL)allowsScaling;
+- (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                      webState:(web::WebState*)webState
+           allowContentScaling:(BOOL)allowContentScaling;
 
 @end
 

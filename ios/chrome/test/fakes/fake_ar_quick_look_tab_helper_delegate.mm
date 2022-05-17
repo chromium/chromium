@@ -25,11 +25,11 @@
   return self;
 }
 
-- (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL
-              allowsContentScaling:(BOOL)allowsScaling {
+- (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                      webState:(web::WebState*)webState
+           allowContentScaling:(BOOL)allowContentScaling {
   [_fileURLs addObject:fileURL];
-  _allowsContentScaling = allowsScaling;
+  _allowsContentScaling = allowContentScaling;
 }
 
 @end
