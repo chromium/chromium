@@ -6880,6 +6880,26 @@
             ]
         }
     ],
+    "SharingHubDesktopScreenshots": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DesktopScreenshots",
+                        "SharingDesktopScreenshotsEdit"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShowScrollableMVTOnNTPAndroid": [
         {
             "platforms": [
