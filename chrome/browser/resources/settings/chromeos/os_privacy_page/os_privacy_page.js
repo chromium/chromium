@@ -8,10 +8,10 @@
  * security settings.
  */
 
-import '//resources/cr_elements/cr_button/cr_button.m.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './peripheral_data_access_protection_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
@@ -21,219 +21,241 @@ import '../../settings_page/settings_animated_pages.js';
 import '../os_people_page/lock_screen.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from '../os_people_page/lock_state_behavior.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior} from '../prefs_behavior.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './metrics_consent_browser_proxy.js';
-import {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
+import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl} from './metrics_consent_browser_proxy.js';
+import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-privacy-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {LockStateBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ */
+const OsSettingsPrivacyPageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, RouteObserverBehavior, LockStateBehavior,
+      PrefsBehavior
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    RouteObserverBehavior,
-    LockStateBehavior,
-    PrefsBehavior,
-  ],
+/** @polymer */
+class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
+  static get is() {
+    return 'os-settings-privacy-page';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!Map<string, string>} */
-    focusConfig_: {
-      type: Object,
-      value() {
-        const map = new Map();
-        if (routes.ACCOUNTS) {
-          map.set(routes.ACCOUNTS.path, '#manageOtherPeopleSubpageTrigger');
-        }
-        if (routes.LOCK_SCREEN) {
-          map.set(routes.LOCK_SCREEN.path, '#lockScreenSubpageTrigger');
-        }
-        return map;
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /**
-     * Authentication token.
-     * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
-     */
-    authToken_: {
-      type: Object,
-      observer: 'onAuthTokenChanged_',
-    },
-
-    /** @private {boolean} */
-    showPasswordPromptDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * setModes_ is a partially applied function that stores the current auth
-     * token. It's defined only when the user has entered a valid password.
-     * @type {Object|undefined}
-     * @private
-     */
-    setModes_: {
-      type: Object,
-    },
-
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kVerifiedAccess,
-        chromeos.settings.mojom.Setting.kUsageStatsAndCrashReports,
-      ]),
-    },
-
-    /**
-     * True if fingerprint settings should be displayed on this machine.
-     * @private
-     */
-    fingerprintUnlockEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('fingerprintUnlockEnabled');
+      /** @private {!Map<string, string>} */
+      focusConfig_: {
+        type: Object,
+        value() {
+          const map = new Map();
+          if (routes.ACCOUNTS) {
+            map.set(routes.ACCOUNTS.path, '#manageOtherPeopleSubpageTrigger');
+          }
+          if (routes.LOCK_SCREEN) {
+            map.set(routes.LOCK_SCREEN.path, '#lockScreenSubpageTrigger');
+          }
+          return map;
+        },
       },
-      readOnly: true,
-    },
 
-    /**
-     * True if snooping protection or screen lock is enabled.
-     * @private
-     */
-    isSmartPrivacyEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isSnoopingProtectionEnabled') ||
-            loadTimeData.getBoolean('isQuickDimEnabled');
+      /**
+       * Authentication token.
+       * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
+       */
+      authToken_: {
+        type: Object,
+        observer: 'onAuthTokenChanged_',
       },
-      readOnly: true,
-    },
 
-    /**
-     * True if OS is running on reven board.
-     * @private
-     */
-    isRevenBranding_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isRevenBranding');
-      },
-      readOnly: true,
-    },
-
-    /**
-     * Whether the user is in guest mode.
-     * @private {boolean}
-     */
-    isGuestMode_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
-      },
-      readOnly: true,
-    },
-
-    /** @private */
-    showDisableProtectionDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    isThunderboltSupported_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    dataAccessProtectionPrefName_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    isUserConfigurable_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    /** @private */
-    dataAccessShiftTabPressed_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether the secure DNS setting should be displayed.
-     * @private
-     */
-    showSecureDnsSetting_: {
-      type: Boolean,
-      readOnly: true,
-      value: function() {
-        return loadTimeData.getBoolean('showSecureDnsSetting');
-      },
-    },
-
-    // <if expr="_google_chrome">
-    /**
-     * The preference controlling the current user's metrics consent. This will
-     * be loaded from |this.prefs| based on the response from
-     * |this.metricsConsentBrowserProxy_.getMetricsConsentState()|.
-     *
-     * @private
-     * @type {!chrome.settingsPrivate.PrefObject}
-     */
-    metricsConsentPref_: {
-      type: Object,
-      value: {
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      /** @private {boolean} */
+      showPasswordPromptDialog_: {
+        type: Boolean,
         value: false,
       },
-    },
 
-    /** @private */
-    isMetricsConsentConfigurable_: {
-      type: Boolean,
-      value: false,
-    },
-    // </if>
-  },
+      /**
+       * setModes_ is a partially applied function that stores the current auth
+       * token. It's defined only when the user has entered a valid password.
+       * @type {Object|undefined}
+       * @private
+       */
+      setModes_: {
+        type: Object,
+      },
 
-  /** @private {?PeripheralDataAccessBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kVerifiedAccess,
+          chromeos.settings.mojom.Setting.kUsageStatsAndCrashReports,
+        ]),
+      },
 
-  /** @private {?MetricsConsentBrowserProxy} */
-  metricsConsentBrowserProxy_: null,
+      /**
+       * True if fingerprint settings should be displayed on this machine.
+       * @private
+       */
+      fingerprintUnlockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('fingerprintUnlockEnabled');
+        },
+        readOnly: true,
+      },
 
-  observers: ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'],
+      /**
+       * True if snooping protection or screen lock is enabled.
+       * @private
+       */
+      isSmartPrivacyEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSnoopingProtectionEnabled') ||
+              loadTimeData.getBoolean('isQuickDimEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * True if OS is running on reven board.
+       * @private
+       */
+      isRevenBranding_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isRevenBranding');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Whether the user is in guest mode.
+       * @private {boolean}
+       */
+      isGuestMode_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
+        readOnly: true,
+      },
+
+      /** @private */
+      showDisableProtectionDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      isThunderboltSupported_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      dataAccessProtectionPrefName_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      isUserConfigurable_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /** @private */
+      dataAccessShiftTabPressed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the secure DNS setting should be displayed.
+       * @private
+       */
+      showSecureDnsSetting_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showSecureDnsSetting');
+        },
+      },
+
+      // <if expr="_google_chrome">
+      /**
+       * The preference controlling the current user's metrics consent. This
+       * will be loaded from |this.prefs| based on the response from
+       * |this.metricsConsentBrowserProxy_.getMetricsConsentState()|.
+       *
+       * @private
+       * @type {!chrome.settingsPrivate.PrefObject}
+       */
+      metricsConsentPref_: {
+        type: Object,
+        value: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
+
+      /** @private */
+      isMetricsConsentConfigurable_: {
+        type: Boolean,
+        value: false,
+      },
+      // </if>
+    };
+  }
+
+  static get observers() {
+    return ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!PeripheralDataAccessBrowserProxy} */
     this.browserProxy_ = PeripheralDataAccessBrowserProxyImpl.getInstance();
+
+    /**
+     * The timeout ID to pass to clearTimeout() to cancel auth token
+     * invalidation.
+     * @private {number|undefined}
+     */
+    this.clearAccountPasswordTimeoutId_ = undefined;
 
     this.browserProxy_.isThunderboltSupported().then(enabled => {
       this.isThunderboltSupported_ = enabled;
@@ -255,20 +277,19 @@ Polymer({
       }
     });
     // </if>
-  },
+  }
 
   /**
    * @param {!Route} route
-   * @param {!Route} oldRoute
    */
-  currentRouteChanged(route, oldRoute) {
+  currentRouteChanged(route) {
     // Does not apply to this page.
     if (route !== routes.OS_PRIVACY) {
       return;
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * Looks up the translation id, which depends on PIN login support.
@@ -280,7 +301,7 @@ Polymer({
       return this.i18n('lockScreenTitleLoginLock');
     }
     return this.i18n('lockScreenTitleLock');
-  },
+  }
 
   /** @private */
   getPasswordState_(hasPin, enableScreenLock) {
@@ -291,12 +312,12 @@ Polymer({
       return this.i18n('lockScreenPinOrPassword');
     }
     return this.i18n('lockScreenPasswordOnly');
-  },
+  }
 
   /** @private */
   onPasswordRequested_() {
     this.showPasswordPromptDialog_ = true;
-  },
+  }
 
   /**
    * Invalidate the token to trigger a password re-prompt. Used for PIN auto
@@ -305,7 +326,7 @@ Polymer({
    */
   onInvalidateTokenRequested_() {
     this.authToken_ = undefined;
-  },
+  }
 
   /** @private */
   onPasswordPromptDialogClose_() {
@@ -313,7 +334,7 @@ Polymer({
     if (!this.setModes_) {
       Router.getInstance().navigateToPreviousRoute();
     }
-  },
+  }
 
   /**
    * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
@@ -321,7 +342,7 @@ Polymer({
    * */
   onAuthTokenObtained_(e) {
     this.authToken_ = e.detail;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -333,24 +354,17 @@ Polymer({
     // it, which takes focus from the dialog.
     e.preventDefault();
     Router.getInstance().navigateTo(routes.LOCK_SCREEN);
-  },
+  }
 
   /** @private */
   onManageOtherPeople_() {
     Router.getInstance().navigateTo(routes.ACCOUNTS);
-  },
+  }
 
   /** @private */
   onSmartPrivacy_() {
     Router.getInstance().navigateTo(routes.SMART_PRIVACY);
-  },
-
-  /**
-   * The timeout ID to pass to clearTimeout() to cancel auth token
-   * invalidation.
-   * @private {number|undefined}
-   */
-  clearAccountPasswordTimeoutId_: undefined,
+  }
 
   /** @private */
   onAuthTokenChanged_() {
@@ -371,7 +385,7 @@ Polymer({
       };
     }
 
-    if (this.clearAuthTokenTimeoutId_) {
+    if (this.clearAccountPasswordTimeoutId_) {
       clearTimeout(this.clearAccountPasswordTimeoutId_);
     }
     if (this.authToken_ === undefined) {
@@ -388,12 +402,12 @@ Polymer({
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
       this.authToken_ = undefined;
     }, lifetimeMs);
-  },
+  }
 
   /** @private */
   onDisableProtectionDialogClosed_() {
     this.showDisableProtectionDialog_ = false;
-  },
+  }
 
   /** @private */
   onPeripheralProtectionClick_() {
@@ -412,7 +426,7 @@ Polymer({
     // The underlying settings-toggle-button is disabled, therefore we will have
     // to set the pref value manually to flip the toggle.
     this.setPrefValue(this.dataAccessProtectionPrefName_, false);
-  },
+  }
 
   /** @private */
   onDataAccessToggleFocus_() {
@@ -424,12 +438,12 @@ Polymer({
     // previous element.
     if (this.dataAccessShiftTabPressed_) {
       this.dataAccessShiftTabPressed_ = false;
-      this.$$('#enableVerifiedAccess').focus();
+      this.shadowRoot.querySelector('#enableVerifiedAccess').focus();
       return;
     }
 
-    this.$$('.peripheral-data-access-protection').focus();
-  },
+    this.shadowRoot.querySelector('.peripheral-data-access-protection').focus();
+  }
 
   /**
    * Handles keyboard events in regards to #peripheralDataAccessProtection.
@@ -457,7 +471,7 @@ Polymer({
       return;
     }
     this.setPrefValue(this.dataAccessProtectionPrefName_, false);
-  },
+  }
 
   // <if expr="_google_chrome">
   /** @private */
@@ -471,7 +485,7 @@ Polymer({
             this.getMetricsToggle_().resetToPrefValue();
           }
         });
-  },
+  }
 
   /**
    * @private
@@ -479,8 +493,8 @@ Polymer({
    */
   getMetricsToggle_() {
     return /** @type {SettingsToggleButtonElement} */ (
-        this.$$('#enable-logging'));
-  },
+        this.shadowRoot.querySelector('#enable-logging'));
+  }
   // </if>
 
   /**
@@ -499,14 +513,15 @@ Polymer({
           })
           .then(() => {
             afterNextRender(this, () => {
-              this.$$('.peripheral-data-access-protection')
+              this.shadowRoot
+                  .querySelector('.peripheral-data-access-protection')
                   .shadowRoot.querySelector('#control')
                   .addEventListener(
                       'keydown', this.onDataAccessToggleKeyPress_.bind(this));
             });
           });
     }
-  },
+  }
 
   /**
    * @return {boolean} returns true if the current data access pref is from the
@@ -516,7 +531,7 @@ Polymer({
   isLocalStateDataAccessPref_() {
     return this.dataAccessProtectionPrefName_ ===
         'settings.local_state_device_pci_data_access_enabled';
-  },
+  }
 
   /**
    * @return {boolean} returns true if the current data access pref is from the
@@ -526,5 +541,8 @@ Polymer({
   isCrosSettingDataAccessPref_() {
     return this.dataAccessProtectionPrefName_ ===
         'cros.device.peripheral_data_access_enabled';
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsPrivacyPageElement.is, OsSettingsPrivacyPageElement);
