@@ -47,6 +47,9 @@ try_.builder(
 try_.builder(
     name = "cast_shell_linux_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Linux Debug",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
