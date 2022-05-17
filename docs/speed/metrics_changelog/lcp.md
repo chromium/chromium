@@ -3,7 +3,7 @@
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
 * Chrome 99
-  * Implementation optimizations: [Navigation optimizations and timeOrigin changes](2022_03_lcp_fcp_fid.md)
+  * Implementation optimizations: [Navigation optimizations and timeOrigin changes](2022_03_lcp_fcp.md)
 * Chrome 98
   * Metric bug fix: [Text paints are more accurate](2021_11_lcp.md)
 * Chrome 96
