@@ -16,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -278,7 +277,7 @@ public class ContextualSearchTabHelper
             }
             // Also make sure the UI is hidden if the device is offline.
             ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
-            if (contextualSearchManager != null && !isDeviceOnline(contextualSearchManager)) {
+            if (contextualSearchManager != null && !contextualSearchManager.isDeviceOnline()) {
                 contextualSearchManager.hideContextualSearch(StateChangeReason.UNKNOWN);
             }
         }
@@ -307,7 +306,7 @@ public class ContextualSearchTabHelper
                 // Talkback has poor interaction with Contextual Search (see http://crbug.com/399708
                 // and http://crbug.com/396934).
                 && !manager.isRunningInCompatibilityMode() && !(mTab.isShowingErrorPage())
-                && isDeviceOnline(manager);
+                && manager.isDeviceOnline();
         if (isCct && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
             Log.w(TAG, "Not allowed to be active! Checking reasons:");
@@ -323,17 +322,9 @@ public class ContextualSearchTabHelper
                             + " !isRunningInCompatibilityMode: "
                             + !manager.isRunningInCompatibilityMode()
                             + " !isShowingErrorPage: " + !mTab.isShowingErrorPage()
-                            + " isDeviceOnline: " + isDeviceOnline(manager));
+                            + " isDeviceOnline: " + manager.isDeviceOnline());
         }
         return isActive;
-    }
-
-    /** @return Whether the device is online, or we have disabled online-detection. */
-    private boolean isDeviceOnline(ContextualSearchManager manager) {
-        return ContextualSearchFieldTrial.getSwitch(
-                       ContextualSearchSwitch.IS_ONLINE_DETECTION_DISABLED)
-                ? true
-                : manager.isDeviceOnline();
     }
 
     /**
