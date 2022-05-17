@@ -179,6 +179,9 @@ try_.builder(
 
 try_.builder(
     name = "layout_test_leak_detection",
+    mirrors = [
+        "ci/WebKit Linux Leak",
+    ],
 )
 
 try_.builder(
