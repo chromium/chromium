@@ -83,7 +83,6 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -767,7 +766,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.Device(type = {UiDisableIf.PHONE}) // Flaking on phones crbug.com/765796
+    // Previously flaky on phones: https://crbug.com/765796
     public void testPanelDismissedOnToggleFullscreen(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and assert that the panel peeks.
@@ -833,7 +832,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "https://crbug.com/1291558")
+    // Previously disabled: https://crbug.com/1291558
     public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
             throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
@@ -893,7 +892,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1315417")
+    // Previously disabled: https://crbug.com/1315417
     public void testQuickActionIntent(@EnabledFeature int enabledFeature) throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
         IntentFilter quickActionFilter = new IntentFilter(Intent.ACTION_VIEW);
@@ -937,7 +936,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
-    @DisabledTest(message = "Flaky https://crbug.com/1127796")
+    // Previously disabled: https://crbug.com/1127796
     public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
 
