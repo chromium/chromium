@@ -5181,7 +5181,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_90_Days_V2",
+                    "name": "Enabled_60_Days_Stable_GWS",
                     "params": {
                         "OmniboxLocalZeroSuggestAgeThreshold": "60"
                     },
