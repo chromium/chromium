@@ -13,7 +13,7 @@
 // - load/error events fired on <link rel=preload>,
 // - load/error events on main requests (e.g. <img>), and
 // - preloads are reused for main requests
-//   (by verifyNumberOfResourceTimingEntries()).
+//   (by verifyLoadedAndNoDoubleDownload()).
 //
 // While this test expects <link rel=preload> error events only for network errors
 // as specified in
@@ -120,10 +120,10 @@ function runTest(api, as, description, shouldPreloadSucceed, shouldMainLoadSucce
     }
 
     // Wait also for <link rel=preload> events.
-    // This deflakes `verifyNumberOfResourceTimingEntries` results.
+    // This deflakes `verifyLoadedAndNoDoubleDownload` results.
     await preloadPromise;
 
-    verifyNumberOfResourceTimingEntries(url, 1);
+    verifyLoadedAndNoDoubleDownload(url);
   }, description + ': main');
 }
 
