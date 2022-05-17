@@ -39,7 +39,7 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   for (const auto& uic : results.ui_component()) {
     // Score is only used to prune very low confidence detections and we don't
     // use it downstream.
-    if (uic.predicted_type().score() < kScreenAIMinConfidenceThreshold)
+    if (uic.predicted_type().confidence() < kScreenAIMinConfidenceThreshold)
       continue;
 
     ui::AXNodeData node;

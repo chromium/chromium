@@ -64,7 +64,7 @@ void AXScreenAIAnnotator::OnAnnotationReceived(
 
   VLOG(2) << "AxScreenAIAnnotator received:\n" << updates.ToString();
   // TODO(https://crbug.com/1278249): To keep the ScreenAI related heuristics
-  // centeralized, apply |updates| here.
+  // centralized, apply |updates| here.
 }
 
 }  // namespace screen_ai
