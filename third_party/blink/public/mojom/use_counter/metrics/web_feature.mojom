@@ -3372,7 +3372,7 @@ enum WebFeature {
   kAppHistory = 4056,
   kFlexboxAlignSingleLineDifference = 4057,
   kExternalProtocolBlockedBySandbox = 4058,
-  kWebAssemblyDynamicTiering = 4059,
+  kOBSOLETE_WebAssemblyDynamicTiering = 4059,
   // The items above roughly this point are available in the M96 branch.
 
   kReadOrWriteWebDatabase = 4061,

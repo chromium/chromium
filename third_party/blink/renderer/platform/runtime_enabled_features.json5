@@ -2542,11 +2542,6 @@
       status: "stable",
     },
     {
-      name: "WebAssemblyDynamicTiering",
-      origin_trial_feature_name: "WebAssemblyDynamicTiering",
-      status: "test",
-    },
-    {
       name: "WebAssemblyExceptions",
       origin_trial_feature_name: "WebAssemblyExceptions",
       status: "test",

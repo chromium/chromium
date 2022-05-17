@@ -485,20 +485,6 @@ bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
       execution_context);
 }
 
-bool WasmDynamicTieringEnabledCallback(v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context)
-    return false;
-
-  bool result = RuntimeEnabledFeatures::WebAssemblyDynamicTieringEnabled(
-      execution_context);
-  if (result) {
-    UseCounter::Count(execution_context,
-                      WebFeature::kWebAssemblyDynamicTiering);
-  }
-  return result;
-}
-
 v8::Local<v8::Value> NewRangeException(v8::Isolate* isolate,
                                        const char* message) {
   return v8::Exception::RangeError(
@@ -656,8 +642,6 @@ void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetWasmExceptionsEnabledCallback(WasmExceptionsEnabledCallback);
-  isolate->SetWasmDynamicTieringEnabledCallback(
-      WasmDynamicTieringEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);

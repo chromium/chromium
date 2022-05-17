@@ -39950,7 +39950,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4056" label="AppHistory"/>
   <int value="4057" label="FlexboxAlignSingleLineDifference"/>
   <int value="4058" label="ExternalProtocolBlockedBySandbox"/>
-  <int value="4059" label="WebAssemblyDynamicTiering"/>
+  <int value="4059" label="OBSOLETE_WebAssemblyDynamicTiering"/>
   <int value="4060" label="OBSOLETE_DeferredShapingTallerIfc"/>
   <int value="4061" label="ReadOrWriteWebDatabase"/>
   <int value="4062" label="AutoDarkMode"/>
