@@ -17,6 +17,7 @@
 #include <lib/zx/channel.h>
 
 #include "base/base_export.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -38,8 +39,9 @@ class BASE_EXPORT ScopedServicePublisher {
                          fidl::InterfaceRequestHandler<Interface> handler,
                          base::StringPiece name = Interface::Name_)
       : pseudo_dir_(pseudo_dir), name_(name) {
-    pseudo_dir_->AddEntry(name_,
-                          std::make_unique<vfs::Service>(std::move(handler)));
+    zx_status_t status = pseudo_dir_->AddEntry(
+        name_, std::make_unique<vfs::Service>(std::move(handler)));
+    ZX_DCHECK(status == ZX_OK, status) << "vfs::PseudoDir::AddEntry";
   }
 
   ScopedServicePublisher(const ScopedServicePublisher&) = delete;

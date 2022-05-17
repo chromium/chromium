@@ -253,17 +253,20 @@ class TestCastComponent {
     WaitQueryApiConnected();
   }
 
-  void CreateComponentContext(const base::StringPiece& component_url) {
+  void CreateComponentContext(const base::StringPiece& component_url,
+                              bool with_fake_agent = true) {
     ASSERT_FALSE(component_context_)
         << "ComponentContext may only be created once";
     url_request_rewrite_rules_provider_ =
         std::make_unique<FakeUrlRequestRewriteRulesProvider>();
     component_context_ = std::make_unique<cr_fuchsia::FakeComponentContext>(
         &component_services_, component_url);
-    component_context_->RegisterCreateComponentStateCallback(
-        FakeApplicationConfigManager::kFakeAgentUrl,
-        base::BindRepeating(&TestCastComponent::OnComponentConnect,
-                            base::Unretained(this)));
+    if (with_fake_agent) {
+      component_context_->RegisterCreateComponentStateCallback(
+          FakeApplicationConfigManager::kFakeAgentUrl,
+          base::BindRepeating(&TestCastComponent::OnComponentConnect,
+                              base::Unretained(this)));
+    }
   }
 
   void StartCastComponent(base::StringPiece component_url) {
@@ -822,7 +825,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   dummy_agent_api_bindings.set_bindings(std::move(binding_list));
 
   auto component_url = base::StrCat({"cast:", kTestAppId});
-  component.CreateComponentContext(component_url);
+  component.CreateComponentContext(component_url, /*with_fake_agent=*/false);
   EXPECT_TRUE(component.component_context());
 
   base::RunLoop run_loop;
@@ -881,7 +884,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
   dummy_agent_api_bindings.set_bindings(std::move(binding_list));
 
   auto component_url = base::StrCat({"cast:", kTestAppId});
-  component.CreateComponentContext(component_url);
+  component.CreateComponentContext(component_url, /*with_fake_agent=*/false);
   base::RunLoop run_loop;
   FakeComponentState* dummy_component_state = nullptr;
   component.component_context()->RegisterCreateComponentStateCallback(
