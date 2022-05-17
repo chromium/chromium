@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -187,8 +188,13 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
   std::unique_ptr<EventTiming> eventTiming;
   LocalFrame* frame = node_->GetDocument().GetFrame();
-  if (frame && frame->DomWindow()) {
-    eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
+  LocalDOMWindow* window = nullptr;
+  if (frame) {
+    window = frame->DomWindow();
+  }
+
+  if (frame && window) {
+    eventTiming = EventTiming::Create(window, *event_);
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -200,17 +206,20 @@ DispatchEventResult EventDispatcher::Dispatch() {
   const bool is_click =
       event_->IsMouseEvent() && event_->type() == event_type_names::kClick;
 
-  if (is_click && event_->isTrusted()) {
-    Document& document = node_->GetDocument();
-    if (frame) {
-      // A genuine mouse click cannot be triggered by script so we don't expect
-      // there are any script in the stack.
-      DCHECK(!frame->GetAdTracker() ||
-             !frame->GetAdTracker()->IsAdScriptInStack(
-                 AdTracker::StackType::kBottomAndTop));
-      if (frame->IsAdSubframe()) {
-        UseCounter::Count(document, WebFeature::kAdClick);
-      }
+  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
+  if (is_click && event_->isTrusted() && frame) {
+    // TODO(yoav): Pass along if this is a semantic element or not.
+    if (window) {
+      soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
+          SoftNavigationHeuristics::From(*window),
+          ToScriptStateForMainWorld(frame));
+    }
+    // A genuine mouse click cannot be triggered by script so we don't expect
+    // there are any script in the stack.
+    DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
+                                         AdTracker::StackType::kBottomAndTop));
+    if (frame->IsAdSubframe()) {
+      UseCounter::Count(node_->GetDocument(), WebFeature::kAdClick);
     }
   }
 
@@ -249,13 +258,19 @@ DispatchEventResult EventDispatcher::Dispatch() {
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==
       kContinueDispatching) {
-    if (DispatchEventAtCapturing() == kContinueDispatching)
+    if (DispatchEventAtCapturing() == kContinueDispatching) {
       DispatchEventAtBubbling();
+    }
   }
   DispatchEventPostProcess(activation_target,
                            pre_dispatch_event_handler_result);
 
-  return EventTarget::GetDispatchEventResult(*event_);
+  auto result = EventTarget::GetDispatchEventResult(*event_);
+  if (soft_navigation_scope) {
+    soft_navigation_scope->SetResult(result);
+  }
+
+  return result;
 }
 
 inline EventDispatchContinuation EventDispatcher::DispatchEventPreProcess(

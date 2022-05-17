@@ -53,12 +53,13 @@ TaskAttributionTrackerImpl::GetTaskIdPairFromTaskContainer(TaskId id) {
   return (task_container_[slot]);
 }
 
-TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
-    ScriptState* script_state,
-    TaskId ancestor_id) {
+template <typename F>
+TaskAttributionTracker::AncestorStatus
+TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
+                                               F is_ancestor) {
   absl::optional<TaskId> current_task_id = RunningTaskId(script_state);
   DCHECK(current_task_id);
-  if (current_task_id.value() == ancestor_id) {
+  if (is_ancestor(current_task_id.value())) {
     return AncestorStatus::kAncestor;
   }
 
@@ -81,7 +82,7 @@ TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
       // longer know the ancestry.
       return AncestorStatus::kUnknown;
     }
-    if (parent_id.value() == ancestor_id) {
+    if (is_ancestor(parent_id.value())) {
       return AncestorStatus::kAncestor;
     }
     DCHECK(parent_pair.current.value() != current_task_id.value());
@@ -89,6 +90,23 @@ TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
     parent_id = parent_pair.parent;
   }
   return AncestorStatus::kNotAncestor;
+}
+
+TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
+    ScriptState* script_state,
+    TaskId ancestor_id) {
+  return IsAncestorInternal(script_state, [&](const TaskId& task_id) {
+    return task_id == ancestor_id;
+  });
+}
+
+TaskAttributionTracker::AncestorStatus
+TaskAttributionTrackerImpl::HasAncestorInSet(
+    ScriptState* script_state,
+    const WTF::HashSet<scheduler::TaskIdType>& set) {
+  return IsAncestorInternal(script_state, [&](const TaskId& task_id) {
+    return set.Contains(task_id.value());
+  });
 }
 
 std::unique_ptr<TaskAttributionTracker::TaskScope>
@@ -104,6 +122,9 @@ TaskAttributionTrackerImpl::CreateTaskScope(
   running_task_id_ = next_task_id_;
 
   InsertTaskIdPair(next_task_id_, parent_task_id);
+  if (observer_) {
+    observer_->OnCreateTaskScope(next_task_id_);
+  }
 
   SaveTaskIdStateInV8(script_state, next_task_id_);
   return std::make_unique<TaskScopeImpl>(script_state, this, next_task_id_,

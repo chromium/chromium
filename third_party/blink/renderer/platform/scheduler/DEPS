@@ -54,6 +54,7 @@ include_rules = [
 
   "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
   "+third_party/blink/renderer/platform/bindings/parkable_string_manager.h",
+  "+third_party/blink/renderer/platform/heap/garbage_collected.h",
   "+third_party/blink/renderer/platform/instrumentation",
   "+third_party/blink/renderer/platform/platform_export.h",
   "+third_party/blink/renderer/platform/runtime_enabled_features.h",

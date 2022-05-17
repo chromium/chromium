@@ -174,6 +174,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://wicg.github.io/nav-speculation/prerendering.html#dom-document-prerendering
     [RuntimeEnabled=Prerender2RelatedFeatures, Measure] readonly attribute boolean prerendering;
 
+    // Non-exposed API, used to evaluate and test soft navigation heuristics
+    [RuntimeEnabled=SoftNavigationHeuristics] readonly attribute unsigned long softNavigations;
+
     // Non-standard APIs
     [MeasureAs=DocumentCaretRangeFromPoint] Range caretRangeFromPoint(optional long x = 0, optional long y = 0);
 

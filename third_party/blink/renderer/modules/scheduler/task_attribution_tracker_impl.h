@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_id.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink::scheduler {
@@ -32,6 +33,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   absl::optional<TaskId> RunningTaskId(ScriptState*) const override;
 
   AncestorStatus IsAncestor(ScriptState*, TaskId parent_id) override;
+  AncestorStatus HasAncestorInSet(
+      ScriptState*,
+      const WTF::HashSet<scheduler::TaskIdType>&) override;
 
   std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState* script_state,
@@ -45,6 +49,15 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   void SetRunningTaskId(absl::optional<TaskId> id) { running_task_id_ = id; }
 
+  void TaskScopeCompleted(ScriptState*, TaskId);
+
+  void RegisterObserver(TaskAttributionTracker::Observer* observer) override {
+    DCHECK(!observer_ || observer == observer_);
+    observer_ = observer;
+  }
+
+  void UnregisterObserver() override { observer_.Clear(); }
+
  private:
   struct TaskIdPair {
     TaskIdPair() = default;
@@ -56,6 +69,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
     absl::optional<TaskId> parent;
     absl::optional<TaskId> current;
   };
+
+  template <typename F>
+  AncestorStatus IsAncestorInternal(ScriptState*, F callback);
 
   class TaskScopeImpl : public TaskScope {
    public:
@@ -116,6 +132,8 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   // task, indicating that we went "full circle".
   WTF::Vector<TaskIdPair> task_container_ =
       WTF::Vector<TaskIdPair>(kVectorSize);
+
+  WeakPersistent<TaskAttributionTracker::Observer> observer_;
 };
 
 }  // namespace blink::scheduler

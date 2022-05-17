@@ -3758,6 +3758,7 @@ crbug.com/626703 external/wpt/screen-orientation/orientation-reading.html [ Time
 # Tests that rely on a non-exposed test-only API. Tested in virtual/task-tracking
 wpt_internal/task-tracking/* [ Failure Skip ]
 virtual/task-tracking/* [ Pass ]
+crbug.com/1326491 [ Mac ] virtual/task-tracking/wpt_internal/task-tracking/soft-navigation-heuristics/detached-iframe-container.html [ Timeout ]
 
 crbug.com/626703 external/wpt/fetch/security/redirect-to-url-with-credentials.https.html [ Timeout ]
 crbug.com/981970 external/wpt/fetch/http-cache/split-cache.html [ Skip ]

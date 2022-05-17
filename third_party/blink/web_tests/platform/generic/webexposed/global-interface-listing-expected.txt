@@ -1897,6 +1897,7 @@ interface Document : Node
     getter rootElement
     getter scripts
     getter scrollingElement
+    getter softNavigations
     getter styleSheets
     getter timeline
     getter title

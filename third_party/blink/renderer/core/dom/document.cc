@@ -308,6 +308,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_element_factory.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -1750,6 +1751,18 @@ AtomicString Document::visibilityState() const {
 
 bool Document::prerendering() const {
   return IsPrerendering();
+}
+uint32_t Document::softNavigations() const {
+  if (LocalDOMWindow* window = domWindow()) {
+    if (LocalFrame* frame = window->GetFrame()) {
+      if (frame->IsMainFrame()) {
+        SoftNavigationHeuristics* heuristics =
+            SoftNavigationHeuristics::From(*window);
+        return heuristics->SoftNavigationCount();
+      }
+    }
+  }
+  return 0;
 }
 
 bool Document::hidden() const {

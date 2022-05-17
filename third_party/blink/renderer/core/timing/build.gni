@@ -64,6 +64,8 @@ blink_core_sources_timing = [
   "background_tracing_helper.h",
   "responsiveness_metrics.cc",
   "responsiveness_metrics.h",
+  "soft_navigation_heuristics.cc",
+  "soft_navigation_heuristics.h",
   "task_attribution_timing.cc",
   "task_attribution_timing.h",
   "time_clamper.cc",

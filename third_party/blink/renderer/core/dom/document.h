@@ -504,6 +504,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool prerendering() const;
 
+  uint32_t softNavigations() const;
+
   bool wasDiscarded() const;
   void SetWasDiscarded(bool);
 

@@ -52,6 +52,7 @@ _CONFIG = [
             'base::Days',
             'base::DefaultTickClock',
             'base::ElapsedTimer',
+            'base::EnumSet',
             'base::JobDelegate',
             'base::JobHandle',
             'base::PostJob',
