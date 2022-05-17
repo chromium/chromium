@@ -74,6 +74,8 @@ class SearchTagRegistry : public EnterprisePolicyDelegate::Observer {
   // EnterprisePolicyDelegate::Observer:
   void OnUserImageIsEnterpriseManagedChanged(
       bool is_enterprise_managed) override;
+  void OnWallpaperIsEnterpriseManagedChanged(
+      bool is_enterprise_managed) override;
 
   base::ObserverList<Observer> observer_list_;
   mojo::Remote<::chromeos::local_search_service::mojom::Index> index_remote_;

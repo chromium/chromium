@@ -287,6 +287,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // returns false.
   virtual bool IsActiveUserWallpaperControlledByPolicy() = 0;
 
+  // Returns true if the wallpaper of the user with the given |account_id| is
+  // controlled by policy (excluding device policy). If the |account_id| is
+  // invalid, returns false.
+  virtual bool IsWallpaperControlledByPolicy(
+      const AccountId& account_id) const = 0;
+
   // Returns a struct with info about the active user's wallpaper; the location
   // is an empty string and the layout is invalid if there's no active user.
   virtual WallpaperInfo GetActiveUserWallpaperInfo() const = 0;

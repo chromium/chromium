@@ -1023,13 +1023,6 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
     observer.OnWallpaperChanged();
 }
 
-bool WallpaperControllerImpl::IsPolicyControlled(
-    const AccountId& account_id) const {
-  WallpaperInfo info;
-  return GetUserWallpaperInfo(account_id, &info) &&
-         info.type == WallpaperType::kPolicy;
-}
-
 void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
   if (!IsBlurAllowedForLockState())
     return;
@@ -1727,7 +1720,7 @@ void WallpaperControllerImpl::RemoveUserWallpaper(const AccountId& account_id) {
 
 void WallpaperControllerImpl::RemovePolicyWallpaper(
     const AccountId& account_id) {
-  if (!IsPolicyControlled(account_id))
+  if (!IsWallpaperControlledByPolicy(account_id))
     return;
 
   // Updates the screen only when the user has logged in.
@@ -1799,7 +1792,15 @@ bool WallpaperControllerImpl::IsActiveUserWallpaperControlledByPolicy() {
   const UserSession* const active_user_session = GetActiveUserSession();
   if (!active_user_session)
     return false;
-  return IsPolicyControlled(active_user_session->user_info.account_id);
+  return IsWallpaperControlledByPolicy(
+      active_user_session->user_info.account_id);
+}
+
+bool WallpaperControllerImpl::IsWallpaperControlledByPolicy(
+    const AccountId& account_id) const {
+  WallpaperInfo info;
+  return GetUserWallpaperInfo(account_id, &info) &&
+         info.type == WallpaperType::kPolicy;
 }
 
 WallpaperInfo WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
@@ -2213,7 +2214,7 @@ bool WallpaperControllerImpl::CanSetUserWallpaper(
   if (IsInKioskMode())
     return false;
   // Don't allow user wallpapers while policy is in effect.
-  if (IsPolicyControlled(account_id))
+  if (IsWallpaperControlledByPolicy(account_id))
     return false;
   return true;
 }

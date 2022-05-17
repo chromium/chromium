@@ -17,11 +17,17 @@ class EnterprisePolicyDelegate {
    public:
     virtual void OnUserImageIsEnterpriseManagedChanged(
         bool is_enterprise_managed) = 0;
+
+    // This may be called even when the enterprise state for a given user has
+    // not changed, if another user on the same device just changed wallpaper.
+    virtual void OnWallpaperIsEnterpriseManagedChanged(
+        bool is_enterprise_managed) = 0;
   };
 
   virtual ~EnterprisePolicyDelegate() = default;
 
   virtual bool IsUserImageEnterpriseManaged() const = 0;
+  virtual bool IsWallpaperEnterpriseManaged() const = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

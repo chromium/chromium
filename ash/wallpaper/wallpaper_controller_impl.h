@@ -191,10 +191,6 @@ class ASH_EXPORT WallpaperControllerImpl
                           bool preview_mode,
                           bool always_on_top);
 
-  // Returns whether a wallpaper policy is enforced for |account_id| (not
-  // including device policy).
-  bool IsPolicyControlled(const AccountId& account_id) const;
-
   // Update the blurred state of the current wallpaper for lock screen. Applies
   // blur if |blur| is true and blur is allowed by the controller, otherwise any
   // existing blur is removed.
@@ -308,6 +304,8 @@ class ASH_EXPORT WallpaperControllerImpl
   const std::vector<SkColor>& GetWallpaperColors() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
+  bool IsWallpaperControlledByPolicy(
+      const AccountId& account_id) const override;
   WallpaperInfo GetActiveUserWallpaperInfo() const override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,

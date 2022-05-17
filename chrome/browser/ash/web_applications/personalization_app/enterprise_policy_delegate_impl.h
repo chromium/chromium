@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -16,9 +18,9 @@
 
 namespace ash::personalization_app {
 
-class EnterprisePolicyDelegateImpl
-    : public EnterprisePolicyDelegate,
-      public user_manager::UserManager::Observer {
+class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
+                                     public user_manager::UserManager::Observer,
+                                     public WallpaperControllerObserver {
  public:
   explicit EnterprisePolicyDelegateImpl(
       content::BrowserContext* browser_context);
@@ -31,6 +33,7 @@ class EnterprisePolicyDelegateImpl
 
   // EnterprisePolicyDelegate:
   bool IsUserImageEnterpriseManaged() const override;
+  bool IsWallpaperEnterpriseManaged() const override;
   void AddObserver(EnterprisePolicyDelegate::Observer* observer) override;
   void RemoveObserver(EnterprisePolicyDelegate::Observer* observer) override;
 
@@ -40,10 +43,15 @@ class EnterprisePolicyDelegateImpl
       const user_manager::User& user,
       bool is_enterprise_managed) override;
 
+  // WallpaperControllerObserver:
+  void OnWallpaperChanged() override;
+
   raw_ptr<Profile> profile_;
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       scoped_user_manager_observation_{this};
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      scoped_wallpaper_controller_observation_{this};
   base::ObserverList<EnterprisePolicyDelegate::Observer> observer_list_;
 };
 

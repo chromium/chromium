@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/enterprise_policy_delegate_impl.h"
 
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -27,12 +28,18 @@ EnterprisePolicyDelegateImpl::EnterprisePolicyDelegateImpl(
     content::BrowserContext* browser_context)
     : profile_(Profile::FromBrowserContext(browser_context)) {
   scoped_user_manager_observation_.Observe(user_manager::UserManager::Get());
+  scoped_wallpaper_controller_observation_.Observe(WallpaperController::Get());
 }
 
 EnterprisePolicyDelegateImpl::~EnterprisePolicyDelegateImpl() = default;
 
 bool EnterprisePolicyDelegateImpl::IsUserImageEnterpriseManaged() const {
   return GetUserImageManager(profile_)->IsUserImageManaged();
+}
+
+bool EnterprisePolicyDelegateImpl::IsWallpaperEnterpriseManaged() const {
+  return WallpaperController::Get()->IsWallpaperControlledByPolicy(
+      GetUser(profile_)->GetAccountId());
 }
 
 void EnterprisePolicyDelegateImpl::AddObserver(
@@ -55,6 +62,13 @@ void EnterprisePolicyDelegateImpl::OnUserImageIsEnterpriseManagedChanged(
 
   for (auto& observer : observer_list_) {
     observer.OnUserImageIsEnterpriseManagedChanged(is_enterprise_managed);
+  }
+}
+
+void EnterprisePolicyDelegateImpl::OnWallpaperChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnWallpaperIsEnterpriseManagedChanged(
+        IsWallpaperEnterpriseManaged());
   }
 }
 

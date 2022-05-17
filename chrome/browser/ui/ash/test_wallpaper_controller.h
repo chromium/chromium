@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -129,6 +130,8 @@ class TestWallpaperController : public ash::WallpaperController {
   const std::vector<SkColor>& GetWallpaperColors() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
+  bool IsWallpaperControlledByPolicy(
+      const AccountId& account_id) const override;
   ash::WallpaperInfo GetActiveUserWallpaperInfo() const override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,

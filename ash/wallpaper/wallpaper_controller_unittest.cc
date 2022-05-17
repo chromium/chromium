@@ -1298,7 +1298,7 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   WallpaperInfo wallpaper_info;
   EXPECT_FALSE(
       controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
-  EXPECT_FALSE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_FALSE(controller_->IsWallpaperControlledByPolicy(account_id_1));
   // A default wallpaper is shown for the user.
   ClearWallpaperCount();
   controller_->ShowUserWallpaper(account_id_1);
@@ -1318,7 +1318,7 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
                                       WallpaperType::kPolicy,
                                       base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, policy_wallpaper_info);
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
   // Verify the wallpaper is not updated since the user hasn't logged in.
   EXPECT_EQ(0, GetWallpaperCount());
 
@@ -1337,7 +1337,7 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   controller_->ShowUserWallpaper(account_id_1);
   RunAllTasksUntilIdle();
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kPolicy);
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
   // Remove the policy wallpaper. Verify the wallpaper info is reset to default
   // and the user is no longer policy controlled.
   ClearWallpaperCount();
@@ -1348,7 +1348,7 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
       std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kDefault,
       base::Time::Now().LocalMidnight());
   EXPECT_EQ(wallpaper_info, default_wallpaper_info);
-  EXPECT_FALSE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_FALSE(controller_->IsWallpaperControlledByPolicy(account_id_1));
   // Verify the wallpaper is not updated since the user hasn't logged in (to
   // avoid abrupt wallpaper change in login screen).
   EXPECT_EQ(0, GetWallpaperCount());
@@ -1466,7 +1466,7 @@ TEST_P(WallpaperControllerTest, RemovePolicyWallpaperNoOp) {
       CreateImage(640, 480, kWallpaperColor), false /*preview_mode=*/);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
-  EXPECT_FALSE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_FALSE(controller_->IsWallpaperControlledByPolicy(account_id_1));
   verify_custom_wallpaper_info();
 
   // Verify RemovePolicyWallpaper() is a no-op when the user doesn't have a
@@ -1521,7 +1521,7 @@ TEST_P(WallpaperControllerTest, SetThirdPartyWallpaper) {
   // controlled.
   controller_->SetPolicyWallpaper(account_id_2, std::string() /*data=*/);
   RunAllTasksUntilIdle();
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_2));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_2));
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
 
   // Setting a third-party wallpaper for |kUser2| should not be allowed, because
@@ -1533,7 +1533,7 @@ TEST_P(WallpaperControllerTest, SetThirdPartyWallpaper) {
   EXPECT_EQ(0, GetWallpaperCount());
   // Verify |kUser2| is still policy controlled and has the policy wallpaper
   // info.
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_2));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_2));
   EXPECT_TRUE(controller_->IsActiveUserWallpaperControlledByPolicy());
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_2, &wallpaper_info));
   WallpaperInfo policy_wallpaper_info(base::FilePath(wallpaper_files_id_2)
@@ -1710,7 +1710,7 @@ TEST_P(WallpaperControllerTest,
       WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kPolicy,
       base::Time::Now().LocalMidnight());
   EXPECT_EQ(policy_wallpaper_info, expected_policy_wallpaper_info);
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
 
   // Finally, verifying that the guest session hasn't been affected by the new
   // policy and |ShowWallpaperImage| hasn't been invoked another time.
@@ -1863,7 +1863,7 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
   // Set a policy wallpaper for the user. Verify the user is policy controlled.
   controller_->SetPolicyWallpaper(account_id_1, std::string() /*data=*/);
   RunAllTasksUntilIdle();
-  EXPECT_TRUE(controller_->IsPolicyControlled(account_id_1));
+  EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(account_id_1));
 
   WallpaperInfo wallpaper_info;
   WallpaperInfo policy_wallpaper_info(base::FilePath(wallpaper_files_id_1)

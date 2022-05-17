@@ -107,6 +107,10 @@ class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
     return is_user_image_enterprise_managed_;
   }
 
+  bool IsWallpaperEnterpriseManaged() const override {
+    return is_wallpaper_enterprise_managed_;
+  }
+
   void AddObserver(EnterprisePolicyDelegate::Observer* observer) override {
     observer_list_.AddObserver(observer);
   }
@@ -117,17 +121,24 @@ class TestEnterprisePolicyDelegate : public EnterprisePolicyDelegate {
 
   void SetIsUserImageEnterpriseManaged(bool is_user_image_enterprise_managed) {
     is_user_image_enterprise_managed_ = is_user_image_enterprise_managed;
-  }
-
-  void NotifyObservers() {
     for (auto& observer : observer_list_) {
       observer.OnUserImageIsEnterpriseManagedChanged(
           is_user_image_enterprise_managed_);
     }
   }
 
+  void SetIsWallpaperImageEnterpriseManaged(
+      bool is_wallpaper_enterprise_managed) {
+    is_wallpaper_enterprise_managed_ = is_wallpaper_enterprise_managed;
+    for (auto& observer : observer_list_) {
+      observer.OnWallpaperIsEnterpriseManagedChanged(
+          is_wallpaper_enterprise_managed_);
+    }
+  }
+
  private:
   bool is_user_image_enterprise_managed_ = false;
+  bool is_wallpaper_enterprise_managed_ = false;
   base::ObserverList<TestEnterprisePolicyDelegate::Observer> observer_list_;
 };
 
@@ -311,13 +322,27 @@ TEST_F(PersonalizationAppSearchHandlerTest, RemovesAvatarForEnterprise) {
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
 
   test_search_delegate()->SetIsUserImageEnterpriseManaged(true);
-  test_search_delegate()->NotifyObservers();
 
   test_observer.WaitForSearchResultsChanged();
 
   EXPECT_FALSE(
       search_tag_registry()->GetSearchConceptById(SearchConceptIdToString(
           mojom::SearchConceptId::kChangeDeviceAccountImage)));
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, RemovesWallpaperForEnterprise) {
+  EXPECT_TRUE(search_tag_registry()->GetSearchConceptById(
+      SearchConceptIdToString(mojom::SearchConceptId::kChangeWallpaper)));
+
+  TestSearchResultsObserver test_observer;
+  search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
+
+  test_search_delegate()->SetIsWallpaperImageEnterpriseManaged(true);
+
+  test_observer.WaitForSearchResultsChanged();
+
+  EXPECT_FALSE(search_tag_registry()->GetSearchConceptById(
+      SearchConceptIdToString(mojom::SearchConceptId::kChangeWallpaper)));
 }
 
 TEST_F(PersonalizationAppSearchHandlerTest, HasDarkModeSearchResults) {

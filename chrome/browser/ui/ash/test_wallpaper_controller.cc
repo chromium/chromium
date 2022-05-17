@@ -243,6 +243,12 @@ bool TestWallpaperController::IsActiveUserWallpaperControlledByPolicy() {
   return false;
 }
 
+bool TestWallpaperController::IsWallpaperControlledByPolicy(
+    const AccountId& account_id) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
 ash::WallpaperInfo TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_.value_or(ash::WallpaperInfo());
 }
