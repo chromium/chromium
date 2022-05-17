@@ -54,7 +54,6 @@ source_set("flags") {
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy",
-    "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/screen_time:buildflags",
     "//ios/chrome/browser/sessions:features",

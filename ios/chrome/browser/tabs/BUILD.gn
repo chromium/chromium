@@ -82,7 +82,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/overscroll_actions",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",

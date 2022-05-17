@@ -96,10 +96,7 @@ source_set("policy") {
     "//url",
   ]
 
-  public_deps = [
-    ":feature_flags",
-    "//components/policy/core/browser",
-  ]
+  public_deps = [ "//components/policy/core/browser" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -111,25 +108,9 @@ source_set("policy_util") {
     "policy_util.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//components/prefs",
     "//ios/chrome/browser:pref_names",
-  ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "policy_features.cc",
-    "policy_features.h",
-  ]
-  deps = [
-    "//base",
-    "//components/version_info",
-    "//ios/chrome/browser:utils",
-    "//ios/chrome/common",
-    "//ios/web/common:features",
   ]
 }
 

@@ -22,7 +22,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -47,7 +46,6 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
                     policy::PolicyService* policy_service,
                     policy::BrowserPolicyConnector* policy_connector) {
   if (policy_service || policy_connector) {
-    DCHECK(IsEnterprisePolicyEnabled());
     DCHECK(policy_service && policy_connector);
     factory->SetManagedPolicies(policy_service, policy_connector);
     factory->SetRecommendedPolicies(policy_service, policy_connector);

@@ -35,7 +35,6 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #include "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy/schema_registry_factory.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
@@ -104,25 +103,23 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   DCHECK(directories_created);
 
   // Bring up the policy system before creating |prefs_|.
-  if (IsEnterprisePolicyEnabled()) {
-    BrowserPolicyConnectorIOS* connector =
-        GetApplicationContext()->GetBrowserPolicyConnector();
-    DCHECK(connector);
-    policy_schema_registry_ = BuildSchemaRegistryForBrowserState(
-        this, connector->GetChromeSchema(), connector->GetSchemaRegistry());
+  BrowserPolicyConnectorIOS* connector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+  DCHECK(connector);
+  policy_schema_registry_ = BuildSchemaRegistryForBrowserState(
+      this, connector->GetChromeSchema(), connector->GetSchemaRegistry());
 
-    // Create the UserCloudPolicyManager and force it to load immediately since
-    // BrowserState is loaded synchronously.
-    user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
-        GetStatePath(), policy_schema_registry_.get(),
-        /*force_immediate_load=*/true, GetIOTaskRunner(),
-        base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
-                            base::Unretained(GetApplicationContext())));
+  // Create the UserCloudPolicyManager and force it to load immediately since
+  // BrowserState is loaded synchronously.
+  user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
+      GetStatePath(), policy_schema_registry_.get(),
+      /*force_immediate_load=*/true, GetIOTaskRunner(),
+      base::BindRepeating(&ApplicationContext::GetNetworkConnectionTracker,
+                          base::Unretained(GetApplicationContext())));
 
-    policy_connector_ = BuildBrowserStatePolicyConnector(
-        policy_schema_registry_.get(), connector,
-        user_cloud_policy_manager_.get());
-  }
+  policy_connector_ =
+      BuildBrowserStatePolicyConnector(policy_schema_registry_.get(), connector,
+                                       user_cloud_policy_manager_.get());
 
   RegisterBrowserStatePrefs(pref_registry_.get());
   BrowserStateDependencyManager::GetInstance()
@@ -203,11 +200,7 @@ void ChromeBrowserStateImpl::DestroyOffTheRecordChromeBrowserState() {
 }
 
 BrowserStatePolicyConnector* ChromeBrowserStateImpl::GetPolicyConnector() {
-  if (policy_connector_.get()) {
-    DCHECK(IsEnterprisePolicyEnabled());
-    return policy_connector_.get();
-  }
-  return nullptr;
+  return policy_connector_.get();
 }
 
 policy::UserCloudPolicyManager*

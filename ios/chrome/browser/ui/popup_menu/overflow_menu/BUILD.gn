@@ -167,7 +167,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/passwords:store_factory",
-    "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu:constants",

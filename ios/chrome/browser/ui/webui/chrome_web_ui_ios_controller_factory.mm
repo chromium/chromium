@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/browser/ui/webui/about_ui.h"
 #include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
@@ -112,10 +111,8 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<TermsUI>;
   if (url_host == kChromeUIVersionHost)
     return &NewWebUIIOS<VersionUI>;
-
-  if (IsEnterprisePolicyEnabled() && url_host == kChromeUIPolicyHost) {
+  if (url_host == kChromeUIPolicyHost)
     return &NewWebUIIOS<PolicyUI>;
-  }
 
   return nullptr;
 }

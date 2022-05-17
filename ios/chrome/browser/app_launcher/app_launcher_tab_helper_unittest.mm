@@ -18,10 +18,8 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
@@ -558,11 +556,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
 class BlockedUrlPolicyAppLauncherTabHelperTest
     : public AppLauncherTabHelperTest {
  protected:
-  BlockedUrlPolicyAppLauncherTabHelperTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableEnterprisePolicy);
-  }
-
   void SetUp() override {
     AppLauncherTabHelperTest::SetUp();
 

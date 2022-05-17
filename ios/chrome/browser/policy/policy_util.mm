@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,8 +14,7 @@
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;
-  return IsEnterprisePolicyEnabled() &&
-         pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability);
+  return pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability);
 }
 
 bool IsIncognitoModeDisabled(PrefService* pref_service) {

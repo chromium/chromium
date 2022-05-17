@@ -55,7 +55,6 @@ source_set("bookmarks") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/policy:feature_flags",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",

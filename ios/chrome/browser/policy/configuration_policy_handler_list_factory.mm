@@ -35,7 +35,6 @@
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #include "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #include "ios/chrome/browser/pref_names.h"
 
@@ -123,17 +122,11 @@ void PopulatePolicyHandlerParameters(
 std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
     bool allow_future_policies,
     const policy::Schema& chrome_schema) {
-  DCHECK(IsEnterprisePolicyEnabled());
   std::unique_ptr<policy::ConfigurationPolicyHandlerList> handlers =
       std::make_unique<policy::ConfigurationPolicyHandlerList>(
           base::BindRepeating(&PopulatePolicyHandlerParameters),
           base::BindRepeating(&policy::GetChromePolicyDetails),
           allow_future_policies);
-
-  // Check the feature flag before adding handlers to the list.
-  if (!ShouldInstallEnterprisePolicyHandlers()) {
-    return handlers;
-  }
 
   for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
