@@ -59,6 +59,7 @@ NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";
+NSString* const kCreditCardFillSymbol = @"creditcard.fill";
 NSString* const kMicrophoneFillSymbol = @"mic.fill";
 NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";

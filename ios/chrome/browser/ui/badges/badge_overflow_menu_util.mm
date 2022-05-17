@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badges_histograms.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -85,8 +86,9 @@ UIAction* GetOverflowMenuElementForBadgeType(
     case kBadgeTypeAddToReadingList:
       action_identifier = kBadgeButtonReadingListActionIdentifier;
       title = l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
-      image = [[UIImage imageNamed:@"infobar_reading_list"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      image = UseSymbols() ? DefaultSymbolWithPointSize(kReadLaterActionSymbol,
+                                                        kSymbolImagePointSize)
+                           : [UIImage imageNamed:@"infobar_reading_list"];
       histogram_type = MobileMessagesInfobarType::Translate;
       break;
     case kBadgeTypePermissionsCamera:

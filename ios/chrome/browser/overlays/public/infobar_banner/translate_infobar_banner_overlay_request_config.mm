@@ -14,18 +14,13 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The name of the icon image for the save passwords banner.
-NSString* const kIconImageName = @"infobar_translate_icon";
-}
-
 namespace translate_infobar_overlays {
 
 OVERLAY_USER_DATA_SETUP_IMPL(TranslateBannerRequestConfig);
 
 TranslateBannerRequestConfig::TranslateBannerRequestConfig(
     infobars::InfoBar* infobar)
-    : infobar_(infobar), icon_image_name_(kIconImageName) {
+    : infobar_(infobar) {
   DCHECK(infobar_);
   translate::TranslateInfoBarDelegate* delegate =
       static_cast<translate::TranslateInfoBarDelegate*>(infobar_->delegate());
