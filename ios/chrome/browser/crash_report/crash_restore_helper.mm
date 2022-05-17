@@ -71,6 +71,12 @@
 
 namespace {
 
+// The size of the symbol image.
+NSInteger kSymbolImagePointSize = 18;
+
+// The name if the popup symbol.
+NSString* const kRestoreSessionSymbol = @"exclamationmark.triangle.fill";
+
 // The name for directory which contains all session backup subdirectories for
 // multiple sessions.
 const base::FilePath::CharType kSessionBackupDirectory[] =
@@ -148,11 +154,24 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
   void InfoBarDismissed() override;
   bool ShouldExpire(const NavigationDetails& details) const override;
-  int GetIconId() const override;
 
+  ui::ImageModel GetIcon() const override {
+    if (icon_.IsEmpty()) {
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kSymbolImagePointSize
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleMedium];
+      UIImage* image = [UIImage systemImageNamed:kRestoreSessionSymbol
+                               withConfiguration:configuration];
+      icon_ = gfx::Image(image);
+    }
+    return ui::ImageModel::FromImage(icon_);
+  }
+
+  // The icon to display.
+  mutable gfx::Image icon_;
   // TimeInterval when the delegate was created.
   NSTimeInterval delegate_creation_time_;
-
   // The CrashRestoreHelper to restore sessions.
   CrashRestoreHelper* crash_restore_helper_;
 };
@@ -223,10 +242,6 @@ void SessionCrashedInfoBarDelegate::InfoBarDismissed() {
 bool SessionCrashedInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
   return false;
-}
-
-int SessionCrashedInfoBarDelegate::GetIconId() const {
-  return IDR_IOS_INFOBAR_RESTORE_SESSION;
 }
 
 }  // namespace
