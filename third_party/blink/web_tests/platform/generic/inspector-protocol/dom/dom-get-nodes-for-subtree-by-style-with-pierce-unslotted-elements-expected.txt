@@ -28,6 +28,11 @@ Nodes:
 }
 {
     node : {
+        assignedSlot : {
+            backendNodeId : <number>
+            nodeName : SLOT
+            nodeType : 1
+        }
         attributes : [
             [0] : class
             [1] : inserted-slot

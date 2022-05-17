@@ -1807,6 +1807,8 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     } else {
       if (!element->ownerDocument()->xmlVersion().IsEmpty())
         value->setXmlVersion(element->ownerDocument()->xmlVersion());
+      if (auto* slot = element->AssignedSlotWithoutRecalc())
+        value->setAssignedSlot(BuildBackendNode(slot));
     }
     std::unique_ptr<protocol::Array<protocol::DOM::Node>> pseudo_elements =
         BuildArrayForPseudoElements(element, nodes_map);
@@ -1935,6 +1937,15 @@ InspectorDOMAgent::BuildArrayForPseudoElements(Element* element,
       std::move(pseudo_elements));
 }
 
+std::unique_ptr<protocol::DOM::BackendNode> InspectorDOMAgent::BuildBackendNode(
+    Node* slot_element) {
+  return protocol::DOM::BackendNode::create()
+      .setNodeType(slot_element->getNodeType())
+      .setNodeName(slot_element->nodeName())
+      .setBackendNodeId(IdentifiersFactory::IntIdForNode(slot_element))
+      .build();
+}
+
 std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
 InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   // TODO(hayato): In Shadow DOM v1, the concept of distributed nodes should
@@ -1946,14 +1957,7 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   for (auto& node : slot_element->AssignedNodes()) {
     if (ShouldSkipNode(node, IncludeWhitespace()))
       continue;
-
-    std::unique_ptr<protocol::DOM::BackendNode> backend_node =
-        protocol::DOM::BackendNode::create()
-            .setNodeType(node->getNodeType())
-            .setNodeName(node->nodeName())
-            .setBackendNodeId(IdentifiersFactory::IntIdForNode(node))
-            .build();
-    distributed_nodes->emplace_back(std::move(backend_node));
+    distributed_nodes->emplace_back(BuildBackendNode(node));
   }
   return distributed_nodes;
 }

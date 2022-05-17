@@ -383,6 +383,7 @@ class CORE_EXPORT InspectorDOMAgent final
       protocol::Array<protocol::DOM::Node>* flatten_result);
   std::unique_ptr<protocol::Array<protocol::DOM::Node>>
   BuildArrayForPseudoElements(Element*, NodeToIdMap* nodes_map);
+  std::unique_ptr<protocol::DOM::BackendNode> BuildBackendNode(Node* node);
   std::unique_ptr<protocol::Array<protocol::DOM::BackendNode>>
   BuildDistributedNodesForSlot(HTMLSlotElement*);
 

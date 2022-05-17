@@ -2274,6 +2274,7 @@ domain DOM
       # Whether the node is SVG.
       optional boolean isSVG
       optional CompatibilityMode compatibilityMode
+      optional BackendNode assignedSlot
 
   # A structure holding an RGBA color.
   type RGBA extends object
