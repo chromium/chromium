@@ -180,7 +180,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 #endif
 
 namespace content {
@@ -786,12 +786,12 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Cache the BuildInfo for this process.
+  // Cache the system info for this process.
   // This avoids requiring that all callers of certain base:: functions first
   // ensure the cache is populated.
   // Making the blocking call now also avoids the potential for blocking later
   // in when it might be user-visible.
-  base::FetchAndCacheSystemBuildInfo();
+  base::FetchAndCacheSystemInfo();
 #endif
 
   int exit_code = 0;

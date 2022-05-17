@@ -134,7 +134,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -412,7 +412,7 @@ void BrowserTestBase::SetUp() {
   // in-process browser tests. There is not a single TestSuite for all browser
   // tests and some use the cached values, so skipping the earlier
   // initialization is not an option.
-  base::ClearCachedBuildInfoForTesting();
+  base::ClearCachedSystemInfoForTesting();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

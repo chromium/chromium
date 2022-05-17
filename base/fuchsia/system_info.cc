@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/build_info.h"
+#include "base/fuchsia/system_info.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
@@ -40,22 +40,18 @@ fuchsia::buildinfo::BuildInfo& CachedBuildInfo() {
 
 }  // namespace
 
-void FetchAndCacheSystemBuildInfo() {
+void FetchAndCacheSystemInfo() {
   DCHECK(CachedBuildInfo().IsEmpty()) << "Only call once per process";
   CachedBuildInfo() = FetchSystemBuildInfo();
 }
 
 const fuchsia::buildinfo::BuildInfo& GetCachedBuildInfo() {
   DCHECK(!CachedBuildInfo().IsEmpty())
-      << "FetchAndCacheSystemBuildInfo() has not been called in this process";
+      << "FetchAndCacheSystemInfo() has not been called in this process";
   return CachedBuildInfo();
 }
 
-StringPiece GetBuildInfoVersion() {
-  return GetCachedBuildInfo().version();
-}
-
-void ClearCachedBuildInfoForTesting() {
+void ClearCachedSystemInfoForTesting() {
   CachedBuildInfo() = {};
 }
 
