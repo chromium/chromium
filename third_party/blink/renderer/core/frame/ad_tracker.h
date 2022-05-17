@@ -10,13 +10,13 @@
 #include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -34,25 +34,13 @@ class ExecuteScript;
 
 namespace features {
 CORE_EXPORT extern const base::Feature kAsyncStackAdTagging;
-}
+}  // namespace features
 
 // Tracker for tagging resources as ads based on the call stack scripts.
 // The tracker is maintained per local root.
 class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
  public:
   enum class StackType { kBottomOnly, kBottomAndTop };
-
-  // Together these two values can be used to unqiuely identify the bottom-most
-  // ad script on the stack.
-  struct AdScriptIdentifier {
-    AdScriptIdentifier(const v8_inspector::V8DebuggerId& context_id, int id);
-
-    // v8's debugging id for the v8::Context.
-    v8_inspector::V8DebuggerId context_id;
-
-    // The script's v8 identifier.
-    int id;
-  };
 
   // Finds an AdTracker for a given ExecutionContext.
   static AdTracker* FromExecutionContext(ExecutionContext*);
@@ -147,6 +135,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // Indicates the bottom-most ad script on the stack or `absl::nullopt` if
   // there isn't one. A non-null value implies `num_ads_in_stack > 0`.
   absl::optional<AdScriptIdentifier> bottom_most_ad_script_;
+
+  // Indicates the bottom-most ad script on the async stack or `absl::nullopt`
+  // if there isn't one.
+  absl::optional<AdScriptIdentifier> bottom_most_async_ad_script_;
 
   // The set of ad scripts detected outside of ad-frame contexts. Scripts are
   // identified by name (i.e. resource URL). Scripts with no name (i.e. inline

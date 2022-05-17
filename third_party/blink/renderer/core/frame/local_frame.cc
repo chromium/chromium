@@ -1523,7 +1523,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
-  absl::optional<AdTracker::AdScriptIdentifier> ad_script_on_stack;
+  absl::optional<AdScriptIdentifier> ad_script_on_stack;
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
   is_subframe_created_by_ad_script_ =

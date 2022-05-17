@@ -5,6 +5,8 @@
 blink_core_sources_frame = [
   "ad_tracker.cc",
   "ad_tracker.h",
+  "ad_script_identifier.cc",
+  "ad_script_identifier.h",
   "attribution_reporting.cc",
   "attribution_reporting.h",
   "attribution_response_parsing.cc",

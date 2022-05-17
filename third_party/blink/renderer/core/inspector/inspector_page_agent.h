@@ -202,7 +202,7 @@ class CORE_EXPORT InspectorPageAgent final
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
   void FrameAttachedToParent(
       LocalFrame*,
-      const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack);
+      const absl::optional<AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStartedLoading(LocalFrame*);
   void FrameStoppedLoading(LocalFrame*);
