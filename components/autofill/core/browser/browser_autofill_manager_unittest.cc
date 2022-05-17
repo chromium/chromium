@@ -104,6 +104,7 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
+using features::kAutofillRemoveCardExpiryFromDownstreamSuggestion;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
@@ -2285,6 +2286,44 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
                  browser_autofill_manager_->GetPackedCreditCardID(2)),
       Suggestion("Clyde Barrow", amex_card_label, kAmericanExpressCard,
                  browser_autofill_manager_->GetPackedCreditCardID(1)));
+}
+
+// Test that a suggestion does not have label (expiration date) if the
+// suggestion is poped up from a credit card number field.
+TEST_F(BrowserAutofillManagerTest,
+       GetCreditCardSuggestions_NoLabelForCCNumberField) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kAutofillRemoveCardExpiryFromDownstreamSuggestion);
+
+  personal_data().ClearCreditCards();
+  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
+
+  CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
+                          test::kEmptyOrigin);
+  test::SetCreditCardInfo(&credit_card0, "Clyde Barrow",
+                          "378282246310005" /* American Express */, "04",
+                          "2999", "1");
+  credit_card0.set_guid("00000000-0000-0000-0000-000000000001");
+  personal_data().AddCreditCard(credit_card0);
+
+  ASSERT_EQ(1U, personal_data().GetCreditCards().size());
+
+  // Set up our form data.
+  FormData form;
+  CreateTestCreditCardFormData(&form, true, false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  // Query by card number field.
+  FormFieldData field = form.fields[1];
+  GetAutofillSuggestions(form, field);
+
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion(
+          std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
+          std::string(), kAmericanExpressCard,
+          browser_autofill_manager_->GetPackedCreditCardID(1)));
 }
 
 // Test that we return profile and credit card suggestions for combined forms.

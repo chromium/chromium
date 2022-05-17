@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 
 #include "build/build_config.h"
@@ -237,12 +238,15 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
                              suggestion_nickname, obfuscation_length),
                          Suggestion::Text::IsPrimary(true));
 
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillRemoveCardExpiryFromDownstreamSuggestion)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestion.label = credit_card.GetInfo(
-        AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
+      suggestion.label = credit_card.GetInfo(
+          AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
 #else
-    suggestion.label = credit_card.DescriptiveExpiration(app_locale);
+      suggestion.label = credit_card.DescriptiveExpiration(app_locale);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    }
 
   } else if (credit_card.number().empty()) {
     DCHECK_EQ(credit_card.record_type(), CreditCard::LOCAL_CARD);
