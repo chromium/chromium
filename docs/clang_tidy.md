@@ -208,8 +208,12 @@ your `$PATH`. However, the system packaged binaries might be several versions
 behind Chromium's toolchain, so not all flags are guaranteed to work. If this is
 a problem, consider building clang-tidy from the same revision the current
 toolchain is using, rather than filing a bug against the toolchain component.
-
-Running clang-tidy is (hopefully) simple.
+This can be done as follows:
+```
+tools/clang/scripts/build_clang_tools_extra.py \
+    --fetch out/Release clang-tidy clang-apply-replacements
+```
+Running clang-tidy is then (hopefully) simple.
 1.  Build chrome normally.
 ```
 ninja -C out/Release chrome
