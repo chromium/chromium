@@ -8,41 +8,22 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Test implementation of {@link Timer} with a directly increment-able elapsed time.
+ * TestTimer internally represents time as Nanoseconds to avoid rounding issues.
  */
-public class TestTimer implements Timer {
-    private final BaseTimerImpl mBaseTimer;
-    private long mTime;
+public class TestTimer extends Timer {
+    private long mTimeNano;
 
-    public TestTimer(long startTime) {
-        mTime = startTime;
-        mBaseTimer = new BaseTimerImpl(this::getTime, TimeUnit.NANOSECONDS);
+    public TestTimer(TimeUnit timeUnit, long startTime) {
+        super(TimerType.TEST_TIME);
+        mTimeNano = TimeUnit.NANOSECONDS.convert(startTime, timeUnit);
     }
 
     public void advanceBy(TimeUnit timeUnit, long increment) {
-        mTime += TimeUnit.NANOSECONDS.convert(increment, timeUnit);
-    }
-
-    private long getTime() {
-        return mTime;
+        mTimeNano += TimeUnit.NANOSECONDS.convert(increment, timeUnit);
     }
 
     @Override
-    public void start() {
-        mBaseTimer.start();
-    }
-
-    @Override
-    public void stop() {
-        mBaseTimer.stop();
-    }
-
-    @Override
-    public long getElapsedTime(TimeUnit timeUnit) {
-        return mBaseTimer.getElapsedTime(timeUnit);
-    }
-
-    @Override
-    public boolean isRunning() {
-        return mBaseTimer.isRunning();
+    protected long getCurrentTimeNano() {
+        return mTimeNano;
     }
 }

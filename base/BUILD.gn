@@ -4179,10 +4179,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/task/TaskRunnerImpl.java",
       "android/java/src/org/chromium/base/task/TaskTraits.java",
       "android/java/src/org/chromium/base/task/TaskTraitsExtensionDescriptor.java",
-      "android/java/src/org/chromium/base/time/BaseTimerImpl.java",
-      "android/java/src/org/chromium/base/time/ElapsedRealTimeTimer.java",
       "android/java/src/org/chromium/base/time/Timer.java",
-      "android/java/src/org/chromium/base/time/UptimeTimer.java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -4430,7 +4427,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/task/AsyncTaskThreadTest.java",
       "android/junit/src/org/chromium/base/task/SequencedTaskRunnerTaskMigrationTest.java",
       "android/junit/src/org/chromium/base/task/TaskTraitsTest.java",
-      "android/junit/src/org/chromium/base/time/BaseTimerImplTest.java",
+      "android/junit/src/org/chromium/base/time/TimerTest.java",
       "android/junit/src/org/chromium/base/util/GarbageCollectionTestUtilsUnitTest.java",
       "test/android/junit/src/org/chromium/base/test/SetUpStatementTest.java",
       "test/android/junit/src/org/chromium/base/test/TestListInstrumentationRunListenerTest.java",
