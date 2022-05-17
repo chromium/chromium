@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_input_stream.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner_host.h"
-#include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -209,14 +208,6 @@ void HTMLParserScriptRunner::
         nesting_level_incrementer =
             reentry_permit_->IncrementScriptNestingLevel();
 
-    // TODO(hiroshige): Remove IgnoreDestructiveWriteCountIncrementer here,
-    // according to the spec. After https://crbug.com/721914 is resolved,
-    // |document_| is equal to the element's context document used in
-    // PendingScript::ExecuteScriptBlockInternal(), and thus this can be removed
-    // more easily.
-    IgnoreDestructiveWriteCountIncrementer
-        ignore_destructive_write_count_incrementer(document_);
-
     // <spec step="B.8">Execute the script.</spec>
     DCHECK(IsExecutingScript());
     DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
@@ -264,13 +255,6 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
     HTMLParserReentryPermit::ScriptNestingLevelIncrementer
         nesting_level_incrementer =
             reentry_permit_->IncrementScriptNestingLevel();
-
-    // <spec step="3">... increment the ignore-destructive-writes counter of the
-    // script element's node document. ...</spec>
-    //
-    // TODO(hiroshige): This is duplicated (also done in ExecuteScriptBlock())).
-    IgnoreDestructiveWriteCountIncrementer
-        ignore_destructive_write_count_incrementer(document_);
 
     DCHECK(IsExecutingScript());
     DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
