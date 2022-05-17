@@ -20,7 +20,7 @@ This file specifies browser resources for developer-facing chrome:// pages
     <includes>
       <include name="IDR_ACCESSIBILITY_HTML" file="resources\accessibility\accessibility.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_ACCESSIBILITY_CSS" file="resources\accessibility\accessibility.css" type="BINDATA" />
-      <include name="IDR_ACCESSIBILITY_JS" file="resources\accessibility\accessibility.js" type="BINDATA" />
+      <include name="IDR_ACCESSIBILITY_JS" file="${root_gen_dir}\chrome\browser\resources\accessibility\tsc\accessibility.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_APC_INTERNALS_HTML" file="resources\apc_internals\apc_internals.html" type="BINDATA" />
       <include name="IDR_APC_INTERNALS_JS" file="resources\apc_internals\apc_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_APC_INTERNALS_CSS" file="resources\apc_internals\apc_internals.css" type="BINDATA" />
