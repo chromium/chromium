@@ -655,6 +655,8 @@ component("quiche") {
     "src/quiche/quic/platform/api/quic_stack_trace.h",
     "src/quiche/quic/platform/api/quic_testvalue.h",
     "src/quiche/quic/platform/api/quic_thread.h",
+    "src/quiche/spdy/core/array_output_buffer.cc",
+    "src/quiche/spdy/core/array_output_buffer.h",
     "src/quiche/spdy/core/hpack/hpack_constants.cc",
     "src/quiche/spdy/core/hpack/hpack_constants.h",
     "src/quiche/spdy/core/hpack/hpack_decoder_adapter.cc",
@@ -1240,8 +1242,6 @@ static_library("quiche_tool_support") {
     "src/quiche/quic/tools/simple_ticket_crypter.cc",
     "src/quiche/quic/tools/simple_ticket_crypter.h",
     "src/quiche/quic/tools/web_transport_test_visitors.h",
-    "src/quiche/spdy/core/array_output_buffer.cc",
-    "src/quiche/spdy/core/array_output_buffer.h",
   ]
 
   configs += [ ":quiche_internal_config" ]

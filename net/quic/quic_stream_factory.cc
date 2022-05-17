@@ -146,7 +146,7 @@ std::string QuicPlatformNotificationToString(
     case NETWORK_IP_ADDRESS_CHANGED:
       return "OnIPAddressChanged";
     default:
-      QUIC_NOTREACHED();
+      QUICHE_NOTREACHED();
       break;
   }
   return "InvalidNotification";
