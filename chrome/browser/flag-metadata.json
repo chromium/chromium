@@ -2111,7 +2111,7 @@
   {
     "name": "enable-firmware-updater-app",
     "owners": [ "zentaro", "jimmyxgong", "swifton", "cros-peripherals@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 108
   },
   {
     "name": "enable-first-party-sets",
