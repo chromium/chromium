@@ -966,12 +966,8 @@ TEST_F(InputRouterImplTest, TouchTypesIgnoringAck) {
 }
 
 // Flaky on Linux: https://crbug.com/1295039
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GestureTypesIgnoringAck DISABLED_GestureTypesIgnoringAck
-#else
-#define MAYBE_GestureTypesIgnoringAck GestureTypesIgnoringAck
-#endif
-TEST_F(InputRouterImplTest, MAYBE_GestureTypesIgnoringAck) {
+// Flaky on at least Win7 and Win10 as well: https://crbug.com/1326564
+TEST_F(InputRouterImplTest, DISABLED_GestureTypesIgnoringAck) {
   // We test every gesture type, ensuring that the stream of gestures is valid.
 
 #if BUILDFLAG(IS_WIN)
