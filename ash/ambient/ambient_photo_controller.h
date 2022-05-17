@@ -149,6 +149,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
   // Initialize variables.
   void Init(std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
 
+  // Requests that the weather controller fetch updated weather info.
   void FetchWeather();
 
   void ScheduleFetchBackupImages();
@@ -189,15 +190,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewEventHandler {
 
   void OnAllPhotoDecoded(bool from_downloading,
                          const std::string& hash);
-
-  void StartDownloadingWeatherConditionIcon(
-      const absl::optional<WeatherInfo>& weather_info);
-
-  // Invoked upon completion of the weather icon download, |icon| can be a null
-  // image if the download attempt from the url failed.
-  void OnWeatherConditionIconDownloaded(float temp_f,
-                                        bool show_celsius,
-                                        const gfx::ImageSkia& icon);
 
   void set_photo_cache_for_testing(
       std::unique_ptr<AmbientPhotoCache> photo_cache) {

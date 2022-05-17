@@ -165,6 +165,8 @@ class AmbientAshTestBase : public AshTestBase {
 
   AmbientPhotoCache* photo_cache();
 
+  AmbientWeatherController* weather_controller();
+
   // Returns the top-level views which contains all the ambient components.
   std::vector<AmbientContainerView*> GetContainerViews();
   // Returns the top level ambient container view for the primary root window.

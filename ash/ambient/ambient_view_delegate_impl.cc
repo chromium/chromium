@@ -32,6 +32,10 @@ AmbientBackendModel* AmbientViewDelegateImpl::GetAmbientBackendModel() {
   return ambient_controller_->GetAmbientBackendModel();
 }
 
+AmbientWeatherModel* AmbientViewDelegateImpl::GetAmbientWeatherModel() {
+  return ambient_controller_->GetAmbientWeatherModel();
+}
+
 AmbientViewEventHandler* AmbientViewDelegateImpl::GetAmbientViewEventHandler() {
   AmbientViewEventHandler* event_handler =
       ambient_controller_->ambient_photo_controller();

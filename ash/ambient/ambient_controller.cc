@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/model/ambient_slideshow_photo_config.h"
@@ -177,7 +178,8 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 AmbientController::AmbientController(
     mojo::PendingRemote<device::mojom::Fingerprint> fingerprint)
-    : fingerprint_(std::move(fingerprint)) {
+    : ambient_weather_controller_(std::make_unique<AmbientWeatherController>()),
+      fingerprint_(std::move(fingerprint)) {
   ambient_backend_controller_ = CreateAmbientBackendController();
 
   // |SessionController| is initialized before |this| in Shell. Necessary to
@@ -734,6 +736,10 @@ void AmbientController::DismissUI() {
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
   DCHECK(ambient_photo_controller_);
   return ambient_photo_controller_->ambient_backend_model();
+}
+
+AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
+  return ambient_weather_controller_->weather_model();
 }
 
 void AmbientController::OnImagesReady() {

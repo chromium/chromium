@@ -5,8 +5,8 @@
 #ifndef ASH_AMBIENT_UI_GLANCEABLE_INFO_VIEW_H_
 #define ASH_AMBIENT_UI_GLANCEABLE_INFO_VIEW_H_
 
-#include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_weather_model.h"
+#include "ash/ambient/model/ambient_weather_model_observer.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
@@ -23,7 +23,7 @@ class TimeView;
 
 // Container for displaying a glanceable clock and weather info.
 class GlanceableInfoView : public views::View,
-                           public AmbientBackendModelObserver {
+                           public AmbientWeatherModelObserver {
  public:
   METADATA_HEADER(GlanceableInfoView);
 
@@ -37,7 +37,7 @@ class GlanceableInfoView : public views::View,
   // views::View:
   void OnThemeChanged() override;
 
-  // AmbientBackendModelObserver:
+  // AmbientWeatherModelObserver:
   void OnWeatherInfoUpdated() override;
 
   void Show();
@@ -60,8 +60,8 @@ class GlanceableInfoView : public views::View,
   const int time_font_size_dip_;
   const SkColor time_temperature_font_color_;
 
-  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      scoped_backend_model_observer_{this};
+  base::ScopedObservation<AmbientWeatherModel, AmbientWeatherModelObserver>
+      scoped_weather_model_observer_{this};
 };
 
 }  // namespace ash

@@ -48,6 +48,7 @@ class AmbientAnimationStaticResources;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
+class AmbientWeatherController;
 
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
@@ -127,6 +128,7 @@ class ASH_EXPORT AmbientController
   std::unique_ptr<views::Widget> CreateWidget(aura::Window* container);
 
   AmbientBackendModel* GetAmbientBackendModel();
+  AmbientWeatherModel* GetAmbientWeatherModel();
 
   AmbientBackendController* ambient_backend_controller() {
     return ambient_backend_controller_.get();
@@ -134,6 +136,10 @@ class ASH_EXPORT AmbientController
 
   AmbientPhotoController* ambient_photo_controller() {
     return ambient_photo_controller_.get();
+  }
+
+  AmbientWeatherController* ambient_weather_controller() {
+    return ambient_weather_controller_.get();
   }
 
   AmbientUiModel* ambient_ui_model() { return &ambient_ui_model_; }
@@ -195,6 +201,7 @@ class ASH_EXPORT AmbientController
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
+  std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;

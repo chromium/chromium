@@ -92,6 +92,7 @@ class AmbientAnimationViewTest : public AmbientAshTestBase,
   AmbientBackendModel* GetAmbientBackendModel() override {
     return model_.get();
   }
+  AmbientWeatherModel* GetAmbientWeatherModel() override { return nullptr; }
   AmbientViewEventHandler* GetAmbientViewEventHandler() override {
     return &event_handler_;
   }

@@ -12,6 +12,7 @@
 namespace ash {
 
 class AmbientBackendModel;
+class AmbientWeatherModel;
 
 class ASH_EXPORT AmbientViewDelegateObserver : public base::CheckedObserver {
  public:
@@ -37,9 +38,11 @@ class ASH_EXPORT AmbientViewDelegate {
   virtual void RemoveObserver(AmbientViewDelegateObserver* observer) = 0;
 
   // Returns the model store stores all the information we get from the backdrop
-  // server to render the photo frame and the glanceable weather information on
-  // Ambient Mode.
+  // server to render the photo frame in Ambient Mode.
   virtual AmbientBackendModel* GetAmbientBackendModel() = 0;
+
+  // Returns the model that stores glanceable weather information.
+  virtual AmbientWeatherModel* GetAmbientWeatherModel() = 0;
 
   virtual AmbientViewEventHandler* GetAmbientViewEventHandler() = 0;
 
