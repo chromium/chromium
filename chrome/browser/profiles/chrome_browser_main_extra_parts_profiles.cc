@@ -130,8 +130,6 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
-#include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
@@ -478,11 +476,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProtocolHandlerRegistryFactory::GetInstance();
 
   ReadingListModelFactory::GetInstance();
-
-#if BUILDFLAG(IS_ANDROID)
-  ReadingListManagerFactory::GetInstance();
-  ReadingListNotificationServiceFactory::GetInstance();
-#endif
 
   RendererUpdaterFactory::GetInstance();
 

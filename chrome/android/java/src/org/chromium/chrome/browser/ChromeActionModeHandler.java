@@ -198,8 +198,6 @@ public class ChromeActionModeHandler {
                 Callback<Boolean> callback = result -> {
                     if (result != null && result) search(selectedText);
                 };
-                LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
-                        TabUtils.getActivity(mTab), callback);
                 mHelper.finishActionMode();
             } else if (mShareDelegateSupplier.get().isSharingHubEnabled()
                     && item.getItemId() == R.id.select_action_menu_share) {

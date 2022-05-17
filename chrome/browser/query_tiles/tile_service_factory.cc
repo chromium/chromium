@@ -27,13 +27,6 @@
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/TileServiceUtils_jni.h"
-#endif
-
 namespace query_tiles {
 namespace {
 
@@ -97,13 +90,6 @@ std::unique_ptr<KeyedService> TileServiceFactory::BuildServiceInstanceFor(
                          channel_name.c_str());
 
   std::string default_server_url;
-#if BUILDFLAG(IS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_server_url =
-      Java_TileServiceUtils_getDefaultServerUrl(env);
-  default_server_url =
-      base::android::ConvertJavaStringToUTF8(env, j_server_url);
-#endif
   return CreateTileService(image_fetcher_service, db_provider, storage_dir,
                            background_task_scheduler, accept_languanges,
                            GetCountryCode(), GetGoogleAPIKey(), client_version,

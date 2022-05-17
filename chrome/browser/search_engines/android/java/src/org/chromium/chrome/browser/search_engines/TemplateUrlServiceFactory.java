@@ -30,11 +30,6 @@ public class TemplateUrlServiceFactory {
         return sTemplateUrlService;
     }
 
-    @VisibleForTesting
-    public static void setInstanceForTesting(TemplateUrlService service) {
-        sTemplateUrlService = service;
-    }
-
     // Natives interface is public to allow mocking in tests outside of
     // org.chromium.chrome.browser.search_engines package.
     @NativeMethods

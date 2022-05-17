@@ -22,48 +22,12 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
-#include "chrome/browser/notifications/scheduler/display_agent_android.h"
-#include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
-#include "chrome/browser/reading_list/android/reading_list_notification_client.h"
-#include "chrome/browser/reading_list/android/reading_list_notification_service.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 std::unique_ptr<notifications::NotificationSchedulerClientRegistrar>
 RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
-#if BUILDFLAG(IS_ANDROID)
-  // Register reading list client.
-  if (ReadingListNotificationService::IsEnabled()) {
-    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
-    auto reading_list_service_getter = base::BindRepeating(
-        &ReadingListNotificationServiceFactory::GetForBrowserContext, profile);
-
-    auto reading_list_client = std::make_unique<ReadingListNotificationClient>(
-        reading_list_service_getter);
-    client_registrar->RegisterClient(
-        notifications::SchedulerClientType::kReadingList,
-        std::move(reading_list_client));
-  }
-
-  if (base::FeatureList::IsEnabled(
-          feature_guide::features::kFeatureNotificationGuide)) {
-    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
-    auto feature_guide_service_getter = base::BindRepeating(
-        &feature_guide::FeatureNotificationGuideServiceFactory::GetForProfile,
-        profile);
-
-    client_registrar->RegisterClient(
-        notifications::SchedulerClientType::kFeatureGuide,
-        CreateFeatureNotificationGuideNotificationClient(
-            feature_guide_service_getter));
-  }
-
-#endif  // BUILDFLAG(IS_ANDROID)
   return client_registrar;
 }
 
@@ -97,9 +61,8 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
       chrome::kNotificationSchedulerStorageDirname);
   auto client_registrar = RegisterClients(profile_key);
 #if BUILDFLAG(IS_ANDROID)
-  auto display_agent = std::make_unique<DisplayAgentAndroid>();
-  auto background_task_scheduler =
-      std::make_unique<NotificationBackgroundTaskSchedulerAndroid>();
+  auto display_agent = nullptr;
+  auto background_task_scheduler = nullptr;
 #else
   auto display_agent = notifications::DisplayAgent::Create();
   auto background_task_scheduler =

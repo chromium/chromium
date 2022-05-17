@@ -738,57 +738,6 @@ by a child template that "extends" this file.
             android:exported="false">
         </service>
 
-        <!-- Quick Action Search widget -->
-        <receiver
-            android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
-            android:label="@string/quick_action_search_widget_title"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/quick_action_search_widget_small_info" />
-        </receiver>
-
-        <receiver
-        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
-        android:label="@string/dino_widget_title"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/quick_action_search_widget_dino_info" />
-        </receiver>
-
-        <!-- Search widget -->
-        <receiver
-                android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
-                android:label="@string/search_widget_title"
-                android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                    android:name="android.appwidget.provider"
-                    android:resource="@xml/search_widget_info" />
-        </receiver>
-
-        <!-- Search Activity -->
-        <activity android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
-            android:theme="@style/Theme.Chromium.SearchActivity"
-            android:label="Search"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-            android:hardwareAccelerated="false" />
-
         <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
         <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
             android:exported="true"
@@ -898,10 +847,6 @@ by a child template that "extends" this file.
               <action android:name="org.chromium.intent.action.INSTALL_WEB_APK" />
             </intent-filter>
         </service>
-
-
-        <receiver android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
-            android:exported="false"/>
 
         <receiver android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
             android:exported="false"/>

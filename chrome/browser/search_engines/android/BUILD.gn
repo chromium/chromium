@@ -8,19 +8,12 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelper.java",
-    "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEnginePromoDialog.java",
-    "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
-    "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotification.java",
-    "java/src/org/chromium/chrome/browser/search_engines/SearchEnginePromoState.java",
-    "java/src/org/chromium/chrome/browser/search_engines/SearchEnginePromoType.java",
     "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
   ]
 
   srcjar_deps = [ "//components/search_engines:search_engine_type_java" ]
 
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
@@ -48,18 +41,4 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java" ]
-}
-
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/search_sogou.xml",
-    "java/res/layout/search_engine.xml",
-    "java/res/layout/search_engine_recent_title.xml",
-    "java/res/values/ids.xml",
-  ]
-  deps = [
-    "//chrome/browser/ui/android/strings:ui_strings_grd",
-    "//components/browser_ui/styles/android:java_resources",
-    "//components/browser_ui/widget/android:java_resources",
-  ]
 }

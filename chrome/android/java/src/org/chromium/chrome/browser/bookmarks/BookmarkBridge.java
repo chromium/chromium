@@ -137,7 +137,6 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, List<BookmarkId> bookmarksList);
         void getTopLevelFolderIDs(long nativeBookmarkBridge, BookmarkBridge caller,
                 boolean getSpecial, boolean getNormal, List<BookmarkId> bookmarksList);
-        BookmarkId getReadingListFolder(long nativeBookmarkBridge, BookmarkBridge caller);
         void getAllFoldersWithDepths(long nativeBookmarkBridge, BookmarkBridge caller,
                 List<BookmarkId> folderList, List<Integer> depthList);
         BookmarkId getRootFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
@@ -185,11 +184,6 @@ public class BookmarkBridge {
                 int index, String title, GURL url);
         BookmarkId addPowerBookmark(long nativeBookmarkBridge, BookmarkBridge caller,
                 WebContents webContents, BookmarkId parent, int index, String title, GURL url);
-        BookmarkId addToReadingList(
-                long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
-        BookmarkItem getReadingListItem(long nativeBookmarkBridge, BookmarkBridge caller, GURL url);
-        void setReadStatus(
-                long nativeBookmarkBridge, BookmarkBridge caller, GURL url, boolean read);
         void undo(long nativeBookmarkBridge, BookmarkBridge caller);
         void startGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
         void endGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);

@@ -266,9 +266,5 @@ public abstract class AppHooks {
         return true;
     }
 
-    public String getDefaultQueryTilesServerUrl() {
-        return "";
-    }
-
     // Stop! Do not add new methods to AppHooks anymore. Follow go/apphooks-migration instead.
 }
