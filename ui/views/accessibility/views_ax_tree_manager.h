@@ -98,7 +98,6 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
 
   // WidgetObserver implementation.
   void OnWidgetDestroyed(Widget* widget) override;
-  void OnWidgetClosing(Widget* widget) override;
 
  private:
   using ViewsAXTreeSerializer = ui::AXTreeSerializer<AXAuraObjWrapper*>;
