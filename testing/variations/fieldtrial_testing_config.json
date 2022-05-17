@@ -354,20 +354,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Release_6",
-                    "params": {
-                        "type": "release"
-                    },
-                    "enable_features": [
-                        "ApplyNativeOcclusionToCompositor"
-                    ]
-                },
-                {
-                    "name": "Throttle_6",
+                    "name": "ThrottleAndApply_20220506",
                     "params": {
                         "type": "throttle"
                     },
                     "enable_features": [
+                        "ApplyNativeOccludedRegionToWindowTracker",
                         "ApplyNativeOcclusionToCompositor"
                     ]
                 }
