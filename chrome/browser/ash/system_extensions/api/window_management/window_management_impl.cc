@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_extensions/api/window_management/window_management_impl.h"
 
+#include <utility>
+
 #include "ash/wm/window_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -72,12 +74,10 @@ void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
   std::move(callback).Run(std::move(windows));
 }
 
-void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
-                                           int32_t x,
-                                           int32_t y,
-                                           int32_t width,
-                                           int32_t height,
-                                           SetWindowBoundsCallback callback) {
+void WindowManagementImpl::MoveTo(const base::UnguessableToken& id,
+                                  int32_t x,
+                                  int32_t y,
+                                  MoveToCallback callback) {
   aura::Window* target = GetWindow(id);
   // TODO(crbug.com/1253318): Ensure this works with multiple screens.
   if (!target) {
@@ -86,7 +86,61 @@ void WindowManagementImpl::SetWindowBounds(const base::UnguessableToken& id,
     return;
   }
 
-  target->SetBounds(gfx::Rect(x, y, width, height));
+  target->SetBounds(
+      gfx::Rect(x, y, target->bounds().width(), target->bounds().height()));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::MoveBy(const base::UnguessableToken& id,
+                                  int32_t delta_x,
+                                  int32_t delta_y,
+                                  MoveByCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(
+      gfx::Rect(target->bounds().x() + delta_x, target->bounds().y() + delta_y,
+                target->bounds().width(), target->bounds().height()));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::ResizeTo(const base::UnguessableToken& id,
+                                    int32_t width,
+                                    int32_t height,
+                                    ResizeToCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(
+      gfx::Rect(target->bounds().x(), target->bounds().y(), width, height));
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
+void WindowManagementImpl::ResizeBy(const base::UnguessableToken& id,
+                                    int32_t delta_width,
+                                    int32_t delta_height,
+                                    ResizeByCallback callback) {
+  aura::Window* target = GetWindow(id);
+  // TODO(crbug.com/1253318): Ensure this works with multiple screens.
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetBounds(gfx::Rect(target->bounds().x(), target->bounds().y(),
+                              target->bounds().width() + delta_width,
+                              target->bounds().height() + delta_height));
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 

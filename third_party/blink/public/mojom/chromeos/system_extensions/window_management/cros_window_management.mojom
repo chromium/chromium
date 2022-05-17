@@ -60,9 +60,20 @@ interface CrosWindowManagement {
   // Returns all windows visible to a window manager.
   GetAllWindows() => (array<CrosWindowInfo> result);
 
-  // Sets the bounds of a CrosWindow where |hash| is used as the window
-  // identifier.
-  SetWindowBounds(mojo_base.mojom.UnguessableToken id, int32 x, int32 y, int32 width, int32 height) => (CrosWindowManagementStatus value);
+  // Moves the window such that the window's top left corner is at coordinates
+  // (x, y) relative to the top left corner of the current screen. Measured in
+  // CSS pixels of the window.
+  MoveTo(mojo_base.mojom.UnguessableToken id, int32 x, int32 y) => (CrosWindowManagementStatus value);
+
+  // Moves the current window by a specified amount. Positive deltas move right
+  // and down. Negative deltas move up and left.
+  MoveBy(mojo_base.mojom.UnguessableToken id, int32 delta_x, int32 delta_y) => (CrosWindowManagementStatus value);
+
+  // Sets the window dimensions to `width` and `height`.
+  ResizeTo(mojo_base.mojom.UnguessableToken id, int32 width, int32 height) => (CrosWindowManagementStatus value);
+
+  // Resizes the current window by a specified amount.
+  ResizeBy(mojo_base.mojom.UnguessableToken id, int32 delta_width, int32 delta_height) => (CrosWindowManagementStatus value);
 
   // Enable/disable fullscreen for window identified by id if one exists, else do nothing.
   SetFullscreen(mojo_base.mojom.UnguessableToken id, bool fullscreen) => (CrosWindowManagementStatus value);

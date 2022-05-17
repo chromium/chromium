@@ -26,12 +26,25 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
 
   void GetAllWindows(GetAllWindowsCallback callback) override;
 
-  void SetWindowBounds(const base::UnguessableToken& id,
-                       int32_t x,
-                       int32_t y,
-                       int32_t width,
-                       int32_t height,
-                       SetWindowBoundsCallback callback) override;
+  void MoveTo(const base::UnguessableToken& id,
+              int32_t x,
+              int32_t y,
+              MoveToCallback callback) override;
+
+  void MoveBy(const base::UnguessableToken& id,
+              int32_t delta_x,
+              int32_t delta_y,
+              MoveByCallback callback) override;
+
+  void ResizeTo(const base::UnguessableToken& id,
+                int32_t width,
+                int32_t height,
+                ResizeToCallback callback) override;
+
+  void ResizeBy(const base::UnguessableToken& id,
+                int32_t delta_width,
+                int32_t delta_height,
+                ResizeByCallback callback) override;
 
   void SetFullscreen(const base::UnguessableToken& id,
                      bool fullscreen,

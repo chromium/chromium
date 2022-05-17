@@ -129,38 +129,63 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetOrigin) {
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMoveTo) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
 
   let x = window.screenLeft;
   let y = window.screenTop;
-  x += 10;
-  y += 10;
+  x -= 20;
+  y -= 20;
 
-  await setOriginAndTest(x, y);
+  await moveToAndTest(x, y);
 }
   )";
 
   RunTest(test_code);
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowSetBounds) {
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowMoveBy) {
   const char test_code[] = R"(
 async function cros_test() {
   let [window] = await chromeos.windowManagement.getWindows();
 
-  let x = window.screenLeft;
-  let y = window.screenTop;
+  await moveByAndTest(-20, -20);
+
+  // Check that calling twice continues to move the window.
+  await moveByAndTest(10, 10);
+}
+  )";
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowResizeTo) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let [window] = await chromeos.windowManagement.getWindows();
+
   let width = window.width;
   let height = window.height;
-  x += 10;
-  y += 10;
-  width -= 100;
-  height -= 100;
+  width -= 20;
+  height -= 20;
 
-  await setBoundsAndTest(x, y, width, height);
+  await resizeToAndTest(width, height);
+}
+  )";
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowResizeBy) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let [window] = await chromeos.windowManagement.getWindows();
+
+  await resizeByAndTest(-20, -20);
+
+  await resizeByAndTest(10, 10);
 }
   )";
 
@@ -341,7 +366,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // When focusing 1st window, it should have sole focus.
-    first_window.focus();
+    await first_window.focus();
   }
 
   {
@@ -353,7 +378,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // When focusing 2nd window, it should have sole focus.
-    second_window.focus();
+    await second_window.focus();
 
     [first_window, second_window] = await getWindows();
     assert_false(first_window.isFocused);
@@ -363,7 +388,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // Fullscreening a window does not focus an unfocused window.
-    first_window.setFullscreen(true);
+    await first_window.setFullscreen(true);
 
     [first_window, second_window] = await getWindows();
     assert_false(first_window.isFocused);
@@ -373,7 +398,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // We can focus a fullscreen window.
-    first_window.focus();
+    await first_window.focus();
 
     [first_window, second_window] = await getWindows();
     assert_true(first_window.isFocused);
@@ -383,7 +408,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // We can focus another window on top of a fullscreen window.
-    second_window.focus();
+    await second_window.focus();
 
     [first_window, second_window] = await getWindows();
     assert_false(first_window.isFocused);
@@ -393,7 +418,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // Minimizing focused window should pass focus to next window.
-    second_window.minimize();
+    await second_window.minimize();
 
     [first_window, second_window] = await getWindows();
     assert_true(first_window.isFocused);
@@ -403,7 +428,7 @@ async function cros_test() {
   {
     let [first_window, second_window] = await getWindows();
     // Minimizing remaining window should lose focus.
-    first_window.minimize();
+    await first_window.minimize();
 
     [first_window, second_window] = await getWindows();
     assert_false(first_window.isFocused);
@@ -504,11 +529,11 @@ async function cros_test() {
   assert_not_equals(undefined, swa_window,
       `Could not find window with id: (%1$s);`);
 
-  swa_window.minimize();
-  swa_window.focus();
-  swa_window.maximize();
-  swa_window.setFullscreen(true);
-  swa_window.close();
+  await swa_window.minimize();
+  await swa_window.focus();
+  await swa_window.maximize();
+  await swa_window.setFullscreen(true);
+  await swa_window.close();
 }
   )",
                                              target_id.c_str());
