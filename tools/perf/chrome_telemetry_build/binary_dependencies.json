@@ -57,12 +57,27 @@
     },
     "generate_breakpad_symbols": {
       "file_info": {
+        "mac_arm64": {
+          "local_paths": [
+            "../../../components/crash/content/tools/generate_breakpad_symbols.py"
+          ]
+        },
         "mac_x86_64": {
           "local_paths": [
             "../../../components/crash/content/tools/generate_breakpad_symbols.py"
           ]
         },
         "linux_x86_64": {
+          "local_paths": [
+            "../../../components/crash/content/tools/generate_breakpad_symbols.py"
+          ]
+        },
+        "win_AMD64": {
+          "local_paths": [
+            "../../../components/crash/content/tools/generate_breakpad_symbols.py"
+          ]
+        },
+        "win_x86": {
           "local_paths": [
             "../../../components/crash/content/tools/generate_breakpad_symbols.py"
           ]
