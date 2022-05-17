@@ -75,10 +75,7 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
                   ? continue_on_shutdown_best_effort_task_traits_
                   : best_effort_task_traits_)),
       engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
-      engagement_score_cache_(
-          GetFieldTrialParamByFeatureAsInt(features::kUseEngagementScoreCache,
-                                           "engagement_score_cache_size",
-                                           100)) {
+      engagement_score_cache_(GetConfig().engagement_score_cache_size) {
   if (GetConfig().should_check_hosts_to_skip_clustering_for &&
       optimization_guide_decider) {
     optimization_guide_decider_ = optimization_guide_decider;
@@ -175,28 +172,20 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
         base::TimeTicks::Now() - *entity_metadata_start);
   }
 
-  if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache) &&
-      base::TimeTicks::Now() >
-          engagement_score_cache_last_refresh_timestamp_ +
-              base::Minutes(GetFieldTrialParamByFeatureAsInt(
-                  features::kUseEngagementScoreCache,
-                  "engagement_score_cache_refresh_duration_minutes", 120))) {
+  if (base::TimeTicks::Now() >
+      (engagement_score_cache_last_refresh_timestamp_ +
+       GetConfig().engagement_score_cache_refresh_duration)) {
     engagement_score_cache_.Clear();
     engagement_score_cache_last_refresh_timestamp_ = base::TimeTicks::Now();
   }
 
-  std::vector<history::ClusterVisit> cluster_visits;
-  cluster_visits.reserve(annotated_visits.size());
-
-  ProcessVisits(clustering_request_source, std::move(cluster_visits),
-                completed_task, std::move(annotated_visits),
-                entity_metadata_start, std::move(callback),
-                entity_metadata_map);
+  ProcessVisits(clustering_request_source, completed_task,
+                std::move(annotated_visits), entity_metadata_start,
+                std::move(callback), entity_metadata_map);
 }
 
 void OnDeviceClusteringBackend::ProcessVisits(
     ClusteringRequestSource clustering_request_source,
-    std::vector<history::ClusterVisit> cluster_visits,
     optimization_guide::BatchEntityMetadataTask* completed_task,
     std::vector<history::AnnotatedVisit> annotated_visits,
     absl::optional<base::TimeTicks> entity_metadata_start,
@@ -207,6 +196,7 @@ void OnDeviceClusteringBackend::ProcessVisits(
 
   base::ElapsedThreadTimer process_batch_timer;
 
+  std::vector<history::ClusterVisit> cluster_visits;
   base::flat_map<std::string, optimization_guide::EntityMetadata>
       human_readable_entity_name_to_metadata_map;
   for (const auto& visit : annotated_visits) {
@@ -239,19 +229,13 @@ void OnDeviceClusteringBackend::ProcessVisits(
         ComputeURLForDisplay(cluster_visit.normalized_url);
 
     if (engagement_score_provider_) {
-      if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {
-        auto it = engagement_score_cache_.Peek(visit_host);
-        if (it != engagement_score_cache_.end()) {
-          cluster_visit.engagement_score = it->second;
-        } else {
-          float score =
-              engagement_score_provider_->GetScore(visit.url_row.url());
-          engagement_score_cache_.Put(visit_host, score);
-          cluster_visit.engagement_score = score;
-        }
+      auto it = engagement_score_cache_.Peek(visit_host);
+      if (it != engagement_score_cache_.end()) {
+        cluster_visit.engagement_score = it->second;
       } else {
-        cluster_visit.engagement_score =
-            engagement_score_provider_->GetScore(visit.url_row.url());
+        float score = engagement_score_provider_->GetScore(visit.url_row.url());
+        engagement_score_cache_.Put(visit_host, score);
+        cluster_visit.engagement_score = score;
       }
     }
 
@@ -332,31 +316,23 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 
   // Post the actual clustering work onto the thread pool, then reply on the
   // calling sequence. This is to prevent UI jank.
-  if (base::FeatureList::IsEnabled(
-          features::kSplitClusteringTasksToSmallerBatches) &&
-      clustering_request_source ==
-          ClusteringRequestSource::kKeywordCacheGeneration) {
-    best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-            engagement_score_provider_ != nullptr, std::move(cluster_visits),
-            std::move(human_readable_entity_name_to_entity_metadata_map)),
-        std::move(callback));
-    return;
-  }
 
-  DCHECK(clustering_request_source == ClusteringRequestSource::kJourneysPage ||
-         clustering_request_source ==
-             ClusteringRequestSource::kKeywordCacheGeneration);
-
-  user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  base::OnceCallback<std::vector<history::Cluster>()> clustering_callback =
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
           engagement_score_provider_ != nullptr, std::move(cluster_visits),
-          std::move(human_readable_entity_name_to_entity_metadata_map)),
-      std::move(callback));
+          std::move(human_readable_entity_name_to_entity_metadata_map));
+
+  switch (clustering_request_source) {
+    case ClusteringRequestSource::kJourneysPage:
+      user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, std::move(clustering_callback), std::move(callback));
+      break;
+    case ClusteringRequestSource::kKeywordCacheGeneration:
+      best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE, std::move(clustering_callback), std::move(callback));
+      break;
+  }
 }
 
 // static

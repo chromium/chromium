@@ -228,6 +228,13 @@ struct Config {
   // Whether to check if all visits for a host should be in resulting clusters.
   bool should_check_hosts_to_skip_clustering_for = false;
 
+  // The max number of hosts that should be stored in the engagement score
+  // cache.
+  int engagement_score_cache_size = 100;
+
+  // The max time a host should be stored in the engagement score cache.
+  base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
+
   // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
   bool use_continue_on_shutdown = true;
 

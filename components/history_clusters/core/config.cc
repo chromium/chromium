@@ -229,6 +229,16 @@ Config::Config() {
   should_check_hosts_to_skip_clustering_for =
       base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);
 
+  engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
+      features::kUseEngagementScoreCache, "engagement_score_cache_size",
+      engagement_score_cache_size);
+
+  engagement_score_cache_refresh_duration =
+      base::Minutes(GetFieldTrialParamByFeatureAsInt(
+          features::kUseEngagementScoreCache,
+          "engagement_score_cache_refresh_duration_minutes",
+          engagement_score_cache_refresh_duration.InMinutes()));
+
   use_continue_on_shutdown = base::FeatureList::IsEnabled(
       internal::kHistoryClustersUseContinueOnShutdown);
 }
