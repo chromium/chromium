@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -119,6 +120,7 @@ public class ReturnToChromeUtilTest {
     private final AtomicBoolean mInflated = new AtomicBoolean();
 
     private final boolean mUseInstantStart;
+    ReturnToChromeUtil.ReturnToChromeBackPressHandler mBackPressHandler;
 
     public ReturnToChromeUtilTest(boolean useInstantStart) {
         mUseInstantStart = useInstantStart;
@@ -234,6 +236,8 @@ public class ReturnToChromeUtilTest {
         if (!mActivityTestRule.getActivity().isTablet()) {
             LayoutTestUtils.waitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+            Assert.assertNotNull(mBackPressHandler.getHandleBackPressChangedSupplier().get());
+            Assert.assertFalse(mBackPressHandler.getHandleBackPressChangedSupplier().get());
         }
 
         waitTabModelRestoration();
@@ -317,6 +321,8 @@ public class ReturnToChromeUtilTest {
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+        Assert.assertNotNull(mBackPressHandler.getHandleBackPressChangedSupplier().get());
+        Assert.assertFalse(mBackPressHandler.getHandleBackPressChangedSupplier().get());
     }
 
     /**
@@ -400,6 +406,8 @@ public class ReturnToChromeUtilTest {
         if (!mActivityTestRule.getActivity().isTablet()) {
             LayoutTestUtils.waitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+            Assert.assertNotNull(mBackPressHandler.getHandleBackPressChangedSupplier().get());
+            Assert.assertFalse(mBackPressHandler.getHandleBackPressChangedSupplier().get());
         }
 
         waitTabModelRestoration();
@@ -478,6 +486,14 @@ public class ReturnToChromeUtilTest {
         } else {
             mActivityTestRule.waitForActivityNativeInitializationComplete();
         }
+        mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> new ReturnToChromeBackPressHandler(
+                                mActivityTestRule.getActivity()
+                                        .getRootUiCoordinatorForTesting()
+                                        .getLayoutStateProviderForTesting(),
+                                mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
+                                () -> {}));
     }
 
     private void waitTabModelRestoration() {

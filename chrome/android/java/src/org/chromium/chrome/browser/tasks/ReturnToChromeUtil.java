@@ -22,6 +22,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
@@ -29,6 +33,9 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -40,11 +47,13 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
@@ -152,6 +161,72 @@ public final class ReturnToChromeUtil {
     private static boolean sGTSFirstMeaningfulPaintRecorded;
 
     private ReturnToChromeUtil() {}
+
+    /**
+     * A helper class to handle the back press related to ReturnToChrome feature. If a tab is opened
+     * from start surface and this tab is unable to be navigated back further, then we trigger
+     * the callback to show overview mode.
+     */
+    public static class ReturnToChromeBackPressHandler implements BackPressHandler {
+        private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
+                new ObservableSupplierImpl<>();
+        private final Supplier<LayoutStateProvider> mLayoutStateProvider;
+        private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+        private final Runnable mOnBackPressedCallback;
+
+        public ReturnToChromeBackPressHandler(
+                OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+                ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+                Runnable onBackPressedCallback) {
+            mLayoutStateProvider = layoutStateProviderOneshotSupplier;
+            mTabModelSelectorSupplier = tabModelSelectorSupplier;
+            mOnBackPressedCallback = onBackPressedCallback;
+            tabModelSelectorSupplier.addObserver(this::onTabModelSelectorAvailable);
+            layoutStateProviderOneshotSupplier.onAvailable(this::onLayoutManagerAvailable);
+        }
+
+        private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
+            onBackPressStatedChanged();
+            tabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
+                    new TabModelObserver() {
+                        @Override
+                        public void didSelectTab(Tab tab, int type, int lastId) {
+                            onBackPressStatedChanged();
+                        }
+                    });
+        }
+
+        private void onLayoutManagerAvailable(LayoutStateProvider layoutStateProvider) {
+            onBackPressStatedChanged();
+            layoutStateProvider.addObserver(new LayoutStateObserver() {
+                @Override
+                public void onStartedShowing(int layoutType, boolean showToolbar) {
+                    onBackPressStatedChanged();
+                }
+            });
+        }
+
+        private void onBackPressStatedChanged() {
+            if (mTabModelSelectorSupplier.get() == null || mLayoutStateProvider.get() == null
+                    || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
+                mBackPressChangedSupplier.set(false);
+                return;
+            }
+            mBackPressChangedSupplier.set(
+                    isTabFromStartSurface(mTabModelSelectorSupplier.get().getCurrentTab())
+                    && !mLayoutStateProvider.get().isLayoutVisible(LayoutType.TAB_SWITCHER));
+        }
+
+        @Override
+        public void handleBackPress() {
+            mOnBackPressedCallback.run();
+        }
+
+        @Override
+        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+            return mBackPressChangedSupplier;
+        }
+    }
 
     /**
      * Determine if we should show the tab switcher on returning to Chrome.
