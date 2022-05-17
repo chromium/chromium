@@ -13,7 +13,7 @@
 namespace base {
 class CommandLine;
 class FilePath;
-}
+}  // namespace base
 
 namespace logging {
 
@@ -37,9 +37,21 @@ LoggingDestination DetermineLoggingDestination(
     const base::CommandLine& command_line);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Prepare the log file. If |new_log| is true, rotate the previous log file to
+// write new logs to the latest log file. Otherwise, we reuse the existing file
+// if exists.
+base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log);
+
+#if defined(UNIT_TEST)
+// Expose the following methods only for tests.
+
+// Allow external calls to the internal method for testing.
+bool RotateLogFile(const base::FilePath& target_path);
+
 // Point the logging symlink to the system log or the user session log.
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log);
+#endif  // defined(UNIT_TEST)
 
 // Remove the logging symlink.
 void RemoveSymlinkAndLog(const base::FilePath& link_path,

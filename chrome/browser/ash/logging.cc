@@ -30,13 +30,13 @@ bool g_chrome_logging_redirect_tried = false;
 // This should be set to true for tests that rely on log redirection.
 bool g_force_log_redirection = false;
 
-void SymlinkSetUp(const base::CommandLine& command_line,
+void LogFileSetUp(const base::CommandLine& command_line,
                   const base::FilePath& log_path,
                   const base::FilePath& target_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // ChromeOS always logs through the symlink, so it shouldn't be
-  // deleted if it already exists.
+  // The |log_path| is the new log file after log rotation. so it shouldn't be
+  // deleted even if it already exists.
   logging::LoggingSettings settings;
   settings.logging_dest = logging::DetermineLoggingDestination(command_line);
   settings.log_file_path = log_path.value().c_str();
@@ -88,18 +88,17 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kDisableLoggingRedirect))
     return;
 
-  LOG(WARNING)
-      << "Redirecting post-login logging to /home/chronos/user/log/chrome/";
-
   // Redirect logs to the session log directory, if set.  Otherwise
   // defaults to the profile dir.
   const base::FilePath log_path = logging::GetSessionLogFile(command_line);
 
-  // Always force a new symlink when redirecting.
+  LOG(WARNING) << "Redirecting post-login logging to " << log_path.value();
+
+  // Rotate the old log files when redirecting.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&logging::SetUpSymlinkIfNeeded, log_path, true),
-      base::BindOnce(&SymlinkSetUp, command_line, log_path));
+      base::BindOnce(&logging::SetUpLogFile, log_path, /*new_log=*/true),
+      base::BindOnce(&LogFileSetUp, command_line, log_path));
 }
 
 }  // namespace ash

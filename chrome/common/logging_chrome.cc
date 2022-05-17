@@ -85,6 +85,13 @@ bool chrome_logging_failed_ = false;
 // InitChromeLogging() and the beginning of CleanupChromeLogging().
 bool chrome_logging_redirected_ = false;
 
+// The directory on which we do rotation of log files instead of switching
+// with symlink. Because this directory doesn't support symlinks and the logic
+// doesn't work correctly.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kChronosHomeDir[] = "/home/chronos/user/";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
 const GUID kChromeTraceProviderName = {
@@ -112,10 +119,8 @@ void SuppressDialogs() {
       base::BindRepeating(SilentRuntimeAssertHandler));
 
 #if BUILDFLAG(IS_WIN)
-  UINT new_flags = SEM_FAILCRITICALERRORS |
-                   SEM_NOGPFAULTERRORBOX |
-                   SEM_NOOPENFILEERRORBOX;
-
+  UINT new_flags =
+      SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX;
   // Preserve existing error mode, as discussed at http://t/dmea
   UINT existing_flags = SetErrorMode(new_flags);
   SetErrorMode(existing_flags | new_flags);
@@ -166,6 +171,51 @@ LoggingDestination DetermineLoggingDestination(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool RotateLogFile(const base::FilePath& target_path) {
+  DCHECK(!target_path.empty());
+  // If the old log file doesn't exist, do nothing.
+  if (!base::PathExists(target_path)) {
+    return true;
+  }
+
+  // Retrieve the creation time of the old log file.
+  base::File::Info info;
+  {
+    // Opens a file, only if it exists.
+    base::File fp(target_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!fp.GetInfo(&info)) {
+      // On failure, keep using the same file.
+      return false;
+    }
+  }
+
+  // Generate the rotated log path name from the creation time.
+  // (eg. "/home/chrome/user/log/chrome_220102-030405")
+  base::Time timestamp = info.creation_time;
+  base::FilePath rotated_path = GenerateTimestampedName(target_path, timestamp);
+
+  // Rare case: if the target path already exists, generate the alternative by
+  // incrementing the timestamp. This may happen when the Chrome restarts
+  // multiple times in a second.
+  while (base::PathExists(rotated_path)) {
+    timestamp += base::Seconds(1);
+    rotated_path = GenerateTimestampedName(target_path, timestamp);
+  }
+
+  // Rename the old log file: |target_path| => |rotated_path|.
+  // We don't use |base::Move|, since we don't consider the inter-filesystem
+  // move in this logic. The current logic depends on the fact that the ctime
+  // won't be changed after rotation, but ctime may be changed on
+  // inter-filesystem move.
+  if (!base::ReplaceFile(target_path, rotated_path, nullptr)) {
+    PLOG(ERROR) << "Failed to rotate the log files: " << target_path << " => "
+                << rotated_path;
+    return false;
+  }
+
+  return true;
+}
+
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log) {
   DCHECK(!symlink_path.empty());
@@ -234,7 +284,7 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
                          const base::FilePath& target_path) {
   if (::unlink(link_path.value().c_str()) == -1)
     DPLOG(WARNING) << "Unable to unlink symlink " << link_path.value();
-  if (::unlink(target_path.value().c_str()) == -1)
+  if (target_path != link_path && ::unlink(target_path.value().c_str()) == -1)
     DPLOG(WARNING) << "Unable to unlink log file " << target_path.value();
 }
 
@@ -269,6 +319,41 @@ base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
       .Append(GetLogFileName(command_line).BaseName());
 }
 
+base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
+  const bool supports_symlinks =
+      !(target_path.IsAbsolute() &&
+        base::StartsWith(target_path.value(), kChronosHomeDir));
+
+  // TODO(crbug.com/1326369): Remove the old symlink logic.
+  if (supports_symlinks) {
+    // As for now, we keep the original log rotation logic on the file system
+    // which supports symlinks.
+    return SetUpSymlinkIfNeeded(target_path, new_log);
+  }
+
+  // Chrome OS doesn't support symlinks on this file system, so that it uses
+  // the rotation logic which doesn't use symlinks.
+  if (!new_log) {
+    // Keep using the same log file without doing anything.
+    return target_path;
+  }
+
+  // For backward compatibility, ignore a ".LATEST" extension the way
+  // |SetUpSymlinkIfNeeded()| does.
+  base::FilePath bare_path = target_path;
+  if (target_path.Extension() == ".LATEST") {
+    bare_path = target_path.ReplaceExtension("");
+  }
+
+  // Try to rotate the log.
+  if (!RotateLogFile(bare_path)) {
+    DPLOG(ERROR) << "Failed to rotate the log file: " << bare_path.value()
+                 << ". Keeping using the same log file without rotating.";
+  }
+
+  return bare_path;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void InitChromeLogging(const base::CommandLine& command_line,
@@ -294,11 +379,11 @@ void InitChromeLogging(const base::CommandLine& command_line,
     if (command_line.HasSwitch(ash::switches::kGuestSession))
       log_path = GetSessionLogFile(command_line);
 
-    // On ChromeOS we log to the symlink.  We force creation of a new
-    // symlink if we've been asked to delete the old log, since that
+    // Prepares a log file.  We rotate the previous log file and prepare a new
+    // log file if we've been asked to delete the old log, since that
     // indicates the start of a new session.
-    target_path = SetUpSymlinkIfNeeded(
-        log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
+    target_path =
+        SetUpLogFile(log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
 
     // Because ChromeOS manages the move to a new session by redirecting
     // the link, it shouldn't remove the old file in the logging code,
@@ -393,8 +478,8 @@ void CleanupChromeLogging() {
   if (chrome_logging_failed_)
     return;  // We failed to initiailize logging, no cleanup.
 
-  DCHECK(chrome_logging_initialized_) <<
-    "Attempted to clean up logging when it wasn't initialized.";
+  DCHECK(chrome_logging_initialized_)
+      << "Attempted to clean up logging when it wasn't initialized.";
 
   CloseLogFile();
 
