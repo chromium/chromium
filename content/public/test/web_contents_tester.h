@@ -177,6 +177,8 @@ class WebContentsTester {
   // frame and returns the simulator after the navigation is started.
   virtual std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
       const GURL& url) = 0;
+  // Activates a prerendered page.
+  virtual void ActivatePrerenderedPage(const GURL& url) = 0;
 
   // Returns the time that was set with SetTabSwitchStartTime, or a null
   // TimeTicks if it was never called.

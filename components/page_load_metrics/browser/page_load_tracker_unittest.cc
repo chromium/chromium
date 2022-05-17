@@ -24,8 +24,8 @@ struct PageLoadMetricsObserverEvents final {
   bool was_prerender_started = false;
   bool was_committed = false;
   bool was_sub_frame_deleted = false;
+  bool was_prerendered_page_activated = false;
   size_t sub_frame_navigation_count = 0;
-  ukm::SourceId source_id = ukm::kInvalidSourceId;
 };
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
@@ -39,27 +39,32 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
  private:
   void ReadyToCommitNextNavigation(
       content::NavigationHandle* navigation_handle) override {
+    EXPECT_FALSE(events_->was_ready_to_commit_next_navigation);
     events_->was_ready_to_commit_next_navigation = true;
   }
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override {
+    EXPECT_FALSE(events_->was_started);
     events_->was_started = true;
     return CONTINUE_OBSERVING;
   }
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override {
+    EXPECT_FALSE(events_->was_fenced_frames_started);
     events_->was_fenced_frames_started = true;
     return stop_on_fenced_frames_ ? STOP_OBSERVING : CONTINUE_OBSERVING;
   }
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override {
+    EXPECT_FALSE(events_->was_prerender_started);
     events_->was_prerender_started = true;
     return stop_on_prerender_ ? STOP_OBSERVING : CONTINUE_OBSERVING;
   }
   ObservePolicy OnCommit(
       content::NavigationHandle* navigation_handle) override {
+    EXPECT_FALSE(events_->was_committed);
     events_->was_committed = true;
     return CONTINUE_OBSERVING;
   }
@@ -70,13 +75,12 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
   void OnSubFrameDeleted(int frame_tree_node_id) override {
     events_->was_sub_frame_deleted = true;
   }
-
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override {
-    events_->source_id = GetDelegate().GetPageUkmSourceId();
-    DCHECK_NE(ukm::kInvalidSourceId, events_->source_id);
-    // TODO(https://crbug.com/1301880): Check this new SourceId in a test for
-    // prerendering activation.
+    EXPECT_FALSE(events_->was_prerendered_page_activated);
+    events_->was_prerendered_page_activated = true;
+
+    EXPECT_NE(ukm::kInvalidSourceId, GetDelegate().GetPageUkmSourceId());
   }
 
   bool stop_on_prerender_ = false;
@@ -112,7 +116,7 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
     if (tracker->GetUrl() != target_url_)
       return;
 
-    DCHECK(!is_observer_passed_);
+    EXPECT_FALSE(is_observer_passed_);
     tracker->AddObserver(std::unique_ptr<PageLoadMetricsObserver>(observer_));
     is_observer_passed_ = true;
   }
@@ -326,6 +330,32 @@ TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
   EXPECT_TRUE(GetEvents().was_fenced_frames_started);
   EXPECT_FALSE(GetEvents().was_prerender_started);
   EXPECT_FALSE(GetEvents().was_committed);
+}
+
+TEST_F(PageLoadTrackerTest, ResumeOnPrerenderActivation) {
+  // Target URL to monitor the tracker via the test observer.
+  const char kPrerenderingUrl[] = "https://a.test/prerender";
+  SetTargetUrl(kPrerenderingUrl);
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Add a prerender page.
+  content::WebContentsTester::For(web_contents())
+      ->AddPrerenderAndCommitNavigation(GURL(kPrerenderingUrl));
+
+  // Check observer behaviors.
+  EXPECT_FALSE(GetEvents().was_started);
+  EXPECT_FALSE(GetEvents().was_fenced_frames_started);
+  EXPECT_TRUE(GetEvents().was_prerender_started);
+  EXPECT_TRUE(GetEvents().was_committed);
+  EXPECT_FALSE(GetEvents().was_prerendered_page_activated);
+
+  // Activate the prerendered page.
+  content::WebContentsTester::For(web_contents())
+      ->ActivatePrerenderedPage(GURL(kPrerenderingUrl));
+
+  EXPECT_TRUE(GetEvents().was_prerendered_page_activated);
 }
 
 }  // namespace

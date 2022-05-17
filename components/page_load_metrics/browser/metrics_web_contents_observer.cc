@@ -308,6 +308,13 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
     NOTREACHED();
   }
 
+  // For prerendered page activations, we don't create a new PageLoadTracker,
+  // but reuse an existing one that was created for the initial prerendering
+  // navigation so that the same instance will bee OnPrerenderStart and
+  // DidActivatePrerenderedPage.
+  if (navigation_handle->IsPrerenderedPageActivation())
+    return;
+
   // Passing raw pointers to `embedder_interface_` is safe because the
   // MetricsWebContentsObserver owns them both list and they are torn down after
   // the PageLoadTracker. The PageLoadTracker does not hold on to

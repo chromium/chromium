@@ -406,6 +406,12 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
     // Notify the parent of the inner main frame navigation as a sub-frame
     // navigation.
     parent_tracker_->DidFinishSubFrameNavigation(navigation_handle);
+  } else if (navigation_handle->IsPrerenderedPageActivation()) {
+    // We don't deliver OnCommit() for activation. Prerendered pages will see
+    // DidActivatePrerenderedPage() instead.
+    // Event records below are also not needed as we did them for the initial
+    // navigation on starting prerendering.
+    return;
   }
 
   did_commit_ = true;
