@@ -57,6 +57,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "allocation_guard.h",
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
+    "extended_api.cc",
+    "extended_api.h",
     "memory_reclaimer.cc",
     "memory_reclaimer.h",
     "oom.cc",
@@ -282,11 +284,7 @@ target(partition_alloc_target_type, "partition_alloc") {
 }
 
 source_set("test_support") {
-  sources = [
-    "extended_api.cc",
-    "extended_api.h",
-    "partition_alloc_base/threading/platform_thread_for_testing.h",
-  ]
+  sources = [ "partition_alloc_base/threading/platform_thread_for_testing.h" ]
   if (is_posix) {
     sources += [
       "partition_alloc_base/threading/platform_thread_posix_for_testing.cc",
