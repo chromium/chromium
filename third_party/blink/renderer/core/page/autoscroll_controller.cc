@@ -320,7 +320,9 @@ void AutoscrollController::HandleMouseReleaseForMiddleClickAutoscroll(
   if (!MiddleClickAutoscrollInProgress())
     return;
 
-  if (!frame->IsMainFrame())
+  // We only want to execute this event once per event dispatch loop so
+  // we restrict to processing it only on the local root.
+  if (!frame->IsLocalRoot())
     return;
 
   if (middle_click_mode_ == kMiddleClickInitial && is_middle_button)
