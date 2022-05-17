@@ -29,7 +29,7 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testSimpleJsEvaluation() throws Throwable {
-        final String code = "'PASS'";
+        final String code = "\"PASS\"";
         final String expected = "PASS";
         Context context = ContextUtils.getApplicationContext();
 
@@ -146,8 +146,8 @@ public class JsSandboxServiceTest {
     @Test
     @MediumTest
     public void testJsEvaluationError() throws Throwable {
-        final String code = ".";
-        final String contains = "SyntaxError";
+        final String code = "throw new WebAssembly.LinkError('RandomLinkError');";
+        final String contains = "RandomLinkError";
         Context context = ContextUtils.getApplicationContext();
 
         ListenableFuture<AwJsSandbox> awJsSandboxFuture =

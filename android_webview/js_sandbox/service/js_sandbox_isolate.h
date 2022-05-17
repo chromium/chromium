@@ -11,12 +11,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "gin/public/context_holder.h"
 #include "gin/public/isolate_holder.h"
-#include "gin/shell_runner.h"
-
-namespace {
-class SandboxRunnerDelegate;
-}
 
 namespace android_webview {
 
@@ -44,10 +41,29 @@ class JsSandboxIsolate {
                                   FinishedCallback success_callback,
                                   FinishedCallback failure_callback);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  void TerminateAndDestroy();
+  void DestroyWhenPossible();
+  void NotifyInitComplete();
+  void CreateCancelableTaskTracker();
+  void PostEvaluationToIsolateThread(const std::string code,
+                                     FinishedCallback success_callback,
+                                     FinishedCallback error_callback);
+
+  // Used as a control sequence to add ordering to binder threadpool requests.
+  scoped_refptr<base::SequencedTaskRunner> control_task_runner_;
+  // Should be used from control_task_runner_.
+  bool isolate_init_complete = false;
+  // Should be used from control_task_runner_.
+  bool destroy_called_before_init = false;
+  // Should be used from control_task_runner_.
+  std::unique_ptr<base::CancelableTaskTracker> cancelable_task_tracker_;
+
+  // Used for interaction with the isolate.
+  scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner_;
+  // Should be used from isolate_task_runner_.
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
-  std::unique_ptr<SandboxRunnerDelegate> delegate_;
-  std::unique_ptr<gin::ShellRunner> runner_;
+  // Should be used from isolate_task_runner_.
+  std::unique_ptr<gin::ContextHolder> context_holder_;
 };
 }  // namespace android_webview
 

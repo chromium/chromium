@@ -23,7 +23,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
-#include "gin/shell_runner.h"
 #include "gin/try_catch.h"
 #include "gin/v8_initializer.h"
 
@@ -37,88 +36,66 @@ namespace {
 // this once error handling is in place.
 constexpr base::StringPiece resource_name = "<expression>";
 
-class SandboxRunnerDelegate : public gin::ShellRunnerDelegate {
- public:
-  SandboxRunnerDelegate() {}
-  ~SandboxRunnerDelegate() override = default;
+v8::Local<v8::String> GetSourceLine(v8::Isolate* isolate,
+                                    v8::Local<v8::Message> message) {
+  auto maybe = message->GetSourceLine(isolate->GetCurrentContext());
+  v8::Local<v8::String> source_line;
+  return maybe.ToLocal(&source_line) ? source_line : v8::String::Empty(isolate);
+}
 
-  using FinishedCallback = base::OnceCallback<void(const std::string&)>;
-
-  void SetErrorCallback(FinishedCallback error_callback) {
-    error_callback_ = std::move(error_callback);
+// Logic borrowed and kept similar to gin::TryCatch::GetStackTrace()
+std::string GetStackTrace(v8::TryCatch& try_catch, v8::Isolate* isolate) {
+  if (!try_catch.HasCaught()) {
+    return "";
   }
 
-  void UnhandledException(gin::ShellRunner* runner,
-                          gin::TryCatch& try_catch) override {
-    std::move(error_callback_).Run(try_catch.GetStackTrace());
-  }
+  std::stringstream ss;
+  v8::Local<v8::Message> message = try_catch.Message();
+  ss << gin::V8ToString(isolate, message->Get()) << std::endl
+     << gin::V8ToString(isolate, GetSourceLine(isolate, message)) << std::endl;
 
- private:
-  FinishedCallback error_callback_;
-};
+  v8::Local<v8::StackTrace> trace = message->GetStackTrace();
+  if (trace.IsEmpty())
+    return ss.str();
+
+  int len = trace->GetFrameCount();
+  for (int i = 0; i < len; ++i) {
+    v8::Local<v8::StackFrame> frame = trace->GetFrame(isolate, i);
+    ss << gin::V8ToString(isolate, frame->GetScriptName()) << ":"
+       << frame->GetLineNumber() << ":" << frame->GetColumn() << ": "
+       << gin::V8ToString(isolate, frame->GetFunctionName()) << std::endl;
+  }
+  return ss.str();
+}
 }  // namespace
 
 namespace android_webview {
 
 JsSandboxIsolate::JsSandboxIsolate() {
-  task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+  control_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+  isolate_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  task_runner_->PostTask(
+  control_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&JsSandboxIsolate::CreateCancelableTaskTracker,
+                                base::Unretained(this)));
+  isolate_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&JsSandboxIsolate::InitializeIsolateOnThread,
                                 base::Unretained(this)));
 }
 
 JsSandboxIsolate::~JsSandboxIsolate() {}
 
-void JsSandboxIsolate::DeleteSelf() {
-  delete this;
-}
-
-void JsSandboxIsolate::DestroyNative(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  // TODO(crbug.com/1297672): Currently this only posts the deletion task to
-  // the task runner which ensures that the deletion happens after all the
-  // existing tasks are processed. We may also want to cancel any
-  // not-yet-started tasks rather than let them all run. And, ultimately,
-  // we'll want to forcibly abort execution in the V8 isolate.
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&JsSandboxIsolate::DeleteSelf, base::Unretained(this)));
-}
-
-void JsSandboxIsolate::InitializeIsolateOnThread() {
-  isolate_holder_ = std::make_unique<gin::IsolateHolder>(
-      base::ThreadTaskRunnerHandle::Get(),
-      gin::IsolateHolder::IsolateType::kUtility);
-  v8::Isolate* isolate = isolate_holder_->isolate();
-  delegate_ = std::make_unique<SandboxRunnerDelegate>();
-  runner_ = std::make_unique<gin::ShellRunner>(delegate_.get(), isolate);
-}
-
-void JsSandboxIsolate::EvaluateJavascriptOnThread(
-    const std::string code,
-    FinishedCallback success_callback,
-    FinishedCallback error_callback) {
-  delegate_->SetErrorCallback(std::move(error_callback));
-  gin::Runner::Scope scope(runner_.get());
-  std::string resource_string(resource_name.begin(), resource_name.end());
-  v8::MaybeLocal<v8::Value> maybe = runner_->Run(code, resource_string);
-  v8::Local<v8::Value> value;
-  if (maybe.ToLocal(&value)) {
-    std::string result =
-        gin::V8ToString(runner_->GetContextHolder()->isolate(), value);
-    std::move(success_callback).Run(result);
-  }
-}
-
-// A single thread is used to interact with the isolate and post tasks. This
-// is because an isolate is not thread safe. Incoming IPCs come from
-// different threads belonging to the Binder threadpool. We push all of these
-// requests into the isolate thread pool queue and return immediately. Once the
-// result is computed, the isolate thread calls the callback.
+// Called from Binder thread.
+// This method posts evaluation tasks to the control_task_runner_. The
+// control_task_runner_ provides ordering to the requests and manages
+// cancelable_task_tracker_ which allows us to cancel tasks. The
+// control_task_runner_ in turn posts tasks via cancelable_task_tracker_ to the
+// isolate_task_runner_ which interacts with the isolate and runs the evaluation
+// in v8. Only isolate_task_runner_ should be used to interact with the isolate
+// for thread-affine v8 APIs. The callback is invoked from the
+// isolate_task_runner_.
 jboolean JsSandboxIsolate::EvaluateJavascript(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
@@ -126,9 +103,9 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
     const base::android::JavaParamRef<jobject>& j_success_callback,
     const base::android::JavaParamRef<jobject>& j_failure_callback) {
   std::string code = ConvertJavaStringToUTF8(env, jcode);
-  task_runner_->PostTask(
+  control_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
+      base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,
                      base::Unretained(this), std::move(code),
                      base::BindOnce(&base::android::RunStringCallbackAndroid,
                                     base::android::ScopedJavaGlobalRef<jobject>(
@@ -137,6 +114,129 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
                                     base::android::ScopedJavaGlobalRef<jobject>(
                                         j_failure_callback))));
   return true;
+}
+
+// Called from Binder thread.
+void JsSandboxIsolate::DestroyNative(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  control_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&JsSandboxIsolate::DestroyWhenPossible,
+                                base::Unretained(this)));
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::PostEvaluationToIsolateThread(
+    const std::string code,
+    FinishedCallback success_callback,
+    FinishedCallback error_callback) {
+  cancelable_task_tracker_->PostTask(
+      isolate_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
+                     base::Unretained(this), std::move(code),
+                     std::move(success_callback), std::move(error_callback)));
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::CreateCancelableTaskTracker() {
+  cancelable_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::TerminateAndDestroy() {
+  // This will cancel all pending executions.
+  cancelable_task_tracker_.reset();
+  isolate_holder_->isolate()->TerminateExecution();
+  isolate_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::DeleteSelf, base::Unretained(this)));
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::DestroyWhenPossible() {
+  if (isolate_init_complete) {
+    TerminateAndDestroy();
+  } else {
+    destroy_called_before_init = true;
+  }
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::NotifyInitComplete() {
+  if (destroy_called_before_init) {
+    TerminateAndDestroy();
+  }
+  isolate_init_complete = true;
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::DeleteSelf() {
+  delete this;
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::InitializeIsolateOnThread() {
+  isolate_holder_ = std::make_unique<gin::IsolateHolder>(
+      base::ThreadTaskRunnerHandle::Get(),
+      gin::IsolateHolder::IsolateType::kUtility);
+  v8::Isolate* isolate = isolate_holder_->isolate();
+  v8::Isolate::Scope isolate_scope(isolate);
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context =
+      v8::Context::New(isolate, NULL, v8::Local<v8::ObjectTemplate>());
+
+  context_holder_ = std::make_unique<gin::ContextHolder>(isolate);
+  context_holder_->SetContext(context);
+
+  control_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&JsSandboxIsolate::NotifyInitComplete,
+                                base::Unretained(this)));
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::EvaluateJavascriptOnThread(
+    const std::string code,
+    FinishedCallback success_callback,
+    FinishedCallback error_callback) {
+  v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+  v8::HandleScope handle_scope(isolate_holder_->isolate());
+  v8::Context::Scope scope(context_holder_->context());
+  v8::Isolate* v8_isolate = isolate_holder_->isolate();
+  v8::TryCatch try_catch(v8_isolate);
+
+  // Compile
+  v8::ScriptOrigin origin(v8_isolate,
+                          gin::StringToV8(v8_isolate, resource_name));
+  v8::MaybeLocal<v8::Script> maybe_script = v8::Script::Compile(
+      context_holder_->context(), gin::StringToV8(v8_isolate, code), &origin);
+  std::string compile_error = "";
+  if (try_catch.HasCaught()) {
+    compile_error = GetStackTrace(try_catch, v8_isolate);
+  }
+  v8::Local<v8::Script> script;
+  if (!maybe_script.ToLocal(&script)) {
+    std::move(error_callback).Run(compile_error);
+    return;
+  }
+
+  // Run
+  v8::Isolate::SafeForTerminationScope safe_for_termination(v8_isolate);
+  v8::MaybeLocal<v8::Value> maybe_result =
+      script->Run(context_holder_->context());
+  std::string run_error = "";
+  if (try_catch.HasTerminated()) {
+    // Client side will take care of it for now.
+    return;
+  } else if (try_catch.HasCaught()) {
+    run_error = GetStackTrace(try_catch, v8_isolate);
+  }
+  v8::Local<v8::Value> value;
+  if (maybe_result.ToLocal(&value)) {
+    std::string result = gin::V8ToString(v8_isolate, value);
+    std::move(success_callback).Run(result);
+  } else {
+    std::move(error_callback).Run(run_error);
+  }
 }
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
