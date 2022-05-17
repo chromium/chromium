@@ -1883,16 +1883,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkIsolationKey) {
                      /*require_dns_https_alpn=*/false)));
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ConnectionNotPooledWithDifferentPin \
-  DISABLED_ConnectionNotPooledWithDifferentPin
-#else
-#define MAYBE_ConnectionNotPooledWithDifferentPin \
-  ConnectionNotPooledWithDifferentPin
-#endif
-TEST_P(QuicChromiumClientSessionTest,
-       MAYBE_ConnectionNotPooledWithDifferentPin) {
+TEST_P(QuicChromiumClientSessionTest, ConnectionNotPooledWithDifferentPin) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -1917,6 +1908,7 @@ TEST_P(QuicChromiumClientSessionTest,
   Initialize();
 
   transport_security_state_->EnableStaticPinsForTesting();
+  transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
 
   ProofVerifyDetailsChromium details;
   details.cert_verify_result.verified_cert =

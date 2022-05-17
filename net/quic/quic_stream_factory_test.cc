@@ -1958,14 +1958,7 @@ TEST_P(QuicStreamFactoryTest, HttpsPoolingWithMatchingPins) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NoHttpsPoolingWithDifferentPins \
-  DISABLED_NoHttpsPoolingWithDifferentPins
-#else
-#define MAYBE_NoHttpsPoolingWithDifferentPins NoHttpsPoolingWithDifferentPins
-#endif
-TEST_P(QuicStreamFactoryTest, MAYBE_NoHttpsPoolingWithDifferentPins) {
+TEST_P(QuicStreamFactoryTest, NoHttpsPoolingWithDifferentPins) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -1986,6 +1979,7 @@ TEST_P(QuicStreamFactoryTest, MAYBE_NoHttpsPoolingWithDifferentPins) {
   url::SchemeHostPort server1(url::kHttpsScheme, kDefaultServerHostName, 443);
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName, 443);
   transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();

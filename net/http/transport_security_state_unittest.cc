@@ -4095,13 +4095,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
                 network_isolation_key, &unused_failure_log));
 }
 
-// crbug.com/1325054 Broken on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_UpdateKeyPinsListTimestamp DISABLED_UpdateKeyPinsListTimestamp
-#else
-#define MAYBE_UpdateKeyPinsListTimestamp UpdateKeyPinsListTimestamp
-#endif
-TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
+TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
@@ -4125,7 +4119,6 @@ TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
 
   TransportSecurityState state;
   EnableStaticPins(&state);
-  state.SetPinningListAlwaysTimelyForTesting(false);
   std::string unused_failure_log;
 
   // Prior to updating the list, bad_hashes should be rejected.
@@ -4134,6 +4127,12 @@ TEST_F(TransportSecurityStateTest, MAYBE_UpdateKeyPinsListTimestamp) {
                 host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
                 TransportSecurityState::ENABLE_PIN_REPORTS,
                 network_isolation_key, &unused_failure_log));
+
+  // TransportSecurityStateTest sets a flag when EnableStaticPins is called that
+  // results in TransportSecurityState considering the pins list as always
+  // timely. We need to disable it so we can test that the timestamp has the
+  // required effect.
+  state.SetPinningListAlwaysTimelyForTesting(false);
 
   // Update the pins list, with bad hashes as rejected, but a timestamp >70 days
   // old.
