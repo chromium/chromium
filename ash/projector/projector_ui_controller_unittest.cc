@@ -88,7 +88,6 @@ class ProjectorUiControllerTest : public AshTestBase {
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
-  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot.
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
@@ -98,10 +97,35 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
 }
 
+TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbarMultipleDisplays) {
+  UpdateDisplay("800x700,801+0-800x700");
+  aura::Window::Windows roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  auto* primary_display_tray = Shell::GetPrimaryRootWindowController()
+                                   ->GetStatusAreaWidget()
+                                   ->projector_annotation_tray();
+  auto* external_display_tray = RootWindowController::ForWindow(roots[1])
+                                    ->GetStatusAreaWidget()
+                                    ->projector_annotation_tray();
+
+  // Show toolbar on primary root window.
+  controller_->ShowToolbar(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(primary_display_tray->visible_preferred());
+  EXPECT_FALSE(external_display_tray->visible_preferred());
+
+  // Change the root window of the recorded window.
+  controller_->OnRecordedWindowChangingRoot(roots[1]);
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_TRUE(external_display_tray->visible_preferred());
+
+  controller_->CloseToolbar();
+  EXPECT_FALSE(primary_display_tray->visible_preferred());
+  EXPECT_FALSE(external_display_tray->visible_preferred());
+}
+
 TEST_F(ProjectorUiControllerTest, CloseToolbarWhenAnnotatorIsEnabled) {
   base::HistogramTester histogram_tester;
 
-  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
@@ -139,7 +163,6 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
-  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
@@ -256,7 +279,6 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
 }
 
 TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {
-  // TODO(b/232301175): Use GetProjectorAnnotationTrayForRoot
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
