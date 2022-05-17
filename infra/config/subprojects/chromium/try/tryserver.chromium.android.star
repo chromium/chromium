@@ -260,6 +260,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android-marshmallow-x86-rel-non-cq",
+    mirrors = [
+        "ci/android-marshmallow-x86-rel-non-cq",
+    ],
 )
 
 try_.builder(

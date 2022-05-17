@@ -999,6 +999,29 @@ ci.builder(
 
 ci.builder(
     name = "android-marshmallow-x86-rel-non-cq",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_wpr_tests",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x86_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "M_non-cq",
