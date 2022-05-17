@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/apple_apsl/cssmapplePriv.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
