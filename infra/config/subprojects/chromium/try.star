@@ -131,6 +131,7 @@ consoles.list_view(
 exec("./try/presubmit.star")
 exec("./try/tryserver.blink.star")
 exec("./try/tryserver.chromium.star")
+exec("./try/tryserver.chromium.accessibility.star")
 exec("./try/tryserver.chromium.android.star")
 exec("./try/tryserver.chromium.angle.star")
 exec("./try/tryserver.chromium.chromiumos.star")

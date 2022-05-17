@@ -228,26 +228,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-blink-web-tests-force-accessibility-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
-    ),
-)
-
-try_.builder(
     name = "linux-clang-tidy-dbg",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,

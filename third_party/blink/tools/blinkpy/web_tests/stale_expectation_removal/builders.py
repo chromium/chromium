@@ -77,10 +77,6 @@ class WebTestBuilders(builders.Builders):
                 },
                 # tryserver.chromium.linux
                 # Explicit trybot.
-                'linux-blink-web-tests-force-accessibility-rel': {
-                    'linux-blink-web-tests-force-accessibility-rel',
-                },
-                # Explicit trybot.
                 'linux-layout-tests-edit-ng': {
                     'linux-layout-tests-edit-ng',
                 },

@@ -483,6 +483,23 @@
     }
   },
   {
+    'name': 'chromium.accessibility',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'linux-blink-web-tests-force-accessibility-rel': {
+        'additional_compile_targets': [
+          'blink_tests',
+        ],
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+    },
+  },
+  {
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -6562,17 +6579,6 @@
         'mixins': [
           'linux-bionic',
         ],
-      },
-      'linux-blink-web-tests-force-accessibility-rel': {
-        'additional_compile_targets': [
-          'blink_tests',
-        ],
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
       },
       'linux-layout-tests-edit-ng': {
         'additional_compile_targets': [

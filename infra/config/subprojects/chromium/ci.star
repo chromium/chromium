@@ -126,6 +126,7 @@ consoles.console_view(
 )]
 
 exec("./ci/chromium.star")
+exec("./ci/chromium.accessibility.star")
 exec("./ci/chromium.android.star")
 exec("./ci/chromium.android.fyi.star")
 exec("./ci/chromium.angle.star")

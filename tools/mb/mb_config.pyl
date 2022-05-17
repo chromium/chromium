@@ -73,6 +73,10 @@
       'win32-official': 'x86_official_optimize_goma',
     },
 
+    'chromium.accessibility': {
+      'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility_reclient',
+    },
+
     'chromium.android': {
       'Android ASAN (dbg)': 'android_clang_asan_debug_bot_reclient',
       'Android arm Builder (dbg)': 'android_webview_google_debug_static_bot_reclient',
@@ -868,6 +872,10 @@
       'win32-official': 'x86_official_optimize_goma_trybot',
     },
 
+    'tryserver.chromium.accessibility': {
+      'linux-blink-web-tests-force-accessibility-rel': 'release_bot_blink_accessibility',
+    },
+
     'tryserver.chromium.android': {
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
@@ -1066,7 +1074,6 @@
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
-      'linux-blink-web-tests-force-accessibility-rel': 'release_trybot',
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
@@ -3142,6 +3149,14 @@
 
     'release_bot_blink': [
       'release_bot_blink',
+    ],
+
+    'release_bot_blink_accessibility': [
+      'release_bot_blink', 'dcheck_always_on',
+    ],
+
+    'release_bot_blink_accessibility_reclient': [
+      'release_bot_blink_reclient', 'dcheck_always_on',
     ],
 
     'release_bot_blink_arm64_minimal_symbols': [

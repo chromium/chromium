@@ -368,15 +368,6 @@
       "use_goma": true
     }
   },
-  "linux-blink-web-tests-force-accessibility-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
   "linux-clang-tidy-dbg": {
     "gn_args": {
       "is_component_build": true,
