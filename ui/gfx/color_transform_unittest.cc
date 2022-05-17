@@ -505,9 +505,9 @@ TEST(SimpleColorSpace, SampleShaderSource) {
       "               3.29283088e-01, 9.19540644e-01, 8.80132765e-02,\n"
       "               4.33131158e-02, 1.13623142e-02, 8.95595193e-01) "
       "* color;\n"
-      "  color.r = TransferFn3(color.r);\n"
-      "  color.g = TransferFn3(color.g);\n"
-      "  color.b = TransferFn3(color.b);\n"
+      "  color.r = sign(color.r) * TransferFn3(abs(color.r));\n"
+      "  color.g = sign(color.g) * TransferFn3(abs(color.g));\n"
+      "  color.b = sign(color.b) * TransferFn3(abs(color.b));\n"
       "  return color;\n"
       "}\n";
   EXPECT_EQ(source, expected);

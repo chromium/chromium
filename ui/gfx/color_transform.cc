@@ -373,7 +373,7 @@ class ColorTransformPerChannelTransferFn : public ColorTransformStep {
   virtual void AppendTransferShaderSource(std::stringstream* src,
                                           bool is_glsl) const = 0;
 
- protected:
+ private:
   // True if the transfer function is extended to be defined for all real
   // values by point symmetry.
   bool extended_ = false;
@@ -500,8 +500,7 @@ class ColorTransformSkTransferFn : public ColorTransformPerChannelTransferFn {
     ColorTransformSkTransferFn* next = next_untyped->GetSkTransferFn();
     if (!next)
       return false;
-    if (!extended_ && !next->extended_ &&
-        SkTransferFnsApproximatelyCancel(fn_, next->fn_)) {
+    if (SkTransferFnsApproximatelyCancel(fn_, next->fn_)) {
       // Set to be the identity.
       fn_.a = 1;
       fn_.b = 0;
@@ -1193,8 +1192,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         // HLG is designed such that treating it as 2.2 gamma content works
         // well.
         constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
-        steps_.push_back(
-            std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
+        steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
+            kGamma22, src.HasExtendedSkTransferFn()));
       } else if (options.tone_map_pq_and_hlg_to_dst) {
         // Convert to linear with a maximum value of 1.
         steps_.push_back(std::make_unique<ColorTransformHLGToLinear>(

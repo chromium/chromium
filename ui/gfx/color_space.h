@@ -379,7 +379,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
   RangeID GetRangeID() const;
 
   // Returns true if the transfer function is defined by an
-  // skcms_TransferFunction which is extended to all real values.
+  // skcms_TransferFunction which is extended to all real values. This is true
+  // unless the color space has a non-RGB matrix.
   bool HasExtendedSkTransferFn() const;
 
   // Returns true if each color in |other| can be expressed in this color space.
