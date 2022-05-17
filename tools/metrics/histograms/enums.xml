@@ -25041,6 +25041,13 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Other error"/>
 </enum>
 
+<enum name="DevToolsRecordingReplaySpeed">
+  <int value="1" label="Replay normal"/>
+  <int value="2" label="Replay slow"/>
+  <int value="3" label="Replay very slow"/>
+  <int value="4" label="Replay extremely slow"/>
+</enum>
+
 <enum name="DevToolsRecordingReplayStarted">
   <int value="1" label="Replay only"/>
   <int value="2" label="Replay with performance tracing"/>
