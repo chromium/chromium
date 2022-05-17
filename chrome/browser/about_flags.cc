@@ -2860,6 +2860,18 @@ const FeatureEntry::FeatureParam kQuickDim10sQuickLock130s[] = {
     {"QuickDim_negative_score_threshold", "0"},
 };
 
+const FeatureEntry::FeatureParam kQuickDim10sQuickLock130sFeedback[] = {
+    {"QuickDim_quick_dim_ms", "10000"},
+    {"QuickDim_quick_lock_ms", "130000"},
+    {"QuickDim_filter_config_case", "2"},
+    {"QuickDim_positive_count_threshold", "1"},
+    {"QuickDim_negative_count_threshold", "2"},
+    {"QuickDim_uncertain_count_threshold", "2"},
+    {"QuickDim_positive_score_threshold", "0"},
+    {"QuickDim_negative_score_threshold", "0"},
+    {"QuickDim_send_feedback_if_undimmed", "true"},
+};
+
 const FeatureEntry::FeatureParam kQuickDim10sQuickLock130sThreshold20[] = {
     {"QuickDim_quick_dim_ms", "10000"},
     {"QuickDim_quick_lock_ms", "130000"},
@@ -2957,6 +2969,8 @@ const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
      std::size(kQuickDim10sQuickLock130sThreshold40), nullptr},
     {"Dim10sLock130sThreshold-40", kQuickDim10sQuickLock130sThresholdMinus40,
      std::size(kQuickDim10sQuickLock130sThresholdMinus40), nullptr},
+    {"Dim10sLock130sWithFeedback", kQuickDim10sQuickLock130sFeedback,
+     std::size(kQuickDim10sQuickLock130sFeedback), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
