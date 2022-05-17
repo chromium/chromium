@@ -511,8 +511,6 @@ def _GenerateGradleProperties():
 
 def _GenerateBaseVars(generator, build_vars):
   variables = {}
-  variables['compile_sdk_version'] = (
-      'android-%s' % build_vars['compile_sdk_version'])
   target_sdk_version = build_vars['android_sdk_version']
   if str(target_sdk_version).isalpha():
     target_sdk_version = '"{}"'.format(target_sdk_version)
@@ -757,12 +755,6 @@ def main():
                       action='append',
                       help='GN native targets to generate for. May be '
                            'repeated.')
-  parser.add_argument('--compile-sdk-version',
-                      type=int,
-                      default=0,
-                      help='Override compileSdkVersion for android sdk docs. '
-                           'Useful when sources for android_sdk_version is '
-                           'not available in Android Studio.')
   parser.add_argument(
       '--sdk-path',
       default=os.path.expanduser('~/Android/Sdk'),
@@ -832,10 +824,6 @@ def main():
     channel = 'canary'
   else:
     channel = 'stable'
-  if args.compile_sdk_version:
-    build_vars['compile_sdk_version'] = args.compile_sdk_version
-  else:
-    build_vars['compile_sdk_version'] = build_vars['android_sdk_version']
   generator = _ProjectContextGenerator(_gradle_output_dir, build_vars,
       args.use_gradle_process_resources, jinja_processor, args.split_projects,
       channel)
