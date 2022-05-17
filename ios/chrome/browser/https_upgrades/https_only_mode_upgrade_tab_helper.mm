@@ -26,6 +26,7 @@
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/base/url_util.h"
 #include "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -112,6 +113,15 @@ void HttpsOnlyModeUpgradeTabHelper::ClearAllowlistForTesting() {
 bool HttpsOnlyModeUpgradeTabHelper::IsFakeHTTPSForTesting(
     const GURL& url) const {
   return url.IntPort() == https_port_for_testing_;
+}
+
+bool HttpsOnlyModeUpgradeTabHelper::IsLocalhost(const GURL& url) const {
+  // Tests use 127.0.0.1 for embedded servers, which is a localhost URL.
+  // Only check for "localhost" in tests.
+  if (http_port_for_testing_) {
+    return url.host() == "localhost";
+  }
+  return net::IsLocalhost(url);
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
@@ -297,8 +307,15 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   DCHECK(item_pending);
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (!item_pending->IsUpgradedToHttps()) {
-    if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
-      // If the feature is disabled, don't upgrade.
+    if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled) ||
+        IsLocalhost(url)) {
+      // Don't upgrade if the feature is disabled or the URL is localhost.
+      // See ShouldCreateLoader() function in
+      // https_only_mode_upgrade_interceptor.cc for the desktop/Android
+      // implementation.
+      // TODO(crbug.com/1302509): Also ignore POST requests. On Desktop and
+      // Android we ignore all requests with methods other than "GET", but we
+      // don't have method information here.
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
       return;

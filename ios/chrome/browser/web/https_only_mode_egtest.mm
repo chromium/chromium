@@ -219,6 +219,17 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [super tearDown];
 }
 
+// Asserts that the navigation wasn't upgraded.
+- (void)assertNoUpgrade {
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Shouldn't record event histogram");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+}
+
 // Asserts that the metrics are properly recorded for a successful upgrade.
 - (void)assertSuccessfulUpgrade {
   GREYAssertNil([MetricsAppInterface
@@ -322,13 +333,24 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:0
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"Shouldn't record event histogram");
-  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
-             @"Timer is still running");
+  [self assertNoUpgrade];
+}
+
+// Tests that navigations to localhost URLs aren't upgraded.
+- (void)testUpgrade_Localhost_NoUpgrade {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.goodHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+
+  GURL testURL = self.testServer->GetURL("/");
+  GURL::Replacements replacements;
+  replacements.SetHostStr("localhost");
+  GURL localhostURL = testURL.ReplaceComponents(replacements);
+
+  [ChromeEarlGrey loadURL:localhostURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  [self assertNoUpgrade];
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL.
@@ -531,6 +553,14 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Open an incognito tab and try there. Should show the interstitial as
   // allowlist decisions don't carry over to incognito.
   [ChromeEarlGrey openNewIncognitoTab];
+  // Set the testing information for the incognito tab.
+  // TODO(crbug.com/1302509): Move these methods to HttpsUpgradeService so
+  // that all tabs can use this information without explicitly setting them.
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.badHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:"You are seeing this warning because this "

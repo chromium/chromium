@@ -72,6 +72,7 @@ class HttpsOnlyModeUpgradeTabHelper
   // test HTTP server. We shouldn't upgrade HTTP URLs from from the fake HTTPS
   // server.
   bool IsFakeHTTPSForTesting(const GURL& url) const;
+  bool IsLocalhost(const GURL& url) const;
   bool IsHttpAllowedForUrl(const GURL& url) const;
 
   // Called when the upgrade timer times out.
