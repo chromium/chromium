@@ -677,8 +677,8 @@ void CaptureModeCameraController::OnFrameHandlerFatalError() {
 }
 
 void CaptureModeCameraController::OnShuttingDown() {
-  // At this point `CaptureModeController` should have already ended any ongoing
-  // recording, and there should be no camera previews available.
+  // This should destroy any camera preview if present.
+  SetShouldShowPreview(false);
   DCHECK(!should_show_preview_);
   DCHECK(!camera_preview_widget_);
 
