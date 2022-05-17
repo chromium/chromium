@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -29,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -48,6 +50,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
@@ -193,6 +196,24 @@ public class BluetoothChooserDialogTest {
         return message.replaceAll("</?[^>]*link[^>]*>", "");
     }
 
+    /**
+     * The helper function help to determine whether |requestedPermissions| pass correct permissions
+     * before and from Android S.
+     */
+    private static boolean checkRequestedPermissions(String[] requestedPermissions) {
+        if (requestedPermissions == null) return false;
+        String[] expectedPermissionBeforeS = {Manifest.permission.ACCESS_FINE_LOCATION};
+        String[] expectedPermissionFromS = {
+                Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN};
+        String[] expected = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                ? expectedPermissionFromS
+                : expectedPermissionBeforeS;
+        String[] copied = Arrays.copyOf(requestedPermissions, requestedPermissions.length);
+        Arrays.sort(expected);
+        Arrays.sort(copied);
+        return Arrays.equals(expected, copied);
+    }
+
     @Test
     @SmallTest
     public void testCancel() {
@@ -308,7 +329,7 @@ public class BluetoothChooserDialogTest {
 
     @Test
     @SmallTest
-    public void testNoLocationPermission() {
+    public void testNoPermission() {
         ItemChooserDialog itemChooser = mChooserDialog.mItemChooserDialog;
         Dialog dialog = itemChooser.getDialogForTesting();
         Assert.assertTrue(dialog.isShowing());
@@ -329,9 +350,16 @@ public class BluetoothChooserDialogTest {
                 () -> mChooserDialog.notifyDiscoveryState(
                                 BluetoothChooserDialog.DiscoveryMode.DISCOVERY_FAILED_TO_START));
 
-        Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
-                                    R.string.bluetooth_need_location_permission)),
-                errorView.getText().toString());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
+                                        R.string.bluetooth_need_nearby_devices_permission)),
+                    errorView.getText().toString());
+        } else {
+            Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
+                                        R.string.bluetooth_need_location_permission)),
+                    errorView.getText().toString());
+        }
+
         Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
                                     R.string.bluetooth_adapter_off_help)),
                 statusView.getText().toString());
@@ -344,16 +372,28 @@ public class BluetoothChooserDialogTest {
                 () -> errorView.getClickableSpans()[0].onClick(errorView));
 
         // Permission was requested.
-        Assert.assertArrayEquals(permissionDelegate.mPermissionsRequested,
-                new String[] {Manifest.permission.ACCESS_FINE_LOCATION});
+        Assert.assertTrue(checkRequestedPermissions(permissionDelegate.mPermissionsRequested));
         Assert.assertNotNull(permissionDelegate.mCallback);
+
         // Grant permission.
-        permissionDelegate.mLocationGranted = true;
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> permissionDelegate.mCallback.onRequestPermissionsResult(
-                                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                                new int[] {PackageManager.PERMISSION_GRANTED}));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionDelegate.mBluetoothConnectGranted = true;
+            permissionDelegate.mBluetoothScanGranted = true;
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> permissionDelegate.mCallback.onRequestPermissionsResult(
+                                    new String[] {Manifest.permission.BLUETOOTH_CONNECT,
+                                            Manifest.permission.BLUETOOTH_SCAN},
+                                    new int[] {PackageManager.PERMISSION_GRANTED}));
+
+        } else {
+            permissionDelegate.mLocationGranted = true;
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> permissionDelegate.mCallback.onRequestPermissionsResult(
+                                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                                    new int[] {PackageManager.PERMISSION_GRANTED}));
+        }
 
         Assert.assertEquals(1, mRestartSearchCount);
         Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
@@ -364,6 +404,7 @@ public class BluetoothChooserDialogTest {
 
     @Test
     @SmallTest
+    @MaxAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testNoLocationServices() {
         ItemChooserDialog itemChooser = mChooserDialog.mItemChooserDialog;
         Dialog dialog = itemChooser.getDialogForTesting();
@@ -433,6 +474,18 @@ public class BluetoothChooserDialogTest {
         final Button button = (Button) dialog.findViewById(R.id.positive);
         final View progress = dialog.findViewById(R.id.progress);
 
+        final TestAndroidPermissionDelegate permissionDelegate =
+                new TestAndroidPermissionDelegate(dialog);
+        mWindowAndroid.setAndroidPermissionDelegate(permissionDelegate);
+
+        // Grant permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionDelegate.mBluetoothConnectGranted = true;
+            permissionDelegate.mBluetoothScanGranted = true;
+        } else {
+            permissionDelegate.mLocationGranted = true;
+        }
+
         // Turn off adapter.
         TestThreadUtils.runOnUiThreadBlocking(() -> mChooserDialog.notifyAdapterTurnedOff());
 
@@ -462,15 +515,27 @@ public class BluetoothChooserDialogTest {
         PermissionCallback mCallback;
         String[] mPermissionsRequested;
         public boolean mLocationGranted;
+        public boolean mBluetoothScanGranted;
+        public boolean mBluetoothConnectGranted;
 
         public TestAndroidPermissionDelegate(Dialog dialog) {
             mLocationGranted = false;
+            mBluetoothScanGranted = false;
+            mBluetoothConnectGranted = false;
             mDialog = dialog;
         }
 
         @Override
         public boolean hasPermission(String permission) {
-            return mLocationGranted;
+            if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                return mLocationGranted;
+            } else if (permission.equals(Manifest.permission.BLUETOOTH_SCAN)) {
+                return mBluetoothScanGranted;
+            } else if (permission.equals(Manifest.permission.BLUETOOTH_CONNECT)) {
+                return mBluetoothConnectGranted;
+            } else {
+                return false;
+            }
         }
 
         @Override
@@ -488,10 +553,7 @@ public class BluetoothChooserDialogTest {
             // Requesting for permission takes away focus from the window.
             mDialog.onWindowFocusChanged(false /* hasFocus */);
             mPermissionsRequested = permissions;
-            if (permissions.length == 1
-                    && permissions[0].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                mCallback = callback;
-            }
+            mCallback = callback;
         }
 
         @Override
