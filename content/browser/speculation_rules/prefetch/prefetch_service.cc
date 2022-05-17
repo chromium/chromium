@@ -20,12 +20,14 @@
 #include "content/browser/speculation_rules/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/speculation_rules/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -72,6 +74,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchIneligibleRetryAfter:
     case PrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
@@ -187,6 +190,13 @@ void PrefetchService::CheckEligibilityOfPrefetch(
 
   if (browser_context_->IsOffTheRecord()) {
     std::move(result_callback).Run(prefetch_container, false, absl::nullopt);
+    return;
+  }
+
+  if (GetContentClient()->browser()->IsDataSaverEnabled(browser_context_)) {
+    std::move(result_callback)
+        .Run(prefetch_container, false,
+             PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
     return;
   }
 

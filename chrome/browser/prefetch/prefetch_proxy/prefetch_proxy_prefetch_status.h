@@ -127,6 +127,10 @@ enum class PrefetchProxyPrefetchStatus {
   // (e.g., a non publicly routable IP address or a hostname which is not
   // registry-controlled) but the prefetch was to be proxied.
   kPrefetchNotEligibleHostIsNonUnique = 36,
+
+  // The prefetch was not made because the user requested that the browser use
+  // less data.
+  kPrefetchNotEligibleDataSaverEnabled = 37,
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_STATUS_H_

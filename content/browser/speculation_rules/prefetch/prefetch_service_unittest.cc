@@ -16,6 +16,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/test_content_browser_client.h"
 #include "net/base/proxy_server.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -23,6 +25,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
 namespace {
@@ -310,6 +313,64 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
   EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
   EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique);
+  EXPECT_FALSE(prefetch_iter->second->HasPrefetchedResponse());
+}
+
+namespace {
+
+class DataSaverContentBrowserClient : public TestContentBrowserClient {
+ public:
+  explicit DataSaverContentBrowserClient(bool data_saver_enabled)
+      : data_saver_enabled_(data_saver_enabled) {}
+
+  bool IsDataSaverEnabled(BrowserContext*) override {
+    return data_saver_enabled_;
+  }
+  void OverrideWebkitPrefs(WebContents*,
+                           blink::web_pref::WebPreferences* prefs) override {
+    prefs->data_saver_enabled = data_saver_enabled_;
+  }
+
+ private:
+  bool data_saver_enabled_;
+};
+
+}  // namespace
+
+TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
+  base::HistogramTester histogram_tester;
+  DataSaverContentBrowserClient browser_client(true);
+  ScopedContentBrowserClientSetting replace_browser_client(&browser_client);
+
+  MakePrefetchOnMainFrame(GURL("https://example.com"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(RequestCount(), 0);
+
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
+                                    0);
+  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
+
+  auto all_prefetches = prefetch_service_->GetAllPrefetchesForTesting();
+
+  EXPECT_EQ(all_prefetches.size(), 1U);
+
+  auto prefetch_iter = all_prefetches.find(
+      std::make_pair(main_rfh()->GetGlobalId(), GURL("https://example.com")));
+  ASSERT_TRUE(prefetch_iter != all_prefetches.end());
+
+  EXPECT_TRUE(prefetch_iter->second->HasPrefetchStatus());
+  EXPECT_EQ(prefetch_iter->second->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
   EXPECT_FALSE(prefetch_iter->second->HasPrefetchedResponse());
 }
 

@@ -76331,6 +76331,10 @@ Called by update_net_trust_anchors.py.-->
     (e.g., a non publicly routable IP address or a hostname which is not
     registry-controlled) but the prefetch was to be proxied.
   </int>
+  <int value="37" label="Prefetch Not Eligible: Data Saver Enabled">
+    The url was not eligible to be prefected because the user requested that the
+    browser use less data.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">
