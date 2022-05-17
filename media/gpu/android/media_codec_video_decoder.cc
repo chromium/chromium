@@ -719,7 +719,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
                           BindToCurrentLoop(base::BindRepeating(
                               &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                               weak_factory_.GetWeakPtr()))),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunnerHandle::Get(), decoder_config_.coded_size());
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.

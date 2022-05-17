@@ -21,14 +21,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::DoAll;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
-using testing::_;
 
 namespace media {
+
+constexpr gfx::Size kInitialCodedSize(640, 480);
 
 class CodecWrapperTest : public testing::Test {
  public:
@@ -40,7 +42,7 @@ class CodecWrapperTest : public testing::Test {
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(),
         // Unrendered output buffers are released on our thread.
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunnerHandle::Get(), kInitialCodedSize);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -398,6 +400,25 @@ TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
       .WillOnce(Return(MEDIA_CODEC_ERROR));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateSRGB());
+}
+
+TEST_F(CodecWrapperTest, CodecOutputsIgnoreZeroSize) {
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+
+  constexpr gfx::Size kNewSize(1280, 720);
+  EXPECT_CALL(*codec_, GetOutputSize(_))
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size()), Return(MEDIA_CODEC_OK)))
+      .WillOnce(DoAll(SetArgPointee<0>(kNewSize), Return(MEDIA_CODEC_OK)));
+
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), kInitialCodedSize);
+
+  codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->size(), kNewSize);
 }
 
 }  // namespace media
