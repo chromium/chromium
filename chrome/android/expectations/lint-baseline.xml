@@ -927,6 +927,17 @@
 
     <issue
         id="NewApi"
+        message="Call requires API level 26 (current min is 24): `create`"
+        errorLine1="                    PredefinedChannel.create(ChannelId.USB,"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java"
+            line="252"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 26 (current min is 23): `getChannelIdForOrigin`"
         errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">

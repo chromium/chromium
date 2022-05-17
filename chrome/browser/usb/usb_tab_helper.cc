@@ -4,28 +4,11 @@
 
 #include "chrome/browser/usb/usb_tab_helper.h"
 
-#include <memory>
-#include <utility>
-
-#include "build/build_config.h"
-#include "chrome/browser/usb/frame_usb_services.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "content/public/browser/navigation_handle.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/usb/web_usb_chooser_android.h"
-#else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/usb/web_usb_chooser_desktop.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
-using content::WebContents;
 
 // static
 UsbTabHelper* UsbTabHelper::GetOrCreateForWebContents(
-    WebContents* web_contents) {
+    content::WebContents* web_contents) {
   UsbTabHelper* tab_helper = FromWebContents(web_contents);
   if (!tab_helper) {
     CreateForWebContents(web_contents);
@@ -38,23 +21,13 @@ UsbTabHelper::~UsbTabHelper() {
   DCHECK_EQ(0, device_connection_count_);
 }
 
-UsbTabHelper::UsbTabHelper(WebContents* web_contents)
+UsbTabHelper::UsbTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<UsbTabHelper>(*web_contents) {}
 
 void UsbTabHelper::NotifyIsDeviceConnectedChanged(bool is_device_connected) {
   performance_manager::PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
       &GetWebContents(), is_device_connected);
-
-  // TODO(https://crbug.com/601627): Implement tab indicator for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
-  if (browser) {
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    tab_strip_model->UpdateWebContentsStateAt(
-        tab_strip_model->GetIndexOfWebContents(&GetWebContents()),
-        TabChangeType::kAll);
-  }
-#endif
+  GetWebContents().NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
 }
 
 void UsbTabHelper::IncrementConnectionCount() {

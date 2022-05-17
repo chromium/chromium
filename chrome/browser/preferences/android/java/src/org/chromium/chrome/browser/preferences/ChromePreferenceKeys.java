@@ -1013,6 +1013,7 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("zero_suggest_header_group_collapsed_by_default*");
 
     public static final String BLUETOOTH_NOTIFICATION_IDS = "Chrome.Bluetooth.NotificationIds";
+    public static final String USB_NOTIFICATION_IDS = "Chrome.USB.NotificationIds";
 
     /**
      * These values are currently used as SharedPreferences keys, along with the keys in
@@ -1142,6 +1143,7 @@ public final class ChromePreferenceKeys {
                 TAP_FEED_CARDS_COUNT,
                 TAP_MV_TILES_COUNT,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
+                USB_NOTIFICATION_IDS,
                 VIDEO_TUTORIALS_SHARE_URL_SET,
                 WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),

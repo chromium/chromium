@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.feature_guide.notifications.FeatureNotificationGuideDelegate;
+import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantHistoryDeletionObserver;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
@@ -86,6 +87,7 @@ import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
+import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -353,11 +355,11 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(new Runnable() {
             @Override
             public void run() {
-                // Clear any Bluetooth and media notifications that existed when Chrome was last
-                // killed.
+                // Clear notifications that existed when Chrome was last killed.
                 MediaCaptureNotificationServiceImpl.clearMediaNotifications();
                 BluetoothNotificationManager.clearBluetoothNotifications(
                         BluetoothNotificationService.class);
+                UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
 
                 startModerateBindingManagementIfNeeded();
 

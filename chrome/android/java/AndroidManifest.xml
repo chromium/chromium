@@ -1196,6 +1196,9 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
             android:exported="false"/>
 
+        <service android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
+            android:exported="false"/>
+
         <receiver android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
             android:exported="false"/>
 
