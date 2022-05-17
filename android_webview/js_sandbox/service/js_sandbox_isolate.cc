@@ -25,6 +25,7 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/try_catch.h"
 #include "gin/v8_initializer.h"
+#include "js_sandbox_isolate.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;

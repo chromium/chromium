@@ -4,9 +4,13 @@
 
 package org.chromium.android_webview.js_sandbox.client;
 
-/** Wrapper for the exception thrown by the JS evaluation engine. */
-public class JsEvaluationException extends Exception {
-    public JsEvaluationException(String error) {
+/** Super class for all exceptions thrown during evaluation. */
+public class JsException extends Exception {
+    public JsException(String error) {
         super(error);
+    }
+
+    public JsException() {
+        super();
     }
 }

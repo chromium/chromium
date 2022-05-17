@@ -36,7 +36,7 @@ public class AwJsSandbox implements AutoCloseable {
     private static final String TAG = "AwJsSandbox";
     private static final String JS_SANDBOX_SERVICE_NAME =
             "org.chromium.android_webview.js_sandbox.service.JsSandboxService0";
-    private Object mLock = new Object();
+    private final Object mLock = new Object();
 
     @GuardedBy("mLock")
     private IJsSandboxService mJsSandboxService;

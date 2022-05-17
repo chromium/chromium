@@ -16,10 +16,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.js_sandbox.client.AwJsIsolate;
 import org.chromium.android_webview.js_sandbox.client.AwJsSandbox;
-import org.chromium.android_webview.js_sandbox.client.JsEvaluationException;
+import org.chromium.android_webview.js_sandbox.client.EvaluationFailedException;
+import org.chromium.android_webview.js_sandbox.client.IsolateTerminatedException;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -149,19 +151,69 @@ public class WebViewJsSandboxTest {
         AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
         AwJsIsolate jsIsolate = jsSandbox.createIsolate();
         ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
-        boolean isOfTypeJsEvaluationException = false;
+        boolean isOfCorrectType = false;
         String error = "";
         try {
             String result = resultFuture.get(5, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
-            isOfTypeJsEvaluationException =
-                    e.getCause().getClass().equals(JsEvaluationException.class);
+            isOfCorrectType = e.getCause().getClass().equals(EvaluationFailedException.class);
             error = e.getCause().getMessage();
         }
         jsIsolate.close();
         jsSandbox.close();
 
-        Assert.assertTrue(isOfTypeJsEvaluationException);
+        Assert.assertTrue(isOfCorrectType);
         Assert.assertTrue(error.contains(contains));
+    }
+
+    @Test
+    @MediumTest
+    public void testInfiniteLoop() throws Throwable {
+        final String code = "while(true){}";
+        Context context = ContextUtils.getApplicationContext();
+
+        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
+        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
+        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+        boolean isOfCorrectType = false;
+        try {
+            jsIsolate.close();
+            String result = resultFuture.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            isOfCorrectType = e.getCause().getClass().equals(IsolateTerminatedException.class);
+        }
+        jsSandbox.close();
+
+        Assert.assertTrue(isOfCorrectType);
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleInfiniteLoops() throws Throwable {
+        final String code = "while(true){}";
+        final int num_of_evaluations = 10;
+        Context context = ContextUtils.getApplicationContext();
+
+        ListenableFuture<AwJsSandbox> awJsSandboxFuture = AwJsSandbox.newConnectedInstance(context);
+        AwJsSandbox jsSandbox = awJsSandboxFuture.get(5, TimeUnit.SECONDS);
+        AwJsIsolate jsIsolate = jsSandbox.createIsolate();
+        Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
+        for (int i = 0; i < num_of_evaluations; i++) {
+            ListenableFuture<String> resultFuture = jsIsolate.evaluateJavascript(code);
+            resultFutures.add(resultFuture);
+        }
+        jsIsolate.close();
+
+        for (int i = 0; i < num_of_evaluations; i++) {
+            boolean isOfCorrectType = false;
+            try {
+                String result = resultFutures.elementAt(i).get(5, TimeUnit.SECONDS);
+            } catch (ExecutionException e) {
+                isOfCorrectType = e.getCause().getClass().equals(IsolateTerminatedException.class);
+            }
+            Assert.assertTrue(isOfCorrectType);
+        }
+        jsSandbox.close();
     }
 }

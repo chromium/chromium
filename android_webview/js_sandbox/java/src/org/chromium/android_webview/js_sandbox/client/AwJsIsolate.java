@@ -16,17 +16,24 @@ import org.chromium.android_webview.js_sandbox.common.ExecutionErrorTypes;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 
+import java.util.HashSet;
 import java.util.concurrent.Executor;
 
-/** Provides a sandboxed execution Isolate. */
+import javax.annotation.concurrent.GuardedBy;
+
+/** Provides a sandboxed execution Isolate. This class is thread-safe. */
 public class AwJsIsolate implements AutoCloseable {
     private static final String TAG = "AwJsIsolate";
+    private final Object mSetLock = new Object();
     private IJsSandboxIsolate mJsIsolateStub;
     private android.util.CloseGuard mGuard;
     private Executor mExecutor;
 
-    private static class IJsSandboxIsolateCallbackStubWrapper
-            extends IJsSandboxIsolateCallback.Stub {
+    @GuardedBy("mSetLock")
+    private HashSet<CallbackToFutureAdapter.Completer> mPendingCompleterSet =
+            new HashSet<CallbackToFutureAdapter.Completer>();
+
+    private class IJsSandboxIsolateCallbackStubWrapper extends IJsSandboxIsolateCallback.Stub {
         private CallbackToFutureAdapter.Completer mCompleter;
 
         IJsSandboxIsolateCallbackStubWrapper(CallbackToFutureAdapter.Completer completer) {
@@ -36,12 +43,14 @@ public class AwJsIsolate implements AutoCloseable {
         @Override
         public void reportResult(String result) {
             mCompleter.set(result);
+            removePending(mCompleter);
         }
 
         @Override
         public void reportError(@ExecutionErrorTypes int type, String error) {
             assert type == IJsSandboxIsolateCallback.JS_EVALUATION_ERROR;
-            mCompleter.setException(new JsEvaluationException(error));
+            mCompleter.setException(new EvaluationFailedException(error));
+            removePending(mCompleter);
         }
     }
 
@@ -66,16 +75,27 @@ public class AwJsIsolate implements AutoCloseable {
         }
 
         return CallbackToFutureAdapter.getFuture(completer -> {
-            IJsSandboxIsolateCallbackStubWrapper callbackStub =
-                    new IJsSandboxIsolateCallbackStubWrapper(completer);
+            final String futureDebugMessage = "evaluateJavascript Future";
+            IJsSandboxIsolateCallbackStubWrapper callbackStub;
+            synchronized (mSetLock) {
+                if (mPendingCompleterSet == null) {
+                    completer.setException(new IsolateTerminatedException());
+                    return futureDebugMessage;
+                }
+                mPendingCompleterSet.add(completer);
+            }
+            callbackStub = new IJsSandboxIsolateCallbackStubWrapper(completer);
             try {
                 mJsIsolateStub.evaluateJavascript(code, callbackStub);
             } catch (RemoteException e) {
                 completer.setException(e.rethrowAsRuntimeException());
+                synchronized (mSetLock) {
+                    mPendingCompleterSet.remove(completer);
+                }
             }
 
             // Debug string.
-            return "evaluateJavascript Future";
+            return futureDebugMessage;
         });
     }
 
@@ -85,6 +105,7 @@ public class AwJsIsolate implements AutoCloseable {
             return;
         }
         try {
+            cancelAllPendingEvaluations(new IsolateTerminatedException());
             mJsIsolateStub.close();
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException was thrown during close()", e);
@@ -92,6 +113,25 @@ public class AwJsIsolate implements AutoCloseable {
         mJsIsolateStub = null;
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard.close();
+        }
+    }
+
+    private void cancelAllPendingEvaluations(Exception e) {
+        final HashSet<CallbackToFutureAdapter.Completer> pendingSet;
+        synchronized (mSetLock) {
+            pendingSet = mPendingCompleterSet;
+            mPendingCompleterSet = null;
+        }
+        for (CallbackToFutureAdapter.Completer ele : pendingSet) {
+            ele.setException(e);
+        }
+    }
+
+    private void removePending(CallbackToFutureAdapter.Completer completer) {
+        synchronized (mSetLock) {
+            if (mPendingCompleterSet != null) {
+                mPendingCompleterSet.remove(completer);
+            }
         }
     }
 
