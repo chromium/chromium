@@ -1436,6 +1436,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 // AUTO-RELOAD TESTS
 // =================
 
+// Intercepts the first load to a URL and fails the request with an error.
 class NetErrorInterceptor final {
  public:
   NetErrorInterceptor(GURL url, net::Error error)
@@ -1451,11 +1452,13 @@ class NetErrorInterceptor final {
   NetErrorInterceptor& operator=(const NetErrorInterceptor&) = delete;
 
  private:
-  bool Intercept(content::URLLoaderInterceptor::RequestParams* params) const {
+  bool Intercept(content::URLLoaderInterceptor::RequestParams* params) {
     const GURL& request_url = params->url_request.url;
-    if (request_url != url_) {
+    if (request_url != url_ || did_intercept_) {
       return false;
     }
+
+    did_intercept_ = true;
 
     network::URLLoaderCompletionStatus status;
     status.error_code = error_;
@@ -1463,12 +1466,15 @@ class NetErrorInterceptor final {
     return true;
   }
 
-  GURL url_;
-  net::Error error_;
+  const GURL url_;
+  const net::Error error_;
+
+  // Whether this instance already intercepted and failed a request.
+  bool did_intercept_ = false;
 
   // Interceptor must be declared after all state used in `Intercept()`, to
   // avoid use-after-free at destruction time.
-  content::URLLoaderInterceptor interceptor_;
+  const content::URLLoaderInterceptor interceptor_;
 };
 
 class PrivateNetworkAccessAutoReloadBrowserTest
@@ -1493,26 +1499,18 @@ class PrivateNetworkAccessAutoReloadBrowserTest
 // This test verifies that when a document in the `local` address space fails to
 // load due to a transient network error, it is auto-reloaded a short while
 // later and that fetch is not blocked as a private network request.
-//
-// TODO(crbug.com/1326341): Flaky on Linux ChromiumOS MSAN.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AutoReloadWorks DISABLED_AutoReloadWorks
-#else
-#define MAYBE_AutoReloadWorks AutoReloadWorks
-#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessAutoReloadBrowserTest,
-                       MAYBE_AutoReloadWorks) {
+                       AutoReloadWorks) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url = embedded_test_server()->GetURL("/defaultresponse");
 
   // There should be two navigations in total: one failed, one successful.
   content::TestNavigationObserver observer(web_contents(), 2);
 
-  {
-    NetErrorInterceptor interceptor(url, net::ERR_UNEXPECTED);
+  // This interceptor will only fail the first request to `url`.
+  NetErrorInterceptor interceptor(url, net::ERR_UNEXPECTED);
 
-    EXPECT_FALSE(content::NavigateToURL(web_contents(), url));
-  }
+  EXPECT_FALSE(content::NavigateToURL(web_contents(), url));
 
   // Observe second navigation, which succeeds.
   observer.Wait();
