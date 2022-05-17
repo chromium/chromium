@@ -23,6 +23,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -131,7 +132,8 @@ public final class SigninTestUtil {
                     .seedAccountsIfNeeded(ch::notifyCalled);
         });
         try {
-            ch.waitForFirst("Timed out while waiting for system accounts to seed.");
+            ch.waitForFirst(
+                    "Timed out while waiting for system accounts to seed.", 20, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             throw new RuntimeException("Timed out while waiting for system accounts to seed.");
         }
