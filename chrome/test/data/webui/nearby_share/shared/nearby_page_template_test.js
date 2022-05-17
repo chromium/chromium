@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://nearby/shared/nearby_page_template.js';
-// #import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_template.js';
-// #import {waitAfterNextRender, isChildVisible} from '../../test_util.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://nearby/shared/nearby_page_template.js';
+
+import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_template.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {isChildVisible, waitAfterNextRender} from '../../test_util.js';
 
 suite('nearby-page-template', function() {
   /** @type {!NearbyPageTemplateElement} */
@@ -28,7 +28,7 @@ suite('nearby-page-template', function() {
    * @return {boolean} Returns true if the element is visible in the shadow dom.
    */
   function isVisible(selector) {
-    return test_util.isChildVisible(element, selector, false);
+    return isChildVisible(element, selector, false);
   }
 
   test('No buttons shown by default', async function() {
@@ -49,7 +49,7 @@ suite('nearby-page-template', function() {
     element.cancelButtonLabel = 'cancel';
     element.actionButtonLabel = 'action';
 
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
 
     assertEquals(
         'title',
@@ -92,7 +92,7 @@ suite('nearby-page-template', function() {
     element.actionButtonLabel = 'action';
     element.closeOnly = true;
 
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
 
     assertEquals(
         'title',
@@ -118,12 +118,12 @@ suite('nearby-page-template', function() {
     element.utilityButtonLabel = 'utility';
 
     // Open-in-new icon not shown by default.
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
     assertFalse(
         !!element.shadowRoot.querySelector('#utilityButton #openInNewIcon'));
 
     element.utilityButtonOpenInNew = true;
-    await test_util.waitAfterNextRender(element);
+    await waitAfterNextRender(element);
     assertTrue(
         !!element.shadowRoot.querySelector('#utilityButton #openInNewIcon'));
     assertEquals(

@@ -6,8 +6,8 @@ import {CrSettingsPrefs, osPageVisibility, Router, routes, setContactManagerForT
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
 
 let settingsPrefs = null;
 /** @type {!FakeContactManager} */

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://nearby/strings.m.js';
-// #import 'chrome://nearby/shared/nearby_visibility_page.js';
-// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
-// #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
-// #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {waitAfterNextRender, isChildVisible} from '../../test_util.js';
-// clang-format on
+import 'chrome://nearby/strings.m.js';
+import 'chrome://nearby/shared/nearby_visibility_page.js';
+
+import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {isChildVisible, waitAfterNextRender} from '../../test_util.js';
+
+import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';
 
 suite('nearby-visibility-page', function() {
   /** @type {!NearbyVisibilityPageElement} */
@@ -36,7 +37,7 @@ suite('nearby-visibility-page', function() {
 
   test('Renders visibility page', async function() {
     assertFalse(visibility_page.settings.enabled);
-    await test_util.waitAfterNextRender(visibility_page);
+    await waitAfterNextRender(visibility_page);
     // Action button on the page template sets settings.enabled to true.
     const page_template =
         visibility_page.shadowRoot.querySelector('nearby-page-template');

@@ -263,13 +263,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_select_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_siminfo_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/sim_lock_dialogs_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_contact_manager.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_icon_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js",
       ]
     }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -351,10 +344,7 @@ if (include_js_tests) {
 
 if (is_chromeos_ash) {
   group("modulize") {
-    deps = [
-      "./cr_components/chromeos:modulize",
-      "./nearby_share/shared:modulize",
-    ]
+    deps = [ "./cr_components/chromeos:modulize" ]
   }
 }
 

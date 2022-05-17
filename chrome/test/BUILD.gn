@@ -3910,7 +3910,6 @@ if (!is_android) {
         "//ash/keyboard/ui:resources",
         "//chrome",
         "//chrome/test/data/webui/cr_components/chromeos/cellular_setup:modulize_runtime_data",
-        "//chrome/test/data/webui/nearby_share/shared:modulize_runtime_data",
         "//testing/buildbot/filters:chromeos_filters",
         "//ui/file_manager:unit_test_data",
       ]

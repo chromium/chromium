@@ -8,8 +8,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.js';
 
 import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 import {isVisible} from './test_util.js';
