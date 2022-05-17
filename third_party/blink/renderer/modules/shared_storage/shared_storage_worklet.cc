@@ -29,6 +29,12 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "A browsing context is required.");
+    return ScriptPromise();
+  }
+
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);

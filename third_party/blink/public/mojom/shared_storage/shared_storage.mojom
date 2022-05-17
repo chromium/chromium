@@ -51,10 +51,11 @@ interface SharedStorageDocumentService {
 
   // Handle sharedStorage.runURLSelectionOperation(): run the operation
   // previously registered by registerURLSelectionOperation() with matching
-  // `name`. The length of the `urls` array should be checked at the renderer
-  // and be enforced at the browser to ensure it's below the configured limit
-  // number `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
-  // `serialized_data` is the serialization result of JavaScript value
+  // `name`. Restrictions be checked at the renderer and be enforced at the
+  // browser: 1) This is not allowed in fenced frame. 2) The length of the
+  // `urls` array is below the configured limit number
+  // `kSharedStorageURLSelectionOperationInputURLSizeLimit`. `serialized_data`
+  // is the serialization result of JavaScript value
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
   // There's no need to sanitize `serialized_data` at the browser process as the
   // data will be only consumed in an environment (i.e. the worklet) in control
