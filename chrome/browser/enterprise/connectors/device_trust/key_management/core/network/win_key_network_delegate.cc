@@ -15,8 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
-#include "components/winhttp/network_fetcher.h"
-#include "components/winhttp/scoped_hinternet.h"
 #include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
@@ -26,29 +24,12 @@ namespace {
 
 constexpr int kMaxRetryCount = 10;
 
-void UploadKey(base::OnceCallback<void(int)> callback,
-               const base::flat_map<std::string, std::string>& headers,
-               const GURL& url,
-               const std::string& body) {
-  // TODO(b/202321214): need to pass in winhttp::ProxyInfo somehow.
-  // If specified use it to create an winhttp::ProxyConfiguration instance.
-  // Otherwise create an winhttp::AutoProxyConfiguration instance.
-  auto proxy_config = base::MakeRefCounted<winhttp::ProxyConfiguration>();
-  auto session = winhttp::CreateSessionHandle(L"DeviceTrustKeyManagement",
-                                              proxy_config->access_type());
-  auto fetcher = base::MakeRefCounted<winhttp::NetworkFetcher>(session.get(),
-                                                               proxy_config);
-
-  fetcher->PostRequest(url, body, std::string(), headers,
-                       /*fetch_started_callback=*/base::DoNothing(),
-                       /*fetch_progress_callback=*/base::DoNothing(),
-                       /*fetch_completed_callback=*/std::move(callback));
-}
-
 }  // namespace
 
 WinKeyNetworkDelegate::WinKeyNetworkDelegate()
-    : upload_callback_(base::BindRepeating(&UploadKey)) {}
+    : upload_callback_(base::BindRepeating(&WinKeyNetworkDelegate::UploadKey,
+                                           base::Unretained(this))),
+      sleep_during_backoff_(true) {}
 
 WinKeyNetworkDelegate::WinKeyNetworkDelegate(UploadKeyCallback upload_callback,
                                              bool sleep_during_backoff)
@@ -112,6 +93,29 @@ WinKeyNetworkDelegate::SendPublicKeyToDmServerSync(const GURL& url,
       kMaxRetryCount, kMaxRetryCount + 1);
 
   return response_code_.value_or(0);
+}
+
+void WinKeyNetworkDelegate::UploadKey(
+    base::OnceCallback<void(int)> callback,
+    const base::flat_map<std::string, std::string>& headers,
+    const GURL& url,
+    const std::string& body) {
+  // TODO(b/202321214): need to pass in winhttp::ProxyInfo somehow.
+  // If specified use it to create an winhttp::ProxyConfiguration instance.
+  // Otherwise create an winhttp::AutoProxyConfiguration instance.
+  if (!winhttp_network_fetcher_) {
+    auto proxy_config = base::MakeRefCounted<winhttp::ProxyConfiguration>();
+    winhttp_session_ = winhttp::CreateSessionHandle(
+        L"DeviceTrustKeyManagement", proxy_config->access_type());
+    winhttp_network_fetcher_ = base::MakeRefCounted<winhttp::NetworkFetcher>(
+        winhttp_session_.get(), proxy_config);
+  }
+
+  winhttp_network_fetcher_->PostRequest(
+      url, body, std::string(), headers,
+      /*fetch_started_callback=*/base::DoNothing(),
+      /*fetch_progress_callback=*/base::DoNothing(),
+      /*fetch_completed_callback=*/std::move(callback));
 }
 
 void WinKeyNetworkDelegate::FetchCompleted(int response_code) {

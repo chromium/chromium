@@ -9,8 +9,11 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
+#include "components/winhttp/network_fetcher.h"
+#include "components/winhttp/scoped_hinternet.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -48,6 +51,11 @@ class WinKeyNetworkDelegate : public KeyNetworkDelegate {
   WinKeyNetworkDelegate(UploadKeyCallback upload_callback,
                         bool sleep_during_backoff);
 
+  void UploadKey(base::OnceCallback<void(int)> callback,
+                 const base::flat_map<std::string, std::string>& headers,
+                 const GURL& url,
+                 const std::string& body);
+
   // Invoked when the network fetch has completed. `response_code` represents
   // the HTTP status code for the response.
   void FetchCompleted(int response_code);
@@ -57,9 +65,12 @@ class WinKeyNetworkDelegate : public KeyNetworkDelegate {
 
   UploadKeyCallback upload_callback_;
 
+  winhttp::ScopedHInternet winhttp_session_;
+  scoped_refptr<winhttp::NetworkFetcher> winhttp_network_fetcher_;
+
   // Used to bound whether the exponential backoff should sleep.
   // This is only set to false when testing.
-  bool sleep_during_backoff_ = true;
+  const bool sleep_during_backoff_;
 
   base::WeakPtrFactory<WinKeyNetworkDelegate> weak_factory_{this};
 };
