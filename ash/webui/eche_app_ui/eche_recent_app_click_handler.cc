@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 
 namespace ash {
 namespace eche_app {
@@ -16,13 +17,16 @@ namespace eche_app {
 EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchAppHelper* launch_app_helper)
+    LaunchAppHelper* launch_app_helper,
+    EcheStreamStatusChangeHandler* stream_status_change_handler)
     : feature_status_provider_(feature_status_provider),
-      launch_app_helper_(launch_app_helper) {
+      launch_app_helper_(launch_app_helper),
+      stream_status_change_handler_(stream_status_change_handler) {
   notification_handler_ =
       phone_hub_manager->GetNotificationInteractionHandler();
   recent_apps_handler_ = phone_hub_manager->GetRecentAppsInteractionHandler();
   feature_status_provider_->AddObserver(this);
+  stream_status_change_handler_->AddObserver(this);
 
   if (notification_handler_ && recent_apps_handler_ &&
       IsClickable(feature_status_provider_->GetStatus())) {
@@ -34,6 +38,7 @@ EcheRecentAppClickHandler::EcheRecentAppClickHandler(
 
 EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
   feature_status_provider_->RemoveObserver(this);
+  stream_status_change_handler_->RemoveObserver(this);
   if (notification_handler_)
     notification_handler_->RemoveNotificationClickHandler(this);
   if (recent_apps_handler_)
@@ -43,14 +48,25 @@ EcheRecentAppClickHandler::~EcheRecentAppClickHandler() {
 void EcheRecentAppClickHandler::HandleNotificationClick(
     int64_t notification_id,
     const phonehub::Notification::AppMetadata& app_metadata) {
-  const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
-      launch_app_helper_->CheckAppLaunchProhibitedReason(
-          feature_status_provider_->GetStatus());
-  if (recent_apps_handler_ &&
-      prohibited_reason ==
-          LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited) {
-    recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
-                                                        base::Time::Now());
+  // Add the notification’s `app_metadata` that the user clicks to recents list
+  // if the stream is already started. If the stream hasn't started yet, we keep
+  // this notification’s `app_metadata` until this notification is streaming
+  // successfully.
+  if (is_stream_started_) {
+    const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+        launch_app_helper_->CheckAppLaunchProhibitedReason(
+            feature_status_provider_->GetStatus());
+    if (recent_apps_handler_ &&
+        prohibited_reason ==
+            LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited) {
+      recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
+                                                          base::Time::Now());
+    }
+  } else {
+    // Only cache the last `app_metadata` when we receive multiple notification
+    // click events.
+    app_metadata_list_.clear();
+    app_metadata_list_.emplace_back(app_metadata);
   }
 }
 
@@ -93,6 +109,26 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
     notification_handler_->RemoveNotificationClickHandler(this);
     recent_apps_handler_->RemoveRecentAppClickObserver(this);
     is_click_handler_set_ = false;
+  }
+}
+
+void EcheRecentAppClickHandler::OnStreamStatusChanged(
+    mojom::StreamStatus status) {
+  if (status == eche_app::mojom::StreamStatus::kStreamStatusStarted) {
+    is_stream_started_ = true;
+    const LaunchAppHelper::AppLaunchProhibitedReason prohibited_reason =
+        launch_app_helper_->CheckAppLaunchProhibitedReason(
+            feature_status_provider_->GetStatus());
+    if (recent_apps_handler_ &&
+        prohibited_reason ==
+            LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited)
+      for (const auto& app_metadata : app_metadata_list_) {
+        recent_apps_handler_->NotifyRecentAppAddedOrUpdated(app_metadata,
+                                                            base::Time::Now());
+      }
+  } else if (status == eche_app::mojom::StreamStatus::kStreamStatusStopped) {
+    is_stream_started_ = false;
+    app_metadata_list_.clear();
   }
 }
 
