@@ -670,12 +670,6 @@ class MathFunctionParser {
       context.Count(WebFeature::kCSSComparisonFunctions);
   }
 
-  explicit MathFunctionParser(CSSParserTokenRange& range,
-                              const CSSParserContext& context)
-      : MathFunctionParser(range,
-                           context,
-                           CSSPrimitiveValue::ValueRange::kAll) {}
-
   const CSSMathFunctionValue* Value() const { return calc_value_; }
   CSSMathFunctionValue* ConsumeValue() {
     if (!calc_value_)
