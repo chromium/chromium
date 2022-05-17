@@ -332,8 +332,9 @@ void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
       std::make_unique<wm::WMTestHelper>(default_window_size);
 #else
   platform_->wm_state = std::make_unique<wm::WMState>();
-  CHECK(!display::Screen::GetScreen());
-  platform_->screen = views::CreateDesktopScreen();
+  // FakeScreen tests create their own screen.
+  if (!display::Screen::HasScreen())
+    platform_->screen = views::CreateDesktopScreen();
 #endif
 
   platform_->views_delegate =

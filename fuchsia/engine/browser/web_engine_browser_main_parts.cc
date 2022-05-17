@@ -55,6 +55,7 @@
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 #include "ui/aura/screen_ozone.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -167,9 +168,7 @@ WebEngineBrowserMainParts::WebEngineBrowserMainParts(
     content::ContentBrowserClient* browser_client)
     : browser_client_(browser_client) {}
 
-WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
-  display::Screen::SetScreenInstance(nullptr);
-}
+WebEngineBrowserMainParts::~WebEngineBrowserMainParts() = default;
 
 std::vector<content::BrowserContext*>
 WebEngineBrowserMainParts::browser_contexts() const {
@@ -190,7 +189,6 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 }
 
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
-  DCHECK(!screen_);
   DCHECK_EQ(context_bindings_.size(), 0u);
 
   // Initialize the |component_inspector_| to allow diagnostics to be published.
@@ -251,11 +249,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
                           base::Unretained(this)));
 
   // Configure Ozone with an Aura implementation of the Screen abstraction.
-  std::unique_ptr<aura::ScreenOzone> screen_ozone =
-      std::make_unique<aura::ScreenOzone>();
-  screen_ozone.get()->Initialize();
-  screen_ = std::move(screen_ozone);
-  display::Screen::SetScreenInstance(screen_.get());
+  screen_ = std::make_unique<aura::ScopedScreenOzone>();
 
   // Create the FuchsiaCdmManager at startup rather than on-demand, to allow it
   // to perform potentially expensive startup work in the background.
@@ -312,7 +306,6 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   // that they may post cleanup tasks during teardown.
   // NOTE: Objects are destroyed in the reverse order of their creation.
   legacy_metrics_client_.reset();
-  screen_.reset();
   intl_profile_watcher_.reset();
 
   base::ImportantFileWriterCleaner::GetInstance().Stop();

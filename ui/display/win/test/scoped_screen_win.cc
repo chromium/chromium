@@ -20,10 +20,6 @@ ScopedScreenWin::ScopedScreenWin() : ScreenWin(false) {
         gfx::Vector2dF(96.0, 96.0), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER}});
 }
 
-ScopedScreenWin::~ScopedScreenWin() {
-  Screen::SetScreenInstance(old_screen_);
-}
-
 }  // namespace test
 }  // namespace win
 }  // namespace display

@@ -13,6 +13,7 @@
 
 #include "base/values.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/mock_screen.h"
 #include "extensions/common/api/system_display.h"
 
 namespace extensions {
@@ -84,6 +85,8 @@ class MockDisplayInfoProvider : public DisplayInfoProvider {
   std::set<std::string> overscan_adjusted_;
 
   bool native_touch_calibration_success_ = false;
+
+  MockScreen screen_;
 
   api::system_display::MirrorMode mirror_mode_ =
       api::system_display::MIRROR_MODE_OFF;

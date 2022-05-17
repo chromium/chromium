@@ -25,10 +25,6 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/display/win/test/scoped_screen_win.h"
-#endif
-
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -244,9 +240,6 @@ class GestureEventQueueTest : public testing::Test,
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   std::unique_ptr<WebGestureEvent> sync_followup_event_;
   base::test::ScopedFeatureList feature_list_;
-#if BUILDFLAG(IS_WIN)
-  display::win::test::ScopedScreenWin scoped_screen_win_;
-#endif
 };
 
 class GestureEventQueueWithCompositorEventQueueTest

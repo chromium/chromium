@@ -24,6 +24,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
 #import "ui/base/test/cocoa_helper.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -385,6 +386,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  private:
   TestViewsDelegate test_views_delegate_;
+
+  display::ScopedNativeScreen screen_;
 };
 
 class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,

@@ -24,6 +24,10 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if DCHECK_IS_ON()
+#include "ui/display/screen_base.h"
+#endif
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -33,7 +37,15 @@ namespace ios_web_view {
 WebViewWebMainParts::WebViewWebMainParts()
     : field_trial_list_(/*entropy_provider=*/nullptr) {}
 
-WebViewWebMainParts::~WebViewWebMainParts() = default;
+WebViewWebMainParts::~WebViewWebMainParts() {
+#if DCHECK_IS_ON()
+  // The screen object is never deleted on IOS. Make sure that all display
+  // observers are removed at the end.
+  display::ScreenBase* screen =
+      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+  DCHECK(!screen->HasDisplayObservers());
+#endif
+}
 
 void WebViewWebMainParts::PreCreateMainMessageLoop() {
   l10n_util::OverrideLocaleWithCocoaLocale();

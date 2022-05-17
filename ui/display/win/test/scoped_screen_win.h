@@ -12,6 +12,10 @@ namespace display {
 namespace win {
 namespace test {
 
+// [Deprecated]
+// TODO(crbug.com/1317416): The initialization code of this class should be
+// moved to the test that depends on it.
+//
 // ScopedScreenWin construct a instance of ScreenWinDisplay with bounds
 // (1920,1080). This will allow unittests to query the details about ScreenWin
 // using static methods. ScopedScreenWin needs to be initialized before running
@@ -23,10 +27,7 @@ class ScopedScreenWin : public ScreenWin {
   ScopedScreenWin(const ScopedScreenWin&) = delete;
   ScopedScreenWin& operator=(const ScopedScreenWin&) = delete;
 
-  ~ScopedScreenWin() override;
-
- private:
-  raw_ptr<Screen> old_screen_ = Screen::SetScreenInstance(this);
+  ~ScopedScreenWin() override = default;
 };
 
 }  // namespace test

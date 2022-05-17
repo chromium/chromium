@@ -71,6 +71,9 @@ class DISPLAY_EXPORT DisplayList {
   bool IsValid() const;
 
   base::ObserverList<DisplayObserver>* observers() { return &observers_; }
+  const base::ObserverList<DisplayObserver>* observers() const {
+    return &observers_;
+  }
 
  private:
   // A non-const version of FindDisplayById.

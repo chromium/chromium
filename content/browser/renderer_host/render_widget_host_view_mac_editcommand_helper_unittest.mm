@@ -27,6 +27,7 @@
 #include "testing/platform_test.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
+#include "ui/display/screen.h"
 
 using content::RenderWidgetHostViewMac;
 
@@ -122,6 +123,7 @@ class RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest
   void TearDown() override { ImageTransportFactory::Terminate(); }
 
  private:
+  display::ScopedNativeScreen screen_;
   // This has a MessageLoop for ImageTransportFactory and enables
   // BrowserThread::UI for RecyclableCompositorMac used by
   // RenderWidgetHostViewMac.
