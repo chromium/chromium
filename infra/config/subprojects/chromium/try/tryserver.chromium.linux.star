@@ -401,6 +401,15 @@ try_.compilator_builder(
 try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Linux Builder (Wayland)",
+        "ci/Linux Tests (Wayland)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
