@@ -89,6 +89,13 @@ IpczResult DriverTransport::TransmitMessage(const Message& message) {
       message.handles.data(), message.handles.size(), IPCZ_NO_FLAGS, nullptr);
 }
 
+IpczResult DriverTransport::Transmit(internal::MessageBase& message) {
+  ABSL_ASSERT(message.CanTransmitOn(*this));
+  message.Serialize(*this);
+  return TransmitMessage(
+      Message(message.data_view(), message.transmissible_driver_handles()));
+}
+
 IpczResult DriverTransport::Notify(const Message& message) {
   ABSL_ASSERT(listener_);
   return listener_->OnTransportMessage(message);

@@ -5,22 +5,20 @@
 #ifndef IPCZ_SRC_IPCZ_MESSAGE_INTERNAL_H_
 #define IPCZ_SRC_IPCZ_MESSAGE_INTERNAL_H_
 
+#include <cstddef>
 #include <cstdint>
 
-#include "ipcz/driver_memory.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/sequence_number.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "util/ref_counted.h"
 #include "util/safe_math.h"
 
 namespace ipcz {
 
 class DriverTransport;
-class Node;
 
 namespace internal {
 
@@ -43,14 +41,21 @@ struct IPCZ_ALIGN(8) MessageHeader {
   uint8_t message_id;
 
   // Reserved for future use. Must be zero.
-  uint8_t reserved[5];
+  uint8_t reserved0[5];
 
   // Used for sequencing messages along a NodeLink to preserve end-to-end
   // ordering, as NodeLink messages may be transmitted either across a driver
   // transport or queues in shared memory.
   SequenceNumber sequence_number;
+
+  // Offset into the message where the unified array of DriverObjectData lives,
+  // or zero if there are no driver objects attached.
+  uint32_t driver_object_data_array;
+
+  // Reserved for future use. Must be zero.
+  uint32_t reserved1;
 };
-static_assert(sizeof(MessageHeader) == 16, "Unexpected size");
+static_assert(sizeof(MessageHeader) == 24, "Unexpected size");
 
 using MessageHeaderV0 = MessageHeader;
 using LatestMessageHeaderVersion = MessageHeaderV0;
@@ -98,6 +103,19 @@ struct IPCZ_ALIGN(8) DriverObjectData {
   uint16_t num_driver_handles;
 };
 
+// Encodes information about a range of driver objects. Used to encode
+// DriverObject array parameters.
+struct IPCZ_ALIGN(8) DriverObjectArrayData {
+  // Index into the message's unified DriverObject array which corresponds to
+  // the first DriverObject belonging to the array described by this structure.
+  uint32_t first_object_index;
+
+  // The length of this DriverObject array. DriverObjects belonging to the array
+  // begin at `first_object_index` within the message's unified DriverObject
+  // array, and continue for the next `num_objects` contiguous elements.
+  uint32_t num_objects;
+};
+
 // End of wire structure definitions. Anything below this line is not meant to
 // be encoded into messages.
 #pragma pack(pop)
@@ -113,14 +131,14 @@ enum class ParamType {
   // points to encoded array contents, beginning with an ArrayHeader.
   kDataArray,
 
-  // A parameter encoded as a single DriverObjectData structure, referring to
-  // a single driver object attached to the message.
+  // A parameter encoded as a single 32-bit value indexing the message's unified
+  // DriverObject array, referring to a single DriverObject attached to the
+  // message.
   kDriverObject,
 
-  // A parameter encoded as a 32-bit index to an array elsewhere in the message.
-  // The array contains zero or more DriverObjectData structures, and the
-  // message parameter corresponds to a collection of driver objects attached to
-  // the message.
+  // A parameter encoded as a single DriverObjectArrayData structure, referring
+  // to a span of contiguous DriverObjects within the message's unified
+  // DriverObject array.
   kDriverObjectArray,
 };
 
@@ -143,11 +161,9 @@ struct ParamMetadata {
   ParamType type;
 };
 
-// Base class for all ipcz-internal wire messages to be transmitted across a
-// NodeLink. This provides helpers for appending and extracting dynamic message
-// contents in addition to the base parameter structure for a given message.
-// This should not be used directly, but should instead be used via a specific
-// instance of the derived Message<T> helper below.
+// Base class for all ipcz-internal wire messages. This provides helpers for
+// building messages for transmission, as well as for introspecting messages
+// upon receipt.
 class IPCZ_ALIGN(8) MessageBase {
  public:
   MessageBase(uint8_t message_id, size_t params_size);
@@ -162,6 +178,7 @@ class IPCZ_ALIGN(8) MessageBase {
   }
 
   absl::Span<uint8_t> data_view() { return absl::MakeSpan(data_); }
+
   absl::Span<uint8_t> params_data_view() {
     return absl::MakeSpan(&data_[header().size], data_.size() - header().size);
   }
@@ -186,30 +203,37 @@ class IPCZ_ALIGN(8) MessageBase {
     return AllocateGenericArray(sizeof(ElementType), num_elements);
   }
 
-  // Allocates additional storage in this message for an array of driver
-  // objects, with each consisting of some number of bytes and driver handles.
-  // Each driver object is described in the message by a DriverObjectData
-  // structure, and this allocates an array of those structures. Similar to
-  // AllocateGenericArray, this returns the index of that array's header within
-  // the message.
+  // Appends a single driver object to this message, and returns its index into
+  // the message's DriverObject array. This index should be stored as the value
+  // for whatever IPCZ_MSG_PARAM_DRIVER_OBJECT() parameter corresponds to the
+  // appended object.
   //
-  // The objects in `objects` are stashed in this message and will not be fully
-  // encoded until Serialize() is called.
-  uint32_t AppendDriverObjects(absl::Span<DriverObject> objects);
+  // Note that this does NOT serialize `object` yet. Serialization of all
+  // attached objects occurs during Serialize().
+  uint32_t AppendDriverObject(DriverObject object);
 
-  // Appends storage for a single driver object and stores it within this
-  // message. `data` is updated to track the index of the attached object within
-  // `driver_objects_`. This does not serialize `object` yet.
+  // Appends all driver objects in `objects` to this message and returns a
+  // DriverObjectArrayData describing the starting index and length of a span
+  // within the message's DriverObject array. This structure should be stored as
+  // the value for whatever IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY() parameter
+  // corresponds to the attached sequence of objects.
   //
-  // When Serialize() is called on the message, any attached objects will be
-  // serialized at that time, and any encoded DriverObjectData structures will
-  // be updated to reflect details of the serialized object encoding.
-  void AppendDriverObject(DriverObject object, DriverObjectData& data);
+  // Note that this does NOT serialize `object` yet. Serialization of all
+  // attached objects occurs during Serialize().
+  DriverObjectArrayData AppendDriverObjects(absl::Span<DriverObject> objects);
 
   // Takes ownership of a DriverObject that was attached to this message, given
-  // an encoded DriverObjectData struct. This is only to be used on deserialized
-  // messages.
-  DriverObject TakeDriverObject(const DriverObjectData& data);
+  // an index into the message's unified DriverObject array. This should be the
+  // same index returned by a prior call to AppendDriverObject() when
+  // serializing the original message.
+  DriverObject TakeDriverObject(uint32_t index);
+
+  // Returns a span of DriverObjects (within `driver_objects_`) corresponding to
+  // the span described by `data`. This should be the same structure value
+  // returned by a prior call to AppendDriverObjects() when serializing the
+  // original message.
+  absl::Span<DriverObject> GetDriverObjectArrayView(
+      const DriverObjectArrayData& data);
 
   // Returns the address of the first element of an array whose header begins
   // at `offset` bytes from the beginning of this message.
@@ -275,14 +299,23 @@ class IPCZ_ALIGN(8) MessageBase {
   // the attached driver objects over that transport.
   bool CanTransmitOn(const DriverTransport& transport);
 
-  // Attempts to finalize a message for transit over `transport`, potentially
-  // mutating the message data in-place. Returns true iff sucessful.
+  // Attempts to finalize a message for transmission over `transport`. If the
+  // message has no DriverObjects attached, this is trivially a no-op.
+  //
+  // Otherwise, any attached DriverObjects are serialized into inlined data
+  // and/or transmissible handles at this time. This may result in re-allocation
+  // of the Message's underlying storage.
+  //
+  // In any case, upon return the resulting Message can be transmitted to
+  // another node and be deserialized from there. If the returned Message has at
+  // least one element in transmissible_driver_handles(), the Message must be
+  // transmitted over `transport`. Otherwise it can be transmitted by any other
+  // suitable mechanism for data transmission, such as shared memory.
   //
   // NOTE: It is invalid to call this on a message for which
-  // `CanTransmitOn(transport)` does not return true and doing so results in
+  // `CanTransmitOn(transport)` does not return true, and doing so results in
   // unspecified behavior.
-  void Serialize(absl::Span<const ParamMetadata> params,
-                 const DriverTransport& transport);
+  void Serialize(const DriverTransport& transport);
 
  protected:
   // Returns `x` aligned above to the nearest 8-byte boundary.
@@ -347,10 +380,6 @@ class IPCZ_ALIGN(8) MessageBase {
   // transmissible handles, there is generally NOT a 1:1 correpsondence between
   // this list and `driver_objects_`.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_driver_handles_;
-
-  // Basic constant attributes of this message, as constructed or deserialized.
-  const uint8_t message_id_;
-  const uint32_t params_size_;
 };
 
 // Template helper to wrap the MessageBase type for a specific macro-generated

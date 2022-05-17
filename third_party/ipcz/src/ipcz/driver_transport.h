@@ -13,6 +13,7 @@
 #include "ipcz/api_object.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message_internal.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
@@ -98,17 +99,10 @@ class DriverTransport
   // transmission from this transport endpoint to the opposite endpoint.
   IpczResult TransmitMessage(const Message& message);
 
-  // Templated helper for transmitting macro-generated ipcz messages. This
-  // performs any necessary in-place serialization of driver objects before
-  // transmitting.
-  template <typename T>
-  IpczResult Transmit(T& message) {
-    if (!message.Serialize(*this)) {
-      return IPCZ_RESULT_INVALID_ARGUMENT;
-    }
-    return TransmitMessage(
-        Message(message.data_view(), message.transmissible_driver_handles()));
-  }
+  // Helper for transmitting macro-generated ipcz messages. This performs any
+  // necessary in-place serialization of driver objects before transmitting,
+  // hence it takes a mutable reference to `message`.
+  IpczResult Transmit(internal::MessageBase& message);
 
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.

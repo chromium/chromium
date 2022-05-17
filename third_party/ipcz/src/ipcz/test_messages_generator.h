@@ -29,3 +29,10 @@ IPCZ_MSG_BEGIN(MessageWithDriverObjectArray,
                IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(objects)
 IPCZ_MSG_END()
+
+IPCZ_MSG_BEGIN(MessageWithDriverArrayAndExtraObject,
+               IPCZ_MSG_ID(4),
+               IPCZ_MSG_VERSION(0))
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(objects)
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(extra_object)
+IPCZ_MSG_END()

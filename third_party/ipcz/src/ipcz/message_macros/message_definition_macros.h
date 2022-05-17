@@ -10,13 +10,6 @@
 #define IPCZ_MSG_BEGIN(name, id_decl, version_decl)                          \
   name::name() = default;                                                    \
   name::~name() = default;                                                   \
-  bool name::Serialize(const DriverTransport& transport) {                   \
-    if (!CanTransmitOn(transport)) {                                         \
-      return false;                                                          \
-    }                                                                        \
-    MessageBase::Serialize(kMetadata, transport);                            \
-    return true;                                                             \
-  }                                                                          \
   bool name::Deserialize(const DriverTransport::Message& message,            \
                          const DriverTransport& transport) {                 \
     return DeserializeFromTransport(sizeof(ParamsType), kVersion,            \

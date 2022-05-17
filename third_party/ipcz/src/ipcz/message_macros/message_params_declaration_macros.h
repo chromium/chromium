@@ -21,5 +21,6 @@
 
 #define IPCZ_MSG_PARAM(type, name) type name;
 #define IPCZ_MSG_PARAM_ARRAY(type, name) uint32_t name;
-#define IPCZ_MSG_PARAM_DRIVER_OBJECT(name) internal::DriverObjectData name;
-#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name) uint32_t name;
+#define IPCZ_MSG_PARAM_DRIVER_OBJECT(name) uint32_t name;
+#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name) \
+  internal::DriverObjectArrayData name;

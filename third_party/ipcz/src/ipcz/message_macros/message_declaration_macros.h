@@ -15,7 +15,6 @@
     version_decl;                                        \
     name();                                              \
     ~name();                                             \
-    bool Serialize(const DriverTransport& transport);    \
     bool Deserialize(const DriverTransport::Message&,    \
                      const DriverTransport& transport);  \
                                                          \
@@ -35,7 +34,6 @@
 #define IPCZ_MSG_PARAM_DRIVER_OBJECT(name)                  \
   {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \
    internal::ParamType::kDriverObject},
-#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name)         \
-  {offsetof(ParamsType, name), sizeof(ParamsType::name), \
-   sizeof(internal::DriverObjectData),                   \
+#define IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(name)            \
+  {offsetof(ParamsType, name), sizeof(ParamsType::name), 0, \
    internal::ParamType::kDriverObjectArray},

@@ -134,7 +134,7 @@ void NodeLink::TransmitMessage(
     return;
   }
 
-  message.Serialize(metadata, *transport_);
+  message.Serialize(*transport_);
   message.header().sequence_number = GenerateOutgoingSequenceNumber();
   transport_->TransmitMessage(
       DriverTransport::Message(DriverTransport::Data(message.data_view()),

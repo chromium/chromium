@@ -30,23 +30,16 @@ namespace {
 // `transmissible_handles`, with relevant index and count also stashed in the
 // DriverObjectData.
 IpczResult SerializeDriverObject(
-    uint32_t data_offset,
+    DriverObject object,
     const DriverTransport& transport,
     MessageBase& message,
+    DriverObjectData& data,
     absl::InlinedVector<IpczDriverHandle, 2>& transmissible_handles) {
-  DriverObjectData* data =
-      reinterpret_cast<DriverObjectData*>(&message.data_view()[data_offset]);
-  DriverObject object =
-      std::move(message.driver_objects()[data->first_driver_handle]);
   if (!object.is_valid()) {
     // This is not a valid driver handle and it cannot be serialized.
-    data->num_driver_handles = 0;
+    data.num_driver_handles = 0;
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-
-  // NOTE: `data` may be invalid after the allocation below. It's nulled here to
-  // help catch accidental reuse.
-  data = nullptr;
 
   uint32_t driver_data_array = 0;
   DriverObject::SerializedDimensions dimensions =
@@ -57,12 +50,11 @@ IpczResult SerializeDriverObject(
 
   const uint32_t first_handle =
       static_cast<uint32_t>(transmissible_handles.size());
-  data = reinterpret_cast<DriverObjectData*>(&message.data_view()[data_offset]);
   absl::Span<uint8_t> driver_data =
       message.GetArrayView<uint8_t>(driver_data_array);
-  data->driver_data_array = driver_data_array;
-  data->num_driver_handles = dimensions.num_driver_handles;
-  data->first_driver_handle = first_handle;
+  data.driver_data_array = driver_data_array;
+  data.num_driver_handles = dimensions.num_driver_handles;
+  data.first_driver_handle = first_handle;
 
   transmissible_handles.resize(transmissible_handles.size() +
                                dimensions.num_driver_handles);
@@ -109,49 +101,42 @@ bool IsArrayValid(MessageBase& message,
   return true;
 }
 
-// Deserializes a driver object encoded within `message`, appending the object
-// for later retrieval via driver_objects() or TakeDriverObject().
-bool DeserializeDriverObject(MessageBase& message,
-                             DriverObjectData& object_data,
-                             absl::Span<const IpczDriverHandle> handles,
-                             const DriverTransport& transport) {
+// Deserializes a driver object encoded within `message`, returning the object
+// on success. On failure, an invalid DriverObject is returned.
+DriverObject DeserializeDriverObject(MessageBase& message,
+                                     const DriverObjectData& object_data,
+                                     absl::Span<const IpczDriverHandle> handles,
+                                     const DriverTransport& transport) {
   if (!IsArrayValid(message, object_data.driver_data_array, sizeof(uint8_t))) {
-    return false;
+    return {};
   }
 
   auto driver_data =
       message.GetArrayView<uint8_t>(object_data.driver_data_array);
   if (object_data.num_driver_handles > handles.size()) {
-    return false;
+    return {};
   }
 
   if (handles.size() - object_data.num_driver_handles <
       object_data.first_driver_handle) {
-    return false;
+    return {};
   }
 
-  DriverObject object = DriverObject::Deserialize(
+  return DriverObject::Deserialize(
       transport, driver_data,
       handles.subspan(object_data.first_driver_handle,
                       object_data.num_driver_handles));
-  if (!object.is_valid()) {
-    return false;
-  }
-
-  message.AppendDriverObject(std::move(object), object_data);
-  return true;
 }
 
 }  // namespace
 
 MessageBase::MessageBase(uint8_t message_id, size_t params_size)
-    : data_(sizeof(MessageHeader) + params_size),
-      message_id_(message_id),
-      params_size_(params_size) {
+    : data_(sizeof(MessageHeader) + params_size) {
   MessageHeader& h = header();
   h.size = sizeof(h);
   h.version = 0;
   h.message_id = message_id;
+  h.driver_object_data_array = 0;
 }
 
 MessageBase::~MessageBase() = default;
@@ -171,35 +156,35 @@ uint32_t MessageBase::AllocateGenericArray(size_t element_size,
   return offset;
 }
 
-uint32_t MessageBase::AppendDriverObjects(absl::Span<DriverObject> objects) {
-  const uint32_t array_param = AllocateArray<DriverObjectData>(objects.size());
-  const absl::Span<DriverObjectData> object_data =
-      GetArrayView<DriverObjectData>(array_param);
-  for (size_t i = 0; i < objects.size(); ++i) {
-    AppendDriverObject(std::move(objects[i]), object_data[i]);
-  }
-  return array_param;
-}
-
-void MessageBase::AppendDriverObject(DriverObject object,
-                                     DriverObjectData& data) {
-  // This is only a placeholder used later by Serialize() to locate the
-  // serializable object within `driver_objects_`. Serialize() will then fill in
-  // this structure with more appropriate metadata pertaining to the object's
-  // serialized encoding.
-  data.driver_data_array = 0;
-  data.first_driver_handle = checked_cast<uint32_t>(driver_objects_.size());
-  data.num_driver_handles = 1;
+uint32_t MessageBase::AppendDriverObject(DriverObject object) {
+  const uint32_t index = checked_cast<uint32_t>(driver_objects_.size());
   driver_objects_.push_back(std::move(object));
+  return index;
 }
 
-DriverObject MessageBase::TakeDriverObject(const DriverObjectData& data) {
-  // When properly deserialized, every logical driver object field in a message
-  // should correspond to a single attached DriverObject. This is validated
-  // during deserialization, so these assertions are safe.
-  ABSL_ASSERT(data.num_driver_handles == 1);
-  ABSL_ASSERT(driver_objects_.size() > data.first_driver_handle);
-  return std::move(driver_objects_[data.first_driver_handle]);
+DriverObjectArrayData MessageBase::AppendDriverObjects(
+    absl::Span<DriverObject> objects) {
+  const DriverObjectArrayData data = {
+      .first_object_index = checked_cast<uint32_t>(driver_objects_.size()),
+      .num_objects = checked_cast<uint32_t>(objects.size()),
+  };
+  driver_objects_.reserve(driver_objects_.size() + objects.size());
+  for (auto& object : objects) {
+    driver_objects_.push_back(std::move(object));
+  }
+  return data;
+}
+
+DriverObject MessageBase::TakeDriverObject(uint32_t index) {
+  // Note that `index` has already been validated by now.
+  ABSL_HARDENING_ASSERT(index < driver_objects_.size());
+  return std::move(driver_objects_[index]);
+}
+
+absl::Span<DriverObject> MessageBase::GetDriverObjectArrayView(
+    const DriverObjectArrayData& data) {
+  return absl::MakeSpan(driver_objects_)
+      .subspan(data.first_object_index, data.num_objects);
 }
 
 bool MessageBase::CanTransmitOn(const DriverTransport& transport) {
@@ -211,48 +196,27 @@ bool MessageBase::CanTransmitOn(const DriverTransport& transport) {
   return true;
 }
 
-void MessageBase::Serialize(absl::Span<const ParamMetadata> params,
-                            const DriverTransport& transport) {
+void MessageBase::Serialize(const DriverTransport& transport) {
   ABSL_ASSERT(CanTransmitOn(transport));
-  absl::InlinedVector<IpczDriverHandle, 2> transmissible_handles;
-  for (const auto& param : params) {
-    switch (param.type) {
-      case ParamType::kDriverObject: {
-        IpczResult result = SerializeDriverObject(
-            GetDataOffset(&GetParamValueAt<DriverObjectData>(param.offset)),
-            transport, *this, transmissible_handles);
-        ABSL_ASSERT(result == IPCZ_RESULT_OK);
-        break;
-      }
-
-      case ParamType::kDriverObjectArray: {
-        const uint32_t array_data_offset =
-            GetParamValueAt<uint32_t>(param.offset);
-        const size_t num_objects =
-            GetArrayView<DriverObjectData>(array_data_offset).size();
-        for (size_t i = 0; i < num_objects; ++i) {
-          // Note that the address of this array can move on each iteration, as
-          // SerializeDriverObject may need to reallocate the data buffer. Hence
-          // we resolve it from the array offset each time.
-          auto data = GetArrayView<DriverObjectData>(array_data_offset);
-          IpczResult result = SerializeDriverObject(
-              GetDataOffset(&data[i]), transport, *this, transmissible_handles);
-          ABSL_ASSERT(result == IPCZ_RESULT_OK);
-        }
-        break;
-      }
-
-      default:
-        // No additional work needed to serialize plain data or data array
-        // fields.
-        break;
-    }
+  if (driver_objects_.empty()) {
+    return;
   }
 
-  // Basic consistency check: all driver objects must have been taken and
-  // serialized.
-  for (const auto& object : driver_objects_) {
-    ABSL_ASSERT(!object.is_valid());
+  const uint32_t array_offset =
+      AllocateArray<DriverObjectData>(driver_objects_.size());
+  header().driver_object_data_array = array_offset;
+
+  // NOTE: In Chromium, a vast majority of IPC messages have 0, 1, or 2 OS
+  // handles attached. Since these objects are small, we inline some storage on
+  // the stack to avoid some heap allocation in the most common cases.
+  absl::InlinedVector<IpczDriverHandle, 2> transmissible_handles;
+  for (size_t i = 0; i < driver_objects().size(); ++i) {
+    DriverObjectData data = {};
+    const IpczResult result =
+        SerializeDriverObject(std::move(driver_objects()[i]), transport, *this,
+                              data, transmissible_handles);
+    ABSL_ASSERT(result == IPCZ_RESULT_OK);
+    GetArrayView<DriverObjectData>(array_offset)[i] = data;
   }
 
   transmissible_driver_handles_ = std::move(transmissible_handles);
@@ -293,9 +257,40 @@ bool MessageBase::DeserializeFromTransport(
     return false;
   }
 
+  // Validate and deserialize the DriverObject array.
+  const uint32_t driver_object_array_offset =
+      message_header.driver_object_data_array;
+  bool all_driver_objects_ok = true;
+  if (driver_object_array_offset > 0) {
+    if (!IsArrayValid(*this, driver_object_array_offset,
+                      sizeof(DriverObjectData))) {
+      // The header specified an invalid DriverObjectData array offset, or the
+      // array itself was invalid or out-of-bounds.
+      return false;
+    }
+
+    auto driver_object_data =
+        GetArrayView<DriverObjectData>(driver_object_array_offset);
+    driver_objects_.reserve(driver_object_data.size());
+    for (const DriverObjectData& object_data : driver_object_data) {
+      DriverObject object =
+          DeserializeDriverObject(*this, object_data, handles, transport);
+      if (object.is_valid()) {
+        driver_objects_.push_back(std::move(object));
+      } else {
+        // We don't fail immediately so we can try to deserialize the remaining
+        // objects anyway, since doing so may free additional resources.
+        all_driver_objects_ok = false;
+      }
+    }
+  }
+
+  if (!all_driver_objects_ok) {
+    return false;
+  }
+
   // Validate parameter data. There must be at least enough bytes following the
   // header to encode a StructHeader and to account for all parameter data.
-
   absl::Span<uint8_t> params_data = params_data_view();
   if (params_data.size() < sizeof(StructHeader)) {
     return false;
@@ -313,7 +308,18 @@ bool MessageBase::DeserializeFromTransport(
     return false;
   }
 
-  // Finally, validate each parameter and unpack driver objects.
+  // NOTE: In Chromium, a vast majority of IPC messages have 0, 1, or 2 OS
+  // handles attached. Since these objects are small, we inline some storage on
+  // the stack to avoid some heap allocation in the most common cases.
+  absl::InlinedVector<bool, 2> is_object_claimed(driver_objects_.size());
+
+  // Finally, validate each parameter and claim driver objects. We track the
+  // index of every object claimed by a parameter to ensure that no object is
+  // claimed more than once.
+  //
+  // Note that it is not an error for some objects to go unclaimed, as they may
+  // be provided for fields from a newer version of the protocol that isn't
+  // known to this receipient.
   for (const ParamMetadata& param : params_metadata) {
     if (param.offset >= params_header.size ||
         param.offset + param.size > params_header.size) {
@@ -329,21 +335,24 @@ bool MessageBase::DeserializeFromTransport(
     }
 
     switch (param.type) {
-      case ParamType::kDriverObject:
-        if (!DeserializeDriverObject(
-                *this, GetParamValueAt<DriverObjectData>(param.offset), handles,
-                transport)) {
+      case ParamType::kDriverObject: {
+        const uint32_t index = GetParamValueAt<uint32_t>(param.offset);
+        if (is_object_claimed[index]) {
           return false;
         }
+        is_object_claimed[index] = true;
         break;
+      }
 
       case ParamType::kDriverObjectArray: {
-        auto objects = GetArrayView<DriverObjectData>(
-            GetParamValueAt<uint32_t>(param.offset));
-        for (DriverObjectData& object : objects) {
-          if (!DeserializeDriverObject(*this, object, handles, transport)) {
+        const DriverObjectArrayData array_data =
+            GetParamValueAt<DriverObjectArrayData>(param.offset);
+        const size_t begin = array_data.first_object_index;
+        for (size_t i = begin; i < begin + array_data.num_objects; ++i) {
+          if (is_object_claimed[i]) {
             return false;
           }
+          is_object_claimed[i] = true;
         }
         break;
       }

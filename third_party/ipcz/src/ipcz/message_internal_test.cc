@@ -137,15 +137,16 @@ TEST_F(MessageInternalTest, BasicMessage) {
   EXPECT_GE(sizeof(internal::MessageHeaderV0), in.header().size);
   EXPECT_EQ(0u, in.header().version);
   EXPECT_EQ(test::msg::BasicTestMessage::kId, in.header().message_id);
-  EXPECT_EQ(0u, in.header().reserved[0]);
-  EXPECT_EQ(0u, in.header().reserved[1]);
-  EXPECT_EQ(0u, in.header().reserved[2]);
-  EXPECT_EQ(0u, in.header().reserved[3]);
-  EXPECT_EQ(0u, in.header().reserved[4]);
+  EXPECT_EQ(0u, in.header().reserved0[0]);
+  EXPECT_EQ(0u, in.header().reserved0[1]);
+  EXPECT_EQ(0u, in.header().reserved0[2]);
+  EXPECT_EQ(0u, in.header().reserved0[3]);
+  EXPECT_EQ(0u, in.header().reserved0[4]);
   EXPECT_EQ(SequenceNumber(0), in.header().sequence_number);
   EXPECT_EQ(0u, in.header().size % 8u);
   EXPECT_EQ(0u, in.params().foo);
   EXPECT_EQ(0u, in.params().bar);
+  EXPECT_EQ(0u, in.header().reserved1);
   in.params().foo = 5;
   in.params().bar = 7;
 
@@ -186,8 +187,8 @@ TEST_F(MessageInternalTest, DriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
 
   test::msg::MessageWithDriverObject in;
-  in.AppendDriverObject(DriverObject(node(), kObjectHandle),
-                        in.params().object);
+  in.params().object =
+      in.AppendDriverObject(DriverObject(node(), kObjectHandle));
 
   transport().Transmit(in);
 
@@ -216,12 +217,10 @@ TEST_F(MessageInternalTest, DriverObjectArray) {
   ReceivedMessage serialized = TakeNextReceivedMessage();
   EXPECT_TRUE(out.Deserialize(serialized.AsTransportMessage(), transport()));
 
-  auto objects_data =
-      out.GetArrayView<internal::DriverObjectData>(out.params().objects);
-  EXPECT_EQ(3u, objects_data.size());
-  for (size_t i = 0; i < objects_data.size(); ++i) {
-    EXPECT_EQ(kObjectHandles[i],
-              out.TakeDriverObject(objects_data[i]).release());
+  auto objects = out.GetDriverObjectArrayView(out.params().objects);
+  EXPECT_EQ(3u, objects.size());
+  for (size_t i = 0; i < objects.size(); ++i) {
+    EXPECT_EQ(kObjectHandles[i], objects[i].release());
   }
 }
 
@@ -296,8 +295,8 @@ TEST_F(MessageInternalTest, ArrayElementsOverflow) {
 TEST_F(MessageInternalTest, MalformedDriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
   test::msg::MessageWithDriverObject in;
-  in.AppendDriverObject(DriverObject(node(), kObjectHandle),
-                        in.params().object);
+  in.params().object =
+      in.AppendDriverObject(DriverObject(node(), kObjectHandle));
   transport().Transmit(in);
 
   // Force driver object deserialization to fail. This must result in failure of
@@ -306,6 +305,68 @@ TEST_F(MessageInternalTest, MalformedDriverObject) {
   ReceivedMessage message = TakeNextReceivedMessage();
   test::msg::MessageWithDriverObject out;
   EXPECT_FALSE(out.Deserialize(message.AsTransportMessage(), transport()));
+}
+
+TEST_F(MessageInternalTest, DriverObjectClaimedTwice) {
+  // Tests that if a single driver object is claimed more than once by a message
+  // parameter, the message is rejected.
+
+  constexpr IpczDriverHandle kObjectHandles[] = {0x12345678, 0x5a5aa5a5,
+                                                 0x42425555};
+  DriverObject in_objects[std::size(kObjectHandles)];
+  for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
+    in_objects[i] = DriverObject(node(), kObjectHandles[i]);
+  }
+
+  test::msg::MessageWithDriverArrayAndExtraObject in;
+  in.params().objects = in.AppendDriverObjects(in_objects);
+
+  // Assign the `extra_object` parameter a DriverObject which has already been
+  // claimed by the second element of the `objects` parameter.
+  in.params().extra_object = 1;
+
+  transport().Transmit(in);
+
+  // Although deserialization will fail, it won't fail until parameter
+  // validation, after all DriverObjects are deserialized. So we should expect
+  // to see clean closure of the attached DriverObjects.
+  EXPECT_CALL(driver(), Close(kObjectHandles[0], _, _));
+  EXPECT_CALL(driver(), Close(kObjectHandles[1], _, _));
+  EXPECT_CALL(driver(), Close(kObjectHandles[2], _, _));
+
+  ReceivedMessage message = TakeNextReceivedMessage();
+  test::msg::MessageWithDriverArrayAndExtraObject out;
+  EXPECT_FALSE(out.Deserialize(message.AsTransportMessage(), transport()));
+}
+
+TEST_F(MessageInternalTest, UnclaimedDriverObjects) {
+  // Smoke test to verify that a message with unclaimed DriverObject attachments
+  // does not leak.
+
+  constexpr IpczDriverHandle kObjectHandle1 = 0x12345678;
+  constexpr IpczDriverHandle kObjectHandle2 = 0xabcdef90;
+  constexpr IpczDriverHandle kObjectHandle3 = 0x5a5a5a5a;
+  test::msg::MessageWithDriverObject in;
+  in.params().object =
+      in.AppendDriverObject(DriverObject(node(), kObjectHandle1));
+
+  // Append two more objects with no references to them in the message.
+  in.AppendDriverObject(DriverObject(node(), kObjectHandle2));
+  in.AppendDriverObject(DriverObject(node(), kObjectHandle3));
+
+  transport().Transmit(in);
+
+  ReceivedMessage message = TakeNextReceivedMessage();
+  test::msg::MessageWithDriverObject out;
+  EXPECT_TRUE(out.Deserialize(message.AsTransportMessage(), transport()));
+
+  // Despite not being claimed by any parameters or otherwise referenced within
+  // the message, the extra DriverObjects should be deserialized and now owned
+  // by the message object.
+  EXPECT_EQ(3u, out.driver_objects().size());
+  EXPECT_EQ(kObjectHandle1, out.driver_objects()[0].release());
+  EXPECT_EQ(kObjectHandle2, out.driver_objects()[1].release());
+  EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
 }
 
 TEST_F(MessageInternalTest, TolerateNewerVersion) {
