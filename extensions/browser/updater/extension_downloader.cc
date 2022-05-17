@@ -131,10 +131,6 @@ bool ShouldRetryRequest(const network::SimpleURLLoader* loader) {
   return response_code >= 500 && response_code < 600;
 }
 
-bool ShouldRetryRequestForExtensionNotFoundInCache(const int net_error_code) {
-  return net_error_code == net::ERR_INTERNET_DISCONNECTED;
-}
-
 // This parses and updates a URL query such that the value of the |authuser|
 // query parameter is incremented by 1. If parameter was not present in the URL,
 // it will be added with a value of 1. All other query keys and values are
@@ -622,13 +618,8 @@ void ExtensionDownloader::ReportManifestFetchFailure(
       extension_ids, fetch_data->request_ids(), error, data);
 }
 
-void ExtensionDownloader::TryFetchingExtensionsFromCache(
-    ManifestFetchData* fetch_data,
-    ExtensionDownloaderDelegate::Error error,
-    const int net_error,
-    const int response_code,
-    const absl::optional<ManifestInvalidFailureDataList>&
-        manifest_invalid_errors) {
+bool ExtensionDownloader::TryFetchingExtensionsFromCache(
+    ManifestFetchData* fetch_data) {
   const ExtensionIdSet extension_ids = fetch_data->GetExtensionIds();
   ExtensionIdSet extensions_fetched_from_cache;
   for (const auto& extension_id : extension_ids) {
@@ -651,36 +642,12 @@ void ExtensionDownloader::TryFetchingExtensionsFromCache(
       extensions_fetched_from_cache.insert(extension_id);
     }
   }
-  // All the extensions were found in the cache, no need to retry any request or
-  // report failure.
+  // TODO(b/232900595): Always remove extensions from |fetch_data|.
   if (extensions_fetched_from_cache.size() == extension_ids.size())
-    return;
+    return true;
   fetch_data->RemoveExtensions(extensions_fetched_from_cache,
                                manifest_query_params_);
-
-  if (ShouldRetryRequestForExtensionNotFoundInCache(net_error)) {
-    RetryManifestFetchRequest(net_error, response_code);
-    return;
-  }
-  if (error == ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED) {
-    const ExtensionDownloaderDelegate::FailureData failure_data =
-        ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
-            net_error, response_code,
-            manifests_queue_.active_request_failure_count());
-    ReportManifestFetchFailure(fetch_data, error, failure_data);
-    return;
-  }
-  DCHECK(manifest_invalid_errors);
-  ManifestInvalidFailureDataList errors_for_remaining_extensions;
-  for (const auto& manifest_invalid_error : manifest_invalid_errors.value()) {
-    if (!extensions_fetched_from_cache.count(manifest_invalid_error.first))
-      errors_for_remaining_extensions.push_back(manifest_invalid_error);
-  }
-  NotifyExtensionsDownloadStageChanged(
-      fetch_data->GetExtensionIds(),
-      ExtensionDownloaderDelegate::Stage::FINISHED);
-  NotifyExtensionsManifestInvalidFailure(errors_for_remaining_extensions,
-                                         fetch_data->request_ids());
+  return false;
 }
 
 void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
@@ -699,10 +666,8 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
   // fetch extension from cache again.
   if (net_error == net::ERR_INTERNET_DISCONNECTED &&
       all_force_installed_extensions && request_failure_count == 0) {
-    TryFetchingExtensionsFromCache(
-        manifests_queue_.active_request(),
-        ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED, net_error,
-        response_code, absl::nullopt /*manifest_invalid_errors*/);
+    if (!TryFetchingExtensionsFromCache(manifests_queue_.active_request()))
+      RetryManifestFetchRequest(net_error, response_code);
     return;
   }
   if (ShouldRetryRequest(loader) && request_failure_count < kMaxRetries) {
@@ -712,10 +677,16 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
   const GURL url = loader->GetFinalURL();
   RETRY_HISTOGRAM("ManifestFetchFailure", request_failure_count, url);
   if (all_force_installed_extensions) {
-    TryFetchingExtensionsFromCache(
+    if (TryFetchingExtensionsFromCache(manifests_queue_.active_request()))
+      return;
+    const ExtensionDownloaderDelegate::FailureData failure_data =
+        ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
+            net_error, response_code,
+            manifests_queue_.active_request_failure_count());
+    ReportManifestFetchFailure(
         manifests_queue_.active_request(),
-        ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED, net_error,
-        response_code, absl::nullopt /*manifest_invalid_errors*/);
+        ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED,
+        failure_data);
   } else {
     const ExtensionDownloaderDelegate::FailureData failure_data =
         ExtensionDownloaderDelegate::FailureData::CreateFromNetworkResponse(
@@ -775,19 +746,22 @@ void ExtensionDownloader::HandleManifestResults(
   if (!results) {
     VLOG(2) << "parsing manifest failed (" << fetch_data->full_url() << ")";
     DCHECK(error.has_value());
+    if (TryFetchingExtensionsFromCache(fetch_data.get()))
+      return;
+    // If not all extension were found in the cache, collect them and report
+    // failure.
     ManifestInvalidFailureDataList manifest_invalid_errors;
     const ExtensionIdSet extension_ids = fetch_data->GetExtensionIds();
     manifest_invalid_errors.reserve(extension_ids.size());
-    // If the manifest parsing failed for all the extensions with a common
-    // error, add all extensions in the list with that error.
     for (const auto& extension_id : extension_ids) {
       manifest_invalid_errors.push_back(std::make_pair(
           extension_id,
           ExtensionDownloaderDelegate::FailureData(error.value().error)));
     }
-    TryFetchingExtensionsFromCache(
-        fetch_data.get(), ExtensionDownloaderDelegate::Error::MANIFEST_INVALID,
-        0 /*net_error_code*/, 0 /*response_code*/, manifest_invalid_errors);
+    NotifyExtensionsDownloadStageChanged(
+        extension_ids, ExtensionDownloaderDelegate::Stage::FINISHED);
+    NotifyExtensionsManifestInvalidFailure(manifest_invalid_errors,
+                                           fetch_data->request_ids());
     return;
   } else {
     VLOG(2) << "parsing manifest succeeded (" << fetch_data->full_url() << ")";

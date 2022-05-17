@@ -19,6 +19,9 @@
 
 namespace extensions {
 
+// Backoff policy to enforce zero initial delay.
+const extern net::BackoffEntry::Policy kZeroBackoffPolicy;
+
 class MockExtensionDownloaderDelegate
     : public testing::NiceMock<ExtensionDownloaderDelegate> {
  public:

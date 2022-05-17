@@ -14,6 +14,7 @@
 #include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "services/network/test/test_utils.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -532,6 +533,66 @@ TEST_F(ExtensionDownloaderTest, TestMultipleUpdates) {
         request->request.url.spec(), "not found", net::HTTP_NOT_FOUND);
   }
   EXPECT_EQ(2, requests_count);
+}
+
+// Tests that extension download is retried if no network found and
+// extension not found in cache.
+TEST_F(ExtensionDownloaderTest, TestNoNetworkRetryAfterCacheMiss) {
+  ExtensionDownloaderTestHelper helper;
+
+  helper.downloader().SetBackoffPolicyForTesting(&kZeroBackoffPolicy);
+
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl(),
+      mojom::ManifestLocation::kExternalPolicyDownload,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      DownloadFetchPriority::kBackground));
+  auto test_extension_cache = std::make_unique<ExtensionCacheFake>();
+  helper.downloader().StartAllPending(test_extension_cache.get());
+
+  ASSERT_EQ(1, helper.test_url_loader_factory().NumPending());
+  network::mojom::URLResponseHeadPtr response_head(
+      network::CreateURLResponseHead(net::HTTP_OK));
+  helper.test_url_loader_factory().SimulateResponseForPendingRequest(
+      helper.test_url_loader_factory().GetPendingRequest(0)->request.url,
+      network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED),
+      std::move(response_head), "" /* content*/);
+
+  // ExtensionDownloader is expected to retry the request, so number of pending
+  // ones should be one again.
+  EXPECT_EQ(1, helper.test_url_loader_factory().NumPending());
+}
+
+// Tests that manifest fetch failure is properly reported if extension not found
+// in cache.
+TEST_F(ExtensionDownloaderTest, TestManifestFetchFailureAfterCacheMiss) {
+  ExtensionDownloaderTestHelper helper;
+
+  helper.downloader().SetBackoffPolicyForTesting(&kZeroBackoffPolicy);
+
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl(),
+      mojom::ManifestLocation::kExternalPolicyDownload,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      DownloadFetchPriority::kBackground));
+
+  EXPECT_CALL(
+      helper.delegate(),
+      OnExtensionDownloadFailed(
+          kTestExtensionId,
+          ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED, _, _, _));
+
+  auto test_extension_cache = std::make_unique<ExtensionCacheFake>();
+  helper.downloader().StartAllPending(test_extension_cache.get());
+
+  ASSERT_EQ(1, helper.test_url_loader_factory().NumPending());
+  helper.test_url_loader_factory().SimulateResponseForPendingRequest(
+      helper.test_url_loader_factory().GetPendingRequest(0)->request.url.spec(),
+      "" /* content */, net::HTTP_NOT_FOUND);
+
+  content::RunAllTasksUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&helper.delegate());
 }
 
 }  // namespace extensions

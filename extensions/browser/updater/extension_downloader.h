@@ -255,16 +255,10 @@ class ExtensionDownloader {
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
 
-  // Tries fetching the extension from cache if manifest fetch is failed for
-  // force installed extensions, and notifies the failure reason for remaining
-  // extensions.
-  void TryFetchingExtensionsFromCache(
-      ManifestFetchData* fetch_data,
-      ExtensionDownloaderDelegate::Error error,
-      const int net_error,
-      const int response_code,
-      const absl::optional<ManifestInvalidFailureDataList>&
-          manifest_invalid_errors);
+  // Tries fetching the extension from cache. Returns true if all extensions
+  // have been found, otherwise modifies |fetch_data| to keep only not found
+  // extension there.
+  bool TryFetchingExtensionsFromCache(ManifestFetchData* fetch_data);
 
   // Makes a retry attempt, reports failure by calling
   // AddFailureDataOnManifestFetchFailed when fetching of update manifest
