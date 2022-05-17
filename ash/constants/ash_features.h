@@ -528,6 +528,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kSimLockPolicy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartDimExperimentalComponent;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSmartLockBluetoothScanningFixes;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartLockSignInRemoved;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartLockUIRevamp;
