@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -80,6 +81,8 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
                                  kNearbyNotifier),
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
+
+  notification.set_accent_color(ash::kSystemNotificationColorNormal);
   notification.set_vector_small_image(kNearbyShareIcon);
   notification.set_settings_button_handler(
       message_center::SettingsButtonHandler::DELEGATE);
