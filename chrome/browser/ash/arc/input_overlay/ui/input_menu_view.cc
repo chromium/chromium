@@ -11,6 +11,7 @@
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -323,6 +324,8 @@ void InputMenuView::OnButtonCustomizedPressed() {
   }
   // Change display mode, load edit UI per action and overall edit buttons.
   display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+  const auto* package_name = display_overlay_controller_->GetPackageName();
+  RecordInputOverlayCustomizedUsage(*package_name);
 }
 
 void InputMenuView::OnButtonSendFeedbackPressed() {

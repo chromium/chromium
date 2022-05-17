@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
@@ -243,6 +244,19 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
 
 void TouchInjector::OnInputMenuViewRemoved() {
   OnSaveProtoFile();
+  const auto* package_name = GetPackageName();
+  // Record UMA stats upon |InputMenuView| close because it needs to ignore the
+  // unfinalized menu state change.
+  if (touch_injector_enable_ != touch_injector_enable_uma_) {
+    touch_injector_enable_uma_ = touch_injector_enable_;
+    RecordInputOverlayFeatureState(*package_name, touch_injector_enable_uma_);
+  }
+
+  if (input_mapping_visible_ != input_mapping_visible_uma_) {
+    input_mapping_visible_uma_ = input_mapping_visible_;
+    RecordInputOverlayMappingHintState(*package_name,
+                                       input_mapping_visible_uma_);
+  }
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {
@@ -576,6 +590,14 @@ void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
 
   if (display_overlay_controller_)
     display_overlay_controller_->OnApplyMenuState();
+}
+
+void TouchInjector::RecordMenuStateOnLaunch() {
+  touch_injector_enable_uma_ = touch_injector_enable_;
+  input_mapping_visible_uma_ = input_mapping_visible_;
+  const auto* package_name = GetPackageName();
+  RecordInputOverlayFeatureState(*package_name, touch_injector_enable_uma_);
+  RecordInputOverlayMappingHintState(*package_name, input_mapping_visible_uma_);
 }
 
 int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {

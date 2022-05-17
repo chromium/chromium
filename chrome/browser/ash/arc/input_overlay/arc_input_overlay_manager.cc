@@ -176,6 +176,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
   }
 
   touch_injector->set_data_reading_finished(true);
+  touch_injector->RecordMenuStateOnLaunch();
   RegisterWindowIfFocused(touch_injector->target_window());
 }
 

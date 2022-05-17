@@ -834,6 +834,8 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/actions/position.h",
     "../ash/arc/input_overlay/arc_input_overlay_manager.cc",
     "../ash/arc/input_overlay/arc_input_overlay_manager.h",
+    "../ash/arc/input_overlay/arc_input_overlay_uma.cc",
+    "../ash/arc/input_overlay/arc_input_overlay_uma.h",
     "../ash/arc/input_overlay/constants.h",
     "../ash/arc/input_overlay/db/data_controller.cc",
     "../ash/arc/input_overlay/db/data_controller.h",

@@ -122,6 +122,9 @@ class TouchInjector : public ui::EventRewriter {
   // Save the input menu state when the menu is closed.
   void OnInputMenuViewRemoved();
 
+  // UMA stats.
+  void RecordMenuStateOnLaunch();
+
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
@@ -210,6 +213,13 @@ class TouchInjector : public ui::EventRewriter {
   // Linked to input mapping toggle in the menu. Set it enabled by default. This
   // is to save status if display overlay is destroyed during window operations.
   bool input_mapping_visible_ = true;
+
+  // Used for UMA stats. Don't record the stats when users just switch the
+  // toggle back and forth and finish at the same state. Only record the state
+  // change once the menu is closed.
+  bool touch_injector_enable_uma_ = true;
+  bool input_mapping_visible_uma_ = true;
+
   // The game app is launched for the first time when input overlay is enabled
   // if the value is true.
   bool first_launch_ = false;

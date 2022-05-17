@@ -38,6 +38,10 @@ chromium-metrics-reviews@google.com.
   <variant name="RegularBoot" summary="For a regular boot."/>
 </variants>
 
+<variants name="ArcInputOverlayPackageNames">
+  <variant name="com.habby.archero" summary="Virtual Joystick Game: Archero"/>
+</variants>
+
 <variants name="ArcPerformanceAppCategories">
   <variant name=".GachaClub" summary="Casual game 2: Gacha Club"/>
   <variant name=".GarenaFreeFire" summary="Shooter game: Garena Free Fire"/>
@@ -1118,6 +1122,89 @@ chromium-metrics-reviews@google.com.
     The number of IME apps installed. Collected at startup and when an IME app
     is installed or uninstalled.
   </summary>
+</histogram>
+
+<histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
+    expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Count the usage of input overlay editing feature on all associated apps. The
+    metric is recorded when users press the Customize button. Refer to
+    InputMenuView::OnButtonCustomizedPressed().
+  </summary>
+</histogram>
+
+<histogram name="Arc.InputOverlay.Customized.{ArcInputOverlayPackageName}"
+    enum="BooleanEnabled" expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Count the usage of input overlay editing feature on app
+    {ArcInputOverlayPackageName}. The metric is recorded when users press the
+    Customize button. Refer to InputMenuView::OnButtonCustomizedPressed().
+  </summary>
+  <token key="ArcInputOverlayPackageName"
+      variants="ArcInputOverlayPackageNames"/>
+</histogram>
+
+<histogram name="Arc.InputOverlay.FeatureState" enum="BooleanEnabled"
+    expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Check whether users play the game with input overlay feature enabled or
+    disabled on all associated apps. The metric is recorded when users launch
+    the associated apps and when users have menu state changed upon on closing
+    the input menu only. Refer to TouchInjector::RecordMenuStateOnLaunch() and
+    TouchInjector::OnInputMenuViewRemoved().
+  </summary>
+</histogram>
+
+<histogram name="Arc.InputOverlay.FeatureState.{ArcInputOverlayPackageName}"
+    enum="BooleanEnabled" expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Check whether users play the game with input overlay feature enabled or
+    disabled on app {ArcInputOverlayPackageName}. The metric is recorded when
+    users launch the app {ArcInputOverlayPackageName} and when users have menu
+    state changed upon on closing the input menu only. Refer to
+    TouchInjector::RecordMenuStateOnLaunch() and
+    TouchInjector::OnInputMenuViewRemoved().
+  </summary>
+  <token key="ArcInputOverlayPackageName"
+      variants="ArcInputOverlayPackageNames"/>
+</histogram>
+
+<histogram name="Arc.InputOverlay.MappingHintState" enum="BooleanEnabled"
+    expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Check whether users play the game with input overlay mapping hint enabled or
+    disabled on all associated apps. The metric is recorded when users launch
+    the associated apps and when users have menu state changed upon on closing
+    the input menu only. Refer to TouchInjector::RecordMenuStateOnLaunch() and
+    TouchInjector::OnInputMenuViewRemoved().
+  </summary>
+</histogram>
+
+<histogram
+    name="Arc.InputOverlay.MappingHintState.{ArcInputOverlayPackageName}"
+    enum="BooleanEnabled" expires_after="2022-11-12">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Check whether users play the game with input overlay mapping hint enabled or
+    disabled on app {ArcInputOverlayPackageName}. The metric is recorded when
+    users launch the app {ArcInputOverlayPackageName} and when users have menu
+    state changed upon on closing the input menu only. Refer to
+    TouchInjector::RecordMenuStateOnLaunch() and
+    TouchInjector::OnInputMenuViewRemoved().
+  </summary>
+  <token key="ArcInputOverlayPackageName"
+      variants="ArcInputOverlayPackageNames"/>
 </histogram>
 
 <histogram name="Arc.IntentHelper.OpenAppWithIntentAction"
