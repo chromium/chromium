@@ -135,6 +135,7 @@
 <translation id="1715293566947629045">正在停用設定檔，請等候幾分鐘。</translation>
 <translation id="1719094688023114093">「即時字幕」功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi Sync</translation>
+<translation id="1733996486177697563">在深色和淺色主題背景之間切換。請輕觸並按住桌面，然後選取「桌布和樣式」。</translation>
 <translation id="1736898441010944794">「<ph name="NAME" />」可供藍牙裝置搜尋。</translation>
 <translation id="174102739345480129">標記已關閉。</translation>
 <translation id="1743570585616704562">無法識別</translation>
@@ -263,6 +264,7 @@
 <translation id="2573588302192866788">無法連接「<ph name="NAME" />」</translation>
 <translation id="2575685495496069081">已停用多重登入功能</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
+<translation id="2586561057878260610">㩒 Ctrl + W 制就可以同「<ph name="DESK_NAME" />」合併。㩒 Ctrl + Shift + W 制就可以閂咗桌面同埋視窗。</translation>
 <translation id="2595239820337756193">5 公里等於幾多英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2607678425161541573">需要網上登入</translation>
@@ -667,6 +669,7 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求這個帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
+<translation id="4938176435186993759">隱藏所有建議</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
@@ -732,6 +735,7 @@
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
+<translation id="5356963482258194581">在深色和淺色主題背景之間切換。請在桌面上按一下右鍵，並選取「桌布和樣式」。</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5393156353051693207">輕觸並按住任何位置即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
@@ -753,6 +757,7 @@
 <translation id="5520229639206813572">管理員已移除所有 eSIM 設定檔。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5532994612895037630">輕按任何一處即可錄影全螢幕畫面</translation>
+<translation id="5536723544185013515">最近用嘅應用程式，用向左或者向右箭咀導覽就可以存取所有最近用嘅應用程式</translation>
 <translation id="553675580533261935">正在結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
@@ -779,6 +784,7 @@
 <translation id="5682642926269496722">「Google 助理」不適用於目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">「夜燈模式」讓您更易在光線昏暗的環境下觀看螢幕內容或閱讀。輕按即可變更「夜燈模式」的開啟時間，或完全關閉此功能。</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
+<translation id="570390244361237317">所有應用程式，用方向鍵導覽就可以存取所有應用程式</translation>
 <translation id="5707775774148071965">您的裝置支援比連接線更高的資料傳輸速率。裝置效能可能受到限制。</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
 <translation id="571295407079589142">流動數據已關閉</translation>

@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Data ostatniego resetowania użycia danych jest niedostępna</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
+<translation id="132712914231403017">Zainstaluj obraz oprogramowania układowego</translation>
 <translation id="1327977588028644528">Brama</translation>
 <translation id="1328223165223065150">Kolor tapety</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1645954272419197032">Potwierdź informacje o urządzeniu</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
 <translation id="2016697457005847575">Wykonaj czynności z instrukcji rozwiązywania problemów</translation>
+<translation id="2016848882344942759">– brak etykiety bez oznaczenia marki –</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2085089206770112532">Zmniejsz jasność wyświetlacza</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
 <translation id="2275586345903859204">Naprawa została ukończona</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Podłącz dysk zewnętrzny (np. dysk USB lub kartę SD) z pobranym obrazem aplikacji Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2320295602967756579">Włącz jasny motyw</translation>
 <translation id="2323506179655536734">POMINIĘTO</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">Klucz uwierzytelniania TLS</translation>
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2717139507051041123">Włącz ciemny tryb kolorów</translation>
+<translation id="2727250716596204208">Nie można znaleźć obrazu oprogramowania układowego. Podłącz dysk zewnętrzny (np. dysk USB lub kartę SD) z pobranym obrazem aplikacji Chromebook Recovery Utility.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
 <translation id="2756652381241102009">Uruchom diagnostykę</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">Procesor</translation>
 <translation id="3124039320086536031">Urządzenie jest połączone.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Usunąć stronę?}=1{Usunąć stronę {PAGE_NUMBER}?}few{Usunąć stronę {PAGE_NUMBER}?}many{Usunąć stronę {PAGE_NUMBER}?}other{Usunąć stronę {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Przygotowuję urządzenie…</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369013195428705271">Czy na pewno chcesz usunąć całą historię drukowania? Bieżące zadania drukowania nie zostaną usunięte.</translation>
+<translation id="3383751554789092165">W razie potrzeby zmień informacje o urządzeniu.</translation>
 <translation id="3404249063913988450">Włącz wygaszacz ekranu</translation>
 <translation id="3404770484521709967">Komponenty zostały zainstalowane poprawnie.</translation>
 <translation id="3413935475507503304">Aby rozpocząć aktualizację, kliknij Dalej.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Brak połączenia</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
 <translation id="3771294271822695279">Pliki wideo</translation>
+<translation id="3774059845329307709">Numer seryjny</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Karta SIM odblokowana</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
+<translation id="4568938274596692027">Instalacja została zakończona. Przygotowuję się do ponownego uruchomienia…</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Jak najszybciej wybierz nowe.</translation>
 <translation id="4891842000192098784">Obciążenie</translation>
 <translation id="4897058166682006107">Poziom naładowania baterii lewej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Instaluję oprogramowanie układowe…</translation>
 <translation id="4915052247106771211">To spowoduje przywrócenie urządzenia do ustawień fabrycznych (Powerwash).</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4917889632206600977">Zatrzymano – brak papieru</translation>
@@ -615,8 +625,10 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
+<translation id="6822504384524564824">Kod SKU należy zmienić tylko wtedy, gdy nowe komponenty są inne od tych, które zastąpiono. Na przykład ekran zwykły wymieniono na dotykowy lub zmodernizowano pamięć z 8 GB do 16 GB.</translation>
 <translation id="6840315122969944400">Naprawa urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
+<translation id="6876833053687020046">Numer części DRAM</translation>
 <translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="6905724422583748843">Powrót do aplikacji <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrywa skanera jest otwarta. Zamknij ją i spróbuj ponownie.</translation>
@@ -664,6 +676,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
 <translation id="7359657277149375382">Typ pliku</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Zmień wygaszacz ekranu</translation>
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
 <translation id="741244894080940828">przeliczanie</translation>
@@ -763,6 +776,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8364946094152050673">Puste serwery nazw</translation>
 <translation id="8372477600026034341">Dodatkowe hosty</translation>
 <translation id="8378855320830505539">Region</translation>
+<translation id="8382302752385457774">Bez oznaczenia marki</translation>
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
 <translation id="8422748173858722634">IMEI</translation>

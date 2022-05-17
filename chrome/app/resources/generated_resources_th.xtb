@@ -3447,6 +3447,7 @@
 <translation id="4307992518367153382">พื้นฐาน</translation>
 <translation id="4309165024397827958">อนุญาตให้แอปและบริการของ Android ที่มีสิทธิ์เข้าถึงตำแหน่งใช้ตำแหน่งของอุปกรณ์ โดย Google อาจเก็บรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้ในแบบไม่ระบุตัวบุคคลเพื่อปรับปรุงความแม่นยำของตำแหน่งและการบริการตามสถานที่</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (แสดงอยู่ <ph name="NUM_KILOBYTES_LIVE" />K)</translation>
+<translation id="4310132194679586591">เลือกแอปในอุปกรณ์เพื่อเปิดลิงก์นี้</translation>
 <translation id="4310139701823742692">รูปแบบไฟล์ไม่ถูกต้อง ตรวจสอบไฟล์ PPD แล้วลองอีกครั้ง</translation>
 <translation id="431076611119798497">&amp;รายละเอียด</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{บัญชี Google 1 บัญชี}other{บัญชี Google <ph name="EXTRA_ACCOUNTS" /> บัญชี}}</translation>
@@ -4677,6 +4678,7 @@
 <translation id="5554403733534868102">หลังจากครั้งนี้ ก็ไม่ต้องรอการอัปเดตอีก</translation>
 <translation id="5554489410841842733">ไอคอนนี้จะมองเห็นได้เมื่อส่วนขยายสามารถทำงานบนหน้าปัจจุบันได้</translation>
 <translation id="5554720593229208774">ผู้ออกใบรับรองอีเมล</translation>
+<translation id="5554866693883022680">เลือกแอปใน <ph name="DEVICE_TYPE" /> เพื่อเปิดลิงก์นี้</translation>
 <translation id="5555363196923735206">พลิกกล้อง</translation>
 <translation id="5555525474779371165">เลือกระดับการปกป้องด้วย Google Safe Browsing</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>

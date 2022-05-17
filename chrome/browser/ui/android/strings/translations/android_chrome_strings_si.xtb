@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1384704387250346179">Google Lens සමග රූපය පරිවර්තනය ක. <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">දින <ph name="LAST_UPDATED" /> කට පෙර ක්‍රියාත්මකයි</translation>
+<translation id="13931502444227376">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියේ <ph name="BEGIN_LINK1" />සේවා නියම<ph name="END_LINK1" /> බලන්න.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> සමඟ සොයන්න</translation>
 <translation id="139993653570221430">ඔබට Chrome සැකසීම් තුළ ඕනෑම වේලාවක ඔබගේ අදහස වෙනස් කළ හැකිය. අත්හදා බැලීම් වත්මන් වෙළඳ දැන්වීම් සපයන ආකාරය සමඟ ක්‍රියාත්මක වේ, එබැවින් ඔබ වෙනස් කිරීම් වහාම නොදකිනු ඇත.</translation>
 <translation id="1406000523432664303">“හඹා නොයන්න”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">රහස්‍යතා සෑන්ඩ්බොක්ස් පිළිබඳව</translation>
 <translation id="1736419249208073774">ගවේෂණය කරන්න</translation>
 <translation id="1749561566933687563">ඔබගේ පොත් සලකුණු සමමුහුර්ත කරන්න</translation>
+<translation id="1750259112639922169">ටැබ සමූහය - ටැබ <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
 <translation id="1754404134430936718">පෙළ පිටපත් කරන ලදී</translation>
 <translation id="1779766957982586368">කවුළුව වසන්න</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">මෙම උපාංගයේ පුද්ගලිකව බ්‍රවුස් කිරීමට, අප්‍රසිද්ධ උත්සාහ කරන්න</translation>
 <translation id="5375577065097716013">Google Lens සමග රූපය සොයන්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">ප්‍රතිචාරය වෙනස් කරන ලදි</translation>
+<translation id="5401851137404501592">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="5403644198645076998">නිශ්චිත අඩවිවලට පමණක් ඉඩ දෙන්න</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" /> හි ඉදිරිපත් කරන්නද?</translation>
 <translation id="5414836363063783498">ස්ථිර කරයි…</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">QR කේතය තැනිය නොහැකිය. URL හි අනුලකුණු <ph name="CHARACTER_LIMIT" />කට වඩා තිබේ.</translation>
 <translation id="7177959540995930968">ඔබට Chrome සැකසීම් තුළ මෙම විශේෂාංග ගැන තව දැන ගත හැකිය.</translation>
 <translation id="718226107353899806">ඔබට ප්‍රතිචාර <ph name="MAX_NUM_REACTIONS" />ක් දක්වා එක් කළ හැකිය</translation>
+<translation id="7183693674623539380">ටැබ සමූහය - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">ඔබ පුරා සිටින විට Chrome මත ඔබව ආරක්ෂිතව තබා ගන්නා අතර අනෙකුත් Google යෙදුම් තුළ ඔබේ ආරක්ෂාව වැඩිදියුණු කිරීමට භාවිත කළ හැකිය</translation>
 <translation id="7191430249889272776">පසුබිමින් පටිත්ත විවෘත කරන ලදි.</translation>
 <translation id="7196215469483532480">පෞද්ගලිකත්ව මාර්ගෝපදේශ පැහැදිලි කිරීම පූර්ණ උසකින් විවෘත වේ</translation>

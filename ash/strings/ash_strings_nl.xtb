@@ -173,6 +173,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinvoer</translation>
+<translation id="1982717156487272186">Vorige week tonen</translation>
 <translation id="1989113344093894667">Kan geen content opnemen</translation>
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
 <translation id="1993072747612765854">Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" /></translation>
@@ -619,6 +620,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Zet het apparaat binnen een dag terug naar een oudere versie}other{Zet het apparaat binnen # dagen terug naar een oudere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
+<translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
 <translation id="4657775630156561295">De volgende suggestie wordt definitief uit de suggestiegeschiedenis van je account verwijderd:
 
@@ -773,6 +775,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
+<translation id="5678564054339031017">Volgende week tonen</translation>
 <translation id="5679050765726761783">Adapter met laag vermogen aangesloten</translation>
 <translation id="5682642926269496722">De Google Assistent is niet beschikbaar voor het huidige gebruikersaccount.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt aangezet of zet de functie helemaal uit.</translation>

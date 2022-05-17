@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">สงสัยว่าเป็นแคพทีฟพอร์ทัล</translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">เปิด Write Protect</translation>
 <translation id="1308754910631152188">กำลังอัปเดต (เสร็จสมบูรณ์ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">ไม่มีเครือข่าย<ph name="NETWORK_NAME" />ที่ใช้งานได้</translation>
 <translation id="131421566576084655">ไม่มีวันที่รีเซ็ตปริมาณการใช้อินเทอร์เน็ตครั้งล่าสุด</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">การตั้งค่าคำตอบด่วน</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
+<translation id="5179530508336824319">เปิดใช้ Write Protect เพื่อดำเนินการต่อในหน้าจอถัดไป ดูวิธีการได้ที่หน้าการสนับสนุนของผู้ผลิตอุปกรณ์</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>

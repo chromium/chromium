@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">可疑的強制網絡入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">開啟「寫入保護」功能</translation>
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">未連線至 <ph name="NETWORK_NAME" /> 網絡</translation>
 <translation id="131421566576084655">無法取得上次重設數據用量的日期</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">「快速解答」設定</translation>
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
+<translation id="5179530508336824319">啟用「寫入保護」功能即可繼續前往下一個畫面。請前往裝置製造商的支援網頁取得相關指示。</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
 <translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
 請嘗試輕按麥克風並發問。</translation>

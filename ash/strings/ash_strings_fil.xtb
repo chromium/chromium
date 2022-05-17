@@ -135,6 +135,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1715293566947629045">Dini-disable ang profile. Maghintay nang ilang minuto.</translation>
 <translation id="1719094688023114093">Naka-on ang Instant Caption.</translation>
 <translation id="1720011244392820496">I-on ang Wi-Fi Sync</translation>
+<translation id="1733996486177697563">Magpalipat-lipat sa madilim at maliwanag na tema. Pindutin nang matagal ang desktop, pagkatapos ay piliin ang Wallpaper at style.</translation>
 <translation id="1736898441010944794">Nakikita ng mga Bluetooth device ang "<ph name="NAME" />."</translation>
 <translation id="174102739345480129">Naka-off ang marker.</translation>
 <translation id="1743570585616704562">Hindi nakilala</translation>
@@ -264,6 +265,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2573588302192866788">Hindi maikonekta ang <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Na-disable ang maraming pag-sign in</translation>
 <translation id="2582112259361606227">I-restart para mag-update</translation>
+<translation id="2586561057878260610">Pindutin ang Ctrl + W para isama sa <ph name="DESK_NAME" />. Pindutin ang Ctrl + Shift + W para isara ang desk at mga window.</translation>
 <translation id="2595239820337756193">5K sa milya</translation>
 <translation id="2596078834055697711">Kumuha ng screenshot ng window</translation>
 <translation id="2607678425161541573">Kailangang mag-sign in online</translation>
@@ -669,6 +671,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4917385247580444890">Malakas</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
+<translation id="4938176435186993759">I-hide ang lahat ng suhestyon</translation>
 <translation id="4945196315133970626">I-off ang mga notification</translation>
 <translation id="4946376291507881335">I-capture</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
@@ -735,6 +738,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
+<translation id="5356963482258194581">Magpalipat-lipat sa madilim at maliwanag na tema. Mag-right click sa desktop at piliin ang Wallpaper at style.</translation>
 <translation id="5379115545237091094">Masyadong maraming pagtatangka</translation>
 <translation id="5393156353051693207">Pumindot nang matagal kahit saan para baguhin ang pagkakaayos ng iyong mga app</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sa ibabaw ng <ph name="IN_PLACE_APP" />, bitawan para gumawa ng folder.</translation>
@@ -756,6 +760,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5523434445161341166">Kumokonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Mag-tap kahit saan para i-record ang full screen</translation>
+<translation id="5536723544185013515">Mga Kamakailang App, mag-navigate gamit ang pakaliwa o pakanang arrow key para ma-access ang lahat ng kamakailang app</translation>
 <translation id="553675580533261935">Lumalabas sa session</translation>
 <translation id="5537725057119320332">I-cast</translation>
 <translation id="554893713779400387">I-toggle ang pagdidikta</translation>
@@ -783,6 +788,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5682642926269496722">Hindi available ang Google Assistant para sa kasalukuyang user account.</translation>
 <translation id="5689633613396158040">Mas pinapadali ng Night Light na tumingin sa iyong screen o magbasa sa dilim. I-tap para baguhin kung anong oras mao-on ang Night Light o tuluyan itong i-off.</translation>
 <translation id="5691772641933328258">Hindi nakilala ang fingerprint</translation>
+<translation id="570390244361237317">Lahat ng App, mag-navigate gamit ang mga arrow key para ma-access ang lahat ng app</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="5710450975648804523">Naka-on ang Huwag Istorbohin</translation>
 <translation id="571295407079589142">Naka-off ang mobile data</translation>

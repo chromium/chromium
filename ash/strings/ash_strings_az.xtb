@@ -135,6 +135,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1715293566947629045">Profil deaktiv edilir. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="1719094688023114093">Canlı Altyazı aktivdir.</translation>
 <translation id="1720011244392820496">Wi-Fi Sinxronlaşdırmasını aktiv edin</translation>
+<translation id="1733996486177697563">Tünd və açıq tema arasında keçid edin. Masaüstünə toxunub saxlayın, sonra Divar kağızı və üslub seçin.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth cihazlarına görünür.</translation>
 <translation id="174102739345480129">Marker deaktivdir.</translation>
 <translation id="1743570585616704562">Tanınmır</translation>
@@ -264,6 +265,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> qoşulmadı</translation>
 <translation id="2575685495496069081">Çoxsaylı giriş deaktivdir</translation>
 <translation id="2582112259361606227">Güncəlləmək üçün yenidən başladın</translation>
+<translation id="2586561057878260610"><ph name="DESK_NAME" /> ilə birləşdirmək üçün Ctrl + W düymələrini basın. Masa və pəncərələri bağlamaq üçün Ctrl + Shift + W düymələrini basın.</translation>
 <translation id="2595239820337756193">5000 mil</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
 <translation id="2607678425161541573">Onlayn giriş tələb olunur</translation>
@@ -669,6 +671,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4917385247580444890">Güclü</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
 <translation id="4925542575807923399">Bu hesabın administratoru istəyir ki, çoxsaylı hesab girişi sessiyalarında bu hesaba giriş birinci edilsin.</translation>
+<translation id="4938176435186993759">Bütün təklifləri gizlədin</translation>
 <translation id="4945196315133970626">Bildirişləri deaktiv edin</translation>
 <translation id="4946376291507881335">Çəkin</translation>
 <translation id="495046168593986294">Yuxarı sürüşdürün</translation>
@@ -735,6 +738,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5331975486040154427">USB-C cihazı (arxa sol port)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Sağ)</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
+<translation id="5356963482258194581">Tünd və açıq tema arasında keçid edin. Masaüstünə sağla klikləyin və Divar kağızı və üslub seçin.</translation>
 <translation id="5379115545237091094">Həddindən çox cəhd</translation>
 <translation id="5393156353051693207">Tətbiqləri yenidən sıralamaq üçün istənilən yerə toxunub saxlayın</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" /> tətbiqinin üzərindədir, qovluq yaratmaq üçün buraxın.</translation>
@@ -756,6 +760,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5520229639206813572">Administratorunuz bütün eSIM profillərini silib. Ətraflı məlumat üçün administratorunuzla əlaqə saxlayın.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> qoşulur.</translation>
 <translation id="5532994612895037630">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
+<translation id="5536723544185013515">Son Tətbiqlər, bütün son tətbiqlərə giriş üçün sola və ya sağa ox ilə hərəkət edin</translation>
 <translation id="553675580533261935">Mövcud sessiya</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="554893713779400387">İmlanı aktiv edin</translation>
@@ -783,6 +788,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5682642926269496722">Google Assistent cari istifadəçi hesabında əlçatan deyil.</translation>
 <translation id="5689633613396158040">Gecə İşığı zəif işıqda ekrana baxmağı və ya oxumağı asanlaşdırır. Gecə İşığının yandığı vaxtı dəyişmək və ya onu birdəfəlik söndürmək üçün toxunun.</translation>
 <translation id="5691772641933328258">Barmaq izi tanınmadı</translation>
+<translation id="570390244361237317">Bütün Tətbiqlər, bütün tətbiqlərə giriş üçün ox düymələri ilə hərəkət edin</translation>
 <translation id="5707775774148071965">Cihazınız kabelinizdən daha yüksək məlumat sürətini dəstəkləyir. Cihazın performansı məhdud ola bilər.</translation>
 <translation id="5710450975648804523">Narahat Etməyin rejimi aktivdir</translation>
 <translation id="571295407079589142">Mobil data deaktiv edilib</translation>

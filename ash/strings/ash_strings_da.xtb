@@ -176,6 +176,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinput</translation>
+<translation id="1982717156487272186">Vis forrige uge</translation>
 <translation id="1989113344093894667">Der kan ikke tages screenshot af indhold</translation>
 <translation id="1990046457226896323">Talefilerne blev downloadet</translation>
 <translation id="1993072747612765854">Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering</translation>
@@ -622,6 +623,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, antal stjerner <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Skift til en tidligere version af enheden inden for en dag}one{Skift til en tidligere version af enheden inden for # dag}other{Skift til en tidligere version af enheden inden for # dage}}</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
+<translation id="4644727592819780893">Området er for småt til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, anbefalet app</translation>
 <translation id="4657775630156561295">Følgende forslag fjernes permanent fra din kontos forslagshistorik:
 
@@ -776,6 +778,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5673434351075758678">Fra "<ph name="FROM_LOCALE" />" til "<ph name="TO_LOCALE" />", efter at du har synkroniseret dine indstillinger.</translation>
 <translation id="5675363643668471212">Hyldeelement</translation>
 <translation id="5677928146339483299">Blokeret</translation>
+<translation id="5678564054339031017">Vis næste uge</translation>
 <translation id="5679050765726761783">En adapter med lav effekt er tilsluttet</translation>
 <translation id="5682642926269496722">Google Assistent er ikke tilgængelig for den aktuelle brugerkonto.</translation>
 <translation id="5689633613396158040">Nattelys gør det mere behageligt at kigge på din skærm eller læse på den i svag belysning. Tryk for at ændre indstillingerne for, hvornår Nattelys aktiveres, eller for at deaktivere funktionen helt.</translation>

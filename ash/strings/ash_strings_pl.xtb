@@ -176,6 +176,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
 <translation id="1978498689038657292">Wprowadzanie tekstu</translation>
+<translation id="1982717156487272186">Pokaż poprzedni tydzień</translation>
 <translation id="1989113344093894667">Nie można przechwytywać treści</translation>
 <translation id="1990046457226896323">Pliki z mową zostały pobrane</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
@@ -622,6 +623,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, liczba gwiazdek <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 dnia}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dnia}}</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
+<translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
 <translation id="4657775630156561295">Ta sugestia zostanie trwale usunięta z historii sugestii na Twoim koncie:
 
@@ -776,6 +778,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
 <translation id="5675363643668471212">Element na półce</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
+<translation id="5678564054339031017">Pokaż następny tydzień</translation>
 <translation id="5679050765726761783">Podłączono zasilacz o małej mocy</translation>
 <translation id="5682642926269496722">Asystent Google jest niedostępny na tym koncie użytkownika.</translation>
 <translation id="5689633613396158040">Dzięki Podświetleniu nocnemu oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu. Kliknij, by zmienić godzinę włączania Podświetlenia nocnego lub całkowicie je wyłączyć.</translation>

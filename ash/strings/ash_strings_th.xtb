@@ -132,6 +132,7 @@
 <translation id="1715293566947629045">กำลังปิดใช้โปรไฟล์ รอสักครู่</translation>
 <translation id="1719094688023114093">คำบรรยายสดเปิดอยู่</translation>
 <translation id="1720011244392820496">เปิดการซิงค์ Wi-Fi</translation>
+<translation id="1733996486177697563">สลับระหว่างธีมมืดและธีมสว่าง แตะเดสก์ท็อปค้างไว้ แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
 <translation id="1736898441010944794">อุปกรณ์บลูทูธจะมองเห็น "<ph name="NAME" />" ได้</translation>
 <translation id="174102739345480129">ปิดตัวทำเครื่องหมายอยู่</translation>
 <translation id="1743570585616704562">ไม่รู้จัก</translation>
@@ -261,6 +262,7 @@
 <translation id="2573588302192866788">เชื่อมต่อ <ph name="NAME" /> ไม่ได้</translation>
 <translation id="2575685495496069081">ปิดใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีอยู่</translation>
 <translation id="2582112259361606227">รีสตาร์ทเพื่ออัปเดต</translation>
+<translation id="2586561057878260610">กด Ctrl + W เพื่อรวมเข้ากับ <ph name="DESK_NAME" /> กด Ctrl + Shift + W เพื่อปิดเดสก์และหน้าต่าง</translation>
 <translation id="2595239820337756193">5 กม. เท่ากับกี่ไมล์</translation>
 <translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2607678425161541573">ต้องลงชื่อเข้าใช้ออนไลน์</translation>
@@ -666,6 +668,7 @@
 <translation id="4917385247580444890">แรง</translation>
 <translation id="4918086044614829423">ยอมรับ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
+<translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
@@ -732,6 +735,7 @@
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
+<translation id="5356963482258194581">สลับระหว่างธีมมืดและธีมสว่าง คลิกขวาที่เดสก์ท็อป แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
 <translation id="5379115545237091094">ลองหลายครั้งเกินไป</translation>
 <translation id="5393156353051693207">แตะที่ใดก็ได้ค้างไว้เพื่อเรียงลำดับแอปใหม่</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> อยู่เหนือ <ph name="IN_PLACE_APP" /> ปล่อยเพื่อสร้างโฟลเดอร์</translation>
@@ -753,6 +757,7 @@
 <translation id="5520229639206813572">ผู้ดูแลระบบได้นำโปรไฟล์ eSIM ทั้งหมดออก ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> กำลังเชื่อมต่อ</translation>
 <translation id="5532994612895037630">แตะที่ใดก็ได้เพื่อบันทึกแบบเต็มหน้าจอ</translation>
+<translation id="5536723544185013515">แอปล่าสุด ใช้แป้นลูกศรซ้ายหรือขวาเพื่อเข้าถึงแอปล่าสุดทั้งหมด</translation>
 <translation id="553675580533261935">กำลังออกจากเซสชัน</translation>
 <translation id="5537725057119320332">แคสต์</translation>
 <translation id="554893713779400387">สลับการเขียนตามคำบอก</translation>
@@ -780,6 +785,7 @@
 <translation id="5682642926269496722">Google Assistant ไม่พร้อมใช้งานกับบัญชีผู้ใช้ปัจจุบัน</translation>
 <translation id="5689633613396158040">แสงตอนกลางคืนช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ง่ายขึ้น แตะเพื่อเปลี่ยนเวลาเปิดแสงตอนกลางคืนหรือจะปิดไปเลยก็ได้</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
+<translation id="570390244361237317">แอปทั้งหมด ใช้แป้นลูกศรเพื่อเข้าถึงแอปทั้งหมด</translation>
 <translation id="5707775774148071965">อุปกรณ์รองรับอัตราข้อมูลที่สูงกว่าสายสัญญาณ และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="5710450975648804523">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="571295407079589142">อินเทอร์เน็ตมือถือปิดอยู่</translation>
