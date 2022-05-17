@@ -152,6 +152,8 @@ extern const base::Feature kAutofillProbableFormSubmissionInBrowser;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProfileImportFromUnfocusableFields;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillRationalizeStreetAddressAndAddressLine;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRemoveInvalidPhoneNumberOnImport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRemoveInaccessibleProfileValues;

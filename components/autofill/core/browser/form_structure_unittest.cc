@@ -6267,6 +6267,54 @@ TEST_F(FormStructureTestImpl, RationalizePhoneNumber_RunsOncePerSection) {
   EXPECT_TRUE(forms[0]->field(3)->only_fill_when_focused());
 }
 
+TEST_F(FormStructureTestImpl, RationalizeStreetAddressAndAddressLine) {
+  base::test::ScopedFeatureList enabled;
+  enabled.InitAndEnableFeature(
+      features::kAutofillRationalizeStreetAddressAndAddressLine);
+
+  FormData form;
+  form.url = GURL("http://foo.com");
+  FormFieldData field;
+  field.form_control_type = "text";
+  field.max_length = 10000;
+
+  field.label = u"Full Name";
+  field.name = u"fullName";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Address1";
+  field.name = u"address1";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  field.label = u"Address2";
+  field.name = u"address2";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form.fields.push_back(field);
+
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldSuggestionToForm(form_suggestion, form.fields[0], NAME_FULL);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[1],
+                           ADDRESS_HOME_STREET_ADDRESS);
+  AddFieldSuggestionToForm(form_suggestion, form.fields[2], ADDRESS_HOME_LINE2);
+
+  std::string response_string = SerializeAndEncode(response);
+
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms = {&form_structure};
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+
+  ASSERT_EQ(1U, forms.size());
+  ASSERT_EQ(3U, forms[0]->field_count());
+  EXPECT_EQ(NAME_FULL, forms[0]->field(0)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(1)->Type().GetStorableType());
+  EXPECT_EQ(ADDRESS_HOME_LINE2, forms[0]->field(2)->Type().GetStorableType());
+}
+
 // Tests that a form that has only one address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureTestImpl, RationalizeRepeatedFields_OneAddress) {

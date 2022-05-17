@@ -410,6 +410,13 @@ const base::Feature kAutofillProfileImportFromUnfocusableFields{
     "AutofillProfileImportFromUnfocusableFields",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If we observe a sequence of fields of (street address, address line 2), these
+// get rationalized to (address line 1, address line 2).
+// TODO(crbug.com/1326425): Remove once feature is lanuched.
+const base::Feature kAutofillRationalizeStreetAddressAndAddressLine{
+    "AutofillRationalizeStreetAddressAndAddressLine",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Clear fields which are not visible in the settings for a profile's country,
 // both during profile import and on startup.
 // TODO(crbug.com/1299435): Cleanup when launched.

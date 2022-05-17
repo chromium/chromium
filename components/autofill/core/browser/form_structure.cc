@@ -1894,6 +1894,36 @@ void FormStructure::RationalizeCreditCardFieldPredictions(
   }
 }
 
+void FormStructure::RationalizeStreetAddressAndAddressLine(
+    LogManager* log_manager) {
+  if (fields_.size() < 2)
+    return;
+  for (auto field = fields_.begin() + 1; field != fields_.end(); ++field) {
+    if ((*field)->ComputedType().GetStorableType() != ADDRESS_HOME_LINE2)
+      continue;
+    // Rationalize a preceding street address belonging to the same section
+    // unless it's a server override.
+    AutofillField& previous_field = **(field - 1);
+    if (previous_field.ComputedType().GetStorableType() !=
+            ADDRESS_HOME_STREET_ADDRESS ||
+        previous_field.section != (*field)->section ||
+        previous_field.server_type_prediction_is_override()) {
+      continue;
+    }
+    // TODO(crbug.com/1326425): Remove once feature is lanuched.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillRationalizeStreetAddressAndAddressLine)) {
+      continue;
+    }
+    if (log_manager) {
+      LogRationalization(log_manager)
+          << "Street Address Rationalization: Converting sequence of (street "
+             "address, address line 2) to (address line 1, address line 2)";
+    }
+    previous_field.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
+  }
+}
+
 void FormStructure::RationalizePhoneNumbersInSection(
     const std::string& section) {
   if (phone_rationalized_[section])
@@ -2198,6 +2228,7 @@ void FormStructure::RationalizeRepeatedFields(
 
 void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
+  RationalizeStreetAddressAndAddressLine(log_manager);
   for (const auto& field : fields_) {
     field->SetTypeTo(field->Type());
   }
