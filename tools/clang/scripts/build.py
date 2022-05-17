@@ -410,9 +410,11 @@ def MaybeDownloadHostGcc(args):
   assert sys.platform.startswith('linux')
   if args.gcc_toolchain:
     return
-  gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-trusty')
+  gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-bionic')
+  if os.path.isdir(gcc_dir):  # TODO(thakis): Remove this branch after a few weeks.
+    RmTree(gcc_dir)
   if not os.path.exists(gcc_dir):
-    DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-trusty.tgz', gcc_dir)
+    DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-bionic.tgz', gcc_dir)
   args.gcc_toolchain = gcc_dir
 
 
