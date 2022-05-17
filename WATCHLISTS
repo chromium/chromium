@@ -972,6 +972,10 @@
       'filepath': 'chrome/browser/download/|'\
                   'content/browser/download/',
     },
+    'download_bubble': {
+      'filepath': 'chrome/browser/download/bubble/|' \
+                  'chrome/browser/ui/views/download/bubble/'
+    },
     'downloads_ui': {
       'filepath': 'chrome/browser/resources/downloads/|' \
                   'chrome/browser/ui/webui/.*downloads|' \
@@ -2515,6 +2519,8 @@
     'disk_cache': ['gavinp+disk@chromium.org'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
     'download': ['dtrainor+watch@chromium.org'],
+    'download_bubble': ['bhatiarohit+watch@chromium.org',
+                        'xinghuilu+watch@chromium.org'],
     'downloads_ui': ['dtrainor+watch@chromium.org'],
     'drive_resource_metadata': ['hashimoto+watch@chromium.org'],
     'eme': ['eme-reviews@chromium.org'],
