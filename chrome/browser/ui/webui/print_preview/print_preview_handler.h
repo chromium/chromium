@@ -247,7 +247,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |printers|: A non-empty list containing information about the printer or
   //     printers that have been added.
   void OnAddedPrinters(mojom::PrinterType printer_type,
-                       const base::Value::List& printers);
+                       base::Value::List printers);
 
   // Called when printer search is done for some destination type.
   // |callback_id|: The javascript callback to call.

@@ -86,7 +86,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
   // methods, primarily so the callbacks can be bound to this class' weak ptr.
   // They just propagate results to callbacks passed to them.
   void WrapGetPrintersCallback(AddedPrintersCallback callback,
-                               const base::Value::List& printers,
+                               base::Value::List printers,
                                bool done);
   void WrapGetCapabilityCallback(GetCapabilityCallback callback,
                                  const base::DictionaryValue& capability);

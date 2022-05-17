@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -39,17 +40,17 @@ namespace {
 using ContextType = ExtensionBrowserTest::ContextType;
 
 // Callback for PrinterProviderAPI::DispatchGetPrintersRequested calls.
-// It appends items in |printers| to |*printers_out|. If |done| is set, it runs
-// |callback|.
-void AppendPrintersAndRunCallbackIfDone(base::Value::List* printers_out,
+// It appends items in `printers` to `printers_out`. If `done` is set, it runs
+// `callback`.
+void AppendPrintersAndRunCallbackIfDone(base::Value::List& printers_out,
                                         base::RepeatingClosure callback,
-                                        const base::Value::List& printers,
+                                        base::Value::List printers,
                                         bool done) {
   for (size_t i = 0; i < printers.size(); ++i) {
-    const base::Value& printer = printers[i];
+    base::Value& printer = printers[i];
     EXPECT_TRUE(printer.is_dict())
         << "Found invalid printer value at index " << i << ": " << printers;
-    printers_out->Append(printer.Clone());
+    printers_out.Append(std::move(printer));
   }
   if (done && callback)
     std::move(callback).Run();
@@ -390,8 +391,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersSuccess) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -429,8 +431,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersAsyncSuccess) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -465,8 +468,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersTwoExtensions) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -528,8 +532,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -559,8 +564,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -605,8 +611,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -645,8 +652,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersNoListener) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -666,8 +674,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersNotArray) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -688,8 +697,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest,
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -709,8 +719,9 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderApiTest, GetPrintersInvalidPrinterValue) {
   base::RunLoop run_loop;
   base::Value::List printers;
 
-  StartGetPrintersRequest(base::BindRepeating(
-      &AppendPrintersAndRunCallbackIfDone, &printers, run_loop.QuitClosure()));
+  StartGetPrintersRequest(
+      base::BindRepeating(&AppendPrintersAndRunCallbackIfDone,
+                          std::ref(printers), run_loop.QuitClosure()));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 

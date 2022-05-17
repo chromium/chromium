@@ -113,7 +113,7 @@ class GetPrintersRequest {
   // Runs the callback for an extension and removes the extension from the
   // list of extensions that still have to respond to the event.
   void ReportForExtension(const std::string& extension_id,
-                          const base::Value::List& printers);
+                          base::Value::List printers);
 
  private:
   // Callback reporting event result for an extension. Called once for each
@@ -142,7 +142,7 @@ class PendingGetPrintersRequests {
   // values reported by the extension.
   bool CompleteForExtension(const std::string& extension_id,
                             int request_id,
-                            const base::Value::List& result);
+                            base::Value::List result);
 
   // Runs callbacks for the extension for all requests that are waiting for a
   // response from the extension with the provided extension id. Callbacks are
@@ -343,9 +343,9 @@ bool GetPrintersRequest::IsDone() const {
 }
 
 void GetPrintersRequest::ReportForExtension(const std::string& extension_id,
-                                            const base::Value::List& printers) {
+                                            base::Value::List printers) {
   if (extensions_.erase(extension_id) > 0)
-    callback_.Run(printers, IsDone());
+    callback_.Run(std::move(printers), IsDone());
 }
 
 PendingGetPrintersRequests::PendingGetPrintersRequests() : last_request_id_(0) {
@@ -364,12 +364,12 @@ int PendingGetPrintersRequests::Add(
 bool PendingGetPrintersRequests::CompleteForExtension(
     const std::string& extension_id,
     int request_id,
-    const base::Value::List& result) {
+    base::Value::List result) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return false;
 
-  it->second.ReportForExtension(extension_id, result);
+  it->second.ReportForExtension(extension_id, std::move(result));
   if (it->second.IsDone()) {
     pending_requests_.erase(it);
   }
@@ -698,8 +698,8 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
     printer_list.Append(base::Value::FromUniquePtrValue(std::move(printer)));
   }
 
-  pending_get_printers_requests_.CompleteForExtension(extension->id(),
-                                                      request_id, printer_list);
+  pending_get_printers_requests_.CompleteForExtension(
+      extension->id(), request_id, std::move(printer_list));
 }
 
 void PrinterProviderAPIImpl::OnGetCapabilityResult(

@@ -46,9 +46,9 @@ void RecordGetDefaultPrinter(std::string& default_printer_out,
 // Increases `call_count` and records values returned by `StartGetPrinters()`.
 void RecordPrinterList(size_t& call_count,
                        base::Value::List& printers_out,
-                       const base::Value::List& printers) {
+                       base::Value::List printers) {
   ++call_count;
-  printers_out = printers.Clone();
+  printers_out = std::move(printers);
 }
 
 // Used as a callback to `StartGetPrinters` in tests.

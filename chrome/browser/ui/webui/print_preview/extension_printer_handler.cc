@@ -274,11 +274,11 @@ void ExtensionPrinterHandler::DispatchPrintJob(
 
 void ExtensionPrinterHandler::WrapGetPrintersCallback(
     AddedPrintersCallback callback,
-    const base::Value::List& printers,
+    base::Value::List printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
   if (!printers.empty())
-    callback.Run(printers);
+    callback.Run(std::move(printers));
 
   if (done)
     pending_enumeration_count_--;
@@ -360,7 +360,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   pending_enumeration_count_--;
   base::Value::List list = std::move(printer_list.Build()->GetList());
   if (!list.empty())
-    callback.Run(list);
+    callback.Run(std::move(list));
   if (pending_enumeration_count_ == 0)
     std::move(done_callback_).Run();
 }

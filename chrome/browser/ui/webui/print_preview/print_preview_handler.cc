@@ -1144,17 +1144,19 @@ PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
 }
 
 void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
-                                          const base::Value::List& printers) {
+                                          base::Value::List printers) {
   DCHECK(printer_type == mojom::PrinterType::kExtension ||
          printer_type == mojom::PrinterType::kLocal);
-  DCHECK(!printers.empty());
+  // Save the count here, as `printers` gets moved below.
+  const size_t printer_count = printers.size();
+  DCHECK(printer_count);
   FireWebUIListener("printers-added",
                     base::Value(static_cast<int>(printer_type)),
-                    base::Value(printers.Clone()));
+                    base::Value(std::move(printers)));
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {
-    ReportNumberOfPrinters(printers.size());
+    ReportNumberOfPrinters(printer_count);
     has_logged_printers_count_ = true;
   }
 }

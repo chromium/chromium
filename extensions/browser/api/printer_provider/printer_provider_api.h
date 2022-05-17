@@ -28,8 +28,7 @@ namespace extensions {
 class PrinterProviderAPI : public KeyedService {
  public:
   using GetPrintersCallback =
-      base::RepeatingCallback<void(const base::Value::List& printers,
-                                   bool done)>;
+      base::RepeatingCallback<void(base::Value::List printers, bool done)>;
   using GetCapabilityCallback =
       base::OnceCallback<void(const base::DictionaryValue& capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
@@ -41,7 +40,7 @@ class PrinterProviderAPI : public KeyedService {
   // Returns generic error string for print request.
   static std::string GetDefaultPrintError();
 
-  ~PrinterProviderAPI() override {}
+  ~PrinterProviderAPI() override = default;
 
   // Requests list of supported printers from extensions implementing
   // chrome.printerProvider API. It dispatches

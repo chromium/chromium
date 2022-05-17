@@ -178,7 +178,7 @@ void ConvertPrinterListForCallback(
   VLOG(1) << "Enumerate printers finished, found " << printers.size()
           << " printers";
   if (!printers.empty())
-    callback.Run(printers);
+    callback.Run(std::move(printers));
   std::move(done_callback).Run();
 }
 

@@ -242,9 +242,9 @@ constexpr size_t kPrintDataLength = sizeof(kPrintData);
 // Increases `call_count` and records values returned by StartGetPrinters().
 void RecordPrinterList(size_t& call_count,
                        base::Value::List& printers_out,
-                       const base::Value::List& printers) {
+                       base::Value::List printers) {
   ++call_count;
-  printers_out = printers.Clone();
+  printers_out = std::move(printers);
 }
 
 // Used as a callback to StartGetPrinters in tests.
@@ -419,10 +419,9 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
     return nullptr;
   }
 
-  void TriggerNextGetPrintersCallback(const base::Value::List& printers,
-                                      bool done) {
+  void TriggerNextGetPrintersCallback(base::Value::List printers, bool done) {
     ASSERT_GT(pending_get_printers_count(), 0u);
-    pending_printers_callbacks_.front().Run(printers, done);
+    pending_printers_callbacks_.front().Run(std::move(printers), done);
     pending_printers_callbacks_.pop();
   }
 
@@ -546,7 +545,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {
       base::test::ParseJson(kPrinterDescriptionList);
   ASSERT_TRUE(original_printers.is_list());
 
-  fake_api->TriggerNextGetPrintersCallback(original_printers.GetList(),
+  fake_api->TriggerNextGetPrintersCallback(original_printers.GetList().Clone(),
                                            /*done=*/true);
 
   EXPECT_EQ(1u, call_count);
@@ -575,7 +574,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetPrinters_Reset) {
       base::test::ParseJson(kPrinterDescriptionList);
   ASSERT_TRUE(original_printers.is_list());
 
-  fake_api->TriggerNextGetPrintersCallback(original_printers.GetList(),
+  fake_api->TriggerNextGetPrintersCallback(original_printers.GetList().Clone(),
                                            /*done=*/true);
 
   EXPECT_EQ(0u, call_count);
