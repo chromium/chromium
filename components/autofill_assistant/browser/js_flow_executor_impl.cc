@@ -388,6 +388,7 @@ void JsFlowExecutorImpl::RunCallback(
     VLOG(1) << "Flow failed with " << status
             << " and result: " << *result_value;
   }
+
   std::move(callback_).Run(status, std::move(result_value));
 }
 
