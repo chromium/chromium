@@ -1100,7 +1100,7 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
   std::unique_ptr<base::DictionaryValue> user_status(new base::DictionaryValue);
   user_status_provider_->GetStatus(user_status.get());
   const std::string* username = user_status->FindStringKey("username");
-  if (username && username->empty())
+  if (username && !username->empty())
     user_status->SetStringKey("domain", gaia::ExtractDomainName(*username));
 
   std::unique_ptr<base::DictionaryValue> machine_status(
