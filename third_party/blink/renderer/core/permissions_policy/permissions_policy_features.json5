@@ -72,6 +72,11 @@
       permissions_policy_name: "autoplay",
     },
     {
+      name: "Bluetooth",
+      permissions_policy_name: "bluetooth",
+      depends_on: ["WebBluetooth"],
+    },
+    {
       name: "BrowsingTopics",
       permissions_policy_name: "browsing-topics",
       feature_default: "EnableForAll",

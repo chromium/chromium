@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -203,9 +204,9 @@ DOMException* BluetoothError::CreateDOMException(
                 DOMExceptionCode::kSecurityError,
                 "requestDevice() called with a filter containing a blocklisted "
                 "UUID. https://goo.gl/4NeimX");
-      MAP_ERROR(REQUEST_DEVICE_FROM_CROSS_ORIGIN_IFRAME,
-                DOMExceptionCode::kSecurityError,
-                "requestDevice() called from cross-origin iframe.");
+      MAP_ERROR(PERMISSIONS_POLICY_VIOLATION, DOMExceptionCode::kSecurityError,
+                "Access to the feature \"bluetooth\" is disallowed by "
+                "permissions policy.");
 
       // NotAllowedErrors:
       MAP_ERROR(SCANNING_BLOCKED, DOMExceptionCode::kNotAllowedError,

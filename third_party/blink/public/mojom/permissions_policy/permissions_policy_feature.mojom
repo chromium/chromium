@@ -223,6 +223,10 @@ enum PermissionsPolicyFeature {
   // https://wicg.github.io/local-font-access/#permissions-policy
   kLocalFonts = 100,
 
+  // Controls access to Bluetooth API.
+  kBluetooth = 101,
+
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in
