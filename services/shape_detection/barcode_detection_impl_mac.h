@@ -18,6 +18,9 @@
 
 namespace shape_detection {
 
+// This class is the implementation of Barcode Detection based on Core Image.
+// This is used in some cases on macOS 10.14 when Vision is broken. When macOS
+// 10.14 is no longer supported by Chromium, remove.
 class BarcodeDetectionImplMac
     : public shape_detection::mojom::BarcodeDetection {
  public:

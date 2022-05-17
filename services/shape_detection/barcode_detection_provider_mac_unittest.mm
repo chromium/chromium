@@ -46,12 +46,8 @@ static const std::vector<mojom::BarcodeFormat>& MockVisionSupportedFormats = {
     mojom::BarcodeFormat::AZTEC, mojom::BarcodeFormat::DATA_MATRIX,
     mojom::BarcodeFormat::QR_CODE};
 
-// Use strings here because, while these will only be used on 10.13 or later
-// when the real symbols will be available, this array is constructed statically
-// on all OS versions.
 static NSArray<VNBarcodeSymbology>* MockVisionSupportedSymbologyStrings = @[
-  @"VNBarcodeSymbologyAztec", @"VNBarcodeSymbologyDataMatrix",
-  @"VNBarcodeSymbologyQR"
+  VNBarcodeSymbologyAztec, VNBarcodeSymbologyDataMatrix, VNBarcodeSymbologyQR
 ];
 
 class MockVisionAPI : public VisionAPIInterface {
@@ -104,8 +100,6 @@ class BarcodeDetectionProviderMacTest
   ~BarcodeDetectionProviderMacTest() override = default;
 
   void SetUp() override {
-    if (@available(macOS 10.13, *))
-      is_vision_available_ = true;
     ASSERT_EQ([MockVisionSupportedSymbologyStrings count],
               MockVisionSupportedFormats.size());
   }
@@ -122,11 +116,10 @@ class BarcodeDetectionProviderMacTest
 
   std::unique_ptr<mojom::BarcodeDetectionProvider> provider_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  bool is_vision_available_ = false;
 };
 
 TEST_P(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodes) {
-  if (is_vision_available_ != GetParam().test_vision_api) {
+  if (!GetParam().test_vision_api) {
     LOG(WARNING) << "Barcode Detection for this (library, OS version) pair is "
                     "not supported, skipping test.";
     return;
@@ -149,12 +142,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          ValuesIn(kTestParams));
 
 TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesCached) {
-  if (!is_vision_available_) {
-    LOG(WARNING) << "Barcode Detection with Vision not supported before 10.13, "
-                 << "skipping test.";
-    return;
-  }
-
   auto mock_vision_api = std::make_unique<MockVisionAPI>();
   ON_CALL(*mock_vision_api, GetSupportedSymbologies())
       .WillByDefault(Return(MockVisionSupportedSymbologyStrings));
@@ -173,12 +160,6 @@ TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesCached) {
 }
 
 TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesUnknown) {
-  if (!is_vision_available_) {
-    LOG(WARNING) << "Barcode Detection with Vision not supported before 10.13, "
-                 << "skipping test.";
-    return;
-  }
-
   NSMutableArray* mock_supported_symbologies =
       [NSMutableArray arrayWithArray:MockVisionSupportedSymbologyStrings];
   [mock_supported_symbologies addObject:@"FooSymbology"];
@@ -192,12 +173,6 @@ TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesUnknown) {
 }
 
 TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesErrored) {
-  if (!is_vision_available_) {
-    LOG(WARNING) << "Barcode Detection with Vision not supported before 10.13, "
-                 << "skipping test.";
-    return;
-  }
-
   std::unique_ptr<VisionAPIInterface> mock_vision_api =
       CreateMockVisionAPI(@[]);
 
@@ -214,12 +189,6 @@ TEST_F(BarcodeDetectionProviderMacTest, EnumerateSupportedBarcodesErrored) {
 }
 
 TEST_F(BarcodeDetectionProviderMacTest, HintFormats) {
-  if (!is_vision_available_) {
-    LOG(WARNING) << "Barcode Detection with Vision not supported before 10.13, "
-                 << "skipping test.";
-    return;
-  }
-
   mojo::Remote<mojom::BarcodeDetectionProvider> provider_remote;
   mojo::MakeSelfOwnedReceiver(CreateBarcodeProviderMac(CreateVisionAPI()),
                               provider_remote.BindNewPipeAndPassReceiver());

@@ -35,7 +35,7 @@ class TextDetectionImplMacTest : public ::testing::Test {
   }
   MOCK_METHOD1(Detection, void(size_t));
 
-  API_AVAILABLE(macosx(10.11)) std::unique_ptr<TextDetectionImplMac> impl_;
+  std::unique_ptr<TextDetectionImplMac> impl_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

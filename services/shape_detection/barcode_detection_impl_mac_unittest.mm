@@ -38,11 +38,8 @@ std::unique_ptr<mojom::BarcodeDetection> CreateBarcodeDetectorImplMacCoreImage(
 
 std::unique_ptr<mojom::BarcodeDetection> CreateBarcodeDetectorImplMacVision(
     mojom::BarcodeDetectorOptionsPtr options) {
-  if (@available(macOS 10.13, *)) {
-    if (!BarcodeDetectionImplMacVision::IsBlockedMacOSVersion()) {
-      return std::make_unique<BarcodeDetectionImplMacVision>(
-          std::move(options));
-    }
+  if (!BarcodeDetectionImplMacVision::IsBlockedMacOSVersion()) {
+    return std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
   }
   return nullptr;
 }
@@ -147,29 +144,23 @@ TEST_P(BarcodeDetectionImplMacTest, ScanOneBarcode) {
 INSTANTIATE_TEST_SUITE_P(, BarcodeDetectionImplMacTest, ValuesIn(kTestParams));
 
 TEST_F(BarcodeDetectionImplMacTest, HintFormats) {
-  if (@available(macOS 10.13, *)) {
-    auto vision_impl = std::make_unique<BarcodeDetectionImplMacVision>(
-        mojom::BarcodeDetectorOptions::New());
-    EXPECT_EQ([vision_impl->GetSymbologyHintsForTesting() count], 0u);
+  auto vision_impl = std::make_unique<BarcodeDetectionImplMacVision>(
+      mojom::BarcodeDetectorOptions::New());
+  EXPECT_EQ([vision_impl->GetSymbologyHintsForTesting() count], 0u);
 
-    mojom::BarcodeDetectorOptionsPtr options =
-        mojom::BarcodeDetectorOptions::New();
-    options->formats = {
-        mojom::BarcodeFormat::PDF417, mojom::BarcodeFormat::QR_CODE,
-        mojom::BarcodeFormat::CODE_128, mojom::BarcodeFormat::ITF};
-    vision_impl =
-        std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
-    NSArray<VNBarcodeSymbology>* expected = @[
-      VNBarcodeSymbologyPDF417, VNBarcodeSymbologyQR, VNBarcodeSymbologyCode128,
-      VNBarcodeSymbologyITF14, VNBarcodeSymbologyI2of5,
-      VNBarcodeSymbologyI2of5Checksum
-    ];
-    EXPECT_TRUE(
-        [vision_impl->GetSymbologyHintsForTesting() isEqualTo:expected]);
-  } else {
-    LOG(WARNING) << "Barcode Detection with Vision not supported before 10.13, "
-                 << "skipping test.";
-  }
+  mojom::BarcodeDetectorOptionsPtr options =
+      mojom::BarcodeDetectorOptions::New();
+  options->formats = {
+      mojom::BarcodeFormat::PDF417, mojom::BarcodeFormat::QR_CODE,
+      mojom::BarcodeFormat::CODE_128, mojom::BarcodeFormat::ITF};
+  vision_impl =
+      std::make_unique<BarcodeDetectionImplMacVision>(std::move(options));
+  NSArray<VNBarcodeSymbology>* expected = @[
+    VNBarcodeSymbologyPDF417, VNBarcodeSymbologyQR, VNBarcodeSymbologyCode128,
+    VNBarcodeSymbologyITF14, VNBarcodeSymbologyI2of5,
+    VNBarcodeSymbologyI2of5Checksum
+  ];
+  EXPECT_TRUE([vision_impl->GetSymbologyHintsForTesting() isEqualTo:expected]);
 }
 
 }  // shape_detection namespace

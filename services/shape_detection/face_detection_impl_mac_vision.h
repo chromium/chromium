@@ -21,8 +21,7 @@ namespace shape_detection {
 
 // The FaceDetectionImplMacVision class is the implementation of Face Detection
 // based on Mac OS Vision framework.
-class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
-    : public mojom::FaceDetection {
+class FaceDetectionImplMacVision : public mojom::FaceDetection {
  public:
   FaceDetectionImplMacVision();
 

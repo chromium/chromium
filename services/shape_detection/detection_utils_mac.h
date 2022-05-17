@@ -28,7 +28,7 @@ gfx::RectF ConvertCGToGfxCoordinates(CGRect bounds, int height);
 
 // This class submits an image analysis request for asynchronous execution on a
 // dispatch queue with default priority.
-class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
+class VisionAPIAsyncRequestMac {
  public:
   // A callback run when the asynchronous execution completes. The callback is
   // repeating for the instance.

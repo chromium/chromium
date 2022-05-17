@@ -15,10 +15,9 @@ namespace shape_detection {
 
 namespace {
 
-mojom::LandmarkPtr API_AVAILABLE(macos(10.13))
-    BuildLandmark(VNFaceLandmarkRegion2D* landmark_region,
-                  mojom::LandmarkType landmark_type,
-                  gfx::RectF bounding_box) {
+mojom::LandmarkPtr BuildLandmark(VNFaceLandmarkRegion2D* landmark_region,
+                                 mojom::LandmarkType landmark_type,
+                                 gfx::RectF bounding_box) {
   auto landmark = mojom::Landmark::New();
   landmark->type = landmark_type;
   landmark->locations.reserve(landmark_region.pointCount);

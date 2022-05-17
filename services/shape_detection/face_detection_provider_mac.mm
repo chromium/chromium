@@ -28,22 +28,19 @@ void FaceDetectionProviderMac::Create(
 void FaceDetectionProviderMac::CreateFaceDetection(
     mojo::PendingReceiver<mojom::FaceDetection> receiver,
     mojom::FaceDetectorOptionsPtr options) {
-  // Vision Framework needs at least MAC OS X 10.13.
-  if (@available(macOS 10.13, *)) {
-    // Vision is more accurate than Core Image Framework, but it also needs more
-    // processing time.
-    if (!options->fast_mode) {
-      auto impl = std::make_unique<FaceDetectionImplMacVision>();
-      auto* impl_ptr = impl.get();
-      impl_ptr->SetReceiver(
-          mojo::MakeSelfOwnedReceiver(std::move(impl), std::move(receiver)));
-      return;
-    }
+  // Vision is more accurate than Core Image Framework, but it also needs more
+  // processing time.
+  if (options->fast_mode) {
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<FaceDetectionImplMac>(std::move(options)),
+        std::move(receiver));
+    return;
   }
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<FaceDetectionImplMac>(std::move(options)),
-      std::move(receiver));
+  auto impl = std::make_unique<FaceDetectionImplMacVision>();
+  auto* impl_ptr = impl.get();
+  impl_ptr->SetReceiver(
+      mojo::MakeSelfOwnedReceiver(std::move(impl), std::move(receiver)));
 }
 
 }  // namespace shape_detection
