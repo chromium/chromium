@@ -21,6 +21,11 @@ extension Color {
     return Color(kTertiaryBackgroundColor)
   }
 
+  /// The updated tertiary background color
+  public static var updatedTertiaryBackground: Color {
+    return Color(kUpdatedTertiaryBackgroundColor)
+  }
+
   /// The primary grouped background color.
   public static var groupedPrimaryBackground: Color {
     return Color(kGroupedPrimaryBackgroundColor)
