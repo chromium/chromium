@@ -383,11 +383,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error:\nError: Failed to load ",
+      {"a JavaScript error: \"Error: Failed to load ",
        https_server()
            ->GetURL("a.test", "/shared_storage/nonexistent_module.js")
            .spec(),
-       " HTTP status = 404 Not Found.\n"});
+       " HTTP status = 404 Not Found.\"\n"});
 
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/nonexistent_module.js');
@@ -407,12 +407,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error:\nError: Unexpected redirect on ",
+      {"a JavaScript error: \"Error: Unexpected redirect on ",
        https_server()
            ->GetURL("a.test",
                     "/server-redirect?shared_storage/simple_module.js")
            .spec(),
-       ".\n"});
+       ".\"\n"});
 
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.worklet.addModule(
@@ -434,11 +434,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error:\nError: ",
+      {"a JavaScript error: \"Error: ",
        https_server()
            ->GetURL("a.test", "/shared_storage/erroneous_module.js")
            .spec(),
-       ":6 Uncaught ReferenceError: undefinedVariable is not defined.\n"});
+       ":6 Uncaught ReferenceError: undefinedVariable is not defined.\"\n"});
 
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/erroneous_module.js');
@@ -465,8 +465,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     )"));
 
   std::string expected_error =
-      "a JavaScript error:\nError: sharedStorage.worklet.addModule() can only "
-      "be invoked once per browsing context.\n";
+      "a JavaScript error: \"Error: sharedStorage.worklet.addModule() can only "
+      "be invoked once per browsing context.\"\n";
 
   EvalJsResult result = EvalJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -573,12 +573,11 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
     )");
 
   EXPECT_EQ(
-      std::string(
-          "a JavaScript error:\nError: function testFunction() {} could not be "
-          "cloned.\n    at eval (__const_std::string&_script__:4:21):\n        "
-          "         .then((result) => true ? result : Promise.reject(),\n      "
-          "                      ^^^^^\n    at eval (<anonymous>)\n    at "
-          "EvalJs-runner.js:2:34\n"),
+      std::string("a JavaScript error: \""
+                  "Error: function testFunction() {} could not be cloned.\n"
+                  "    at __const_std::string&_script__:4:21):\n"
+                  "              sharedStorage.run(\n"
+                  "                            ^^^^^\n"),
       result.error);
 }
 

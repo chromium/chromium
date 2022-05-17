@@ -59,8 +59,11 @@ class CORE_EXPORT ScriptEvaluationResult final {
     // The script is evaluated and an exception is thrown.
     // Spec: #run-a-classic-script/#run-a-module-script return an abrupt
     //       completion.
-    // |value_| is the non-empty exception thrown for module scripts, or
-    // empty for classic scripts.
+    // |value_| is the non-empty exception thrown for
+    // - module scripts or
+    // - classic scripts with |RethrowErrorsOption::DoNotRethrow()|
+    // or empty for
+    // - classic scripts with |RethrowErrorsOption::Rethrow()|
     //
     // Note: The exception can be already caught and passed to
     // https://html.spec.whatwg.org/C/#report-the-error, instead of being
@@ -88,7 +91,9 @@ class CORE_EXPORT ScriptEvaluationResult final {
 
   static ScriptEvaluationResult FromClassicNotRun();
   static ScriptEvaluationResult FromClassicSuccess(v8::Local<v8::Value> value);
-  static ScriptEvaluationResult FromClassicException();
+  static ScriptEvaluationResult FromClassicExceptionRethrown();
+  static ScriptEvaluationResult FromClassicException(
+      v8::Local<v8::Value> exception);
   static ScriptEvaluationResult FromClassicAborted();
 
   static ScriptEvaluationResult FromModuleNotRun();
@@ -111,6 +116,10 @@ class CORE_EXPORT ScriptEvaluationResult final {
   // Returns the exception thrown.
   // Can be called only when GetResultType() == kException.
   v8::Local<v8::Value> GetExceptionForModule() const;
+
+  // Returns the exception thrown for both module and classic scripts.
+  // Can be called only when GetResultType() == kException.
+  v8::Local<v8::Value> GetExceptionForClassicForTesting() const;
 
   // Returns the promise returned by #run-a-module-script.
   // Can be called only

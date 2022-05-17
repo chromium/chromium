@@ -115,7 +115,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
         content::EvalJs(FrameToUseForConnecting(), script);
     EXPECT_THAT(
         result.error,
-        testing::StartsWith("a JavaScript error:\nTypeError: Cannot read "
+        testing::StartsWith("a JavaScript error: \"TypeError: Cannot read "
                             "properties of undefined (reading 'connect')"));
   }
 
