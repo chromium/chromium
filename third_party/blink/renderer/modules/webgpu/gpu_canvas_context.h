@@ -86,7 +86,8 @@ class GPUCanvasContext : public CanvasRenderingContext {
 
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
-  String getPreferredFormat(const GPUAdapter* adapter);
+  String getPreferredFormat(ExecutionContext* execution_context,
+                            GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
  private:

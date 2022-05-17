@@ -249,8 +249,13 @@ void GPUCanvasContext::unconfigure() {
   configured_device_ = nullptr;
 }
 
-String GPUCanvasContext::getPreferredFormat(const GPUAdapter* adapter) {
-  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+String GPUCanvasContext::getPreferredFormat(ExecutionContext* execution_context,
+                                            GPUAdapter* adapter) {
+  adapter->AddConsoleWarning(
+      execution_context,
+      "Calling getPreferredFormat() on a GPUCanvasContext is deprecated and "
+      "will soon be removed. Call navigator.gpu.getPreferredCanvasFormat() "
+      "instead, which no longer requires an adapter.");
   return "bgra8unorm";
 }
 

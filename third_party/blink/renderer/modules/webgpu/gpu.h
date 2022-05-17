@@ -75,6 +75,7 @@ class GPU final : public ScriptWrappable,
   // gpu.idl
   ScriptPromise requestAdapter(ScriptState* script_state,
                                const GPURequestAdapterOptions* options);
+  String getPreferredCanvasFormat();
 
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.

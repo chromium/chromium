@@ -271,6 +271,11 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   return promise;
 }
 
+String GPU::getPreferredCanvasFormat() {
+  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+  return "bgra8unorm";
+}
+
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.insert(buffer);
   mappable_buffer_handles_->insert(buffer->GetHandle());
