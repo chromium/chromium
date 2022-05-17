@@ -18,7 +18,6 @@ include_rules = [
     "+base/mac/scoped_cftyperef.h",
     "+base/process/memory.h",
     "+base/thread_annotations.h",
-    "+base/threading/platform_thread.h",
     "+base/time/time.h",
     "+base/win/windows_types.h",
     "+build/build_config.h",
