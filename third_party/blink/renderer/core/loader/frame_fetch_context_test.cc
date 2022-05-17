@@ -608,16 +608,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", false,
                "");
-  // Without a permissions policy header, the client hints should be sent only
-  // to the first party origins. Device-memory is a legacy hint that's sent on
-  // Android regardless of Permissions Policy delegation.
-#if BUILDFLAG(IS_ANDROID)
-  ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
-               "4");
-#else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
-#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
 }
@@ -1075,15 +1067,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Device-Memory", true,
                "4");
-  // Device-memory is a legacy hint that's sent on Android regardless of
-  // Permissions Policy delegation.
-#if BUILDFLAG(IS_ANDROID)
-  ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
-               "4");
-#else
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory",
                false, "");
-#endif
   ExpectHeader("https://www.someother-example.com/1.gif",
                "Sec-CH-Device-Memory", false, "");
   // `Sec-CH-UA` is special.
@@ -1092,13 +1077,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   // Other hints not declared in the policy are still not attached.
   ExpectHeader("https://www.example.net/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.net/1.gif", "ect", false, "");
-  // DPR is a legacy hint that's sent on Android regardless of Permissions
-  // Policy delegation.
-#if BUILDFLAG(IS_ANDROID)
-  ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
-#else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");
-#endif
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-DPR", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform-Version",
