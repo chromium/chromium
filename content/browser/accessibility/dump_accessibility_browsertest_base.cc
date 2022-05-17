@@ -277,21 +277,21 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
   scenario_ = std::move(*scenario);
 
-  // Exit without running the test if we can't find an expectation file.
-  // This is used to skip certain tests on certain platforms.
-  // We have to check for this in advance in order to avoid waiting on a
-  // WAIT-FOR directive in the source file that's looking for something not
-  // supported on the current platform.
+  absl::optional<std::vector<std::string>> expected_lines;
+
+  // Get expectation lines from expectation file if any.
   base::FilePath expected_file =
       test_helper_.GetExpectationFilePath(file_path, expectations_qualifier);
-  if (expected_file.empty()) {
+  if (!expected_file.empty()) {
+    expected_lines = test_helper_.LoadExpectationFile(expected_file);
+  }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  else {
     LOG(INFO) << "No expectation file present, ignoring test on this "
                  "platform.";
     return;
   }
-
-  absl::optional<std::vector<std::string>> expected_lines =
-      test_helper_.LoadExpectationFile(expected_file);
+#endif
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
@@ -351,8 +351,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
 
   // No expected lines indicate the test is marked to skip the expectations
-  // checks. If we reach this point, then it means no crashes during the test
-  // run and we can consider the test as succeeding.
+  // checks or it has no expectation file. If we reach this point, then it means
+  // no crashes during the test run and we can consider the test as succeeding.
   if (!expected_lines) {
     EXPECT_TRUE(true);
     return;
