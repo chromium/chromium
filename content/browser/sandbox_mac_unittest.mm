@@ -264,18 +264,10 @@ TEST_F(SandboxMacTest, FontLoadingTest) {
 MULTIPROCESS_TEST_MAIN(BuiltinAvailable) {
   CheckCreateSeatbeltServer();
 
-  if (__builtin_available(macOS 10.11, *)) {
+  if (__builtin_available(macOS 10.13, *)) {
     // Can't negate a __builtin_available condition. But success!
   } else {
-    return 11;
-  }
-
-  if (base::mac::IsAtLeastOS10_13()) {
-    if (__builtin_available(macOS 10.13, *)) {
-      // Can't negate a __builtin_available condition. But success!
-    } else {
-      return 13;
-    }
+    return 13;
   }
 
   return 0;

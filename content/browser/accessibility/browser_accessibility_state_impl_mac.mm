@@ -12,19 +12,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/animation/animation.h"
 
-@interface NSWorkspace (Partials)
-
-@property(readonly) BOOL accessibilityDisplayShouldDifferentiateWithoutColor;
-@property(readonly) BOOL accessibilityDisplayShouldIncreaseContrast;
-@property(readonly) BOOL accessibilityDisplayShouldReduceTransparency;
-
-@end
-
-// Only available since 10.12.
-@interface NSWorkspace (AvailableSinceSierra)
-@property(readonly) BOOL accessibilityDisplayShouldReduceMotion;
-@end
-
 namespace content {
 
 namespace {

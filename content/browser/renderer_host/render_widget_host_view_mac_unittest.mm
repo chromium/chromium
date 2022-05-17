@@ -1728,7 +1728,6 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     return rwhv_cocoa_.get();
   }
 
-  API_AVAILABLE(macos(10.12.2))
   NSCandidateListTouchBarItem* candidate_list_item() {
     return [tab_GetInProcessNSView().touchBar
         itemForIdentifier:NSTouchBarItemIdentifierCandidateList];
@@ -2008,94 +2007,87 @@ TEST_F(InputMethodMacTest, MonitorCompositionRangeForActiveWidget) {
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsPresence) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    EXPECT_NSEQ(nil, candidate_list_item());
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
-    EXPECT_NSNE(nil, candidate_list_item());
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    EXPECT_NSNE(nil, candidate_list_item());
-  }
+  EXPECT_NSEQ(nil, candidate_list_item());
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_NSNE(nil, candidate_list_item());
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_NSNE(nil, candidate_list_item());
 }
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsReplacement) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    EXPECT_NSNE(nil, candidate_list_item());
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_NSNE(nil, candidate_list_item());
+  candidate_list_item().allowsCollapsing = NO;
 
-    FakeTextCheckingResult* fakeResult =
-        [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
-                              replacementString:@"foo"];
+  FakeTextCheckingResult* fakeResult =
+      [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
+                            replacementString:@"foo"];
 
-    const std::u16string kOriginalString = u"abcxxxghi";
+  const std::u16string kOriginalString = u"abcxxxghi";
 
-    // Change the selection once; requests completions from the spell checker.
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
+  // Change the selection once; requests completions from the spell checker.
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
 
-    NSInteger firstSequenceNumber = [spellChecker sequenceNumber];
-    auto firstCompletionHandler = [spellChecker takeCompletionHandler];
+  NSInteger firstSequenceNumber = [spellChecker sequenceNumber];
+  auto firstCompletionHandler = [spellChecker takeCompletionHandler];
 
-    EXPECT_NE(nil, (id)firstCompletionHandler.get());
-    EXPECT_EQ(0U, candidate_list_item().candidates.count);
+  EXPECT_NE(nil, (id)firstCompletionHandler.get());
+  EXPECT_EQ(0U, candidate_list_item().candidates.count);
 
-    // Instead of replying right away, change the selection again!
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(5, 5));
+  // Instead of replying right away, change the selection again!
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(5, 5));
 
-    EXPECT_NE(firstSequenceNumber, [spellChecker sequenceNumber]);
+  EXPECT_NE(firstSequenceNumber, [spellChecker sequenceNumber]);
 
-    // Make sure that calling the stale completion handler is a no-op.
-    firstCompletionHandler.get()(
-        firstSequenceNumber,
-        @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(0U, candidate_list_item().candidates.count);
+  // Make sure that calling the stale completion handler is a no-op.
+  firstCompletionHandler.get()(
+      firstSequenceNumber, @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0U, candidate_list_item().candidates.count);
 
-    // But calling the current handler should work.
-    [spellChecker takeCompletionHandler].get()(
-        [spellChecker sequenceNumber],
-        @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
-    base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1U, candidate_list_item().candidates.count);
+  // But calling the current handler should work.
+  [spellChecker takeCompletionHandler].get()(
+      [spellChecker sequenceNumber],
+      @[ static_cast<NSTextCheckingResult*>(fakeResult) ]);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1U, candidate_list_item().candidates.count);
 
-    base::RunLoop().RunUntilIdle();
-    MockWidgetInputHandler::MessageVector events =
-        host_->GetAndResetDispatchedMessages();
-    ASSERT_EQ("", GetMessageNames(events));
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("", GetMessageNames(events));
 
-    // Now, select that result.
-    [tab_GetInProcessNSView() candidateListTouchBarItem:candidate_list_item()
-                           endSelectingCandidateAtIndex:0];
-    base::RunLoop().RunUntilIdle();
-    events = host_->GetAndResetDispatchedMessages();
-    ASSERT_EQ("CommitText", GetMessageNames(events));
-  }
+  // Now, select that result.
+  [tab_GetInProcessNSView() candidateListTouchBarItem:candidate_list_item()
+                         endSelectingCandidateAtIndex:0];
+  base::RunLoop().RunUntilIdle();
+  events = host_->GetAndResetDispatchedMessages();
+  ASSERT_EQ("CommitText", GetMessageNames(events));
 }
 
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
-    EXPECT_NSNE(nil, candidate_list_item());
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_NSNE(nil, candidate_list_item());
+  candidate_list_item().allowsCollapsing = NO;
 
-    const std::u16string kOriginalString = u"abcxxxghi";
+  const std::u16string kOriginalString = u"abcxxxghi";
 
-    // Change the selection once; completions should *not* be requested.
-    tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
+  // Change the selection once; completions should *not* be requested.
+  tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
 
-    EXPECT_EQ(0U, [spellChecker sequenceNumber]);
-  }
+  EXPECT_EQ(0U, [spellChecker sequenceNumber]);
 }
 
 // https://crbug.com/893038: There exist code paths which set the selection
@@ -2103,19 +2095,18 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
 // practice, but this has caused crashes in the field.
 TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
   base::test::ScopedFeatureList feature_list;
-  if (@available(macOS 10.12.2, *)) {
-    base::scoped_nsobject<FakeSpellChecker> spellChecker(
-        [[FakeSpellChecker alloc] init]);
-    tab_GetInProcessNSView().spellCheckerForTesting =
-        static_cast<NSSpellChecker*>(spellChecker.get());
+  base::scoped_nsobject<FakeSpellChecker> spellChecker(
+      [[FakeSpellChecker alloc] init]);
+  tab_GetInProcessNSView().spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(spellChecker.get());
 
-    SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
-    candidate_list_item().allowsCollapsing = NO;
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  candidate_list_item().allowsCollapsing = NO;
 
-    if (auto completionHandler = [spellChecker takeCompletionHandler]) {
-      completionHandler.get()([spellChecker sequenceNumber], @[]);
-      base::RunLoop().RunUntilIdle();
-    }
+  if (auto completionHandler = [spellChecker takeCompletionHandler]) {
+    completionHandler.get()([spellChecker sequenceNumber], @[]);
+    base::RunLoop().RunUntilIdle();
+  }
 
     FakeTextCheckingResult* fakeResult =
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
@@ -2135,7 +2126,6 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
 
     EXPECT_NE(nil, candidate_list_item().candidates);
     EXPECT_EQ(0U, candidate_list_item().candidates.count);
-  }
 }
 
 // This test verifies that in AutoResize mode a child-allocated

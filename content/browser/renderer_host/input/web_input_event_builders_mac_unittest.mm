@@ -695,10 +695,6 @@ TEST(WebInputEventBuilderMacTest, ScrollWheelMatchesUIEvent) {
 // Test if the value of twist and rotation_angle are set correctly when the
 // NSEvent's rotation is less than 90.
 TEST(WebInputEventBuilderMacTest, TouchEventsWithPointerTypePenRotationLess90) {
-  if (base::mac::IsOS10_12()) {
-    // Fails on macOS 10.12; https://crbug.com/992915
-    return;
-  }
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 60.0);
@@ -718,10 +714,6 @@ TEST(WebInputEventBuilderMacTest, TouchEventsWithPointerTypePenRotationLess90) {
 // NSEvent's rotation is between 90 and 180.
 TEST(WebInputEventBuilderMacTest,
      TouchEventsWithPointerTypePenRotationLess180) {
-  if (base::mac::IsOS10_12()) {
-    // Fails on macOS 10.12; https://crbug.com/992915
-    return;
-  }
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 160.0);
@@ -741,10 +733,6 @@ TEST(WebInputEventBuilderMacTest,
 // NSEvent's rotation is between 180 and 360.
 TEST(WebInputEventBuilderMacTest,
      TouchEventsWithPointerTypePenRotationLess360) {
-  if (base::mac::IsOS10_12()) {
-    // Fails on macOS 10.12; https://crbug.com/992915
-    return;
-  }
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 260.0);
@@ -764,10 +752,6 @@ TEST(WebInputEventBuilderMacTest,
 // NSEvent's rotation is greater than 360.
 TEST(WebInputEventBuilderMacTest,
      TouchEventsWithPointerTypePenRotationGreater360) {
-  if (base::mac::IsOS10_12()) {
-    // Fails on macOS 10.12; https://crbug.com/992915
-    return;
-  }
   NSEvent* mac_event =
       BuildFakeMouseEvent(kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
                           kCGEventMouseSubtypeTabletPoint, 390.0);
@@ -785,10 +769,6 @@ TEST(WebInputEventBuilderMacTest,
 
 // Test if all the values of a WebTouchEvent are set correctly.
 TEST(WebInputEventBuilderMacTest, BuildWebTouchEvents) {
-  if (base::mac::IsOS10_12()) {
-    // Fails on macOS 10.12; https://crbug.com/992915
-    return;
-  }
   NSEvent* mac_event = BuildFakeMouseEvent(
       kCGEventLeftMouseDown, {6, 9}, kCGMouseButtonLeft,
       kCGEventMouseSubtypeTabletPoint, /* rotation */ 60.0,

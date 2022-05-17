@@ -277,13 +277,6 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 #endif
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                        MAYBE_ReceiveFramesFromFakeCaptureDevice) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::IsOS10_12()) {
-    // Flaky on MacOS 10.12. https://crbug.com/938074
-    return;
-  }
-#endif
-
   // Only fake device with index 2 delivers MJPEG.
   if (params_.exercise_accelerated_jpeg_decoding &&
       params_.device_index_to_use != 2) {

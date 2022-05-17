@@ -219,7 +219,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
 
-      if (base::mac::IsAtMostOS10_13()) {
+      if (base::mac::IsOS10_13()) {
         // Use the announcement API to get around OS <= 10.13 VoiceOver bug
         // where it stops announcing live regions after the first time focus
         // leaves any content area.
