@@ -22,8 +22,8 @@ class GPUSupportedLimits final : public ScriptWrappable {
  public:
   explicit GPUSupportedLimits(const WGPUSupportedLimits& limits);
 
-  static void MakeUndefined(WGPUSupportedLimits* out);
-  static DOMException* Populate(WGPUSupportedLimits* out,
+  static void MakeUndefined(WGPURequiredLimits* out);
+  static DOMException* Populate(WGPURequiredLimits* out,
                                 const Vector<std::pair<String, uint64_t>>& in);
 
   GPUSupportedLimits(const GPUSupportedLimits&) = delete;

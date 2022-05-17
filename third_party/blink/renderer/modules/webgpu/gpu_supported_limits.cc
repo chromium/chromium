@@ -60,7 +60,7 @@ GPUSupportedLimits::GPUSupportedLimits(const WGPUSupportedLimits& limits)
 }
 
 // static
-void GPUSupportedLimits::MakeUndefined(WGPUSupportedLimits* out) {
+void GPUSupportedLimits::MakeUndefined(WGPURequiredLimits* out) {
 #define X(name) \
   out->limits.name = UndefinedLimitValue<decltype(WGPULimits::name)>();
   SUPPORTED_LIMITS(X)
@@ -69,7 +69,7 @@ void GPUSupportedLimits::MakeUndefined(WGPUSupportedLimits* out) {
 
 // static
 DOMException* GPUSupportedLimits::Populate(
-    WGPUSupportedLimits* out,
+    WGPURequiredLimits* out,
     const Vector<std::pair<String, uint64_t>>& in) {
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of

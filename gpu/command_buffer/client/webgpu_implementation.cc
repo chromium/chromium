@@ -26,7 +26,7 @@ namespace webgpu {
 class DawnWireServices : public APIChannel {
  private:
   friend class base::RefCounted<DawnWireServices>;
-  ~DawnWireServices() override = default;
+  ~DawnWireServices() override { GetProcs().instanceRelease(wgpu_instance_); }
 
  public:
   DawnWireServices(WebGPUImplementation* webgpu_implementation,
@@ -41,11 +41,16 @@ class DawnWireServices : public APIChannel {
         wire_client_(dawn::wire::WireClientDescriptor{
             &serializer_,
             &memory_transfer_service_,
-        }) {}
+        }),
+        wgpu_instance_(wire_client_.ReserveInstance().instance) {
+    DCHECK(wgpu_instance_);
+  }
 
   const DawnProcTable& GetProcs() const override {
     return dawn::wire::client::GetProcs();
   }
+
+  WGPUInstance GetWGPUInstance() const override { return wgpu_instance_; }
 
   dawn::wire::WireClient* wire_client() { return &wire_client_; }
   DawnClientSerializer* serializer() { return &serializer_; }
@@ -71,6 +76,7 @@ class DawnWireServices : public APIChannel {
   DawnClientMemoryTransferService memory_transfer_service_;
   DawnClientSerializer serializer_;
   dawn::wire::WireClient wire_client_;
+  WGPUInstance wgpu_instance_;
 };
 #endif
 
@@ -110,19 +116,6 @@ void WebGPUImplementation::LoseContext() {
   lost_ = true;
 #if BUILDFLAG(USE_DAWN)
   dawn_wire_->Disconnect();
-
-  auto request_adapter_callback_map = std::move(request_adapter_callback_map_);
-  auto request_device_callback_map = std::move(request_device_callback_map_);
-  for (auto& it : request_adapter_callback_map) {
-    std::move(it.second).Run(-1, {}, "Context Lost");
-  }
-  for (auto& it : request_device_callback_map) {
-    std::move(it.second).Run(false, nullptr, "Context Lost");
-  }
-
-  // After |lost_| is set to true, callbacks should not be enqueued anymore.
-  DCHECK(request_adapter_callback_map_.empty());
-  DCHECK(request_device_callback_map_.empty());
 #endif
 }
 
@@ -381,92 +374,7 @@ void WebGPUImplementation::OnGpuControlReturnData(
           data.size() -
               offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)));
     } break;
-    case DawnReturnDataType::kRequestedDawnAdapterProperties: {
-      CHECK_GE(data.size(),
-               offsetof(cmds::DawnReturnAdapterInfo, deserialized_buffer));
 
-      const cmds::DawnReturnAdapterInfo* returned_adapter_info =
-          reinterpret_cast<const cmds::DawnReturnAdapterInfo*>(data.data());
-
-      DawnRequestAdapterSerial request_adapter_serial =
-          returned_adapter_info->header.request_adapter_serial;
-      auto request_callback_iter =
-          request_adapter_callback_map_.find(request_adapter_serial);
-      CHECK(request_callback_iter != request_adapter_callback_map_.end());
-      RequestAdapterCallback callback =
-          std::move(request_callback_iter->second);
-      // Remove the callback from the map immediately since the callback could
-      // perform reentrant calls that modify the map.
-      request_adapter_callback_map_.erase(request_callback_iter);
-
-      GLuint adapter_service_id =
-          returned_adapter_info->header.adapter_service_id;
-      WGPUDeviceProperties adapter_properties = {};
-      const volatile char* deserialized_buffer =
-          reinterpret_cast<const volatile char*>(
-              returned_adapter_info->deserialized_buffer);
-      const char* error_message =
-          returned_adapter_info->deserialized_buffer +
-          returned_adapter_info->adapter_properties_size;
-      if (strlen(error_message) == 0) {
-        error_message = nullptr;
-      }
-      if (returned_adapter_info->adapter_properties_size > 0) {
-        if (!dawn::wire::DeserializeWGPUDeviceProperties(
-                &adapter_properties, deserialized_buffer,
-                returned_adapter_info->adapter_properties_size)) {
-          adapter_service_id = -1;
-          adapter_properties = {};
-          error_message = "Request adapter failed";
-        }
-      }
-      std::move(callback).Run(adapter_service_id, adapter_properties,
-                              error_message);
-    } break;
-    case DawnReturnDataType::kRequestedDeviceReturnInfo: {
-      CHECK_GE(data.size(), offsetof(cmds::DawnReturnRequestDeviceInfo,
-                                     deserialized_buffer));
-
-      const cmds::DawnReturnRequestDeviceInfo* returned_request_device_info =
-          reinterpret_cast<const cmds::DawnReturnRequestDeviceInfo*>(
-              data.data());
-
-      DawnRequestDeviceSerial request_device_serial =
-          returned_request_device_info->request_device_serial;
-      auto request_callback_iter =
-          request_device_callback_map_.find(request_device_serial);
-      CHECK(request_callback_iter != request_device_callback_map_.end());
-      RequestDeviceCallback callback = std::move(request_callback_iter->second);
-      // Remove the callback from the map immediately since the callback could
-      // perform reentrant calls that modify the map.
-      request_device_callback_map_.erase(request_callback_iter);
-
-      bool success = returned_request_device_info->is_request_device_success &&
-                     returned_request_device_info->limits_size > 0;
-
-      WGPUSupportedLimits limits;
-      limits.nextInChain = nullptr;
-
-      const volatile char* deserialized_buffer =
-          reinterpret_cast<const volatile char*>(
-              returned_request_device_info->deserialized_buffer);
-      const char* error_message =
-          returned_request_device_info->deserialized_buffer +
-          returned_request_device_info->limits_size;
-      if (strlen(error_message) == 0) {
-        error_message = nullptr;
-      }
-      if (success) {
-        if (!dawn::wire::DeserializeWGPUSupportedLimits(
-                &limits, deserialized_buffer,
-                returned_request_device_info->limits_size)) {
-          success = false;
-          error_message = "Request device failed";
-        }
-      }
-
-      std::move(callback).Run(success, &limits, error_message);
-    } break;
     default:
       NOTREACHED();
   }
@@ -532,109 +440,6 @@ ReservedTexture WebGPUImplementation::ReserveTexture(WGPUDevice device) {
 #else
   NOTREACHED();
   return {};
-#endif
-}
-
-DawnRequestAdapterSerial WebGPUImplementation::NextRequestAdapterSerial() {
-  return ++request_adapter_serial_;
-}
-
-void WebGPUImplementation::RequestAdapterAsync(
-    PowerPreference power_preference,
-    bool force_fallback_adapter,
-    base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
-        request_adapter_callback) {
-  if (lost_) {
-    std::move(request_adapter_callback).Run(-1, {}, "Context Lost");
-    return;
-  }
-
-  // Now that we declare request_adapter_serial as an uint64, it can't overflow
-  // because we just increment an uint64 by one.
-  DawnRequestAdapterSerial request_adapter_serial = NextRequestAdapterSerial();
-  DCHECK(request_adapter_callback_map_.find(request_adapter_serial) ==
-         request_adapter_callback_map_.end());
-
-  request_adapter_callback_map_[request_adapter_serial] =
-      std::move(request_adapter_callback);
-
-  helper_->RequestAdapter(request_adapter_serial,
-                          static_cast<uint32_t>(power_preference),
-                          force_fallback_adapter);
-  helper_->Flush();
-}
-
-DawnRequestDeviceSerial WebGPUImplementation::NextRequestDeviceSerial() {
-  return ++request_device_serial_;
-}
-
-void WebGPUImplementation::RequestDeviceAsync(
-    uint32_t requested_adapter_id,
-    const WGPUDeviceProperties& requested_device_properties,
-    base::OnceCallback<void(WGPUDevice,
-                            const WGPUSupportedLimits*,
-                            const char*)> request_device_callback) {
-#if BUILDFLAG(USE_DAWN)
-  if (lost_) {
-    std::move(request_device_callback)
-        .Run(nullptr, nullptr, "GPU connection lost");
-    return;
-  }
-
-  size_t serialized_device_properties_size =
-      dawn::wire::SerializedWGPUDevicePropertiesSize(
-          &requested_device_properties);
-  DCHECK_NE(0u, serialized_device_properties_size);
-
-  DCHECK_LE(serialized_device_properties_size, transfer_buffer_->GetMaxSize());
-
-  ScopedTransferBufferPtr buffer(serialized_device_properties_size, helper_,
-                                 transfer_buffer_);
-
-  if (!buffer.valid() || buffer.size() < serialized_device_properties_size) {
-    std::move(request_device_callback)
-        .Run(nullptr, nullptr, "Failed to request device");
-    return;
-  }
-
-  // We declare DawnRequestDeviceSerial as an uint64, so it can't overflow
-  // because we just increment an uint64 by one.
-  DawnRequestDeviceSerial request_device_serial = NextRequestDeviceSerial();
-  DCHECK(request_device_callback_map_.find(request_device_serial) ==
-         request_device_callback_map_.end());
-
-  // Commit because we need to make sure messages that free a previously used
-  // device are seen first. ReserveDevice may reuse an existing ID.
-  dawn_wire_->serializer()->Commit();
-
-  dawn::wire::ReservedDevice reservation =
-      dawn_wire_->wire_client()->ReserveDevice();
-
-  request_device_callback_map_[request_device_serial] = base::BindOnce(
-      [](scoped_refptr<DawnWireServices> dawn_wire,
-         dawn::wire::ReservedDevice reservation,
-         base::OnceCallback<void(WGPUDevice, const WGPUSupportedLimits*,
-                                 const char*)> callback,
-         bool success, const WGPUSupportedLimits* limits,
-         const char* error_message) {
-        WGPUDevice device = reservation.device;
-        if (!success) {
-          dawn_wire->wire_client()->ReclaimDeviceReservation(reservation);
-          device = nullptr;
-        }
-        std::move(callback).Run(device, limits, error_message);
-      },
-      dawn_wire_, reservation, std::move(request_device_callback));
-
-  dawn::wire::SerializeWGPUDeviceProperties(
-      &requested_device_properties, reinterpret_cast<char*>(buffer.address()));
-
-  helper_->RequestDevice(request_device_serial, requested_adapter_id,
-                         reservation.id, reservation.generation,
-                         buffer.shm_id(), buffer.offset(),
-                         serialized_device_properties_size);
-  buffer.Release();
-  helper_->Flush();
 #endif
 }
 

@@ -56,29 +56,4 @@ void DissociateMailboxForPresent(GLuint device_id,
   }
 }
 
-void RequestAdapter(uint64_t request_adapter_serial,
-                    uint32_t power_preference,
-                    bool force_fallback_adapter) {
-  webgpu::cmds::RequestAdapter* c = GetCmdSpace<webgpu::cmds::RequestAdapter>();
-  if (c) {
-    c->Init(request_adapter_serial, power_preference, force_fallback_adapter);
-  }
-}
-
-void RequestDevice(uint64_t request_device_serial,
-                   uint32_t adapter_service_id,
-                   uint32_t device_id,
-                   uint32_t device_generation,
-                   uint32_t request_device_properties_shm_id,
-                   uint32_t request_device_properties_shm_offset,
-                   uint32_t request_device_properties_size) {
-  webgpu::cmds::RequestDevice* c = GetCmdSpace<webgpu::cmds::RequestDevice>();
-  if (c) {
-    c->Init(request_device_serial, adapter_service_id, device_id,
-            device_generation, request_device_properties_shm_id,
-            request_device_properties_shm_offset,
-            request_device_properties_size);
-  }
-}
-
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_CMD_HELPER_AUTOGEN_H_

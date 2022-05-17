@@ -10,5 +10,3 @@ GL_APICALL void GL_APIENTRY wgDawnCommands (const char* commands, size_t size);
 GL_APICALL void GL_APIENTRY wgAssociateMailbox (GLuint device_id, GLuint device_generation, GLuint id, GLuint generation, GLuint usage, MailboxFlags flags, const GLbyte* mailbox);
 GL_APICALL void GL_APIENTRY wgDissociateMailbox (GLuint texture_id, GLuint texture_generation);
 GL_APICALL void GL_APIENTRY wgDissociateMailboxForPresent (GLuint device_id, GLuint device_generation, GLuint texture_id, GLuint texture_generation);
-GL_APICALL void GL_APIENTRY wgRequestAdapter (GLuint64 request_adapter_serial, EnumClassPowerPreference power_preference, bool force_fallback_adapter);
-GL_APICALL void GL_APIENTRY wgRequestDevice (GLuint64 request_device_serial, GLuint adapter_service_id, GLuint device_id, GLuint device_generation, const char* dawn_request_device_properties, size_t request_device_properties_size);

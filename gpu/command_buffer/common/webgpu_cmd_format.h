@@ -40,45 +40,6 @@ struct DawnReturnCommandsInfo {
 static_assert(offsetof(DawnReturnCommandsInfo, header) == 0,
               "The offset of header must be 0");
 
-struct DawnReturnAdapterInfoHeader {
-  DawnReturnDataHeader return_data_header = {
-      DawnReturnDataType::kRequestedDawnAdapterProperties};
-  DawnRequestAdapterSerial request_adapter_serial;
-  int32_t adapter_service_id;
-};
-
-static_assert(offsetof(DawnReturnAdapterInfoHeader, return_data_header) == 0,
-              "The offset of return_data_header must be 0");
-
-struct DawnReturnAdapterInfo {
-  DawnReturnAdapterInfoHeader header;
-  uint32_t adapter_properties_size;
-
-  // |deserialized_buffer| contains the serialized adapter properties if
-  // |adapter_properties_size > 0|. Following it is an optional null-terminated
-  // error message.
-  alignas(GPU_DAWN_RETURN_DATA_ALIGNMENT) char deserialized_buffer[];
-};
-
-static_assert(offsetof(DawnReturnAdapterInfo, header) == 0,
-              "The offset of header must be 0");
-
-struct DawnReturnRequestDeviceInfo {
-  DawnReturnDataHeader return_data_header = {
-      DawnReturnDataType::kRequestedDeviceReturnInfo};
-  DawnRequestDeviceSerial request_device_serial;
-  bool is_request_device_success;
-  uint32_t limits_size;
-
-  // |deserialized_buffer| contains the serialized limits if
-  // |limits_size > 0|. Following it is an optional null-terminated
-  // error message.
-  alignas(GPU_DAWN_RETURN_DATA_ALIGNMENT) char deserialized_buffer[];
-};
-
-static_assert(offsetof(DawnReturnRequestDeviceInfo, return_data_header) == 0,
-              "The offset of return_data_header must be 0");
-
 // Command buffer is GPU_COMMAND_BUFFER_ENTRY_ALIGNMENT byte aligned.
 #pragma pack(push, 4)
 static_assert(GPU_COMMAND_BUFFER_ENTRY_ALIGNMENT == 4,

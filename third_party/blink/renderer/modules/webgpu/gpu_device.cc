@@ -55,12 +55,10 @@ Vector<String> ToStringVector(const Vector<V8GPUFeatureName>& features) {
 
 }  // anonymous namespace
 
-// TODO(enga): Handle adapter options and device descriptor
 GPUDevice::GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
                      WGPUDevice dawn_device,
-                     const WGPUSupportedLimits* limits,
                      const GPUDeviceDescriptor* descriptor)
     : ExecutionContextClient(execution_context),
       DawnObject(dawn_control_client, dawn_device),
@@ -84,8 +82,10 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
       lost_callback_(BindWGPURepeatingCallback(&GPUDevice::OnDeviceLostError,
                                                WrapWeakPersistent(this))) {
   DCHECK(dawn_device);
-  DCHECK(limits);
-  limits_ = MakeGarbageCollected<GPUSupportedLimits>(*limits);
+
+  WGPUSupportedLimits limits = {};
+  GetProcs().deviceGetLimits(GetHandle(), &limits);
+  limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 
   GetProcs().deviceSetUncapturedErrorCallback(
       GetHandle(), error_callback_->UnboundCallback(),

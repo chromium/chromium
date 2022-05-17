@@ -27,8 +27,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
  public:
   GPUAdapter(GPU* gpu,
              const String& name,
-             uint32_t adapter_service_id,
-             const WGPUDeviceProperties& properties,
+             WGPUAdapter handle,
              scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
   GPUAdapter(const GPUAdapter&) = delete;
@@ -56,17 +55,16 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
   void OnRequestDeviceCallback(ScriptState* script_state,
                                ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
+                               WGPURequestDeviceStatus status,
                                WGPUDevice dawn_device,
-                               const WGPUSupportedLimits* limits,
                                const char* error_message);
-  void InitializeFeatureNameList();
 
   String name_;
-  uint32_t adapter_service_id_;
-  WGPUDeviceProperties adapter_properties_;
+  WGPUAdapter handle_;
   Member<GPU> gpu_;
-  Member<GPUSupportedFeatures> features_;
+  bool is_fallback_adapter_;
   Member<GPUSupportedLimits> limits_;
+  Member<GPUSupportedFeatures> features_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

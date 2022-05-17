@@ -69,6 +69,10 @@ DawnControlClientHolder::GetContextProviderWeakPtr() const {
   return context_provider_->GetWeakPtr();
 }
 
+WGPUInstance DawnControlClientHolder::GetWGPUInstance() const {
+  return api_channel_->GetWGPUInstance();
+}
+
 bool DawnControlClientHolder::IsContextLost() const {
   return !context_provider_;
 }
