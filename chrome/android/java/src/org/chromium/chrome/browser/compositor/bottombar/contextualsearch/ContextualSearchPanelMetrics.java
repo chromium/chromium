@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchHeuristics;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInteractionRecorder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
-import org.chromium.chrome.browser.contextualsearch.EngagementSuppression;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -129,17 +128,12 @@ public class ContextualSearchPanelMetrics {
                 ContextualSearchUma.logResultsSeen(mWasSearchContentViewSeen, mWasActivatedByTap);
             }
 
-            if (mWasContextualCardsDataShown) {
-                EngagementSuppression.registerContextualCardsImpression(mWasSearchContentViewSeen);
-            }
             ContextualSearchUma.logCardTagSeen(mWasSearchContentViewSeen, mCardTag);
             if (mWasQuickActionShown) {
                 ContextualSearchUma.logQuickActionResultsSeen(mWasSearchContentViewSeen,
                         mQuickActionCategory);
-                ContextualSearchUma.logQuickActionClicked(mWasQuickActionClicked,
-                        mQuickActionCategory);
-                EngagementSuppression.registerQuickActionImpression(
-                        mWasSearchContentViewSeen, mWasQuickActionClicked);
+                ContextualSearchUma.logQuickActionClicked(
+                        mWasQuickActionClicked, mQuickActionCategory);
             }
 
             if (mResultsSeenExperiments != null) {

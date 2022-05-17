@@ -234,7 +234,6 @@ class ContextualSearchPolicy {
         } else {
             ContextualSearchUma.logTapsSinceOpenForDecided(tapsSinceOpen);
         }
-        mPreferencesManager.incrementInt(ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_COUNT);
     }
 
     /**
@@ -244,8 +243,6 @@ class ContextualSearchPolicy {
         // Always completely reset the tap counters that accumulate only since the last open.
         mPreferencesManager.writeInt(
                 ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT, 0);
-        mPreferencesManager.writeInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_QUICK_ANSWER_COUNT, 0);
 
         // Disable the "promo tap" counter, but only if we're using the Opt-out onboarding.
         // For Opt-in, we never disable the promo tap counter.
@@ -256,23 +253,6 @@ class ContextualSearchPolicy {
             int count = mPreferencesManager.incrementInt(
                     ChromePreferenceKeys.CONTEXTUAL_SEARCH_PROMO_OPEN_COUNT);
             ContextualSearchUma.logPromoOpenCount(count);
-        }
-        mPreferencesManager.incrementInt(
-                ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_OPEN_COUNT);
-    }
-
-    /**
-     * Updates Tap counters to account for a quick-answer caption shown on the panel.
-     * @param wasActivatedByTap Whether the triggering gesture was a Tap or not.
-     * @param doesAnswer Whether the caption is considered an answer rather than just
-     *                          informative.
-     */
-    void updateCountersForQuickAnswer(boolean wasActivatedByTap, boolean doesAnswer) {
-        if (wasActivatedByTap && doesAnswer) {
-            mPreferencesManager.incrementInt(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_QUICK_ANSWER_COUNT);
-            mPreferencesManager.incrementInt(
-                    ChromePreferenceKeys.CONTEXTUAL_SEARCH_ALL_TIME_TAP_QUICK_ANSWER_COUNT);
         }
     }
 

@@ -23,7 +23,6 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
             @Nullable ContextualSearchTapState previousTapState, int x, int y,
             boolean wasSelectionEmptyBeforeTap) {
         super();
-        mHeuristics.add(new EngagementSuppression());
         mHeuristics.add(new RecentScrollTapSuppression(selectionController));
         mHeuristics.add(new TapFarFromPreviousSuppression(
                 selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));

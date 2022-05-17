@@ -1007,9 +1007,6 @@ public class ContextualSearchManager
             mQuickAnswersHeuristic.setConditionSatisfied(true);
             mQuickAnswersHeuristic.setDoesAnswer(doesAnswer);
         }
-
-        // Update Tap counters to account for a possible answer.
-        mPolicy.updateCountersForQuickAnswer(mWasActivatedByTap, doesAnswer);
     }
 
     /**
