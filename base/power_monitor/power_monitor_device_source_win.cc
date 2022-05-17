@@ -56,6 +56,28 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
   ProcessPowerEventHelper(power_event);
 }
 
+HPOWERNOTIFY RegisterSuspendResumeNotification(HANDLE hRecipient, DWORD Flags) {
+  const auto register_suspend_resume_notification_ptr =
+      reinterpret_cast<decltype(&::RegisterSuspendResumeNotification)>(
+          ::GetProcAddress(::GetModuleHandle(L"user32.dll"),
+                           "RegisterSuspendResumeNotification"));
+  if (!register_suspend_resume_notification_ptr)
+    return nullptr;
+
+  return register_suspend_resume_notification_ptr(hRecipient, Flags);
+}
+
+BOOL UnregisterSuspendResumeNotification(HPOWERNOTIFY Handle) {
+  const auto unregister_suspend_resume_notification_ptr =
+      reinterpret_cast<decltype(&::UnregisterSuspendResumeNotification)>(
+          ::GetProcAddress(::GetModuleHandle(L"user32.dll"),
+                           "UnregisterSuspendResumeNotification"));
+  if (!unregister_suspend_resume_notification_ptr)
+    return FALSE;
+
+  return unregister_suspend_resume_notification_ptr(Handle);
+}
+
 }  // namespace
 
 void PowerMonitorDeviceSource::PlatformInit() {
@@ -116,10 +138,21 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
   message_hwnd_ =
       CreateWindowEx(WS_EX_NOACTIVATE, kWindowClassName, NULL, WS_POPUP, 0, 0,
                      0, 0, NULL, NULL, instance_, NULL);
+  if (message_hwnd_) {
+    // On machines with modern standby and Win8+, calling
+    // RegisterSuspendResumeNotification is required in order to get the
+    // PBT_APMSUSPEND message. The notification is no longer automatically
+    // fired.
+    power_notify_handle_ = base::RegisterSuspendResumeNotification(
+        message_hwnd_, DEVICE_NOTIFY_WINDOW_HANDLE);
+  }
 }
 
 PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
   if (message_hwnd_) {
+    if (power_notify_handle_)
+      base::UnregisterSuspendResumeNotification(power_notify_handle_);
+
     DestroyWindow(message_hwnd_);
     UnregisterClass(kWindowClassName, instance_);
   }
