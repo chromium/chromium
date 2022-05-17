@@ -73,10 +73,8 @@ public class SelectionPopupBackPressHandler
     public void destroy() {
         if (mTab != null) mTab.removeObserver(this);
         mTab = null;
-        if (mPopupController != null) {
-            mPopupController.isSelectActionBarShowingSupplier().removeObserver(mCallback);
-            mPopupController = null;
-        }
+        mPopupController.isSelectActionBarShowingSupplier().removeObserver(mCallback);
+        mPopupController = null;
     }
 
     private void onActionBarShowingChanged(boolean isShowing) {

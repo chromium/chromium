@@ -71,7 +71,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -544,21 +543,19 @@ public class StartSurfaceBackButtonTest {
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
-        verifySwipeBackOnStartSurfaceHomePage();
-    }
+        // TODO(https://crbug.com/1093632): Requires 2 back press/gesture events now. Make this
+        // work with a single event.
+        Assume.assumeFalse(mImmediateReturn);
+        StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
 
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1246457")
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
-    public void testSwipeBackOnStartSurfaceHomePage_BackGestureRefactor()
-            throws ExecutionException {
-        verifySwipeBackOnStartSurfaceHomePage();
+        StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule);
+
+        // Back gesture on the start surface puts Chrome background.
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     @Test
@@ -635,20 +632,6 @@ public class StartSurfaceBackButtonTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, incognitoTabs);
-    }
-
-    private void verifySwipeBackOnStartSurfaceHomePage() {
-        // TODO(https://crbug.com/1093632): Requires 2 back press/gesture events now. Make this
-        // work with a single event.
-        Assume.assumeFalse(mImmediateReturn);
-        StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-
-        StartSurfaceTestUtils.gestureNavigateBack(mActivityTestRule);
-
-        // Back gesture on the start surface puts Chrome background.
-        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     /**

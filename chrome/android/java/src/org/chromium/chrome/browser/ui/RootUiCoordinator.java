@@ -1348,11 +1348,6 @@ public class RootUiCoordinator
     }
 
     @VisibleForTesting
-    public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderForTesting() {
-        return mLayoutStateProviderOneShotSupplier;
-    }
-
-    @VisibleForTesting
     public void destroyActivityForTesting() {
         // Actually destroying or finishing the activity hinders the shutdown process after
         // a test is done. Just null it out to give an effect of |onDestroy| being invoked.
