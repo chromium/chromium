@@ -17,13 +17,32 @@ pkg_config("qt5_config") {
   ]
 }
 
+config("qt_internal_config") {
+  # libstdc++ headers are incompatible with -fcomplete-member-pointers.
+  cflags = [ "-fno-complete-member-pointers" ]
+
+  # It's OK to depend on the system libstdc++ since it's a dependency of QT, so
+  # it will get loaded into the process anyway.
+  libs = [ "stdc++" ]
+
+  configs = [
+    ":qt5_config",
+    "//build/config/linux:runtime_library",
+    "//build/config/posix:runtime_library",
+  ]
+}
+
 source_set("qt_interface") {
   visibility = [ ":*" ]
+
+  configs -= [ "//build/config/compiler:runtime_library" ]
+  configs += [ ":qt_internal_config" ]
 
   # Since `:qt` depends on `qt_shim` via data_deps, gn check would error-out
   # if qt_interface.h was placed in `qt_shim`, so it's placed in a separate
   # target instead.
   public = [ "qt_interface.h" ]
+  sources = [ "qt_interface.cc" ]
 }
 
 shared_library("qt5_shim") {
@@ -42,11 +61,8 @@ shared_library("qt5_shim") {
   ]
   deps = [ ":qt_interface" ]
 
-  # It's OK to depend on the system libstdc++ since it's a dependency of QT, so
-  # it will get loaded into the process anyway.
-  libs = [ "stdc++" ]
-
-  configs += [ ":qt5_config" ]
+  configs -= [ "//build/config/compiler:runtime_library" ]
+  configs += [ ":qt_internal_config" ]
 
   public = []
   sources = [
@@ -72,6 +88,8 @@ component("qt") {
   deps = [
     ":qt_interface",
     "//base",
+    "//ui/gfx",
+    "//ui/native_theme",
     "//ui/shell_dialogs",
     "//ui/views",
   ]

@@ -14,7 +14,7 @@
 namespace qt {
 
 // Interface to QT desktop features.
-class QtUi : public views::LinuxUI {
+class QtUi : public views::LinuxUI, QtInterface::Delegate {
  public:
   QtUi();
 
@@ -90,10 +90,21 @@ class QtUi : public views::LinuxUI {
   bool MatchEvent(const ui::Event& event,
                   std::vector<ui::TextEditCommandAuraLinux>* commands) override;
 
+  // QtInterface::Delegate:
+  void FontChanged() override;
+
  private:
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
   CmdLineArgs cmd_line_;
+
+  // Cached default font settings.
+  std::string font_family_;
+  int font_size_pixels_ = 0;
+  int font_size_points_ = 0;
+  gfx::Font::FontStyle font_style_ = gfx::Font::NORMAL;
+  gfx::Font::Weight font_weight_;
+  gfx::FontRenderParams font_params_;
 
   std::unique_ptr<QtInterface> shim_;
 };

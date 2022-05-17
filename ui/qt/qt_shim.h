@@ -18,17 +18,21 @@ class QtShim : public QObject, public QtInterface {
   Q_OBJECT
 
  public:
-  QtShim(int* argc, char** argv);
+  QtShim(QtInterface::Delegate* delegate, int* argc, char** argv);
 
   ~QtShim() override;
 
-  // QtShim:
+  // QtInterface:
   double GetScaleFactor() const override;
+  FontRenderParams GetFontRenderParams() const override;
+  FontDescription GetFontDescription() const override;
 
  private slots:
   void FontChanged(const QFont& font);
 
  private:
+  QtInterface::Delegate* const delegate_;
+
   QApplication app_;
 };
 

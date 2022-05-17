@@ -8,14 +8,62 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/image/image.h"
+#include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/label_button_border.h"
 
 namespace qt {
+
+namespace {
+
+int QtWeightToCssWeight(int weight) {
+  struct {
+    int qt_weight;
+    int css_weight;
+  } constexpr kMapping[] = {
+      // https://doc.qt.io/qt-5/qfont.html#Weight-enum
+      {0, 100},  {12, 200}, {25, 300}, {50, 400}, {57, 500},
+      {63, 600}, {75, 700}, {81, 800}, {87, 900}, {99, 1000},
+  };
+
+  weight = base::clamp(weight, 0, 99);
+  for (size_t i = 0; i < std::size(kMapping) - 1; i++) {
+    const auto& lo = kMapping[i];
+    const auto& hi = kMapping[i + 1];
+    if (weight <= hi.qt_weight) {
+      return (weight - lo.qt_weight) * (hi.css_weight - lo.css_weight) /
+                 (hi.qt_weight - lo.qt_weight) +
+             lo.css_weight;
+    }
+  }
+  NOTREACHED();
+  return kMapping[std::size(kMapping) - 1].css_weight;
+}
+
+gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
+    qt::FontHinting hinting,
+    gfx::FontRenderParams::Hinting default_hinting) {
+  switch (hinting) {
+    case FontHinting::kDefault:
+      return default_hinting;
+    case FontHinting::kNone:
+      return gfx::FontRenderParams::HINTING_NONE;
+    case FontHinting::kLight:
+      return gfx::FontRenderParams::HINTING_SLIGHT;
+    case FontHinting::kFull:
+      return gfx::FontRenderParams::HINTING_FULL;
+  }
+}
+
+}  // namespace
 
 QtUi::QtUi() = default;
 
@@ -29,8 +77,7 @@ std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
 }
 
 gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+  return font_params_;
 }
 
 void QtUi::GetDefaultFontDescription(std::string* family_out,
@@ -38,7 +85,16 @@ void QtUi::GetDefaultFontDescription(std::string* family_out,
                                      int* style_out,
                                      gfx::Font::Weight* weight_out,
                                      gfx::FontRenderParams* params_out) const {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (family_out)
+    *family_out = font_family_;
+  if (size_pixels_out)
+    *size_pixels_out = font_size_pixels_;
+  if (style_out)
+    *style_out = font_style_;
+  if (weight_out)
+    *weight_out = font_weight_;
+  if (params_out)
+    *params_out = font_params_;
 }
 
 ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
@@ -61,7 +117,9 @@ bool QtUi::Initialize() {
 
   cmd_line_ = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
-      create_qt_interface)(&cmd_line_.argc, cmd_line_.argv.data())));
+      create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
+
+  FontChanged();
 
   return true;
 }
@@ -113,12 +171,12 @@ base::TimeDelta QtUi::GetCursorBlinkInterval() const {
 
 ui::NativeTheme* QtUi::GetNativeTheme(aura::Window* window) const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
 ui::NativeTheme* QtUi::GetNativeTheme(bool use_system_theme) const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return ui::NativeTheme::GetInstanceForNativeUi();
 }
 
 void QtUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
@@ -217,12 +275,6 @@ int QtUi::GetCursorThemeSize() {
   return 0;
 }
 
-bool QtUi::MatchEvent(const ui::Event& event,
-                      std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
 std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return {};
@@ -230,6 +282,47 @@ std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
 
 void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
   NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool QtUi::MatchEvent(const ui::Event& event,
+                      std::vector<ui::TextEditCommandAuraLinux>* commands) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+void QtUi::FontChanged() {
+  auto params = shim_->GetFontRenderParams();
+  auto desc = shim_->GetFontDescription();
+
+  font_family_ = desc.family.c_str();
+  if (desc.size_pixels > 0) {
+    font_size_pixels_ = desc.size_pixels;
+    font_size_points_ = font_size_pixels_ / GetDeviceScaleFactor();
+  } else {
+    font_size_points_ = desc.size_points;
+    font_size_pixels_ = font_size_points_ * GetDeviceScaleFactor();
+  }
+  font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
+  font_weight_ =
+      static_cast<gfx::Font::Weight>(QtWeightToCssWeight(desc.weight));
+
+  gfx::FontRenderParamsQuery query;
+  query.families = {font_family_};
+  query.pixel_size = font_size_pixels_;
+  query.point_size = font_size_points_;
+  query.style = font_style_;
+  query.weight = font_weight_;
+
+  gfx::FontRenderParams fc_params;
+  gfx::QueryFontconfig(query, &fc_params, nullptr);
+  font_params_ = gfx::FontRenderParams{
+      .antialiasing = params.antialiasing,
+      .use_bitmaps = params.use_bitmaps,
+      .hinting = QtHintingToGfxHinting(params.hinting, fc_params.hinting),
+      // QT doesn't expose a subpixel rendering setting, so fall back to
+      // fontconfig for it.
+      .subpixel_rendering = fc_params.subpixel_rendering,
+  };
 }
 
 std::unique_ptr<views::LinuxUI> CreateQtUi() {

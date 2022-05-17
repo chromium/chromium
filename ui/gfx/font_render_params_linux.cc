@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"
 #include "ui/gfx/switches.h"
@@ -77,9 +78,7 @@ const size_t kCacheSize = 256;
 // Cached result from a call to GetFontRenderParams().
 struct QueryResult {
   QueryResult(const FontRenderParams& params, const std::string& family)
-      : params(params),
-        family(family) {
-  }
+      : params(params), family(family) {}
   ~QueryResult() {}
 
   FontRenderParams params;
@@ -103,8 +102,16 @@ struct SynchronizedCache {
 base::LazyInstance<SynchronizedCache>::Leaky g_synchronized_cache =
     LAZY_INSTANCE_INITIALIZER;
 
-// Queries Fontconfig for rendering settings and updates |params_out| and
-// |family_out| (if non-NULL). Returns false on failure.
+// Serialize |query| into a string value suitable for use as a cache key.
+std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
+  return base::StringPrintf(
+      "%d|%d|%d|%d|%s|%f", query.pixel_size, query.point_size, query.style,
+      static_cast<int>(query.weight),
+      base::JoinString(query.families, ",").c_str(), query.device_scale_factor);
+}
+
+}  // namespace
+
 bool QueryFontconfig(const FontRenderParamsQuery& query,
                      FontRenderParams* params_out,
                      std::string* family_out) {
@@ -116,15 +123,16 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
   FcPatternAddBool(query_pattern.get(), FC_SCALABLE, FcTrue);
 
   for (auto it = query.families.begin(); it != query.families.end(); ++it) {
-    FcPatternAddString(query_pattern.get(),
-        FC_FAMILY, reinterpret_cast<const FcChar8*>(it->c_str()));
+    FcPatternAddString(query_pattern.get(), FC_FAMILY,
+                       reinterpret_cast<const FcChar8*>(it->c_str()));
   }
   if (query.pixel_size > 0)
     FcPatternAddDouble(query_pattern.get(), FC_PIXEL_SIZE, query.pixel_size);
   if (query.point_size > 0)
     FcPatternAddInteger(query_pattern.get(), FC_SIZE, query.point_size);
   if (query.style >= 0) {
-    FcPatternAddInteger(query_pattern.get(), FC_SLANT,
+    FcPatternAddInteger(
+        query_pattern.get(), FC_SLANT,
         (query.style & Font::ITALIC) ? FC_SLANT_ITALIC : FC_SLANT_ROMAN);
   }
   if (query.weight != Font::Weight::INVALID) {
@@ -170,16 +178,6 @@ bool QueryFontconfig(const FontRenderParamsQuery& query,
 
   return true;
 }
-
-// Serialize |query| into a string value suitable for use as a cache key.
-std::string GetFontRenderParamsQueryKey(const FontRenderParamsQuery& query) {
-  return base::StringPrintf(
-      "%d|%d|%d|%d|%s|%f", query.pixel_size, query.point_size, query.style,
-      static_cast<int>(query.weight),
-      base::JoinString(query.families, ",").c_str(), query.device_scale_factor);
-}
-
-}  // namespace
 
 FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out) {
