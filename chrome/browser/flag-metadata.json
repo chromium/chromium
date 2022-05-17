@@ -4645,7 +4645,7 @@
   {
     "name": "omnibox-updated-connection-security-indicators",
     "owners": [ "meacer", "chrome-trusty-transport@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-zero-suggest-prefetching",
