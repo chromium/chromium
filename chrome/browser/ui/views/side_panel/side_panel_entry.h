@@ -30,7 +30,8 @@ class SidePanelEntry final {
     kFeed,
     // Contextual Entries
     kSideSearch,
-    kLens
+    kLens,
+    kAssistant
   };
 
   // TODO(pbos): Add an icon ImageModel here.
