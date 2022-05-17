@@ -94,8 +94,7 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheRecentAppClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get(),
-              stream_status_change_handler_.get())),
+              launch_app_helper_.get())),
       notification_generator_(std::make_unique<EcheNotificationGenerator>(
           launch_app_helper_.get())),
       apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
