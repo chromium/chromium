@@ -494,6 +494,10 @@ void PaintTimingCallbackManagerImpl::
 void PaintTimingCallbackManagerImpl::ReportPaintTime(
     std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks,
     base::TimeTicks paint_time) {
+  // Do not report any paint timings for detached frames.
+  if (frame_view_->GetFrame().IsDetached())
+    return;
+
   while (!frame_callbacks->empty()) {
     std::move(frame_callbacks->front()).Run(paint_time);
     frame_callbacks->pop();

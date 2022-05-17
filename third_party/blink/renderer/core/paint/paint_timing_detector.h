@@ -64,7 +64,7 @@ class PaintTimingCallbackManager : public GarbageCollectedMixin {
 //
 // |GarbageCollected| inheritance is required by the swap-time callback
 // registration.
-class PaintTimingCallbackManagerImpl final
+class CORE_EXPORT PaintTimingCallbackManagerImpl final
     : public GarbageCollected<PaintTimingCallbackManagerImpl>,
       public PaintTimingCallbackManager {
  public:
@@ -205,6 +205,9 @@ class CORE_EXPORT PaintTimingDetector
   void Trace(Visitor* visitor) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
+                           LargestImagePaint_Detached_Frame);
+
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
   bool HasLargestImagePaintChanged(base::TimeTicks, uint64_t size) const;

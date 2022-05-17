@@ -83,6 +83,8 @@ typedef std::pair<const LayoutObject*, const MediaTiming*> RecordId;
 // Node, LayoutObject, etc.
 class CORE_EXPORT ImageRecordsManager {
   friend class ImagePaintTimingDetectorTest;
+  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
+                           LargestImagePaint_Detached_Frame);
   DISALLOW_NEW();
 
   using NodesQueueComparator = bool (*)(const base::WeakPtr<ImageRecord>&,
@@ -236,8 +238,6 @@ class CORE_EXPORT ImageRecordsManager {
 // https://docs.google.com/document/d/1DRVd4a2VU8-yyWftgOparZF-sf16daf0vfbsHuz2rws/edit#heading=h.1k2rnrs6mdmt
 class CORE_EXPORT ImagePaintTimingDetector final
     : public GarbageCollected<ImagePaintTimingDetector> {
-  friend class ImagePaintTimingDetectorTest;
-
  public:
   ImagePaintTimingDetector(LocalFrameView*, PaintTimingCallbackManager*);
   // Record an image paint. This method covers both img and background image. In
@@ -278,6 +278,9 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
  private:
   friend class LargestContentfulPaintCalculatorTest;
+  friend class ImagePaintTimingDetectorTest;
+  FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
+                           LargestImagePaint_Detached_Frame);
 
   void PopulateTraceValue(TracedValue&, const ImageRecord& first_image_paint);
   void RegisterNotifyPresentationTime();

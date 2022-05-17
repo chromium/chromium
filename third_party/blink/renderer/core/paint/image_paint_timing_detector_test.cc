@@ -265,15 +265,16 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kKeyUp);
   }
 
+  LocalFrame* GetChildFrame() {
+    return To<LocalFrame>(GetFrame()->Tree().FirstChild());
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 
  private:
   LocalFrame* GetFrame() {
     return web_view_helper_.GetWebView()->MainFrameImpl()->GetFrame();
-  }
-  LocalFrame* GetChildFrame() {
-    return To<LocalFrame>(GetFrame()->Tree().FirstChild());
   }
   ImageResourceContent* CreateImageForTest(int width, int height) {
     sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
@@ -1258,6 +1259,42 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_FullViewportImage) {
   auto* entry = entries[0];
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, true);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_Detached_Frame) {
+  using trace_analyzer::Query;
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+      <style>iframe { display: block; position: relative; margin-left: 30px; margin-top: 50px; width: 250px; height: 250px;} </style>
+      <iframe> </iframe>
+    )HTML");
+  SetChildBodyInnerHTML(R"HTML(
+      <style>body { margin: 10px;} #target { width: 200px; height: 200px; }
+      </style>
+      <img id="target"></img>
+    )HTML");
+  SetChildFrameImageAndPaint("target", 5, 5);
+  UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
+  LocalFrame* child_frame = GetChildFrame();
+  PaintTimingDetector* child_detector =
+      &child_frame->View()->GetPaintTimingDetector();
+  GetDocument().body()->setInnerHTML("", ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(child_frame->IsDetached());
+
+  // Start tracing, we only want to capture it during the ReportPaintTime.
+  trace_analyzer::Start("loading");
+  child_detector->callback_manager_->ReportPaintTime(
+      std::make_unique<PaintTimingCallbackManager::CallbackQueue>(),
+      test_task_runner_->NowTicks());
+
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("LargestImagePaint::Candidate");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(0u, events.size());
+  q = Query::EventNameIs("LargestImagePaint::NoCandidate");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(0u, events.size());
 }
 
 }  // namespace blink
