@@ -31,6 +31,8 @@ def main(argv):
       chrome_options=options, incognito=FLAGS.incognito)
   driver.get(URL)
   time.sleep(10)
+  # Refresh the tab so the TranslateEnabled policy can apply
+  driver.refresh()
   translatePopupVisible = None
 
   try:
