@@ -94,6 +94,28 @@ ci.builder(
 
 ci.builder(
     name = "chromeos-amd64-generic-asan-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "asn",
