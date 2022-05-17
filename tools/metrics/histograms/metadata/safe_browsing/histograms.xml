@@ -2219,6 +2219,17 @@ Safe Browsing lookup mechanism is working as expected -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4GetHash.Result.BackoffErrorCount" units="times"
+    expires_after="2023-05-22">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of GetHash attempts skipped (due to being in backoff)
+    within the same backoff time window. Logged if there are any backoff errors
+    at the time of backoff window expiry.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
     units="verdicts" expires_after="2022-06-05">
   <owner>xinghuilu@chromium.org</owner>
