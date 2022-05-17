@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
                              out_of_process_url.spec().c_str()),
           "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
-        CHECK(result.is_response());
+        EXPECT_TRUE(result.is_response());
       });
   LoadPage(kPageIframePath, "iframe loaded");
 
@@ -1106,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   frame_->ExecuteJavaScript(
       {"*"}, base::MemBufferFromString(script, "test2"),
       [](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
-        CHECK(result.is_response());
+        EXPECT_TRUE(result.is_response());
       });
 
   semantics_manager_.semantic_tree()->RunUntilNodeWithLabelIsInTree(

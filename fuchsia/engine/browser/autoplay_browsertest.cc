@@ -32,7 +32,7 @@ class AutoplayTest : public cr_fuchsia::WebEngineBrowserTest {
   AutoplayTest& operator=(const AutoplayTest&) = delete;
 
   void SetUpOnMainThread() override {
-    CHECK(embedded_test_server()->Start());
+    EXPECT_TRUE(embedded_test_server()->Start());
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
   }
 

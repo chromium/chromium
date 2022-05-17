@@ -57,7 +57,7 @@ void PermissionsBrowserTest::InjectBeforeLoadJs(const std::string& code) {
   frame_->AddBeforeLoadJavaScript(
       before_load_js_id_++, {"*"}, base::MemBufferFromString(code, "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
-        CHECK(result.is_response());
+        EXPECT_TRUE(result.is_response());
       });
 }
 

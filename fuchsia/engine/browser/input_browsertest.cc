@@ -108,7 +108,7 @@ class FakeKeyboard : public fuchsia::ui::input3::testing::Keyboard_TestBase {
       fidl::InterfaceHandle<::fuchsia::ui::input3::KeyboardListener> listener,
       AddListenerCallback callback) final {
     // This implementation is only set up to have up to one listener.
-    DCHECK(!listener_);
+    EXPECT_FALSE(listener_);
     listener_ = listener.Bind();
     callback();
   }

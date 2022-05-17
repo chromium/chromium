@@ -66,12 +66,12 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   // Reports the system |theme_type| via the Display FIDL service.
   void ReportSystemTheme(fuchsia::settings::ThemeType theme_type) {
     if (!watch_callback_) {
-      DCHECK(!on_watch_closure_);
+      EXPECT_FALSE(on_watch_closure_);
 
       base::RunLoop run_loop;
       on_watch_closure_ = run_loop.QuitClosure();
       run_loop.Run();
-      DCHECK(watch_callback_);
+      ASSERT_TRUE(watch_callback_);
     }
 
     fuchsia::settings::DisplaySettings settings;
@@ -92,7 +92,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
 
     for (const char* scheme : {kCssDark, kCssLight}) {
       bool matches;
-      CHECK(ExecuteScriptAndExtractBool(
+      EXPECT_TRUE(ExecuteScriptAndExtractBool(
           web_contents,
           base::StringPrintf(
               "window.domAutomationController.send(window."

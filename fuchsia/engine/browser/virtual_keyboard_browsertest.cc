@@ -112,7 +112,10 @@ class VirtualKeyboardTest : public cr_fuchsia::WebEngineBrowserTest {
         frame_for_test_.ptr().get(),
         base::StringPrintf("getPointInsideText('%.*s')",
                            base::saturated_cast<int>(id.length()), id.data()));
-    CHECK(result);
+    if (!result) {
+      ADD_FAILURE() << "!result";
+      return {};
+    }
 
     // Note that coordinates are floating point and must be retrieved as such
     // from the Value, but we can cast them to integers and disregard the
@@ -220,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
   std::vector<base::RunLoop> set_type_loops(std::size(kInputTypeMappings));
   for (size_t i = 0; i < std::size(kInputTypeMappings); ++i) {
     const auto& field_type_pair = kInputTypeMappings[i];
-    DCHECK_NE(field_type_pair.second, previous_text_type);
+    EXPECT_NE(field_type_pair.second, previous_text_type);
 
     EXPECT_CALL(*controller_, SetTextType(field_type_pair.second))
         .WillOnce(testing::InvokeWithoutArgs(

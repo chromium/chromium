@@ -87,7 +87,7 @@ class AgentImplTest : public ::testing::Test {
   AgentImplTest& operator=(const AgentImplTest&) = delete;
 
   fuchsia::modular::AgentPtr CreateAgentAndConnect() {
-    DCHECK(!agent_impl_);
+    EXPECT_FALSE(agent_impl_);
     agent_impl_ = std::make_unique<AgentImpl>(
         &services_, base::BindRepeating(&AgentImplTest::OnComponentConnect,
                                         base::Unretained(this)));

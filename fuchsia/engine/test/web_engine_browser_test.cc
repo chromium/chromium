@@ -84,7 +84,7 @@ ContextImpl* WebEngineBrowserTest::context_impl() const {
   // since those are created early on, before test setup or execution.
   auto* browser_client =
       WebEngineMainDelegate::GetInstanceForTest()->browser_client();
-  DCHECK(browser_client);
+  CHECK(browser_client);
 
   auto* main_parts = browser_client->main_parts_for_test();
   CHECK(main_parts) << "context_impl() called too early in browser startup.";
@@ -100,7 +100,7 @@ std::vector<FrameHostImpl*> WebEngineBrowserTest::frame_host_impls() const {
   // since those are created early on, before test setup or execution.
   auto* browser_client =
       WebEngineMainDelegate::GetInstanceForTest()->browser_client();
-  DCHECK(browser_client);
+  CHECK(browser_client);
 
   auto* main_parts = browser_client->main_parts_for_test();
   CHECK(main_parts) << "frame_host_impl() called too early in browser startup.";

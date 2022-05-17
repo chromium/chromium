@@ -383,7 +383,7 @@ class ChunkedHttpTransaction {
       : io_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         send_state_(SendState::IDLE),
         delegate_(delegate) {
-    DCHECK(!current_instance_);
+    EXPECT_FALSE(current_instance_);
 
     current_instance_ = this;
   }
@@ -392,7 +392,7 @@ class ChunkedHttpTransaction {
   ChunkedHttpTransaction& operator=(const ChunkedHttpTransaction&) = delete;
 
   static ChunkedHttpTransaction* current() {
-    DCHECK(current_instance_);
+    EXPECT_TRUE(current_instance_);
     return current_instance_;
   }
 
@@ -412,7 +412,7 @@ class ChunkedHttpTransaction {
     base::RunLoop run_loop;
     send_chunk_complete_callback_ = run_loop.QuitClosure();
     run_loop.Run();
-    DCHECK_EQ(send_state_, SendState::IDLE);
+    EXPECT_EQ(send_state_, SendState::IDLE);
   }
 
   void SendChunk(const std::string& chunk) {

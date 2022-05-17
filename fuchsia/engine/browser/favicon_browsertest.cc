@@ -66,7 +66,7 @@ class FaviconTest : public cr_fuchsia::WebEngineBrowserTest {
   void SetUpOnMainThread() override {
     WebEngineBrowserTest::SetUpOnMainThread();
 
-    CHECK(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     frame_ = cr_fuchsia::FrameForTest::Create(context(), {});
   }

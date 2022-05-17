@@ -230,7 +230,7 @@ class TestCastComponent {
   explicit TestCastComponent(fuchsia::sys::Runner* cast_runner)
       : app_config_manager_binding_(&component_services_, &app_config_manager_),
         cast_runner_(cast_runner) {
-    DCHECK(cast_runner_);
+    EXPECT_TRUE(cast_runner_);
   }
 
   ~TestCastComponent() {
@@ -283,10 +283,10 @@ class TestCastComponent {
         outgoing_directory.NewRequest().TakeChannel();
 
     fidl::InterfaceHandle<fuchsia::io::Directory> svc_directory;
-    CHECK_EQ(fdio_service_connect_at(
-                 outgoing_directory.channel().get(), "svc",
-                 svc_directory.NewRequest().TakeChannel().release()),
-             ZX_OK);
+    EXPECT_EQ(fdio_service_connect_at(
+                  outgoing_directory.channel().get(), "svc",
+                  svc_directory.NewRequest().TakeChannel().release()),
+              ZX_OK);
 
     component_services_client_ =
         std::make_unique<sys::ServiceDirectory>(std::move(svc_directory));
@@ -323,7 +323,8 @@ class TestCastComponent {
     fuchsia::web::ContentDirectoryProvider provider;
     provider.set_name("testdata");
     base::FilePath pkg_path;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
     provider.set_directory(base::OpenDirectoryHandle(
         pkg_path.AppendASCII("fuchsia/runners/cast/testdata")));
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
@@ -366,7 +367,7 @@ class TestCastComponent {
   }
 
   void ShutdownComponent() {
-    DCHECK(component_controller_);
+    EXPECT_TRUE(component_controller_);
 
     if (component_state_) {
       base::RunLoop run_loop;
@@ -377,7 +378,7 @@ class TestCastComponent {
   }
 
   void ExpectControllerDisconnectWithStatus(zx_status_t expected_status) {
-    DCHECK(component_controller_);
+    EXPECT_TRUE(component_controller_);
 
     base::RunLoop loop;
     component_controller_.ptr().set_error_handler(
@@ -460,7 +461,7 @@ class TestCastComponent {
   }
 
   void WaitQueryApiConnected() {
-    CHECK(!test_port_);
+    EXPECT_FALSE(test_port_);
     test_port_ = api_bindings_.RunAndReturnConnectedPort("testport").Bind();
   }
 

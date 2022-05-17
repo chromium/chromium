@@ -56,7 +56,7 @@ class WebInstanceHostIntegrationTest : public testing::Test {
     embedded_test_server_.ServeFilesFromSourceDirectory(
         "fuchsia/engine/test/data");
     net::test_server::RegisterDefaultHandlers(&embedded_test_server_);
-    CHECK(embedded_test_server_.Start());
+    ASSERT_TRUE(embedded_test_server_.Start());
   }
 
  protected:
@@ -71,7 +71,7 @@ class WebInstanceHostIntegrationTest : public testing::Test {
   }
 
   void CreateContext(fuchsia::web::CreateContextParams context_params) {
-    CHECK(!context_);
+    EXPECT_FALSE(context_);
 
     fuchsia::io::DirectoryHandle web_instance_services;
     web_instance_host_.CreateInstanceForContextWithCopiedArgs(

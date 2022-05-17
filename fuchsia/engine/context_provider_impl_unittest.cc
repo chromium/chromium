@@ -69,7 +69,7 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
   base::FilePath data_dir(base::kPersistedDataDirectoryPath);
   if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
     auto out_file = data_dir.AppendASCII(kTestDataFileOut);
-    CHECK_EQ(base::WriteFile(out_file, nullptr, 0), 0);
+    EXPECT_EQ(base::WriteFile(out_file, nullptr, 0), 0);
   }
 
   // Publish the fake fuchsia.web.Context implementation for the test to use.

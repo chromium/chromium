@@ -108,7 +108,8 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
 
     base::FilePath pkg_path;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
 
     testdata_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
         "testdata", base::OpenDirectoryHandle(

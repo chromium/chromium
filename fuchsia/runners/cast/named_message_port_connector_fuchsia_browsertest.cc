@@ -67,7 +67,7 @@ class NamedMessagePortConnectorFuchsiaTest
       frame_->PostMessage(
           "*", CreateWebMessage(connect_message, std::move(connect_port)),
           [](fuchsia::web::Frame_PostMessage_Result result) {
-            DCHECK(result.is_response());
+            EXPECT_TRUE(result.is_response());
           });
     }
 

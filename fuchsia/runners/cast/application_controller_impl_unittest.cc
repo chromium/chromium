@@ -63,7 +63,7 @@ class ApplicationControllerImplTest : public chromium::cast::ApplicationContext,
   void SetApplicationController(
       fidl::InterfaceHandle<chromium::cast::ApplicationController> application)
       final {
-    DCHECK(wait_for_controller_callback_);
+    EXPECT_TRUE(wait_for_controller_callback_);
 
     application_ptr_ = application.Bind();
     std::move(wait_for_controller_callback_).Run();
