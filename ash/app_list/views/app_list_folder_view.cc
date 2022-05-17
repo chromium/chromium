@@ -79,6 +79,8 @@ constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
 
+constexpr int kScrollViewGradientSize = 16;
+
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
 constexpr auto kVerticalScrollInsets =
@@ -752,7 +754,8 @@ void AppListFolderView::CreateScrollableAppsGrid() {
 
   // Set up fade in/fade out gradients at top/bottom of scroll view.
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+      scroll_view_, kScrollViewGradientSize);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(

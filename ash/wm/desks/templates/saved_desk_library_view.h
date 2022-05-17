@@ -26,6 +26,7 @@ class SavedDeskGridView;
 class SavedDeskItemView;
 class SavedDeskLibraryEventHandler;
 class SavedDeskLibraryWindowTargeter;
+class ScrollViewGradientHelper;
 
 // This view is the content of the saved desk library widget. Depending on which
 // saved desk features are enabled, it can show one or more `SavedDeskGridView`s
@@ -97,6 +98,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.
   views::ScrollView* scroll_view_ = nullptr;
+
+  // Adds a fade in/out gradient to the top/bottom of `scroll_view_`.
+  std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
 
   // Holds the active ones, for convenience.
   std::vector<SavedDeskGridView*> grid_views_;

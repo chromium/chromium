@@ -34,7 +34,7 @@ class GradientLayerDelegate;
 class ASH_EXPORT ScrollViewGradientHelper {
  public:
   // `scroll_view` must have a layer.
-  explicit ScrollViewGradientHelper(views::ScrollView* scroll_view);
+  ScrollViewGradientHelper(views::ScrollView* scroll_view, int gradient_height);
   ~ScrollViewGradientHelper();
 
   // Updates the gradients based on `scroll_view_` bounds and scroll position.
@@ -52,6 +52,9 @@ class ASH_EXPORT ScrollViewGradientHelper {
 
   // The scroll view being decorated.
   views::ScrollView* const scroll_view_;
+
+  // The height of the gradient in DIPs.
+  const int gradient_height_;
 
   // Draws the fade in/out gradients via a `scroll_view_` mask layer.
   std::unique_ptr<GradientLayerDelegate> gradient_layer_;

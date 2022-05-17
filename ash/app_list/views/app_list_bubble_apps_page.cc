@@ -76,6 +76,9 @@ constexpr int kVerticalPaddingBetweenSections = 16;
 // between the apps page bounds and the page content.
 constexpr int kHorizontalInteriorMargin = 16;
 
+// The size of the scroll view gradient.
+constexpr int kScrollViewGradientSize = 16;
+
 // Insets for the continue section. These insets are required to make the
 // suggestion icons visually align with the icons in the apps grid.
 constexpr auto kContinueSectionInsets = gfx::Insets::VH(0, 4);
@@ -679,7 +682,8 @@ void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
   // Set up fade in/fade out gradients at top/bottom of scroll view. Wait until
   // the end of the show animation because the animation performs better without
   // the gradient mask layer.
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+      scroll_view_, kScrollViewGradientSize);
   gradient_helper_->UpdateGradientZone();
 
   // Show the scroll bar for keyboard-driven scroll position changes.

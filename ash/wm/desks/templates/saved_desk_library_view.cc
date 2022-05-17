@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -47,6 +48,9 @@ constexpr gfx::Size kLabelSizePortrait = {464, 24};
 
 // Between child spacing of Library page scroll content view.
 constexpr int kLibraryPageScrollContentsBetweenChildSpacingDp = 32;
+
+// The size of the gradient applied to the top and bottom of the scroll view.
+constexpr int kScrollViewGradientSize = 32;
 
 // Insets of Library page scroll content view.
 constexpr gfx::Insets kLibraryPageScrollContentsInsets = gfx::Insets::VH(32, 0);
@@ -218,6 +222,9 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   vertical_scroll->SetInsets(kLibraryPageVerticalScrollInsets);
   vertical_scroll->SetSnapBackOnDragOutside(false);
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
+
+  scroll_view_gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+      scroll_view_, kScrollViewGradientSize);
 
   // Set up scroll contents.
   auto scroll_contents = std::make_unique<views::View>();
@@ -429,6 +436,7 @@ void SavedDeskLibraryView::Layout() {
   }
 
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
+  scroll_view_gradient_helper_->UpdateGradientZone();
 }
 
 void SavedDeskLibraryView::OnThemeChanged() {

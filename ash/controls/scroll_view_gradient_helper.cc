@@ -15,16 +15,11 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
-namespace {
-
-// Height of the gradient in DIPs.
-constexpr int kGradientHeight = 16;
-
-}  // namespace
 
 ScrollViewGradientHelper::ScrollViewGradientHelper(
-    views::ScrollView* scroll_view)
-    : scroll_view_(scroll_view) {
+    views::ScrollView* scroll_view,
+    int gradient_height)
+    : scroll_view_(scroll_view), gradient_height_(gradient_height) {
   DCHECK(scroll_view_);
   DCHECK(scroll_view_->layer());
   on_contents_scrolled_subscription_ =
@@ -36,7 +31,7 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
           base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
                               base::Unretained(this)));
   scroll_view_->SetPreferredViewportMargins(
-      gfx::Insets::VH(kGradientHeight, 0));
+      gfx::Insets::VH(gradient_height_, 0));
 }
 
 ScrollViewGradientHelper::~ScrollViewGradientHelper() {
@@ -58,13 +53,13 @@ void ScrollViewGradientHelper::UpdateGradientZone() {
   gfx::Rect top_gradient_bounds;
   if (show_top_gradient) {
     top_gradient_bounds =
-        gfx::Rect(0, 0, scroll_view_bounds.width(), kGradientHeight);
+        gfx::Rect(0, 0, scroll_view_bounds.width(), gradient_height_);
   }
   gfx::Rect bottom_gradient_bounds;
   if (show_bottom_gradient) {
     bottom_gradient_bounds =
-        gfx::Rect(0, scroll_view_bounds.height() - kGradientHeight,
-                  scroll_view_bounds.width(), kGradientHeight);
+        gfx::Rect(0, scroll_view_bounds.height() - gradient_height_,
+                  scroll_view_bounds.width(), gradient_height_);
   }
 
   // If no gradient is needed, remove the mask layer.
