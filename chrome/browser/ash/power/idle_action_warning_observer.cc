@@ -86,7 +86,7 @@ void IdleActionWarningObserver::PowerChanged(
       power_manager::PowerSupplyProperties_BatteryState_DISCHARGING;
 }
 
-void IdleActionWarningObserver::OnWidgetClosing(views::Widget* widget) {
+void IdleActionWarningObserver::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(warning_dialog_);
   DCHECK_EQ(widget, warning_dialog_->GetWidget());
   warning_dialog_->GetWidget()->RemoveObserver(this);
