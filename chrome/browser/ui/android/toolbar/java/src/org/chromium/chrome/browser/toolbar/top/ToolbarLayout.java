@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -292,7 +293,7 @@ public abstract class ToolbarLayout
             }
 
             @Override
-            public int getSecurityIconResource(boolean isTablet) {
+            public @DrawableRes int getSecurityIconResource(boolean isTablet) {
                 return 0;
             }
 

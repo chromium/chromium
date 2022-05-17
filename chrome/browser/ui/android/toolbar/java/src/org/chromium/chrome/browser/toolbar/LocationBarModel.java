@@ -607,7 +607,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public int getSecurityIconResource(boolean isTablet) {
+    public @DrawableRes int getSecurityIconResource(boolean isTablet) {
         return getSecurityIconResource(
                 getSecurityLevel(), !isTablet, isOfflinePage(), isPaintPreview());
     }

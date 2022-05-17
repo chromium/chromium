@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -73,6 +74,7 @@ public interface ToolbarDataProvider {
      *
      * @param isTablet Whether or not the display context of the icon is a tablet.
      */
+    @DrawableRes
     int getSecurityIconResource(boolean isTablet);
 
     /** Returns whether the page currently shown is a paint preview. */

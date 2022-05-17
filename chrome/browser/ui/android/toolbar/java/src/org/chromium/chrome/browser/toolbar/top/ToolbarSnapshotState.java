@@ -6,26 +6,29 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.res.ColorStateList;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
 import java.util.Objects;
 
 class ToolbarSnapshotState {
-    private final int mTint;
+    private final @ColorInt int mTint;
     private final int mTabCount;
     private final ButtonData mOptionalButtonData;
     private final @VisualState int mVisualState;
     private String mUrlText = "";
-    private final int mSecurityIcon;
+    private final @DrawableRes int mSecurityIcon;
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
     private final boolean mIsPaintPreview;
     private final float mProgress;
     private final int mUnfocusedLocationBarLayoutWidth;
 
-    public ToolbarSnapshotState(int tint, int tabCount, ButtonData optionalButtonData,
-            @VisualState int visualState, String urlText, int securityIcon,
+    public ToolbarSnapshotState(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
+            @VisualState int visualState, String urlText, @DrawableRes int securityIcon,
             ColorStateList colorStateList, boolean isShowingUpdateBadgeDuringLastCapture,
             boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
@@ -69,6 +72,7 @@ class ToolbarSnapshotState {
                 mIsPaintPreview, mProgress, mUnfocusedLocationBarLayoutWidth);
     }
 
+    @ColorInt
     int getTint() {
         return mTint;
     }
