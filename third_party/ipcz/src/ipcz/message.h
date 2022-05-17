@@ -165,6 +165,7 @@ struct ParamMetadata {
 // Message helps build, serialize, and deserialize ipcz-internal messages.
 class IPCZ_ALIGN(8) Message {
  public:
+  Message();
   Message(uint8_t message_id, size_t params_size);
   ~Message();
 
@@ -318,6 +319,13 @@ class IPCZ_ALIGN(8) Message {
   // `CanTransmitOn(transport)` does not return true, and doing so results in
   // unspecified behavior.
   void Serialize(const DriverTransport& transport);
+
+  // Validates and deserializes a Message of an unrecognized type. DriverObjects
+  // are deserialized and much of the message structure is validated, but the
+  // parameter layout is not known and is therefore neither validated nor
+  // exposed.
+  bool DeserializeUnknownType(const DriverTransport::RawMessage& message,
+                              const DriverTransport& transport);
 
  protected:
   // Returns `x` aligned above to the nearest 8-byte boundary.

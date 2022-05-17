@@ -38,7 +38,7 @@ class Router;
 // NodeLinks may also allocate an arbitrary number of sublinks which are used
 // to multiplex the link and facilitate point-to-point communication between
 // specific Router instances on either end.
-class NodeLink : public RefCounted, private DriverTransport::Listener {
+class NodeLink : public RefCounted, private msg::NodeMessageListener {
  public:
   struct Sublink {
     Sublink(Ref<RemoteRouterLink> link, Ref<Router> receiver);
@@ -112,19 +112,9 @@ class NodeLink : public RefCounted, private DriverTransport::Listener {
 
   SequenceNumber GenerateOutgoingSequenceNumber();
 
-  // DriverTransport::Listener:
-  IpczResult OnTransportMessage(
-      const DriverTransport::RawMessage& message) override;
+  // NodeMessageListener overrides:
+  bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   void OnTransportError() override;
-
-  // All of these methods correspond directly to remote calls from another node,
-  // either through NodeLink (for OnIntroduceNode) or via RemoteRouterLink (for
-  // everything else).
-  bool OnConnectFromBrokerToNonBroker(const msg::ConnectFromBrokerToNonBroker&);
-  bool OnConnectFromNonBrokerToBroker(const msg::ConnectFromNonBrokerToBroker&);
-  bool OnRouteClosed(const msg::RouteClosed& route_closed);
-
-  IpczResult DispatchMessage(const DriverTransport::RawMessage& message);
 
   const Ref<Node> node_;
   const LinkSide link_side_;

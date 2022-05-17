@@ -74,7 +74,6 @@ TEST_F(DriverTransportTest, Activation) {
   listener.OnStringMessage([&](std::string_view message) {
     EXPECT_EQ(kTestMessage, message);
     received = true;
-    return IPCZ_RESULT_OK;
   });
 
   // Verify that activation of a DriverTransport feeds the driver an activity

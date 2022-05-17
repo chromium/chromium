@@ -7,6 +7,8 @@
 // This file defines the internal messages which can be sent on a NodeLink
 // between two ipcz nodes.
 
+IPCZ_MSG_BEGIN_INTERFACE(Node)
+
 // Initial greeting sent by a broker node when a ConnectNode() is issued without
 // the IPCZ_CONNECT_NODE_TO_BROKER flag, implying that the receiving node is a
 // non-broker.
@@ -68,3 +70,5 @@ IPCZ_MSG_BEGIN(RouteClosed, IPCZ_MSG_ID(22), IPCZ_MSG_VERSION(0))
   // arrive before completely forgetting about the route's link(s).
   IPCZ_MSG_PARAM(SequenceNumber, sequence_length)
 IPCZ_MSG_END()
+
+IPCZ_MSG_END_INTERFACE()

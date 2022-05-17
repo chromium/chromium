@@ -42,9 +42,12 @@ IpczResult IPCZ_API NotifyTransport(IpczHandle transport,
     return IPCZ_RESULT_OK;
   }
 
-  return t->Notify(
-      {absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-       absl::MakeSpan(driver_handles, num_driver_handles)});
+  if (!t->Notify({absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
+                  absl::MakeSpan(driver_handles, num_driver_handles)})) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return IPCZ_RESULT_OK;
 }
 
 }  // namespace
@@ -83,9 +86,9 @@ IpczResult DriverTransport::Transmit(Message& message) {
       handles.size(), IPCZ_NO_FLAGS, nullptr);
 }
 
-IpczResult DriverTransport::Notify(const RawMessage& message) {
+bool DriverTransport::Notify(const RawMessage& message) {
   ABSL_ASSERT(listener_);
-  return listener_->OnTransportMessage(message);
+  return listener_->OnTransportMessage(message, *this);
 }
 
 void DriverTransport::NotifyError() {

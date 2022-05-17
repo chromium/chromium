@@ -360,20 +360,5 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   EXPECT_EQ(kObjectHandle3, out.driver_objects()[2].release());
 }
 
-TEST_F(MessageTest, TolerateNewerVersion) {
-  test::msg::BasicTestMessageV1 in;
-  in.params().foo = 1;
-  in.params().bar = 2;
-  in.params().baz = 3;
-  in.params().qux = 4;
-  transport().Transmit(in);
-
-  test::msg::BasicTestMessage out;
-  ReceivedMessage message = TakeNextReceivedMessage();
-  EXPECT_TRUE(out.Deserialize(message.AsTransportMessage(), transport()));
-  EXPECT_EQ(1u, out.params().foo);
-  EXPECT_EQ(2u, out.params().bar);
-}
-
 }  // namespace
 }  // namespace ipcz

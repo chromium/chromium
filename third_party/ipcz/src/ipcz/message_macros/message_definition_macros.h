@@ -4,6 +4,9 @@
 
 // no-include-guard-because-multiply-included
 
+#define IPCZ_MSG_BEGIN_INTERFACE(name)
+#define IPCZ_MSG_END_INTERFACE()
+
 #define IPCZ_MSG_ID(x)
 #define IPCZ_MSG_VERSION(x)
 

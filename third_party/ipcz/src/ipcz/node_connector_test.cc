@@ -67,7 +67,7 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
     EXPECT_EQ(broker->GetAssignedName(), connect.params().broker_name);
     EXPECT_EQ(1u, connect.params().num_initial_portals);
     non_broker_received_connect = true;
-    return IPCZ_RESULT_OK;
+    return true;
   });
 
   // Initiate connection from the broker side. The non-broker's transport should
@@ -91,7 +91,7 @@ TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
   listener.OnMessage<msg::ConnectFromNonBrokerToBroker>([&](auto& connect) {
     EXPECT_EQ(1u, connect.params().num_initial_portals);
     broker_received_connect = true;
-    return IPCZ_RESULT_OK;
+    return true;
   });
 
   // Initiate connection from the non-broker side. The broker's transport should
@@ -126,7 +126,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     test::TestTransportListener listener(non_broker_transport);
     listener.OnMessage<msg::ConnectFromBrokerToNonBroker>([&](auto&) {
       received_connect = true;
-      return IPCZ_RESULT_OK;
+      return true;
     });
     EXPECT_TRUE(received_connect);
 
@@ -154,7 +154,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     test::TestTransportListener listener(non_broker_transport);
     listener.OnMessage<msg::ConnectFromBrokerToNonBroker>([&](auto&) {
       received_connect = true;
-      return IPCZ_RESULT_OK;
+      return true;
     });
     EXPECT_TRUE(received_connect);
 

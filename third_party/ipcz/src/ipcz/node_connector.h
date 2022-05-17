@@ -12,6 +12,7 @@
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/node_messages.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
@@ -28,7 +29,7 @@ class Portal;
 // Once an initial handshake is complete the underlying transport is adopted by
 // a new NodeLink and handed off to the local Node to communicate with the
 // remote node, and this object is destroyed.
-class NodeConnector : public RefCounted, public DriverTransport::Listener {
+class NodeConnector : public RefCounted, public msg::NodeMessageListener {
  public:
   // Constructs a new NodeConnector to send and receive a handshake on
   // `transport`. The specific type of connector to create is determined by a
@@ -49,8 +50,6 @@ class NodeConnector : public RefCounted, public DriverTransport::Listener {
                                 ConnectCallback callback = nullptr);
 
   virtual bool Connect() = 0;
-  virtual bool OnMessage(uint8_t message_id,
-                         const DriverTransport::RawMessage& message) = 0;
 
  protected:
   NodeConnector(Ref<Node> node,
@@ -86,9 +85,7 @@ class NodeConnector : public RefCounted, public DriverTransport::Listener {
                                LinkSide link_side,
                                size_t max_valid_portals);
 
-  // DriverTransport::Listener:
-  IpczResult OnTransportMessage(
-      const DriverTransport::RawMessage& message) override;
+  // NodeMessageListener overrides:
   void OnTransportError() override;
 
   const ConnectCallback callback_;

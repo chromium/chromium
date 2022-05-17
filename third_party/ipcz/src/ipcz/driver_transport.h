@@ -44,7 +44,8 @@ class DriverTransport
 
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
-    virtual IpczResult OnTransportMessage(const RawMessage& message) = 0;
+    virtual bool OnTransportMessage(const RawMessage& message,
+                                    const DriverTransport& transport) = 0;
 
     // Indicates that some unrecoverable error has occurred with the transport.
     virtual void OnTransportError() = 0;
@@ -94,7 +95,7 @@ class DriverTransport
 
   // Invoked by the driver any time this transport receives data and driver
   // handles to be passed back into ipcz.
-  IpczResult Notify(const RawMessage& message);
+  bool Notify(const RawMessage& message);
   void NotifyError();
 
   // APIObject:

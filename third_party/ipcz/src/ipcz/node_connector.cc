@@ -56,17 +56,9 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
-  bool OnMessage(uint8_t message_id,
-                 const DriverTransport::RawMessage& message) override {
-    if (message_id != msg::ConnectFromNonBrokerToBroker::kId) {
-      return false;
-    }
-
-    msg::ConnectFromNonBrokerToBroker connect;
-    if (!connect.Deserialize(message, *transport_)) {
-      return false;
-    }
-
+  // NodeMessageListener overrides:
+  bool OnConnectFromNonBrokerToBroker(
+      msg::ConnectFromNonBrokerToBroker& connect) override {
     DVLOG(4) << "Accepting ConnectFromNonBrokerToBroker on broker "
              << broker_name_.ToString() << " from new node "
              << new_remote_node_name_.ToString();
@@ -108,17 +100,9 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
-  bool OnMessage(uint8_t message_id,
-                 const DriverTransport::RawMessage& message) override {
-    if (message_id != msg::ConnectFromBrokerToNonBroker::kId) {
-      return false;
-    }
-
-    msg::ConnectFromBrokerToNonBroker connect;
-    if (!connect.Deserialize(message, *transport_)) {
-      return false;
-    }
-
+  // NodeMessageListener overrides:
+  bool OnConnectFromBrokerToNonBroker(
+      msg::ConnectFromBrokerToNonBroker& connect) override {
     DVLOG(4) << "New node accepting ConnectFromBrokerToNonBroker with assigned "
              << "name " << connect.params().receiver_name.ToString()
              << " from broker " << connect.params().broker_name.ToString();
@@ -275,16 +259,6 @@ void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
     waiting_portals_[i]->router()->AcceptRouteClosureFrom(LinkType::kCentral,
                                                           SequenceNumber(0));
   }
-}
-
-IpczResult NodeConnector::OnTransportMessage(
-    const DriverTransport::RawMessage& message) {
-  const auto& header =
-      *reinterpret_cast<const internal::MessageHeader*>(message.data.data());
-  if (!OnMessage(header.message_id, message)) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-  return IPCZ_RESULT_OK;
 }
 
 void NodeConnector::OnTransportError() {

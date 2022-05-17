@@ -131,6 +131,8 @@ DriverObject DeserializeDriverObject(
 
 }  // namespace
 
+Message::Message() = default;
+
 Message::Message(uint8_t message_id, size_t params_size)
     : data_(sizeof(internal::MessageHeader) + params_size) {
   internal::MessageHeader& h = header();
@@ -223,12 +225,8 @@ void Message::Serialize(const DriverTransport& transport) {
   transmissible_driver_handles_ = std::move(transmissible_handles);
 }
 
-bool Message::DeserializeFromTransport(
-    size_t params_size,
-    uint32_t params_current_version,
-    absl::Span<const internal::ParamMetadata> params_metadata,
-    const DriverTransport::RawMessage& message,
-    const DriverTransport& transport) {
+bool Message::DeserializeUnknownType(const DriverTransport::RawMessage& message,
+                                     const DriverTransport& transport) {
   // Copy the data into a local message object to avoid any TOCTOU issues in
   // case `data` is in unsafe shared memory.
   data_.resize(message.data.size());
@@ -285,7 +283,16 @@ bool Message::DeserializeFromTransport(
     }
   }
 
-  if (!all_driver_objects_ok) {
+  return all_driver_objects_ok;
+}
+
+bool Message::DeserializeFromTransport(
+    size_t params_size,
+    uint32_t params_current_version,
+    absl::Span<const internal::ParamMetadata> params_metadata,
+    const DriverTransport::RawMessage& message,
+    const DriverTransport& transport) {
+  if (!DeserializeUnknownType(message, transport)) {
     return false;
   }
 

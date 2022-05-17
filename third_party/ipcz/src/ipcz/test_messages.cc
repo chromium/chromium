@@ -18,6 +18,14 @@ namespace ipcz::test::msg {
 #include "ipcz/message_macros/message_definition_macros.h"
 #include "ipcz/test_messages_generator.h"
 #include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_listener_definition_macros.h"
+#include "ipcz/test_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_listener_dispatch_macros.h"
+#include "ipcz/test_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
 // clang-format on
 
 #pragma pack(pop)

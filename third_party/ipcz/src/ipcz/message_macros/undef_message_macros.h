@@ -9,6 +9,8 @@
 
 // no-include-guard-because-multiply-included
 
+#undef IPCZ_MSG_BEGIN_INTERFACE
+#undef IPCZ_MSG_END_INTERFACE
 #undef IPCZ_MSG_ID
 #undef IPCZ_MSG_VERSION
 #undef IPCZ_MSG_BEGIN

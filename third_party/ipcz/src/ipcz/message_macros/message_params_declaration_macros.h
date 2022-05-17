@@ -4,6 +4,9 @@
 
 // no-include-guard-because-multiply-included
 
+#define IPCZ_MSG_BEGIN_INTERFACE(name)
+#define IPCZ_MSG_END_INTERFACE()
+
 #define IPCZ_MSG_ID(x) static constexpr uint8_t kId = x
 #define IPCZ_MSG_VERSION(x) static constexpr uint32_t kVersion = x
 

@@ -30,6 +30,10 @@ constexpr uint32_t kProtocolVersion = 0;
 #include "ipcz/message_macros/message_declaration_macros.h"
 #include "ipcz/node_messages_generator.h"
 #include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_listener_declaration_macros.h"
+#include "ipcz/node_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
 // clang-format on
 
 #pragma pack(pop)
