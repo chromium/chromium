@@ -856,7 +856,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
-<translation id="1888871729456797026">El token de registro de la política relativa a la nube en ordenadores</translation>
+<translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de gráficos de fondo de forma predeterminada</translation>
 <translation id="1897365952389968758">Permitir que todos los sitios ejecuten JavaScript</translation>
 <translation id="1902043648529789224">Controlar la posición de la estantería</translation>

@@ -1247,7 +1247,7 @@
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
-<translation id="2188881192257509750">打开 <ph name="APPLICATION" /></translation>
+<translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
 <translation id="2189787291884708275">分享标签页中的音频</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>

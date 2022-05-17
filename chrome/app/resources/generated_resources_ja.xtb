@@ -4431,7 +4431,7 @@
 <translation id="5339031667684712858">削除したサイト</translation>
 <translation id="5340638867532133571">サイトに支払いハンドラのインストールを許可する（推奨）</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
-<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で作成してください</translation>
+<translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で設定してください</translation>
 <translation id="5344036115151554031">Linux を復元しています</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="5345916423802287046">ログイン時にアプリを開く</translation>

@@ -683,7 +683,7 @@
 <translation id="1643072738649235303">‏امضای X9.62 ECDSA با SHA-1</translation>
 <translation id="1643921258693943800">‏برای استفاده از «هم‌رسانی با اطراف»، بلوتوث و Wi-Fi را روشن کنید</translation>
 <translation id="1644574205037202324">سابقه</translation>
-<translation id="1644852018355792105">«کلیدواژه بلوتوث» مربوط به دستگاه <ph name="DEVICE" /> را وارد کنید</translation>
+<translation id="1644852018355792105">«گذرکلید بلوتوث» مربوط به دستگاه <ph name="DEVICE" /> را وارد کنید</translation>
 <translation id="1645004815457365098">منبع ناشناخته</translation>
 <translation id="1645516838734033527">‏برای ایمن نگه‌داشتن <ph name="DEVICE_TYPE" />، Smart Lock در تلفنتان قفل صفحه لازم دارد.</translation>
 <translation id="1646982517418478057">برای رمزگذاری این گواهی، گذرواژه‌ای وارد کنید</translation>
@@ -826,7 +826,7 @@
 <translation id="1778457539567749232">علامت‌گذاری به عنوان خوانده نشده</translation>
 <translation id="1778991607452011493">ارسال گزارش‌های اشکال‌زدایی (توصیه می‌شود)</translation>
 <translation id="1779468444204342338">حداقل</translation>
-<translation id="1779652936965200207">لطفاً این کلیدواژه را در "<ph name="DEVICE_NAME" />" وارد کنید:</translation>
+<translation id="1779652936965200207">لطفاً این گذرکلید را در "<ph name="DEVICE_NAME" />" وارد کنید:</translation>
 <translation id="177989070088644880">برنامه (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">بستن گروه</translation>
 <translation id="1780273119488802839">وارد کردن نشانک‌ها…</translation>
@@ -8184,7 +8184,7 @@
 <translation id="9041692268811217999">دسترسی به فایل‌های محلی موجود در دستگاهتان، توسط سرپرست شما غیرفعال شده است</translation>
 <translation id="904224458472510106">این عملیات را نمی‌توان واگرد کرد</translation>
 <translation id="9042893549633094279">حریم‌خصوصی و امنیت</translation>
-<translation id="904451693890288097">لطفاً کلیدواژه را برای "<ph name="DEVICE_NAME" />" وارد کنید:</translation>
+<translation id="904451693890288097">لطفاً گذرکلید "<ph name="DEVICE_NAME" />" را وارد کنید:</translation>
 <translation id="9044646465488564462">اتصال به شبکه انجام نشد: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">فهرست خواندن به پانل کناری جدید منتقل شده است. آن را در اینجا امتحان کنید.</translation>
 <translation id="9045430190527754450">‏نشانی وب صفحه‌ای را که باز می‌کنید به Google ارسال می‌کند</translation>
@@ -8227,7 +8227,7 @@
 <translation id="9087949559523851360">افزودن کاربر محدودشده</translation>
 <translation id="9088234649737575428">خط‌مشی شرکت <ph name="PLUGIN_NAME" /> را مسدود کرده است</translation>
 <translation id="9088446193279799727">‏Linux پیکربندی نشد. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
-<translation id="9088917181875854783">لطفاً تأیید کنید که این کلیدواژه در دستگاه "<ph name="DEVICE_NAME" />" نشان داده می‌شود:</translation>
+<translation id="9088917181875854783">لطفاً تأیید کنید که این گذرکلید در دستگاه "<ph name="DEVICE_NAME" />" نشان داده می‌شود:</translation>
 <translation id="9089416786594320554">روش‌های ورودی</translation>
 <translation id="9090044809052745245">نحوه نمایش دستگاه شما به دیگران</translation>
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>
