@@ -295,7 +295,9 @@ inline bool InitLogging(const LoggingSettings& settings) {
 // will be silently ignored. The log level defaults to 0 (everything is logged
 // up to level INFO) if this function is not called.
 // Note that log messages for VLOG(x) are logged at level -x, so setting
-// the min log level to negative values enables verbose logging.
+// the min log level to negative values enables verbose logging and conversely,
+// setting the VLOG default level will set this min level to a negative number,
+// effectively enabling all levels of logging.
 BASE_EXPORT void SetMinLogLevel(int level);
 
 // Gets the current log level.
