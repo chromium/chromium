@@ -28,9 +28,6 @@ CertVerifyResult::~CertVerifyResult() = default;
 CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) {
   verified_cert = other.verified_cert;
   cert_status = other.cert_status;
-  has_md2 = other.has_md2;
-  has_md4 = other.has_md4;
-  has_md5 = other.has_md5;
   has_sha1 = other.has_sha1;
   has_sha1_leaf = other.has_sha1_leaf;
   is_issued_by_known_root = other.is_issued_by_known_root;
@@ -52,9 +49,6 @@ CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) {
 void CertVerifyResult::Reset() {
   verified_cert = nullptr;
   cert_status = 0;
-  has_md2 = false;
-  has_md4 = false;
-  has_md5 = false;
   has_sha1 = false;
   has_sha1_leaf = false;
   is_issued_by_known_root = false;
@@ -75,12 +69,6 @@ base::Value CertVerifyResult::NetLogParams(int net_error) const {
   DCHECK_NE(ERR_IO_PENDING, net_error);
   if (net_error < 0)
     results.SetIntKey("net_error", net_error);
-  if (has_md5)
-    results.SetBoolKey("has_md5", true);
-  if (has_md2)
-    results.SetBoolKey("has_md2", true);
-  if (has_md4)
-    results.SetBoolKey("has_md4", true);
   results.SetBoolKey("is_issued_by_known_root", is_issued_by_known_root);
   if (is_issued_by_additional_trust_anchor) {
     results.SetBoolKey("is_issued_by_additional_trust_anchor", true);

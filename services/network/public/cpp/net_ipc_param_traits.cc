@@ -41,9 +41,6 @@ void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.verified_cert);
   WriteParam(m, p.cert_status);
-  WriteParam(m, p.has_md2);
-  WriteParam(m, p.has_md4);
-  WriteParam(m, p.has_md5);
   WriteParam(m, p.has_sha1);
   WriteParam(m, p.has_sha1_leaf);
   WriteParam(m, p.public_key_hashes);
@@ -59,8 +56,7 @@ bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
                                               param_type* r) {
   return ReadParam(m, iter, &r->verified_cert) &&
          ReadParam(m, iter, &r->cert_status) &&
-         ReadParam(m, iter, &r->has_md2) && ReadParam(m, iter, &r->has_md4) &&
-         ReadParam(m, iter, &r->has_md5) && ReadParam(m, iter, &r->has_sha1) &&
+         ReadParam(m, iter, &r->has_sha1) &&
          ReadParam(m, iter, &r->has_sha1_leaf) &&
          ReadParam(m, iter, &r->public_key_hashes) &&
          ReadParam(m, iter, &r->is_issued_by_known_root) &&

@@ -1056,8 +1056,6 @@ TEST_P(CertVerifyProcInternalTest, ExtraneousMD5RootCert) {
   EXPECT_TRUE(x509_util::CryptoBufferEqual(
       verify_result.verified_cert->intermediate_buffers().front().get(),
       root_cert->cert_buffer()));
-
-  EXPECT_FALSE(verify_result.has_md5);
 }
 
 // Test for bug 94673.
@@ -4296,63 +4294,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
 }
 
-TEST(CertVerifyProcTest, RejectsMD2) {
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
-  ASSERT_TRUE(cert);
-
-  CertVerifyResult result;
-  result.has_md2 = true;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error = verify_proc->Verify(
-      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-}
-
-TEST(CertVerifyProcTest, RejectsMD4) {
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
-  ASSERT_TRUE(cert);
-
-  CertVerifyResult result;
-  result.has_md4 = true;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error = verify_proc->Verify(
-      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-}
-
-TEST(CertVerifyProcTest, RejectsMD5) {
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
-  ASSERT_TRUE(cert);
-
-  CertVerifyResult result;
-  result.has_md5 = true;
-  scoped_refptr<CertVerifyProc> verify_proc = new MockCertVerifyProc(result);
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error = verify_proc->Verify(
-      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-}
-
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
@@ -4434,11 +4375,9 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
 }
 
 enum ExpectedAlgorithms {
-  EXPECT_MD2 = 1 << 0,
-  EXPECT_MD4 = 1 << 1,
-  EXPECT_MD5 = 1 << 2,
-  EXPECT_SHA1 = 1 << 3,
-  EXPECT_SHA1_LEAF = 1 << 4,
+  EXPECT_SHA1 = 1 << 0,
+  EXPECT_SHA1_LEAF = 1 << 2,
+  EXPECT_STATUS_INVALID = 1 << 3,
 };
 
 struct WeakDigestTestData {
@@ -4513,15 +4452,18 @@ TEST_P(CertVerifyProcWeakDigestTest, VerifyDetectsAlgorithm) {
   // hash algorithms is done by CertVerifyProc::Verify().
   scoped_refptr<CertVerifyProc> proc =
       new MockCertVerifyProc(CertVerifyResult());
-  proc->Verify(ee_chain.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-               /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-               CertificateList(), &verify_result, NetLogWithSource());
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_MD2), verify_result.has_md2);
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_MD4), verify_result.has_md4);
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_MD5), verify_result.has_md5);
+  int error = proc->Verify(ee_chain.get(), "127.0.0.1",
+                           /*ocsp_response=*/std::string(),
+                           /*sct_list=*/std::string(), flags,
+                           CRLSet::BuiltinCRLSet().get(), CertificateList(),
+                           &verify_result, NetLogWithSource());
   EXPECT_EQ(!!(data.expected_algorithms & EXPECT_SHA1), verify_result.has_sha1);
   EXPECT_EQ(!!(data.expected_algorithms & EXPECT_SHA1_LEAF),
             verify_result.has_sha1_leaf);
+  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
+            !!(verify_result.cert_status & CERT_STATUS_INVALID));
+  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
+            error == ERR_CERT_INVALID);
 }
 
 // The signature algorithm of the root CA should not matter.
@@ -4540,11 +4482,14 @@ INSTANTIATE_TEST_SUITE_P(VerifyRoot,
 // The signature algorithm of intermediates should be properly detected.
 const WeakDigestTestData kVerifyIntermediateCATestData[] = {
     {"weak_digest_sha1_root.pem", "weak_digest_md5_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_MD5 | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem",
+     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
     {"weak_digest_sha1_root.pem", "weak_digest_md4_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_MD4 | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem",
+     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
     {"weak_digest_sha1_root.pem", "weak_digest_md2_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_MD2 | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     "weak_digest_sha1_ee.pem",
+     EXPECT_STATUS_INVALID | EXPECT_SHA1 | EXPECT_SHA1_LEAF},
 };
 
 INSTANTIATE_TEST_SUITE_P(VerifyIntermediate,
@@ -4554,11 +4499,11 @@ INSTANTIATE_TEST_SUITE_P(VerifyIntermediate,
 // The signature algorithm of end-entity should be properly detected.
 const WeakDigestTestData kVerifyEndEntityTestData[] = {
     {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md5_ee.pem", EXPECT_MD5 | EXPECT_SHA1},
+     "weak_digest_md5_ee.pem", EXPECT_STATUS_INVALID},
     {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md4_ee.pem", EXPECT_MD4 | EXPECT_SHA1},
+     "weak_digest_md4_ee.pem", EXPECT_STATUS_INVALID},
     {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_MD2 | EXPECT_SHA1},
+     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
 };
 
 INSTANTIATE_TEST_SUITE_P(VerifyEndEntity,
@@ -4572,11 +4517,11 @@ INSTANTIATE_TEST_SUITE_P(VerifyEndEntity,
 // this intermediate is treated like a trust anchor.
 const WeakDigestTestData kVerifyIncompleteIntermediateTestData[] = {
     {nullptr, "weak_digest_md5_intermediate.pem", "weak_digest_sha1_ee.pem",
-     /*EXPECT_MD5 |*/ EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
     {nullptr, "weak_digest_md4_intermediate.pem", "weak_digest_sha1_ee.pem",
-     /*EXPECT_MD4 |*/ EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
     {nullptr, "weak_digest_md2_intermediate.pem", "weak_digest_sha1_ee.pem",
-     /*EXPECT_MD2 |*/ EXPECT_SHA1 | EXPECT_SHA1_LEAF},
+     EXPECT_SHA1 | EXPECT_SHA1_LEAF},
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4585,32 +4530,29 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(kVerifyIncompleteIntermediateTestData));
 
 // Incomplete chains should report the status of the end-entity.
-// Note: really each of these tests should also expect EXPECT_SHA1 (included as
-// a comment). However CertVerifyProc::Verify() is unable to distinguish that
-// this is an intermediate and not a trust anchor, so this intermediate is
-// treated like a trust anchor.
+// since the intermediate is treated as a trust anchor these should
+// be still simply be invalid.
 const WeakDigestTestData kVerifyIncompleteEETestData[] = {
     {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md5_ee.pem",
-     /*EXPECT_SHA1 |*/ EXPECT_MD5},
+     EXPECT_STATUS_INVALID},
     {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md4_ee.pem",
-     /*EXPECT_SHA1 |*/ EXPECT_MD4},
+     EXPECT_STATUS_INVALID},
     {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md2_ee.pem",
-     /*EXPECT_SHA1 |*/ EXPECT_MD2},
+     EXPECT_STATUS_INVALID},
 };
 
 INSTANTIATE_TEST_SUITE_P(VerifyIncompleteEndEntity,
                          CertVerifyProcWeakDigestTest,
                          testing::ValuesIn(kVerifyIncompleteEETestData));
 
-// Differing algorithms between the intermediate and the EE should still be
-// reported.
+// Md2, Md4, and Md5 are all considered invalid.
 const WeakDigestTestData kVerifyMixedTestData[] = {
     {"weak_digest_sha1_root.pem", "weak_digest_md5_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_MD2 | EXPECT_MD5},
+     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
     {"weak_digest_sha1_root.pem", "weak_digest_md2_intermediate.pem",
-     "weak_digest_md5_ee.pem", EXPECT_MD2 | EXPECT_MD5},
+     "weak_digest_md5_ee.pem", EXPECT_STATUS_INVALID},
     {"weak_digest_sha1_root.pem", "weak_digest_md4_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_MD2 | EXPECT_MD4},
+     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
 };
 
 INSTANTIATE_TEST_SUITE_P(VerifyMixed,

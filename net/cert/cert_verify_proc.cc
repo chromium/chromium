@@ -358,35 +358,31 @@ bool AreSHA1IntermediatesAllowed() {
 #endif
 }
 
-// Sets the "has_*" boolean members in |verify_result| that correspond with
-// the the presence of |hash| somewhere in the certificate chain (excluding the
-// trust anchor).
-void MapAlgorithmToBool(DigestAlgorithm hash, CertVerifyResult* verify_result) {
+// Validate if a digest hash algorithm is acceptable in a certificate.
+//
+// Sets as a side effect the "has_*" boolean members in
+// |verify_result| that correspond with the the presence of |hash|
+// somewhere in the certificate chain (excluding the trust anchor).
+bool ValidateHashAlgorithm(DigestAlgorithm hash,
+                           CertVerifyResult* verify_result) {
   switch (hash) {
-    case DigestAlgorithm::Md2:
-      verify_result->has_md2 = true;
-      break;
-    case DigestAlgorithm::Md4:
-      verify_result->has_md4 = true;
-      break;
-    case DigestAlgorithm::Md5:
-      verify_result->has_md5 = true;
-      break;
     case DigestAlgorithm::Sha1:
       verify_result->has_sha1 = true;
-      break;
+      return true;  // For now.
     case DigestAlgorithm::Sha256:
     case DigestAlgorithm::Sha384:
     case DigestAlgorithm::Sha512:
-      break;
+      return true;
+    case DigestAlgorithm::Md2:
+    case DigestAlgorithm::Md4:
+    case DigestAlgorithm::Md5:
+      return false;
   }
+  NOTREACHED();
 }
 
 // Inspects the signature algorithms in a single certificate |cert|.
 //
-//   * Sets |verify_result->has_md2| to true if the certificate uses MD2.
-//   * Sets |verify_result->has_md4| to true if the certificate uses MD4.
-//   * Sets |verify_result->has_md5| to true if the certificate uses MD5.
 //   * Sets |verify_result->has_sha1| to true if the certificate uses SHA1.
 //
 // Returns false if the signature algorithm was unknown or mismatched.
@@ -410,10 +406,13 @@ void MapAlgorithmToBool(DigestAlgorithm hash, CertVerifyResult* verify_result) {
 
   std::unique_ptr<SignatureAlgorithm> algorithm =
       SignatureAlgorithm::Create(der::Input(cert_algorithm_sequence), nullptr);
-  if (!algorithm)
+  if (!algorithm) {
     return false;
+  }
 
-  MapAlgorithmToBool(algorithm->digest(), verify_result);
+  if (!ValidateHashAlgorithm(algorithm->digest(), verify_result)) {
+    return false;
+  }
 
   // Check algorithm-specific parameters.
   switch (algorithm->algorithm()) {
@@ -423,8 +422,10 @@ void MapAlgorithmToBool(DigestAlgorithm hash, CertVerifyResult* verify_result) {
       DCHECK(!algorithm->has_params());
       break;
     case SignatureAlgorithmId::RsaPss:
-      MapAlgorithmToBool(algorithm->ParamsForRsaPss()->mgf1_hash(),
-                         verify_result);
+      if (!ValidateHashAlgorithm(algorithm->ParamsForRsaPss()->mgf1_hash(),
+                                 verify_result)) {
+        return false;
+      }
       break;
   }
 
@@ -655,12 +656,6 @@ int CertVerifyProc::Verify(X509Certificate* cert,
       rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
-  // Treat certificates signed using broken signature algorithms as invalid.
-  if (verify_result->has_md2 || verify_result->has_md4) {
-    verify_result->cert_status |= CERT_STATUS_INVALID;
-    rv = MapCertStatusToNetError(verify_result->cert_status);
-  }
-
   if (verify_result->has_sha1)
     verify_result->cert_status |= CERT_STATUS_SHA1_SIGNATURE_PRESENT;
 
@@ -677,7 +672,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
       (verify_result->has_sha1_leaf ||
        (verify_result->has_sha1 && !AreSHA1IntermediatesAllowed()));
 
-  if (verify_result->has_md5 || current_sha1_issue) {
+  if (current_sha1_issue) {
     verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
     // Avoid replacing a more serious error, such as an OS/library failure,
     // by ensuring that if verification failed, it failed with a certificate

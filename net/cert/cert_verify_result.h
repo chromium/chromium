@@ -75,9 +75,6 @@ class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
 
   // Hash algorithms used by the certificate chain, excluding the trust
   // anchor.
-  bool has_md2;
-  bool has_md4;
-  bool has_md5;
   bool has_sha1;
   bool has_sha1_leaf;
 
