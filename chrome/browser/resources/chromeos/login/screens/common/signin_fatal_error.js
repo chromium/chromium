@@ -20,7 +20,7 @@ const SigninFatalErrorBase = Polymer.mixinBehaviors(
 
 /**
  * @typedef {{
- *   actionButton:  OobeTextButtonElement,
+ *   actionButton:  OobeTextButton,
  * }}
  */
 SigninFatalErrorBase.$;
