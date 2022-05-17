@@ -659,12 +659,11 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   if (!db_)
     return;
 
-  // Will be filled with the URL ID and the visit ID of the last addition.
-  std::pair<URLID, VisitID> last_ids(
-      0, tracker_.GetLastVisit(request.context_id, request.nav_entry_id,
-                               request.referrer));
+  // Will be filled with the visit ID of the last addition.
+  VisitID last_visit_id = tracker_.GetLastVisit(
+      request.context_id, request.nav_entry_id, request.referrer);
 
-  VisitID from_visit_id = last_ids.second;
+  const VisitID from_visit_id = last_visit_id;
 
   // If a redirect chain is given, we expect the last item in that chain to be
   // the final URL.
@@ -676,13 +675,13 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     first_recorded_time_ = request.time;
 
   ui::PageTransition request_transition = request.transition;
-  bool is_keyword_generated = ui::PageTransitionCoreTypeIs(
+  const bool is_keyword_generated = ui::PageTransitionCoreTypeIs(
       request_transition, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
   // If the user is navigating to a not-previously-typed intranet hostname,
   // change the transition to TYPED so that the omnibox will learn that this is
   // a known host.
-  bool has_redirects = request.redirects.size() > 1;
+  const bool has_redirects = request.redirects.size() > 1;
   if (ui::PageTransitionIsMainFrame(request_transition) &&
       !ui::PageTransitionCoreTypeIs(request_transition,
                                     ui::PAGE_TRANSITION_TYPED) &&
@@ -711,15 +710,17 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
         ui::PAGE_TRANSITION_CHAIN_END);
 
     // No redirect case (one element means just the page itself).
-    last_ids = AddPageVisit(request.url, request.time, last_ids.second, t,
-                            request.hidden, request.visit_source,
-                            IsTypedIncrement(t), opener_visit, request.title);
+    last_visit_id =
+        AddPageVisit(request.url, request.time, last_visit_id, t,
+                     request.hidden, request.visit_source, IsTypedIncrement(t),
+                     opener_visit, request.title)
+            .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
     // result in changing most visited, so we don't update segments (most
     // visited db).
     if (!is_keyword_generated && request.consider_for_ntp_most_visited) {
-      UpdateSegments(request.url, from_visit_id, last_ids.second, t,
+      UpdateSegments(request.url, from_visit_id, last_visit_id, t,
                      request.time);
 
       // Update the referrer's duration.
@@ -772,7 +773,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
         // time we won't have changed anything.
         VisitRow visit_row;
         if (request.did_replace_entry) {
-          if (db_->GetRowForVisit(last_ids.second, &visit_row) &&
+          if (db_->GetRowForVisit(last_visit_id, &visit_row) &&
               visit_row.transition & ui::PAGE_TRANSITION_CHAIN_END) {
             visit_row.transition = ui::PageTransitionFromInt(
                 visit_row.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
@@ -829,15 +830,17 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       // them anyway, and if we ever decide to, we can reconstruct their order
       // from the redirect chain. Only place the opener on the initial visit in
       // the chain.
-      last_ids = AddPageVisit(
-          redirects[redirect_index], request.time, last_ids.second, t,
-          request.hidden, request.visit_source, should_increment_typed_count,
-          redirect_index == 0 ? opener_visit : 0, request.title);
+      last_visit_id =
+          AddPageVisit(redirects[redirect_index], request.time, last_visit_id,
+                       t, request.hidden, request.visit_source,
+                       should_increment_typed_count,
+                       redirect_index == 0 ? opener_visit : 0, request.title)
+              .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
         if (request.consider_for_ntp_most_visited) {
           UpdateSegments(redirects[redirect_index], from_visit_id,
-                         last_ids.second, t, request.time);
+                         last_visit_id, t, request.time);
         }
 
         // Update the visit_details for this visit.
@@ -871,7 +874,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                                     ui::PAGE_TRANSITION_MANUAL_SUBFRAME) &&
       !is_keyword_generated) {
     tracker_.AddVisit(request.context_id, request.nav_entry_id, request.url,
-                      last_ids.second);
+                      last_visit_id);
   }
 
   ScheduleCommit();
