@@ -4941,6 +4941,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxExperimentalSuggestScoring)},
 
+    {"omnibox-fuzzy-url-suggestions",
+     flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
+     flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
+
     {"omnibox-trending-zero-prefix-suggestions-on-ntp",
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPName,
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription,

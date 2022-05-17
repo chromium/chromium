@@ -4483,6 +4483,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "omnibox-fuzzy-url-suggestions",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "omnibox-local-history-zero-suggest",
     "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 105
