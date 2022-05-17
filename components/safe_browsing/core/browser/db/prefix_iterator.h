@@ -16,12 +16,13 @@ namespace safe_browsing {
 // The prefix iterator is used to binary search within a |HashPrefixes|. It is
 // essentially a random access iterator that steps |PrefixSize| steps within the
 // underlying buffer.
-class PrefixIterator
-    : public std::iterator<std::random_access_iterator_tag, base::StringPiece> {
+class PrefixIterator {
  public:
-  using difference_type =
-      typename std::iterator<std::random_access_iterator_tag,
-                             base::StringPiece>::difference_type;
+  using iterator_category = std::random_access_iterator_tag;
+  using value_type = base::StringPiece;
+  using difference_type = std::ptrdiff_t;
+  using pointer = base::StringPiece*;
+  using reference = base::StringPiece&;
 
   PrefixIterator(base::StringPiece prefixes, size_t index, size_t size);
   PrefixIterator(const PrefixIterator& rhs);
