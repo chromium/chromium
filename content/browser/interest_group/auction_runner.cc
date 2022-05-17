@@ -627,15 +627,14 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     base::RandomShuffle(rand_begin, rand_end);
     interest_groups.resize(std::min(interest_groups.size(), size_limit));
 
-    for (auto bidder = std::make_move_iterator(interest_groups.begin());
-         bidder != std::make_move_iterator(interest_groups.end()); ++bidder) {
+    for (auto& bidder : interest_groups) {
       // Ignore interest groups with no bidding script or no ads.
-      if (!bidder->interest_group.bidding_url)
+      if (!bidder.interest_group.bidding_url)
         continue;
-      if (bidder->interest_group.ads->empty())
+      if (bidder.interest_group.ads->empty())
         continue;
       bid_states_.emplace_back(BidState());
-      bid_states_.back().bidder = std::move(*bidder);
+      bid_states_.back().bidder = std::move(bidder);
     }
     post_auction_update_owners_.push_back(
         interest_groups[0].interest_group.owner);
