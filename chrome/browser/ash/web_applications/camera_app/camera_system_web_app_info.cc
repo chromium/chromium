@@ -65,9 +65,7 @@ CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
           GURL("chrome://camera-app/views/main.html"),
           profile,
           ash::OriginTrialsMap(
-              {{ash::GetOrigin("chrome://camera-app"), {"FileHandling"}},
-               {ash::GetOrigin("chrome-untrusted://camera-app"),
-                {"WebAssemblyDynamicTiering"}}})) {}
+              {{ash::GetOrigin("chrome://camera-app"), {"FileHandling"}}})) {}
 
 std::unique_ptr<WebAppInstallInfo> CameraSystemAppDelegate::GetWebAppInfo()
     const {
