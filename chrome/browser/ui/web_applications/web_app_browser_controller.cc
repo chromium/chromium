@@ -54,7 +54,7 @@ namespace {
 class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
  public:
   explicit SystemAppTabMenuModelFactory(
-      const web_app::SystemWebAppDelegate* system_app)
+      const ash::SystemWebAppDelegate* system_app)
       : system_app_(system_app) {}
   SystemAppTabMenuModelFactory(const SystemAppTabMenuModelFactory&) = delete;
   SystemAppTabMenuModelFactory& operator=(const SystemAppTabMenuModelFactory&) =
@@ -70,7 +70,7 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
   }
 
  private:
-  raw_ptr<const web_app::SystemWebAppDelegate> system_app_;
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 };
 
 }  // namespace
@@ -81,7 +81,7 @@ WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
     Browser* browser,
     AppId app_id,
-    const SystemWebAppDelegate* system_app,
+    const ash::SystemWebAppDelegate* system_app,
     bool has_tab_strip)
     : AppBrowserController(browser, std::move(app_id), has_tab_strip),
       provider_(provider),
@@ -145,7 +145,7 @@ bool WebAppBrowserController::HasReloadButton() const {
   return system_app_->ShouldHaveReloadButtonInMinimalUi();
 }
 
-const SystemWebAppDelegate* WebAppBrowserController::system_app() const {
+const ash::SystemWebAppDelegate* WebAppBrowserController::system_app() const {
   return system_app_;
 }
 

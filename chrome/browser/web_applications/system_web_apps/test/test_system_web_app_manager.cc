@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
 namespace web_app {
 
@@ -15,7 +15,7 @@ TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
     : SystemWebAppManager(profile) {
   SetSystemAppsForTesting(
       base::flat_map<ash::SystemWebAppType,
-                     std::unique_ptr<SystemWebAppDelegate>>());
+                     std::unique_ptr<ash::SystemWebAppDelegate>>());
 }
 
 TestSystemWebAppManager::~TestSystemWebAppManager() = default;

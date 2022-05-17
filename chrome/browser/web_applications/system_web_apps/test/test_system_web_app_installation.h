@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -18,7 +18,7 @@
 
 namespace web_app {
 
-class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
+class UnittestingSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   UnittestingSystemAppDelegate(ash::SystemWebAppType type,
                                const std::string& name,
@@ -72,7 +72,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldReuseExistingWindow(bool);
   void SetShouldShowNewWindowMenuOption(bool);
   void SetShouldIncludeLaunchDirectory(bool);
-  void SetEnabledOriginTrials(const OriginTrialsMap&);
+  void SetEnabledOriginTrials(const ash::OriginTrialsMap&);
   void SetAdditionalSearchTerms(const std::vector<int>&);
   void SetShouldShowInLauncher(bool);
   void SetShouldShowInSearch(bool);
@@ -152,7 +152,7 @@ class TestSystemWebAppInstallation {
       IncludeLaunchDirectory include_launch_directory);
 
   static std::unique_ptr<TestSystemWebAppInstallation>
-  SetUpAppWithEnabledOriginTrials(const OriginTrialsMap& origin_to_trials);
+  SetUpAppWithEnabledOriginTrials(const ash::OriginTrialsMap& origin_to_trials);
 
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppNotShownInLauncher();
@@ -219,7 +219,7 @@ class TestSystemWebAppInstallation {
 
   AppId GetAppId();
   const GURL& GetAppUrl();
-  SystemWebAppDelegate* GetDelegate();
+  ash::SystemWebAppDelegate* GetDelegate();
   ash::SystemWebAppType GetType();
 
   void set_update_policy(SystemWebAppManager::UpdatePolicy update_policy) {
@@ -249,7 +249,8 @@ class TestSystemWebAppInstallation {
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>
       web_ui_controller_factories_;
   std::set<ContentSettingsType> auto_granted_permissions_;
-  base::flat_map<ash::SystemWebAppType, std::unique_ptr<SystemWebAppDelegate>>
+  base::flat_map<ash::SystemWebAppType,
+                 std::unique_ptr<ash::SystemWebAppDelegate>>
       system_app_delegates_;
 };
 

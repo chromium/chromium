@@ -8,17 +8,17 @@
 #include <vector>
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 struct WebAppInstallInfo;
 
-class FileManagerSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit FileManagerSystemAppDelegate(Profile* profile);
 
-  // web_app::SystemWebAppDelegate overrides:
+  // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldReuseExistingWindow() const override;

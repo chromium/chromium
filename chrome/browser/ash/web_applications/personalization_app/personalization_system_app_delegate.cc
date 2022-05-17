@@ -19,7 +19,7 @@
 
 PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(
+    : ash::SystemWebAppDelegate(
           ash::SystemWebAppType::PERSONALIZATION,
           "Personalization",
           GURL(ash::personalization_app::kChromeUIPersonalizationAppURL),

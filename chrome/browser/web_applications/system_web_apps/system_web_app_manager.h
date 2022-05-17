@@ -16,11 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -107,7 +107,8 @@ class SystemWebAppManager {
       const AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
-  const SystemWebAppDelegate* GetSystemApp(ash::SystemWebAppType type) const;
+  const ash::SystemWebAppDelegate* GetSystemApp(
+      ash::SystemWebAppType type) const;
 
   // Returns the App Ids for all installed System Web Apps.
   std::vector<AppId> GetAppIds() const;
@@ -174,7 +175,7 @@ class SystemWebAppManager {
   // App |type|. Returns an empty vector if the App does not specify origin
   // trials for |url|.
   const std::vector<std::string>* GetEnabledOriginTrials(
-      const SystemWebAppDelegate* system_app,
+      const ash::SystemWebAppDelegate* system_app,
       const GURL& url) const;
 
   void StopBackgroundTasks();

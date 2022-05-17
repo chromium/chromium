@@ -124,14 +124,13 @@ const apps::AppLaunchParams PickFileFromParams(
 }  // namespace
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
+    : ash::SystemWebAppDelegate(
           ash::SystemWebAppType::MEDIA,
           "Media",
           GURL("chrome://media-app/pwa.html"),
           profile,
-          web_app::OriginTrialsMap(
-              {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
-}
+          ash::OriginTrialsMap(
+              {{ash::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {}
 
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebAppInstallInfo> info =

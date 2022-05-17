@@ -21,12 +21,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -109,7 +109,7 @@ const int kInstallFailureAttempts = 3;
 
 ash::SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
+  std::vector<std::unique_ptr<ash::SystemWebAppDelegate>> info_vec;
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
@@ -167,7 +167,7 @@ bool HasSystemWebAppScheme(const GURL& url) {
 
 ExternalInstallOptions CreateInstallOptionsForSystemApp(
     const ash::SystemWebAppType type,
-    const SystemWebAppDelegate& delegate,
+    const ash::SystemWebAppDelegate& delegate,
     bool force_update,
     bool is_disabled) {
   DCHECK(delegate.GetInstallUrl().scheme() == content::kChromeUIScheme ||
@@ -182,7 +182,7 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   // factory method. The lifetime of that is the same as the
   // SystemWebAppManager.
   install_options.app_info_factory = base::BindRepeating(
-      &SystemWebAppDelegate::GetWebAppInfo, base::Unretained(&delegate));
+      &ash::SystemWebAppDelegate::GetWebAppInfo, base::Unretained(&delegate));
   install_options.add_to_applications_menu = delegate.ShouldShowInLauncher();
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
@@ -333,7 +333,7 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
 }
 
 const base::flat_map<ash::SystemWebAppType,
-                     std::unique_ptr<SystemWebAppDelegate>>&
+                     std::unique_ptr<ash::SystemWebAppDelegate>>&
 SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
   return system_app_delegates_;
 }
@@ -350,7 +350,7 @@ SystemWebAppManager::GetSystemAppTypeForAppId(const AppId& app_id) const {
                                            app_id);
 }
 
-const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
+const ash::SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
     ash::SystemWebAppType type) const {
   return ash::GetSystemWebApp(system_app_delegates_, type);
 }
@@ -372,7 +372,7 @@ bool SystemWebAppManager::IsSystemWebApp(const AppId& app_id) const {
 }
 
 const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
-    const SystemWebAppDelegate* system_app,
+    const ash::SystemWebAppDelegate* system_app,
     const GURL& url) const {
   DCHECK(system_app);
   const auto& origin_to_origin_trials = system_app->GetEnabledOriginTrials();
@@ -421,7 +421,7 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!type.has_value())
     return absl::nullopt;
 
-  const web_app::SystemWebAppDelegate* delegate =
+  const ash::SystemWebAppDelegate* delegate =
       ash::GetSystemWebApp(system_app_delegates_, type.value());
   if (!delegate)
     return absl::nullopt;

@@ -12,9 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -92,7 +92,7 @@ UnittestingSystemAppDelegate::UnittestingSystemAppDelegate(
     const std::string& name,
     const GURL& url,
     WebAppInstallInfoFactory info_factory)
-    : web_app::SystemWebAppDelegate(type, name, url, nullptr),
+    : ash::SystemWebAppDelegate(type, name, url, nullptr),
       info_factory_(std::move(info_factory)) {}
 
 UnittestingSystemAppDelegate::~UnittestingSystemAppDelegate() = default;
@@ -214,7 +214,7 @@ void UnittestingSystemAppDelegate::SetShouldIncludeLaunchDirectory(bool value) {
   include_launch_directory_ = value;
 }
 void UnittestingSystemAppDelegate::SetEnabledOriginTrials(
-    const OriginTrialsMap& map) {
+    const ash::OriginTrialsMap& map) {
   origin_trials_map_ = map;
 }
 void UnittestingSystemAppDelegate::SetAdditionalSearchTerms(
@@ -398,7 +398,7 @@ TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-    const OriginTrialsMap& origin_to_trials) {
+    const ash::OriginTrialsMap& origin_to_trials) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           ash::SystemWebAppType::MEDIA, "Media",
@@ -835,7 +835,7 @@ const GURL& TestSystemWebAppInstallation::GetAppUrl() {
       GetAppId());
 }
 
-SystemWebAppDelegate* TestSystemWebAppInstallation::GetDelegate() {
+ash::SystemWebAppDelegate* TestSystemWebAppInstallation::GetDelegate() {
   auto it = system_app_delegates_.find(GetType());
   return it != system_app_delegates_.end() ? it->second.get() : nullptr;
 }

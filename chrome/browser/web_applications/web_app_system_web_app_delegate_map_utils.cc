@@ -14,7 +14,7 @@ absl::optional<AppId> GetAppIdForSystemApp(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
     ash::SystemWebAppType type) {
-  const web_app::SystemWebAppDelegate* delegate =
+  const ash::SystemWebAppDelegate* delegate =
       ash::GetSystemWebApp(delegates, type);
   if (!delegate)
     return absl::nullopt;

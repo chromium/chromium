@@ -14,15 +14,14 @@ bool IsSystemWebAppEnabled(const SystemWebAppDelegateMap& delegates,
   if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
     return true;
 
-  const web_app::SystemWebAppDelegate* delegate =
-      GetSystemWebApp(delegates, type);
+  const SystemWebAppDelegate* delegate = GetSystemWebApp(delegates, type);
   if (!delegate)
     return false;
 
   return delegate->IsAppEnabled();
 }
 
-const web_app::SystemWebAppDelegate* GetSystemWebApp(
+const SystemWebAppDelegate* GetSystemWebApp(
     const SystemWebAppDelegateMap& delegates,
     SystemWebAppType type) {
   auto it = delegates.find(type);

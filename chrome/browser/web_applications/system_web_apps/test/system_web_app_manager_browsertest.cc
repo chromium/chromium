@@ -822,8 +822,8 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-            OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
-                              {"FileHandling"}}}));
+            ash::OriginTrialsMap({{GetOrigin(GURL("chrome://test-system-app/")),
+                                   {"FileHandling"}}}));
   }
 
   ~SystemWebAppManagerFileHandlingOriginTrialsBrowserTest() override = default;
@@ -1076,7 +1076,7 @@ class SystemWebAppManagerUninstallBrowserTest
       // steps.
       maybe_installation_ =
           TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-              OriginTrialsMap(
+              ash::OriginTrialsMap(
                   {{url::Origin::Create(GURL("chrome://test-system-app/")),
                     {"FileHandling"}}}));
     } else {
@@ -1239,8 +1239,8 @@ class SystemWebAppManagerOriginTrialsBrowserTest
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
-            OriginTrialsMap({{GetOrigin(main_url_), main_url_trials_},
-                             {GetOrigin(trial_url_), trial_url_trials_}}));
+            ash::OriginTrialsMap({{GetOrigin(main_url_), main_url_trials_},
+                                  {GetOrigin(trial_url_), trial_url_trials_}}));
   }
 
   ~SystemWebAppManagerOriginTrialsBrowserTest() override = default;

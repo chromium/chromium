@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
-
-namespace web_app {
+namespace ash {
 
 url::Origin GetOrigin(const char* url) {
   GURL gurl = GURL(url);
@@ -20,7 +17,7 @@ url::Origin GetOrigin(const char* url) {
 }
 
 SystemWebAppDelegate::SystemWebAppDelegate(
-    const ash::SystemWebAppType type,
+    const SystemWebAppType type,
     const std::string& internal_name,
     const GURL& install_url,
     Profile* profile,
@@ -37,8 +34,8 @@ SystemWebAppDelegate::SystemWebAppDelegate(
 
 SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 
-std::vector<AppId> SystemWebAppDelegate::GetAppIdsToUninstallAndReplace()
-    const {
+std::vector<web_app::AppId>
+SystemWebAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return {};
 }
 
@@ -99,8 +96,8 @@ bool SystemWebAppDelegate::ShouldHandleFileOpenIntents() const {
   return ShouldShowInLauncher();
 }
 
-absl::optional<SystemAppBackgroundTaskInfo> SystemWebAppDelegate::GetTimerInfo()
-    const {
+absl::optional<web_app::SystemAppBackgroundTaskInfo>
+SystemWebAppDelegate::GetTimerInfo() const {
   return absl::nullopt;
 }
 
@@ -147,4 +144,4 @@ bool SystemWebAppDelegate::ShouldPinTab(GURL url) const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-}  // namespace web_app
+}  // namespace ash

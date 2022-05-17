@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -23,8 +23,10 @@ class Browser;
 class Profile;
 
 namespace web_app {
-
 class WebAppProvider;
+}
+
+namespace ash {
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 
@@ -46,7 +48,7 @@ class SystemWebAppDelegate {
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.
   SystemWebAppDelegate(
-      ash::SystemWebAppType type,
+      SystemWebAppType type,
       const std::string& internal_name,
       const GURL& install_url,
       Profile* profile,
@@ -56,7 +58,7 @@ class SystemWebAppDelegate {
   SystemWebAppDelegate& operator=(const SystemWebAppDelegate& other) = delete;
   virtual ~SystemWebAppDelegate();
 
-  ash::SystemWebAppType GetType() const { return type_; }
+  SystemWebAppType GetType() const { return type_; }
 
   // A developer-friendly name for, among other things, reporting metrics
   // and interacting with tast tests. It should follow PascalCase
@@ -73,7 +75,7 @@ class SystemWebAppDelegate {
 
   // If specified, the apps in |uninstall_and_replace| will have their data
   // migrated to this System App.
-  virtual std::vector<AppId> GetAppIdsToUninstallAndReplace() const;
+  virtual std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const;
 
   // Minimum window size in DIPs. Empty if the app does not have a minimum.
   // TODO(https://github.com/w3c/manifest/issues/436): Replace with PWA manifest
@@ -135,7 +137,8 @@ class SystemWebAppDelegate {
   virtual bool ShouldHandleFileOpenIntents() const;
 
   // Setup information to drive a background task.
-  virtual absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const;
+  virtual absl::optional<web_app::SystemAppBackgroundTaskInfo> GetTimerInfo()
+      const;
 
   // Default window bounds of the application.
   virtual gfx::Rect GetDefaultBounds(Browser* browser) const;
@@ -167,7 +170,7 @@ class SystemWebAppDelegate {
   // chrome/browser/ui/web_applications/system_web_app_delegate_ui_impl.cc.
   virtual Browser* LaunchAndNavigateSystemWebApp(
       Profile* profile,
-      WebAppProvider* provider,
+      web_app::WebAppProvider* provider,
       const GURL& url,
       const apps::AppLaunchParams& params) const;
 
@@ -195,13 +198,13 @@ class SystemWebAppDelegate {
 
   // These should all be private. See
   // https://google.github.io/styleguide/cppguide.html#Access_Control
-  ash::SystemWebAppType type_;
+  SystemWebAppType type_;
   std::string internal_name_;
   GURL install_url_;
   raw_ptr<Profile> profile_;
   OriginTrialsMap origin_trials_map_;
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_

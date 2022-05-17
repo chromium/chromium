@@ -215,7 +215,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   auto* const provider =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar().IsInstalled(app_id)) {
-    const SystemWebAppDelegate* system_app = nullptr;
+    const ash::SystemWebAppDelegate* system_app = nullptr;
     auto system_app_type =
         GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {

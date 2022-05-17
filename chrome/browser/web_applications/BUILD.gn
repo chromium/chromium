@@ -16,6 +16,8 @@ source_set("web_applications") {
   sources = [
     # TODO(crbug.com/1321984): Move system_web_app_delegate.cc/h and
     # system_web_app_types.cc/h to /ash/system_web_apps/types/
+    "../ash/system_web_apps/types/system_web_app_delegate.cc",
+    "../ash/system_web_apps/types/system_web_app_delegate.h",
     "../ash/system_web_apps/types/system_web_app_delegate_map.cc",
     "../ash/system_web_apps/types/system_web_app_delegate_map.h",
     "../ash/system_web_apps/types/system_web_app_type.h",
@@ -103,8 +105,6 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_apps.h",
     "system_web_apps/system_web_app_background_task.cc",
     "system_web_apps/system_web_app_background_task.h",
-    "system_web_apps/system_web_app_delegate.cc",
-    "system_web_apps/system_web_app_delegate.h",
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
     "user_display_mode.cc",

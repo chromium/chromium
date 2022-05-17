@@ -68,10 +68,10 @@ gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*) {
 
 FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::FIRMWARE_UPDATE,
-                                    "FirmwareUpdate",
-                                    GURL(ash::kChromeUIFirmwareUpdateAppURL),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::FIRMWARE_UPDATE,
+                                "FirmwareUpdate",
+                                GURL(ash::kChromeUIFirmwareUpdateAppURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {

@@ -2123,7 +2123,7 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   for (const auto& type_and_info :
        provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
     api::autotest_private::SystemApp system_app;
-    web_app::SystemWebAppDelegate* delegate = type_and_info.second.get();
+    ash::SystemWebAppDelegate* delegate = type_and_info.second.get();
     system_app.internal_name = delegate->GetInternalName();
     system_app.url =
         delegate->GetInstallUrl().DeprecatedGetOriginAsURL().spec();

@@ -60,10 +60,10 @@ gfx::Rect GetDefaultBoundsForOSFeedbackApp(Browser*) {
 }
 
 OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::OS_FEEDBACK,
-                                    "OSFeedback",
-                                    GURL(ash::kChromeUIOSFeedbackUrl),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_FEEDBACK,
+                                "OSFeedback",
+                                GURL(ash::kChromeUIOSFeedbackUrl),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> OSFeedbackAppDelegate::GetWebAppInfo()
     const {

@@ -27,10 +27,10 @@ SkColor GetBgColor(bool use_dark_mode) {
 }  // namespace
 
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::PROJECTOR,
-                                    "Projector",
-                                    GURL(ash::kChromeUITrustedProjectorAppUrl),
-                                    profile) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::PROJECTOR,
+                                "Projector",
+                                GURL(ash::kChromeUITrustedProjectorAppUrl),
+                                profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 

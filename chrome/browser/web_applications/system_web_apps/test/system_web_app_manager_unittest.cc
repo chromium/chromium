@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,13 +18,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
@@ -62,9 +62,6 @@ namespace web_app {
 namespace {
 const char kSettingsAppInternalName[] = "OSSettings";
 const char kCameraAppInternalName[] = "Camera";
-
-using SystemAppMapType = base::flat_map<ash::SystemWebAppType,
-                                        std::unique_ptr<SystemWebAppDelegate>>;
 
 GURL AppUrl1() {
   return GURL(content::GetWebUIURL("system-app1"));
@@ -298,8 +295,7 @@ class SystemWebAppManagerTest : public WebAppTest {
 TEST_F(SystemWebAppManagerTest, Enabled) {
   InitEmptyRegistrar();
 
-  base::flat_map<ash::SystemWebAppType, std::unique_ptr<SystemWebAppDelegate>>
-      system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -329,8 +325,7 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
         GURL(content::GetWebUIURL("system-app3/app.ico")),
         ExternalInstallSource::kInternalDefault}});
 
-  base::flat_map<ash::SystemWebAppType, std::unique_ptr<SystemWebAppDelegate>>
-      system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -371,7 +366,7 @@ TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
 
   InitEmptyRegistrar();
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -387,7 +382,7 @@ TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
   // Create another app. The version hasn't changed but the app should still
   // install.
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
 
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
@@ -416,7 +411,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
 
   InitEmptyRegistrar();
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -432,7 +427,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   EXPECT_TRUE(IsInstalled(AppUrl1()));
 
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -473,7 +468,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
   const GURL kAppUrl3(content::GetWebUIURL("system-app3"));
 
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -507,7 +502,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
 
   InitEmptyRegistrar();
 
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -555,7 +550,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
       SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
 
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -598,7 +593,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
           }));
 
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -628,7 +623,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
   }
 
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -686,7 +681,7 @@ TEST_F(SystemWebAppManagerTest,
       ".Profiles.Other";
 
   InitEmptyRegistrar();
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -724,7 +719,7 @@ TEST_F(SystemWebAppManagerTest,
   base::HistogramTester histograms;
 
   InitEmptyRegistrar();
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -787,7 +782,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
 
   InitEmptyRegistrar();
 
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -860,7 +855,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
 
   InitEmptyRegistrar();
 
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -932,7 +927,7 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   InitEmptyRegistrar();
 
   // Set up and install a baseline
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -1005,7 +1000,7 @@ TEST_F(SystemWebAppManagerTest, ForceReinstallFeature) {
       SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   // Register a test system app.
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
@@ -1044,7 +1039,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
 
   // Set up and install a baseline
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -1064,7 +1059,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
       &externally_managed_app_manager(), &controller().registrar(),
       &controller().sync_bridge(), &ui_manager(), &web_app_policy_manager());
   {
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
@@ -1111,7 +1106,7 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
                   bool open_immediately) {
     InitEmptyRegistrar();
 
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
         ash::SystemWebAppType::SETTINGS,
         std::make_unique<TimerSystemAppDelegate>(
@@ -1134,7 +1129,7 @@ TEST_F(SystemWebAppManagerTimerTest, BackgroundTaskDisabled) {
 
     sys_app_delegate->SetIsAppEnabled(false);
 
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(ash::SystemWebAppType::SETTINGS,
                         std::move(sys_app_delegate));
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
@@ -1151,7 +1146,7 @@ TEST_F(SystemWebAppManagerTimerTest, BackgroundTaskDisabled) {
             ash::SystemWebAppType::SETTINGS, kSettingsAppInternalName,
             AppUrl1(), GetApp1WebAppInfoFactory(), base::Seconds(60), false);
 
-    SystemAppMapType system_apps;
+    ash::SystemWebAppDelegateMap system_apps;
     system_apps.emplace(ash::SystemWebAppType::SETTINGS,
                         std::move(sys_app_delegate));
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
@@ -1435,7 +1430,7 @@ TEST_F(SystemWebAppManagerTest,
        HonorsRegisteredAppsDespiteOfPersistedWebAppInfo) {
   InitEmptyRegistrar();
 
-  SystemAppMapType system_apps;
+  ash::SystemWebAppDelegateMap system_apps;
   system_apps.emplace(
       ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
