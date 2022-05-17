@@ -9,34 +9,47 @@
  */
 import '../../settings_shared_css.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'os-settings-powerwash-dialog-esim-item',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OsSettingsPowerwashDialogEsimItemElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+class OsSettingsPowerwashDialogEsimItemElement extends
+    OsSettingsPowerwashDialogEsimItemElementBase {
+  static get is() {
+    return 'os-settings-powerwash-dialog-esim-item';
+  }
 
-  properties: {
-    /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
-    profile: {
-      type: Object,
-      value: null,
-      observer: 'onProfileChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
-     * @private
-     */
-    profileProperties_: {
-      type: Object,
-      value: null,
-    },
-  },
+  static get properties() {
+    return {
+      /** @type {?ash.cellularSetup.mojom.ESimProfileRemote} */
+      profile: {
+        type: Object,
+        value: null,
+        observer: 'onProfileChanged_',
+      },
+
+      /**
+       * @type {?ash.cellularSetup.mojom.ESimProfileProperties}
+       * @private
+       */
+      profileProperties_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
 
   /** @private */
   onProfileChanged_() {
@@ -47,7 +60,7 @@ Polymer({
     this.profile.getProperties().then(response => {
       this.profileProperties_ = response.properties;
     });
-  },
+  }
 
   /**
    * @return {string}
@@ -66,7 +79,7 @@ Polymer({
     return this.i18nAdvanced(
         'powerwashDialogESimListItemTitle',
         {attrs: ['id'], substitutions: [profileName, providerName]});
-  },
+  }
 
   /**
    * @param {ash.cellularSetup.mojom.ESimProfileProperties} profileProperties
@@ -81,7 +94,7 @@ Polymer({
     }
     return this.escapeHtml_(
         String.fromCharCode(...profileProperties.nickname.data));
-  },
+  }
 
   /**
    * @param {string} string
@@ -94,5 +107,9 @@ Polymer({
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
-  },
-});
+  }
+}
+
+customElements.define(
+    OsSettingsPowerwashDialogEsimItemElement.is,
+    OsSettingsPowerwashDialogEsimItemElement);
