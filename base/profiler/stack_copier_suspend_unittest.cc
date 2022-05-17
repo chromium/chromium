@@ -20,6 +20,7 @@ namespace base {
 
 namespace {
 
+using ::testing::Each;
 using ::testing::ElementsAre;
 
 // A thread delegate for use in tests that provides the expected behavior when
@@ -125,7 +126,11 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
   std::unique_ptr<StackBuffer> stack_buffer =
       std::make_unique<StackBuffer>((stack.size() - 1) * sizeof(uintptr_t));
   // Make the buffer different than the input stack.
-  stack_buffer->buffer()[0] = 100;
+  constexpr uintptr_t kBufferInitializer = 100;
+  size_t stack_buffer_elements =
+      stack_buffer->size() / sizeof(stack_buffer->buffer()[0]);
+  std::fill_n(stack_buffer->buffer(), stack_buffer_elements,
+              kBufferInitializer);
   uintptr_t stack_top = 0;
   TimeTicks timestamp;
   RegisterContext register_context{};
@@ -135,12 +140,11 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(
-      stack_copy_bottom,
-      stack_copy_bottom + (stack_buffer->size() / sizeof(*stack_copy_bottom)));
+  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
+                                    stack_copy_bottom + stack_buffer_elements);
   // Use the buffer not being overwritten as a proxy for the unwind being
   // aborted.
-  EXPECT_NE(stack, stack_copy);
+  EXPECT_THAT(stack_copy, Each(kBufferInitializer));
 }
 
 TEST(StackCopierSuspendTest, CopyStackAndRewritePointers) {
