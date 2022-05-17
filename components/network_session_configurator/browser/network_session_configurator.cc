@@ -28,6 +28,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/quic_context.h"
+#include "net/quic/set_quic_flag.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/third_party/quiche/overrides/quiche_platform_impl/quic_flags_impl.h"
@@ -460,7 +461,7 @@ void SetQuicFlags(const VariationParameters& quic_trial_params) {
         flag, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (tokens.size() != 2)
       continue;
-    SetQuicFlagByName(tokens[0], tokens[1]);
+    net::SetQuicFlagByName(tokens[0], tokens[1]);
   }
 }
 

@@ -32,6 +32,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator_params.h"
+#include "net/quic/set_quic_flag.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_key_logger_impl.h"
@@ -624,7 +625,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
               flag, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
           if (tokens.size() != 2)
             continue;
-          SetQuicFlagByName(tokens[0], tokens[1]);
+          net::SetQuicFlagByName(tokens[0], tokens[1]);
         }
       }
 

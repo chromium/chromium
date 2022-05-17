@@ -821,6 +821,8 @@ component("net") {
     "quic/quic_session_key.h",
     "quic/quic_stream_factory.cc",
     "quic/quic_stream_factory.h",
+    "quic/set_quic_flag.cc",
+    "quic/set_quic_flag.h",
     "quic/web_transport_client.cc",
     "quic/web_transport_client.h",
     "quic/web_transport_error.cc",
@@ -4259,6 +4261,7 @@ test("net_unittests") {
     "quic/quic_stream_factory_test.cc",
     "quic/quic_test_packet_maker.cc",
     "quic/quic_test_packet_maker.h",
+    "quic/set_quic_flag_test.cc",
     "quic/test_quic_crypto_client_config_handle.cc",
     "quic/test_quic_crypto_client_config_handle.h",
     "socket/client_socket_pool_base_unittest.cc",
@@ -4517,7 +4520,6 @@ test("net_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "quic/platform/impl/quic_flags_test.cc",
       "tools/quic/quic_http_proxy_backend_stream_test.cc",
       "tools/quic/quic_http_proxy_backend_test.cc",
       "tools/quic/quic_simple_server_test.cc",
