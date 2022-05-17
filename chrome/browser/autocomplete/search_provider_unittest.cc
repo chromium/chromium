@@ -59,6 +59,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/device_form_factor.h"
 
 using base::ASCIIToUTF16;
 
@@ -2243,39 +2244,45 @@ TEST_P(SearchProviderTest, DontInlineAutocompleteAsynchronously) {
   }
 }
 
-// TODO(crbug.com/1325124): Re-enable this on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DontCacheCalculatorSuggestions \
-  DISABLED_DontCacheCalculatorSuggestions
-#else
-#define MAYBE_DontCacheCalculatorSuggestions DontCacheCalculatorSuggestions
-#endif
-TEST_P(SearchProviderTest, MAYBE_DontCacheCalculatorSuggestions) {
+TEST_P(SearchProviderTest, DontCacheCalculatorSuggestions) {
   // This test sends two separate queries and checks that at each stage of
   // processing (receiving first asynchronous response, handling new keystroke
   // synchronously) we have the expected matches.  The new keystroke should
   // immediately invalidate old calculator suggestions.
   struct {
-    const std::string json;
-    const ExpectedMatch async_matches[4];
-    const ExpectedMatch sync_matches[4];
+    std::string json;
+    ExpectedMatch async_matches[4];
+    ExpectedMatch sync_matches[4];
   } cases[] = {
-    { "[\"1+2\",[\"= 3\", \"1+2+3+4+5\"],[],[],"
+      {"[\"1+2\",[\"= 3\", \"1+2+3+4+5\"],[],[],"
        "{\"google:verbatimrelevance\":1300,"
-        "\"google:suggesttype\":[\"CALCULATOR\", \"QUERY\"],"
-        "\"google:suggestrelevance\":[1200, 900]}]",
-      // The contents of the second match here are set to the query (the result
-      // is placed in the description instead) and therefore the
-      // allowed_to_default_match value is true for the second match (despite
-      // being received asynchronously) because of the logic in
-      // SearchProvider::PersistTopSuggestions which allows it to be promoted
-      // based on the fact that it has the same contents as the previous top
-      // match.
-      { { "1+2", true }, { "1+2", true }, { "1+2+3+4+5", false },
-        kEmptyExpectedMatch },
-      { { "1+23", true }, { "1+2+3+4+5", false }, kEmptyExpectedMatch,
-        kEmptyExpectedMatch } },
+       "\"google:suggesttype\":[\"CALCULATOR\", \"QUERY\"],"
+       "\"google:suggestrelevance\":[1200, 900]}]",
+       // The contents of the second match here are set to the query (the result
+       // is placed in the description instead) and therefore the
+       // allowed_to_default_match value is true for the second match (despite
+       // being received asynchronously) because of the logic in
+       // SearchProvider::PersistTopSuggestions which allows it to be promoted
+       // based on the fact that it has the same contents as the previous top
+       // match.
+       {{"1+2", true},
+        {"= 3", false},
+        {"1+2+3+4+5", false},
+        kEmptyExpectedMatch},
+       {{"1+23", true},
+        {"1+2+3+4+5", false},
+        kEmptyExpectedMatch,
+        kEmptyExpectedMatch}},
   };
+
+  // Note: SearchSuggestionParser::ParseSuggestResults swaps the content and
+  // answer fields on Desktop. See https://crbug.com/1325124#c1.
+  // As a result of the field flip, the Calculator answer is only permitted
+  // to be the default suggestion on the Desktop.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+    cases[0].async_matches[1].contents = "1+2";
+    cases[0].async_matches[1].allowed_to_be_default_match = true;
+  }
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     // First, send the query "1+2" and receive the JSON response |first_json|.
