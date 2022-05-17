@@ -351,7 +351,11 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Unsafe scheme should be filtered out.
+  // Note that chrome:// URLs are allowed on Lacros so that trustworthy calls
+  // from Ash will work (URLs from untrustworthy applications are filtered
+  // before getting to StartupTabProvider).
   {
     base::CommandLine command_line({"", "chrome://flags"});
     StartupTabProviderImpl instance;
@@ -362,6 +366,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Exceptional settings page.
   {
@@ -478,7 +483,8 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
     EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
   }
 
-  // Unsafe scheme should be filtered out.
+  // chrome:// scheme should be allowed on Lacros because calls from
+  // untrustworthy applications are filtered before StartupTabProvider.
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->initial_browser_action =
@@ -486,7 +492,8 @@ TEST(StartupTabProviderTest, GetCrosapiTabs) {
     params->startup_urls = std::vector<GURL>{GURL("chrome://flags")};
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
     StartupTabs output = StartupTabProviderImpl().GetCrosapiTabs();
-    EXPECT_TRUE(output.empty());
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://flags"), output[0].url);
   }
 
   // Exceptional settings page.
