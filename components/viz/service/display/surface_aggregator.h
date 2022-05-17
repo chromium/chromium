@@ -386,8 +386,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Whether de-jelly may be active.
   const bool de_jelly_enabled_;
 
-  const bool clip_prewalk_damage_;
-
   const ExtraPassForReadbackOption extra_pass_for_readback_option_;
 
   bool output_is_secure_ = false;

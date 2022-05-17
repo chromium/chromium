@@ -69,7 +69,6 @@ VIZ_COMMON_EXPORT extern const char kPredictorLinear2[];
 VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
-VIZ_COMMON_EXPORT bool IsClipPrewalkDamageEnabled();
 VIZ_COMMON_EXPORT bool IsSimpleFrameRateThrottlingEnabled();
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();

@@ -191,13 +191,6 @@ bool IsAdpfEnabled() {
   return base::FeatureList::IsEnabled(kAdpf);
 }
 
-bool IsClipPrewalkDamageEnabled() {
-  static constexpr base::Feature kClipPrewalkDamage{
-      "ClipPrewalkDamage", base::FEATURE_ENABLED_BY_DEFAULT};
-
-  return base::FeatureList::IsEnabled(kClipPrewalkDamage);
-}
-
 bool IsOverlayPrioritizationEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // DelegatedCompositing in Lacros makes this feature a no-op.
