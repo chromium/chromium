@@ -383,9 +383,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * Updates the size of the virtual tab strip, making the tabs resize and move accordingly.
      * @param width  The new available width.
      * @param height The new height this stack should be.
+     * @param orientationChanged Whether the screen orientation was changed.
+     * @param time The current time of the app in ms.
      */
-    public void onSizeChanged(float width, float height) {
+    public void onSizeChanged(float width, float height, boolean orientationChanged, long time) {
         if (mWidth == width && mHeight == height) return;
+
+        boolean wasSelectedTabVisible =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+                && orientationChanged && mModel != null && mModel.index() >= 0
+                && mModel.index() < mStripTabs.length && mStripTabs[mModel.index()].isVisible();
 
         boolean widthChanged = mWidth != width;
 
@@ -408,6 +415,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
         mTabMenu.dismiss();
+
+        if (wasSelectedTabVisible) {
+            bringSelectedTabToVisibleArea(time, true);
+        }
     }
 
     /**
