@@ -1144,16 +1144,17 @@ PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
 }
 
 void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
-                                          const base::ListValue& printers) {
+                                          const base::Value::List& printers) {
   DCHECK(printer_type == mojom::PrinterType::kExtension ||
          printer_type == mojom::PrinterType::kLocal);
-  DCHECK(!printers.GetListDeprecated().empty());
+  DCHECK(!printers.empty());
   FireWebUIListener("printers-added",
-                    base::Value(static_cast<int>(printer_type)), printers);
+                    base::Value(static_cast<int>(printer_type)),
+                    base::Value(printers.Clone()));
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {
-    ReportNumberOfPrinters(printers.GetListDeprecated().size());
+    ReportNumberOfPrinters(printers.size());
     has_logged_printers_count_ = true;
   }
 }

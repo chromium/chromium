@@ -35,7 +35,7 @@ class PrinterHandler {
   using DefaultPrinterCallback =
       base::OnceCallback<void(const std::string& printer_name)>;
   using AddedPrintersCallback =
-      base::RepeatingCallback<void(const base::ListValue& printers)>;
+      base::RepeatingCallback<void(const base::Value::List& printers)>;
   using GetPrintersDoneCallback = base::OnceClosure;
   // |capability| should contain a CDD with key |kSettingCapabilities|.
   // It may also contain other information about the printer in a dictionary
@@ -71,7 +71,7 @@ class PrinterHandler {
       content::WebContents* preview_web_contents,
       Profile* profile);
 
-  virtual ~PrinterHandler() {}
+  virtual ~PrinterHandler() = default;
 
   // Cancels all pending requests.
   virtual void Reset() = 0;

@@ -25,15 +25,14 @@
 namespace printing {
 
 namespace {
+
 // Used as a callback to `StartGetPrinters()` in tests.
 // Increases `call_count` and records values returned by `StartGetPrinters()`.
-// TODO(crbug.com/1171579) Get rid of use of base::ListValue.
 void RecordPrinterList(size_t& call_count,
-                       std::unique_ptr<base::ListValue>& printers_out,
-                       const base::ListValue& printers) {
+                       base::Value::List& printers_out,
+                       const base::Value::List& printers) {
   ++call_count;
-  printers_out =
-      base::ListValue::From(base::Value::ToUniquePtrValue(printers.Clone()));
+  printers_out = printers.Clone();
 }
 
 // Used as a callback to `StartGetPrinters` in tests.
@@ -92,7 +91,7 @@ TEST_F(LocalPrinterHandlerChromeosTest,
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetPrintersNoAsh_ProvidesDefaultValue) {
   size_t call_count = 0;
-  std::unique_ptr<base::ListValue> printers;
+  base::Value::List printers;
   bool is_done = false;
   local_printer_handler()->StartGetPrinters(
       base::BindRepeating(&RecordPrinterList, std::ref(call_count),

@@ -46,10 +46,10 @@ void OnGetPrintersComplete(
     LocalPrinterHandlerChromeos::AddedPrintersCallback callback,
     std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
   if (!printers.empty()) {
-    base::Value::ListStorage list;
+    base::Value::List list;
     for (const crosapi::mojom::LocalDestinationInfoPtr& p : printers)
-      list.push_back(LocalPrinterHandlerChromeos::PrinterToValue(*p));
-    std::move(callback).Run(base::ListValue(std::move(list)));
+      list.Append(LocalPrinterHandlerChromeos::PrinterToValue(*p));
+    std::move(callback).Run(std::move(list));
   }
 }
 

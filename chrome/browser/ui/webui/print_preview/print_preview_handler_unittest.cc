@@ -211,7 +211,7 @@ class TestPrinterHandler : public PrinterHandler {
 
   void StartGetPrinters(AddedPrintersCallback added_printers_callback,
                         GetPrintersDoneCallback done_callback) override {
-    if (!printers_.GetListDeprecated().empty())
+    if (!printers_.empty())
       added_printers_callback.Run(printers_);
     std::move(done_callback).Run();
   }
@@ -232,20 +232,19 @@ class TestPrinterHandler : public PrinterHandler {
   }
 
   void SetPrinters(const std::vector<PrinterInfo>& printers) {
-    base::Value::ListStorage printer_list;
+    printers_.clear();
     for (const auto& printer : printers) {
       if (printer.is_default)
         default_printer_ = printer.id;
-      printer_list.push_back(printer.basic_info.Clone());
+      printers_.Append(printer.basic_info.Clone());
       printer_capabilities_[printer.id] = base::DictionaryValue::From(
           std::make_unique<base::Value>(printer.capabilities.Clone()));
     }
-    printers_ = base::ListValue(printer_list);
   }
 
  private:
   std::string default_printer_;
-  base::ListValue printers_;
+  base::Value::List printers_;
   std::map<std::string, std::unique_ptr<base::DictionaryValue>>
       printer_capabilities_;
 };

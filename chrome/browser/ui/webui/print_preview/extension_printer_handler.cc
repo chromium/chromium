@@ -274,10 +274,10 @@ void ExtensionPrinterHandler::DispatchPrintJob(
 
 void ExtensionPrinterHandler::WrapGetPrintersCallback(
     AddedPrintersCallback callback,
-    const base::ListValue& printers,
+    const base::Value::List& printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
-  if (!printers.GetListDeprecated().empty())
+  if (!printers.empty())
     callback.Run(printers);
 
   if (done)
@@ -358,9 +358,9 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
 
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
-  std::unique_ptr<base::ListValue> list = printer_list.Build();
-  if (!list->GetListDeprecated().empty())
-    callback.Run(*list);
+  base::Value::List list = std::move(printer_list.Build()->GetList());
+  if (!list.empty())
+    callback.Run(list);
   if (pending_enumeration_count_ == 0)
     std::move(done_callback_).Run();
 }

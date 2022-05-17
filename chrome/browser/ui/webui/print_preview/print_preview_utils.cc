@@ -45,8 +45,8 @@ const char kVendorCapabilityKey[] = "vendor_capability";
 
 namespace {
 
-void PrintersToValues(const PrinterList& printer_list,
-                      base::ListValue* printers) {
+base::Value::List PrintersToValues(const PrinterList& printer_list) {
+  base::Value::List results;
   for (const PrinterBasicInfo& printer : printer_list) {
     base::Value::Dict printer_info;
     printer_info.Set(kSettingDeviceName, printer.printer_name);
@@ -67,11 +67,12 @@ void PrintersToValues(const PrinterList& printer_list,
 
     printer_info.Set(kSettingPrinterOptions, std::move(options));
 
-    printers->GetList().Append(std::move(printer_info));
+    results.Append(std::move(printer_info));
 
     VLOG(1) << "Found printer " << printer.display_name << " with device name "
             << printer.printer_name;
   }
+  return results;
 }
 
 template <typename Predicate>
@@ -172,12 +173,11 @@ void ConvertPrinterListForCallback(
     PrinterHandler::AddedPrintersCallback callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
     const PrinterList& printer_list) {
-  base::ListValue printers;
-  PrintersToValues(printer_list, &printers);
+  base::Value::List printers = PrintersToValues(printer_list);
 
-  VLOG(1) << "Enumerate printers finished, found "
-          << printers.GetListDeprecated().size() << " printers";
-  if (!printers.GetListDeprecated().empty())
+  VLOG(1) << "Enumerate printers finished, found " << printers.size()
+          << " printers";
+  if (!printers.empty())
     callback.Run(printers);
   std::move(done_callback).Run();
 }

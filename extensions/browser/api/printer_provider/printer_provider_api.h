@@ -9,14 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}
 
 namespace content {
 class BrowserContext;
@@ -33,7 +28,8 @@ namespace extensions {
 class PrinterProviderAPI : public KeyedService {
  public:
   using GetPrintersCallback =
-      base::RepeatingCallback<void(const base::ListValue& printers, bool done)>;
+      base::RepeatingCallback<void(const base::Value::List& printers,
+                                   bool done)>;
   using GetCapabilityCallback =
       base::OnceCallback<void(const base::DictionaryValue& capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
