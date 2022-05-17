@@ -62,7 +62,8 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
 }
 
 void WebAppTabHelper::SetAppId(const AppId& app_id) {
-  DCHECK(app_id.empty() || provider_->registrar().IsInstalled(app_id));
+  DCHECK(app_id.empty() || provider_->registrar().IsInstalled(app_id) ||
+         provider_->registrar().IsUninstalling(app_id));
   if (app_id_ == app_id)
     return;
 

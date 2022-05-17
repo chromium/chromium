@@ -243,7 +243,7 @@ absl::optional<AppId> WebAppRegistrar::FindAppWithUrlInScope(
   size_t best_score = 0U;
   bool best_app_is_shortcut = true;
 
-  for (const AppId& app_id : GetAppIds()) {
+  for (const AppId& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
     // TODO(crbug.com/910016): Treat shortcuts as PWAs.
     bool app_is_shortcut = IsShortcutApp(app_id);
     if (app_is_shortcut && !best_app_is_shortcut)

@@ -254,6 +254,20 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     return app_id;
   }
 
+  void UninstallWebApp(const web_app::AppId& app_id) {
+    base::RunLoop run_loop;
+    web_app::WebAppProvider::GetForTest(browser()->profile())
+        ->install_finalizer()
+        .UninstallWebApp(
+            app_id, webapps::WebappUninstallSource::kAppMenu,
+            base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Tests that we measure when a user uninstalls a PWA within a "bounce" period
   // of time after installation.
   void TestInstallBounce(base::TimeDelta install_duration, int expected_count) {
@@ -269,16 +283,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time + install_duration);
 
-    base::RunLoop run_loop;
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->install_finalizer()
-        .UninstallWebApp(
-            app_id, webapps::WebappUninstallSource::kAppMenu,
-            base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
+    UninstallWebApp(app_id);
 
     web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);
 
@@ -523,6 +528,31 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   ASSERT_FALSE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_FALSE(pwa_install_view_->is_animating_label());
+}
+
+// Tests that the icon updates its state after uninstallation.
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
+                       IconStateAfterUnInstallation) {
+  GURL app_url = GetInstallableAppURL();
+  bool installable = OpenTab(app_url).installable;
+  ASSERT_TRUE(installable);
+  const web_app::AppId app_id = ExecutePwaInstallIcon();
+
+  // Use a new tab because installed app may have opened in new window.
+  OpenTabResult result = OpenTab(app_url);
+
+  // Validate that state is set to already installed.
+  EXPECT_EQ(
+      result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
+      webapps::AppBannerManager::InstallableWebAppCheckResult::
+          kNo_AlreadyInstalled);
+  EXPECT_FALSE(pwa_install_view_->GetVisible());
+
+  // Uninstall app and wait for completion.
+  UninstallWebApp(app_id);
+
+  // Validate that state got changed to installable.
+  EXPECT_TRUE(pwa_install_view_->GetVisible());
 }
 
 // Tests that the icon and animation resets while loading a different scope.
