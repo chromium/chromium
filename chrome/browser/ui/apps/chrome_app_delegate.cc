@@ -338,9 +338,9 @@ void ChromeAppDelegate::SetWebContentsBlocked(
     bool blocked) {
   if (!blocked)
     web_contents->Focus();
-  // RenderViewHost may be NULL during shutdown.
+  // RenderFrameHost may be NULL during shutdown.
   content::RenderFrameHost* host = web_contents->GetMainFrame();
-  if (host) {
+  if (host && host->IsRenderFrameLive()) {
     mojo::Remote<extensions::mojom::AppWindow> app_window;
     host->GetRemoteInterfaces()->GetInterface(
         app_window.BindNewPipeAndPassReceiver());

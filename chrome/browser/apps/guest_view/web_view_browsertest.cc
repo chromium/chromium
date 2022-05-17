@@ -41,6 +41,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,6 +74,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -124,9 +127,13 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/client_cert_store.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -3954,6 +3961,158 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestDisabledZoomMode) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestZoomBeforeNavigation) {
   TestHelper("testZoomBeforeNavigation", "web_view/shim", NO_TEST_SERVER);
+}
+
+namespace {
+
+class NullWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  NullWebContentsDelegate() = default;
+  ~NullWebContentsDelegate() override = default;
+};
+
+// A stub ClientCertStore that returns a FakeClientCertIdentity.
+class ClientCertStoreStub : public net::ClientCertStore {
+ public:
+  explicit ClientCertStoreStub(net::ClientCertIdentityList list)
+      : list_(std::move(list)) {}
+
+  ~ClientCertStoreStub() override = default;
+
+  // net::ClientCertStore:
+  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
+                      ClientCertListCallback callback) override {
+    std::move(callback).Run(std::move(list_));
+    if (quit_closure_) {
+      // Call the quit closure asynchronously, so it's ordered after the cert
+      // selector.
+      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                    std::move(quit_closure_));
+    }
+  }
+
+  static void SetQuitClosure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
+ private:
+  net::ClientCertIdentityList list_;
+
+  // Called the next time GetClientCerts is called.
+  static base::OnceClosure quit_closure_;
+};
+
+// static
+base::OnceClosure ClientCertStoreStub::quit_closure_;
+
+}  // namespace
+
+class WebViewCertificateSelectorTest : public WebViewTest {
+ public:
+  void SetUpOnMainThread() override {
+    WebViewTest::SetUpOnMainThread();
+
+    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+        ->set_client_cert_store_factory_for_testing(base::BindRepeating(
+            &WebViewCertificateSelectorTest::CreateCertStore));
+
+    net::SSLServerConfig ssl_config;
+    ssl_config.client_cert_type =
+        net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  net::EmbeddedTestServer& https_server() { return https_server_; }
+
+  web_modal::WebContentsModalDialogManager* GetModalDialogManager(
+      content::WebContents* embedder_web_contents) {
+    web_modal::WebContentsModalDialogManager* manager =
+        web_modal::WebContentsModalDialogManager::FromWebContents(
+            embedder_web_contents);
+    EXPECT_TRUE(manager);
+    return manager;
+  }
+
+ private:
+  static std::unique_ptr<net::ClientCertStore> CreateCertStore() {
+    net::ClientCertIdentityList cert_identity_list;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+
+      std::unique_ptr<net::FakeClientCertIdentity> cert_identity =
+          net::FakeClientCertIdentity::CreateFromCertAndKeyFiles(
+              net::GetTestCertsDirectory(), "client_1.pem", "client_1.pk8");
+      EXPECT_TRUE(cert_identity.get());
+      if (cert_identity)
+        cert_identity_list.push_back(std::move(cert_identity));
+    }
+
+    return std::make_unique<ClientCertStoreStub>(std::move(cert_identity_list));
+  }
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+INSTANTIATE_TEST_SUITE_P(WebViewTests,
+                         WebViewCertificateSelectorTest,
+                         testing::Bool(),
+                         WebViewTest::DescribeParams);
+
+// Ensure a guest triggering a client certificate dialog does not crash.
+IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
+                       CertificateSelectorForGuest) {
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+
+  const GURL client_cert_url =
+      https_server().GetURL("/ssl/browser_use_client_cert_store.html");
+
+  base::RunLoop run_loop;
+  ClientCertStoreStub::SetQuitClosure(run_loop.QuitClosure());
+  EXPECT_TRUE(content::ExecJs(
+      guest, content::JsReplace("location.href = $1;", client_cert_url)));
+  run_loop.Run();
+
+  auto* manager = GetModalDialogManager(GetEmbedderWebContents());
+  EXPECT_TRUE(manager->IsDialogActive());
+  manager->CloseAllDialogs();
+}
+
+// Ensure a guest triggering a client certificate dialog does not crash.
+// This considers the case where a guest view is in use that has been
+// inadvertently broken by misuse of WebContentsDelegates. This has seemingly
+// happened multiple times for various dialogs and signin flows (see
+// https://crbug.com/1076696 and https://crbug.com/1306988 ), so let's test that
+// if we are in this situation, we at least don't crash.
+IN_PROC_BROWSER_TEST_P(WebViewCertificateSelectorTest,
+                       CertificateSelectorForGuestMisconfigured) {
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+
+  const GURL client_cert_url =
+      https_server().GetURL("/ssl/browser_use_client_cert_store.html");
+
+  auto* guest_delegate = guest->GetDelegate();
+  NullWebContentsDelegate null_delegate;
+  // This is intentionally incorrect. The guest WebContents' delegate should
+  // remain a guest_view::GuestViewBase.
+  guest->SetDelegate(&null_delegate);
+
+  base::RunLoop run_loop;
+  ClientCertStoreStub::SetQuitClosure(run_loop.QuitClosure());
+  EXPECT_TRUE(content::ExecJs(
+      guest, content::JsReplace("location.href = $1;", client_cert_url)));
+  run_loop.Run();
+
+  auto* manager = GetModalDialogManager(GetEmbedderWebContents());
+  EXPECT_TRUE(manager->IsDialogActive());
+  manager->CloseAllDialogs();
+
+  guest->SetDelegate(guest_delegate);
 }
 
 // Test fixture to run the test on multiple channels.
