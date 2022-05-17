@@ -97586,6 +97586,13 @@ others/histograms.xml -->
   <int value="3" label="kOtherFailure"/>
 </enum>
 
+<enum name="WasmCodeCaching">
+  <int value="0" label="kMiss"/>
+  <int value="1" label="kHit"/>
+  <int value="2" label="kInvalidCacheEntry"/>
+  <int value="3" label="kNoCacheHandler"/>
+</enum>
+
 <enum name="WebApkArcInstallResultChromeOS">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>

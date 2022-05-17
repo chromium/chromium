@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -304,53 +305,70 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   }
 
   CodeCacheState MaybeConsumeCodeCache() {
-    if (!cache_handler_)
+    // The enum values need to match "WasmCodeCaching" in
+    // tools/metrics/histograms/enums.xml.
+    enum class WasmCodeCaching {
+      kMiss = 0,
+      kHit = 1,
+      kInvalidCacheEntry = 2,
+      kNoCacheHandler = 3,
+
+      kMaxValue = kNoCacheHandler
+    };
+
+    if (!cache_handler_) {
+      base::UmaHistogramEnumeration("V8.WasmCodeCaching",
+                                    WasmCodeCaching::kNoCacheHandler);
       return CodeCacheState::kNoCodeCache;
+    }
 
     // We must wait until we see the first byte of the response body before
-    // checking for GetCachedMetadata().  The serialized cache metadata is
+    // checking for GetCachedMetadata(). The serialized cache metadata is
     // guaranteed to be set on the handler before the body stream is provided,
     // but this can happen some time after the Response head is received.
     scoped_refptr<CachedMetadata> cached_module =
         cache_handler_->GetCachedMetadata(kWasmModuleTag);
-    if (cached_module) {
-      TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                           "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
-                           "url", url_.Utf8(), "consumedCacheSize",
-                           cached_module->size());
-
-      bool is_valid =
-          cached_module->size() >= kWireBytesDigestSize &&
-          streaming_->SetCompiledModuleBytes(
-              reinterpret_cast<const uint8_t*>(cached_module->Data()) +
-                  kWireBytesDigestSize,
-              cached_module->size() - kWireBytesDigestSize);
-
-      if (is_valid) {
-        // Keep the buffer alive until V8 is ready to deserialize it.
-        // TODO(bbudge) V8 should notify us if deserialization fails, so we
-        // can release the data and reset the cache.
-        streaming_client_->SetBuffer(cached_module);
-        return CodeCacheState::kUseCodeCache;
-      } else {
-        TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                             "v8.wasm.moduleCacheInvalid",
-                             TRACE_EVENT_SCOPE_THREAD);
-        // TODO(mythria): Also support using context specific code cache host
-        // here. When we pass nullptr for CodeCacheHost we use per-process
-        // interface. Currently this code is run on a thread started via a
-        // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
-        // that was bound on the frame / worker threads. We should instead post
-        // a task back to the frame / worker threads with the required data
-        // which can then write to generated code caches.
-        cache_handler_->ClearCachedMetadata(
-            /*code_cache_host*/ nullptr,
-            CachedMetadataHandler::kClearPersistentStorage);
-        return CodeCacheState::kNoCodeCache;
-      }
-    } else {
+    if (!cached_module) {
+      base::UmaHistogramEnumeration("V8.WasmCodeCaching",
+                                    WasmCodeCaching::kMiss);
       return CodeCacheState::kNoCodeCache;
     }
+
+    TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
+                         "url", url_.Utf8(), "consumedCacheSize",
+                         cached_module->size());
+
+    bool is_valid =
+        cached_module->size() >= kWireBytesDigestSize &&
+        streaming_->SetCompiledModuleBytes(
+            reinterpret_cast<const uint8_t*>(cached_module->Data()) +
+                kWireBytesDigestSize,
+            cached_module->size() - kWireBytesDigestSize);
+
+    if (!is_valid) {
+      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                           "v8.wasm.moduleCacheInvalid",
+                           TRACE_EVENT_SCOPE_THREAD);
+      base::UmaHistogramEnumeration("V8.WasmCodeCaching",
+                                    WasmCodeCaching::kInvalidCacheEntry);
+      // TODO(mythria): Also support using context specific code cache host
+      // here. When we pass nullptr for CodeCacheHost we use per-process
+      // interface. Currently this code is run on a thread started via a
+      // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
+      // that was bound on the frame / worker threads. We should instead post
+      // a task back to the frame / worker threads with the required data
+      // which can then write to generated code caches.
+      cache_handler_->ClearCachedMetadata(
+          /*code_cache_host*/ nullptr,
+          CachedMetadataHandler::kClearPersistentStorage);
+      return CodeCacheState::kNoCodeCache;
+    }
+
+    base::UmaHistogramEnumeration("V8.WasmCodeCaching", WasmCodeCaching::kHit);
+    // Keep the buffer alive until V8 is ready to deserialize it.
+    streaming_client_->SetBuffer(cached_module);
+    return CodeCacheState::kUseCodeCache;
   }
 
   bool HasValidCodeCache() {

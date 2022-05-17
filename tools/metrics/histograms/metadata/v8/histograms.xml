@@ -1669,6 +1669,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCodeCaching" enum="WasmCodeCaching"
+    expires_after="2023-05-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>wasm-runtime@google.com</owner>
+  <summary>
+    The result of a Wasm code cache lookup. Recorded once per Wasm streaming
+    compilation at the time where we try to get the compiled Wasm module from
+    the code cache.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCompileAfterDeserializeMilliSeconds" units="ms"
     expires_after="2022-11-13">
   <owner>ahaas@chromium.org</owner>
