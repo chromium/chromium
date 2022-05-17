@@ -169,6 +169,14 @@ wheel: <
     platform: "linux_aarch64"
   >
 >
+wheel: <
+  name: "infra/python/wheels/opencv_python/${vpython_platform}"
+  version: "version:4.5.3.56.chromium.4"
+  # There is currently no Linux arm/arm64 version in CIPD.
+  not_match_tag <
+    platform: "linux_aarch64"
+  >
+>
 
 # Used by various python unit tests.
 wheel: <
