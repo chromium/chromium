@@ -451,6 +451,7 @@ base::Value RunAttributionSimulation(
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
+  const base::Time time_origin = base::Time::Now();
 
   absl::optional<AttributionSimulationEventAndValues> events =
       ParseAttributionSimulationInput(std::move(input), base::Time::Now(),
@@ -462,6 +463,7 @@ base::Value RunAttributionSimulation(
     return base::Value(base::Value::Dict());
 
   base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
+  task_environment.FastForwardBy(GetEventTime(events->at(0)) - time_origin);
 
   // Avoid creating an on-disk sqlite DB.
   content::AttributionManagerImpl::RunInMemoryForTesting();
@@ -478,10 +480,8 @@ base::Value RunAttributionSimulation(
   }
 
   const AttributionReportJsonConverter json_converter(
-      options.remove_report_ids,
-      options.report_time_format,
-      options.remove_assembled_report,
-      base::Time::Now());
+      options.remove_report_ids, options.report_time_format,
+      options.remove_assembled_report, time_origin);
 
   base::Value::List event_level_reports;
   base::Value::List debug_event_level_reports;
