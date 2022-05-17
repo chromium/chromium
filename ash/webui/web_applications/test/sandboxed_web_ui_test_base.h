@@ -15,6 +15,8 @@
 // A base class that can be extended by SWA browser test to inject scripts.
 class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
  public:
+  enum EvalJsTimeout { kNormalTimeout, kLongTimeout };
+
   // Initialize the test harnesss for the |host_url| web UI. Starts a content::
   // TestNavigationObserver watching for |sandboxed_url| and, when it loads,
   // automatically injects |scripts|, in order, into the sandboxed frame.
@@ -49,8 +51,10 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   // Runs |script| in the untrusted app frame of |web_ui|. This function assumes
   // the first <iframe> element in |web_ui| is the untrusted (sandboxed)
   // content.
-  static content::EvalJsResult EvalJsInAppFrame(content::WebContents* web_ui,
-                                                const std::string& script);
+  static content::EvalJsResult EvalJsInAppFrame(
+      content::WebContents* web_ui,
+      const std::string& script,
+      EvalJsTimeout timeout = kNormalTimeout);
 
   // MojoWebUIBrowserTest:
   void SetUpOnMainThread() override;
