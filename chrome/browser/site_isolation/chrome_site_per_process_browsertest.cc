@@ -246,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, PluginWithRemoteTopFrame) {
 }
 
 // Check that window.focus works for cross-process popups.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, PopupWindowFocus) {
+// TODO(crbug.com/1326293): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, DISABLED_PopupWindowFocus) {
   GURL main_url(embedded_test_server()->GetURL("/page_with_focus_events.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
