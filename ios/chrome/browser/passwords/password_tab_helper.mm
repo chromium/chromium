@@ -6,7 +6,12 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,7 +71,8 @@ PasswordTabHelper::GetPasswordGenerationProvider() {
 }
 
 PasswordTabHelper::PasswordTabHelper(web::WebState* web_state)
-    : controller_([[PasswordController alloc] initWithWebState:web_state]) {
+    : web::WebStatePolicyDecider(web_state),
+      controller_([[PasswordController alloc] initWithWebState:web_state]) {
   web_state->AddObserver(this);
 }
 
@@ -74,5 +80,31 @@ void PasswordTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   controller_ = nil;
 }
+
+void PasswordTabHelper::ShouldAllowRequest(
+    NSURLRequest* request,
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  GURL request_url = net::GURLWithNSURL(request.URL);
+  if (request_info.target_frame_is_main &&
+      ui::PageTransitionCoreTypeIs(request_info.transition_type,
+                                   ui::PAGE_TRANSITION_LINK) &&
+      request_url == GURL(password_manager::kManageMyPasswordsURL) &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    id<ApplicationSettingsCommands> settings_command_handler =
+        HandlerForProtocol(controller_.dispatcher, ApplicationSettingsCommands);
+
+    [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
+                                                          showCancelButton:NO];
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    return;
+  }
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+}
+
+void PasswordTabHelper::WebStateDestroyed() {}
 
 WEB_STATE_USER_DATA_KEY_IMPL(PasswordTabHelper)
