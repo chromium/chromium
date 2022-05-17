@@ -87,7 +87,7 @@ static float ComputeDecorationThickness(
   float text_decoration_thickness_pixels =
       FloatValueForLength(thickness_length, font_size);
 
-  return std::max(minimum_thickness, text_decoration_thickness_pixels);
+  return std::max(minimum_thickness, roundf(text_decoration_thickness_pixels));
 }
 
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
