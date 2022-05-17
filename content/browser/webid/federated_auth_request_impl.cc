@@ -786,7 +786,8 @@ void FederatedAuthRequestImpl::OnManifestReady(
     network_manager_->SendAccountsRequest(
         endpoints_.accounts, client_id_,
         base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(idp_metadata)));
   }
 }
 
@@ -905,7 +906,7 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
   network_manager_->SendAccountsRequest(
       endpoints_.accounts, client_id_,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(idp_metadata)));
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
