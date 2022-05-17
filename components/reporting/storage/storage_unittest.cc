@@ -222,11 +222,6 @@ class StorageTest
 
   void TearDown() override {
     ResetTestStorage();
-    // Make sure all memory is deallocated.
-    ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
-    // Make sure all disk is not reserved (files remain, but Storage is not
-    // responsible for them anymore).
-    ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
     // Log next uploader id for possible verification.
     LOG(ERROR) << "Next uploader id=" << next_uploader_id.load();
   }
@@ -533,7 +528,7 @@ class StorageTest
                   base::OnceCallback<void(bool)> processed_cb,
                   scoped_refptr<base::SequencedTaskRunner> task_runner,
                   TestUploader* uploader, StatusOr<base::StringPiece> result) {
-                 ASSERT_OK(result.status());
+                 ASSERT_OK(result.status()) << result.status();
                  WrappedRecord wrapped_record;
                  ASSERT_TRUE(wrapped_record.ParseFromArray(
                      result.ValueOrDie().data(), result.ValueOrDie().size()));
@@ -688,7 +683,7 @@ class StorageTest
   };
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
-      const StorageOptions& options,
+      StorageOptions&& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module) {
     // Initialize Storage with no key.
     test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
@@ -703,7 +698,7 @@ class StorageTest
   }
 
   void CreateTestStorageOrDie(
-      const StorageOptions& options,
+      StorageOptions&& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::Minutes(30))) {
@@ -725,7 +720,7 @@ class StorageTest
 
     ASSERT_FALSE(storage_) << "TestStorage already assigned";
     StatusOr<scoped_refptr<Storage>> storage_result =
-        CreateTestStorage(options, encryption_module);
+        CreateTestStorage(std::move(options), encryption_module);
     ASSERT_OK(storage_result)
         << "Failed to create TestStorage, error=" << storage_result.status();
     storage_ = std::move(storage_result.ValueOrDie());
@@ -734,15 +729,25 @@ class StorageTest
   void ResetTestStorage() {
     // Let asynchronous activity finish.
     task_environment_.RunUntilIdle();
-    storage_.reset();
-    // StorageQueue is destructed on a thread,
-    // so we need to wait for all queues to destruct.
-    task_environment_.RunUntilIdle();
+    if (storage_) {
+      const auto memory_resource = storage_->options().memory_resource();
+      const auto disk_space_resource =
+          storage_->options().disk_space_resource();
+      storage_.reset();
+      // StorageQueue is destructed on a thread,
+      // so we need to wait for all queues to destruct.
+      task_environment_.RunUntilIdle();
+      // Make sure all memory is deallocated.
+      ASSERT_THAT(memory_resource->GetUsed(), Eq(0u));
+      // Make sure all disk is not reserved (files remain, but Storage is not
+      // responsible for them anymore).
+      ASSERT_THAT(disk_space_resource->GetUsed(), Eq(0u));
+    }
     expect_to_need_key_ = false;
   }
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorageWithFailedKeyDelivery(
-      const StorageOptions& options,
+      StorageOptions&& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module =
           EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::Minutes(30))) {
@@ -760,7 +765,8 @@ class StorageTest
   }
 
   StorageOptions BuildTestStorageOptions() const {
-    auto options = StorageOptions().set_directory(location_.GetPath());
+    StorageOptions options;
+    options.set_directory(location_.GetPath());
     if (is_encryption_enabled()) {
       // Encryption enabled.
       options.set_signature_verification_public_key(std::string(

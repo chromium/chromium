@@ -12,11 +12,8 @@
 
 namespace reporting {
 
-// TODO(b/159361496): Set total memory allowance based on the platform
-// (or policy?).
-MemoryResourceImpl::MemoryResourceImpl()
-    : total_(16u * 1024LLu * 1024LLu),  // 16 MiB
-      used_(0) {}
+MemoryResourceImpl::MemoryResourceImpl(uint64_t total_size)
+    : total_(total_size) {}
 
 MemoryResourceImpl::~MemoryResourceImpl() = default;
 
@@ -44,11 +41,6 @@ uint64_t MemoryResourceImpl::GetUsed() {
 
 void MemoryResourceImpl::Test_SetTotal(uint64_t test_total) {
   total_ = test_total;
-}
-
-ResourceInterface* GetMemoryResource() {
-  static base::NoDestructor<MemoryResourceImpl> memory;
-  return memory.get();
 }
 
 }  // namespace reporting

@@ -6,9 +6,12 @@
 
 #include "components/reporting/resources/resource_interface.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "components/reporting/resources/disk_resource_impl.h"
+#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +22,11 @@ namespace reporting {
 namespace {
 
 class ResourceInterfaceTest
-    : public ::testing::TestWithParam<ResourceInterface*> {
+    : public ::testing::TestWithParam<scoped_refptr<ResourceInterface>> {
  protected:
-  ResourceInterface* resource_interface() const { return GetParam(); }
+  scoped_refptr<ResourceInterface> resource_interface() const {
+    return GetParam();
+  }
 
   void TearDown() override {
     EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
@@ -54,7 +59,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, ResourceInterface* resource_interface,
+            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
                test::TestCallbackWaiter* waiter) {
               EXPECT_TRUE(resource_interface->Reserve(size));
               waiter->Signal();
@@ -70,7 +75,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, ResourceInterface* resource_interface,
+            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
                test::TestCallbackWaiter* waiter) {
               resource_interface->Discard(size);
               waiter->Signal();
@@ -89,7 +94,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
-            [](size_t size, ResourceInterface* resource_interface,
+            [](size_t size, scoped_refptr<ResourceInterface> resource_interface,
                test::TestCallbackWaiter* waiter) {
               { ScopedReservation(size, resource_interface); }
               waiter->Signal();
@@ -150,10 +155,11 @@ TEST_P(ResourceInterfaceTest, ReservationOverMaxTest) {
   resource_interface()->Discard(resource_interface()->GetTotal());
 }
 
-INSTANTIATE_TEST_SUITE_P(VariousResources,
-                         ResourceInterfaceTest,
-                         testing::Values(GetMemoryResource(),
-                                         GetDiskResource()));
-
+INSTANTIATE_TEST_SUITE_P(
+    VariousResources,
+    ResourceInterfaceTest,
+    testing::Values(
+        base::MakeRefCounted<DiskResourceImpl>(16u * 1024LLu * 1024LLu),
+        base::MakeRefCounted<MemoryResourceImpl>(4u * 1024LLu * 1024LLu)));
 }  // namespace
 }  // namespace reporting

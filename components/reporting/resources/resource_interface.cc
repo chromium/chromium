@@ -8,10 +8,15 @@
 
 #include <cstdint>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace reporting {
 
-ScopedReservation::ScopedReservation(uint64_t size,
-                                     ResourceInterface* resource_interface)
+ScopedReservation::ScopedReservation(
+    uint64_t size,
+    scoped_refptr<ResourceInterface> resource_interface)
     : resource_interface_(resource_interface) {
   if (!resource_interface->Reserve(size)) {
     return;

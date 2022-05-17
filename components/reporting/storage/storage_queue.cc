@@ -26,6 +26,7 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -291,7 +292,9 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
                    SingleFile::GetFileSequenceIdFromPath(full_name));
   RETURN_IF_ERROR(SetGenerationId(full_name));
 
-  auto file_or_status = SingleFile::Create(full_name, file_info.GetSize());
+  auto file_or_status = SingleFile::Create(full_name, file_info.GetSize(),
+                                           options_.memory_resource(),
+                                           options_.disk_space_resource());
   if (!file_or_status.ok()) {
     return file_or_status.status();
   }
@@ -434,7 +437,8 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
                 .Append(options_.file_prefix())
                 .AddExtensionASCII(base::NumberToString(generation_id_))
                 .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
-            /*size=*/0));
+            /*size=*/0, options_.memory_resource(),
+            options_.disk_space_resource()));
     next_sequencing_id_ = 0;
     auto insert_result = files_.emplace(next_sequencing_id_, file);
     DCHECK(insert_result.second);
@@ -464,7 +468,8 @@ StorageQueue::OpenNewWriteableFile() {
               .Append(options_.file_prefix())
               .AddExtensionASCII(base::NumberToString(generation_id_))
               .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
-          /*size=*/0));
+          /*size=*/0, options_.memory_resource(),
+          options_.disk_space_resource()));
   RETURN_IF_ERROR(new_file->Open(/*read_only=*/false));
   auto insert_result = files_.emplace(next_sequencing_id_, new_file);
   if (!insert_result.second) {
@@ -509,7 +514,7 @@ Status StorageQueue::WriteHeaderAndBlock(
                   base::StrCat({"Cannot open file=", file->name(),
                                 " status=", open_status.ToString()}));
   }
-  if (!GetDiskResource()->Reserve(total_size)) {
+  if (!options_.disk_space_resource()->Reserve(total_size)) {
     return Status(
         error::RESOURCE_EXHAUSTED,
         base::StrCat({"Not enough disk space available to write into file=",
@@ -566,11 +571,12 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
           options_.directory()
               .Append(METADATA_NAME)
               .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
-          /*size=*/0));
+          /*size=*/0, options_.memory_resource(),
+          options_.disk_space_resource()));
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/false));
   // Account for the metadata file size.
-  if (!GetDiskResource()->Reserve(sizeof(generation_id_) +
-                                  current_record_digest.size())) {
+  if (!options_.disk_space_resource()->Reserve(sizeof(generation_id_) +
+                                               current_record_digest.size())) {
     return Status(
         error::RESOURCE_EXHAUSTED,
         base::StrCat({"Not enough disk space available to write into file=",
@@ -617,8 +623,10 @@ Status StorageQueue::ReadMetadata(
     size_t size,
     int64_t sequencing_id,
     base::flat_set<base::FilePath>* used_files_set) {
-  ASSIGN_OR_RETURN(scoped_refptr<SingleFile> meta_file,
-                   SingleFile::Create(meta_file_path, size));
+  ASSIGN_OR_RETURN(
+      scoped_refptr<SingleFile> meta_file,
+      SingleFile::Create(meta_file_path, size, options_.memory_resource(),
+                         options_.disk_space_resource()));
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
   // Metadata file format is:
   // - generation id (8 bytes)
@@ -1356,8 +1364,9 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
   void ProcessWrappedRecord(WrappedRecord wrapped_record) {
     // Serialize wrapped record into a string.
-    ScopedReservation scoped_reservation(wrapped_record.ByteSizeLong(),
-                                         GetMemoryResource());
+    ScopedReservation scoped_reservation(
+        wrapped_record.ByteSizeLong(),
+        storage_queue_->options().memory_resource());
     if (!scoped_reservation.reserved()) {
       Schedule(&ReadContext::Response, base::Unretained(this),
                Status(error::RESOURCE_EXHAUSTED,
@@ -1381,6 +1390,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Compress the string.
     storage_queue_->compression_module_->CompressRecord(
         std::move(serialized_record),
+        storage_queue_->options().memory_resource(),
         base::BindOnce(&WriteContext::OnCompressedRecordReady,
                        base::Unretained(this), std::move(scoped_reservation)));
   }
@@ -1420,7 +1430,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Serialize encrypted record.
     ScopedReservation scoped_reservation(
         encrypted_record_result.ValueOrDie().ByteSizeLong(),
-        GetMemoryResource());
+        storage_queue_->options().memory_resource());
     if (!scoped_reservation.reserved()) {
       Schedule(&ReadContext::Response, base::Unretained(this),
                Status(error::RESOURCE_EXHAUSTED,
@@ -1679,8 +1689,12 @@ void StorageQueue::TestInjectErrorsForOperation(
 // SingleFile implementation
 //
 StatusOr<scoped_refptr<StorageQueue::SingleFile>>
-StorageQueue::SingleFile::Create(const base::FilePath& filename, int64_t size) {
-  if (!GetDiskResource()->Reserve(size)) {
+StorageQueue::SingleFile::Create(
+    const base::FilePath& filename,
+    int64_t size,
+    scoped_refptr<ResourceInterface> memory_resource,
+    scoped_refptr<ResourceInterface> disk_space_resource) {
+  if (!disk_space_resource->Reserve(size)) {
     LOG(WARNING) << "Disk space exceeded adding file "
                  << filename.MaybeAsASCII();
     return Status(
@@ -1690,7 +1704,7 @@ StorageQueue::SingleFile::Create(const base::FilePath& filename, int64_t size) {
   }
   // Cannot use base::MakeRefCounted, since the constructor is private.
   return scoped_refptr<StorageQueue::SingleFile>(
-      new SingleFile(filename, size));
+      new SingleFile(filename, size, memory_resource, disk_space_resource));
 }
 
 StatusOr<int64_t> StorageQueue::SingleFile::GetFileSequenceIdFromPath(
@@ -1713,12 +1727,18 @@ StatusOr<int64_t> StorageQueue::SingleFile::GetFileSequenceIdFromPath(
   return file_sequence_id;
 }
 
-StorageQueue::SingleFile::SingleFile(const base::FilePath& filename,
-                                     int64_t size)
-    : filename_(filename), size_(size) {}
+StorageQueue::SingleFile::SingleFile(
+    const base::FilePath& filename,
+    int64_t size,
+    scoped_refptr<ResourceInterface> memory_resource,
+    scoped_refptr<ResourceInterface> disk_space_resource)
+    : filename_(filename),
+      size_(size),
+      memory_resource_(memory_resource),
+      disk_space_resource_(disk_space_resource) {}
 
 StorageQueue::SingleFile::~SingleFile() {
-  GetDiskResource()->Discard(size_);
+  disk_space_resource_->Discard(size_);
   Close();
 }
 
@@ -1759,13 +1779,13 @@ void StorageQueue::SingleFile::Close() {
   is_readonly_ = absl::nullopt;
   if (buffer_) {
     buffer_.reset();
-    GetMemoryResource()->Discard(buffer_size_);
+    memory_resource_->Discard(buffer_size_);
   }
 }
 
 void StorageQueue::SingleFile::DeleteWarnIfFailed() {
   DCHECK(!handle_);
-  GetDiskResource()->Discard(size_);
+  disk_space_resource_->Discard(size_);
   size_ = 0;
   DeleteFileWarnIfFailed(filename_);
 }
@@ -1797,7 +1817,7 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
   // tracking the average + peak memory the Storage module is consuming.
   if (!buffer_) {
     // Register with resource management.
-    if (!GetMemoryResource()->Reserve(buffer_size_)) {
+    if (!memory_resource_->Reserve(buffer_size_)) {
       return Status(error::RESOURCE_EXHAUSTED,
                     "Not enough memory for the read buffer");
     }

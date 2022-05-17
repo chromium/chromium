@@ -6,6 +6,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/statusor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,6 +38,7 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
   // std::move(record).
   void CompressRecord(
       std::string record,
+      scoped_refptr<ResourceInterface> memory_resource,
       base::OnceCallback<
           void(std::string, absl::optional<CompressionInformation>)> cb) const;
 
