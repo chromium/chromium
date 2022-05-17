@@ -53,6 +53,14 @@ int CountFiles(const base::FilePath& dir, bool* some_files_empty = nullptr) {
   return file_count;
 }
 
+#if (!GTEST_OS_MAC)
+base::FilePath GetFirstFilePath(const base::FilePath& dir) {
+  base::FileEnumerator file_enumerator(dir, /*recursive=*/true,
+                                       base::FileEnumerator::FILES);
+  return file_enumerator.Next();
+}
+#endif // GTEST_OS_MAC
+
 class UnzipTest : public testing::Test {
  public:
   UnzipTest() = default;
@@ -244,6 +252,16 @@ TEST_F(UnzipTest, DetectEncodingSjis) {
               DoDetectEncoding(GetArchivePath(name)));
   }
 }
+
+#if (!GTEST_OS_MAC)
+// TODO(crbug.com/953256) Check for Mac HFS decomposed strings as well.
+TEST_F(UnzipTest, DecodeExtendedHeader) {
+  EXPECT_TRUE(DoUnzip(GetArchivePath("bug953599.zip"), unzip_dir_));
+
+  base::FilePath fileName = GetFirstFilePath(unzip_dir_);
+  EXPECT_EQ("새 문서.txt", fileName.BaseName().AsUTF8Unsafe());
+}
+#endif // GTEST_OS_MAC
 
 TEST_F(UnzipTest, GetExtractedSize) {
   mojom::Size result = DoGetExtractedSize(GetArchivePath("good_archive.zip"));
