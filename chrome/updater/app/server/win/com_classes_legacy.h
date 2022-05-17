@@ -281,7 +281,8 @@ class LegacyAppCommandWebImpl
       const std::wstring& command_id,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& web_impl);
 
-  HRESULT Initialize(std::wstring command_format);
+  bool InitializeExecutable(UpdaterScope scope, const base::FilePath& exe_path);
+  HRESULT Initialize(UpdaterScope scope, std::wstring command_format);
 
   absl::optional<std::wstring> FormatCommandLine(
       const std::vector<std::wstring>& parameters) const;

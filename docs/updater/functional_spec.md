@@ -36,7 +36,7 @@ TODO(crbug.com/1035895): Document the standalone installer.
 
 TODO(crbug.com/1035895): Document bundled installers.
 
-Applications on macOS frequently install via "drag-install", and then install 
+Applications on macOS frequently install via "drag-install", and then install
 the updater using a standalone installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
@@ -523,11 +523,18 @@ single request.
 ### Crash Reporting
 TODO(crbug.com/1035895): Document updater crash reporting.
 
-### Application Commands
+### Application Commands (applicable to the Windows version of the Updater)
 The Application Command feature allows installed Updater-managed products to
 pre-register and later run command lines in the format
 `c:\path-to-exe\exe.exe {params}` (elevated for system applications). `{params}`
 is optional and can also include replaceable parameters substituted at runtime.
+
+The program path must always be an absolute path. Additionally, for system
+applications,  the program path must also be a child of %ProgramFiles% or
+%ProgramFiles(x86)%. For instance:
+* `c:\path-to-exe\exe.exe` is an invalid path.
+* `"c:\Program Files\subdir\exe.exe"` is a valid path.
+* `"c:\Program Files (x86)\subdir\exe.exe"` is also a valid path.
 
 #### Registration
 App commands are registered in the registry with the following formats:

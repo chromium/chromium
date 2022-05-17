@@ -21,6 +21,9 @@ extern const char kTestEventToSignal[];
 // The switch to wait on the event with the name given as a switch value.
 extern const char kTestEventToWaitOn[];
 
+// Specifies an exit code that the test process exits with.
+extern const char kTestExitCode[];
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_TEST_TEST_STRINGS_H_

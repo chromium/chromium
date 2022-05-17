@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -36,10 +37,10 @@ namespace {
 
 const wchar_t kAppId1[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
 
-const wchar_t kBadCmdLine[] = L"cmd.exe";
-const wchar_t kCmdLineExit0[] = L"c:\\windows\\system32\\cmd.exe /c \"exit 0\"";
-const wchar_t kCmdLineExitX[] =
-    L"c:\\windows\\system32\\cmd.exe /c \"exit %1\"";
+const wchar_t kCmdExe[] = L"cmd.exe";
+const wchar_t kBadCmdLine[] = L"\"c:\\Program Files\\cmd.exe\"";
+const wchar_t kCmdLineValid[] =
+    L"\"C:\\Program Files\\Windows Media Player\\wmpnscfg.exe\" /Close";
 
 const wchar_t kCmdId1[] = L"command 1";
 const wchar_t kCmdId2[] = L"command 2";
@@ -48,10 +49,39 @@ const wchar_t kCmdId2[] = L"command 2";
 
 class LegacyAppCommandWebImplTest : public testing::Test {
  protected:
+  LegacyAppCommandWebImplTest()
+      : test_process_command_line_(base::CommandLine::NO_PROGRAM) {}
+  ~LegacyAppCommandWebImplTest() override = default;
+
+  void SetUp() override {
+    base::FilePath system_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
+
+    const base::FilePath from_test_process = system_path.Append(kCmdExe);
+    if (GetTestScope() == UpdaterScope::kUser) {
+      test_process_command_line_ = base::CommandLine(from_test_process);
+      return;
+    }
+
+    base::FilePath programfiles_path;
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_PROGRAM_FILES, &programfiles_path));
+    ASSERT_TRUE(base::CreateTemporaryDirInDir(
+        programfiles_path, L"com_classes_legacy_unittest", &temp_directory_));
+    base::FilePath test_process_path;
+    test_process_path = temp_directory_.Append(kCmdExe);
+
+    ASSERT_TRUE(base::CopyFile(from_test_process, test_process_path));
+    test_process_command_line_ = base::CommandLine(test_process_path);
+  }
+
   void TearDown() override {
     base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()), L"",
                       Wow6432(DELETE))
         .DeleteKey(GetClientKeyName(kAppId1).c_str());
+
+    if (!temp_directory_.empty())
+      base::DeletePathRecursively(temp_directory_);
   }
 
   template <typename T>
@@ -78,8 +108,10 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       const std::wstring& command_line_format,
       const std::vector<std::wstring>& parameters) {
     LegacyAppCommandWebImpl web;
-    if (HRESULT hr = web.Initialize(command_line_format); FAILED(hr))
+    if (HRESULT hr = web.Initialize(GetTestScope(), command_line_format);
+        FAILED(hr)) {
       return absl::nullopt;
+    }
 
     return MakeCommandLine(&web, parameters);
   }
@@ -124,7 +156,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
   void NoCmdTest() {
     Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
     CreateAppClientKey(kAppId1);
-    CreateCommand(kAppId1, kCmdId1, kCmdLineExit0);
+    CreateCommand(kAppId1, kCmdId1, kCmdLineValid);
 
     EXPECT_HRESULT_FAILED(
         LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
@@ -175,35 +207,69 @@ class LegacyAppCommandWebImplTest : public testing::Test {
       base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
     }
   }
+
+  base::CommandLine test_process_command_line_;
+  base::FilePath temp_directory_;
 };
 
+TEST_F(LegacyAppCommandWebImplTest, InvalidPaths) {
+  // Relative paths are invalid.
+  EXPECT_EQ(FormatCommandLine(L"process.exe", {}), absl::nullopt);
+
+  if (GetTestScope() == UpdaterScope::kUser)
+    return;
+
+  // Paths not under %ProgramFiles% or %ProgramFilesX86% are invalid for system.
+  EXPECT_EQ(FormatCommandLine(L"\"C:\\foobar\\process.exe\"", {}),
+            absl::nullopt);
+  EXPECT_EQ(FormatCommandLine(L"C:\\ProgramFiles\\process.exe", {}),
+            absl::nullopt);
+  EXPECT_EQ(FormatCommandLine(L"C:\\windows\\system32\\cmd.exe", {}),
+            absl::nullopt);
+}
+
 TEST_F(LegacyAppCommandWebImplTest, NoArguments) {
-  EXPECT_EQ(FormatCommandLine(L"process.exe", {}).value(), L"process.exe");
-  EXPECT_EQ(FormatCommandLine(L"\"process.exe\"", {}).value(), L"process.exe");
-  EXPECT_EQ(FormatCommandLine(L"\"c:\\path to\\process.exe\"", {}).value(),
-            L"\"c:\\path to\\process.exe\"");
+  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\"", {})
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\"");
+  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\"", {})
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\"");
 }
 
 TEST_F(LegacyAppCommandWebImplTest, UnformattedParameters) {
   std::wstring process_name;
   std::wstring arguments;
-  EXPECT_EQ(FormatCommandLine(L"process.exe abc=1", {}).value(),
-            L"process.exe abc=1");
-  EXPECT_EQ(FormatCommandLine(L"process.exe abc=1 xyz=2", {}).value(),
-            L"process.exe abc=1 xyz=2");
-  EXPECT_EQ(FormatCommandLine(L"process.exe  abc=1  xyz=2   q ", {}).value(),
-            L"process.exe abc=1 xyz=2 q");
-  EXPECT_EQ(FormatCommandLine(L"process.exe \"abc = 1\"", {}).value(),
-            L"process.exe \"abc = 1\"");
-  EXPECT_EQ(FormatCommandLine(L"process.exe abc\" = \"1", {}).value(),
-            L"process.exe \"abc = 1\"");
+  EXPECT_EQ(
+      FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" abc=1", {})
+          .value(),
+      L"\"C:\\Program Files (x86)\\process.exe\" abc=1");
+  EXPECT_EQ(FormatCommandLine(
+                L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2", {})
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2");
+  EXPECT_EQ(
+      FormatCommandLine(
+          L"\"C:\\Program Files (x86)\\process.exe\"  abc=1  xyz=2   q ", {})
+          .value(),
+      L"\"C:\\Program Files (x86)\\process.exe\" abc=1 xyz=2 q");
+  EXPECT_EQ(FormatCommandLine(
+                L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"", {})
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"");
+  EXPECT_EQ(FormatCommandLine(
+                L"\"C:\\Program Files (x86)\\process.exe\" abc\" = \"1", {})
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\" \"abc = 1\"");
 
-  EXPECT_EQ(FormatCommandLine(L"\"c:\\path to\\process.exe\" \"abc = 1\"", {})
-                .value(),
-            L"\"c:\\path to\\process.exe\" \"abc = 1\"");
-  EXPECT_EQ(FormatCommandLine(L"\"c:\\path to\\process.exe\" abc\" = \"1", {})
-                .value(),
-            L"\"c:\\path to\\process.exe\" \"abc = 1\"");
+  EXPECT_EQ(
+      FormatCommandLine(L"\"c:\\Program Files\\process.exe\" \"abc = 1\"", {})
+          .value(),
+      L"\"c:\\Program Files\\process.exe\" \"abc = 1\"");
+  EXPECT_EQ(
+      FormatCommandLine(L"\"c:\\Program Files\\process.exe\" abc\" = \"1", {})
+          .value(),
+      L"\"c:\\Program Files\\process.exe\" \"abc = 1\"");
 }
 
 TEST_F(LegacyAppCommandWebImplTest, SimpleParameters) {
@@ -212,17 +278,25 @@ TEST_F(LegacyAppCommandWebImplTest, SimpleParameters) {
   parameters.push_back(L"p2");
   parameters.push_back(L"p3");
 
-  EXPECT_EQ(FormatCommandLine(L"process.exe abc=%1", parameters).value(),
-            L"process.exe abc=p1");
-  EXPECT_EQ(
-      FormatCommandLine(L"process.exe abc=%1 %3 %2=x", parameters).value(),
-      L"process.exe abc=p1 p3 p2=x");
+  EXPECT_EQ(FormatCommandLine(
+                L"\"C:\\Program Files (x86)\\process.exe\" abc=%1", parameters)
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\" abc=p1");
+  EXPECT_EQ(FormatCommandLine(
+                L"\"C:\\Program Files (x86)\\process.exe\" abc=%1 %3 %2=x",
+                parameters)
+                .value(),
+            L"\"C:\\Program Files (x86)\\process.exe\" abc=p1 p3 p2=x");
 
-  EXPECT_EQ(FormatCommandLine(L"process.exe %4", parameters), absl::nullopt);
+  EXPECT_EQ(FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" %4",
+                              parameters),
+            absl::nullopt);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, SimpleParametersNoFormatParameters) {
-  EXPECT_EQ(FormatCommandLine(L"process.exe abc=%1", {}), absl::nullopt);
+  EXPECT_EQ(
+      FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" abc=%1", {}),
+      absl::nullopt);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, FormatParametersSucceeds) {
@@ -236,11 +310,13 @@ TEST_F(LegacyAppCommandWebImplTest, FormatParametersSucceeds) {
   };
 
   for (const auto& test_case : test_cases) {
-    EXPECT_EQ(
-        FormatCommandLine(base::StrCat({L"process.exe ", test_case.input}),
-                          {L"p1", L"p2", L"p3"})
-            .value(),
-        base::StrCat({L"process.exe ", test_case.output}));
+    EXPECT_EQ(FormatCommandLine(
+                  base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
+                                test_case.input}),
+                  {L"p1", L"p2", L"p3"})
+                  .value(),
+              base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
+                            test_case.output}));
   }
 }
 
@@ -256,8 +332,10 @@ TEST_F(LegacyAppCommandWebImplTest, FormatParametersFails) {
   };
 
   for (const wchar_t* test_case : test_cases) {
-    EXPECT_EQ(FormatCommandLine(base::StrCat({L"process.exe ", test_case}),
-                                {L"p1", L"p2", L"p3"}),
+    EXPECT_EQ(FormatCommandLine(
+                  base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
+                                test_case}),
+                  {L"p1", L"p2", L"p3"}),
               absl::nullopt);
   }
 }
@@ -295,8 +373,12 @@ TEST_F(LegacyAppCommandWebImplTest, ParameterQuoting) {
 
   for (const auto& test_case : test_cases) {
     std::wstring command_line =
-        FormatCommandLine(L"process.exe %1", {test_case.input}).value();
-    EXPECT_EQ(command_line, base::StrCat({L"process.exe ", test_case.output}));
+        FormatCommandLine(L"\"C:\\Program Files (x86)\\process.exe\" %1",
+                          {test_case.input})
+            .value();
+    EXPECT_EQ(command_line,
+              base::StrCat({L"\"C:\\Program Files (x86)\\process.exe\" ",
+                            test_case.output}));
 
     // The formatted output is now sent through ::CommandLineToArgvW to verify
     // that it produces the original input.
@@ -326,21 +408,16 @@ TEST_F(LegacyAppCommandWebImplTest, NoCmd) {
 }
 
 TEST_F(LegacyAppCommandWebImplTest, LoadCommand) {
-  EXPECT_EQ(FormatCommandLine(kAppId1, kCmdId1, kCmdLineExit0, {}).value(),
-            kCmdLineExit0);
+  EXPECT_EQ(FormatCommandLine(kAppId1, kCmdId1, kCmdLineValid, {}).value(),
+            kCmdLineValid);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, Execute) {
-  base::FilePath temp_file;
-  EXPECT_TRUE(base::CreateTemporaryFile(&temp_file));
-  EXPECT_TRUE(base::DeleteFile(temp_file));
-
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
       kAppId1, kCmdId1,
-      base::StrCat(
-          {L"c:\\windows\\system32\\cmd.exe /c \"echo hello world! > \"",
-           temp_file.value(), L"\"\""}),
+      base::StrCat({test_process_command_line_.GetCommandLineString(),
+                    L" /c \"exit 7\""}),
       app_command_web));
 
   UINT status = 0;
@@ -365,31 +442,32 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
   EXPECT_EQ(status, COMMAND_STATUS_COMPLETE);
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
-  EXPECT_EQ(exit_code, 0U);
-
-  EXPECT_TRUE(base::PathExists(temp_file));
-  EXPECT_TRUE(base::DeleteFile(temp_file));
+  EXPECT_EQ(exit_code, 7U);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-  ASSERT_HRESULT_SUCCEEDED(
-      CreateAppCommandWeb(kAppId1, kCmdId1, kCmdLineExitX, app_command_web));
+  ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
+      kAppId1, kCmdId1,
+      base::StrCat({test_process_command_line_.GetCommandLineString(),
+                    L" /c \"exit %1\""}),
+      app_command_web));
 
-  ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
-      base::win::ScopedVariant(L"3"), base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant));
+  ASSERT_HRESULT_SUCCEEDED(
+      app_command_web->execute(base::win::ScopedVariant(L"5420"),
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant,
+                               base::win::ScopedVariant::kEmptyVariant));
   WaitForUpdateCompletion(app_command_web, TestTimeouts::action_max_timeout());
 
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
-  EXPECT_EQ(exit_code, 3U);
+  EXPECT_EQ(exit_code, 5420U);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
@@ -413,6 +491,9 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
+  if (GetTestScope() == UpdaterScope::kSystem)
+    return;
+
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   base::CommandLine command_line = GetTestProcessCommandLine(GetTestScope());
 
@@ -427,21 +508,22 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
   ASSERT_NE(event.handle(), nullptr);
 
   command_line.AppendSwitchNative(kTestEventToWaitOn, L"%1");
+  command_line.AppendSwitchNative(kTestExitCode, L"%2");
+
   ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
       kAppId1, kCmdId1,
       command_line.GetCommandLineStringWithUnsafeInsertSequences(),
       app_command_web));
 
-  ASSERT_HRESULT_SUCCEEDED(
-      app_command_web->execute(base::win::ScopedVariant(attr.name.c_str()),
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant,
-                               base::win::ScopedVariant::kEmptyVariant));
+  ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
+      base::win::ScopedVariant(attr.name.c_str()),
+      base::win::ScopedVariant(L"999"), base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant));
 
   UINT status = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
@@ -453,6 +535,7 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
 
   DWORD exit_code = 0;
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(exit_code, 999U);
 }
 
 }  // namespace updater

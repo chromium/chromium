@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -219,6 +220,11 @@ std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
     output.push_back(L'"');
 
   return output;
+}
+
+bool IsParentOf(int key, const base::FilePath& child) {
+  base::FilePath path;
+  return base::PathService::Get(key, &path) && path.IsParent(child);
 }
 
 }  // namespace
@@ -730,17 +736,34 @@ HRESULT LegacyAppCommandWebImpl::CreateLegacyAppCommandWebImpl(
     return hr;
   }
 
-  return web_impl->Initialize(command_format);
+  return web_impl->Initialize(scope, command_format);
 }
 
-HRESULT LegacyAppCommandWebImpl::Initialize(std::wstring command_format) {
+bool LegacyAppCommandWebImpl::InitializeExecutable(
+    UpdaterScope scope,
+    const base::FilePath& exe_path) {
+  if (!exe_path.IsAbsolute() ||
+      (scope == UpdaterScope::kSystem &&
+       !IsParentOf(base::DIR_PROGRAM_FILESX86, exe_path) &&
+       !IsParentOf(base::DIR_PROGRAM_FILES6432, exe_path))) {
+    return false;
+  }
+
+  executable_ = exe_path;
+  return true;
+}
+
+HRESULT LegacyAppCommandWebImpl::Initialize(UpdaterScope scope,
+                                            std::wstring command_format) {
   int num_args = 0;
   ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
   if (!args.is_valid() || num_args < 1)
     return E_INVALIDARG;
 
   const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
-  executable_ = base::FilePath(argv[0]);
+  if (!InitializeExecutable(scope, base::FilePath(argv[0])))
+    return E_INVALIDARG;
+
   parameters_.clear();
   for (int i = 1; i < num_args; ++i)
     parameters_.push_back(argv[i]);
