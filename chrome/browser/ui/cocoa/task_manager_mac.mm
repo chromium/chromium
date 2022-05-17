@@ -28,7 +28,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cocoa/controls/button_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -251,9 +250,9 @@ NSString* ColumnIdentifier(int id) {
 
   // Create the button that terminates the selected process in the table.
   _endProcessButton =
-      [ButtonUtils buttonWithTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_KILL)
-                            action:@selector(killSelectedProcesses:)
-                            target:self];
+      [NSButton buttonWithTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_KILL)
+                         target:self
+                         action:@selector(killSelectedProcesses:)];
   [_endProcessButton setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];
   [_endProcessButton sizeToFit];
   NSRect buttonFrame = [_endProcessButton frame];
