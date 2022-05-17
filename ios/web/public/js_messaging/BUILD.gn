@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
+
 source_set("js_messaging") {
   deps = [
     "//base",
@@ -21,4 +23,9 @@ source_set("js_messaging") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+compile_ts("util_scripts") {
+  allow_js = true
+  sources = [ "resources/utils.ts" ]
 }

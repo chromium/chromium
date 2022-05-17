@@ -136,6 +136,8 @@ __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
 
 /**
  * Posts |message| to the webkit message handler specified by |handlerName|.
+ * DEPRECATED: This function will be removed soon. Instead, use the
+ * implementation at //ios/web/public/js_messaging/resources/utils.ts
  *
  * @param {string} handlerName The name of the webkit message handler.
  * @param {Object} message The message to post to the handler.
