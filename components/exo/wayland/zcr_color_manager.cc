@@ -16,14 +16,20 @@
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/wayland_display_observer.h"
+#include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/base/wayland/color_manager_util.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/triangle_f.h"
+#include "wayland-server-protocol.h"
 
 namespace exo {
 namespace wayland {
@@ -55,7 +61,8 @@ class ColorManagerColorSpace {
   const zcr_color_manager_v1_eotf_names eotf;
   const SkColorSpacePrimaries primaries;
 
-  virtual void SendColorSpaceInfo(wl_resource* color_space_resource) {
+  void SendColorSpaceInfo(wl_resource* color_space_resource) {
+    SendCustomColorSpaceInfo(color_space_resource);
     zcr_color_space_v1_send_params(
         color_space_resource, eotf,
         static_cast<int>(FLOAT_TO_PARAM(primaries.fRX)),
@@ -68,6 +75,8 @@ class ColorManagerColorSpace {
         static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
     zcr_color_space_v1_send_done(color_space_resource);
   }
+
+  virtual void SendCustomColorSpaceInfo(wl_resource* color_space_resource) {}
 };
 
 class NameBasedColorSpace final : public ColorManagerColorSpace {
@@ -87,32 +96,10 @@ class NameBasedColorSpace final : public ColorManagerColorSpace {
   const zcr_color_manager_v1_chromaticity_names chromaticity;
   const zcr_color_manager_v1_whitepoint_names whitepoint;
 
-  void SendColorSpaceInfo(wl_resource* color_space_resource) override {
+  void SendCustomColorSpaceInfo(wl_resource* color_space_resource) override {
     zcr_color_space_v1_send_names(color_space_resource, eotf, chromaticity,
                                   whitepoint);
-    ColorManagerColorSpace::SendColorSpaceInfo(color_space_resource);
   }
-};
-
-class ParamsBasedColorSpace final : public ColorManagerColorSpace {
- public:
-  explicit ParamsBasedColorSpace(gfx::ColorSpace color_space,
-                                 zcr_color_manager_v1_eotf_names eotf,
-                                 uint32_t primary_r_x,
-                                 uint32_t primary_r_y,
-                                 uint32_t primary_g_x,
-                                 uint32_t primary_g_y,
-                                 uint32_t primary_b_x,
-                                 uint32_t primary_b_y,
-                                 uint32_t whitepoint_x,
-                                 uint32_t whitepoint_y)
-      : ColorManagerColorSpace(
-            color_space,
-            eotf,
-            {PARAM_TO_FLOAT(primary_r_x), PARAM_TO_FLOAT(primary_r_y),
-             PARAM_TO_FLOAT(primary_g_x), PARAM_TO_FLOAT(primary_g_y),
-             PARAM_TO_FLOAT(primary_b_x), PARAM_TO_FLOAT(primary_b_y),
-             PARAM_TO_FLOAT(whitepoint_x), PARAM_TO_FLOAT(whitepoint_y)}) {}
 };
 
 // Wrap a surface pointer and handle relevant events.
@@ -199,17 +186,38 @@ void color_management_output_get_color_space(
     struct wl_client* client,
     struct wl_resource* color_management_output_resource,
     uint32_t id) {
+  auto* display_handler =
+      GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
+
+  display::Display display;
+  bool exists = display::Screen::GetScreen()->GetDisplayWithDisplayId(
+      display_handler->id(), &display);
+  if (!exists) {
+    // WaylandDisplayHandler is created asynchronously, and the
+    // display can be deleted before created. This usually won't happen
+    // in real environment, but can happen in test environment.
+    return;
+  }
+  // TODO(mrfemi): replace with actual snapshot color space.
+  auto snapshot_color_space = gfx::ColorSpace::CreateSRGB();
+
+  // create new zcr color space for the current color space of the output
+  auto color_space =
+      std::make_unique<ColorManagerColorSpace>(snapshot_color_space);
+
   wl_resource* color_space_resource =
       wl_resource_create(client, &zcr_color_space_v1_interface, 1, id);
 
-  wl_resource_set_implementation(color_space_resource,
-                                 &color_space_v1_implementation,
-                                 /*data=*/nullptr, /*destroy=*/nullptr);
+  SetImplementation(color_space_resource, &color_space_v1_implementation,
+                    std::move(color_space));
 }
 
 void color_management_output_destroy(
     struct wl_client* client,
     struct wl_resource* color_management_output_resource) {
+  auto* display_handler =
+      GetUserDataAs<WaylandDisplayHandler>(color_management_output_resource);
+  display_handler->UnsetColorManagementOutputResource();
   wl_resource_destroy(color_management_output_resource);
 }
 
@@ -426,9 +434,11 @@ void color_manager_get_color_management_output(
   wl_resource* color_management_output_resource = wl_resource_create(
       client, &zcr_color_management_output_v1_interface, 1, id);
 
+  auto* display_handler = GetUserDataAs<WaylandDisplayHandler>(output);
   wl_resource_set_implementation(color_management_output_resource,
                                  &color_management_output_v1_implementation,
-                                 /*data=*/nullptr, /*destroy=*/nullptr);
+                                 display_handler, nullptr);
+  display_handler->OnGetColorManagementOutput(color_management_output_resource);
 }
 
 void color_manager_get_color_management_surface(

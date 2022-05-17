@@ -9,10 +9,15 @@
 
 #include <string>
 
+#include "chrome-color-management-server-protocol.h"
+#include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/zcr_color_manager.h"
 #include "components/exo/wm_helper.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "wayland-server-protocol-core.h"
 
 namespace exo {
 namespace wayland {
@@ -73,6 +78,20 @@ void WaylandDisplayHandler::OnDisplayMetricsChanged(
   for (auto& observer : observers_)
     needs_done |= observer.SendDisplayMetrics(display, changed_metrics);
 
+  // if the color space changed, send a
+  // zcr_color_management_output.color_space_changed() event as well as
+  // wl_output_send_done() event.
+  if ((changed_metrics & DISPLAY_METRIC_COLOR_SPACE) ==
+      DISPLAY_METRIC_COLOR_SPACE) {
+    if (color_management_output_resource_) {
+      // TODO(b/217795369): will need to track and send events for each
+      // potential client's zcr color management output resource.
+      zcr_color_management_output_v1_send_color_space_changed(
+          color_management_output_resource_);
+      needs_done = true;
+    }
+  }
+
   if (needs_done) {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_DONE_SINCE_VERSION) {
@@ -98,6 +117,26 @@ void WaylandDisplayHandler::OnXdgOutputCreated(
 void WaylandDisplayHandler::UnsetXdgOutputResource() {
   DCHECK(xdg_output_resource_);
   xdg_output_resource_ = nullptr;
+}
+
+void WaylandDisplayHandler::OnGetColorManagementOutput(
+    wl_resource* color_management_output_resource) {
+  DCHECK(!color_management_output_resource_);
+  color_management_output_resource_ = color_management_output_resource;
+
+  // TODO(b/215778539): send an appropriate EDR value. Currently using dummy
+  // value of 3000. Also find out when dynamic range changes and if it happens
+  // in OnDisplayMetricsChanged().
+  zcr_color_management_output_v1_send_extended_dynamic_range(
+      color_management_output_resource_, 3000);
+
+  wl_output_send_done(output_resource_);
+  wl_client_flush(wl_resource_get_client(output_resource_));
+}
+
+void WaylandDisplayHandler::UnsetColorManagementOutputResource() {
+  DCHECK(color_management_output_resource_);
+  color_management_output_resource_ = nullptr;
 }
 
 bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,

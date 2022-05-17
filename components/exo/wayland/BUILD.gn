@@ -73,6 +73,7 @@ source_set("wayland") {
     "//components/exo",
     "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//device/gamepad",

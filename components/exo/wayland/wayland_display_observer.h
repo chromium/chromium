@@ -58,6 +58,13 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   // Unset the xdg output object.
   void UnsetXdgOutputResource();
 
+  // TODO(b/223538419): Move this functionality into an observer
+  // Called when a color_management_output object is created through
+  // get_color_management_output() request by the wayland client.
+  void OnGetColorManagementOutput(wl_resource* color_manager_output_resource);
+  // Unset the color management object
+  void UnsetColorManagementOutputResource();
+
  protected:
   wl_resource* output_resource() const { return output_resource_; }
 
@@ -78,6 +85,9 @@ class WaylandDisplayHandler : public display::DisplayObserver,
 
   // Resource associated with a zxdg_output_v1 object.
   wl_resource* xdg_output_resource_ = nullptr;
+
+  // Resource associated with a zcr_color_management_output_v1 object.
+  wl_resource* color_management_output_resource_ = nullptr;
 
   base::ObserverList<WaylandDisplayObserver> observers_;
 
