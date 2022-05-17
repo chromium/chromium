@@ -240,11 +240,13 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         "SBClientPhishing.PreClassificationCheckResult", result,
         PreClassificationCheckResult::NO_CLASSIFY_MAX);
 
-    ukm::SourceId ukm_source =
-        web_contents_->GetMainFrame()->GetPageUkmSourceId();
-    ukm::builders::SBClientPhishing_ClassificationStart builder(ukm_source);
-    builder.SetPreClassificationCheckResult(static_cast<int>(result));
-    builder.Record(ukm::UkmRecorder::Get());
+    if (web_contents_ && web_contents_->GetMainFrame()) {
+      ukm::SourceId ukm_source =
+          web_contents_->GetMainFrame()->GetPageUkmSourceId();
+      ukm::builders::SBClientPhishing_ClassificationStart builder(ukm_source);
+      builder.SetPreClassificationCheckResult(static_cast<int>(result));
+      builder.Record(ukm::UkmRecorder::Get());
+    }
   }
 
   bool ShouldClassifyForPhishing() const {
