@@ -34,9 +34,6 @@ Config::Config() {
   max_visits_to_cluster = base::GetFieldTrialParamByFeatureAsInt(
       internal::kJourneys, "JourneysMaxVisitsToCluster", max_visits_to_cluster);
 
-  max_days_to_cluster = base::GetFieldTrialParamByFeatureAsInt(
-      internal::kJourneys, "JourneysMaxDaysToCluster", max_days_to_cluster);
-
   max_keyword_phrases = base::GetFieldTrialParamByFeatureAsInt(
       internal::kJourneys, "JourneysMaxKeywordPhrases", max_keyword_phrases);
 

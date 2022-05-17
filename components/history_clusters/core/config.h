@@ -26,12 +26,6 @@ struct Config {
   // the number of visits sent to the clustering backend per batch.
   int max_visits_to_cluster = 1000;
 
-  // The recency threshold controlling which visits will be clustered. This
-  // isn't the only factor; i.e. visits older than `MaxDaysToCluster()` may
-  // still be clustered. Only applies when using persisted visit context
-  // annotations; i.e. `kPersistContextAnnotationsInHistoryDb` is true.
-  int max_days_to_cluster = 9;
-
   // A soft cap on the number of keyword phrases to cache. 5000 should be more
   // than enough, as the 99.9th percentile of users has 2000. A few nuances:
   //  - We cache both entity keywords and URLs, each limited separately.
