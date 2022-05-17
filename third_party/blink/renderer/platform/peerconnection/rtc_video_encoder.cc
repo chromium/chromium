@@ -1310,11 +1310,14 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         static_cast<WebRtcVideoFrameAdapter*>(buffer.get());
     frame = frame_adapter->getMediaVideoFrame();
     const media::VideoFrame::StorageType storage = frame->storage_type();
-    const bool is_shmem_frame = storage == media::VideoFrame::STORAGE_SHMEM;
+    const bool is_memory_based_frame =
+        storage == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
+        storage == media::VideoFrame::STORAGE_OWNED_MEMORY ||
+        storage == media::VideoFrame::STORAGE_SHMEM;
     const bool is_gmb_frame =
         storage == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
     requires_copy_or_scale =
-        RequiresSizeChange(*frame) || !(is_shmem_frame || is_gmb_frame);
+        RequiresSizeChange(*frame) || !(is_memory_based_frame || is_gmb_frame);
   }
 
   if (requires_copy_or_scale) {
