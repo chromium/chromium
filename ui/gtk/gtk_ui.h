@@ -93,7 +93,6 @@ class GtkUi : public views::LinuxUI {
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   void NotifyWindowManagerStartupComplete() override;
-  void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
@@ -141,6 +140,10 @@ class GtkUi : public views::LinuxUI {
 
   // Updates |default_font_*|.
   void UpdateDefaultFont();
+
+  // Updates the device scale factor so that the default font size can be
+  // recalculated.
+  void UpdateDeviceScaleFactor();
 
   float GetRawDeviceScaleFactor();
 

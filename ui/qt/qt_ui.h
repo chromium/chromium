@@ -66,7 +66,6 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   void NotifyWindowManagerStartupComplete() override;
-  void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;

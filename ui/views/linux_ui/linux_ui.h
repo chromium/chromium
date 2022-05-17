@@ -168,10 +168,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // longer use GTK (which did this automatically) for the main windows.
   virtual void NotifyWindowManagerStartupComplete() = 0;
 
-  // Updates the device scale factor so that the default font size can be
-  // recalculated.
-  virtual void UpdateDeviceScaleFactor() = 0;
-
   // Determines the device scale factor of the primary screen.
   virtual float GetDeviceScaleFactor() const = 0;
 

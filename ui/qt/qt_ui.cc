@@ -204,15 +204,20 @@ std::unique_ptr<views::Border> QtUi::CreateNativeBorder(
 
 QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return views::LinuxUI::WindowFrameAction::kNone;
+  // QT doesn't have settings for the window frame action since it prefers
+  // server-side decorations.  So use the hardcoded behavior of a QMdiSubWindow,
+  // which also matches the default Chrome behavior when there's no LinuxUI.
+  switch (source) {
+    case WindowFrameActionSource::kDoubleClick:
+      return WindowFrameAction::kToggleMaximize;
+    case WindowFrameActionSource::kMiddleClick:
+      return WindowFrameAction::kNone;
+    case WindowFrameActionSource::kRightClick:
+      return WindowFrameAction::kMenu;
+  }
 }
 
 void QtUi::NotifyWindowManagerStartupComplete() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::UpdateDeviceScaleFactor() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
@@ -231,12 +236,12 @@ bool QtUi::AnimationsEnabled() const {
 }
 
 std::unique_ptr<views::NavButtonProvider> QtUi::CreateNavButtonProvider() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT prefers server-side decorations.
   return nullptr;
 }
 
 views::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT prefers server-side decorations.
   return nullptr;
 }
 
@@ -246,27 +251,34 @@ base::flat_map<std::string, std::string> QtUi::GetKeyboardLayoutMap() {
 }
 
 std::string QtUi::GetCursorThemeName() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // This is only used on X11 where QT obtains the cursor theme from XSettings.
+  // However, ui/base/x/x11_cursor_loader.cc already handles this.
   return std::string();
 }
 
 int QtUi::GetCursorThemeSize() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // This is only used on X11 where QT obtains the cursor size from XSettings.
+  // However, ui/base/x/x11_cursor_loader.cc already handles this.
   return 0;
 }
 
 std::vector<std::string> QtUi::GetAvailableSystemThemeNamesForTest() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return {};
+  // In QT, themes are binary plugins that are loaded on start and can't be
+  // changed at runtime.  The style may change, but there's no common interface
+  // for doing this from a client.  Return a single empty theme here to
+  // represent the current theme.
+  return {std::string()};
 }
 
 void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Ensure we only get passed the "current theme" name that we returned from
+  // GetAvailableSystemThemeNamesForTest() above.
+  DCHECK(theme_name.empty());
 }
 
 bool QtUi::MatchEvent(const ui::Event& event,
                       std::vector<ui::TextEditCommandAuraLinux>* commands) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // QT doesn't have "key themes" (eg. readline bindings) like GTK.
   return false;
 }
 
