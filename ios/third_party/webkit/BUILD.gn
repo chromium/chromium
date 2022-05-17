@@ -81,7 +81,6 @@ template("compile_webkit") {
     args += [
       "-j",
       "4",
-      "-quiet",
     ]
   }
 }
