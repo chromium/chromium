@@ -1892,6 +1892,8 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
     }
   }
 
+  UpdateDocumentAnnotatedRegions();
+
   GetLayoutView()->EnclosingLayer()->UpdateLayerPositionsAfterLayout();
   frame_->Selection().DidLayout();
 
@@ -3237,7 +3239,6 @@ void LocalFrameView::UpdateStyleAndLayout() {
     PerformPostLayoutTasks(visual_viewport_size_changed);
     GetFrame().GetDocument()->LayoutUpdated();
   }
-  UpdateDocumentAnnotatedRegions();
   UpdateGeometriesIfNeeded();
 }
 
