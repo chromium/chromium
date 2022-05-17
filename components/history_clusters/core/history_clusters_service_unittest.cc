@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -27,6 +28,7 @@
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -917,6 +919,66 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
   // The keyword cache should be repopulated.
   EXPECT_TRUE(history_clusters_service_->DoesURLMatchAnyCluster(
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
+}
+
+TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
+  // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
+  AddHardcodedTestDataToHistoryService();
+
+  // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster`, with the
+  // continuation time returned from the previous task, and return the visits
+  // it returns.
+  QueryClustersContinuationParams continuation_params = {};
+  const auto next_visits = [&]() {
+    std::vector<history::AnnotatedVisit> visits;
+    base::CancelableTaskTracker task_tracker;
+    history_service_->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<GetAnnotatedVisitsToCluster>(
+            IncompleteVisitMap{}, base::Time(), continuation_params, false,
+            base::BindLambdaForTesting(
+                [&](std::vector<history::AnnotatedVisit> visits_temp,
+                    QueryClustersContinuationParams continuation_params_temp) {
+                  visits = visits_temp;
+                  continuation_params = continuation_params_temp;
+                })),
+        &task_tracker);
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+    return visits;
+  };
+
+  {
+    // 1st query should return the oldest, 60-day-old visit.
+    const auto visits = next_visits();
+    ASSERT_EQ(visits.size(), 1u);
+    EXPECT_EQ(visits[0].visit_row.visit_id, 4);
+    EXPECT_TRUE(continuation_params.is_continuation);
+    EXPECT_FALSE(continuation_params.is_done);
+  }
+  {
+    // 2nd query should return the next oldest, 2-day-old visit.
+    const auto visits = next_visits();
+    ASSERT_EQ(visits.size(), 1u);
+    EXPECT_EQ(visits[0].visit_row.visit_id, 1);
+    EXPECT_TRUE(continuation_params.is_continuation);
+    EXPECT_FALSE(continuation_params.is_done);
+  }
+  {
+    // 3rd query should return the next oldest, 1-day-old visits. Visit 3 is
+    // excluded as it's from sync.
+    const auto visits = next_visits();
+    ASSERT_EQ(visits.size(), 2u);
+    EXPECT_EQ(visits[0].visit_row.visit_id, 5);
+    EXPECT_EQ(visits[1].visit_row.visit_id, 2);
+    EXPECT_TRUE(continuation_params.is_continuation);
+    EXPECT_FALSE(continuation_params.is_done);
+  }
+  {
+    // 4th query should return no visits; all visits were exhausted.
+    const auto visits = next_visits();
+    ASSERT_TRUE(visits.empty());
+    EXPECT_TRUE(continuation_params.is_done);
+  }
 }
 
 class HistoryClustersServiceMaxKeywordsTest

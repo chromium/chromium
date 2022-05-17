@@ -1612,6 +1612,12 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
   return ToAnnotatedVisits(visit_rows);
 }
 
+base::Time HistoryBackend::FindMostRecentClusteredTime() {
+  // TODO(manukh): Implement. Since we don't have persisted clustered visits
+  //  yet, there are no visits to take the timestamp of.
+  return base::Time::Now() - base::Days(kExpireDaysThreshold);
+}
+
 void HistoryBackend::ReplaceClusters(
     const std::vector<int64_t>& ids_to_delete,
     const std::vector<Cluster>& clusters_to_add) {

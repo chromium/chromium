@@ -468,6 +468,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
       const std::vector<VisitID>& visit_ids);
 
+  // Returns the time of the most recent clustered visits; i.e. the boundary
+  // until which visits have been clustered. It's possible for there to be
+  // unclustered visits older than this boundary, since synced visits older than
+  // this boundary won't be clustered nor cause re-clustering.
+  base::Time FindMostRecentClusteredTime();
+
   void ReplaceClusters(const std::vector<int64_t>& ids_to_delete,
                        const std::vector<Cluster>& clusters_to_add);
 

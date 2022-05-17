@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_to_iso8601.h"
@@ -64,7 +65,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
         FROM_HERE,
         std::make_unique<GetAnnotatedVisitsToCluster>(
             incomplete_visit_context_annotations_, begin_time_,
-            continuation_params_,
+            continuation_params_, true,
             base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                                OnGotAnnotatedVisitsToCluster,
                            weak_ptr_factory_.GetWeakPtr())),

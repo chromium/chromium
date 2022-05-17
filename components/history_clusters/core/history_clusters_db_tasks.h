@@ -30,14 +30,15 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
                                            QueryClustersContinuationParams)>;
 
   // For a given `end_time`, this returns an appropriate beginning time
-  // designed to avoid breaking up internet browsing sessions. In the morning,
-  // it returns 4AM the previous day. In the afternoon, it returns 4AM today.
-  static base::Time GetBeginTimeOnDayBoundary(base::Time end_time);
+  // designed to avoid breaking up internet browsing sessions. Before 4PM, it
+  // returns 4AM the previous day. After 4PM, it returns 4AM today.
+  static base::Time GetBeginTimeOnDayBoundary(base::Time time);
 
   GetAnnotatedVisitsToCluster(
       IncompleteVisitMap incomplete_visit_map,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
+      bool recent_first,
       Callback callback);
   ~GetAnnotatedVisitsToCluster() override;
 
@@ -48,8 +49,12 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
  private:
   // Helper for `RunOnDBThread()` that generates the `QueryOptions` for each
-  // history request.
-  history::QueryOptions GetHistoryQueryOptions();
+  // history request. Because `base::Time::Now()` may change during the async
+  // history request, and because determining whether history was exhausted
+  // depends on whether the query reached `Now()`, `now` is set when this
+  // function is called and shared with `IncrementContinuationParams()`.
+  history::QueryOptions GetHistoryQueryOptions(history::HistoryBackend* backend,
+                                               base::Time now);
 
   // Helper for `RunOnDBThread()` that adds complete but unclustered visits
   // from `backend` to `annotated_visits_`. Returns whether the visits were
@@ -68,9 +73,11 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   void RemoveVisitsFromSync();
 
   // Helper for `RunOnDBThread()` that updates `continuation_params_` after each
-  // history request preparing it for the next call.
+  // history request preparing it for the next call. See
+  // `GetHistoryQueryOptions()`'s comment regarding `now`.
   void IncrementContinuationParams(history::QueryOptions options,
-                                   bool limited_by_max_count);
+                                   bool limited_by_max_count,
+                                   base::Time now);
 
   // Incomplete visits that have history rows and are withing the time frame of
   // the completed visits fetched will be appended to the annotated visits
@@ -89,6 +96,10 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // updated after each history request. The final state will be returned to
   // `callback_` to be used in the next query task.
   QueryClustersContinuationParams continuation_params_;
+
+  // Whether to begin with the most recent visits and iterate towards older
+  // visits, or vice versa.
+  bool recent_first_ = true;
 
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.
