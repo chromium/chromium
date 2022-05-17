@@ -36,11 +36,11 @@ OmniboxSuggestionUsedMetricsObserver::OmniboxSuggestionUsedMetricsObserver() =
 
 OmniboxSuggestionUsedMetricsObserver::~OmniboxSuggestionUsedMetricsObserver() {}
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class is interested only in the primary page.
   return STOP_OBSERVING;
 }
 
