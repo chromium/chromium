@@ -41,11 +41,23 @@ void UserNoteBaseTest::TearDown() {
 
 void UserNoteBaseTest::AddNewNotesToService(size_t count) {
   for (size_t i = 0; i < count; ++i) {
+    size_t last = note_ids_.size();
     note_ids_.push_back(base::UnguessableToken::Create());
     UserNoteService::ModelMapEntry entry(std::make_unique<UserNote>(
-        note_ids_[i], GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+        note_ids_[last], GetTestUserNoteMetadata(), GetTestUserNoteBody(),
         GetTestUserNotePageTarget()));
-    note_service_->model_map_.emplace(note_ids_[i], std::move(entry));
+    note_service_->model_map_.emplace(note_ids_[last], std::move(entry));
+  }
+}
+
+void UserNoteBaseTest::AddPartialNotesToService(size_t count) {
+  for (size_t i = 0; i < count; ++i) {
+    size_t last = note_ids_.size();
+    note_ids_.push_back(base::UnguessableToken::Create());
+    UserNoteService::ModelMapEntry entry(std::make_unique<UserNote>(
+        note_ids_[last], GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+        GetTestUserNotePageTarget()));
+    note_service_->creation_map_.emplace(note_ids_[last], std::move(entry));
   }
 }
 
@@ -91,6 +103,12 @@ bool UserNoteBaseTest::DoesModelExist(const base::UnguessableToken& note_id) {
   return entry_it != note_service_->model_map_.end();
 }
 
+bool UserNoteBaseTest::DoesPartialModelExist(
+    const base::UnguessableToken& note_id) {
+  const auto& entry_it = note_service_->creation_map_.find(note_id);
+  return entry_it != note_service_->creation_map_.end();
+}
+
 bool UserNoteBaseTest::DoesManagerExistForId(
     const base::UnguessableToken& note_id,
     UserNoteManager* manager) {
@@ -104,6 +122,10 @@ bool UserNoteBaseTest::DoesManagerExistForId(
 
 size_t UserNoteBaseTest::ModelMapSize() {
   return note_service_->model_map_.size();
+}
+
+size_t UserNoteBaseTest::CreationMapSize() {
+  return note_service_->creation_map_.size();
 }
 
 size_t UserNoteBaseTest::InstanceMapSize(UserNoteManager* manager) {

@@ -32,6 +32,8 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
 
   void AddNewNotesToService(size_t count);
 
+  void AddPartialNotesToService(size_t count);
+
   UserNoteManager* ConfigureNewManager();
 
   void AddNewInstanceToManager(UserNoteManager* manager,
@@ -41,10 +43,14 @@ class UserNoteBaseTest : public content::RenderViewHostTestHarness {
 
   bool DoesModelExist(const base::UnguessableToken& note_id);
 
+  bool DoesPartialModelExist(const base::UnguessableToken& note_id);
+
   bool DoesManagerExistForId(const base::UnguessableToken& note_id,
                              UserNoteManager* manager);
 
   size_t ModelMapSize();
+
+  size_t CreationMapSize();
 
   size_t InstanceMapSize(UserNoteManager* manager);
 

@@ -21,8 +21,16 @@ class UserNoteManager;
 // page.
 class UserNoteInstance : public blink::mojom::AnnotationAgentHost {
  public:
-  explicit UserNoteInstance(base::SafeRef<UserNote> model,
-                            UserNoteManager* parent_manager);
+  // The main constructor.
+  UserNoteInstance(base::SafeRef<UserNote> model,
+                   UserNoteManager* parent_manager);
+
+  // A constructor for when the bounding rect of the highlight is known in
+  // advance, for example during the note creation process.
+  UserNoteInstance(base::SafeRef<UserNote> model,
+                   UserNoteManager* parent_manager,
+                   gfx::Rect rect);
+
   ~UserNoteInstance() override;
   UserNoteInstance(const UserNoteInstance&) = delete;
   UserNoteInstance& operator=(const UserNoteInstance&) = delete;

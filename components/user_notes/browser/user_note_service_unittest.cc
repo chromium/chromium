@@ -22,6 +22,7 @@ class UserNoteServiceTest : public UserNoteBaseTest {
   }
 };
 
+// Tests that note models are returned correctly by the service.
 TEST_F(UserNoteServiceTest, GetNoteModel) {
   // Verify initial state.
   EXPECT_EQ(ModelMapSize(), 2u);
@@ -42,6 +43,7 @@ TEST_F(UserNoteServiceTest, GetNoteModel) {
             nullptr);
 }
 
+// Tests that references to note managers are correctly added to the model map.
 TEST_F(UserNoteServiceTest, OnNoteInstanceAddedToPage) {
   // Verify initial state.
   EXPECT_EQ(ModelMapSize(), 2u);
@@ -60,6 +62,8 @@ TEST_F(UserNoteServiceTest, OnNoteInstanceAddedToPage) {
   EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
 }
 
+// Tests that references to note managers are correctly removed from the model
+// map.
 TEST_F(UserNoteServiceTest, OnNoteInstanceRemovedFromPage) {
   // Initial setup.
   UserNoteManager* m1 = ConfigureNewManager();
@@ -92,6 +96,85 @@ TEST_F(UserNoteServiceTest, OnNoteInstanceRemovedFromPage) {
   EXPECT_EQ(ModelMapSize(), 0u);
   EXPECT_FALSE(DoesModelExist(note_ids_[0]));
   EXPECT_FALSE(DoesModelExist(note_ids_[1]));
+}
+
+// Tests that partial notes are correctly identified as such.
+TEST_F(UserNoteServiceTest, IsNoteInProgress) {
+  EXPECT_EQ(CreationMapSize(), 0u);
+  AddPartialNotesToService(2);
+  EXPECT_EQ(CreationMapSize(), 2u);
+
+  EXPECT_FALSE(note_service_->IsNoteInProgress(note_ids_[0]));
+  EXPECT_FALSE(note_service_->IsNoteInProgress(note_ids_[1]));
+  EXPECT_TRUE(note_service_->IsNoteInProgress(note_ids_[2]));
+  EXPECT_TRUE(note_service_->IsNoteInProgress(note_ids_[3]));
+
+  // The method should also return false for notes that don't exist.
+  EXPECT_FALSE(
+      note_service_->IsNoteInProgress(base::UnguessableToken::Create()));
+}
+
+// Tests that adding an instance of a partial note to a page does not impact
+// the model map and the note manager references.
+TEST_F(UserNoteServiceTest, AddPartialNoteInstance) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  note_service_->OnNoteInstanceAddedToPage(note_ids_[0], manager);
+  note_service_->OnNoteInstanceAddedToPage(note_ids_[1], manager);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
+
+  // Create an in-progress note.
+  EXPECT_EQ(CreationMapSize(), 0u);
+  AddPartialNotesToService(1);
+  EXPECT_EQ(CreationMapSize(), 1u);
+
+  // Simulate the instance of the in-progress note being added to the note
+  // manager.
+  note_service_->OnNoteInstanceAddedToPage(note_ids_[2], manager);
+
+  // Verify the model map hasn't been impacted and that the creation map is
+  // still as expected.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
+  EXPECT_EQ(CreationMapSize(), 1u);
+  EXPECT_TRUE(note_service_->IsNoteInProgress(note_ids_[2]));
+}
+
+// Tests that removing an instance of a partial note from a page does not impact
+// the model map and the note manager references, and correctly clears the
+// partial note from the creation map.
+TEST_F(UserNoteServiceTest, RemovePartialNoteInstance) {
+  // Initial setup.
+  UserNoteManager* manager = ConfigureNewManager();
+  note_service_->OnNoteInstanceAddedToPage(note_ids_[0], manager);
+  note_service_->OnNoteInstanceAddedToPage(note_ids_[1], manager);
+
+  // Verify initial setup.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
+
+  // Create an in-progress note.
+  EXPECT_EQ(CreationMapSize(), 0u);
+  AddPartialNotesToService(1);
+  EXPECT_EQ(CreationMapSize(), 1u);
+
+  // Simulate the instance of the in-progress note being removed from the note
+  // manager.
+  note_service_->OnNoteInstanceRemovedFromPage(note_ids_[2], manager);
+
+  // Verify the model map hasn't been impacted and the partial note has been
+  // removed from the creation map.
+  EXPECT_EQ(ModelMapSize(), 2u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[0]), 1u);
+  EXPECT_EQ(ManagerCountForId(note_ids_[1]), 1u);
+  EXPECT_EQ(CreationMapSize(), 0u);
+  EXPECT_FALSE(note_service_->IsNoteInProgress(note_ids_[2]));
 }
 
 }  // namespace user_notes

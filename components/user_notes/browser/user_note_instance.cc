@@ -11,7 +11,15 @@ namespace user_notes {
 
 UserNoteInstance::UserNoteInstance(base::SafeRef<UserNote> model,
                                    UserNoteManager* parent_manager)
-    : model_(model), parent_manager_(parent_manager), receiver_(this) {}
+    : UserNoteInstance(model, parent_manager, gfx::Rect()) {}
+
+UserNoteInstance::UserNoteInstance(base::SafeRef<UserNote> model,
+                                   UserNoteManager* parent_manager,
+                                   gfx::Rect rect)
+    : model_(model),
+      parent_manager_(parent_manager),
+      rect_(rect),
+      receiver_(this) {}
 
 UserNoteInstance::~UserNoteInstance() = default;
 

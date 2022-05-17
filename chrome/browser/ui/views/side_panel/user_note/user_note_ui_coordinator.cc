@@ -55,8 +55,8 @@ void UserNoteUICoordinator::FocusNote(const std::string& guid) {
   // corresponding note into view in the side panel.
 }
 
-void UserNoteUICoordinator::StartNoteCreation(const std::string& guid,
-                                              gfx::Rect bounds) {
+void UserNoteUICoordinator::StartNoteCreation(
+    user_notes::UserNoteInstance* instance) {
   // TODO(cheickcisse): Implement StartNoteCreation, which will be called by
   // UserNoteService to add a new note in the side panel. The new note entry row
   // will be position at y relative to existing notes in the side panel.

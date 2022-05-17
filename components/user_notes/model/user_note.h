@@ -23,6 +23,7 @@ class UserNote {
                     std::unique_ptr<UserNoteMetadata> metadata,
                     std::unique_ptr<UserNoteBody> body,
                     std::unique_ptr<UserNoteTarget> target);
+
   ~UserNote();
   UserNote(const UserNote&) = delete;
   UserNote& operator=(const UserNote&) = delete;

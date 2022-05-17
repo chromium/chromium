@@ -63,7 +63,7 @@ void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
 }
 
 void UserNoteManager::AddNoteInstance(std::unique_ptr<UserNoteInstance> note) {
-  AddNoteInstance(std::move(note), base::BindOnce([] {}));
+  AddNoteInstance(std::move(note), base::DoNothing());
 }
 
 void UserNoteManager::AddNoteInstance(

@@ -55,7 +55,15 @@ std::vector<FrameUserNoteChanges> CalculateNoteChanges(
     for (UserNoteInstance* instance : instances) {
       const UserNote& model = instance->model();
       const auto& metadata_it = metadata_map->find(model.id());
+
       if (metadata_it == metadata_map->end()) {
+        // In-progress notes have an instance in the manager, but are not part
+        // of the metadata snapshot because they haven't been persisted to disk
+        // yet. Ignore them.
+        if (note_service.IsNoteInProgress(model.id())) {
+          continue;
+        }
+
         if (url == model.target().target_page()) {
           // Note has been removed.
           removed.emplace_back(base::UnguessableToken(model.id()));

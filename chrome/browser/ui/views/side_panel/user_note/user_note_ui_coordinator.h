@@ -31,7 +31,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
 
   // UserNoteUI overrides
   void FocusNote(const std::string& guid) override;
-  void StartNoteCreation(const std::string& guid, gfx::Rect bounds) override;
+  void StartNoteCreation(user_notes::UserNoteInstance* instance) override;
   void Invalidate() override;
   void Show() override;
 
