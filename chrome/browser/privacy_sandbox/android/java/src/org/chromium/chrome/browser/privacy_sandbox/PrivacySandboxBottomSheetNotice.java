@@ -4,19 +4,50 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** Bottom sheet view for displaying the Privacy Sandbox notice. */
 public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
-    private final View mContentView;
+    private final BottomSheetController mBottomSheetController;
+    private final Context mContext;
+    private final SettingsLauncher mSettingsLauncher;
 
-    PrivacySandboxBottomSheetNotice(View contentView) {
-        mContentView = contentView;
+    private View mContentView;
+
+    PrivacySandboxBottomSheetNotice(Context context, BottomSheetController bottomSheetController,
+            SettingsLauncher settingsLauncher) {
+        mBottomSheetController = bottomSheetController;
+        mContext = context;
+        mSettingsLauncher = settingsLauncher;
+
+        mContentView = LayoutInflater.from(context).inflate(
+                R.layout.privacy_sandbox_notice_bottom_sheet, null);
+
+        View ackButton = mContentView.findViewById(R.id.ack_button);
+        ackButton.setOnClickListener((v) -> {
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+            mBottomSheetController.hideContent(this, /* animate= */ true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        });
+        View settingsButton = mContentView.findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener((v) -> {
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            mBottomSheetController.hideContent(this, /* animate= */ true,
+                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+                    mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+        });
     }
+
+    // BottomSheetContent implementation.
 
     @Override
     public View getContentView() {

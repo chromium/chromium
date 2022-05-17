@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -43,8 +42,7 @@ public class PrivacySandboxDialogController {
                     if (bottomSheetController == null) return false;
                     PrivacySandboxBottomSheetNotice bottomSheet =
                             new PrivacySandboxBottomSheetNotice(
-                                    LayoutInflater.from(context).inflate(
-                                            R.layout.privacy_sandbox_notice_bottom_sheet, null));
+                                    context, bottomSheetController, settingsLauncher);
                     bottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
                 } else {
                     dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
