@@ -74,6 +74,8 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // committed. We continue running the current classification.
   void DidFinishSameDocumentNavigation() override;
 
+  bool is_ready();
+
  private:
   friend class PhishingClassifierDelegateTest;
 

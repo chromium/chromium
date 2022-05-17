@@ -188,11 +188,9 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     return;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kDisableClientSidePhishingDetection))
-    SetClientSidePhishingDetection();
+  SetClientSidePhishingDetection();
 #endif
+
   if (!translate::IsSubFrameTranslationEnabled()) {
     translate_agent_ = new translate::TranslateAgent(
         render_frame, ISOLATED_WORLD_ID_TRANSLATE);
@@ -550,7 +548,7 @@ bool ChromeRenderFrameObserver::ShouldCapturePageTextForTranslateOrPhishing(
   bool should_capture_for_phishing = false;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  should_capture_for_phishing = !!phishing_classifier_;
+  should_capture_for_phishing = phishing_classifier_->is_ready();
 #endif
 
   return should_capture_for_translate || should_capture_for_phishing;

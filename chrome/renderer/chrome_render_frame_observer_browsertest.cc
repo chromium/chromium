@@ -19,6 +19,9 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -261,8 +264,6 @@ class ChromeRenderFrameObserverNoTranslateNorPhishingTest
     : public ChromeRenderFrameObserverTest {
  public:
   ChromeRenderFrameObserverNoTranslateNorPhishingTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableClientSidePhishingDetection);
     scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
   }
 
@@ -330,6 +331,18 @@ class ChromeRenderFrameObserverNoTranslateYesPhishingTest
  public:
   ChromeRenderFrameObserverNoTranslateYesPhishingTest() {
     scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
+  }
+
+  void SetUp() override {
+    ChromeRenderFrameObserverTest::SetUp();
+
+    // Provide a valid Safe Browsing client side phishing model to enable
+    // phishing detection.
+    safe_browsing::ClientSideModel model;
+    model.set_max_words_per_term(0);
+    safe_browsing::ScorerStorage::GetInstance()->SetScorer(
+        safe_browsing::ProtobufModelScorer::Create(model.SerializeAsString(),
+                                                   base::File()));
   }
 
  private:
