@@ -19,11 +19,6 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      ash::prefs::kDarkModeScheduleType,
-      base::BindRepeating(&PersonalizationAppThemeProviderImpl::
-                              NotifyColorModeAutoScheduleChanged,
-                          base::Unretained(this)));
 }
 
 PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
@@ -46,6 +41,15 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
     color_mode_observer_.Observe(ash::AshColorProvider::Get());
   // Call it once to get the current color mode.
   OnColorModeChanged(ash::ColorProvider::Get()->IsDarkModeEnabled());
+
+  // Listen to |ash::prefs::kDarkModeScheduleType| changes.
+  if (!pref_change_registrar_.IsObserved(ash::prefs::kDarkModeScheduleType)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDarkModeScheduleType,
+        base::BindRepeating(&PersonalizationAppThemeProviderImpl::
+                                NotifyColorModeAutoScheduleChanged,
+                            base::Unretained(this)));
+  }
   // Call it once to get the status of auto mode.
   NotifyColorModeAutoScheduleChanged();
 }
