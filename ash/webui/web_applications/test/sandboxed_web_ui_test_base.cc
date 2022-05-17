@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -46,10 +45,8 @@ bool TestRequestHandlerShouldHandleRequest(
   return base::Contains(test_paths, path);
 }
 
-std::string DefaultScriptTimeoutLog(const std::string& script,
-                                    const base::TimeDelta& timeout) {
-  return base::StringPrintf("Hit timeout of %fs:\n", timeout.InSecondsF()) +
-         script;
+std::string DefaultScriptTimeoutLog(const std::string& script) {
+  return script;
 }
 
 }  // namespace
@@ -151,17 +148,13 @@ content::RenderFrameHost* SandboxedWebUiAppTestBase::GetAppFrame(
 // static
 content::EvalJsResult SandboxedWebUiAppTestBase::EvalJsInAppFrame(
     content::WebContents* web_ui,
-    const std::string& script,
-    EvalJsTimeout timeout) {
+    const std::string& script) {
   // Clients of this helper all run in the same isolated world.
   constexpr int kWorldId = 1;
 
-  base::TimeDelta script_timeout = timeout == kLongTimeout
-                                       ? TestTimeouts::action_max_timeout()
-                                       : TestTimeouts::action_timeout();
   base::test::ScopedRunLoopTimeout scoped_run_timeout(
-      FROM_HERE, script_timeout,
-      base::BindRepeating(&DefaultScriptTimeoutLog, script, script_timeout));
+      FROM_HERE, TestTimeouts::action_timeout(),
+      base::BindRepeating(&DefaultScriptTimeoutLog, script));
 
   return EvalJs(GetAppFrame(web_ui), script,
                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, kWorldId);
