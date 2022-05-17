@@ -16,7 +16,7 @@ import * as localStorage from '../../models/local_storage.js';
 import * as nav from '../../nav.js';
 import * as newFeatureToast from '../../new_feature_toast.js';
 import * as state from '../../state.js';
-import {Facing, Mode, ViewName} from '../../type.js';
+import {Facing, LocalStorageKey, Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
 import {OptionPanelOptions, PTZPanelOptions, StateOption} from '../view.js';
 
@@ -82,9 +82,8 @@ export class Options implements CameraUI {
     this.initOpenPTZPanel();
 
     // Restore saved mirroring states per video device.
-    this.mirroringToggles = localStorage.getObject('mirroringToggles');
-    // Remove the deprecated values.
-    localStorage.remove('effectIndex', 'toggleMulti', 'toggleMirror');
+    this.mirroringToggles =
+        localStorage.getObject(LocalStorageKey.MIRRORING_TOGGLES);
 
     state.addObserver(state.State.TAKING, () => {
       this.updateOptionAvailability();
@@ -255,14 +254,13 @@ export class Options implements CameraUI {
 
     this.cameraManager.registerCameraUI({
       onUpdateConfig: () => {
-        const ptzToastKey = 'isPTZToastShown';
         if (!state.get(state.State.ENABLE_PTZ) ||
             state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
-            localStorage.getBool(ptzToastKey)) {
+            localStorage.getBool(LocalStorageKey.PTZ_TOAST_SHOWN)) {
           highlight(false);
           return;
         }
-        localStorage.set(ptzToastKey, true);
+        localStorage.set(LocalStorageKey.PTZ_TOAST_SHOWN, true);
         state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
         highlight(true);
       },
@@ -331,7 +329,8 @@ export class Options implements CameraUI {
   private saveMirroring(enabled: boolean) {
     if (this.currentConfig !== null) {
       this.mirroringToggles[this.currentConfig.deviceId] = enabled;
-      localStorage.set('mirroringToggles', this.mirroringToggles);
+      localStorage.set(
+          LocalStorageKey.MIRRORING_TOGGLES, this.mirroringToggles);
     }
   }
 

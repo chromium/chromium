@@ -442,3 +442,30 @@ export class PortraitModeProcessError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+/**
+ * Types of local storage key.
+ */
+export enum LocalStorageKey {
+  CUSTOM_VIDEO_PARAMETERS = 'customVideoParameters',
+  DOC_MODE_DIALOG_SHOWN = 'isDocModeDialogShown',
+  DOC_MODE_TOAST_SHOWN = 'isDocModeToastShown',
+  ENABLE_FPS_PICKER = 'enableFPSPicker',
+  ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
+  EXPERT_MODE = 'expert',
+  ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
+  GA_USER_ID = 'google-analytics.analytics.user-id',
+  MIRRORING_TOGGLES = 'mirroringToggles',
+  PREF_DEVICE_PHOTO_ASPECT_RATIO_SET = 'devicePhotoAspectRatioSet',
+  PREF_DEVICE_PHOTO_RESOLUTION_EXPERT = 'devicePhotoResolutionExpert',
+  PREF_DEVICE_PHOTO_RESOLUTION_LEVEL = 'devicePhotoResolutionLevel',
+  PREF_DEVICE_VIDEO_RESOLUTION_EXPERT = 'deviceVideoResolutionExpert',
+  PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
+  PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
+  PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
+  PTZ_TOAST_SHOWN = 'isPTZToastShown',
+  SAVE_META_DATA = 'saveMetadata',
+  SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
+  SHOW_META_DATA = 'showMetadata',
+  TOGGLE_MIC = 'toggleMic',
+}

@@ -29,13 +29,13 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  LocalStorageKey,
   Mode,
   PerfEvent,
   ViewName,
 } from './type.js';
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
-import {checkEnumVariant} from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
@@ -109,6 +109,7 @@ export class App {
 
     util.setupI18nElements(document.body);
     this.setupToggles();
+    localStorage.cleanup();
     this.setupEffect();
     focusRing.initialize();
 
@@ -134,17 +135,23 @@ export class App {
           element.click();
         }
       });
+      const localStorageKey = element.dataset['key'] === undefined ?
+          null :
+          util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+      const stateKey = element.dataset['state'] === undefined ?
+          null :
+          state.assertState(element.dataset['state']);
 
       function save(element: HTMLInputElement) {
-        if (element.dataset['key'] !== undefined) {
-          localStorage.set(element.dataset['key'], element.checked);
+        if (localStorageKey !== null) {
+          localStorage.set(localStorageKey, element.checked);
         }
       }
       element.addEventListener('change', (event) => {
-        if (element.dataset['state'] !== undefined) {
-          state.set(
-              state.assertState(element.dataset['state']), element.checked);
+        if (stateKey !== null) {
+          state.set(stateKey, element.checked);
         }
+        // Check if event is triggered by user on UI.
         if (event.isTrusted) {
           save(element);
           if (element.type === 'radio' && element.checked) {
@@ -158,19 +165,16 @@ export class App {
           }
         }
       });
-      if (element.dataset['state'] !== undefined) {
-        const s = state.assertState(element.dataset['state']);
-        state.addObserver(s, (value) => {
+      if (stateKey !== null) {
+        state.set(stateKey, element.checked);
+        state.addObserver(stateKey, (value) => {
           if (value !== element.checked) {
             util.toggleChecked(element, value);
           }
         });
-        state.set(s, element.checked);
       }
-      if (element.dataset['key'] !== undefined) {
-        // Restore the previously saved state on startup.
-        const value =
-            localStorage.getBool(element.dataset['key'], element.checked);
+      if (localStorageKey !== null) {
+        const value = localStorage.getBool(localStorageKey, element.checked);
         util.toggleChecked(element, value);
       }
     }
@@ -361,9 +365,9 @@ function parseSearchParams(): {
   const url = new URL(window.location.href);
   const params = url.searchParams;
 
-  const facing = checkEnumVariant(Facing, params.get('facing'));
+  const facing = util.checkEnumVariant(Facing, params.get('facing'));
 
-  const mode = checkEnumVariant(Mode, params.get('mode'));
+  const mode = util.checkEnumVariant(Mode, params.get('mode'));
 
   const intent = (() => {
     if (params.get('intentId') === null) {

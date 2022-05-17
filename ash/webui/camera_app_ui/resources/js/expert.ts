@@ -4,6 +4,7 @@
 
 import * as localStorage from './models/local_storage.js';
 import * as state from './state.js';
+import {LocalStorageKey} from './type.js';
 
 /**
  * Enables or disables expert mode.
@@ -12,7 +13,7 @@ import * as state from './state.js';
  */
 export function setExpertMode(enable: boolean): void {
   state.set(state.State.EXPERT, enable);
-  localStorage.set('expert', enable);
+  localStorage.set(LocalStorageKey.EXPERT_MODE, enable);
 }
 
 /**

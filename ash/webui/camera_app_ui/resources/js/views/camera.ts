@@ -42,6 +42,7 @@ import {
   ErrorType,
   Facing,
   ImageBlob,
+  LocalStorageKey,
   MimeType,
   Mode,
   PerfEvent,
@@ -330,11 +331,10 @@ export class Camera extends View implements CameraViewUI {
     }
 
     // Check show toast.
-    const docModeToastKey = 'isDocModeToastShown';
     if (!state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) &&
-        !localStorage.getBool(docModeToastKey)) {
+        !localStorage.getBool(LocalStorageKey.DOC_MODE_TOAST_SHOWN)) {
       state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
-      localStorage.set(docModeToastKey, true);
+      localStorage.set(LocalStorageKey.DOC_MODE_TOAST_SHOWN, true);
       // aria-owns don't work on HTMLInputElement, show toast on parent div
       // instead.
       const scanModeBtn = dom.get('input[data-mode="scan"]', HTMLInputElement);
@@ -346,15 +346,15 @@ export class Camera extends View implements CameraViewUI {
       });
     }
 
-    const docModeDialogKey = 'isDocModeDialogShown';
-    if (!localStorage.getBool(docModeDialogKey)) {
+    if (!localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN)) {
       this.cameraManager.registerCameraUI({
         onUpdateConfig: () => {
-          if (localStorage.getBool(docModeDialogKey) || !state.get(Mode.SCAN) ||
+          if (localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN) ||
+              !state.get(Mode.SCAN) ||
               !this.scanOptions.isDocumentModeEanbled()) {
             return;
           }
-          localStorage.set(docModeDialogKey, true);
+          localStorage.set(LocalStorageKey.DOC_MODE_DIALOG_SHOWN, true);
           const message = loadTimeData.getI18nMessage(
               I18nString.DOCUMENT_MODE_DIALOG_INTRO_TITLE);
           nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
