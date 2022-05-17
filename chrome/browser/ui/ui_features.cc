@@ -242,7 +242,7 @@ const base::Feature kWebUIDownloadShelf{"WebUIDownloadShelf",
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.
 const base::Feature kWebUITabStrip {
   "WebUITabStrip",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 };
 #else
