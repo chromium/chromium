@@ -154,7 +154,7 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
 
   void SetBackgroundColor(SkColor color) {
     background_color_ = color;
-    layer_->SchedulePaint(layer_->bounds());
+    layer_->SchedulePaint(layer_->PaintableRegion());
   }
 
  private:
