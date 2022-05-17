@@ -1013,6 +1013,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
