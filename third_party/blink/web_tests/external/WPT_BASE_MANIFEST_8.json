@@ -311944,6 +311944,10 @@
          "6da274469f87f5f1391fe221daefcb9db76be62b",
          []
         ],
+        "script-type-and-language-js.js": [
+         "d357bc49944df2791d351c05f66a3d377ee25acf",
+         []
+        ],
         "set-script-executed.js": [
          "a6095097dd7e17b1e5370b739b31d361f8fdaf7b",
          []
@@ -319348,6 +319352,14 @@
      "ae17c099e5585428111e6cc1e0860ae3bd1f981f",
      []
     ],
+    "bluetooth-allowed-by-permissions-policy.https.sub.html.headers": [
+     "a053d1a213855bb1bd2c8e59c62e73c00bdd7624",
+     []
+    ],
+    "bluetooth-disabled-by-permissions-policy.https.sub.html.headers": [
+     "10b94729dd3cb95bac4742fecff6dd3c161359cc",
+     []
+    ],
     "experimental-features": {
      "resources": {
       "common.js": [
@@ -319477,6 +319489,14 @@
      []
     ],
     "reporting": {
+     "bluetooth-report-only.https.html.headers": [
+      "dfa8cf0090dac0a092c5fb0db3bd46992a74175a",
+      []
+     ],
+     "bluetooth-reporting.https.html.headers": [
+      "10b94729dd3cb95bac4742fecff6dd3c161359cc",
+      []
+     ],
      "camera-report-only.https.html.headers": [
       "71a1cca5bee84e6b12e1457df4583a3097e9ae32",
       []
@@ -319621,6 +319641,10 @@
      ],
      "permissions-policy-battery.html": [
       "dff4b3290d66c4c804267ecfe2fb9717a6449cff",
+      []
+     ],
+     "permissions-policy-bluetooth.html": [
+      "2265bd01d2bd66cfa079e22a749e03e836e45785",
       []
      ],
      "permissions-policy-clipboard-read.html": [
@@ -352090,7 +352114,7 @@
       ]
      },
      "cross-origin-iframe.sub.https.window.js": [
-      "bbc813e5c9a5a015028f0161e24b4477c6b6d51d",
+      "c8d4dc1c5a1fe4d1f6ec1673a155f704431b23e2",
       [
        "bluetooth/requestDevice/cross-origin-iframe.sub.https.window.html",
        {
@@ -352430,7 +352454,7 @@
       ]
      ],
      "request-from-sandboxed-iframe.https.window.js": [
-      "72649d42e09fdf4c2c28797ad581283385353b0e",
+      "c486162a58bb9fbd41ab54c42a63d1df31133095",
       [
        "bluetooth/requestDevice/request-from-sandboxed-iframe.https.window.html",
        {
@@ -364058,7 +364082,7 @@
      ]
     ],
     "cookieListItem_attributes.https.any.js": [
-     "88ec4e98a28e4f638687a20aada6f45a665202f5",
+     "200cbd06928ff27d2574103fd82f0ae610dff5a4",
      [
       "cookie-store/cookieListItem_attributes.https.any.html",
       {
@@ -472637,8 +472661,22 @@
          {}
         ]
        ],
+       "script-type-and-language-js-svg.svg": [
+        "2f31d4d75c0ee90375d6369a1b2bbb6c77eda381",
+        [
+         null,
+         {}
+        ]
+       ],
+       "script-type-and-language-js-xhtml.xhtml": [
+        "0bfdfce3c4b8b5af27b1ef2049c2b9c8cf9b291a",
+        [
+         null,
+         {}
+        ]
+       ],
        "script-type-and-language-js.html": [
-        "2f56ade9bee885a55b975edc305c245117add132",
+        "009123de2b56e47442df017d603f833a36fde88b",
         [
          null,
          {}
@@ -494793,6 +494831,41 @@
     ]
    },
    "permissions-policy": {
+    "bluetooth-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
+     "a5f44795111f9eaf45b53cd4e65f668e6390120c",
+     [
+      null,
+      {}
+     ]
+    ],
+    "bluetooth-allowed-by-permissions-policy-attribute.https.sub.html": [
+     "5b1f69e86c7d8e1b7f191e255b75266df9839d75",
+     [
+      null,
+      {}
+     ]
+    ],
+    "bluetooth-allowed-by-permissions-policy.https.sub.html": [
+     "283c613271a30a947e6c0d78d5cae47b15c308bd",
+     [
+      null,
+      {}
+     ]
+    ],
+    "bluetooth-default-permissions-policy.https.sub.html": [
+     "51ab40bca915e674113889b73b509bd368f616fc",
+     [
+      null,
+      {}
+     ]
+    ],
+    "bluetooth-disabled-by-permissions-policy.https.sub.html": [
+     "7a20a9f01f7df4f9ad007f9af64e4a2c1655f2bf",
+     [
+      null,
+      {}
+     ]
+    ],
     "experimental-features": {
      "focus-without-user-activation-disabled-tentative.html": [
       "3980fd1219cba990454ffa86e0a5bd493b9eb5e6",
@@ -495097,6 +495170,24 @@
      ]
     ],
     "reporting": {
+     "bluetooth-report-only.https.html": [
+      "9688baa5b0ab7b302e1911e871009bae54d46d3c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "bluetooth-reporting.https.html": [
+      "35b22122b97970b66afd6d73e1fe56f7c51b9c4c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "camera-report-only.https.html": [
       "2cf20c28a752be521898119f40204ebeeaa80817",
       [
@@ -497313,7 +497404,7 @@
      ]
     ],
     "preload-error.sub.html": [
-     "e2ae13170b5ca3bcd6915ae2a708293ed9ca90c8",
+     "3c9d35b0b3589f0003c64d2817dd9b0f8dc60562",
      [
       null,
       {
@@ -512511,7 +512602,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "ee14628cb21bf0239e7c0c42b0ddd55f467f25d3",
+     "78c92b026551c280c9f085cdc34ce9725762cbfc",
      [
       null,
       {
@@ -528907,7 +528998,7 @@
      ]
     ],
     "useragentdata.https.any.js": [
-     "fc1e9e0b3c98907aace3795cf0b92eb78b6617cc",
+     "acb53d436686b306fa9e8b048dbbab0300ddd7e6",
      [
       "ua-client-hints/useragentdata.https.any.html",
       {
