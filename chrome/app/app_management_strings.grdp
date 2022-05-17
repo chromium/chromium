@@ -173,8 +173,7 @@
       You can open and edit supported files with this app from Finder or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
-  <!-- TODO(crbug.com/1307455): Remove ` and not chromeos_ash and not chromeos_lacros` once fixed. -->
-  <if expr="is_fuchsia or is_linux and not chromeos_ash and not chromeos_lacros">
+  <if expr="is_fuchsia or is_linux">
     <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_SET_DEFAULTS_LINK" desc="Further explanation of the File Handling API, including text describing the purpose of the toggle (referencing a generic Linux file browser app) and a link to a learn more link for default filetype associations.">
       You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>learn how to set default apps on your device<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>

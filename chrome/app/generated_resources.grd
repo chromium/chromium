@@ -8688,7 +8688,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Google Pay
       </message>
 
-      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+      <if expr="is_linux">
         <message name="IDS_SHOW_WINDOW_DECORATIONS" desc="The label of a radio button in the options dialog for using the system title bar and borders.">
           Use system title bar and borders
         </message>
@@ -9845,7 +9845,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Set as default
       </message>
 
-      <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+      <if expr="is_linux">
         <message name="IDS_MINIMIZE_WINDOW_MENU" desc="The Linux browser window menu item text for minimizing the window.">
           Minimize
         </message>

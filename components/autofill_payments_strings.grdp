@@ -127,7 +127,7 @@
   <message name="IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL" desc="Text to show on the button to save the card to Google when the fix flow dialog is shown after the Autofill save card prompt." formatter_data="android_java">
     Save card
   </message>
-  <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+  <if expr="is_linux">
     <then>
       <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
         Do you want to save this card to your Google Account?

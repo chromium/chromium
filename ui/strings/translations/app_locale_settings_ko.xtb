@@ -12,7 +12,7 @@
 <if expr="is_ios">
   <translation id="IDS_WEB_FONT_FAMILY">Helvetica,Apple SD Gothic Neo,AppleGothic,sans-serif</translation>
 </if>
-<if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+<if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Noto Sans CJK KR,NanumGothic,UnDotum,Baekmuk Gulim,sans-serif</translation>
 </if>
 <if expr="chromeos_ash or chromeos_lacros">

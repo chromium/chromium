@@ -218,7 +218,7 @@
           75%
         </message>
       </if>
-      <if expr="(is_linux or is_android or is_bsd or is_fuchsia) and not (chromeos_ash or chromeos_lacros)">
+      <if expr="is_linux or is_android or is_bsd or is_fuchsia">
         <!-- The font used in Web UI (e.g. History). Note that these are only
              backups. We try to use the system font if possible. -->
         <message name="IDS_WEB_FONT_FAMILY" use_name_for_id="true">

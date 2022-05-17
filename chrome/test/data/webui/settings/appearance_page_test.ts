@@ -131,7 +131,7 @@ suite('AppearanceHandler', function() {
 
   const THEME_ID_PREF = 'prefs.extensions.theme.id.value';
 
-  // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+  // <if expr="is_linux">
   const USE_SYSTEM_PREF = 'prefs.extensions.theme.use_system.value';
 
   test('useDefaultThemeLinux', function() {
@@ -194,7 +194,7 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  // <if expr="not is_linux or chromeos_ash or chromeos_lacros">
+  // <if expr="not is_linux">
   test('useDefaultTheme', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));

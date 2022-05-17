@@ -124,8 +124,7 @@
       <if expr="chromeos_ash">
         <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
       </if>
-      <!-- TODO(crbug.com/1307455): Remove ` and not chromeos_ash` once fixed. -->
-      <if expr="is_linux and not chromeos_ash or chromeos_lacros">
+      <if expr="is_linux or chromeos_lacros">
         <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
       </if>
       <if expr="chromeos_ash">

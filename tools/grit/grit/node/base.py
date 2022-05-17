@@ -251,10 +251,9 @@ class Node(object):
     # Check that |file| does not point to a TypeScript (.ts) file, as those
     # files should not be included in the final build.
     if self.attrs.get('file'):
-      assert not self.attrs.get('file').endswith(
-          '.ts'
-      ), 'TypeScript files should not be added to Grit: Found \'%s\'' % self.attrs.get(
-          'file')
+      assert not self.attrs.get('file').endswith('.ts'), (
+          'TypeScript files should not be added to Grit: Found \'%s\'' %
+          self.attrs.get('file'))
 
   def GetCdata(self):
     '''Returns all CDATA of this element, concatenated into a single
@@ -480,6 +479,17 @@ class Node(object):
   @classmethod
   def EvaluateExpression(cls, expr, defs, target_platform, extra_variables={}):
     '''Worker for EvaluateCondition (below) and conditions in XTB files.'''
+
+    def IsChromeOS(defs):
+      '''Returns whether the target is Chrome OS based on specified definitions.
+
+      Unlike other platforms, the target platform for Chrome OS is Linux and not
+      the target OS, which is instead specified by one of two defines.
+
+      TODO(crbug.com/1316150): Remove once GRIT natively supports `is_chromeos`.
+      '''
+      return defs.get('chromeos_ash') or defs.get('chromeos_lacros')
+
     if expr in cls.eval_expr_cache:
       code, variables_in_expr = cls.eval_expr_cache[expr]
     else:
@@ -499,7 +509,9 @@ class Node(object):
         value = defs
 
       elif name == 'is_linux':
-        value = target_platform == 'linux'
+        # Although the `target_platform` for Chrome OS is 'linux', do not
+        # consider `is_linux` to be true, consistent with the GN arg.
+        value = target_platform == 'linux' and not IsChromeOS(defs)
       elif name == 'is_macosx':
         value = target_platform == 'darwin'
       elif name == 'is_win':

@@ -131,7 +131,7 @@
       Theme
     </message>
   </if>
-  <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+  <if expr="is_linux">
     <message name="IDS_SETTINGS_SYSTEM_THEME" desc="Text of the label describing the system (GTK+) browser theme on Linux">
       GTK+
     </message>

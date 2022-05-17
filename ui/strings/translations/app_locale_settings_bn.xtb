@@ -10,7 +10,7 @@
   <translation id="IDS_WEB_FONT_FAMILY">Vrinda</translation>
   <translation id="IDS_WEB_FONT_FAMILY_XP">Vrinda</translation>
 </if>
-<if expr="is_linux and not chromeos_ash and not chromeos_lacros">
+<if expr="is_linux">
   <translation id="IDS_WEB_FONT_FAMILY">Lohit Bengali</translation>
 </if>
 <if expr="chromeos_ash or chromeos_lacros">
