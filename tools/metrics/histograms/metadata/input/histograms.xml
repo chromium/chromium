@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2022-03-26">
+    enum="IMEAutocorrectActions" expires_after="2022-12-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Actions.VK"
-    enum="IMEAutocorrectActions" expires_after="2022-03-22">
+    enum="IMEAutocorrectActions" expires_after="2022-12-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2022-04-10">
+    enum="IMETextInputClient" expires_after="2022-12-01">
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Autocorrect.Delay" units="ms"
-    expires_after="2022-03-26">
+    expires_after="2022-12-01">
   <owner>jopalmer@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2022-06-30">
+    enum="IMEAutocorrectActions" expires_after="2022-12-01">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -647,7 +647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Count"
-    enum="IMETextInputClient" expires_after="2022-06-30">
+    enum="IMETextInputClient" expires_after="2022-12-01">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -657,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.Autocorrect.Delay"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2022-12-01">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.MultilingualExperiment.DiacriticalAutocorrect.Actions"
-    enum="IMEAutocorrectActions" expires_after="2022-06-30">
+    enum="IMEAutocorrectActions" expires_after="2022-12-01">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.MultilingualExperiment.NonAutocorrect"
-    enum="IMENonAutocorrectDiacriticStatus" expires_after="2022-06-30">
+    enum="IMENonAutocorrectDiacriticStatus" expires_after="2022-12-01">
   <owner>tranbaoduy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
