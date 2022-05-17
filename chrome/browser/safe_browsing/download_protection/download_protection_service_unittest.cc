@@ -33,6 +33,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -4089,6 +4090,12 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
         .Times(1);
 
+    // Confirm that we don't try to request fetching the token
+    base::MockCallback<base::OnceClosure> access_token_requested;
+    EXPECT_CALL(access_token_requested, Run()).Times(0);
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetCallbackForNextAccessTokenRequest(access_token_requested.Get());
+
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -4100,6 +4107,8 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
     EXPECT_TRUE(requests[0]->access_token().empty());
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetCallbackForNextAccessTokenRequest(base::NullCallback());
   }
 
   identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(

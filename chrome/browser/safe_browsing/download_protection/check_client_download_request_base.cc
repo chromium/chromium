@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -93,7 +94,8 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
         profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    if (!profile->IsOffTheRecord() && identity_manager) {
+    if (!profile->IsOffTheRecord() && identity_manager &&
+        safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager)) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           identity_manager);
     }
