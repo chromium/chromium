@@ -12,12 +12,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach_time.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <time.h>
-
-#include "base/cxx17_backports.h"
 #elif BUILDFLAG(IS_POSIX)
 #include <time.h>
 #else
@@ -31,27 +26,8 @@ void SystemClock::Init() {}
 
 absl::Time SystemClock::ElapsedRealtime() {
 #if BUILDFLAG(IS_MAC)
-  // Mac 10.12 supports mach_continuous_time, which is around 15 times faster
-  // than sysctl() call. Use it if possible; otherwise, fall back to sysctl().
-  if (__builtin_available(macOS 10.12, *)) {
-    return absl::FromUnixMicros(
-        base::TimeDelta::FromMachTime(mach_continuous_time()).InMicroseconds());
-  }
-
-  // On Mac mach_absolute_time stops while the device is sleeping. Instead use
-  // now - KERN_BOOTTIME to get a time difference that is not impacted by clock
-  // changes. KERN_BOOTTIME will be updated by the system whenever the system
-  // clock change.
-  struct timeval boottime;
-  int mib[2] = {CTL_KERN, KERN_BOOTTIME};
-  size_t size = sizeof(boottime);
-  int kr = sysctl(mib, std::size(mib), &boottime, &size, nullptr, 0);
-  DCHECK_EQ(KERN_SUCCESS, kr);
-  base::TimeDelta time_difference =
-      base::Time::FromCFAbsoluteTime(CFAbsoluteTimeGetCurrent()) -
-      (base::Time::FromTimeT(boottime.tv_sec) +
-       base::Microseconds(boottime.tv_usec));
-  return absl::FromUnixMicros(time_difference.InMicroseconds());
+  return absl::FromUnixMicros(
+      base::TimeDelta::FromMachTime(mach_continuous_time()).InMicroseconds());
 #elif BUILDFLAG(IS_POSIX)
   // SystemClock::ElapsedRealtime() must provide monotonically increasing time,
   // but is not expected to be convertible to wall clock time. Unfortunately,

@@ -15,9 +15,6 @@
 #include "components/download/public/common/download_item.h"
 #import "net/base/mac/url_conversions.h"
 
-// An NSProgress note. When updating so that macOS 10.13 is the minimum OS, all
-// the -setUserInfoObject:forKey: calls can be turned into property accesses.
-
 namespace {
 
 const char kCrNSProgressUserDataKey[] = "CrNSProgressUserData";
@@ -60,9 +57,8 @@ CrNSProgressUserData* CreateOrGetNSProgress(download::DownloadItem* download) {
 
   NSProgress* progress = [NSProgress progressWithTotalUnitCount:-1];
   progress.kind = NSProgressKindFile;
-  [progress setUserInfoObject:NSProgressFileOperationKindDownloading
-                       forKey:NSProgressFileOperationKindKey];
-  [progress setUserInfoObject:destination_url forKey:NSProgressFileURLKey];
+  progress.fileOperationKind = NSProgressFileOperationKindDownloading;
+  progress.fileURL = destination_url;
 
   // Don't publish a pause/resume handler. The only users of `NSProgress` are
   // outside of Chromium, and none currently implement pausing published
@@ -95,21 +91,19 @@ void UpdateNSProgress(download::DownloadItem* download) {
   NSProgress* progress = progress_data->progress();
   progress.totalUnitCount = download->GetTotalBytes();
   progress.completedUnitCount = download->GetReceivedBytes();
-  [progress setUserInfoObject:@(download->CurrentSpeed())
-                       forKey:NSProgressThroughputKey];
+  progress.throughput = @(download->CurrentSpeed());
 
   base::TimeDelta time_remaining;
   NSNumber* ns_time_remaining = nil;
   if (download->TimeRemaining(&time_remaining))
     ns_time_remaining = @(time_remaining.InSeconds());
-  [progress setUserInfoObject:ns_time_remaining
-                       forKey:NSProgressEstimatedTimeRemainingKey];
+  progress.estimatedTimeRemaining = ns_time_remaining;
 
   base::FilePath download_path = download->GetFullPath();
   if (progress_data->target() != download_path) {
     progress_data->setTarget(download_path);
     NSURL* download_url = base::mac::FilePathToNSURL(download_path);
-    [progress setUserInfoObject:download_url forKey:NSProgressFileURLKey];
+    progress.fileURL = download_url;
   }
 }
 

@@ -365,7 +365,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
 }
 
 #if BUILDFLAG(IS_MAC)
-API_AVAILABLE(macos(10.12.2))
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
                                   content::BrowserContext* browser_context) {
   return delegate.GetTouchIdAuthenticatorConfig(browser_context)
@@ -373,40 +372,33 @@ std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, TouchIdMetadataSecret) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    ChromeWebAuthenticationDelegate delegate;
-    std::string secret = TouchIdMetadataSecret(delegate, GetBrowserContext());
-    EXPECT_EQ(secret.size(), 32u);
-    // The secret should be stable.
-    EXPECT_EQ(secret, TouchIdMetadataSecret(delegate, GetBrowserContext()));
-  }
+  ChromeWebAuthenticationDelegate delegate;
+  std::string secret = TouchIdMetadataSecret(delegate, GetBrowserContext());
+  EXPECT_EQ(secret.size(), 32u);
+  // The secret should be stable.
+  EXPECT_EQ(secret, TouchIdMetadataSecret(delegate, GetBrowserContext()));
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TouchIdMetadataSecret_EqualForSameProfile) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    // Different delegates on the same BrowserContext (Profile) should return
-    // the same secret.
-    ChromeWebAuthenticationDelegate delegate1;
-    ChromeWebAuthenticationDelegate delegate2;
-    EXPECT_EQ(TouchIdMetadataSecret(delegate1, GetBrowserContext()),
-              TouchIdMetadataSecret(delegate2, GetBrowserContext()));
-  }
+  // Different delegates on the same BrowserContext (Profile) should return
+  // the same secret.
+  ChromeWebAuthenticationDelegate delegate1;
+  ChromeWebAuthenticationDelegate delegate2;
+  EXPECT_EQ(TouchIdMetadataSecret(delegate1, GetBrowserContext()),
+            TouchIdMetadataSecret(delegate2, GetBrowserContext()));
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TouchIdMetadataSecret_NotEqualForDifferentProfiles) {
-  if (__builtin_available(macOS 10.12.2, *)) {
-    // Different profiles have different secrets.
-    auto other_browser_context = CreateBrowserContext();
-    ChromeWebAuthenticationDelegate delegate;
-    EXPECT_NE(TouchIdMetadataSecret(delegate, GetBrowserContext()),
-              TouchIdMetadataSecret(delegate, other_browser_context.get()));
-    // Ensure this second secret is actually valid.
-    EXPECT_EQ(
-        32u,
-        TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
-  }
+  // Different profiles have different secrets.
+  auto other_browser_context = CreateBrowserContext();
+  ChromeWebAuthenticationDelegate delegate;
+  EXPECT_NE(TouchIdMetadataSecret(delegate, GetBrowserContext()),
+            TouchIdMetadataSecret(delegate, other_browser_context.get()));
+  // Ensure this second secret is actually valid.
+  EXPECT_EQ(
+      32u, TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
 }
 #endif  // BUILDFLAG(IS_MAC)
 

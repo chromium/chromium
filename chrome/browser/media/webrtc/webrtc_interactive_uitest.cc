@@ -186,12 +186,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
     return;
   }
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(jam): this test only on 10.12.
-  if (base::mac::IsOS10_12())
-    return;
-#endif
-
   RunsAudioVideoWebRTCCallInTwoTabs("H264", true /* prefer_hw_video_codec */);
 }
 
