@@ -38,9 +38,9 @@ void OnRatioSet(bool success) {
 
 }  // namespace
 
-const base::Feature kKstaled{"KstaledSwap", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kKstaled{"KstaledSwap", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", -1};
+const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 1};
 
 // InitializeKstaled will attempt to configure kstaled with the experimental
 // parameters for this user.
