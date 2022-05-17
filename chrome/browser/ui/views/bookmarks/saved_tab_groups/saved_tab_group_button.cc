@@ -53,7 +53,14 @@ SavedTabGroupButton::SavedTabGroupButton(
     : MenuButton(std::move(callback), group.title),
       tab_group_color_id_(group.color),
       is_group_in_tabstrip_(is_group_in_tabstrip),
-      context_menu_controller_(group.saved_tabs, page_navigator) {
+      tabs_(group.saved_tabs),
+      page_navigator_callback_(std::move(page_navigator)),
+      context_menu_controller_(
+          this,
+          base::BindRepeating(
+              &SavedTabGroupButton::CreateDialogModelForContextMenu,
+              base::Unretained(this)),
+          views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
   SetText(group.title);
   SetAccessibleName(group.title);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
@@ -63,8 +70,8 @@ SavedTabGroupButton::SavedTabGroupButton(
   // be enabled when a theme provider can provide one onpaint.
   SetEnabledTextColors(gfx::kPlaceholderColor);
 
-  // TODO (dljames): Add set_context_menu_controller and set_drag_controller to
-  // this button once dragging and the context menu are built.
+  // TODO (dljames): Add set_drag_controller to this button once dragging is
+  // built.
   SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
 
   ConfigureInkDropForToolbar(this);
@@ -90,8 +97,6 @@ SavedTabGroupButton::SavedTabGroupButton(
     // comfortably fit in the bookmarks bar.
     SetPreferredSize(gfx::Size(button_height, button_height));
   }
-
-  set_context_menu_controller(&context_menu_controller_);
 }
 
 SavedTabGroupButton::~SavedTabGroupButton() = default;
@@ -190,16 +195,8 @@ bool SavedTabGroupButton::HasButtonOutline() const {
   return is_group_in_tabstrip_;
 }
 
-SavedTabGroupButton::ContextMenuController::ContextMenuController(
-    const std::vector<SavedTabGroupTab>& tabs,
-    base::RepeatingCallback<content::PageNavigator*()> page_navigator)
-    : tabs_(tabs), page_navigator_(page_navigator) {}
-SavedTabGroupButton::ContextMenuController::~ContextMenuController() = default;
-
-void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
-    View* source,
-    const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+std::unique_ptr<ui::DialogModel>
+SavedTabGroupButton::CreateDialogModelForContextMenu() {
   ui::DialogModel::Builder dialog_model = ui::DialogModel::Builder();
 
   for (const SavedTabGroupTab& tab : tabs_) {
@@ -208,7 +205,7 @@ void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
         base::BindRepeating(
             [](GURL url,
                base::RepeatingCallback<content::PageNavigator*()>
-                   page_navigator,
+                   page_navigator_callback,
                int event_flags) {
               content::OpenURLParams params(
                   url, content::Referrer(),
@@ -216,23 +213,12 @@ void SavedTabGroupButton::ContextMenuController::ShowContextMenuForViewImpl(
                   ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                   /*is_renderer_initiated=*/false,
                   /*started_from_context_menu=*/true);
-              page_navigator.Run()->OpenURL(params);
+              page_navigator_callback.Run()->OpenURL(params);
             },
-            tab.url, page_navigator_));
+            tab.url, page_navigator_callback_));
   }
 
-  menu_model_ =
-      std::make_unique<ui::DialogModelMenuModelAdapter>(dialog_model.Build());
-
-  // TODO(pbos): See if there's a better way than IS_NESTED to force this to
-  // show icons (we need favicons, I haven't figured out why this doesn't show
-  // icons under Mac OS context menus).
-  menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(),
-      views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
-  menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
-                          gfx::Rect(point, gfx::Size()),
-                          views::MenuAnchorPosition::kTopLeft, source_type);
+  return dialog_model.Build();
 }
 
 BEGIN_METADATA(SavedTabGroupButton, MenuButton)
