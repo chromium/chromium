@@ -214,9 +214,7 @@ class ASH_EXPORT AppsContainerView
     return suggestion_chip_container_view_;
   }
 
-  AppListToastContainerView* toast_container_for_test() {
-    return toast_container_;
-  }
+  AppListToastContainerView* toast_container() { return toast_container_; }
 
   AppListNudgeController* app_list_nudge_controller() {
     return app_list_nudge_controller_.get();

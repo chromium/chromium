@@ -842,7 +842,7 @@ void AppsContainerView::UpdateForNewSortingOrder(
           weak_ptr_factory_.GetWeakPtr(), new_order));
 
   // Configure the toast fade out animation if the toast is going to be hidden.
-  const bool current_toast_visible = toast_container_->is_toast_visible();
+  const bool current_toast_visible = toast_container_->IsToastVisible();
   const bool target_toast_visible =
       toast_container_->GetVisibilityForSortOrder(new_order);
   if (current_toast_visible && !target_toast_visible) {
@@ -1684,7 +1684,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(
     std::move(update_position_closure_).Run();
 
   // Record the undo toast's visibility before update.
-  const bool old_toast_visible = toast_container_->is_toast_visible();
+  const bool old_toast_visible = toast_container_->IsToastVisible();
 
   toast_container_->OnTemporarySortOrderChanged(new_order);
   HandleFocusAfterSort();
@@ -1695,7 +1695,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(
     return;
   }
 
-  const bool target_toast_visible = toast_container_->is_toast_visible();
+  const bool target_toast_visible = toast_container_->IsToastVisible();
   const bool toast_visibility_change =
       (old_toast_visible != target_toast_visible);
 
@@ -1765,9 +1765,10 @@ void AppsContainerView::HandleFocusAfterSort() {
   if (!contents_view_->app_list_view()->is_tablet_mode())
     return;
 
-  // If the sort is done and the toast is visible, request the focus on the
-  // undo button on the toast. Otherwise request the focus on the search box.
-  if (toast_container_->is_toast_visible()) {
+  // If the sort is done and the toast is visible and not fading out, request
+  // the focus on the undo button on the toast. Otherwise request the focus on
+  // the search box.
+  if (toast_container_->IsToastVisible()) {
     toast_container_->toast_view()->toast_button()->RequestFocus();
   } else {
     contents_view_->GetSearchBoxView()->search_box()->RequestFocus();

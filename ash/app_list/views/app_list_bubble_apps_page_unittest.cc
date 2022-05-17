@@ -451,12 +451,12 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
             apps_page->separator_for_test()->GetVisible());
 
   // Before sorting, the undo toast should be invisible.
-  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_FALSE(reorder_undo_toast_container->IsToastVisible());
 
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
   // After sorting, the undo toast should be visible.
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->IsToastVisible());
 
   // Scroll the apps page to the end.
   views::ScrollView* scroll_view = apps_page->scroll_view();
@@ -480,7 +480,7 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
                                     scroll_view->contents(), &origin);
   toast_container_bounds_in_scroll_view =
       gfx::Rect(origin, reorder_undo_toast_container->size());
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->IsToastVisible());
   EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(
       toast_container_bounds_in_scroll_view));
 }
@@ -496,11 +496,11 @@ TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
 
   AppListToastContainerView* toast_container =
       helper->GetBubbleAppsPage()->toast_container_for_test();
-  EXPECT_FALSE(toast_container->is_toast_visible());
+  EXPECT_FALSE(toast_container->IsToastVisible());
 
   // Sort app list and expect undo toast to be shown with close button.
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
-  EXPECT_TRUE(toast_container->is_toast_visible());
+  EXPECT_TRUE(toast_container->IsToastVisible());
   EXPECT_TRUE(toast_container->GetCloseButton());
 
   // Click on close button to dismiss the toast.
@@ -510,7 +510,7 @@ TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
   EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
   LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
 
-  EXPECT_FALSE(toast_container->is_toast_visible());
+  EXPECT_FALSE(toast_container->IsToastVisible());
 }
 
 }  // namespace

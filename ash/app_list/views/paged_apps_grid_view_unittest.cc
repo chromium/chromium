@@ -145,7 +145,7 @@ class PagedAppsGridViewWithNudgeTest : public PagedAppsGridViewTest {
     // Update the toast container to make sure the nudge is shown, if required.
     GetAppListTestHelper()
         ->GetAppsContainerView()
-        ->toast_container_for_test()
+        ->toast_container()
         ->MaybeUpdateReorderNudgeView();
   }
 };
@@ -488,7 +488,7 @@ TEST_F(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
   helper->GetAppsContainerView()->ResetForShowApps();
 
   AppsContainerView* container_view = helper->GetAppsContainerView();
-  views::View* announcement_view = container_view->toast_container_for_test()
+  views::View* announcement_view = container_view->toast_container()
                                        ->a11y_announcer_for_test()
                                        ->announcement_view_for_test();
   ASSERT_TRUE(announcement_view);
@@ -534,13 +534,13 @@ TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
 
   AppsContainerView* container_view = helper->GetAppsContainerView();
   AppListToastContainerView* reorder_undo_toast_container =
-      container_view->toast_container_for_test();
-  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+      container_view->toast_container();
+  EXPECT_FALSE(reorder_undo_toast_container->IsToastVisible());
 
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
   // After sorting, the undo toast should be visible.
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->IsToastVisible());
 
   views::View* first_item =
       grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/0);
@@ -597,13 +597,13 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
   AppsContainerView* container_view =
       GetAppListTestHelper()->GetAppsContainerView();
   AppListToastContainerView* reorder_undo_toast_container =
-      container_view->toast_container_for_test();
-  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+      container_view->toast_container();
+  EXPECT_FALSE(reorder_undo_toast_container->IsToastVisible());
 
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
   // After sorting, the undo toast should be visible.
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->IsToastVisible());
 
   pagination_model->SelectPage(total_pages - 1, /*animate=*/false);
 
@@ -617,7 +617,7 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
   SortAppList(AppListSortOrder::kColor, /*wait=*/true);
 
   // After sorting, the undo toast should still be visible.
-  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(reorder_undo_toast_container->IsToastVisible());
 
   // The undo toast should be within the apps container's view port.
   EXPECT_TRUE(apps_container_screen_bounds.Contains(
@@ -639,9 +639,9 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
   SortAppList(AppListSortOrder::kNameAlphabetical, /*wait=*/true);
 
   AppListToastContainerView* toast_container =
-      helper->GetAppsContainerView()->toast_container_for_test();
+      helper->GetAppsContainerView()->toast_container();
   EXPECT_TRUE(toast_container->GetToastButton()->HasFocus());
-  EXPECT_TRUE(toast_container->is_toast_visible());
+  EXPECT_TRUE(toast_container->IsToastVisible());
   EXPECT_EQ(2, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
 
   // Tap on the close button to remove the toast.
@@ -676,7 +676,7 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
 
   // Verify that another row appears once the toast is closed.
   EXPECT_EQ(3, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
-  EXPECT_FALSE(toast_container->is_toast_visible());
+  EXPECT_FALSE(toast_container->IsToastVisible());
 }
 
 }  // namespace

@@ -271,6 +271,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
                      base::BindRepeating(
                          &AppListToastContainerView::OnReorderUndoButtonClicked,
                          base::Unretained(this)))
+          .SetViewDelegate(view_delegate_)
           .Build());
   toast_view_->toast_button()->GetViewAccessibility().OverrideName(
       a11y_text_on_undo_button);
@@ -314,6 +315,11 @@ void AppListToastContainerView::OnReorderUndoButtonClicked() {
 void AppListToastContainerView::OnReorderCloseButtonClicked() {
   base::AutoReset auto_reset(&committing_sort_order_, true);
   view_delegate_->CommitTemporarySortOrder();
+}
+
+bool AppListToastContainerView::IsToastVisible() const {
+  return toast_view_ && !(toast_view_->layer() &&
+                          toast_view_->layer()->GetTargetOpacity() == 0.0f);
 }
 
 void AppListToastContainerView::FadeOutToastView() {

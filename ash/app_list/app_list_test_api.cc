@@ -236,7 +236,7 @@ AppListToastContainerView* GetToastContainerViewFromBubble() {
 
 AppListToastContainerView* GetToastContainerViewFromFullscreenAppList() {
   DCHECK(features::IsLauncherAppSortEnabled());
-  return GetAppsContainerView()->toast_container_for_test();
+  return GetAppsContainerView()->toast_container();
 }
 
 RecentAppsView* GetRecentAppsView() {

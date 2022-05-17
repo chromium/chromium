@@ -375,9 +375,7 @@ class ContinueSectionViewWithReorderNudgeTest
           ->toast_container_for_test();
     }
 
-    return GetAppListTestHelper()
-        ->GetAppsContainerView()
-        ->toast_container_for_test();
+    return GetAppListTestHelper()->GetAppsContainerView()->toast_container();
   }
 };
 

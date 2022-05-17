@@ -299,7 +299,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
     // The separator is not offset; it animates next to the view above it.
     SlideViewIntoPosition(separator_, vertical_offset, slide_duration);
   }
-  if (toast_container_ && toast_container_->is_toast_visible()) {
+  if (toast_container_ && toast_container_->IsToastVisible()) {
     vertical_offset += section_offset;
     SlideViewIntoPosition(toast_container_, vertical_offset, slide_duration);
   }
@@ -480,7 +480,7 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
               weak_factory_.GetWeakPtr(), new_order));
 
   // Configure the toast fade out animation if the toast is going to be hidden.
-  const bool current_toast_visible = toast_container_->is_toast_visible();
+  const bool current_toast_visible = toast_container_->IsToastVisible();
   const bool target_toast_visible =
       toast_container_->GetVisibilityForSortOrder(new_order);
   if (current_toast_visible && !target_toast_visible) {
@@ -693,9 +693,10 @@ void AppListBubbleAppsPage::HandleFocusAfterSort() {
   if (view_delegate_->IsInTabletMode())
     return;
 
-  // If the sort is done and the toast is visible, request the focus on the
-  // undo button on the toast. Otherwise request the focus on the search box.
-  if (toast_container_->is_toast_visible()) {
+  // If the sort is done and the toast is visible and not fading out, request
+  // the focus on the undo button on the toast. Otherwise request the focus on
+  // the search box.
+  if (toast_container_->IsToastVisible()) {
     toast_container_->toast_view()->toast_button()->RequestFocus();
   } else {
     search_box_->search_box()->RequestFocus();
@@ -722,11 +723,11 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded(
     std::move(update_position_closure_).Run();
 
   // Record the undo toast's visibility before update.
-  const bool old_toast_visible = toast_container_->is_toast_visible();
+  const bool old_toast_visible = toast_container_->IsToastVisible();
 
   toast_container_->OnTemporarySortOrderChanged(new_order);
   HandleFocusAfterSort();
-  const bool target_toast_visible = toast_container_->is_toast_visible();
+  const bool target_toast_visible = toast_container_->IsToastVisible();
 
   // If there is a layer created for fading out `toast_container_`, destroy
   // the layer when the fade out animation ends. NOTE: when the reorder toast

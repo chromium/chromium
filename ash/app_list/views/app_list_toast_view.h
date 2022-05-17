@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/style/pill_button.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace ash {
+
+class AppListViewDelegate;
 
 // A view specific to AppList that displays an icon, two labels and a button.
 // The view can be built with all or some of the elements mentioned before, but
@@ -58,6 +61,8 @@ class ASH_EXPORT AppListToastView : public views::View {
         views::Button::PressedCallback close_button_callback);
     Builder& SetStyleForTabletMode(bool style_for_tablet_mode);
 
+    Builder& SetViewDelegate(AppListViewDelegate* delegate);
+
    private:
     std::u16string title_;
     absl::optional<std::u16string> subtitle_;
@@ -70,7 +75,11 @@ class ASH_EXPORT AppListToastView : public views::View {
     views::Button::PressedCallback close_button_callback_;
     bool style_for_tablet_mode_ = false;
     bool has_icon_background_ = false;
+    AppListViewDelegate* view_delegate_ = nullptr;
   };
+
+  // Whether `view` is a ToastPillButton.
+  static bool IsToastButton(views::View* view);
 
   explicit AppListToastView(const std::u16string title);
   AppListToastView(const AppListToastView&) = delete;
@@ -96,6 +105,8 @@ class ASH_EXPORT AppListToastView : public views::View {
 
   void UpdateInteriorMargins(const gfx::Insets& margins);
 
+  void SetViewDelegate(AppListViewDelegate* delegate);
+
   // Styles the toast for display in tablet mode launcher UI - for example, adds
   // background blur, and sets rounded corners on the toast layer.
   void StyleForTabletMode();
@@ -107,6 +118,21 @@ class ASH_EXPORT AppListToastView : public views::View {
   views::Button* close_button() const { return close_button_; }
 
  private:
+  class ToastPillButton : public PillButton {
+   public:
+    ToastPillButton(AppListViewDelegate* view_delegate,
+                    PressedCallback callback,
+                    const std::u16string& text,
+                    Type type,
+                    const gfx::VectorIcon* icon);
+
+    // views::View:
+    void OnFocus() override;
+    void OnBlur() override;
+
+    AppListViewDelegate* view_delegate_ = nullptr;
+  };
+
   // Attach the icon to the toast based on theming and available icons.
   void UpdateIconImage();
   // Creates an ImageView for the icon and inserts it in the toast view.
@@ -130,6 +156,8 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Whether the toast icon should be styled with a background.
   bool has_icon_background_ = false;
 
+  AppListViewDelegate* view_delegate_ = nullptr;
+
   // Toast icon view.
   views::ImageView* icon_ = nullptr;
   // Label with the main text for the toast.
@@ -137,7 +165,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   // Label with the subtext for the toast.
   views::Label* subtitle_label_ = nullptr;
   // The button for the toast.
-  views::LabelButton* toast_button_ = nullptr;
+  ToastPillButton* toast_button_ = nullptr;
   // The close button for the toast.
   views::Button* close_button_ = nullptr;
   // Helper view to layout labels.
