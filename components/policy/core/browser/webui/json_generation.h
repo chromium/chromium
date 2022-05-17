@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,11 +18,18 @@ class Value;
 namespace policy {
 class PolicyConversionsClient;
 
+POLICY_EXPORT extern const char kChromeMetadataVersionKey[];
+POLICY_EXPORT extern const char kChromeMetadataOSKey[];
+POLICY_EXPORT extern const char kChromeMetadataPlatformKey[];
+POLICY_EXPORT extern const char kChromeMetadataRevisionKey[];
+
 // Simple object containing parameters used to generate a string of JSON from
 // a set of policies.
 struct POLICY_EXPORT JsonGenerationParams {
   explicit JsonGenerationParams();
   ~JsonGenerationParams();
+
+  JsonGenerationParams(JsonGenerationParams&&);
 
   JsonGenerationParams& with_application_name(
       const std::string& other_application_name) {
@@ -71,6 +79,11 @@ struct POLICY_EXPORT JsonGenerationParams {
 POLICY_EXPORT std::string GenerateJson(
     std::unique_ptr<PolicyConversionsClient> client,
     base::Value status,
+    const JsonGenerationParams& params);
+
+// Returns metadata about the current device/build, based both on what
+// is stored in |params| and also information that is statically available.
+POLICY_EXPORT base::Value::Dict GetChromeMetadataValue(
     const JsonGenerationParams& params);
 
 }  // namespace policy
