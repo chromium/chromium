@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="WebAudio.AudioBuffer.Length" units="frames"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The length (in frames) requested by createBuffer(). Recorded for every call
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintCategory" units="units"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>hongchan@chromium.org</owner>
   <summary>
     If provided, the latencyHint option category of &quot;interactive&quot;,
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintMilliSeconds" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>hongchan@chromium.org</owner>
   <summary>
     If the latencyHint is provided and is a floating-point number, the value in
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.HardwareOutputLatency" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.ConvolverNode.ImpulseResponseLength" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The duration in millisec of impulse responses for a ConvolverNode. Recorded

@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2022-11-13">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.DomContentLoaded" units="ms"
-    expires_after="2022-09-09">
+    expires_after="2022-11-13">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.Shaping.FCP" units="ms"
-    expires_after="2022-09-09">
+    expires_after="2022-11-13">
   <owner>tkent@chromium.org</owner>
   <owner>kojii@chromium.org</owner>
   <owner>yosin@chromium.org</owner>

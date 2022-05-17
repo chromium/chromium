@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.FileDescriptorLimiterAction"
-    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2022-09-11">
+    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2022-11-13">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.CloseReason"
-    enum="BottomSheet.StateChangeReason" expires_after="2022-09-11">
+    enum="BottomSheet.StateChangeReason" expires_after="2022-11-13">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
