@@ -11,7 +11,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom.h"
 
 namespace content {
 
@@ -34,22 +34,22 @@ class ContentfulPaintTimingInfo {
 
   ContentfulPaintTimingInfo(LargestContentTextOrImage largest_content_type,
                             bool in_main_frame,
-                            blink::LargestContentfulPaintTypeMask type);
+                            blink::mojom::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(
       const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
       const LargestContentTextOrImage largest_content_type,
       double image_bpp,
       bool in_main_frame,
-      blink::LargestContentfulPaintTypeMask type);
+      blink::mojom::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const absl::optional<base::TimeDelta>&,
              const uint64_t& size,
-             blink::LargestContentfulPaintTypeMask type,
+             blink::mojom::LargestContentfulPaintType type,
              double image_bpp);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
-  blink::LargestContentfulPaintTypeMask Type() const { return type_; }
+  blink::mojom::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
   LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
   double ImageBPP() const { return image_bpp_; }
@@ -76,7 +76,8 @@ class ContentfulPaintTimingInfo {
   absl::optional<base::TimeDelta> time_;
   uint64_t size_;
   LargestContentTextOrImage text_or_image_;
-  blink::LargestContentfulPaintTypeMask type_ = 0;
+  blink::mojom::LargestContentfulPaintType type_ =
+      blink::mojom::LargestContentfulPaintType::kNone;
   double image_bpp_ = 0.0;
   bool in_main_frame_;
 };
@@ -84,7 +85,7 @@ class ContentfulPaintTimingInfo {
 class ContentfulPaint {
  public:
   explicit ContentfulPaint(bool in_main_frame,
-                           blink::LargestContentfulPaintTypeMask type);
+                           blink::mojom::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo& Text() { return text_; }
   const ContentfulPaintTimingInfo& Text() const { return text_; }
   ContentfulPaintTimingInfo& Image() { return image_; }

@@ -5,33 +5,39 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_
 
-namespace blink {
-// This enum contains the various types a potential LargestContentfulPaint
-// candidate entry may have.
-// These values are set in PaintTimingDetector, packed into
-// page_load_metrics.mojom's LargestContentfulPaintTiming.type and finally
-// reported to UKM through UKMPageLoadMetricsObserver.
-enum LargestContentfulPaintType : uint32_t {
-  // kImage and KText are not yet supported and will be added later.
-  kLCPTypeImage = 1 << 0,
-  kLCPTypeText = 1 << 1,
+#include "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom-forward.h"
 
-  kLCPTypeAnimatedImage = 1 << 2,
-  // The enum values below are not yet used and will be added later.
-  kLCPTypeVideo = 1 << 3,
-  kLCPTypeDataURI = 1 << 4,
-  kLCPTypePNG = 1 << 5,
-  kLCPTypeJPG = 1 << 6,
-  kLCPTypeWebP = 1 << 7,
-  kLCPTypeSVG = 1 << 8,
-  kLCPTypeGIF = 1 << 9,
-  kLCPTypeAVIF = 1 << 10,
-  kLCPTypeFullViewport = 1 << 11,
-  kLCPTypeAfterMouseover = 1 << 12,
-};
+namespace blink::mojom {
 
-using LargestContentfulPaintTypeMask = uint32_t;
+inline constexpr LargestContentfulPaintType operator&(
+    LargestContentfulPaintType a,
+    LargestContentfulPaintType b) {
+  return static_cast<LargestContentfulPaintType>(static_cast<uint32_t>(a) &
+                                                 static_cast<uint32_t>(b));
+}
 
-}  // namespace blink
+inline constexpr LargestContentfulPaintType operator|(
+    LargestContentfulPaintType a,
+    LargestContentfulPaintType b) {
+  return static_cast<LargestContentfulPaintType>(static_cast<uint32_t>(a) |
+                                                 static_cast<uint32_t>(b));
+}
+
+inline LargestContentfulPaintType& operator&=(LargestContentfulPaintType& a,
+                                              LargestContentfulPaintType b) {
+  return a = a & b;
+}
+
+inline LargestContentfulPaintType& operator|=(LargestContentfulPaintType& a,
+                                              LargestContentfulPaintType b) {
+  return a = a | b;
+}
+
+inline constexpr uint64_t LargestContentfulPaintTypeToUKMFlags(
+    LargestContentfulPaintType type) {
+  return static_cast<uint64_t>(type);
+}
+
+}  // namespace blink::mojom
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_

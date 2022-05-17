@@ -231,8 +231,8 @@ uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
   return 0u;
 }
 
-LargestContentfulPaintTypeMask WebPerformance::LargestContentfulPaintType()
-    const {
+mojom::blink::LargestContentfulPaintType
+WebPerformance::LargestContentfulPaintType() const {
   return private_->timing()->LargestContentfulPaintType();
 }
 

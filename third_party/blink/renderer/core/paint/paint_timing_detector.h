@@ -10,7 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_visualizer.h"
@@ -178,7 +178,7 @@ class CORE_EXPORT PaintTimingDetector
     return largest_image_paint_time_;
   }
   uint64_t LargestImagePaintSize() const { return largest_image_paint_size_; }
-  LargestContentfulPaintTypeMask LargestContentfulPaintType() const {
+  mojom::blink::LargestContentfulPaintType LargestContentfulPaintType() const {
     return largest_contentful_paint_type_;
   }
   double LargestContentfulPaintImageBPP() const {
@@ -232,7 +232,8 @@ class CORE_EXPORT PaintTimingDetector
 
   base::TimeTicks largest_image_paint_time_;
   uint64_t largest_image_paint_size_ = 0;
-  LargestContentfulPaintTypeMask largest_contentful_paint_type_ = 0;
+  mojom::blink::LargestContentfulPaintType largest_contentful_paint_type_ =
+      mojom::blink::LargestContentfulPaintType::kNone;
   double largest_contentful_paint_image_bpp_ = 0.0;
   base::TimeTicks largest_text_paint_time_;
   uint64_t largest_text_paint_size_ = 0;

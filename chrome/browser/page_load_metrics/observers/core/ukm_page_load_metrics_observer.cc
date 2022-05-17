@@ -632,7 +632,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
     builder.SetPaintTiming_LargestContentfulPaintType(
-        all_frames_largest_contentful_paint.Type());
+        LargestContentfulPaintTypeToUKMFlags(
+            all_frames_largest_contentful_paint.Type()));
     if (all_frames_largest_contentful_paint.TextOrImage() ==
         page_load_metrics::ContentfulPaintTimingInfo::
             LargestContentTextOrImage::kImage) {

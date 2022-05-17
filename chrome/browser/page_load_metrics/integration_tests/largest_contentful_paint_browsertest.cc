@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
 class IsAnimatedLCPTest : public MetricIntegrationTest {
  public:
   void test_is_animated(const char* html_name,
-                        uint32_t flag_set,
+                        blink::mojom::LargestContentfulPaintType flag_set,
                         bool expected,
                         unsigned entries = 1) {
     auto waiter =
@@ -212,21 +212,21 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     waiter->Wait();
     ExpectUKMPageLoadMetricFlagSet(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
-        expected);
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest, LargestContentfulPaint_IsAnimated) {
   test_is_animated("/is_animated.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::mojom::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(IsAnimatedLCPTest,
                        LargestContentfulPaint_IsNotAnimated) {
   test_is_animated("/non_animated.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::mojom::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/false);
 }
 
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(
     IsAnimatedLCPTest,
     LargestContentfulPaint_AnimatedImageWithLargerTextFirst) {
   test_is_animated("/animated_image_with_larger_text_first.html",
-                   blink::LargestContentfulPaintType::kLCPTypeAnimatedImage,
+                   blink::mojom::LargestContentfulPaintType::kAnimatedImage,
                    /*expected=*/false);
 }
 
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(
 class MouseoverLCPTest : public MetricIntegrationTest {
  public:
   void test_mouseover(const char* html_name,
-                      uint32_t flag_set,
+                      blink::mojom::LargestContentfulPaintType flag_set,
                       std::string entries,
                       std::string entries2,
                       int x1,
@@ -304,15 +304,15 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     waiter->Wait();
     ExpectUKMPageLoadMetricFlagSet(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName, flag_set,
-        expected);
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                        DISABLED_LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/10, /*y1=*/10,
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(
     MouseoverLCPTest,
     DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/10, /*y1=*/10,
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                        LargestContentfulPaint_MouseoverOverBody) {
   test_mouseover("/mouseover.html",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"2",
                  /*x1=*/30, /*y1=*/10,
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(
     MouseoverLCPTest,
     DISABLED_LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
-                 blink::LargestContentfulPaintType::kLCPTypeAfterMouseover,
+                 blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
                  /*entries2=*/"3",
                  /*x1=*/10, /*y1=*/10,

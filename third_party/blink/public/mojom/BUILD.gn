@@ -146,6 +146,7 @@ mojom("mojom_platform") {
     "parakeet/ad_request.mojom",
     "payments/payment_app.mojom",
     "peerconnection/peer_connection_tracker.mojom",
+    "performance/largest_contentful_paint_type.mojom",
     "performance_manager/v8_detailed_memory_reporter.mojom",
     "permissions/permission.mojom",
     "permissions/permission_automation.mojom",
